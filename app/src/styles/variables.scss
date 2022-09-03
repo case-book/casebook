@@ -1,0 +1,52 @@
+$primary: #FF8C00;
+$secondary: #7bde89;
+$danger: #f21646;
+$point: #d184d8;
+$yellow: #ffbb20;
+$warning: #e25a75;
+$white: #ffffff;
+$light: #f8f9fa;
+$green: #397D02;
+
+$xs-height : 24px;
+$sm-height : 30px;
+$md-height : 36px;
+$lg-height : 42px;
+$xl-height : 48px;
+$xxl-height : 60px;
+
+$black: #222;
+$gray: #555;
+$color-point: #ffbb20;
+$color-sub1: #7bde89;
+$color-sub2: #657feb;
+$color-sub3: #d184d8;
+$color-sub4: #5ab0b2;
+$color-sub5: #e25a75;
+$blue: #386BD8;
+$red-color: #f21646;
+$link-color: #409eff;
+$link-color: #386BD8;
+$max-width : 1200px;
+
+$border-color: #d1d1d1;
+$input-border-color: #AAA;
+
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+
+$kakao-color: #f7e600;
+$facebook-color: #3b5998;
+$naver-color: #1ec800;
+$google-color: #4285f4;
+
+@mixin shadow() {
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+}

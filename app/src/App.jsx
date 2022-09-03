@@ -1,5 +1,6 @@
 import logo from './logo.svg';
-import './App.css';
+import '@/App.scss';
+import React from 'react';
 
 function App() {
   return (
@@ -15,8 +16,9 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Learn React111
         </a>
+        <img src="/favicon.ico" alt="sample" />
       </header>
     </div>
   );

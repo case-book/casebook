@@ -1,7 +1,28 @@
 # Getting Started
+
+-- server
 docker-compose up -d
 
+-- backend application
+run com.mindplates.bugcase.BugCaseApplication
+
+-- swagger 
 https://localhost:8080/swagger-ui/
+
+-- api test
+https://localhost:8080/api/configs/systems/version
+
+
+-- front dev server start 
+cd app
+npm install
+npm run start
+
+--
+https://localhost:3000/
+
+
+-- build
 
 
 ### Reference Documentation
