@@ -1,0 +1,36 @@
+# 파일 규격 버전
+version: "3"
+# 이 항목 밑에 실행하려는 컨테이너 들을 정의
+services:
+  # 서비스 명
+  db:
+    # 사용할 이미지
+    image: mysql:5.7
+    # 컨테이너 이름 설정
+    container_name: bug-case-mysql-dev
+    # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
+    ports:
+      - 3606:3306
+    # -e 옵션
+    environment:
+      # MYSQL 패스워드 설정 옵션
+      MYSQL_ROOT_PASSWORD: "admin1234"
+    # 명령어 실행 (한글 인코딩 관련)
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    volumes:
+      # -v 옵션 (다렉토리 마운트 설정)
+      - ./database/db:/var/lib/mysql
+      - ./database/script/:/docker-entrypoint-initdb.d/:ro
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass admin1234 --port 6579
+    container_name: bug-case-redis-dev
+    hostname: redis6579
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6679:6579
