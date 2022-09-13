@@ -1,0 +1,132 @@
+.header-wrapper {
+  > div {
+    height: 80px;
+    display: flex;
+    max-width: $max-width;
+    margin: 0 auto;
+    .logo {
+      height: 100%;
+      display: flex;
+      margin-left: 20px;
+      flex-grow: 0;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .space-selector {
+      flex-grow: 1;
+      text-align: right;
+      display: flex;
+      justify-content: right;
+      margin-right: 40px;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .menu {
+      flex-grow: 0;
+      display: flex;
+      justify-content: right;
+      margin-right: 20px;
+      > div {
+        align-self: center;
+
+        ul {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+
+          li {
+            display: inline-flex;
+            line-height: 120%;
+            height: 40px;
+            vertical-align: top;
+
+            a {
+              color: $black;
+              position: relative;
+              text-decoration: none;
+              text-transform: uppercase;
+              font-family: Cairo, sans-serif;
+              align-self: center;
+
+              .icon {
+                position: static;
+                width: 100%;
+                text-align: center;
+                top: -20px;
+              }
+            }
+
+            &.selected {
+              a {
+                color: $color-azure;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .user-menu {
+      display: flex;
+      margin-right: 20px;
+
+      a, button {
+        align-self: center;
+      }
+      .user-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  &.theme-white {
+    .menu {
+      > div {
+        ul {
+          li {
+            a {
+              color: $black;
+
+              &:hover {
+                color: $color-azure;
+              }
+            }
+
+            &.selected {
+              a {
+                color: $color-azure;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.theme-black {
+    .menu {
+      > div {
+        ul {
+          li {
+            a {
+              color: $white;
+              &:hover {
+                color: $color-sunflower;
+              }
+            }
+
+            &.selected {
+              a {
+                color: $color-sunflower;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

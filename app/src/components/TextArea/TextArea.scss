@@ -1,0 +1,50 @@
+.text-area-wrapper {
+  display: block;
+  position: relative;
+  width: 100%;
+  border: 1px solid $border-color;
+  padding: 8px;
+  z-index: 2;
+  background-color: $white;
+  border-radius: 2px;
+  resize: none;
+
+  &:focus {
+    box-shadow: none;
+    outline: none;
+    border-color: $input-border-focus-color;
+  }
+
+  &:invalid {
+    border: 1px solid $danger;
+  }
+
+  &.size-xxl {
+    font-size: 20px;
+  }
+
+  &.size-xl {
+    font-size: 20px;
+  }
+
+  &.size-lg {
+    font-size: 18px;
+  }
+
+  &.size-md {
+    font-size: 16px;
+  }
+
+  &.size-sm {
+    font-size: 14px;
+  }
+
+  &.size-xs {
+    font-size: 12px;
+  }
+
+  &.disabled {
+    background-color: $gray-100;
+    opacity: 0.6;
+  }
+}

@@ -1,0 +1,24 @@
+.block-row-wrapper {
+  display: flex;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+
+  > div {
+    align-self: center;
+  }
+
+  &.expand {
+    > div {
+      &:last-child {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  button {
+    margin-left: 8px;
+  }
+}

@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.project.entity;
 
-import com.mindplates.bugcase.biz.common.entity.CommonEntity;
-import com.mindplates.bugcase.biz.common.entity.RoleCode;
+import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.biz.user.entity.User;
 import lombok.*;
 

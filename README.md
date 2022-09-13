@@ -22,6 +22,8 @@ npm run start
 https://localhost:3000/
 
 
+npm config delete "@fortawesome:registry"
+
 -- build
 
 

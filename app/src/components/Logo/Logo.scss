@@ -1,0 +1,38 @@
+.logo-wrapper {
+  position: relative;
+  white-space: nowrap;
+  display: flex;
+  > div.logo-icon {
+    background-color: $color-tangerine;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    border-radius: 5px;
+    align-self: center;
+    font-size: 24px;
+    color: $white;
+    justify-content: center;
+    > span {
+      align-self: center;
+      line-height: 0;
+    }
+  }
+
+  > div.logo-text {
+    align-self: center;
+    font-family: PatrickHand, sans-serif;
+
+    line-height: 100%;
+    margin-left: 10px;
+
+    > div:nth-child(1) {
+      font-size: 18px;
+    }
+
+    > div:nth-child(2) {
+      font-size: 12px;
+      font-family: NotoSans, sans-serif;
+      display: none;
+    }
+  }
+}

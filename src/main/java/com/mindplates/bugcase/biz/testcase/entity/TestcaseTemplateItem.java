@@ -1,8 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
-import com.mindplates.bugcase.biz.common.constants.ColumnsDef;
-import com.mindplates.bugcase.biz.common.entity.CommonEntity;
-import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
+import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.framework.converter.StringListConverter;
 import lombok.*;

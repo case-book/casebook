@@ -1,8 +1,8 @@
 package com.mindplates.bugcase.biz.user.entity;
 
-import com.mindplates.bugcase.biz.common.constants.ColumnsDef;
-import com.mindplates.bugcase.biz.common.entity.CommonEntity;
-import com.mindplates.bugcase.biz.common.entity.RoleCode;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
+import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.entity.RoleCode;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,23 +27,8 @@ public class User extends CommonEntity {
     @Column(name = "name", length = ColumnsDef.NAME)
     private String name;
 
-    @Column(name = "is_name_opened")
-    private Boolean isNameOpened;
-
-    @Column(name = "alias", nullable = false, length = ColumnsDef.NAME)
-    private String alias;
-
-    @Column(name = "tel", length = ColumnsDef.TEL)
-    private String tel;
-
-    @Column(name = "is_tel_opened")
-    private Boolean isTelOpened;
-
-    @Column(name = "image_type")
-    private String imageType;
-
-    @Column(columnDefinition = "text", name = "image_data")
-    private String imageData;
+    @Column(name = "uuid")
+    private String uuid;
 
     @Column(name = "password", nullable = false, length = ColumnsDef.PASSWORD)
     private String password;

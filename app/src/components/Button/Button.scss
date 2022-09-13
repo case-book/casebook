@@ -1,0 +1,239 @@
+.btn-wrapper {
+  border-radius: 1px;
+  background-color: transparent;
+  border: none;
+  padding: 0 12px;
+  cursor: pointer;
+
+  &.disabled {
+    opacity: 0.4;
+  }
+
+  &.btn-xs {
+    height: $xs-height;
+  }
+
+  &.btn-sm {
+    height: $sm-height;
+  }
+
+  &.btn-md {
+    height: $md-height;
+  }
+
+  &.btn-lg {
+    height: $lg-height;
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  &.btn-white {
+    background-color: $white;
+    color: $black;
+
+    &:hover {
+      background-color: $yellow;
+    }
+
+    &.disabled:hover {
+      background-color: $white;
+    }
+  }
+
+  &.btn-outline-white {
+    background-color: $white;
+    color: $black;
+    border: 1px solid $border-color;
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid $border-color;
+      }
+    }
+  }
+
+  &.btn-danger {
+    background-color: $danger;
+    color: $white;
+
+    &:hover {
+      background-color: darken($danger, 10%);
+    }
+
+    &.disabled:hover {
+      background-color: $danger;
+    }
+  }
+
+  &.btn-outline-danger {
+    background-color: $white;
+    color: $danger;
+    border: 1px solid $danger;
+    &:hover {
+      border: 1px solid darken($danger, 10%);
+      color: darken($danger, 10%);
+      &.disabled {
+        opacity: 0.4;
+      }
+    }
+  }
+
+  &.rounded {
+    border-radius: 50% !important;
+    padding-left: 0;
+    padding-right: 0;
+    line-height: 100%;
+
+    &.btn-xs {
+      width: 26px;
+      height: 26px;
+      width: 22px;
+      height: 22px;
+      padding-left: 0;
+      padding-right: 0;
+      padding-top: 0;
+      display: inline-flex;
+      > i {
+        align-self: center;
+        width: 100%;
+        line-height: 0;
+      }
+    }
+
+    &.btn-sm {
+      width: 31px;
+      height: 31px;
+      width: 28px;
+      height: 28px;
+    }
+
+    &.btn-md {
+      width: 38px;
+      height: 38px;
+      width: 35px;
+      height: 35px;
+    }
+
+    &.btn-lg {
+      width: 48px;
+      height: 48px;
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  &.btn-primary {
+    background-color: $primary;
+    color: $white;
+    &:hover {
+      background-color: lighten($primary, 8%);
+    }
+
+    &.disabled:hover {
+      background-color: $primary;
+    }
+  }
+
+  &.btn-blue {
+    background-color: $blue;
+    color: $white;
+
+    &:hover {
+      background-color: darken($blue, 5%);
+    }
+
+    &.disabled:hover {
+      background-color: $blue;
+    }
+  }
+
+  &.btn-outline-blue {
+    background-color: $blue;
+    color: $white;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  &.btn-yellow {
+    background-color: $yellow;
+    color: $black;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      background-color: darken($yellow, 5%);
+    }
+
+    &.disabled:hover {
+      background-color: $yellow;
+    }
+  }
+
+  &.btn-outline-yellow {
+    background-color: $yellow;
+    color: $black;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  &.btn-gray {
+    background-color: $gray-400;
+    color: $black;
+
+    &:hover {
+      background-color: darken($gray-400, 5%);
+    }
+
+    &.disabled:hover {
+      background-color: $gray-400;
+    }
+  }
+
+  &.btn-outline-gray {
+    background-color: $gray-400;
+    color: $black;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  &.btn-black {
+    background-color: $black;
+    color: $white;
+
+    &:hover {
+      background-color: darken($black, 5%);
+    }
+
+    &.disabled:hover {
+      background-color: $black;
+    }
+  }
+
+  &.btn-outline-black {
+    background-color: $black;
+    color: $white;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    &:hover {
+      border: 1px solid rgba(0, 0, 0, 0.7);
+      &.disabled {
+        border: 1px solid rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}

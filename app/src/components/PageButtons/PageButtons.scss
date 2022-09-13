@@ -1,0 +1,103 @@
+.bottom-buttons-wrapper {
+  text-align: center;
+  padding: 0;
+  max-width: $max-width;
+  margin: 2rem auto 0;
+
+  .bottom-liner {
+    margin-bottom: 1.5rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+
+    height: 1px;
+    background: rgb(122, 122, 124);
+    background: linear-gradient(90deg, rgba(122, 122, 124, 1) 0%, rgba(255, 68, 0, 1) 20%, rgba(111, 205, 17, 1) 40%, rgba(42, 60, 188, 1) 60%, rgba(226, 21, 80, 1) 80%, rgba(238, 251, 10, 1) 100%);
+    background: $gray-500;
+    opacity: 0.7;
+
+    @media (max-width: 992px) {
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
+
+    @media (max-width: 576px) {
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
+  }
+
+  &.has-delete {
+    .button-content {
+      > .other-buttons {
+        text-align: right;
+      }
+    }
+  }
+
+  .button-content {
+    display: flex;
+    position: relative;
+    padding: 0 1rem;
+
+    > .delete-buttons {
+      position: absolute;
+      left: 1rem;
+
+      > button {
+        color: $danger;
+      }
+    }
+
+    > .other-buttons {
+      flex-grow: 1;
+      text-align: center;
+      padding: 0;
+    }
+
+    > div > button {
+      min-width: 60px;
+      padding: 0 1rem;
+      font-weight: bold;
+      @media (max-width: 768px) {
+        border: none;
+        color: $link-color;
+      }
+
+      > div {
+        display: flex;
+        justify-content: center;
+        > div {
+          align-self: center;
+
+          &.icon {
+            display: flex;
+            margin-right: 0.25rem;
+
+            > span {
+              align-self: center;
+              display: inline-flex;
+              font-size: 16px;
+
+              > i {
+                flex-grow: 1;
+                align-self: center;
+              }
+            }
+
+            &.delete-icon {
+              > span {
+                i {
+                  margin-bottom: 2px;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

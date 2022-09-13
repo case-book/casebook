@@ -1,0 +1,44 @@
+.text-wrapper {
+  display: flex;
+  word-break: break-all;
+  background-color: $gray-100;
+  padding: 0.5rem;
+  flex-grow: 1;
+
+  &.bg-white {
+    background-color: $white;
+  }
+
+  @media (max-width: 576px) {
+    display: flex;
+  }
+
+  > div {
+    align-self: center;
+  }
+
+  &.size-xs {
+    min-height: 26px;
+    .text {
+    }
+  }
+
+  &.size-sm {
+    min-height: 31px;
+    font-size: 14px;
+    .text {
+    }
+  }
+
+  &.size-md {
+    min-height: 38px;
+  }
+
+  &.size-lg {
+    min-height: 48px;
+  }
+
+  &.is-bold {
+    font-weight: bold;
+  }
+}

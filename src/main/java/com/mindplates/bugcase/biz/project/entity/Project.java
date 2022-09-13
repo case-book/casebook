@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.project.entity;
 
-import com.mindplates.bugcase.biz.common.constants.ColumnsDef;
-import com.mindplates.bugcase.biz.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
+import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import lombok.*;

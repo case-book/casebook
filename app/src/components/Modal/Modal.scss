@@ -1,0 +1,81 @@
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: none;
+
+  &.show {
+    display: flex;
+  }
+
+  > div {
+    position: relative;
+    align-self: center;
+    background-color: $white;
+    padding: 1rem;
+    margin: 0 auto;
+    max-width: 500px;
+    min-width: 500px;
+    @media (max-width: 536px) {
+      margin: 0 0.5rem;
+      width: calc(100% - 1rem);
+      min-width: auto;
+    }
+
+    border-radius: 2px;
+    box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.05);
+
+    > .exit-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      display: inline-flex;
+      justify-content: center;
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+      font-size: 24px;
+      color: $gray-600;
+
+      &:hover {
+        border-bottom: 1px solid $black;
+      }
+      > span {
+        align-self: center;
+        line-height: 0;
+      }
+    }
+
+    .modal-header-wrapper {
+      text-align: center;
+    }
+
+    .modal-body-wrapper {
+      text-align: center;
+      line-height: 180%;
+      word-break: break-all;
+    }
+
+    .modal-footer-wrapper {
+      margin-top: 1rem;
+      text-align: center;
+
+      > button {
+        margin-right: 0.5rem;
+        min-width: 60px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

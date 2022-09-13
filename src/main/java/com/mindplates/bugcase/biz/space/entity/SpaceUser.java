@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.entity;
 
-import com.mindplates.bugcase.biz.common.entity.CommonEntity;
-import com.mindplates.bugcase.biz.common.entity.RoleCode;
+import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.biz.user.entity.User;
 import lombok.*;
 
@@ -32,5 +32,8 @@ public class SpaceUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_SPACE__USER"))
     private Space space;
+
+    @Transient
+    private String CRUD;
 
 }

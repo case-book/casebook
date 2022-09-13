@@ -1,0 +1,87 @@
+.label-wrapper {
+  display: inline-flex;
+  margin-right: 1rem;
+  color: $gray-600;
+  position: relative;
+  @media (max-width: 768px) {
+    display: flex;
+    margin-right: 0;
+    > span {
+      align-self: center;
+    }
+  }
+
+  &.required {
+    > span {
+      color: $color-tangerine;
+    }
+  }
+
+  .required-mark {
+    position: absolute;
+    top: 0;
+    right: -6px;
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    line-height: 0;
+    > div {
+      line-height: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: $color-tangerine;
+      display: inline-block;
+    }
+  }
+
+  &.size-xxl {
+    font-size: 20px;
+    height: $xxl-height;
+  }
+
+  &.size-xl {
+    font-size: 20px;
+    height: $xl-height;
+  }
+
+  &.size-lg {
+    font-size: 18px;
+    height: $lg-height;
+  }
+
+  &.size-md {
+    font-size: 16px;
+    height: $md-height;
+  }
+
+  &.size-sm {
+    font-size: 14px;
+    height: $sm-height;
+  }
+
+  &.size-xs {
+    font-size: 12px;
+    height: $xs-height;
+  }
+
+  > span {
+    position: relative;
+    align-self: center;
+
+    &.liner {
+      flex-grow: 1;
+      text-align: right;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+      > span {
+        display: inline-block;
+        height: 10px;
+        width: 1px;
+        background-color: $gray-500;
+      }
+    }
+  }
+}

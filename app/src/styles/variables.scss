@@ -7,6 +7,8 @@ $warning: #e25a75;
 $white: #ffffff;
 $light: #f8f9fa;
 $green: #397D02;
+$black: #222;
+$gray: #555;
 
 $xs-height : 24px;
 $sm-height : 30px;
@@ -15,8 +17,7 @@ $lg-height : 42px;
 $xl-height : 48px;
 $xxl-height : 60px;
 
-$black: #222;
-$gray: #555;
+
 $color-point: #ffbb20;
 $color-sub1: #7bde89;
 $color-sub2: #657feb;
@@ -27,10 +28,12 @@ $blue: #386BD8;
 $red-color: #f21646;
 $link-color: #409eff;
 $link-color: #386BD8;
-$max-width : 1200px;
+$max-width : 1920px;
+$max-page-width : 1200px;
 
-$border-color: #d1d1d1;
-$input-border-color: #AAA;
+$border-color: rgba(0,0,0,0.3);
+$input-border-color: rgba(0,0,0,0.3);
+$input-border-focus-color: rgba(0,0,0,0.6);
 
 $gray-100: #f8f9fa !default;
 $gray-200: #e9ecef !default;
@@ -46,6 +49,20 @@ $kakao-color: #f7e600;
 $facebook-color: #3b5998;
 $naver-color: #1ec800;
 $google-color: #4285f4;
+
+$bg-1 : #171313;
+
+$color-azure: #3e8ef1;
+$color-storm: #a4c9d8;
+$color-tangerine: #ff4935;
+$color-citric: #cdf567;
+$color-sunflower: #ffbc4b;
+$color-pink: #ffd0d5;
+$color-salmon: #fb7ea8;
+$color-factory-yellow: #ffe818;
+$color-black: #171313;
+$color-white: #fff;
+$color-muted-black: #837e7e;
 
 @mixin shadow() {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);

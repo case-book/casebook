@@ -1,0 +1,268 @@
+.selector-wrapper {
+  display: inline-block;
+  position: relative;
+
+  &.size-xs {
+    height: $xs-height;
+    font-size: 0.8rem;
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $xs-height;
+        }
+      }
+    }
+  }
+
+  &.size-sm {
+    height: $sm-height;
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $sm-height;
+        }
+      }
+    }
+  }
+
+  &.size-md {
+    height: $md-height;
+
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $md-height;
+        }
+      }
+    }
+  }
+
+  &.size-lg {
+    height: $lg-height;
+    .selector-current {
+      > span {
+        &.text {
+          max-height: $lg-height;
+        }
+      }
+    }
+  }
+
+  .selector-overlay {
+    z-index: 1;
+    background-color: transparent;
+  }
+
+  .selector-current {
+    background-color: $white;
+    display: flex;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    line-height: 160%;
+
+    &.open {
+      border-radius: 2px 2px 0 0 !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    }
+
+    &:hover {
+      &.outline {
+        background-color: $white;
+        color: $black;
+        border-color: rgba(0, 0, 0, 0.7);
+      }
+
+      > span {
+        &.icon {
+          .hover {
+            display: inline-block;
+          }
+
+          .normal {
+            display: none;
+          }
+        }
+      }
+    }
+
+    &.outline {
+      border: 1px solid rgba(0, 0, 0, 0.4);
+    }
+
+    > span {
+      display: inline-block;
+      padding: 0 6px;
+
+      &.text {
+        text-transform: uppercase;
+        flex: 1;
+        align-self: center;
+        overflow: hidden;
+        line-height: 180%;
+        padding: 0 8px;
+      }
+
+      &.liner {
+        padding: 0;
+        width: 1px;
+        flex: 0;
+        height: 16px;
+        align-self: center;
+        display: inline-flex;
+
+        > span {
+          display: inline-block;
+          width: 1px;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.3);
+          align-self: center;
+        }
+      }
+
+      &.icon {
+        flex: 0;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        align-self: center;
+        line-height: 0;
+
+        .hover {
+          display: none;
+        }
+
+        > i {
+          align-self: center;
+        }
+      }
+    }
+
+    &.color-primary {
+      border: 1px solid $primary;
+
+      > span {
+        &.liner {
+          > span {
+            background-color: $primary;
+          }
+        }
+
+        &.icon {
+          color: $primary;
+        }
+      }
+
+      &:hover {
+        border: 1px solid darken($primary, 10%);
+
+        > span {
+          &.liner {
+            > span {
+              background-color: darken($primary, 10%);
+            }
+          }
+
+          &.icon {
+            color: darken($primary, 10%);
+          }
+        }
+      }
+    }
+  }
+
+  &.radius {
+    .selector-current {
+      border-radius: 5px;
+
+      &.open {
+        border-radius: 5px 5px 0 0 !important;
+      }
+    }
+
+    .selector-list {
+      ul {
+        border-radius: 0 0 5px 5px;
+        li {
+          &:last-child {
+            border-radius: 0 0 5px 5px;
+          }
+        }
+      }
+    }
+  }
+
+  &.md {
+    height: 30px;
+  }
+
+  &.sm {
+    height: 28px;
+    .selector-current {
+      > span {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .selector-list {
+    position: absolute;
+    background-color: $white;
+    min-width: 100%;
+    margin-top: 2px;
+    max-height: calc(30px * 6);
+    overflow-y: auto;
+    z-index: 3;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+
+    ul {
+      list-style: none;
+      padding: 1px;
+      margin: 0;
+      cursor: pointer;
+
+      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+      border-radius: 0 0 2px 2px;
+
+      li {
+        padding: 9px 7px 6px;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+        text-align: left;
+        margin-bottom: 1px;
+        line-height: 100%;
+        white-space: nowrap;
+
+        &:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+          border-radius: 0 0 2px 2px;
+        }
+
+        .select-arrow {
+          width: 40px;
+          height: 60px;
+          background-color: rgba(0, 0, 0, 0.2);
+          position: absolute;
+          top: -10px;
+          right: -35px;
+          transform: rotate(45deg);
+          display: none;
+        }
+
+        &.selected {
+          font-weight: bold;
+          background-color: $yellow;
+        }
+
+        &:hover {
+          background-color: lighten($yellow, 8%);
+        }
+      }
+    }
+  }
+}

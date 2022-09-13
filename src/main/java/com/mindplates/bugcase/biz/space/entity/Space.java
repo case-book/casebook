@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.entity;
 
-import com.mindplates.bugcase.biz.common.constants.ColumnsDef;
-import com.mindplates.bugcase.biz.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
+import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;

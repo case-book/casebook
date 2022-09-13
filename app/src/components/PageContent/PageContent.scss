@@ -1,0 +1,8 @@
+.page-content-wrapper {
+  flex-grow: 1;
+  position: relative;
+  width: 100%;
+  flex-direction: column;
+  max-width: $max-width;
+  padding: 32px;
+}

@@ -1,0 +1,108 @@
+@import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
+
+@font-face {
+  font-family: 'NotoSans';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Noto Sans Light'), local('NotoSans-Light');
+  src: url(./fonts/NotoSans/NotoSans-Light.eot);
+  src: url(./fonts/NotoSans/NotoSans-Light.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Light.woff) format('woff'),
+    url(./fonts/NotoSans/NotoSans-Light.otf) format('opentype');
+}
+@font-face {
+  font-family: 'NotoSans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans Regular'), local('NotoSans-Regular');
+  src: url(./fonts/NotoSans/NotoSans-Regular.eot);
+  src: url(./fonts/NotoSans/NotoSans-Regular.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Regular.woff) format('woff'),
+    url(./fonts/NotoSans/NotoSans-Regular.otf) format('opentype');
+}
+@font-face {
+  font-family: 'NotoSans';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Noto Sans Medium'), local('NotoSans-Medium');
+  src: url(./fonts/NotoSans/NotoSans-Medium.eot);
+  src: url(./fonts/NotoSans/NotoSans-Medium.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Medium.woff) format('woff'),
+    url(./fonts/NotoSans/NotoSans-Medium.otf) format('opentype');
+}
+@font-face {
+  font-family: 'NotoSans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Noto Sans Bold'), local('NotoSans-Bold');
+  src: url(./fonts/NotoSans/NotoSans-Bold.eot);
+  src: url(./fonts/NotoSans/NotoSans-Bold.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Bold.woff) format('woff'), url(./fonts/NotoSans/NotoSans-Bold.otf) format('opentype');
+}
+
+@font-face {
+  font-family: 'PatrickHand';
+  src: url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff'), url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff2');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./fonts/Cairo/Cairo-Light.ttf') format('woff'), url('./fonts/Cairo/Cairo-Light.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/Cairo/Cairo-Medium.ttf') format('woff'), url('./fonts/Cairo/Cairo-Medium.ttf') format('woff2');
+}
+
+
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/Cairo/Cairo-Bold.ttf') format('woff'), url('./fonts/Cairo/Cairo-Bold.ttf') format('woff2');
+}
+
+html {
+  &.theme-white {
+    background-color: $gray-100;
+    color: $black;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  &.theme-black {
+    background-color: #111;
+    color: $white;
+    transition: background-color 0.3s, color 0.3s;
+  }
+}
+
+body {
+  margin: 0;
+  font-size: 14px;
+  font-family: 'NotoSans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+a {
+  color: $color-azure;
+  text-decoration: none;
+
+  &:hover {
+    color: darken($color-azure, 10%);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.g-clickable {
+  cursor: pointer;
+}
