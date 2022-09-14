@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import './ConfirmDialog.scss';
 
 function ConfirmDialog({ className, category, title, message, okHandler, noHandler, okText, noText }) {
   const { t } = useTranslation();
@@ -24,16 +25,18 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
 
   return (
     <Modal
-      className={`${className}`}
+      className={`common-dialog-wrapper confirm-dialog-wrapper ${className} ${category}`}
       isOpen
       toggle={() => {
         controlStore.setConfirm(null);
       }}
     >
-      <ModalHeader>{title}</ModalHeader>
+      <ModalHeader>
+        <span className="title">{title}</span>
+      </ModalHeader>
       <ModalBody>
         <div>
-          <div className={`g-dialog-icon ${category}`}>
+          <div className={`dialog-icon ${category}`}>
             {category === MESSAGE_CATEGORY.ERROR && <i className="fas fa-exclamation-circle" />}
             {category === MESSAGE_CATEGORY.WARNING && <i className="fas fa-exclamation-circle" />}
             {category === MESSAGE_CATEGORY.INFO && <i className="fas fa-exclamation-circle" />}

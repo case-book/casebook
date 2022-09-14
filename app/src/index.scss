@@ -56,7 +56,6 @@
   src: url('./fonts/Cairo/Cairo-Medium.ttf') format('woff'), url('./fonts/Cairo/Cairo-Medium.ttf') format('woff2');
 }
 
-
 @font-face {
   font-family: 'Cairo';
   font-style: normal;
@@ -88,6 +87,15 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+input, textarea {
+  font-family: 'NotoSans', sans-serif;
+  font-weight: lighter;
+}
+
+button {
+  font-family: 'NotoSans', sans-serif;
 }
 
 a {

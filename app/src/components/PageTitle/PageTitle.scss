@@ -24,6 +24,10 @@
         > span {
           align-self: center;
         }
+
+        &:hover {
+          color: $link-color;
+        }
       }
 
       &.title-text {

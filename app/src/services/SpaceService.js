@@ -24,6 +24,17 @@ SpaceService.selectSpaceList = (successHandler, failHandler) => {
   );
 };
 
+SpaceService.selectMySpaceList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/spaces/my',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 SpaceService.selectSpaceInfo = (spaceId, successHandler, failHandler) => {
   return request.get(
     `/api/spaces/${spaceId}`,

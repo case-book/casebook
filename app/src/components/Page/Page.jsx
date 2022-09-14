@@ -3,38 +3,26 @@ import PropTypes from 'prop-types';
 import './Page.scss';
 import useStores from '@/hooks/useStores';
 
-function Page({ className, children, padding, colored, fill, ...last }) {
+function Page({ className, children, colored, list }) {
   const {
     themeStore: { theme },
   } = useStores();
 
-  return (
-    <div
-      className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${fill ? 'fill' : ''} theme-${theme}`}
-      style={{
-        padding,
-        ...last?.style,
-      }}
-    >
-      {children}
-    </div>
-  );
+  return <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : ''}  theme-${theme}`}>{children}</div>;
 }
 
 Page.defaultProps = {
   className: '',
-  padding: '',
   children: '',
   colored: false,
-  fill: false,
+  list: false,
 };
 
 Page.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
-  padding: PropTypes.string,
   colored: PropTypes.bool,
-  fill: PropTypes.bool,
+  list: PropTypes.bool,
 };
 
 export default Page;

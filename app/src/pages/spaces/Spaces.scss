@@ -1,0 +1,62 @@
+.spaces-wrapper {
+  .space-card-list {
+    vertical-align: top;
+
+    .space-card-wrapper {
+      display: inline-flex;
+      flex-direction: column;
+      width: calc((100% - 2rem) / 3);
+      border: 1px solid $border-color;
+      padding: 1rem;
+      margin-right: 1rem;
+      margin-bottom: 1rem;
+      height: 200px;
+      background-color: $white;
+      position: relative;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        @include shadow;
+      }
+
+      .config-button {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+      }
+
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+
+      .name-and-code {
+        text-align: center;
+        padding-bottom: 1rem;
+
+        .name {
+          font-size: 20px;
+          margin-bottom: 4px;
+          white-space: nowrap;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding-right: 2rem;
+          padding-left: 2rem;
+        }
+      }
+
+      .description {
+        padding: 0;
+        text-align: center;
+        flex-grow: 1;
+        > div {
+          height: 100%;
+          background-color: $gray-100;
+          padding: 1rem;
+          border-radius: 8px;
+        }
+      }
+    }
+  }
+}

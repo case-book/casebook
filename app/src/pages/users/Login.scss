@@ -1,25 +1,62 @@
-.edit-club-wrapper {
-  .image-info {
-    flex-grow: 1;
-    .image-preview {
+.login-wrapper {
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  flex-direction: row;
+  margin: 0 auto;
+  min-height: calc(100vh - 80px);
+  justify-content: center;
+
+  > div.login-box {
+    align-self: center;
+    background-color: $white;
+    padding: 2rem;
+    margin-bottom: 80px;
+    min-width: 500px;
+    border: 1px solid $gray-300;
+
+    .logo-content {
       text-align: center;
-      line-height: 0;
       margin-bottom: 1rem;
-      img {
-        line-height: 100%;
-        border: 1px solid $border-color;
-        max-width: 200px;
-        border-radius: 5px;
+      .logo {
+        display: inline-block;
       }
     }
 
-    .image-delete-button {
-      text-align: center;
-      margin-bottom: 0.5rem;
+    .label {
+      margin-bottom: 0.25rem;
+      color: $gray-600;
     }
-  }
 
-  form {
-    padding: 0;
+    .input {
+      margin-bottom: 1rem;
+
+      input:invalid {
+        border-color: $input-border-color;
+      }
+    }
+
+    .auto-login {
+      display: flex;
+
+      > div {
+        align-self: center;
+
+        &:first-child {
+          flex-grow: 1;
+          text-align: right;
+        }
+      }
+    }
+
+    .button {
+      text-align: center;
+    }
+
+    .message {
+      margin-top: 1rem;
+      text-align: center;
+      color: $danger;
+    }
   }
 }

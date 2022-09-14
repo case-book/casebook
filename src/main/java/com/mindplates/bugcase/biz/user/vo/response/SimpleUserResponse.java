@@ -12,9 +12,4 @@ public class SimpleUserResponse {
     private RoleCode role;
     private String email;
     private String name;
-    private String alias;
-    private String imageType;
-    private String imageData;
-    private String tags;
-
 }

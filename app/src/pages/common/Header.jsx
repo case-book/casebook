@@ -70,11 +70,13 @@ function Header({ className, theme }) {
           />
         </div>
         <div className="space-selector">
-          <div>
-            <Link to="/spaces/new">
-              <i className="fa-solid fa-plus" />
-            </Link>
-          </div>
+          {false && (
+            <div>
+              <Link to="/spaces/new">
+                <i className="fa-solid fa-plus" />
+              </Link>
+            </div>
+          )}
         </div>
         <div className="menu">
           <div>

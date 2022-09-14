@@ -1,0 +1,29 @@
+.space-wrapper {
+  .user-list {
+    border-top: 1px solid $color-muted-black;
+    border-bottom: 1px solid $color-muted-black;
+    padding: 4px 0;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      tr {
+        td {
+          padding: 0.75rem;
+          border-bottom: 1px solid $border-color;
+          white-space: nowrap;
+
+          &.email {
+            width: 100%;
+          }
+        }
+
+        &:last-child {
+          td {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,7 +8,6 @@ function PageContent({ className, children }) {
 
 PageContent.defaultProps = {
   className: '',
-
   children: '',
 };
 

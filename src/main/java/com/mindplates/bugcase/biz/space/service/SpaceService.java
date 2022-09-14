@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class SpaceService {
         space.setCreatedBy(userId);
         space.setLastUpdatedBy(userId);
 
-        SpaceUser spaceUser = SpaceUser.builder().space(space).user(User.builder().id(userId).build()).build();
+        SpaceUser spaceUser = SpaceUser.builder().space(space).user(User.builder().id(userId).build()).role(RoleCode.ADMIN).build();
         space.setUsers(Arrays.asList(spaceUser));
         spaceRepository.save(space);
         return space;

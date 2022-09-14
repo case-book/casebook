@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import './Login.scss';
-import { Block, CheckBox, Form, Input, Label, Page, PageButtons, PageContent } from '@/components';
+import { Button, CheckBox, Form, Input, Logo } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
-
-import BlockRow from '@/components/BlockRow/BlockRow';
 import useStores from '@/hooks/useStores';
-
-const labelMinWidth = '100px';
 
 function Login() {
   const { t } = useTranslation();
@@ -16,6 +12,8 @@ function Login() {
   const { userStore } = useStores();
 
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   const [info, setInfo] = useState({
     email: '',
@@ -32,48 +30,45 @@ function Login() {
   };
 
   return (
-    <Page className="edit-space-wrapper">
-      <PageContent>
+    <div className="login-wrapper">
+      <div className="login-box">
         <Form onSubmit={onSubmit}>
-          <Block className="pt-0">
-            <BlockRow>
-              <Label minWidth={labelMinWidth} size="sm" required>
-                {t('이메일')}
-              </Label>
-              <Input
-                value={info.email}
-                onChange={val =>
-                  setInfo({
-                    ...info,
-                    email: val,
-                  })
-                }
-                required
-                minLength={1}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label size="sm" minWidth={labelMinWidth} required>
-                {t('비밀번호')}
-              </Label>
-              <Input
-                type="password"
-                value={info.password}
-                onChange={val =>
-                  setInfo({
-                    ...info,
-                    password: val,
-                  })
-                }
-                required
-                minLength={1}
-              />
-            </BlockRow>
-
-            <BlockRow>
-              <Label size="sm" minWidth={labelMinWidth}>
-                {t('활성화')}
-              </Label>
+          <div className="logo-content">
+            <div className="logo">
+              <Logo icon={false} />
+            </div>
+          </div>
+          <div className="label">{t('이메일')}</div>
+          <div className="input">
+            <Input
+              value={info.email}
+              onChange={val =>
+                setInfo({
+                  ...info,
+                  email: val,
+                })
+              }
+              required
+              minLength={1}
+            />
+          </div>
+          <div className="label">{t('비밀번호')}</div>
+          <div className="input">
+            <Input
+              type="password"
+              value={info.password}
+              onChange={val =>
+                setInfo({
+                  ...info,
+                  password: val,
+                })
+              }
+              required
+              minLength={1}
+            />
+          </div>
+          <div className="auto-login">
+            <div>
               <CheckBox
                 size="sm"
                 type="checkbox"
@@ -85,19 +80,18 @@ function Login() {
                   })
                 }
               />
-            </BlockRow>
-          </Block>
-          <PageButtons
-            onCancel={() => {
-              navigate('/spaces');
-            }}
-            onSubmit={() => {}}
-            onSubmitText="저장"
-            onCancelIcon=""
-          />
+            </div>
+            <div>{t('자동 로그인')}</div>
+          </div>
+          <div className="button">
+            <Button type="submit" outline>
+              로그인
+            </Button>
+          </div>
         </Form>
-      </PageContent>
-    </Page>
+        {location.pathname !== '/users/login' && <div className="message">로그인이 필요합니다.</div>}
+      </div>
+    </div>
   );
 }
 

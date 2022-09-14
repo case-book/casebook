@@ -41,7 +41,7 @@ Label.defaultProps = {
   className: '',
   minWidth: '100px',
   required: false,
-  separator: true,
+  separator: false,
   size: 'md',
   verticalAlign: 'center',
   children: null,

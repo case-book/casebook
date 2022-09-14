@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import './ConfirmDialog.scss';
 
 function MessageDialog({ className, category, title, message, okHandler, okText }) {
   const { t } = useTranslation();
@@ -24,7 +25,7 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
   });
 
   return (
-    <Modal className={`${className} error_layer`} isOpen>
+    <Modal className={`common-dialog-wrapper message-dialog-wrapper  ${className} ${category}`} isOpen>
       <ModalHeader className="text-center">{title}</ModalHeader>
       <ModalBody>
         <div className="wrap_error">

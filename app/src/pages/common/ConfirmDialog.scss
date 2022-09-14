@@ -1,0 +1,16 @@
+.common-dialog-wrapper {
+  > div {
+    padding: 2rem;
+  }
+  .dialog-icon {
+    font-size: 30px;
+    margin-bottom: 1rem;
+  }
+
+  &.WARNING {
+    .title,
+    .dialog-icon {
+      color: $color-tangerine;
+    }
+  }
+}

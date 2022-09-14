@@ -11,8 +11,8 @@ import moment from 'moment';
 
 import BlockRow from '@/components/BlockRow/BlockRow';
 import useStores from '@/hooks/useStores';
-
-const labelMinWidth = '100px';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 function EditSpace({ type }) {
   const { t } = useTranslation();
@@ -28,7 +28,7 @@ function EditSpace({ type }) {
     name: '',
     code: '',
     description: '',
-    activated: '',
+    activated: true,
     token: uuidv4(),
   });
 
@@ -60,6 +60,22 @@ function EditSpace({ type }) {
     }
   };
 
+  const onDelete = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('스페이스 삭제'),
+      <div>{t('[{space.name}] 스페이스의 모든 정보가 삭제됩니다. 삭제하시겠습니까?')}</div>,
+      () => {
+        SpaceService.deleteSpace(space.id, result => {
+          addSpace(result);
+          navigate('/spaces');
+        });
+      },
+      null,
+      t('삭제'),
+    );
+  };
+
   return (
     <Page className="edit-space-wrapper">
       <PageTitle>{t('새 스페이스')}</PageTitle>
@@ -67,9 +83,7 @@ function EditSpace({ type }) {
         <Form onSubmit={onSubmit}>
           <Block className="pt-0">
             <BlockRow>
-              <Label minWidth={labelMinWidth} size="sm" required>
-                {t('이름')}
-              </Label>
+              <Label required>{t('이름')}</Label>
               <Input
                 value={space.name}
                 onChange={val =>
@@ -83,9 +97,7 @@ function EditSpace({ type }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label size="sm" minWidth={labelMinWidth} required>
-                {t('코드')}
-              </Label>
+              <Label required>{t('코드')}</Label>
               <Input
                 value={space.code}
                 onChange={val =>
@@ -99,9 +111,7 @@ function EditSpace({ type }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label size="sm" minWidth={labelMinWidth}>
-                {t('설명')}
-              </Label>
+              <Label>{t('설명')}</Label>
               <TextArea
                 value={space.description || ''}
                 rows={4}
@@ -114,9 +124,7 @@ function EditSpace({ type }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label size="sm" minWidth={labelMinWidth}>
-                {t('활성화')}
-              </Label>
+              <Label>{t('활성화')}</Label>
               <CheckBox
                 size="sm"
                 type="checkbox"
@@ -130,9 +138,7 @@ function EditSpace({ type }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label size="sm" minWidth={labelMinWidth}>
-                {t('토큰')}
-              </Label>
+              <Label>{t('토큰')}</Label>
               <Text>{space.token}</Text>
               <Button
                 outline
@@ -148,6 +154,7 @@ function EditSpace({ type }) {
             </BlockRow>
           </Block>
           <PageButtons
+            onDelete={onDelete}
             onCancel={() => {
               navigate('/spaces');
             }}

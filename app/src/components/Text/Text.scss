@@ -18,24 +18,24 @@
   }
 
   &.size-xs {
-    min-height: 26px;
+    min-height: $xs-height;
     .text {
     }
   }
 
   &.size-sm {
-    min-height: 31px;
+    min-height: $sm-height;
     font-size: 14px;
     .text {
     }
   }
 
   &.size-md {
-    min-height: 38px;
+    min-height: $md-height;
   }
 
   &.size-lg {
-    min-height: 48px;
+    min-height: $lg-height;
   }
 
   &.is-bold {

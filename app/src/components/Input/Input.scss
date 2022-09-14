@@ -59,13 +59,5 @@
     opacity: 0.6;
   }
 
-  input {
-    border: 1px solid $input-border-color;
-    padding: 4px 7px 3px 7px;
-    -webkit-appearance: none;
 
-    &:focus {
-      border-color: $primary;
-    }
-  }
 }

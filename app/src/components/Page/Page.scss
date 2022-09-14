@@ -11,8 +11,18 @@
   border-radius: 10px;
   border: 1px solid $gray-300;
 
-  @media (max-width: 768px) {
-    padding-bottom: 2rem;
+  &.list-page {
+    background-color: transparent;
+    border-radius: 0;
+    border: none;
+
+    .page-title-wrapper {
+      border-bottom: none;
+    }
+
+    .page-content-wrapper {
+      padding: 1rem;
+    }
   }
 
   &.colored {
@@ -21,22 +31,5 @@
     top: 0;
     left: 0;
     background: linear-gradient(#33a1de, #acd9f2);
-  }
-
-  &.fill {
-    min-height: calc(100vh - 90px - 55px);
-    display: flex;
-
-    @media (max-width: 768px) {
-      min-height: auto;
-    }
-
-    > .page-title-wrapper {
-      flex-grow: 0;
-    }
-
-    > .page-content-wrapper {
-      flex-grow: 1;
-    }
   }
 }

@@ -46,6 +46,15 @@ public class SpaceController {
         return spaces.stream().map((SpaceResponse::new)).collect(Collectors.toList());
     }
 
+
+    @Operation(description = "내 스페이스 목록 조회")
+    @GetMapping("/my")
+    public List<SpaceResponse> selectMySpaceList(HttpServletRequest request) {
+        List<Space> spaces = spaceService.selectUserSpaceList(sessionUtil.getUserId(request));
+        return spaces.stream().map((SpaceResponse::new)).collect(Collectors.toList());
+    }
+
+
     @Operation(description = "스페이스 정보 조회")
     @GetMapping("/{spaceId}")
     public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {

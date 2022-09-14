@@ -24,6 +24,7 @@ import Logo from './Logo/Logo';
 import WordSplitter from './WordSplitter/WordSplitter';
 import TextArea from './TextArea/TextArea';
 import Text from './Text/Text';
+import Tag from './Tag/Tag';
 
 export {
   Selector,
@@ -50,4 +51,5 @@ export {
   WordSplitter,
   TextArea,
   Text,
+  Tag,
 };

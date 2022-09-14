@@ -8,6 +8,7 @@ const MENUS = [
     admin: false,
     pc: true,
     theme: 'white',
+    login: true,
   },
   {
     to: '/testcases',
@@ -16,6 +17,7 @@ const MENUS = [
     admin: false,
     pc: true,
     theme: 'black',
+    login: true,
   },
   {
     to: '/testruns',
@@ -23,6 +25,7 @@ const MENUS = [
     name: 'Test Runs',
     admin: false,
     pc: true,
+    login: true,
   },
   {
     to: '/bugs',
@@ -30,6 +33,7 @@ const MENUS = [
     name: 'Bugs',
     admin: false,
     pc: true,
+    login: true,
   },
   {
     to: '/reports',
@@ -37,6 +41,7 @@ const MENUS = [
     name: 'Reports',
     admin: false,
     pc: true,
+    login: true,
   },
 ];
 
