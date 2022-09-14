@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 function Header({ className, theme }) {
   const {
-    userStore: { user, isLogin, setUser },
+    userStore: { isLogin, setUser },
     controlStore: { hideHeader, setMobileMenuOpen },
   } = useStores();
 
@@ -57,27 +57,20 @@ function Header({ className, theme }) {
     );
   };
 
-  console.log(user, userMenuOpen, logout);
+  console.log(userMenuOpen, logout);
 
   return (
     <header className={`${className} header-wrapper ${hideHeader ? 'hide' : ''} ${location.pathname === '/' ? 'is-main' : ''} theme-${theme}`}>
       <div>
         <div className="logo">
           <Logo
+            animate
             onClick={() => {
               navigate('/');
             }}
           />
         </div>
-        <div className="space-selector">
-          {false && (
-            <div>
-              <Link to="/spaces/new">
-                <i className="fa-solid fa-plus" />
-              </Link>
-            </div>
-          )}
-        </div>
+        <div className="spacer" />
         <div className="menu">
           <div>
             <ul>
@@ -87,7 +80,12 @@ function Header({ className, theme }) {
                 .map((d, inx, row) => {
                   return (
                     <React.Fragment key={inx}>
-                      <li className={location.pathname === d.to ? 'selected' : ''}>
+                      <li
+                        className={location.pathname === d.to ? 'selected' : ''}
+                        style={{
+                          animationDelay: `${inx * 0.1}s`,
+                        }}
+                      >
                         <Link
                           to={d.to}
                           onClick={() => {
@@ -106,7 +104,12 @@ function Header({ className, theme }) {
                         </div>
                       </li>
                       {inx + 1 !== row.length && (
-                        <li className="separator">
+                        <li
+                          className="separator"
+                          style={{
+                            animationDelay: `${inx * 0.1}s`,
+                          }}
+                        >
                           <Liner display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 10px" />
                         </li>
                       )}

@@ -19,7 +19,6 @@ function Space() {
   useEffect(() => {
     window.scrollTo(0, 0);
     SpaceService.selectSpaceInfo(id, info => {
-      console.log(info);
       setSpace(info);
     });
   }, [id]);

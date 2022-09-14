@@ -14,7 +14,7 @@
       }
     }
 
-    .space-selector {
+    .spacer {
       flex-grow: 1;
       text-align: right;
       display: flex;
@@ -43,6 +43,10 @@
             line-height: 120%;
             height: 40px;
             vertical-align: top;
+            position: relative;
+            opacity: 0;
+            animation: fade-in-animation 0.7s ease-out;
+            animation-fill-mode: forwards;
 
             a {
               color: $black;
@@ -73,8 +77,11 @@
     .user-menu {
       display: flex;
       margin-right: 20px;
+      animation: fade-in-animation 1s ease-out;
+      animation-fill-mode: forwards;
 
-      a, button {
+      a,
+      button {
         align-self: center;
       }
       .user-icon {

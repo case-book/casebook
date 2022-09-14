@@ -19,8 +19,6 @@ function Spaces() {
     });
   }, []);
 
-  console.log(spaces);
-
   return (
     <Page className="spaces-wrapper" list>
       <PageTitle

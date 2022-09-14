@@ -16,6 +16,11 @@
       align-self: center;
       line-height: 0;
     }
+
+    &.animate {
+      animation: rotate-animation 2s ease-out;
+      animation-fill-mode: forwards;
+    }
   }
 
   > div.logo-text {
