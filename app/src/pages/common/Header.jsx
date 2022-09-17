@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 function Header({ className, theme }) {
   const {
     userStore: { isLogin, setUser },
-    controlStore: { hideHeader, setMobileMenuOpen },
+    controlStore: { hideHeader },
   } = useStores();
 
   const navigate = useNavigate();
@@ -27,41 +27,24 @@ function Header({ className, theme }) {
   const logout = e => {
     e.preventDefault();
     e.stopPropagation();
-    setMobileMenuOpen(false);
+
     setUserMenuOpen(false);
     setOption('user', 'info', 'uuid', '');
     UserService.logout(
-      info => {
-        setUser({
-          ...info,
-          id: null,
-          uuid: null,
-          roleCode: null,
-          email: null,
-          name: null,
-        });
-
+      () => {
+        setUser(null);
         navigate('/');
       },
       () => {
-        setUser({
-          id: null,
-          uuid: null,
-          roleCode: null,
-          email: null,
-          name: null,
-        });
-
+        setUser(null);
         navigate('/');
       },
     );
   };
 
-  console.log(userMenuOpen, logout);
-
   return (
     <header className={`${className} header-wrapper ${hideHeader ? 'hide' : ''} ${location.pathname === '/' ? 'is-main' : ''} theme-${theme}`}>
-      <div>
+      <div className="header-content">
         <div className="logo">
           <Logo
             animate
@@ -86,12 +69,7 @@ function Header({ className, theme }) {
                           animationDelay: `${inx * 0.1}s`,
                         }}
                       >
-                        <Link
-                          to={d.to}
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                          }}
-                        >
+                        <Link to={d.to} onClick={() => {}}>
                           <div>
                             <div className="icon">
                               <span>{d.icon}</span>
@@ -137,6 +115,40 @@ function Header({ className, theme }) {
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
         </div>
       </div>
+      {userMenuOpen && (
+        <div
+          className="my-info-menu"
+          onClick={() => {
+            setUserMenuOpen(false);
+          }}
+        >
+          <div>
+            <div>
+              <div className="arrow">
+                <div />
+              </div>
+              <ul>
+                <li>
+                  <Link
+                    to="/users/my"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setUserMenuOpen(false);
+                    }}
+                  >
+                    내 정보
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/" onClick={logout}>
+                    로그아웃
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
