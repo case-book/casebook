@@ -45,9 +45,9 @@
   &.btn-outline-white {
     background-color: $white;
     color: $black;
-    border: 1px solid $border-color;
+    border: 1px solid $input-border-color;
     &:hover {
-      border: 1px solid rgba(0, 0, 0, 0.7);
+      border: 1px solid $input-border-focus-color;
       &.disabled {
         border: 1px solid $border-color;
       }

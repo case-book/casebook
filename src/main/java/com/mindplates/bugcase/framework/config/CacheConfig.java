@@ -25,7 +25,12 @@ public class CacheConfig {
     public static final int DEFAULT_EXPIRE_SEC = 60 * 60;
     public static final String SPACE = "space";
     public static final int SPACE_EXPIRE_SEC = 60 * 60 * 24;
+
+    public static final String PROJECT = "project";
+
+    public static final int PROJECT_EXPIRE_SEC = 60 * 60 * 24;
     final private RedisConnectionFactory connectionFactory;
+
 
     @Bean
     public CacheManager cacheManager() {
@@ -40,6 +45,7 @@ public class CacheConfig {
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
         cacheConfigurations.put(SPACE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_EXPIRE_SEC)));
+        cacheConfigurations.put(PROJECT, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(PROJECT_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(connectionFactory)

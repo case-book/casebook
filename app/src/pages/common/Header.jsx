@@ -14,6 +14,7 @@ function Header({ className, theme }) {
   const {
     userStore: { isLogin, setUser },
     controlStore: { hideHeader },
+    contextStore: { spaceCode, projectId, isProjectSelected },
   } = useStores();
 
   const navigate = useNavigate();
@@ -58,18 +59,26 @@ function Header({ className, theme }) {
           <div>
             <ul>
               {MENUS.filter(d => d.pc)
+                .filter(d => d.project === isProjectSelected)
                 .filter(d => !d.admin)
                 .filter(d => d.login === undefined || d.login === isLogin)
                 .map((d, inx, row) => {
+                  let isSelected = false;
+                  if (d.project) {
+                    isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
+                  } else {
+                    isSelected = location.pathname === d.to;
+                  }
+
                   return (
                     <React.Fragment key={inx}>
                       <li
-                        className={location.pathname === d.to ? 'selected' : ''}
+                        className={isSelected ? 'selected' : ''}
                         style={{
                           animationDelay: `${inx * 0.1}s`,
                         }}
                       >
-                        <Link to={d.to} onClick={() => {}}>
+                        <Link to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to} onClick={() => {}}>
                           <div>
                             <div className="icon">
                               <span>{d.icon}</span>

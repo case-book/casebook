@@ -156,7 +156,7 @@ function EditSpace({ type }) {
           <PageButtons
             onDelete={onDelete}
             onCancel={() => {
-              navigate('/spaces');
+              navigate(`/spaces/${id}/info`);
             }}
             onSubmit={() => {}}
             onSubmitText="저장"

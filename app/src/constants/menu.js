@@ -2,13 +2,24 @@ import React from 'react';
 
 const MENUS = [
   {
-    to: '/overview',
+    to: '/',
+    icon: <i className="fas fa-home-alt" />,
+    name: '스페이스',
+    admin: false,
+    pc: true,
+    theme: 'white',
+    login: true,
+    project: false,
+  },
+  {
+    to: '',
     icon: <i className="fas fa-home-alt" />,
     name: 'Overview',
     admin: false,
     pc: true,
     theme: 'white',
     login: true,
+    project: true,
   },
   {
     to: '/testcases',
@@ -18,6 +29,7 @@ const MENUS = [
     pc: true,
     theme: 'black',
     login: true,
+    project: true,
   },
   {
     to: '/testruns',
@@ -26,6 +38,7 @@ const MENUS = [
     admin: false,
     pc: true,
     login: true,
+    project: true,
   },
   {
     to: '/bugs',
@@ -34,6 +47,7 @@ const MENUS = [
     admin: false,
     pc: true,
     login: true,
+    project: true,
   },
   {
     to: '/reports',
@@ -42,6 +56,16 @@ const MENUS = [
     admin: false,
     pc: true,
     login: true,
+    project: true,
+  },
+  {
+    to: '/config',
+    icon: <i className="fa-regular fa-newspaper" />,
+    name: 'Config',
+    admin: false,
+    pc: true,
+    login: true,
+    project: true,
   },
 ];
 

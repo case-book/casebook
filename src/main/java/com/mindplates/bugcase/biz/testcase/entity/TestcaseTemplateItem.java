@@ -1,8 +1,8 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
+import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.framework.converter.StringListConverter;
 import lombok.*;
 
@@ -37,6 +37,9 @@ public class TestcaseTemplateItem extends CommonEntity {
     @Column(name = "options", length = ColumnsDef.TEXT)
     @Convert(converter = StringListConverter.class)
     private List<String> options;
+
+    @Column(name = "size")
+    private Integer size;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_TEMPLATE_ITEM__TESTCASE_TEMPLATE"))

@@ -66,14 +66,14 @@
 
     &.open {
       border-radius: 2px 2px 0 0 !important;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+      border: 1px solid $input-border-focus-color;
     }
 
     &:hover {
       &.outline {
         background-color: $white;
         color: $black;
-        border-color: rgba(0, 0, 0, 0.7);
+        border-color: $input-border-focus-color;
       }
 
       > span {
@@ -90,7 +90,10 @@
     }
 
     &.outline {
-      border: 1px solid rgba(0, 0, 0, 0.4);
+      border: 1px solid $input-border-color;
+      &.open {
+        border: 1px solid $input-border-focus-color;
+      }
     }
 
     > span {
@@ -118,7 +121,7 @@
           display: inline-block;
           width: 1px;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.3);
+          background-color: $input-border-color;
           align-self: center;
         }
       }
@@ -215,21 +218,19 @@
     max-height: calc(30px * 6);
     overflow-y: auto;
     z-index: 3;
-    border: 1px solid rgba(0, 0, 0, 0.3);
+    border: 1px solid $input-border-focus-color;
 
     ul {
       list-style: none;
       padding: 1px;
       margin: 0;
       cursor: pointer;
-
-      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
       border-radius: 0 0 2px 2px;
 
       li {
         padding: 9px 7px 6px;
         text-transform: uppercase;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        border-bottom: 1px solid $border-color;
         position: relative;
         overflow: hidden;
         text-align: left;

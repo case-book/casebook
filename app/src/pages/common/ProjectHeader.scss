@@ -1,0 +1,216 @@
+.project-header-wrapper {
+  > div.header-content {
+    height: 80px;
+    display: flex;
+    max-width: $max-width;
+    margin: 0 auto;
+    .logo {
+      height: 100%;
+      display: flex;
+      margin-left: 20px;
+      flex-grow: 0;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .spacer {
+      flex-grow: 1;
+      text-align: right;
+      display: flex;
+      justify-content: right;
+      margin-right: 40px;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .menu {
+      flex-grow: 0;
+      display: flex;
+      justify-content: right;
+      margin-right: 20px;
+      > div {
+        align-self: center;
+
+        ul {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+
+          li {
+            display: inline-flex;
+            line-height: 120%;
+            height: 40px;
+            vertical-align: top;
+            position: relative;
+            opacity: 0;
+            animation: fade-in-animation 0.7s ease-out;
+            animation-fill-mode: forwards;
+
+            a {
+              color: $black;
+              position: relative;
+              text-decoration: none;
+              text-transform: uppercase;
+              font-family: Cairo, sans-serif;
+              align-self: center;
+
+              .icon {
+                position: static;
+                width: 100%;
+                text-align: center;
+                top: -20px;
+              }
+            }
+
+            &.selected {
+              a {
+                color: $color-azure;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .user-menu {
+      display: flex;
+      margin-right: 20px;
+      animation: fade-in-animation 1s ease-out;
+      animation-fill-mode: forwards;
+
+      a,
+      button {
+        align-self: center;
+      }
+      .user-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .my-info-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    > div {
+      position: relative;
+      max-width: $max-width;
+      margin: 0 auto;
+
+      > div {
+        position: absolute;
+        top: 65px;
+        right: 21px;
+
+        background-color: $white;
+        border: 1px solid $border-color;
+
+        .arrow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          text-align: right;
+          padding-right: 11px;
+          @media (max-width: 768px) {
+            padding-right: 32px;
+          }
+
+          > div {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border: 1px solid $border-color;
+            transform: rotate(45deg);
+            position: relative;
+            top: -8px;
+            border-right: none;
+            border-bottom: none;
+            background-color: $white;
+          }
+        }
+
+        ul {
+          list-style: none;
+          margin: 0;
+          font-size: 14px;
+          padding: 0.25rem 0;
+          position: relative;
+          z-index: 1;
+          line-height: 100%;
+          background-color: $white;
+          li {
+            line-height: 100%;
+            a {
+              color: $blue;
+              text-decoration: none;
+              padding: 0.5rem 1rem;
+              display: inline-block;
+              width: 100%;
+
+              &:visited {
+                color: $blue;
+              }
+            }
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.theme-white {
+    .menu {
+      > div {
+        ul {
+          li {
+            a {
+              color: $black;
+
+              &:hover {
+                color: $color-azure;
+              }
+            }
+
+            &.selected {
+              a {
+                color: $color-azure;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.theme-black {
+    .menu {
+      > div {
+        ul {
+          li {
+            a {
+              color: $white;
+              &:hover {
+                color: $color-sunflower;
+              }
+            }
+
+            &.selected {
+              a {
+                color: $color-sunflower;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

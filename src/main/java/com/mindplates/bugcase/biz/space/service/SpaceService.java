@@ -31,6 +31,14 @@ public class SpaceService {
         return spaceRepository.findById(id);
     }
 
+    public boolean selectIsSpaceMember(String spaceCode, Long userId) {
+        return spaceRepository.existsByCodeAndUsersUserId(spaceCode, userId);
+    }
+
+    public Optional<Space> selectSpaceInfo(String code) {
+        return spaceRepository.findByCode(code);
+    }
+
     @CacheEvict(key = "#id", value = CacheConfig.SPACE)
     @Transactional
     public void deleteSpaceInfo(Long id) {

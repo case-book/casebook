@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "space", indexes = {
-        @Index(name = "IDX_SPACE_CODE", columnList = "code"),
+        @Index(name = "IDX_SPACE_CODE", columnList = "code", unique = true),
         @Index(name = "IDX_SPACE_CODE_AND_ACTIVATED", columnList = "code, activated")
 })
 @NoArgsConstructor

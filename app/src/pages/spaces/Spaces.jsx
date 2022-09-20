@@ -35,7 +35,13 @@ function Spaces() {
         <div className="space-card-list">
           {spaces?.map(space => {
             return (
-              <div key={space.id} className="space-card-wrapper">
+              <div
+                key={space.id}
+                className="space-card-wrapper"
+                onClick={() => {
+                  navigate(`/spaces/${space.code}`);
+                }}
+              >
                 <div className="config-button">
                   <Button
                     outline
@@ -43,7 +49,7 @@ function Spaces() {
                     size="sm"
                     onClick={e => {
                       e.stopPropagation();
-                      navigate(`/spaces/${space.id}`);
+                      navigate(`/spaces/${space.code}/info`);
                     }}
                   >
                     <i className="fa-solid fa-gear" />

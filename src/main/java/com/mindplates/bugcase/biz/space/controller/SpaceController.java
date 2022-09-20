@@ -54,11 +54,10 @@ public class SpaceController {
         return spaces.stream().map((SpaceResponse::new)).collect(Collectors.toList());
     }
 
-
     @Operation(description = "스페이스 정보 조회")
-    @GetMapping("/{spaceId}")
-    public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {
-        Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    @GetMapping("/{spaceCode}")
+    public SpaceResponse selectSpaceInfo(@PathVariable String spaceCode) {
+        Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new SpaceResponse(space);
     }
 

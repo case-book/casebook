@@ -4,8 +4,11 @@ import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -28,5 +31,9 @@ public class TestcaseTemplate extends CommonEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM_TYPE__PROJECT"))
     private Project project;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcaseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<TestcaseTemplateItem> testcaseTemplateItems;
 
 }
