@@ -16,7 +16,7 @@ function App() {
   } = useStores();
 
   const location = useLocation();
-  const theme = MENUS.find(d => d.to === location.pathname)?.theme || 'white';
+  const theme = MENUS.find(d => d.to === location.pathname)?.theme || 'black';
 
   useEffect(() => {
     setTheme(theme);

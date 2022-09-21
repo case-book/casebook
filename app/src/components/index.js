@@ -11,7 +11,7 @@ import ModalFooter from './Modal/ModalFooter';
 import ModalHeader from './Modal/ModalHeader';
 import BlockRow from './BlockRow/BlockRow';
 import Block from './Block/Block';
-
+import Card from './Card/Card';
 import Label from './Label/Label';
 import Input from './Input/Input';
 
@@ -52,4 +52,5 @@ export {
   TextArea,
   Text,
   Tag,
+  Card,
 };

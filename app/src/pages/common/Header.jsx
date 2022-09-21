@@ -4,7 +4,7 @@ import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
-import { Button, Liner, Logo } from '@/components';
+import { Button, Liner } from '@/components';
 import { MENUS } from '@/constants/menu';
 import './Header.scss';
 import { setOption } from '@/utils/storageUtil';
@@ -43,18 +43,41 @@ function Header({ className, theme }) {
     );
   };
 
+  const isRoot = location.pathname === '/';
+
   return (
-    <header className={`${className} header-wrapper ${hideHeader ? 'hide' : ''} ${location.pathname === '/' ? 'is-main' : ''} theme-${theme}`}>
+    <header className={`${className} header-wrapper ${hideHeader ? 'hide' : ''} ${isRoot ? 'is-main' : ''} theme-${theme}`}>
+      <div className="header-bg">
+        <span>
+          <i className="fa-solid fa-chess-rook" />
+        </span>
+      </div>
       <div className="header-content">
+        {!isRoot && (
+          <div className="back-navigator">
+            <div
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
+              <div>
+                <i className="fa-solid fa-chevron-left" />
+              </div>
+            </div>
+          </div>
+        )}
         <div className="logo">
-          <Logo
-            animate
+          <div
             onClick={() => {
               navigate('/');
             }}
-          />
+          >
+            <div>CASEBOOK</div>
+          </div>
         </div>
-        <div className="spacer" />
+        <div className="spacer">
+          <div />
+        </div>
         <div className="menu">
           <div>
             <ul>
@@ -62,7 +85,7 @@ function Header({ className, theme }) {
                 .filter(d => d.project === isProjectSelected)
                 .filter(d => !d.admin)
                 .filter(d => d.login === undefined || d.login === isLogin)
-                .map((d, inx, row) => {
+                .map((d, inx) => {
                   let isSelected = false;
                   if (d.project) {
                     isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
@@ -71,36 +94,21 @@ function Header({ className, theme }) {
                   }
 
                   return (
-                    <React.Fragment key={inx}>
-                      <li
-                        className={isSelected ? 'selected' : ''}
-                        style={{
-                          animationDelay: `${inx * 0.1}s`,
-                        }}
-                      >
-                        <Link to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to} onClick={() => {}}>
-                          <div>
-                            <div className="icon">
-                              <span>{d.icon}</span>
-                            </div>
-                            <div className="text">{d.name}</div>
-                          </div>
-                        </Link>
-                        <div className="cursor">
-                          <div />
-                        </div>
-                      </li>
-                      {inx + 1 !== row.length && (
-                        <li
-                          className="separator"
-                          style={{
-                            animationDelay: `${inx * 0.1}s`,
-                          }}
-                        >
-                          <Liner display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 10px" />
-                        </li>
-                      )}
-                    </React.Fragment>
+                    <li
+                      key={inx}
+                      className={isSelected ? 'selected' : ''}
+                      style={{
+                        animationDelay: `${inx * 0.1}s`,
+                      }}
+                    >
+                      <Link to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to} onClick={() => {}}>
+                        <span>{d.name}</span>
+                      </Link>
+                      <div className="cursor">
+                        <div />
+                      </div>
+                      <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 16px" />
+                    </li>
                   );
                 })}
             </ul>

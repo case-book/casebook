@@ -21,7 +21,19 @@ public class SpaceResponse {
     private String token;
     private List<SimpleUserResponse> users;
 
+    private Long projectCount;
+
     public SpaceResponse(Space space) {
+        this(space, null);
+    }
+
+    public SpaceResponse(Space space, Long projectCount) {
+
+        this.id = space.getId();
+        this.name = space.getName();
+        this.code = space.getCode();
+        this.activated = space.getActivated();
+        this.projectCount = projectCount;
         this.id = space.getId();
         this.name = space.getName();
         this.code = space.getCode();
@@ -39,7 +51,6 @@ public class SpaceResponse {
                             .name(spaceUser.getUser().getName())
                             .build()).collect(Collectors.toList());
         }
-
     }
 
 
