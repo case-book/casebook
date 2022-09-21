@@ -14,7 +14,6 @@ public class SimpleSpaceResponse {
     private String code;
     private Boolean activated;
 
-
     public SimpleSpaceResponse(Space space) {
         this.id = space.getId();
         this.name = space.getName();

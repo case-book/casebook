@@ -11,20 +11,50 @@ import ConfigService from '@/services/ConfigService';
 import './Common.scss';
 
 import { getOption, setOption } from '@/utils/storageUtil';
+import { useLocation } from 'react-router-dom';
 
 function Common() {
   const {
     userStore,
     configStore: { setVersion },
     controlStore,
+    contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
   } = useStores();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    let nextSpaceCode = null;
+    let nextProjectId = null;
+    if (/^\/spaces\/.*\/projects\/.*$/.test(location.pathname)) {
+      const paths = location.pathname.split('/');
+      // eslint-disable-next-line prefer-destructuring
+      nextSpaceCode = paths[2];
+      // eslint-disable-next-line prefer-destructuring
+      nextProjectId = paths[4];
+      if (Number.isInteger(nextProjectId)) {
+        nextProjectId = Number(nextProjectId);
+      }
+    } else if (/^\/spaces\/.*$/.test(location.pathname)) {
+      const paths = location.pathname.split('/');
+      // eslint-disable-next-line prefer-destructuring
+      nextSpaceCode = paths[2];
+    }
+
+    if (spaceCode !== nextSpaceCode) {
+      setSpaceCode(nextSpaceCode);
+    }
+
+    if (projectId !== nextProjectId) {
+      setProjectId(nextProjectId);
+    }
+  }, [location.pathname]);
 
   const [loading, setLoading] = useState(false);
 
   const getUserProfile = () => {
     UserService.getMyInfo(
       info => {
-        console.log(info);
         userStore.setUser(info);
       },
       () => {
@@ -33,8 +63,6 @@ function Common() {
       },
     );
   };
-
-  console.log(userStore.user.spaces);
 
   const getSystemVersion = () => {
     ConfigService.selectSystemVersion(version => {

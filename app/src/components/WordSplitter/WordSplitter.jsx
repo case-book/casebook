@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './WordSplitter.scss';
 
-function WordSplitter({ className, text, colors, spacing, bouncing, swing, rounded }) {
+function WordSplitter({ className, text, colors, spacing, bouncing, swing, rounded, animate }) {
   return (
     <div
-      className={`word-splitter-wrapper ${className} ${rounded ? 'rounded' : ''}`}
+      className={`word-splitter-wrapper ${className} ${rounded ? 'rounded' : ''} ${animate ? 'animate' : ''}`}
       style={{
         marginRight: `-${(text.length - 1) * spacing}px`,
       }}
@@ -30,6 +30,7 @@ function WordSplitter({ className, text, colors, spacing, bouncing, swing, round
               width: bouncing && inx % 2 === 0 ? '26px' : '22px',
               height: bouncing && inx % 2 === 0 ? '26px' : '22px',
               transform,
+              animationDelay: `${inx * 0.1}s`,
             }}
           >
             <span>{d}</span>
@@ -81,6 +82,7 @@ WordSplitter.defaultProps = {
   bouncing: true,
   swing: true,
   rounded: true,
+  animate: false,
 };
 
 WordSplitter.propTypes = {
@@ -96,6 +98,7 @@ WordSplitter.propTypes = {
   bouncing: PropTypes.bool,
   swing: PropTypes.bool,
   rounded: PropTypes.bool,
+  animate: PropTypes.bool,
 };
 
 export default WordSplitter;

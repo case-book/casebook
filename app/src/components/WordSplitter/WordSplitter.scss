@@ -7,8 +7,18 @@
     text-align: center;
     position: relative;
     justify-content: center;
+
     > span {
       align-self: center;
+    }
+  }
+
+  &.animate {
+    > span {
+      opacity: 0;
+      top: -40px;
+      animation: drop 0.3s ease-out;
+      animation-fill-mode: forwards;
     }
   }
 

@@ -1,9 +1,10 @@
 package com.mindplates.bugcase.biz.project.entity;
 
-import com.mindplates.bugcase.common.constraints.ColumnsDef;
-import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
+import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -32,7 +33,7 @@ public class Project extends CommonEntity {
     private String description;
 
     @Column(name = "activated")
-    private Boolean activated;
+    private boolean activated;
 
     @Column(name = "token", length = ColumnsDef.CODE)
     private String token;
@@ -49,8 +50,9 @@ public class Project extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<ProjectUser> users;
 
-
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
+    private Space space;
 
 
 }

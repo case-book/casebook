@@ -19,7 +19,6 @@ function Space() {
   useEffect(() => {
     window.scrollTo(0, 0);
     SpaceService.selectSpaceInfo(id, info => {
-      console.log(info);
       setSpace(info);
     });
   }, [id]);
@@ -54,23 +53,25 @@ function Space() {
         <Title type="h2">사용자</Title>
         <div className="user-list">
           <table>
-            {space?.users?.map(user => {
-              return (
-                <tr key={user.id} className="user-item-wrapper">
-                  <td className="name">{user.name}</td>
-                  <td className="email">{user.email}</td>
-                  <td className="role">{user.role || 'MEMBER'}</td>
-                </tr>
-              );
-            })}
+            <tbody>
+              {space?.users?.map(user => {
+                return (
+                  <tr key={user.id} className="user-item-wrapper">
+                    <td className="name">{user.name}</td>
+                    <td className="email">{user.email}</td>
+                    <td className="role">{user.role || 'MEMBER'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         </div>
         <PageButtons
           onBack={() => {
-            navigate('/spaces');
+            navigate('/');
           }}
           onEdit={() => {
-            navigate(`/spaces/${space.id}/edit`);
+            navigate(`/spaces/${space.code}/edit`);
           }}
           onCancelIcon=""
         />

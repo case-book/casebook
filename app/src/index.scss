@@ -1,6 +1,51 @@
 @import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
 @font-face {
+  font-family: 'PatrickHand';
+  src: url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff'), url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'RubikWetPaint';
+  src: url('./fonts/RubikWetPaint/RubikWetPaint-Regular.ttf') format('woff'), url('./fonts/RubikWetPaint/RubikWetPaint-Regular.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'Rowdies';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./fonts/Rowdies/Rowdies-Light.ttf') format('woff'), url('./fonts/Rowdies/Rowdies-Light.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'Rowdies';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/Rowdies/Rowdies-Regular.ttf') format('woff'), url('./fonts/Rowdies/Rowdies-Regular.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'Rowdies';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/Rowdies/Rowdies-Bold.ttf') format('woff'), url('./fonts/Rowdies/Rowdies-Bold.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'NanumGothic';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./fonts/NanumGothic/NanumGothic-Regular.ttf') format('woff'), url('./fonts/NanumGothic/NanumGothic-Regular.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'NanumGothic';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/NanumGothic/NanumGothic-Bold.ttf') format('woff'), url('./fonts/NanumGothic/NanumGothic-Bold.ttf') format('woff2');
+}
+
+@font-face {
   font-family: 'NotoSans';
   font-style: normal;
   font-weight: 300;
@@ -34,12 +79,6 @@
   src: local('Noto Sans Bold'), local('NotoSans-Bold');
   src: url(./fonts/NotoSans/NotoSans-Bold.eot);
   src: url(./fonts/NotoSans/NotoSans-Bold.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Bold.woff) format('woff'), url(./fonts/NotoSans/NotoSans-Bold.otf) format('opentype');
-}
-
-@font-face {
-  font-family: 'PatrickHand';
-  src: url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff'), url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff2');
-  font-weight: 400;
 }
 
 @font-face {
@@ -80,7 +119,7 @@ html {
 body {
   margin: 0;
   font-size: 14px;
-  font-family: 'NotoSans', sans-serif;
+  font-family: 'NanumGothic', 'NotoSans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -89,7 +128,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-input, textarea {
+input,
+textarea {
   font-family: 'NotoSans', sans-serif;
   font-weight: lighter;
 }
@@ -113,4 +153,38 @@ a {
 
 .g-clickable {
   cursor: pointer;
+}
+
+@keyframes drop {
+  0% {
+    top: -40px;
+    opacity: 0;
+  }
+
+  100% {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes rotate-animation {
+  0% {
+    transform: rotate(0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: rotate(720deg);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-animation {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }

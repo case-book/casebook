@@ -1,7 +1,7 @@
 .page-title-wrapper {
   border-bottom: 1px solid $gray-300;
-  font-size: 20px;
-  padding: 18px 0;
+
+  height: 60px;
 
   > div {
     max-width: $max-width;
@@ -15,7 +15,7 @@
       &.icon {
         flex-grow: 0;
         font-size: 16px;
-        line-height: 100%;
+        line-height: 0;
         height: 100%;
         display: inline-flex;
         padding: 0 8px 0 16px;
@@ -26,7 +26,7 @@
         }
 
         &:hover {
-          color: $link-color;
+          color: $color-sunflower;
         }
       }
 
@@ -34,6 +34,7 @@
         flex-grow: 0;
         line-height: 100%;
         font-weight: bold;
+        font-size: 24px;
       }
     }
   }
@@ -43,7 +44,7 @@
   }
 
   .links {
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     margin-right: 1rem;
     flex-grow: 1;
@@ -53,7 +54,7 @@
       display: flex;
 
       > a {
-        color: $link-color;
+        color: $gray-500;
         text-decoration: none;
         margin-right: 8px;
 
@@ -61,11 +62,10 @@
           margin-right: 0;
         }
         &:visited {
-          color: $link-color;
+          color: $gray-500;
         }
         &:hover {
-          color: darken($link-color, 20%);
-          text-decoration: underline;
+          color: $white;
         }
       }
     }

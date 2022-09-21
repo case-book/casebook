@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.controller;
 
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceRequest;
@@ -28,6 +29,8 @@ public class SpaceController {
 
     private final SpaceService spaceService;
 
+    private final ProjectService projectService;
+
     private final SessionUtil sessionUtil;
 
     @Operation(description = "스페이스 추가")
@@ -41,9 +44,9 @@ public class SpaceController {
     @DisableLogin
     @Operation(description = "스페이스 목록 조회")
     @GetMapping("")
-    public List<SpaceResponse> selectSpaceList() {
+    public List<SimpleSpaceResponse> selectSpaceList() {
         List<Space> spaces = spaceService.selectSpaceList();
-        return spaces.stream().map((SpaceResponse::new)).collect(Collectors.toList());
+        return spaces.stream().map(SimpleSpaceResponse::new).collect(Collectors.toList());
     }
 
 
@@ -51,14 +54,17 @@ public class SpaceController {
     @GetMapping("/my")
     public List<SpaceResponse> selectMySpaceList(HttpServletRequest request) {
         List<Space> spaces = spaceService.selectUserSpaceList(sessionUtil.getUserId(request));
-        return spaces.stream().map((SpaceResponse::new)).collect(Collectors.toList());
+
+        return spaces.stream().map((space -> {
+            Long spaceCount = projectService.selectSpaceProjectCount(space.getId());
+            return new SpaceResponse(space, spaceCount);
+        })).collect(Collectors.toList());
     }
 
-
     @Operation(description = "스페이스 정보 조회")
-    @GetMapping("/{spaceId}")
-    public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {
-        Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    @GetMapping("/{spaceCode}")
+    public SpaceResponse selectSpaceInfo(@PathVariable String spaceCode) {
+        Space space = spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new SpaceResponse(space);
     }
 

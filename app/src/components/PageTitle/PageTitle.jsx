@@ -30,7 +30,7 @@ function PageTitle({ className, children, links, control }) {
         <div className="title-text">{children}</div>
         {links && (
           <div className="links">
-            <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+            <Liner display="inline-block" width="1px" height="12px" color="white" margin="0 1rem" />
             {links.map((d, inx) => {
               return (
                 <React.Fragment key={inx}>
