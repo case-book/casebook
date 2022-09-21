@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class TestcaseService {
 
@@ -24,11 +24,17 @@ public class TestcaseService {
         return testcaseTemplateRepository.findAllByProjectId(projectId);
     }
 
+
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public List<TestcaseTemplate> saveTestcaseTemplateItemList(String spaceCode, Long projectId, List<TestcaseTemplate> testcaseTemplates, Long userId) {
 
+        testcaseTemplates.stream().filter((TestcaseTemplate::isDeleted)).forEach((testcaseTemplate -> {
+            testcaseTemplateRepository.delete(testcaseTemplate);
+        }));
+
         LocalDateTime now = LocalDateTime.now();
-        testcaseTemplates.stream().forEach((testcaseTemplate -> {
+        testcaseTemplates.stream().filter((testcaseTemplate -> !testcaseTemplate.isDeleted())).forEach((testcaseTemplate -> {
             if (testcaseTemplate.getId() == null) {
                 testcaseTemplate.setCreationDate(now);
                 testcaseTemplate.setCreatedBy(userId);
@@ -39,7 +45,7 @@ public class TestcaseService {
         }));
 
 
-        testcaseTemplateRepository.saveAll(testcaseTemplates);
+        testcaseTemplateRepository.saveAll(testcaseTemplates.stream().filter((testcaseTemplate -> !testcaseTemplate.isDeleted())).collect(Collectors.toList()));
         return testcaseTemplates;
     }
 

@@ -36,4 +36,7 @@ public class TestcaseTemplate extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<TestcaseTemplateItem> testcaseTemplateItems;
 
+    @Transient
+    private boolean deleted;
+
 }

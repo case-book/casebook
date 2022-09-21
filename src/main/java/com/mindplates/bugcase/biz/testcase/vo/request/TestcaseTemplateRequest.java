@@ -22,6 +22,7 @@ public class TestcaseTemplateRequest {
         TestcaseTemplate testcaseTemplate = TestcaseTemplate.builder()
                 .id(id)
                 .name(name)
+                .deleted("D".equals(crud))
                 .build();
 
         testcaseTemplate.setTestcaseTemplateItems(testcaseTemplateItems

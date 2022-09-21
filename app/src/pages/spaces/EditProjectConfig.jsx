@@ -78,6 +78,17 @@ function ProjectConfig() {
     setProject(nextProject);
   };
 
+  const removeTestcaseTemplateItem = inx => {
+    const nextProject = { ...project };
+    if (nextProject.testcaseTemplates[inx].id) {
+      nextProject.testcaseTemplates[inx].crud = 'D';
+    } else {
+      nextProject.testcaseTemplates.splice(inx, 1);
+    }
+
+    setProject(nextProject);
+  };
+
   // eslint-disable-next-line no-unused-vars
   const onChangeTestcaseTemplate = (testcaseTemplateInx, key, val) => {
     const nextProject = { ...project };
@@ -161,10 +172,7 @@ function ProjectConfig() {
     e.preventDefault();
 
     const nextProject = { ...project };
-    const nextTestcaseTemplates = nextProject.testcaseTemplates.filter(d => d.crud !== 'D');
-    nextProject.testcaseTemplates = nextTestcaseTemplates;
-
-    nextTestcaseTemplates.forEach(testcaseTemplate => {
+    nextProject.testcaseTemplates.forEach(testcaseTemplate => {
       const nextTestcaseTemplate = testcaseTemplate;
       nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
     });
@@ -205,7 +213,7 @@ function ProjectConfig() {
             <div className="testcase-template-list">
               {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
                 return (
-                  <div className="testcase-template" key={inx}>
+                  <div className={`testcase-template ${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `} key={inx}>
                     <div className="template-name">
                       <div className="line line-1">
                         <div />
@@ -218,6 +226,16 @@ function ProjectConfig() {
                         <div />
                       </div>
                       <div className="control">
+                        <Button
+                          size="sm"
+                          outline
+                          color="danger"
+                          onClick={() => {
+                            removeTestcaseTemplateItem(inx);
+                          }}
+                        >
+                          <i className="fa-solid fa-plus" /> 템플릿 삭제
+                        </Button>
                         <Button
                           size="sm"
                           outline

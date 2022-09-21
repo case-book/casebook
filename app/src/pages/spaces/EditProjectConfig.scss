@@ -5,6 +5,10 @@
       _border: 1px solid $border-color;
       padding: 1rem;
 
+      &.hidden {
+        display: none;
+      }
+
       .template-name {
         display: flex;
         margin-bottom: 1rem;
@@ -34,6 +38,14 @@
 
           &.control {
             margin: 0 0.5rem;
+
+            > button {
+              margin-right: 0.5rem;
+
+              &:last-child {
+                margin-right: 0;
+              }
+            }
           }
 
           &.name {
