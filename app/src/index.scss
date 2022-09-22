@@ -122,6 +122,10 @@ body {
   font-family: 'NanumGothic', 'NotoSans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  &.page-moving {
+    overflow: hidden;
+  }
 }
 
 code {

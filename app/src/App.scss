@@ -11,8 +11,8 @@
       height: 600px;
 
       border-radius: 50%;
-      top : -200px;
-      left : -200px;
+      top: -200px;
+      left: -200px;
     }
   }
 
@@ -22,6 +22,33 @@
     min-height: 100vh;
 
     .main-content {
+
+
+      .transition-group {
+        position: relative;
+
+        .fade-enter {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+
+        .fade-enter-active {
+          opacity: 1;
+          transform: translateX(0%);
+          transition: all 0.5s ease-in-out;
+        }
+
+        .fade-exit {
+          opacity: 1;
+          transform: translateX(0%);
+        }
+
+        .fade-exit-active {
+          opacity: 0;
+          transform: translateX(-100%);
+          transition: all 0.5s ease-in-out;
+        }
+      }
 
     }
   }

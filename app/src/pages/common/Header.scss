@@ -130,12 +130,22 @@
               > span {
                 align-self: center;
               }
+
+              .alert-message {
+                color: $color-tangerine;
+                font-size: 14px;
+                position: absolute;
+                left : calc(100% + 8px);
+                white-space: nowrap;
+                top : 36px;
+              }
             }
 
             &.selected {
               a {
                 color: $white;
                 font-weight: normal;
+                position: relative;
               }
             }
 

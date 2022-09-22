@@ -30,7 +30,7 @@ function Input({ className, type, value, size, disabled, border, required, onCha
 Input.defaultProps = {
   className: '',
   type: 'text',
-  size: 'md',
+  size: 'lg',
   value: '',
   required: false,
   disabled: false,

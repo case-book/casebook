@@ -2,12 +2,14 @@
   display: block;
   position: relative;
   width: 100%;
-  border: 1px solid $border-color;
   padding: 8px;
   z-index: 2;
-  background-color: $white;
   border-radius: 2px;
   resize: none;
+  border: none;
+  _border-bottom: 1px solid $white !important;
+  color: $white;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 
   &:focus {
     box-shadow: none;
@@ -21,14 +23,17 @@
 
   &.size-xxl {
     font-size: 20px;
+    padding: 12px;
   }
 
   &.size-xl {
     font-size: 20px;
+    padding: 12px;
   }
 
   &.size-lg {
     font-size: 18px;
+    padding: 12px;
   }
 
   &.size-md {
@@ -46,5 +51,12 @@
   &.disabled {
     background-color: $gray-100;
     opacity: 0.6;
+  }
+
+  &.underline {
+    border: none;
+    _border-bottom: 1px solid $white !important;
+    color: $white;
+    background-color: rgba(255, 255, 255, 0.1) !important;
   }
 }

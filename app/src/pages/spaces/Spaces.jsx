@@ -33,9 +33,14 @@ function Spaces() {
       </PageTitle>
       <PageContent>
         <ul className="space-card-list">
-          {spaces?.map(space => {
+          {spaces?.map((space, inx) => {
             return (
-              <li key={space.id}>
+              <li
+                key={space.id}
+                style={{
+                  animationDelay: `${inx * 0.1}s`,
+                }}
+              >
                 <Card
                   className="space-card"
                   circle
@@ -112,7 +117,11 @@ function Spaces() {
               </li>
             );
           })}
-          <li>
+          <li
+            style={{
+              animationDelay: `${(spaces?.length || 1) * 0.1}s`,
+            }}
+          >
             <Card
               className="space-card"
               color="gray"

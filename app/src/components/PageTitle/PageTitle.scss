@@ -1,7 +1,7 @@
 .page-title-wrapper {
-  border-bottom: 1px solid $gray-300;
+  _border-bottom: 1px solid $gray-300;
+  height: 80px;
 
-  height: 60px;
 
   > div {
     max-width: $max-width;
@@ -18,11 +18,12 @@
         line-height: 0;
         height: 100%;
         display: inline-flex;
-        padding: 0 8px 0 16px;
+        padding: 0 8px 0 32px;
         margin-right: 8px;
         cursor: pointer;
         > span {
           align-self: center;
+
         }
 
         &:hover {
@@ -35,6 +36,8 @@
         line-height: 100%;
         font-weight: bold;
         font-size: 24px;
+
+
       }
     }
   }

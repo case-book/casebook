@@ -8,7 +8,7 @@ function Page({ className, children, colored, list }) {
     themeStore: { theme },
   } = useStores();
 
-  return <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : ''}  theme-${theme}`}>{children}</div>;
+  return <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'}  theme-${theme}`}>{children}</div>;
 }
 
 Page.defaultProps = {

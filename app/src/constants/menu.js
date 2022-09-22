@@ -10,6 +10,7 @@ const MENUS = [
     theme: 'black',
     login: true,
     project: false,
+    selectedAlias: /^\/$/,
   },
   {
     to: '/projects',
@@ -20,6 +21,8 @@ const MENUS = [
     theme: 'black',
     login: true,
     project: false,
+    needSpace: true,
+    selectedAlias: /^\/spaces\/.*$/,
   },
   {
     to: '',

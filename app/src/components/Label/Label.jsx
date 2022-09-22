@@ -19,7 +19,7 @@ function Label({ className, children, minWidth, required, separator, size, verti
         {children}
         {required && (
           <div className="required-mark">
-            <div />
+            <i className="fa-solid fa-asterisk" />
           </div>
         )}
       </span>
@@ -39,7 +39,7 @@ function Label({ className, children, minWidth, required, separator, size, verti
 
 Label.defaultProps = {
   className: '',
-  minWidth: '100px',
+  minWidth: '60px',
   required: false,
   separator: false,
   size: 'md',

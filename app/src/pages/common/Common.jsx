@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { observer } from 'mobx-react';
 import ConfirmDialog from '@/pages/common/ConfirmDialog';
@@ -125,44 +126,16 @@ function Common() {
         />
       )}
       {!loading && controlStore.error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || ''} message={controlStore.error?.message || ''} />}
-      {loading && (
-        <div className="request-loading">
-          <div>
-            <div className="logo">
-              <div>
-                <div className="circle">
-                  <div className="line line-1">
-                    <div />
-                  </div>
-                  <div className="line line-2">
-                    <div />
-                  </div>
-                  <div className="line line-3">
-                    <div />
-                  </div>
-                  <div className="line line-4">
-                    <div />
-                  </div>
-                  <div className="line line-5">
-                    <div />
-                  </div>
-                  <div className="line line-6">
-                    <div />
-                  </div>
-                  <div className="line line-7">
-                    <div />
-                  </div>
-                  <div className="line line-8">
-                    <div />
-                  </div>
-                  <div className="dot dot-1" />
-                  <div className="dot dot-2" />
-                </div>
-              </div>
+
+      <TransitionGroup className="loading-group">
+        {loading && (
+          <CSSTransition classNames="fade" timeout={500}>
+            <div className="request-loading">
+              <div className="loader" />
             </div>
-          </div>
-        </div>
-      )}
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </div>
   );
 }
