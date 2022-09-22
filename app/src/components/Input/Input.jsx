@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Input.scss';
 
-function Input({ className, type, value, size, disabled, border, required, onChange, placeholder, minLength, maxLength, onRef }) {
+function Input({ className, type, value, size, disabled, border, required, onChange, placeholder, minLength, maxLength, onRef, underline }) {
   return (
     <input
       ref={e => {
@@ -10,7 +10,7 @@ function Input({ className, type, value, size, disabled, border, required, onCha
           onRef(e);
         }
       }}
-      className={`input-wrapper ${className} size-${size} ${border ? 'border' : ''}`}
+      className={`input-wrapper ${className} size-${size} ${border ? 'border' : ''} ${underline ? 'underline' : ''}`}
       type={type}
       disabled={disabled}
       placeholder={placeholder}
@@ -40,6 +40,7 @@ Input.defaultProps = {
   minLength: null,
   maxLength: null,
   onRef: null,
+  underline: false,
 };
 
 Input.propTypes = {
@@ -55,6 +56,7 @@ Input.propTypes = {
   minLength: PropTypes.number,
   maxLength: PropTypes.number,
   onRef: PropTypes.func,
+  underline: PropTypes.bool,
 };
 
 export default Input;

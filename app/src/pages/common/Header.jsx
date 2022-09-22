@@ -53,19 +53,17 @@ function Header({ className, theme }) {
         </span>
       </div>
       <div className="header-content">
-        {!isRoot && (
-          <div className="back-navigator">
-            <div
-              onClick={() => {
-                navigate(-1);
-              }}
-            >
-              <div>
-                <i className="fa-solid fa-chevron-left" />
-              </div>
+        <div className={`back-navigator ${isRoot ? 'is-root' : ''}`}>
+          <div
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <div>
+              <i className="fa-solid fa-chevron-left" />
             </div>
           </div>
-        )}
+        </div>
         <div className="logo">
           <div
             onClick={() => {
@@ -75,9 +73,7 @@ function Header({ className, theme }) {
             <div>CASEBOOK</div>
           </div>
         </div>
-        <div className="spacer">
-          <div />
-        </div>
+        <div className="spacer">{isLogin && <div />}</div>
         <div className="menu">
           <div>
             <ul>
@@ -130,6 +126,7 @@ function Header({ className, theme }) {
             </Button>
           )}
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
+          {!isLogin && <Link to="/users/login">{t('회원가입')}</Link>}
         </div>
       </div>
       {userMenuOpen && (

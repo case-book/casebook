@@ -9,6 +9,7 @@
       display: inline-flex;
       flex-direction: column;
       width: calc((100% - 2rem) / 3);
+      vertical-align: top;
 
       .space-card {
         &:hover {
@@ -135,6 +136,33 @@
                 font-family: RubikWetPaint, sans-serif;
               }
             }
+          }
+        }
+
+        .new-space-card-content {
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          background-color: transparent !important;
+          > div {
+            align-self: center;
+            background-color: transparent;
+
+            > div {
+              text-align: center;
+              background-color: transparent;
+            }
+
+            .plus-icon {
+              font-size: 40px;
+              margin-bottom: 1rem;
+            }
+
+            font-size: 16px;
+          }
+
+          &:hover {
+            color: $link-color;
           }
         }
       }

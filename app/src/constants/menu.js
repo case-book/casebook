@@ -12,6 +12,16 @@ const MENUS = [
     project: false,
   },
   {
+    to: '/projects',
+    icon: <i className="fas fa-home-alt" />,
+    name: '프로젝트',
+    admin: false,
+    pc: true,
+    theme: 'black',
+    login: true,
+    project: false,
+  },
+  {
     to: '',
     icon: <i className="fas fa-home-alt" />,
     name: '대시보드',

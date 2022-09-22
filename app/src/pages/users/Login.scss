@@ -9,23 +9,22 @@
 
   > div.login-box {
     align-self: center;
-    background-color: $white;
     padding: 2rem;
     margin-bottom: 80px;
     min-width: 500px;
-    border: 1px solid $gray-300;
+    position: relative;
 
-    .logo-content {
-      text-align: center;
+    .login-title {
+      font-size: 30px;
+      font-family: Rowdies, sans-serif;
       margin-bottom: 1rem;
-      .logo {
-        display: inline-block;
-      }
     }
 
     .label {
-      margin-bottom: 0.25rem;
-      color: $gray-600;
+      margin-bottom: 0.5rem;
+      font-size: 16px;
+
+
     }
 
     .input {
@@ -51,12 +50,19 @@
 
     .button {
       text-align: center;
+      margin-top: 1rem;
     }
 
     .message {
       margin-top: 1rem;
       text-align: center;
       color: $danger;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -16px;
+      font-weight: bold;
+      font-size: 18px;
     }
   }
 }

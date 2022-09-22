@@ -27,11 +27,13 @@
   &.size-xxl {
     font-size: 20px;
     height: $xxl-height;
+    padding: 8px 12px;
   }
 
   &.size-xl {
     font-size: 20px;
     height: $xl-height;
+    padding: 8px 12px;
   }
 
   &.size-lg {
@@ -59,5 +61,10 @@
     opacity: 0.6;
   }
 
-
+  &.underline {
+    border: none;
+    _border-bottom: 1px solid $white !important;
+    color: $white;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
 }

@@ -34,6 +34,15 @@
       &.back-navigator {
         height: 100%;
         line-height: 0;
+        width: 58px;
+        overflow: hidden;
+        transition: width, 0.5s;
+
+        &.is-root {
+          width: 0;
+          transition: width, 0.5s;
+        }
+
         > div {
           display: flex;
           height: 100%;
@@ -142,7 +151,6 @@
 
     .user-menu {
       display: flex;
-
       animation: fade-in-animation 1s ease-out;
       animation-fill-mode: forwards;
 
@@ -150,6 +158,19 @@
       button {
         align-self: center;
       }
+
+      a {
+        color: $white;
+        font-size: 18px;
+        &:hover {
+          color: $color-sunflower;
+        }
+      }
+
+      a ~ a {
+        margin-left: 1rem;
+      }
+
       .user-icon {
         font-size: 20px;
       }
@@ -170,11 +191,13 @@
 
       > div {
         position: absolute;
-        top: 65px;
-        right: 21px;
-
+        top: 75px;
+        right: -22px;
         background-color: $white;
-        border: 1px solid $border-color;
+
+        @media (max-width: 1980px) {
+          right: 10px;
+        }
 
         .arrow {
           position: absolute;
@@ -182,16 +205,16 @@
           left: 0;
           right: 0;
           text-align: right;
-          padding-right: 11px;
-          @media (max-width: 768px) {
-            padding-right: 32px;
+          padding-right: 35px;
+
+          @media (max-width: 1980px) {
+            padding-right: 21px;
           }
 
           > div {
             display: inline-block;
             width: 11px;
             height: 11px;
-            border: 1px solid $border-color;
             transform: rotate(45deg);
             position: relative;
             top: -8px;
@@ -205,23 +228,23 @@
           list-style: none;
           margin: 0;
           font-size: 14px;
-          padding: 0.25rem 0;
+          padding: 0.25rem;
           position: relative;
           z-index: 1;
           line-height: 100%;
           background-color: $white;
           li {
             line-height: 100%;
+            &:hover {
+              background-color: $color-sunflower;
+            }
             a {
-              color: $blue;
+              color: $black;
+              font-weight: bold;
               text-decoration: none;
               padding: 0.5rem 1rem;
               display: inline-block;
               width: 100%;
-
-              &:visited {
-                color: $blue;
-              }
             }
 
             &:last-child {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Login.scss';
-import { Button, CheckBox, Form, Input, Logo } from '@/components';
+import { Button, CheckBox, Form, Input } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
@@ -32,16 +32,14 @@ function Login() {
   return (
     <div className="login-wrapper">
       <div className="login-box">
+        <div className="login-title">LOGIN</div>
         <Form onSubmit={onSubmit}>
-          <div className="logo-content">
-            <div className="logo">
-              <Logo icon={false} />
-            </div>
-          </div>
           <div className="label">{t('이메일')}</div>
           <div className="input">
             <Input
               value={info.email}
+              underline
+              size="xxl"
               onChange={val =>
                 setInfo({
                   ...info,
@@ -56,6 +54,8 @@ function Login() {
           <div className="input">
             <Input
               type="password"
+              underline
+              size="xxl"
               value={info.password}
               onChange={val =>
                 setInfo({
@@ -70,9 +70,9 @@ function Login() {
           <div className="auto-login">
             <div>
               <CheckBox
-                size="sm"
                 type="checkbox"
                 value={info.activated}
+                label={t('자동 로그인')}
                 onChange={val =>
                   setInfo({
                     ...info,
@@ -81,15 +81,14 @@ function Login() {
                 }
               />
             </div>
-            <div>{t('자동 로그인')}</div>
           </div>
           <div className="button">
-            <Button type="submit" outline>
+            <Button type="submit" size="xl">
               로그인
             </Button>
           </div>
         </Form>
-        {location.pathname !== '/users/login' && <div className="message">로그인이 필요합니다.</div>}
+        {location.pathname !== '/users/login' && <div className="message">{t('로그인이 필요합니다.')}</div>}
       </div>
     </div>
   );
