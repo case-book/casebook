@@ -33,12 +33,16 @@ function Spaces() {
       </PageTitle>
       <PageContent>
         <ul className="space-card-list">
-          {spaces?.map(space => {
+          {spaces?.map((space, inx) => {
             return (
-              <li key={space.id}>
+              <li
+                key={space.id}
+                style={{
+                  animationDelay: `${inx * 0.1}s`,
+                }}
+              >
                 <Card
                   className="space-card"
-                  pattern
                   circle
                   color="gray"
                   point
@@ -113,6 +117,29 @@ function Spaces() {
               </li>
             );
           })}
+          <li
+            style={{
+              animationDelay: `${(spaces?.length || 1) * 0.1}s`,
+            }}
+          >
+            <Card
+              className="space-card"
+              color="gray"
+              point
+              onClick={() => {
+                navigate('/spaces/new');
+              }}
+            >
+              <div className="new-space-card-content">
+                <div>
+                  <div className="plus-icon">
+                    <i className="fa-solid fa-plus" />
+                  </div>
+                  <div>새 스페이스</div>
+                </div>
+              </div>
+            </Card>
+          </li>
         </ul>
       </PageContent>
     </Page>

@@ -118,10 +118,14 @@ html {
 
 body {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-family: 'NanumGothic', 'NotoSans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  &.page-moving {
+    overflow: hidden;
+  }
 }
 
 code {
@@ -130,7 +134,7 @@ code {
 
 input,
 textarea {
-  font-family: 'NotoSans', sans-serif;
+  font-family: 'NanumGothic', 'NotoSans', sans-serif;
   font-weight: lighter;
 }
 

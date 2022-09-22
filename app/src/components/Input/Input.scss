@@ -2,13 +2,16 @@
   display: block;
   position: relative;
   width: 100%;
-  border: 1px solid $input-border-color;
   padding: 8px;
   height: auto;
   z-index: 2;
-  background-color: $white;
   border-radius: 2px;
   box-sizing: border-box;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: $white;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  transition: border-bottom 0.5s;
 
   &:focus {
     box-shadow: none;
@@ -17,7 +20,9 @@
   }
 
   &:invalid {
-    border: 1px solid $danger;
+    border-bottom: 1px solid $danger;
+    transition: border-bottom 0.5s;
+    border-radius: 2px 2px 0 0;
   }
 
   &[type='range'] {
@@ -27,16 +32,19 @@
   &.size-xxl {
     font-size: 20px;
     height: $xxl-height;
+    padding: 8px 12px;
   }
 
   &.size-xl {
     font-size: 20px;
     height: $xl-height;
+    padding: 8px 12px;
   }
 
   &.size-lg {
     font-size: 18px;
     height: $lg-height;
+    padding: 8px 12px;
   }
 
   &.size-md {
@@ -59,5 +67,6 @@
     opacity: 0.6;
   }
 
-
+  &.underline {
+  }
 }

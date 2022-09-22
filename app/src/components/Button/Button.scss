@@ -10,19 +10,36 @@
   }
 
   &.btn-xs {
+    font-size: 12px;
     height: $xs-height;
   }
 
   &.btn-sm {
+    font-size: 14px;
     height: $sm-height;
   }
 
   &.btn-md {
+    font-size: 16px;
     height: $md-height;
   }
 
   &.btn-lg {
+    font-size: 18px;
     height: $lg-height;
+    padding: 0 16px;
+  }
+
+  &.btn-xl {
+    font-size: 18px;
+    height: $xl-height;
+    padding: 0 20px;
+  }
+
+  &.btn-xxl {
+    font-size: 20px;
+    height: $xxl-height;
+    padding: 0 24px;
   }
 
   &:focus {

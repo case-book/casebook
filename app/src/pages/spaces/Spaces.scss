@@ -9,6 +9,10 @@
       display: inline-flex;
       flex-direction: column;
       width: calc((100% - 2rem) / 3);
+      vertical-align: top;
+      opacity: 0;
+      animation: fade-in-animation 0.7s ease-out;
+      animation-fill-mode: forwards;
 
       .space-card {
         &:hover {
@@ -31,6 +35,7 @@
         .name-and-code {
           text-align: center;
           padding-bottom: 1rem;
+          padding-top: 16px;
           font-weight: bold;
 
           .name {
@@ -58,13 +63,14 @@
           border-radius: 8px;
           overflow-y: auto;
           margin-bottom: 1rem;
+          font-size: 14px;
           > div {
             align-self: center;
           }
         }
 
         .counter-info {
-          height: 171px;
+          height: 155px;
           display: flex;
           background-color: $white;
           border: 1px solid rgba(0, 0, 0, 0.1);
@@ -135,6 +141,33 @@
                 font-family: RubikWetPaint, sans-serif;
               }
             }
+          }
+        }
+
+        .new-space-card-content {
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          background-color: transparent !important;
+          > div {
+            align-self: center;
+            background-color: transparent;
+
+            > div {
+              text-align: center;
+              background-color: transparent;
+            }
+
+            .plus-icon {
+              font-size: 40px;
+              margin-bottom: 1rem;
+            }
+
+            font-size: 16px;
+          }
+
+          &:hover {
+            color: $link-color;
           }
         }
       }

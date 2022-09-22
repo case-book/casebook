@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
@@ -14,16 +14,23 @@ function Header({ className, theme }) {
   const {
     userStore: { isLogin, setUser },
     controlStore: { hideHeader },
-    contextStore: { spaceCode, projectId, isProjectSelected },
+    contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected },
   } = useStores();
 
   const navigate = useNavigate();
 
   const location = useLocation();
 
+  const timer = useRef(null);
+
   const { t } = useTranslation();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const [menuAlert, setMenuAlert] = useState({
+    inx: null,
+    message: '',
+  });
 
   const logout = e => {
     e.preventDefault();
@@ -53,19 +60,17 @@ function Header({ className, theme }) {
         </span>
       </div>
       <div className="header-content">
-        {!isRoot && (
-          <div className="back-navigator">
-            <div
-              onClick={() => {
-                navigate(-1);
-              }}
-            >
-              <div>
-                <i className="fa-solid fa-chevron-left" />
-              </div>
+        <div className={`back-navigator ${isRoot ? 'is-root' : ''}`}>
+          <div
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            <div>
+              <i className="fa-solid fa-chevron-left" />
             </div>
           </div>
-        )}
+        </div>
         <div className="logo">
           <div
             onClick={() => {
@@ -75,9 +80,7 @@ function Header({ className, theme }) {
             <div>CASEBOOK</div>
           </div>
         </div>
-        <div className="spacer">
-          <div />
-        </div>
+        <div className="spacer">{isLogin && <div />}</div>
         <div className="menu">
           <div>
             <ul>
@@ -89,6 +92,8 @@ function Header({ className, theme }) {
                   let isSelected = false;
                   if (d.project) {
                     isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
+                  } else if (d.selectedAlias && d.selectedAlias.test(location.pathname)) {
+                    isSelected = true;
                   } else {
                     isSelected = location.pathname === d.to;
                   }
@@ -101,8 +106,32 @@ function Header({ className, theme }) {
                         animationDelay: `${inx * 0.1}s`,
                       }}
                     >
-                      <Link to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to} onClick={() => {}}>
+                      <Link
+                        to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+                        onClick={e => {
+                          if (d.needSpace && !isSpaceSelected) {
+                            e.preventDefault();
+                            setMenuAlert({
+                              inx,
+                              message: '스페이스를 먼저 선택해주세요.',
+                            });
+
+                            if (timer.current) {
+                              clearTimeout(timer.current);
+                              timer.current = null;
+                            }
+                            timer.current = setTimeout(() => {
+                              timer.current = null;
+                              setMenuAlert({
+                                inx: null,
+                                message: '',
+                              });
+                            }, 2000);
+                          }
+                        }}
+                      >
                         <span>{d.name}</span>
+                        {menuAlert.inx === inx && <span className="alert-message">{menuAlert.message}</span>}
                       </Link>
                       <div className="cursor">
                         <div />
@@ -130,6 +159,7 @@ function Header({ className, theme }) {
             </Button>
           )}
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
+          {!isLogin && <Link to="/users/login">{t('회원가입')}</Link>}
         </div>
       </div>
       {userMenuOpen && (

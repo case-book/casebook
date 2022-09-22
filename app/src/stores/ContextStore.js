@@ -12,6 +12,7 @@ export default class ContextStore {
       setSpaceCode: action,
       setProjectId: action,
       isProjectSelected: computed,
+      isSpaceSelected: computed,
     });
   }
 
@@ -25,5 +26,9 @@ export default class ContextStore {
 
   get isProjectSelected() {
     return !!this.spaceCode && !!this.projectId;
+  }
+
+  get isSpaceSelected() {
+    return !!this.spaceCode;
   }
 }

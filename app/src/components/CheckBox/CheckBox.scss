@@ -15,7 +15,6 @@
     transition: all 0.3s;
     cursor: pointer;
     display: inline-block;
-    font-family: pretendard, sans-serif;
     line-height: 100%;
   }
 
@@ -42,7 +41,7 @@
 
     &.checked {
       > span {
-        background-color: $color-azure;
+        background-color: $yellow;
         transition: all 0.3s;
         border: 1px solid rgba(0, 0, 0, 0.4);
       }
@@ -51,7 +50,7 @@
 
   &.lg {
     label {
-      font-size: 1rem;
+      font-size: 16px;
     }
 
     .check-box-span {
@@ -64,7 +63,7 @@
     height: 38px;
 
     label {
-      font-size: 15px;
+      font-size: 16px;
     }
 
     .check-box-span {
@@ -90,7 +89,7 @@
 
   &:hover {
     .check-box-span {
-      border-color: $black;
+      border-color: $yellow;
       transition: all 0.3s;
     }
   }

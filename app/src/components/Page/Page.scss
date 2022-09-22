@@ -6,10 +6,27 @@
   flex-direction: column;
   max-width: $max-page-width;
   margin: 20px auto 40px;
-  background-color: $white;
+  _background-color: $white;
   min-height: calc(100vh - 140px);
-  border-radius: 10px;
-  border: 1px solid $gray-300;
+  border-radius: 20px;
+  _border: 1px solid $gray-300;
+  background-color: rgba(0, 0, 0, 0.075);
+
+  &.info-page {
+
+    .page-title-wrapper {
+      > div {
+        .icon {
+          > span {
+            margin-top: 20px;
+          }
+        }
+        .title-text {
+          margin-top: 20px !important;
+        }
+      }
+    }
+  }
 
   &.list-page {
     background-color: transparent;

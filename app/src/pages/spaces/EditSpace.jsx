@@ -92,6 +92,7 @@ function EditSpace({ type }) {
                     name: val,
                   })
                 }
+                underline
                 required
                 minLength={1}
               />
@@ -106,6 +107,7 @@ function EditSpace({ type }) {
                     code: val,
                   })
                 }
+                underline
                 required
                 minLength={1}
               />
@@ -115,6 +117,7 @@ function EditSpace({ type }) {
               <TextArea
                 value={space.description || ''}
                 rows={4}
+                underline
                 onChange={val => {
                   setSpace({
                     ...space,
