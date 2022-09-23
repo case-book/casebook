@@ -1,8 +1,10 @@
 .label-wrapper {
   display: inline-flex;
   margin-right: 1rem;
-  color: $gray-600;
+  color: $gray-500;
   position: relative;
+  font-weight: bold;
+
   @media (max-width: 768px) {
     display: flex;
     margin-right: 0;
@@ -13,20 +15,19 @@
 
   &.required {
     > span {
-      color: $white;
+      color: $gray-200;
     }
   }
 
   .required-mark {
     position: absolute;
-    top: -4px;
+    top: 4px;
     right: -14px;
     display: inline-block;
     width: 10px;
     height: 10px;
     line-height: 0;
     font-size: 10px;
-    color: $danger;
   }
 
   &.size-xxl {

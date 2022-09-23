@@ -27,7 +27,7 @@ CheckBox.defaultProps = {
   label: '',
   onChange: null,
   value: false,
-  size: 'md',
+  size: 'lg',
 };
 
 CheckBox.propTypes = {

@@ -5,7 +5,7 @@ import Title from '@/components/Title/Title';
 function ModalHeader({ className, children }) {
   return (
     <div className={`modal-header-wrapper ${className}`}>
-      <Title type="h2">{children}</Title>
+      <Title type="h1">{children}</Title>
     </div>
   );
 }

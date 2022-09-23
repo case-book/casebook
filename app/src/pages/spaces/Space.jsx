@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Space.scss';
-import { Block, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import { Block, Label, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
@@ -27,7 +27,7 @@ function Space() {
     <Page className="space-wrapper">
       <PageTitle>{t('스페이스')}</PageTitle>
       <PageContent>
-        <Title type="h2">스페이스 정보</Title>
+        <Title>스페이스 정보</Title>
         <Block>
           <BlockRow>
             <Label>{t('이름')}</Label>
@@ -50,21 +50,25 @@ function Space() {
             <Text>{space?.token}</Text>
           </BlockRow>
         </Block>
-        <Title type="h2">사용자</Title>
+        <Title>사용자</Title>
         <div className="user-list">
-          <table>
-            <tbody>
-              {space?.users?.map(user => {
-                return (
-                  <tr key={user.id} className="user-item-wrapper">
-                    <td className="name">{user.name}</td>
-                    <td className="email">{user.email}</td>
-                    <td className="role">{user.role || 'MEMBER'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <ul>
+            {space?.users?.map(user => {
+              return (
+                <li key={user.id}>
+                  <div className="user-item-wrapper">
+                    <div className="name">
+                      <div>{user.name}</div>
+                      <div>
+                        <Tag>{user.role || 'MEMBER'}</Tag>
+                      </div>
+                    </div>
+                    <div className="email">{user.email}</div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
         <PageButtons
           onBack={() => {

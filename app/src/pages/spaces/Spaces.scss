@@ -13,6 +13,12 @@
       opacity: 0;
       animation: fade-in-animation 0.7s ease-out;
       animation-fill-mode: forwards;
+      margin-right: 1rem;
+      margin-bottom: 1rem;
+
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
 
       .space-card {
         &:hover {
@@ -26,10 +32,6 @@
           position: absolute;
           right: 1rem;
           top: 1rem;
-        }
-
-        &:nth-child(3n) {
-          margin-right: 0;
         }
 
         .name-and-code {

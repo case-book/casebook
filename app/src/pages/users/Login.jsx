@@ -88,7 +88,11 @@ function Login() {
             </Button>
           </div>
         </Form>
-        {location.pathname !== '/users/login' && <div className="message">{t('로그인이 필요합니다.')}</div>}
+        {location.pathname !== '/users/login' && (
+          <div className="message">
+            <span>{t('로그인이 필요합니다.')}</span>
+          </div>
+        )}
       </div>
     </div>
   );

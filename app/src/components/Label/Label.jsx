@@ -39,10 +39,10 @@ function Label({ className, children, minWidth, required, separator, size, verti
 
 Label.defaultProps = {
   className: '',
-  minWidth: '60px',
+  minWidth: '100px',
   required: false,
   separator: false,
-  size: 'md',
+  size: 'lg',
   verticalAlign: 'center',
   children: null,
 };

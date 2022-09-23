@@ -2,9 +2,19 @@
   > div {
     padding: 2rem;
   }
+
+  .modal-header {
+    margin-bottom: 2rem;
+    > div {
+      padding: 0.5rem 0.5rem 1.5rem;
+    }
+  }
   .dialog-icon {
     font-size: 30px;
     margin-bottom: 1rem;
+    position: absolute;
+    top: 16px;
+    left: 16px;
   }
 
   &.WARNING {

@@ -10,22 +10,9 @@
   min-height: calc(100vh - 140px);
   border-radius: 20px;
   _border: 1px solid $gray-300;
-  background-color: rgba(0, 0, 0, 0.075);
+  _background-color: rgba(0, 0, 0, 0.075);
 
   &.info-page {
-
-    .page-title-wrapper {
-      > div {
-        .icon {
-          > span {
-            margin-top: 20px;
-          }
-        }
-        .title-text {
-          margin-top: 20px !important;
-        }
-      }
-    }
   }
 
   &.list-page {
@@ -48,5 +35,13 @@
     top: 0;
     left: 0;
     background: linear-gradient(#33a1de, #acd9f2);
+  }
+
+  .page-content-wrapper .title-wrapper:first-child {
+    margin-top: 1rem;
+  }
+
+  .block-wrapper ~ .title-wrapper {
+    margin-top: 3rem;
   }
 }

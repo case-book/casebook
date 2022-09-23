@@ -12,15 +12,12 @@ function Spaces() {
   const { t } = useTranslation();
   const { spaceCode } = useParams();
 
-  console.log(spaceCode);
-
   const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     ProjectService.selectProjectList(spaceCode, list => {
-      console.log(list);
       setProjects(list);
     });
   }, []);
