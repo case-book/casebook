@@ -1,9 +1,18 @@
 .tag-wrapper {
   display: inline-block;
   font-size: 12px;
-  border: 1px solid $border-color;
   line-height: 100%;
-  padding: 4px;
+  padding: 8px;
   border-radius: 4px;
-  background-color: $white;
+
+  &.color-black {
+    background-color: #111;
+    color: $white;
+  }
+
+  &.color-white {
+    background-color: $white;
+    color: $black;
+    border: 1px solid $border-color;
+  }
 }

@@ -4,6 +4,10 @@
   padding: 0.5rem;
   flex-grow: 1;
 
+  &.inline {
+    flex-grow: 0;
+  }
+
   &.bg-white {
     background-color: $white;
   }

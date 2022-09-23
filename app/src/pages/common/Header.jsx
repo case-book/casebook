@@ -92,9 +92,13 @@ function Header({ className, theme }) {
                   let isSelected = false;
                   if (d.project) {
                     isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
-                  } else if (d.selectedAlias && d.selectedAlias.test(location.pathname)) {
-                    isSelected = true;
-                  } else {
+                  } else if (d.selectedAlias) {
+                    isSelected = d.selectedAlias.reduce((p, c) => {
+                      return p || c.test(location.pathname);
+                    }, false);
+                  }
+
+                  if (!isSelected) {
                     isSelected = location.pathname === d.to;
                   }
 

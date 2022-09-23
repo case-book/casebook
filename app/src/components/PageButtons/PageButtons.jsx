@@ -5,7 +5,7 @@ import Liner from '@/components/Liner/Liner';
 import './PageButtons.scss';
 
 function PageButtons(props) {
-  const { className, size } = props;
+  const { className, size, outline } = props;
   const {
     onList,
     onListText,
@@ -31,12 +31,12 @@ function PageButtons(props) {
     onBackIcon,
   } = props;
   return (
-    <div className={`bottom-buttons-wrapper ${className} ${onDelete ? 'has-delete' : ''}`}>
+    <div className={`page-buttons-wrapper ${className} ${onDelete ? 'has-delete' : ''}`}>
       {border && <div className="bottom-liner" />}
       <div className="button-content">
         {onDelete && (
           <div className="delete-buttons">
-            <Button className="delete-button" type="button" size={size} color="danger" outline onClick={onDelete}>
+            <Button className="delete-button" type="button" size={size} color="danger" outline={outline} onClick={onDelete}>
               <div>
                 {onDeleteIcon && (
                   <div className="icon delete-icon">
@@ -50,7 +50,7 @@ function PageButtons(props) {
         )}
         <div className="other-buttons">
           {onBack && (
-            <Button type="button" size={size} color="white" outline onClick={onBack}>
+            <Button type="button" size={size} color="white" outline={outline} onClick={onBack}>
               <div>
                 {onBackIcon && (
                   <div className="icon">
@@ -62,7 +62,7 @@ function PageButtons(props) {
             </Button>
           )}
           {onCancel && (
-            <Button type="button" size={size} color="white" outline onClick={onCancel}>
+            <Button type="button" size={size} color="white" outline={outline} onClick={onCancel}>
               <div>
                 {onCancelIcon && (
                   <div className="icon">
@@ -76,7 +76,7 @@ function PageButtons(props) {
           {onList && (
             <>
               {(onBack || onCancel) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
-              <Button type="button" size={size} color="white" outline onClick={onList}>
+              <Button type="button" size={size} color="white" outline={outline} onClick={onList}>
                 <div>
                   {onListIcon && (
                     <div className="icon">
@@ -91,7 +91,7 @@ function PageButtons(props) {
           {onInfo && (
             <>
               {(onBack || onCancel || onList) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
-              <Button type="button" size={size} color="white" outline onClick={onInfo}>
+              <Button type="button" size={size} color="white" outline={outline} onClick={onInfo}>
                 <div>
                   {onInfoIcon && (
                     <div className="icon">
@@ -106,7 +106,7 @@ function PageButtons(props) {
           {onEdit && (
             <>
               {(onBack || onCancel || onList || onInfo) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
-              <Button type="button" size={size} color="white" outline onClick={onEdit}>
+              <Button type="button" size={size} color="white" outline={outline} onClick={onEdit}>
                 <div>
                   {onEditIcon && (
                     <div className="icon">
@@ -121,7 +121,7 @@ function PageButtons(props) {
           {onSubmit && (
             <>
               {(onBack || onCancel || onList || onInfo || onEdit) && <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />}
-              <Button type="submit" size={size} color="white" outline>
+              <Button type="submit" size={size} color="white" outline={outline}>
                 <div>
                   {onSubmitIcon && (
                     <div className="icon">
@@ -141,7 +141,8 @@ function PageButtons(props) {
 
 PageButtons.defaultProps = {
   className: '',
-  size: 'md',
+  size: 'xl',
+  outline: false,
   onListText: '목록',
   onListIcon: '', // <i className="far fa-file-alt" />,
   onInfoText: '정보',
@@ -169,6 +170,7 @@ PageButtons.defaultProps = {
 PageButtons.propTypes = {
   className: PropTypes.string,
   size: PropTypes.string,
+  outline: PropTypes.bool,
   onList: PropTypes.func,
   onListText: PropTypes.string,
   onListIcon: PropTypes.node,

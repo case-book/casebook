@@ -2,6 +2,7 @@
   _border-bottom: 1px solid $gray-300;
   height: 80px;
 
+  border-bottom: 1px solid #2e2e2e;
 
   > div {
     max-width: $max-width;
@@ -18,12 +19,11 @@
         line-height: 0;
         height: 100%;
         display: inline-flex;
-        padding: 0 8px 0 32px;
-        margin-right: 8px;
+        padding: 0 16px;
+
         cursor: pointer;
         > span {
           align-self: center;
-
         }
 
         &:hover {
@@ -36,8 +36,6 @@
         line-height: 100%;
         font-weight: bold;
         font-size: 24px;
-
-
       }
     }
   }

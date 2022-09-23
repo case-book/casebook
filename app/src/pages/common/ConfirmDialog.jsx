@@ -31,7 +31,7 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
         controlStore.setConfirm(null);
       }}
     >
-      <ModalHeader>
+      <ModalHeader className="modal-header">
         <span className="title">{title}</span>
       </ModalHeader>
       <ModalBody>
@@ -46,7 +46,7 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
       </ModalBody>
       <ModalFooter>
         <Button
-          outline
+          size="lg"
           onClick={() => {
             if (noHandler) {
               noHandler();
@@ -57,7 +57,7 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
           {noText || t('취소')}
         </Button>
         <Button
-          outline
+          size="lg"
           onClick={() => {
             if (okHandler) {
               okHandler();

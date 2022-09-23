@@ -1,6 +1,9 @@
 .block-wrapper {
-
+  _background-color: rgb(25, 25, 25);
   position: relative;
+
+  border-radius: 4px;
+  margin: 0 0.5rem;
 
   .block-row-wrapper {
     &:last-child {

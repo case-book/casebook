@@ -4,7 +4,7 @@
   position: relative;
   flex-direction: row;
   margin: 0 auto;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 100px);
   justify-content: center;
 
   > div.login-box {
@@ -23,8 +23,6 @@
     .label {
       margin-bottom: 0.5rem;
       font-size: 16px;
-
-
     }
 
     .input {
@@ -56,13 +54,21 @@
     .message {
       margin-top: 1rem;
       text-align: center;
-      color: $danger;
+
       position: absolute;
       left: 0;
       right: 0;
-      bottom: -16px;
+      top: -50px;
       font-weight: bold;
-      font-size: 18px;
+
+      > span {
+        display: inline-block;
+        padding: 0.75rem 1rem;
+        background-color: $color-sunflower;
+        font-size: 16px;
+        color: $black;
+        border-radius: 8px;
+      }
     }
   }
 }

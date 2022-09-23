@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './EditSpace.scss';
-import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea } from '@/components';
+import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -64,7 +64,7 @@ function EditSpace({ type }) {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('스페이스 삭제'),
-      <div>{t('[{space.name}] 스페이스의 모든 정보가 삭제됩니다. 삭제하시겠습니까?')}</div>,
+      <div>{t(`${space.name} 스페이스의 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
       () => {
         SpaceService.deleteSpace(space.id, result => {
           addSpace(result);
@@ -78,9 +78,10 @@ function EditSpace({ type }) {
 
   return (
     <Page className="edit-space-wrapper">
-      <PageTitle>{t('새 스페이스')}</PageTitle>
+      <PageTitle>{type === 'edit' ? t('스페이스') : t('새 스페이스')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
+          <Title>기본 정보</Title>
           <Block className="pt-0">
             <BlockRow>
               <Label required>{t('이름')}</Label>
@@ -92,11 +93,11 @@ function EditSpace({ type }) {
                     name: val,
                   })
                 }
-                underline
                 required
                 minLength={1}
               />
             </BlockRow>
+
             <BlockRow>
               <Label required>{t('코드')}</Label>
               <Input
@@ -107,7 +108,6 @@ function EditSpace({ type }) {
                     code: val,
                   })
                 }
-                underline
                 required
                 minLength={1}
               />
@@ -117,7 +117,6 @@ function EditSpace({ type }) {
               <TextArea
                 value={space.description || ''}
                 rows={4}
-                underline
                 onChange={val => {
                   setSpace({
                     ...space,
@@ -129,7 +128,6 @@ function EditSpace({ type }) {
             <BlockRow>
               <Label>{t('활성화')}</Label>
               <CheckBox
-                size="sm"
                 type="checkbox"
                 value={space.activated}
                 onChange={val =>
@@ -142,9 +140,9 @@ function EditSpace({ type }) {
             </BlockRow>
             <BlockRow>
               <Label>{t('토큰')}</Label>
-              <Text>{space.token}</Text>
+              <Text inline>{space.token}</Text>
               <Button
-                outline
+                rounded
                 onClick={() => {
                   setSpace({
                     ...space,
@@ -157,9 +155,13 @@ function EditSpace({ type }) {
             </BlockRow>
           </Block>
           <PageButtons
-            onDelete={onDelete}
+            onDelete={type === 'edit' ? onDelete : null}
             onCancel={() => {
-              navigate(`/spaces/${id}/info`);
+              if (type === 'edit') {
+                navigate(`/spaces/${id}/info`);
+              } else {
+                navigate('/');
+              }
             }}
             onSubmit={() => {}}
             onSubmitText="저장"

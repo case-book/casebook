@@ -26,10 +26,10 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
 
   return (
     <Modal className={`common-dialog-wrapper message-dialog-wrapper  ${className} ${category}`} isOpen>
-      <ModalHeader className="text-center">{title}</ModalHeader>
+      <ModalHeader className="modal-header">{title}</ModalHeader>
       <ModalBody>
         <div className="wrap_error">
-          <div className={`g-dialog-icon ${category}`}>
+          <div className={`dialog-icon ${category}`}>
             {category === MESSAGE_CATEGORY.ERROR && <i className="fas fa-exclamation-circle" />}
             {category === MESSAGE_CATEGORY.WARNING && <i className="fas fa-exclamation-circle" />}
             {category === MESSAGE_CATEGORY.INFO && <i className="fas fa-exclamation-circle" />}

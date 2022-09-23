@@ -1,12 +1,13 @@
 .block-row-wrapper {
   display: flex;
-  margin-bottom: 1rem;
+  padding: 2rem 0;
+  border-bottom: 1px solid #2e2e2e;
 
   @media (max-width: 768px) {
     display: block;
   }
 
-  > div {
+  > * {
     align-self: center;
   }
 

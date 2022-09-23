@@ -49,41 +49,40 @@
   }
 
   &.lg {
+    height: $lg-height;
     label {
       font-size: 16px;
     }
 
     .check-box-span {
-      width: 17px;
-      height: 17px;
+      width: 28px;
+      height: 28px;
     }
   }
 
   &.md {
-    height: 38px;
+    height: $md-height;
 
     label {
       font-size: 16px;
     }
 
     .check-box-span {
-      width: 16px;
-      height: 16px;
-      position: relative;
-      top: -1px;
+      width: 24px;
+      height: 24px;
     }
   }
 
   &.sm {
-    height: 31px;
+    height: $sm-height;
     line-height: 0;
     label {
       font-size: 14px;
     }
 
     .check-box-span {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
     }
   }
 

@@ -10,7 +10,7 @@ const MENUS = [
     theme: 'black',
     login: true,
     project: false,
-    selectedAlias: /^\/$/,
+    selectedAlias: [/^\/$/, /^\/spaces\/[A-Z]+(\/)?(edit|info)$/],
   },
   {
     to: '/projects',
@@ -22,7 +22,7 @@ const MENUS = [
     login: true,
     project: false,
     needSpace: true,
-    selectedAlias: /^\/spaces\/.*$/,
+    selectedAlias: [/^\/spaces\/[\dA-Z]+$/],
   },
   {
     to: '',

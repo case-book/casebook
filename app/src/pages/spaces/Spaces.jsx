@@ -66,7 +66,7 @@ function Spaces() {
                   <div className="name-and-code">
                     <div className="name">{space.name}</div>
                     <div className="code">
-                      <Tag>{space.code}</Tag>
+                      <Tag color="white">{space.code}</Tag>
                     </div>
                   </div>
                   <div className="description">
