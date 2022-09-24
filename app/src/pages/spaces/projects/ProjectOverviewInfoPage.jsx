@@ -7,7 +7,7 @@ function ProjectOverviewInfoPage() {
   const { t } = useTranslation();
 
   return (
-    <Page className="project-overview-info-page-wrapper">
+    <Page className="project-overview-info-page-wrapper" list>
       <PageTitle>{t('OVERVIEW')}</PageTitle>
       <PageContent>OVER</PageContent>
     </Page>

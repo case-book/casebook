@@ -31,14 +31,14 @@
         }
         .config-button {
           position: absolute;
-          right: 1rem;
-          top: 1rem;
+          right: 0;
+          top: 0;
         }
 
         .name-and-code {
           text-align: center;
           padding-bottom: 1rem;
-          padding-top: 16px;
+          padding-top: 1rem;
           font-weight: bold;
 
           .name {

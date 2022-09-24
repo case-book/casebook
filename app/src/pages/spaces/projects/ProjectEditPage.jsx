@@ -15,9 +15,7 @@ import ProjectService from '@/services/ProjectService';
 
 function ProjectEditPage({ type }) {
   const { t } = useTranslation();
-  const { id, spaceCode } = useParams();
-
-  console.log(spaceCode);
+  const { projectId, spaceCode } = useParams();
 
   const navigate = useNavigate();
 
@@ -33,12 +31,12 @@ function ProjectEditPage({ type }) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (id && type === 'edit') {
-      ProjectService.selectProjectInfo(spaceCode, id, info => {
+    if (projectId && type === 'edit') {
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
         setProject(info);
       });
     }
-  }, [type, id]);
+  }, [type, projectId]);
 
   useEffect(() => {
     SpaceService.selectSpaceInfo(spaceCode, info => {
@@ -50,12 +48,12 @@ function ProjectEditPage({ type }) {
     e.preventDefault();
 
     if (type === 'new') {
-      ProjectService.createProject(spaceCode, project, () => {
-        navigate(`/spaces/${spaceCode}`);
+      ProjectService.createProject(spaceCode, project, info => {
+        navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
       });
     } else if (type === 'edit') {
-      ProjectService.updateProject(project, () => {
-        navigate(`/spaces/${spaceCode}`);
+      ProjectService.updateProject(spaceCode, project, () => {
+        navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
       });
     }
   };
@@ -77,7 +75,7 @@ function ProjectEditPage({ type }) {
 
   return (
     <Page className="project-edit-page-wrapper">
-      <PageTitle>{t('새 프로젝트')}</PageTitle>
+      <PageTitle>{type === 'edit' ? t('프로젝트') : t('새 프로젝트')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Block className="pt-0">
@@ -145,7 +143,7 @@ function ProjectEditPage({ type }) {
           <PageButtons
             onDelete={onDelete}
             onCancel={() => {
-              navigate('/projects');
+              navigate(-1);
             }}
             onSubmit={() => {}}
             onSubmitText="저장"

@@ -21,7 +21,6 @@ public class ProjectResponse {
     private Boolean activated;
     private LocalDateTime creationDate;
     private String spaceName;
-
     private List<TestcaseTemplateResponse> testcaseTemplates;
 
     public ProjectResponse(Project project) {
@@ -32,6 +31,8 @@ public class ProjectResponse {
         this.activated = project.isActivated();
         this.creationDate = project.getCreationDate();
         this.spaceName = project.getSpace().getName();
-        this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
+        if (project.getTestcaseTemplates() != null) {
+            this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
+        }
     }
 }

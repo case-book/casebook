@@ -1,8 +1,6 @@
 .card-wrapper {
   color: $black;
   padding: 1rem;
-
-
   background-color: $white;
   position: relative;
   border-radius: 4px;
@@ -23,7 +21,6 @@
     height: 110%;
     background-color: rgba(0, 0, 0, 0.04);
     border-radius: 50%;
-
 
     &.circle-1 {
       top: -30%;

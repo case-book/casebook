@@ -12,5 +12,21 @@ import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
 import ProjectOverviewInfoPage from '@/pages/spaces/projects/ProjectOverviewInfoPage';
 import ProjectConfigInfoPage from '@/pages/spaces/projects/ProjectConfigInfoPage';
 import EditProjectConfig from '@/pages/spaces/projects/ProjectConfigEditPage';
+import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
-export { ProjectConfigInfoPage, ProjectOverviewInfoPage, SpaceListPage, Message, SpaceInfoPage, SpaceEditPage, Common, Header, Login, Join, SpaceProjectListPage, ProjectEditPage, EditProjectConfig };
+export {
+  ProjectConfigInfoPage,
+  ProjectOverviewInfoPage,
+  SpaceListPage,
+  Message,
+  SpaceInfoPage,
+  SpaceEditPage,
+  Common,
+  Header,
+  Login,
+  Join,
+  SpaceProjectListPage,
+  ProjectEditPage,
+  EditProjectConfig,
+  ProjectInfoPage,
+};

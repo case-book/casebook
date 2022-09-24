@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Page, PageContent, PageTitle } from '@/components';
+import { Button, Card, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -31,39 +31,42 @@ function Spaces() {
         {t('프로젝트')}
       </PageTitle>
       <PageContent>
-        <div className="space-card-list">
+        <ul className="project-card-list">
           {projects?.map(project => {
             return (
-              <div
-                key={project.id}
-                className="space-card-wrapper"
-                onClick={() => {
-                  navigate(`/spaces/${spaceCode}/projects/${project.id}`);
-                }}
-              >
-                <div className="config-button">
-                  <Button
-                    outline
-                    rounded
-                    size="sm"
-                    onClick={e => {
-                      e.stopPropagation();
-                      navigate(`/spaces/${spaceCode}/projects/${project.id}`);
-                    }}
-                  >
-                    <i className="fa-solid fa-gear" />
-                  </Button>
-                </div>
-                <div className="name-and-code">
-                  <div className="name">{project.name}</div>
-                </div>
-                <div className="description">
-                  <div>{project.description}</div>
-                </div>
-              </div>
+              <li key={project.id}>
+                <Card
+                  className="project-card-wrapper"
+                  color="gray"
+                  point
+                  onClick={() => {
+                    navigate(`/spaces/${spaceCode}/projects/${project.id}`);
+                  }}
+                >
+                  <div className="config-button">
+                    <Button
+                      outline
+                      rounded
+                      size="sm"
+                      onClick={e => {
+                        e.stopPropagation();
+                        navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
+                      }}
+                    >
+                      <i className="fa-solid fa-gear" />
+                    </Button>
+                  </div>
+                  <div className="name-and-code">
+                    <div className="name">{project.name}</div>
+                  </div>
+                  <div className="description">
+                    <div>{project.description}</div>
+                  </div>
+                </Card>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </PageContent>
     </Page>
   );

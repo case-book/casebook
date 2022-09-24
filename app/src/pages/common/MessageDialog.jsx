@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import useStores from '@/hooks/useStores';
-
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
-import './ConfirmDialog.scss';
+import './CommonDialog.scss';
 
 function MessageDialog({ className, category, title, message, okHandler, okText }) {
   const { t } = useTranslation();

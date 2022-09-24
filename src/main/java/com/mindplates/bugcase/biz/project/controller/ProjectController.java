@@ -74,10 +74,13 @@ public class ProjectController {
             throw new ServiceException(HttpStatus.NOT_FOUND);
         }
 
-        Project nextProjectInfo = projectRequest.buildEntity();
-        nextProjectInfo.setSpace(projectInfo.get().getSpace());
+        Project nextProject = projectInfo.get();
+        nextProject.setName(projectRequest.getName());
+        nextProject.setActivated(projectRequest.getActivated());
+        nextProject.setDescription(projectRequest.getDescription());
+        nextProject.setToken(projectRequest.getToken());
 
-        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProjectInfo, userSession.getId()));
+        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject, userSession.getId()));
     }
 
     @Operation(description = "프로젝트 삭제")

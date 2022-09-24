@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
-import './ConfirmDialog.scss';
+import './CommonDialog.scss';
 
 function ConfirmDialog({ className, category, title, message, okHandler, noHandler, okText, noText }) {
   const { t } = useTranslation();
