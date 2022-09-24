@@ -1,21 +1,21 @@
 import React from 'react';
-import './ProjectOverview.scss';
 import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
+import './ProjectOverviewInfoPage.scss';
 
-function ProjectOverview() {
+function ProjectOverviewInfoPage() {
   const { t } = useTranslation();
 
   return (
-    <Page className="edit-project-wrapper">
+    <Page className="project-overview-info-page-wrapper">
       <PageTitle>{t('OVERVIEW')}</PageTitle>
       <PageContent>OVER</PageContent>
     </Page>
   );
 }
 
-ProjectOverview.defaultProps = {};
+ProjectOverviewInfoPage.defaultProps = {};
 
-ProjectOverview.propTypes = {};
+ProjectOverviewInfoPage.propTypes = {};
 
-export default ProjectOverview;
+export default ProjectOverviewInfoPage;

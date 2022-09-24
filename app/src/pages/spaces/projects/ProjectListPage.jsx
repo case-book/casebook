@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react';
-
 import { Button, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-
 import { useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
-import './SpaceProjectListPage.scss';
+import './ProjectListPage.scss';
 
 function Spaces() {
   const { t } = useTranslation();
   const { spaceCode } = useParams();
-
   const navigate = useNavigate();
-
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
@@ -23,7 +19,7 @@ function Spaces() {
   }, []);
 
   return (
-    <Page className="space-project-list-page-wrapper" list>
+    <Page className="project-list-page-wrapper" list>
       <PageTitle
         className="page-title"
         links={[

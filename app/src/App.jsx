@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Common, Header, Login, Message, Spaces } from '@/pages';
+import { Common, Header, Login, Message, SpaceListPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
-import ProjectsRoutes from '@/pages/projects';
+import ProjectsRoutes from '@/pages/spaces/projects';
 import UsersRoutes from '@/pages/users';
 import { MENUS } from '@/constants/menu';
 import useStores from '@/hooks/useStores';
@@ -44,11 +44,11 @@ function App() {
             <TransitionGroup className="transition-group">
               <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
                 <Routes location={location}>
-                  <Route path="/" element={<Spaces />} />
+                  <Route path="/" element={<SpaceListPage />} />
                   <Route path="/users/*" element={<UsersRoutes />} />
                   <Route path="/spaces/*" element={<SpacesRoutes />} />
                   <Route path="/projects/*" element={<ProjectsRoutes />} />
-                  <Route path="/404" element={<Message code="404" />} />
+                  <Route path="*" element={<Message code="404" />} />
                 </Routes>
               </CSSTransition>
             </TransitionGroup>

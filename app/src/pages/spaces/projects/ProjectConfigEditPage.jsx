@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './EditProjectConfig.scss';
 import { useTranslation } from 'react-i18next';
 import { cloneDeep } from 'lodash';
 import ProjectService from '@/services/ProjectService';
@@ -8,6 +7,7 @@ import ConfigService from '@/services/ConfigService';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Page, PageButtons, PageContent, PageTitle, Selector, Tag, Title } from '@/components';
 import TestcaseService from '@/services/TestcaseService';
+import './ProjectConfigEditPage.scss';
 
 function ProjectConfig() {
   const { t } = useTranslation();
@@ -185,7 +185,7 @@ function ProjectConfig() {
   };
 
   return (
-    <Page className="edit-project-config-wrapper">
+    <Page className="project-config-edit-page-wrapper">
       <PageTitle>
         {project?.name} {t('CONFIG')}
       </PageTitle>

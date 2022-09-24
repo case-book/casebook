@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import './ProjectConfig.scss';
 import { Page, PageButtons, PageContent, PageTitle, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
-
 import ProjectService from '@/services/ProjectService';
 import { useParams } from 'react-router';
 import ConfigService from '@/services/ConfigService';
 import { useNavigate } from 'react-router-dom';
+import './ProjectConfigInfoPage.scss';
 
-function ProjectConfig() {
+function ProjectConfigInfoPage() {
   const { t } = useTranslation();
   const { id, spaceCode } = useParams();
   const navigate = useNavigate();
@@ -33,7 +32,7 @@ function ProjectConfig() {
   console.log(testcaseItemTypes, project);
 
   return (
-    <Page className="edit-space-wrapper">
+    <Page className="project-config-info-page-wrapper">
       <PageTitle>
         {project?.name} {t('CONFIG')}
       </PageTitle>
@@ -54,8 +53,8 @@ function ProjectConfig() {
   );
 }
 
-ProjectConfig.defaultProps = {};
+ProjectConfigInfoPage.defaultProps = {};
 
-ProjectConfig.propTypes = {};
+ProjectConfigInfoPage.propTypes = {};
 
-export default ProjectConfig;
+export default ProjectConfigInfoPage;

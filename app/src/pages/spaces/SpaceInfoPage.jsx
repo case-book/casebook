@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import './Space.scss';
 import { Block, Label, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
 import { useParams } from 'react-router';
-
 import BlockRow from '@/components/BlockRow/BlockRow';
+import './SpaceInfoPage.scss';
 
-function Space() {
+function SpaceInfoPage() {
   const { t } = useTranslation();
   const { id } = useParams();
-
   const navigate = useNavigate();
-
   const [space, setSpace] = useState(null);
 
   useEffect(() => {
@@ -24,7 +21,7 @@ function Space() {
   }, [id]);
 
   return (
-    <Page className="space-wrapper">
+    <Page className="space-info-page-wrapper">
       <PageTitle>{t('스페이스')}</PageTitle>
       <PageContent>
         <Title>스페이스 정보</Title>
@@ -84,8 +81,8 @@ function Space() {
   );
 }
 
-Space.defaultProps = {};
+SpaceInfoPage.defaultProps = {};
 
-Space.propTypes = {};
+SpaceInfoPage.propTypes = {};
 
-export default Space;
+export default SpaceInfoPage;

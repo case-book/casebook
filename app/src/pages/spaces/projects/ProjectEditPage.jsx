@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './EditProject.scss';
+import './ProjectEditPage.scss';
 import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 
-function EditProject({ type }) {
+function ProjectEditPage({ type }) {
   const { t } = useTranslation();
   const { id, spaceCode } = useParams();
 
@@ -76,7 +76,7 @@ function EditProject({ type }) {
   };
 
   return (
-    <Page className="edit-project-wrapper">
+    <Page className="project-edit-page-wrapper">
       <PageTitle>{t('새 프로젝트')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
@@ -157,12 +157,12 @@ function EditProject({ type }) {
   );
 }
 
-EditProject.defaultProps = {
+ProjectEditPage.defaultProps = {
   type: 'new',
 };
 
-EditProject.propTypes = {
+ProjectEditPage.propTypes = {
   type: PropTypes.string,
 };
 
-export default EditProject;
+export default ProjectEditPage;

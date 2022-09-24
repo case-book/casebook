@@ -124,6 +124,7 @@ function Header({ className, theme }) {
                               clearTimeout(timer.current);
                               timer.current = null;
                             }
+
                             timer.current = setTimeout(() => {
                               timer.current = null;
                               setMenuAlert({
@@ -131,6 +132,9 @@ function Header({ className, theme }) {
                                 message: '',
                               });
                             }, 2000);
+                          } else if (d.needSpace) {
+                            e.preventDefault();
+                            navigate(`/spaces/${spaceCode}${d.to}`);
                           }
                         }}
                       >

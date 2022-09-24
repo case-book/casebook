@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
-
 import { Button, Card, Page, PageContent, PageTitle, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
-import './Spaces.scss';
+import './SpaceListPage.scss';
 
-function Spaces() {
+function SpaceListPage() {
   const { t } = useTranslation();
-
   const navigate = useNavigate();
-
   const [spaces, setSpaces] = useState([]);
 
   useEffect(() => {
@@ -20,7 +17,7 @@ function Spaces() {
   }, []);
 
   return (
-    <Page className="spaces-wrapper" list>
+    <Page className="space-list-page-wrapper" list>
       <PageTitle
         className="page-title"
         links={[
@@ -47,7 +44,7 @@ function Spaces() {
                   color="gray"
                   point
                   onClick={() => {
-                    navigate(`/spaces/${space.code}`);
+                    navigate(`/spaces/${space.code}/projects`);
                   }}
                 >
                   <div className="config-button">
@@ -135,7 +132,7 @@ function Spaces() {
                   <div className="plus-icon">
                     <i className="fa-solid fa-plus" />
                   </div>
-                  <div>새 스페이스</div>
+                  <div>{t('새 스페이스')}</div>
                 </div>
               </div>
             </Card>
@@ -146,4 +143,4 @@ function Spaces() {
   );
 }
 
-export default Spaces;
+export default SpaceListPage;

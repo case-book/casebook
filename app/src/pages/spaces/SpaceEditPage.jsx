@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './EditSpace.scss';
 import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +7,13 @@ import SpaceService from '@/services/SpaceService';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import moment from 'moment';
-
 import BlockRow from '@/components/BlockRow/BlockRow';
 import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import './SpaceEditPage.scss';
 
-function EditSpace({ type }) {
+function SpaceEditPage({ type }) {
   const { t } = useTranslation();
   const { id } = useParams();
 
@@ -64,7 +63,7 @@ function EditSpace({ type }) {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('스페이스 삭제'),
-      <div>{t(`${space.name} 스페이스의 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
+      <div>{t(`${space.name} 스페이스 및 스페이스에 포함된 프로젝트를 비롯한 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
       () => {
         SpaceService.deleteSpace(space.id, result => {
           addSpace(result);
@@ -77,7 +76,7 @@ function EditSpace({ type }) {
   };
 
   return (
-    <Page className="edit-space-wrapper">
+    <Page className="space-edit-page-wrapper">
       <PageTitle>{type === 'edit' ? t('스페이스') : t('새 스페이스')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
@@ -173,12 +172,12 @@ function EditSpace({ type }) {
   );
 }
 
-EditSpace.defaultProps = {
+SpaceEditPage.defaultProps = {
   type: 'new',
 };
 
-EditSpace.propTypes = {
+SpaceEditPage.propTypes = {
   type: PropTypes.string,
 };
 
-export default EditSpace;
+export default SpaceEditPage;

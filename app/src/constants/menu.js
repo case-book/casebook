@@ -22,7 +22,7 @@ const MENUS = [
     login: true,
     project: false,
     needSpace: true,
-    selectedAlias: [/^\/spaces\/[\dA-Z]+$/],
+    selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects$/],
   },
   {
     to: '',
