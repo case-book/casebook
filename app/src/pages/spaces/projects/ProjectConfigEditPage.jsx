@@ -11,7 +11,7 @@ import './ProjectConfigEditPage.scss';
 
 function ProjectConfig() {
   const { t } = useTranslation();
-  const { id, spaceCode } = useParams();
+  const { projectId, spaceCode } = useParams();
   const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
@@ -39,11 +39,11 @@ function ProjectConfig() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    ProjectService.selectProjectInfo(spaceCode, id, info => {
+    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       console.log(info);
       setProject(info);
     });
-  }, [spaceCode, id]);
+  }, [spaceCode, projectId]);
 
   const addTestcaseTemplate = name => {
     const nextProject = { ...project };
@@ -179,7 +179,7 @@ function ProjectConfig() {
 
     console.log(nextProject);
 
-    TestcaseService.updateConfig(spaceCode, id, nextProject, d => {
+    TestcaseService.updateConfig(spaceCode, projectId, nextProject, d => {
       console.log(d);
     });
   };

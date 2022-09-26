@@ -14,6 +14,11 @@ import ProjectConfigInfoPage from '@/pages/spaces/projects/ProjectConfigInfoPage
 import EditProjectConfig from '@/pages/spaces/projects/ProjectConfigEditPage';
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
+import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
+import ProjectReportInfoPage from '@/pages/spaces/projects/ProjectReportInfoPage';
+import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage';
+import ProjectTestrunInfoPage from '@/pages/spaces/projects/ProjectTestrunInfoPage';
+
 export {
   ProjectConfigInfoPage,
   ProjectOverviewInfoPage,
@@ -29,4 +34,8 @@ export {
   ProjectEditPage,
   EditProjectConfig,
   ProjectInfoPage,
+  ProjectBugInfoPage,
+  ProjectReportInfoPage,
+  ProjectTestcaseInfoPage,
+  ProjectTestrunInfoPage,
 };

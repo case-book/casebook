@@ -24,12 +24,22 @@ function ErrorDialog({ className, title, message, okHandler, okText }) {
 
   return (
     <Modal className={`${className} common-dialog-wrapper WARNING error-dialog`} isOpen>
-      <ModalHeader className="modal-header">
-        <span className="title">{title}</span>
+      <ModalHeader
+        className="modal-header"
+        onClose={() => {
+          controlStore.setError(null);
+        }}
+      >
+        <span className="title">
+          <span className="dialog-icon ERROR">
+            <i className="fas fa-exclamation-circle" />
+          </span>
+          <span>{title}</span>
+        </span>
       </ModalHeader>
       <ModalBody>
         <div>
-          <div className="error-message">{message}</div>
+          <div>{message}</div>
         </div>
       </ModalBody>
       <ModalFooter>

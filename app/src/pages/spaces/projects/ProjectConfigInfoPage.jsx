@@ -3,53 +3,85 @@ import { Page, PageButtons, PageContent, PageTitle, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import { useParams } from 'react-router';
-import ConfigService from '@/services/ConfigService';
 import { useNavigate } from 'react-router-dom';
 import './ProjectConfigInfoPage.scss';
+import TestcaseTemplateViewerPopup from '@/pages/spaces/projects/TestcaseTemplateViewerPopup';
 
 function ProjectConfigInfoPage() {
   const { t } = useTranslation();
-  const { id, spaceCode } = useParams();
+  const { projectId, spaceCode } = useParams();
   const navigate = useNavigate();
-
   const [project, setProject] = useState(null);
-  const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
-
-  useEffect(() => {
-    ConfigService.selectTestcaseItemTypes(list => {
-      setTestcaseItemTypes(list);
-    });
-  }, []);
+  const [templateViewerPopupInfo, setTemplateViewerPopupInfo] = useState({
+    opened: false,
+    testcaseTemplate: null,
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    ProjectService.selectProjectInfo(spaceCode, id, info => {
+    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
-  }, [spaceCode, id]);
-
-  console.log(testcaseItemTypes, project);
+  }, [spaceCode, projectId]);
 
   return (
-    <Page className="project-config-info-page-wrapper">
-      <PageTitle>
-        {project?.name} {t('CONFIG')}
-      </PageTitle>
-      <PageContent>
-        <Title type="h2">테스트케이스 템플릿</Title>
-        CONFIG
-        <PageButtons
-          onBack={() => {
-            navigate('/');
+    <>
+      <Page className="project-config-info-page-wrapper">
+        <PageTitle>{t('설정')}</PageTitle>
+        <PageContent>
+          <Title type="h2" border={false}>
+            테스트케이스 템플릿
+          </Title>
+          <table>
+            <tbody>
+              {project?.testcaseTemplates.map(testcaseTemplate => {
+                return (
+                  <tr key={testcaseTemplate.id}>
+                    <td
+                      className="name"
+                      onClick={() => {
+                        setTemplateViewerPopupInfo({
+                          opened: true,
+                          testcaseTemplate,
+                        });
+                      }}
+                    >
+                      {testcaseTemplate.name}
+                    </td>
+                    <td className="count">
+                      <span className="count-badge">
+                        <span>{testcaseTemplate.testcaseTemplateItems?.length || 0}</span>
+                      </span>{' '}
+                      {t('아이템')}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <PageButtons
+            onBack={() => {
+              navigate('/');
+            }}
+            onEdit={() => {
+              navigate(`/spaces/${spaceCode}/projects/${project.id}/config/edit`);
+            }}
+            onCancelIcon=""
+          />
+        </PageContent>
+      </Page>
+      {templateViewerPopupInfo.opened && (
+        <TestcaseTemplateViewerPopup
+          testcaseTemplate={templateViewerPopupInfo.testcaseTemplate}
+          onClose={() => {
+            setTemplateViewerPopupInfo({
+              opened: false,
+            });
           }}
-          onEdit={() => {
-            navigate(`/spaces/${spaceCode}/projects/${project.id}/config/edit`);
-          }}
-          onCancelIcon=""
         />
-      </PageContent>
-    </Page>
+      )}
+    </>
   );
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import close from '@/images/close-80.svg';
 import './Modal.scss';
 
 function Modal({ className, children, isOpen, toggle }) {
@@ -10,7 +11,7 @@ function Modal({ className, children, isOpen, toggle }) {
         {toggle && (
           <button className="exit-button" onClick={toggle}>
             <span>
-              <i className="fal fa-times" />
+              <img src={close} alt="close-popup" />
             </span>
           </button>
         )}

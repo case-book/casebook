@@ -199,3 +199,37 @@ hr {
   border: none;
   background-color: #2e2e2e;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #191919;
+  tr {
+    &:first-child {
+      td {
+        border-top: 1px solid #2e2e2e;
+      }
+    }
+    td {
+      padding: 1.5rem;
+      border-bottom: 1px solid #2e2e2e;
+      vertical-align: middle;
+
+      &.name {
+        width: 100%;
+      }
+
+      &.count {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.g-no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

@@ -1,9 +1,106 @@
 .project-list-page-wrapper {
+  ul.project-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    > li {
+      background-color: #191919;
+      border: 1px solid #2e2e2e;
+      margin-bottom: 1rem;
+      display: flex;
+      padding-left: 0.5rem;
+      border-radius: 4px;
+
+      > div {
+        &.project-info {
+          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          .name {
+            font-size: 24px;
+            flex-grow: 1;
+            padding: 1rem;
+            margin-top: 2px;
+            &:hover {
+              color: $color-sunflower;
+              cursor: pointer;
+            }
+          }
+
+          ul.project-menu {
+            list-style: none;
+            padding: 0 1rem 1rem;
+
+            > li {
+              display: inline-flex;
+
+              cursor: pointer;
+
+              &:hover {
+                color: $color-sunflower;
+              }
+
+              > div {
+                align-self: center;
+              }
+
+              &:last-child {
+                .liner {
+                  display: none !important;
+                }
+              }
+            }
+          }
+        }
+        &.project-status {
+          margin-left: 1rem;
+          display: flex;
+          > div {
+            align-self: center;
+            display: flex;
+            line-height: 100%;
+            > div {
+              width: 120px;
+              text-align: center;
+              padding: 1rem;
+
+              &:hover {
+                background-color: $color-sunflower;
+                color: $black;
+                cursor: pointer;
+              }
+
+              .icon {
+                font-size: 16px;
+                margin-bottom: 0.5rem;
+              }
+
+              .count {
+                font-family: Rowdies, sans-serif;
+                font-size: 24px;
+                margin-bottom: 0.5rem;
+                &.bugs {
+                  font-family: RubikWetPaint, sans-serif;
+                }
+              }
+
+              .label {
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   ul.project-card-list {
     vertical-align: top;
     list-style: none;
     padding: 0;
     margin: 0;
+    display: none;
 
     li {
       display: inline-flex;

@@ -12,7 +12,7 @@ class Selector extends React.Component {
 
   render() {
     const { open } = this.state;
-    const { className, onChange, items, value, addAll, outline, color, size, separator, minWidth, radius, disabled } = this.props;
+    const { className, onChange, items, value, addAll, outline, color, size, separator, minWidth, radius, disabled, onClick } = this.props;
     let selectedItem = items.find(item => String(item.key) === String(value));
     if (addAll && value === '') {
       selectedItem = {
@@ -26,6 +26,11 @@ class Selector extends React.Component {
         className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''}`}
         style={{
           minWidth: `${minWidth}`,
+        }}
+        onClick={e => {
+          if (onClick) {
+            onClick(e);
+          }
         }}
       >
         {open && (
@@ -114,6 +119,7 @@ Selector.defaultProps = {
   value: '',
   items: [],
   onChange: PropTypes.func,
+  onClick: null,
 };
 
 Selector.propTypes = {
@@ -134,6 +140,7 @@ Selector.propTypes = {
   minWidth: PropTypes.string,
   radius: PropTypes.bool,
   disabled: PropTypes.bool,
+  onClick: PropTypes.func,
 };
 
 export default Selector;

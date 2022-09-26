@@ -61,11 +61,11 @@ function ProjectEditPage({ type }) {
   const onDelete = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
-      t('스페이스 삭제'),
-      <div>{t('[{project.name}] 스페이스의 모든 정보가 삭제됩니다. 삭제하시겠습니까?')}</div>,
+      t('프로젝트 삭제'),
+      <div>{t(`"${project.name}" 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
       () => {
-        SpaceService.deleteSpace(project.id, () => {
-          navigate(`/spaces/${spaceCode}`);
+        ProjectService.deleteProject(spaceCode, project, () => {
+          navigate(`/spaces/${spaceCode}/projects`);
         });
       },
       null,

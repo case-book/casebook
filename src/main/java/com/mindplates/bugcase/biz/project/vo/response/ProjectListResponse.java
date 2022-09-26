@@ -15,6 +15,11 @@ public class ProjectListResponse {
     private String name;
     private String description;
     private Boolean activated;
+    private int testcaseCount;
+
+    private int bugCount;
+
+    private int testrunCount;
 
 
     public ProjectListResponse(Project project) {
@@ -22,6 +27,10 @@ public class ProjectListResponse {
         this.name = project.getName();
         this.description = project.getDescription();
         this.activated = project.isActivated();
+        this.testcaseCount = project.getTestcases().size();
+        this.bugCount = 0;
+        this.testrunCount = 0;
+
     }
 
 

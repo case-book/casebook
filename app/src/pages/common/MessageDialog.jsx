@@ -25,15 +25,24 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
 
   return (
     <Modal className={`common-dialog-wrapper message-dialog-wrapper  ${className} ${category}`} isOpen>
-      <ModalHeader className="modal-header">{title}</ModalHeader>
-      <ModalBody>
-        <div className="wrap_error">
-          <div className={`dialog-icon ${category}`}>
+      <ModalHeader
+        className="modal-header"
+        onClose={() => {
+          controlStore.setMessage(null);
+        }}
+      >
+        <span className="title">
+          <span className={`dialog-icon ${category}`}>
             {category === MESSAGE_CATEGORY.ERROR && <i className="fas fa-exclamation-circle" />}
             {category === MESSAGE_CATEGORY.WARNING && <i className="fas fa-exclamation-circle" />}
             {category === MESSAGE_CATEGORY.INFO && <i className="fas fa-exclamation-circle" />}
-          </div>
-          <p className="g-dialog-message">{message}</p>
+          </span>
+          <span>{title}</span>
+        </span>
+      </ModalHeader>
+      <ModalBody className="modal-body">
+        <div>
+          <div>{message}</div>
         </div>
       </ModalBody>
       <ModalFooter>
