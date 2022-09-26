@@ -2,7 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 function ModalFooter({ className, children }) {
-  return <div className={`modal-footer-wrapper ${className}`}>{children}</div>;
+  return (
+    <div className={`modal-footer-wrapper ${className}`}>
+      <div>{children}</div>
+    </div>
+  );
 }
 
 ModalFooter.defaultProps = {

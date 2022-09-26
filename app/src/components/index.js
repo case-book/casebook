@@ -25,6 +25,7 @@ import WordSplitter from './WordSplitter/WordSplitter';
 import TextArea from './TextArea/TextArea';
 import Text from './Text/Text';
 import Tag from './Tag/Tag';
+import TargetSelector from './TargetSelector/TargetSelector';
 
 export {
   Selector,
@@ -53,4 +54,5 @@ export {
   Text,
   Tag,
   Card,
+  TargetSelector,
 };

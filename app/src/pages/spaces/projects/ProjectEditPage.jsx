@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './EditProject.scss';
+import './ProjectEditPage.scss';
 import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -13,11 +13,9 @@ import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 
-function EditProject({ type }) {
+function ProjectEditPage({ type }) {
   const { t } = useTranslation();
-  const { id, spaceCode } = useParams();
-
-  console.log(spaceCode);
+  const { projectId, spaceCode } = useParams();
 
   const navigate = useNavigate();
 
@@ -33,12 +31,12 @@ function EditProject({ type }) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (id && type === 'edit') {
-      ProjectService.selectProjectInfo(spaceCode, id, info => {
+    if (projectId && type === 'edit') {
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
         setProject(info);
       });
     }
-  }, [type, id]);
+  }, [type, projectId]);
 
   useEffect(() => {
     SpaceService.selectSpaceInfo(spaceCode, info => {
@@ -50,12 +48,12 @@ function EditProject({ type }) {
     e.preventDefault();
 
     if (type === 'new') {
-      ProjectService.createProject(spaceCode, project, () => {
-        navigate(`/spaces/${spaceCode}`);
+      ProjectService.createProject(spaceCode, project, info => {
+        navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
       });
     } else if (type === 'edit') {
-      ProjectService.updateProject(project, () => {
-        navigate(`/spaces/${spaceCode}`);
+      ProjectService.updateProject(spaceCode, project, () => {
+        navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
       });
     }
   };
@@ -63,11 +61,11 @@ function EditProject({ type }) {
   const onDelete = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
-      t('스페이스 삭제'),
-      <div>{t('[{project.name}] 스페이스의 모든 정보가 삭제됩니다. 삭제하시겠습니까?')}</div>,
+      t('프로젝트 삭제'),
+      <div>{t(`"${project.name}" 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
       () => {
-        SpaceService.deleteSpace(project.id, () => {
-          navigate(`/spaces/${spaceCode}`);
+        ProjectService.deleteProject(spaceCode, project, () => {
+          navigate(`/spaces/${spaceCode}/projects`);
         });
       },
       null,
@@ -76,8 +74,8 @@ function EditProject({ type }) {
   };
 
   return (
-    <Page className="edit-project-wrapper">
-      <PageTitle>{t('새 프로젝트')}</PageTitle>
+    <Page className="project-edit-page-wrapper">
+      <PageTitle>{type === 'edit' ? t('프로젝트') : t('새 프로젝트')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Block className="pt-0">
@@ -145,7 +143,7 @@ function EditProject({ type }) {
           <PageButtons
             onDelete={onDelete}
             onCancel={() => {
-              navigate('/projects');
+              navigate(-1);
             }}
             onSubmit={() => {}}
             onSubmitText="저장"
@@ -157,12 +155,12 @@ function EditProject({ type }) {
   );
 }
 
-EditProject.defaultProps = {
+ProjectEditPage.defaultProps = {
   type: 'new',
 };
 
-EditProject.propTypes = {
+ProjectEditPage.propTypes = {
   type: PropTypes.string,
 };
 
-export default EditProject;
+export default ProjectEditPage;

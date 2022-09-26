@@ -1,4 +1,4 @@
-.spaces-wrapper {
+.space-list-page-wrapper {
   ul.space-card-list {
     vertical-align: top;
     list-style: none;
@@ -21,6 +21,7 @@
       }
 
       .space-card {
+        height: 376px;
         &:hover {
           .name-and-code {
             .name {
@@ -30,14 +31,14 @@
         }
         .config-button {
           position: absolute;
-          right: 1rem;
-          top: 1rem;
+          right: 0;
+          top: 0;
         }
 
         .name-and-code {
           text-align: center;
           padding-bottom: 1rem;
-          padding-top: 16px;
+          padding-top: 1rem;
           font-weight: bold;
 
           .name {
@@ -72,7 +73,7 @@
         }
 
         .counter-info {
-          height: 155px;
+          height: 163px;
           display: flex;
           background-color: $white;
           border: 1px solid rgba(0, 0, 0, 0.1);

@@ -71,7 +71,14 @@ public class SpaceController {
     @Operation(description = "스페이스 변경")
     @PutMapping("/{spaceId}")
     public SpaceResponse updateSpace(@PathVariable Long spaceId, @Valid @RequestBody SpaceRequest spaceRequest) {
-        Space space = spaceRequest.buildEntity();
+
+        Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        space.setName(spaceRequest.getName());
+        space.setCode(spaceRequest.getCode().toUpperCase());
+        space.setDescription(spaceRequest.getDescription());
+        space.setActivated(spaceRequest.getActivated());
+        space.setToken(spaceRequest.getToken());
+
         Space result = spaceService.updateSpaceInfo(space, 0L);
         return new SpaceResponse(result);
     }

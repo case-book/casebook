@@ -2,7 +2,7 @@ import * as request from '@/utils/request';
 
 const ProjectService = {};
 
-ProjectService.selectProjectList = (spaceCode, successHandler, failHandler) => {
+ProjectService.selectProjectList = (spaceCode, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects`,
     spaceCode,
@@ -10,6 +10,9 @@ ProjectService.selectProjectList = (spaceCode, successHandler, failHandler) => {
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    loading,
   );
 };
 

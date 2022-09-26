@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class ProjectService {
 
@@ -29,6 +28,7 @@ public class ProjectService {
         return projectRepository.findBySpaceCodeAndName(spaceCode, name).orElse(null);
     }
 
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public Project createProjectInfo(String spaceCode, Project project, Long userId) {
         LocalDateTime now = LocalDateTime.now();
@@ -40,6 +40,7 @@ public class ProjectService {
         return project;
     }
 
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public Project updateProjectInfo(String spaceCode, Project project, Long userId) {
         LocalDateTime now = LocalDateTime.now();
@@ -49,6 +50,7 @@ public class ProjectService {
         return project;
     }
 
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, Project project) {
         projectRepository.delete(project);

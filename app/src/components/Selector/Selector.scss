@@ -55,6 +55,8 @@
 
   .selector-current {
     background-color: $white;
+    color: $black;
+
     display: flex;
     cursor: pointer;
     border: none;
@@ -219,6 +221,7 @@
     overflow-y: auto;
     z-index: 3;
     border: 1px solid $input-border-focus-color;
+    color: $black;
 
     ul {
       list-style: none;

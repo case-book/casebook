@@ -2,6 +2,7 @@
   _background: linear-gradient(to bottom, #000 0%, #000 20%, #111 50%);
   padding: 0 20px;
   position: relative;
+  z-index: 2;
   &.theme-black {
   }
 
@@ -90,8 +91,21 @@
       }
     }
 
-    .menu {
+    .static-menu {
       flex-grow: 1;
+
+      &.project-selected {
+        justify-content: right;
+        margin-right: 1rem;
+      }
+    }
+
+    .menu {
+      flex-grow: 0;
+    }
+
+    .static-menu,
+    .menu {
       display: flex;
       font-family: NanumGothic, sans-serif;
       font-weight: lighter;
@@ -102,13 +116,13 @@
         align-self: center;
         height: 100%;
 
-        ul {
+        > ul {
           padding: 0;
           margin: 0;
           list-style: none;
           height: 100%;
 
-          li {
+          > li {
             display: inline-flex;
             line-height: 120%;
             vertical-align: top;
@@ -131,15 +145,21 @@
                 align-self: center;
               }
 
+              &:hover {
+                color: $gray-500;
+              }
+
               .alert-message {
                 color: $color-tangerine;
                 font-size: 14px;
                 position: absolute;
-                left : calc(100% + 8px);
+                left: calc(100% + 8px);
                 white-space: nowrap;
-                top : 36px;
+                top: 36px;
               }
             }
+
+
 
             &.selected {
               a {

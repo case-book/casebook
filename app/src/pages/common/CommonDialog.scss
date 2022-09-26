@@ -1,0 +1,26 @@
+.common-dialog-wrapper {
+  .modal-header {
+    .title {
+      display: inline-flex;
+      > span {
+        align-self: center;
+      }
+
+      .dialog-icon {
+        font-size: 26px;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .modal-body {
+    line-height: 180%;
+  }
+
+  &.WARNING {
+    .title,
+    .dialog-icon {
+      color: $color-tangerine;
+    }
+  }
+}

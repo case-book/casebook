@@ -1,21 +1,16 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { EditProject, EditProjectConfig, EditSpace, Message, ProjectConfig, ProjectOverview, Projects, Space, SpaceProjectListPage, Spaces } from '@/pages';
+import { Message, SpaceEditPage, SpaceInfoPage, SpaceListPage } from '@/pages';
+import ProjectsRoutes from '@/pages/spaces/projects';
 
 function SpacesRoutes() {
   return (
     <Routes>
-      <Route path="/new" element={<EditSpace />} />
-      <Route path="/:id/edit" element={<EditSpace type="edit" />} />
-      <Route path="/:id/info" element={<Space />} />
-      <Route path="/:spaceCode/projects/new" element={<EditProject />} />
-      <Route path="/:spaceCode/projects/:id/config/edit" element={<EditProjectConfig />} />
-      <Route path="/:spaceCode/projects/:id/config" element={<ProjectConfig />} />
-      <Route path="/:spaceCode/projects/:id" element={<ProjectOverview />} />
-
-      <Route path="/:spaceCode" element={<SpaceProjectListPage />} />
-      <Route path="/" element={<Projects />} />
-      <Route path="/" element={<Spaces />} />
+      <Route path="/:spaceCode/projects/*" element={<ProjectsRoutes />} />
+      <Route path="/new" element={<SpaceEditPage />} />
+      <Route path="/:id/edit" element={<SpaceEditPage type="edit" />} />
+      <Route path="/:id/info" element={<SpaceInfoPage />} />
+      <Route path="/" element={<SpaceListPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>
   );

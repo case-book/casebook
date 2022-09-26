@@ -1,29 +1,28 @@
 import React from 'react';
 
-const MENUS = [
+const STATIC_MENUS = [
   {
+    key: 'space',
     to: '/',
     icon: <i className="fas fa-home-alt" />,
     name: '스페이스',
     admin: false,
     pc: true,
-    theme: 'black',
-    login: true,
-    project: false,
     selectedAlias: [/^\/$/, /^\/spaces\/[A-Z]+(\/)?(edit|info)$/],
   },
   {
+    key: 'project',
     to: '/projects',
     icon: <i className="fas fa-home-alt" />,
     name: '프로젝트',
     admin: false,
     pc: true,
-    theme: 'black',
-    login: true,
-    project: false,
-    needSpace: true,
-    selectedAlias: [/^\/spaces\/[\dA-Z]+$/],
+    prefixSpace: true,
+    selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects$/],
   },
+];
+
+const MENUS = [
   {
     to: '',
     icon: <i className="fas fa-home-alt" />,
@@ -82,6 +81,4 @@ const MENUS = [
   },
 ];
 
-const DUMMY = {};
-
-export { MENUS, DUMMY };
+export { STATIC_MENUS, MENUS };

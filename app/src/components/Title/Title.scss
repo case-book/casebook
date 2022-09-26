@@ -1,11 +1,15 @@
 .title-wrapper {
   display: flex;
   padding: 1rem 0.5rem 2rem;
-  border-bottom: 1px solid #2e2e2e;
   font-weight: bold;
+
+  &.border {
+    border-bottom: 1px solid #2e2e2e;
+  }
 
   > div {
     align-self: center;
+    text-align: left;
     &.title-text {
       flex-grow: 1;
     }
