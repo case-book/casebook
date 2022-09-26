@@ -62,7 +62,7 @@ function ProjectConfigInfoPage() {
           </table>
           <PageButtons
             onBack={() => {
-              navigate('/');
+              navigate(-1);
             }}
             onEdit={() => {
               navigate(`/spaces/${spaceCode}/projects/${project.id}/config/edit`);
