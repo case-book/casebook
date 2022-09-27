@@ -35,7 +35,7 @@ function ProjectConfigInfoPage() {
           </Title>
           <table>
             <tbody>
-              {project?.testcaseTemplates.map(testcaseTemplate => {
+              {project?.testcaseTemplates?.map(testcaseTemplate => {
                 return (
                   <tr key={testcaseTemplate.id}>
                     <td

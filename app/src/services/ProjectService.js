@@ -5,7 +5,7 @@ const ProjectService = {};
 ProjectService.selectProjectList = (spaceCode, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects`,
-    spaceCode,
+    null,
     res => {
       successHandler(res);
     },
@@ -19,7 +19,7 @@ ProjectService.selectProjectList = (spaceCode, successHandler, failHandler, load
 ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}`,
-    spaceCode,
+    null,
     res => {
       successHandler(res);
     },

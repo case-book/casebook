@@ -33,7 +33,7 @@ function Spaces() {
         {t('프로젝트')}
       </PageTitle>
       <PageContent>
-        <ul className="project-list">
+        <ul className="project-list white">
           {projects?.map(project => {
             return (
               <li key={project.id}>
@@ -58,7 +58,7 @@ function Spaces() {
                             {menu.name}
                           </div>
                           <div>
-                            <Liner className="liner" display="inline-block" width="1px" height="8px" color="white" margin="0 0.5rem" />
+                            <Liner className="liner" display="inline-block" width="1px" height="8px" color="black" margin="0 0.5rem" />
                           </div>
                         </li>
                       );

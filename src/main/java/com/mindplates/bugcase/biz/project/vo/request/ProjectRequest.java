@@ -12,7 +12,6 @@ public class ProjectRequest {
     private String token;
     private Boolean activated;
 
-
     public Project buildEntity() {
 
         Project project = Project.builder()
@@ -20,11 +19,9 @@ public class ProjectRequest {
                 .name(name)
                 .description(description)
                 .token(token)
-
                 .activated(activated)
                 .build();
 
-        
         return project;
     }
 

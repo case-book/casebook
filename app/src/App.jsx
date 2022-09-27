@@ -13,7 +13,7 @@ import './App.scss';
 function App() {
   const {
     themeStore: { setTheme },
-    userStore: { isLogin },
+    userStore: { isLogin, tried },
   } = useStores();
 
   const location = useLocation();
@@ -34,28 +34,27 @@ function App() {
   return (
     <div className={`app-wrapper theme-${theme}`}>
       <Common />
-      <div className="back">
-        <div />
-      </div>
-      <div className="app-content">
-        <Header theme={theme} />
-        <main className="main-content">
-          {isLogin && (
-            <TransitionGroup className="transition-group">
-              <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
-                <Routes location={location}>
-                  <Route path="/" element={<SpaceListPage />} />
-                  <Route path="/users/*" element={<UsersRoutes />} />
-                  <Route path="/spaces/*" element={<SpacesRoutes />} />
-                  <Route path="/projects/*" element={<ProjectsRoutes />} />
-                  <Route path="*" element={<Message code="404" />} />
-                </Routes>
-              </CSSTransition>
-            </TransitionGroup>
-          )}
-          {!isLogin && <Login />}
-        </main>
-      </div>
+      {tried && (
+        <div className="app-content">
+          <Header theme={theme} />
+          <main className="main-content">
+            {isLogin && (
+              <TransitionGroup className="transition-group">
+                <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
+                  <Routes location={location}>
+                    <Route path="/" element={<SpaceListPage />} />
+                    <Route path="/users/*" element={<UsersRoutes />} />
+                    <Route path="/spaces/*" element={<SpacesRoutes />} />
+                    <Route path="/projects/*" element={<ProjectsRoutes />} />
+                    <Route path="*" element={<Message code="404" />} />
+                  </Routes>
+                </CSSTransition>
+              </TransitionGroup>
+            )}
+            {!isLogin && <Login />}
+          </main>
+        </div>
+      )}
     </div>
   );
 }

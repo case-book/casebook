@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.framework.converter;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 import java.util.Arrays;
@@ -13,11 +15,11 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
 
     @Override
     public String convertToDatabaseColumn(List<String> stringList) {
-        return stringList != null ? String.join(SPLIT_CHAR, stringList) : "";
+        return stringList != null ? String.join(SPLIT_CHAR, stringList) : null;
     }
 
     @Override
     public List<String> convertToEntityAttribute(String string) {
-        return string != null ? Arrays.asList(string.split(SPLIT_CHAR)) : emptyList();
+        return !StringUtils.isBlank(string) ? Arrays.asList(string.split(SPLIT_CHAR)) : emptyList();
     }
 }

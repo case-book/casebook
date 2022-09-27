@@ -57,6 +57,7 @@ function Common() {
     UserService.getMyInfo(
       info => {
         userStore.setUser(info);
+        userStore.setTried(true);
       },
       () => {
         userStore.setTried(true);
