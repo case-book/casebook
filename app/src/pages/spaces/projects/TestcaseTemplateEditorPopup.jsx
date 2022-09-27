@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { Button, Form, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Selector } from '@/components';
+import { Button, CloseIcon, Input, Liner, Selector, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './TestcaseTemplateEditorPopup.scss';
 
-function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes }) {
+function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, opened }) {
   const { t } = useTranslation();
-
-  const [selectedOptionIndex, setSelectedOptionIndex] = useState(null);
 
   const [selectedItem, setSelectedItem] = useState({});
 
@@ -17,9 +15,8 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
 
   useEffect(() => {
     setTemplate(cloneDeep(testcaseTemplate));
-  }, [testcaseTemplate]);
-
-  console.log(testcaseTemplate);
+    setSelectedItem({});
+  }, [testcaseTemplate, opened]);
 
   const hasOptionType = value => {
     return value === 'RADIO' || value === 'SELECT';
@@ -28,6 +25,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
     const nextTemplate = { ...template };
     const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
     nextTemplateItem[key] = val;
+
     setTemplate(nextTemplate);
   };
 
@@ -67,7 +65,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
       itemOrder: nextTemplate.testcaseTemplateItems.length,
       label: '라벨',
       size: 4,
-      options: [],
+      options: null,
     });
 
     setTemplate(nextTemplate);
@@ -130,300 +128,272 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
   };
 
   return (
-    <Modal className={`${className} testcase-template-editor-popup-wrapper`} isOpen>
-      <ModalHeader className="modal-header" onClose={onClose}>
-        템플릿 에디터
-      </ModalHeader>
-      <ModalBody className="template-content">
-        <div className="control">
-          <div>{t('이름')}</div>
-          <div>
-            <Input
-              size="md"
-              value={template?.name}
-              onChange={name => {
-                setTemplate({
-                  ...template,
-                  name,
-                });
-              }}
-              required
-              minLength={1}
-            />
+    <div
+      className={`${className} testcase-template-editor-popup-wrapper ${opened ? 'opened' : ''}`}
+      onClick={() => {
+        onClose();
+      }}
+    >
+      <div onClick={e => e.stopPropagation()}>
+        <div className="editor-content">
+          <Title className="editor-title" type="h1" control={<CloseIcon onClick={onClose} />}>
+            {t('템플릿 에디터')}
+          </Title>
+          <div className="template-content">
+            <div className="control">
+              <div>{t('이름')}</div>
+              <div>
+                <Input
+                  size="md"
+                  value={template?.name}
+                  onChange={name => {
+                    setTemplate({
+                      ...template,
+                      name,
+                    });
+                  }}
+                  required
+                  minLength={1}
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    addTestcaseTemplateItem();
+                  }}
+                >
+                  아이템 추가
+                </Button>
+              </div>
+            </div>
+            <div className="editor">
+              <div className="items">
+                <div className="sub-title">레이아웃</div>
+                <div className="layout">
+                  <ul>
+                    {template?.testcaseTemplateItems?.map((testcaseTemplateItem, inx) => {
+                      return (
+                        <li
+                          key={inx}
+                          className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${selectedItem?.inx === inx ? 'selected' : ''}`}
+                          style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}% - 0.5rem)` }}
+                          onClick={() => {
+                            if (selectedItem.inx === inx) {
+                              setSelectedItem({});
+                            } else {
+                              setSelectedItem({
+                                inx,
+                                item: testcaseTemplateItem,
+                              });
+                            }
+                          }}
+                        >
+                          <div>
+                            <div className="type">
+                              <span>{testcaseTemplateItem.type}</span>
+                              {hasOptionType(testcaseTemplateItem.type) && (
+                                <span className="count-badge">
+                                  <span>{testcaseTemplateItem.options.length}</span>
+                                </span>
+                              )}
+                            </div>
+                            <div className="item-info">{testcaseTemplateItem.label}</div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              </div>
+              <div className="properties">
+                <div className="sub-title">속성</div>
+                <div className="properties-content">
+                  {!selectedItem?.item && (
+                    <div className="empty-message">
+                      <div>아이템을 선택해주세요</div>
+                    </div>
+                  )}
+                  {selectedItem?.item && (
+                    <>
+                      <div className="properties-button">
+                        <Button
+                          size="xs"
+                          rounded
+                          onClick={() => {
+                            onChangeTestcaseTemplateItemOrder(selectedItem.inx, 'left');
+                          }}
+                        >
+                          <i className="fa-solid fa-arrow-left" />
+                        </Button>
+                        <Button
+                          size="xs"
+                          rounded
+                          onClick={() => {
+                            onChangeTestcaseTemplateItemOrder(selectedItem.inx, 'right');
+                          }}
+                        >
+                          <i className="fa-solid fa-arrow-right" />
+                        </Button>
+                        <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem 0 0.25rem" />
+                        <Button
+                          size="xs"
+                          rounded
+                          onClick={() => {
+                            onChangeTestcaseTemplateItemSize(selectedItem.inx, 'down');
+                          }}
+                        >
+                          <i className="fa-solid fa-right-left" />
+                        </Button>
+                        <Button
+                          size="xs"
+                          rounded
+                          onClick={() => {
+                            onChangeTestcaseTemplateItemSize(selectedItem.inx, 'up');
+                          }}
+                        >
+                          <i className="fa-solid fa-left-right" />
+                        </Button>
+                        <Button
+                          size="xs"
+                          rounded
+                          onClick={() => {
+                            onChangeTestcaseTemplateItemSize(selectedItem.inx, 'fill');
+                          }}
+                        >
+                          <i className="fa-solid fa-expand" />
+                        </Button>
+                        <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem 0 0.25rem" />
+                        <Button
+                          size="xs"
+                          rounded
+                          color="danger"
+                          onClick={() => {
+                            onDeleteTestcaseTemplateItem(selectedItem.inx);
+                          }}
+                        >
+                          <i className="fa-regular fa-trash-can" />
+                        </Button>
+                      </div>
+                      <div className="label">
+                        <div className="title">라벨</div>
+                        <div className="properties-control">
+                          <Input
+                            size="md"
+                            color="white"
+                            value={selectedItem?.item?.label}
+                            onChange={val => {
+                              onChangeTestcaseTemplateItem(selectedItem.inx, 'label', val);
+                            }}
+                            required
+                            minLength={1}
+                          />
+                        </div>
+                      </div>
+                      <div className="type">
+                        <div className="title">타입</div>
+                        <div className="properties-control">
+                          <Selector
+                            className="selector"
+                            outline
+                            size="sm"
+                            items={testcaseItemTypes.map(d => {
+                              return {
+                                key: d,
+                                value: d,
+                              };
+                            })}
+                            value={selectedItem?.item?.type}
+                            onChange={val => {
+                              onChangeTestcaseTemplateItem(selectedItem.inx, 'type', val);
+                            }}
+                          />
+                        </div>
+                      </div>
+                      {hasOptionType(selectedItem?.item?.type) && (
+                        <div className="options">
+                          <div className="title">
+                            <div>옵션</div>
+                            <div className="option-button">
+                              <Button
+                                size="xs"
+                                onClick={() => {
+                                  onAddTestcaseTemplateItemOption(selectedItem.inx);
+                                }}
+                              >
+                                추가
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="properties-control">
+                            <div>
+                              <ul>
+                                {selectedItem?.item?.options?.map((d, jnx) => {
+                                  return (
+                                    <li key={jnx}>
+                                      <div>
+                                        <div className="input">
+                                          <Input
+                                            size="sm"
+                                            color="white"
+                                            value={d}
+                                            onChange={val => {
+                                              onChangeTestcaseTemplateItemOption(selectedItem.inx, jnx, val);
+                                            }}
+                                            required
+                                            minLength={1}
+                                          />
+                                        </div>
+                                        <div className="button">
+                                          <Button
+                                            size="sm"
+                                            rounded
+                                            color="danger"
+                                            onClick={() => {
+                                              onDeleteTestcaseTemplateItemOption(selectedItem.inx, jnx);
+                                            }}
+                                          >
+                                            <i className="fa-regular fa-trash-can" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
+          <div className="buttons">
             <Button
               onClick={() => {
-                addTestcaseTemplateItem();
+                if (onClose) {
+                  onClose();
+                }
               }}
             >
-              아이템 추가
+              {t('취소')}
+            </Button>
+            <Button
+              onClick={() => {
+                if (onChange) {
+                  onChange(template);
+                  onClose();
+                }
+              }}
+            >
+              {t('적용')}
             </Button>
           </div>
         </div>
-        <div className="editor">
-          <div className="items">
-            <div className="sub-title">레이아웃</div>
-            <div className="layout">
-              <ul>
-                {template?.testcaseTemplateItems?.map((testcaseTemplateItem, inx) => {
-                  return (
-                    <li
-                      key={inx}
-                      className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${selectedItem?.inx === inx ? 'selected' : ''}`}
-                      style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}%)` }}
-                      onClick={() => {
-                        if (selectedItem.inx === inx) {
-                          setSelectedItem({});
-                        } else {
-                          setSelectedItem({
-                            inx,
-                            item: testcaseTemplateItem,
-                          });
-                        }
-                      }}
-                    >
-                      <div>
-                        <div className="type">
-                          <span>{testcaseTemplateItem.type}</span>
-                          {hasOptionType(testcaseTemplateItem.type) && (
-                            <span className="count-badge">
-                              <span>{testcaseTemplateItem.options.length}</span>
-                            </span>
-                          )}
-                        </div>
-                        <div className="item-info">{testcaseTemplateItem.label}</div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-          <div className="properties">
-            <div className="sub-title">속성</div>
-            <div className="properties-content">
-              {!selectedItem?.item && (
-                <div className="empty-message">
-                  <div>아이템을 선택해주세요</div>
-                </div>
-              )}
-              {selectedItem?.item && (
-                <>
-                  <div className="properties-button">
-                    <Button
-                      size="xs"
-                      rounded
-                      onClick={() => {
-                        onChangeTestcaseTemplateItemOrder(selectedItem.inx, 'left');
-                      }}
-                    >
-                      <i className="fa-solid fa-arrow-left" />
-                    </Button>
-                    <Button
-                      size="xs"
-                      rounded
-                      onClick={() => {
-                        onChangeTestcaseTemplateItemOrder(selectedItem.inx, 'right');
-                      }}
-                    >
-                      <i className="fa-solid fa-arrow-right" />
-                    </Button>
-                    <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem 0 0.25rem" />
-                    <Button
-                      size="xs"
-                      rounded
-                      onClick={() => {
-                        onChangeTestcaseTemplateItemSize(selectedItem.inx, 'down');
-                      }}
-                    >
-                      <i className="fa-solid fa-right-left" />
-                    </Button>
-                    <Button
-                      size="xs"
-                      rounded
-                      onClick={() => {
-                        onChangeTestcaseTemplateItemSize(selectedItem.inx, 'up');
-                      }}
-                    >
-                      <i className="fa-solid fa-left-right" />
-                    </Button>
-                    <Button
-                      size="xs"
-                      rounded
-                      onClick={() => {
-                        onChangeTestcaseTemplateItemSize(selectedItem.inx, 'fill');
-                      }}
-                    >
-                      <i className="fa-solid fa-expand" />
-                    </Button>
-                    <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem 0 0.25rem" />
-                    <Button
-                      size="xs"
-                      rounded
-                      color="danger"
-                      onClick={() => {
-                        onDeleteTestcaseTemplateItem(selectedItem.inx);
-                      }}
-                    >
-                      <i className="fa-regular fa-trash-can" />
-                    </Button>
-                  </div>
-                  <div className="label">
-                    <div className="title">라벨</div>
-                    <div className="properties-control">
-                      <Input
-                        size="md"
-                        value={selectedItem?.item?.label}
-                        onChange={val => {
-                          onChangeTestcaseTemplateItem(selectedItem.inx, 'label', val);
-                        }}
-                        required
-                        minLength={1}
-                      />
-                    </div>
-                  </div>
-                  <div className="type">
-                    <div className="title">타입</div>
-                    <div className="properties-control">
-                      <Selector
-                        className="selector"
-                        outline
-                        size="sm"
-                        items={testcaseItemTypes.map(d => {
-                          return {
-                            key: d,
-                            value: d,
-                          };
-                        })}
-                        value={selectedItem?.item?.type}
-                        onChange={val => {
-                          onChangeTestcaseTemplateItem(selectedItem.inx, 'type', val);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {hasOptionType(selectedItem?.item?.type) && (
-                    <div className="options">
-                      <div className="title">
-                        옵션
-                        <Button
-                          size="xs"
-                          onClick={() => {
-                            onAddTestcaseTemplateItemOption(selectedItem.inx);
-                          }}
-                        >
-                          추가
-                        </Button>
-                      </div>
-                      <div className="properties-control">
-                        <div>
-                          <ul>
-                            {selectedItem?.item?.options?.map((d, jnx) => {
-                              return (
-                                <li key={jnx}>
-                                  <div>
-                                    <div className="input">
-                                      <Input
-                                        size="sm"
-                                        value={d}
-                                        onChange={val => {
-                                          onChangeTestcaseTemplateItemOption(selectedItem.inx, jnx, val);
-                                        }}
-                                        required
-                                        minLength={1}
-                                      />
-                                    </div>
-                                    <div className="button">
-                                      <Button
-                                        size="sm"
-                                        rounded
-                                        color="danger"
-                                        onClick={() => {
-                                          onDeleteTestcaseTemplateItemOption(selectedItem.inx, jnx);
-                                        }}
-                                      >
-                                        <i className="fa-regular fa-trash-can" />
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        <Form className="form-test">
-          <ul>
-            {template?.testcaseTemplateItems?.map((testcaseTemplateItem, inx) => {
-              return (
-                <li key={inx} className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''}`} style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}% - 1rem)` }}>
-                  <div>
-                    <div className="type">
-                      <div className="type-text">
-                        <span>{testcaseTemplateItem.type}</span>
-                      </div>
-                      {hasOptionType(testcaseTemplateItem.type) && (
-                        <div className="option-count">
-                          <Button
-                            size="xs"
-                            onClick={() => {
-                              setSelectedOptionIndex(selectedOptionIndex ? null : inx);
-                            }}
-                          >
-                            {testcaseTemplateItem.options.length} OPTIONS
-                          </Button>
-                        </div>
-                      )}
-                      {inx === selectedOptionIndex && (
-                        <div className="options-list">
-                          <div className="arrow">
-                            <div />
-                          </div>
-                          <ul>
-                            {testcaseTemplateItem?.options?.map((option, jnx) => {
-                              return <li key={jnx}>{option}</li>;
-                            })}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                    <div className="item-info">{testcaseTemplateItem.label}</div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </Form>
-      </ModalBody>
-      <ModalFooter className="template-footer">
-        <Button
-          onClick={() => {
-            if (onClose) {
-              onClose();
-            }
-          }}
-        >
-          {t('취소')}
-        </Button>
-        <Button
-          onClick={() => {
-            if (onChange) {
-              onChange(template);
-            }
-          }}
-        >
-          {t('설정')}
-        </Button>
-      </ModalFooter>
-    </Modal>
+      </div>
+    </div>
   );
 }
 
@@ -433,6 +403,7 @@ TestcaseTemplateEditorPopup.defaultProps = {
   onClose: null,
   onChange: null,
   testcaseItemTypes: [],
+  opened: false,
 };
 
 TestcaseTemplateEditorPopup.propTypes = {
@@ -441,6 +412,7 @@ TestcaseTemplateEditorPopup.propTypes = {
   onClose: PropTypes.func,
   onChange: PropTypes.func,
   testcaseItemTypes: PropTypes.arrayOf(PropTypes.string),
+  opened: PropTypes.bool,
 };
 
 export default TestcaseTemplateEditorPopup;

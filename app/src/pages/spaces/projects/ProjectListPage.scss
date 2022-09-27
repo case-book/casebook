@@ -4,11 +4,42 @@
     margin: 0;
     padding: 0;
 
+    &.white {
+      > li {
+        background-color: $white;
+        color: $black;
+
+        > div {
+          &.project-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+
+            .name {
+              font-weight: bold;
+              &:hover {
+                color: $link-color;
+              }
+            }
+
+            ul.project-menu {
+              > li {
+
+                &:hover {
+                  color: $link-color;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     > li {
       background-color: #191919;
       border: 1px solid #2e2e2e;
       _background-color: $white;
-      _color : $black;
+      _color: $black;
       margin-bottom: 1rem;
       display: flex;
       padding-left: 0.5rem;

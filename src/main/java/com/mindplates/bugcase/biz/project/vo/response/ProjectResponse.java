@@ -31,7 +31,7 @@ public class ProjectResponse {
         this.activated = project.isActivated();
         this.creationDate = project.getCreationDate();
         this.spaceName = project.getSpace().getName();
-        if (project.getTestcaseTemplates() != null) {
+        if (project.getTestcaseTemplates() != null && project.getTestcaseTemplates().size() > 0) {
             this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
         }
     }

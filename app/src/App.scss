@@ -1,29 +1,10 @@
 .app-wrapper {
-  .back {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    > div {
-      position: absolute;
-      width: 600px;
-      height: 600px;
-
-      border-radius: 50%;
-      top: -200px;
-      left: -200px;
-    }
-  }
-
   .app-content {
     position: relative;
     z-index: 1;
     min-height: 100vh;
 
     .main-content {
-
-
       .transition-group {
         position: relative;
 
@@ -49,7 +30,6 @@
           transition: all 0.5s ease-in-out;
         }
       }
-
     }
   }
 }

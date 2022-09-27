@@ -26,6 +26,7 @@ import TextArea from './TextArea/TextArea';
 import Text from './Text/Text';
 import Tag from './Tag/Tag';
 import TargetSelector from './TargetSelector/TargetSelector';
+import CloseIcon from './CloseIcon/CloseIcon';
 
 export {
   Selector,
@@ -55,4 +56,5 @@ export {
   Tag,
   Card,
   TargetSelector,
+  CloseIcon,
 };

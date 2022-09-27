@@ -33,6 +33,7 @@ function ProjectConfig() {
     window.scrollTo(0, 0);
 
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+      console.log(info);
       setProject(info);
     });
   }, [spaceCode, projectId]);
@@ -75,6 +76,7 @@ function ProjectConfig() {
     nextProject.testcaseTemplates.forEach(testcaseTemplate => {
       const nextTestcaseTemplate = testcaseTemplate;
       nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
+      console.log(nextTestcaseTemplate);
     });
 
     TestcaseService.updateConfig(spaceCode, projectId, nextProject, () => {
@@ -107,7 +109,7 @@ function ProjectConfig() {
           <Form onSubmit={onSubmit}>
             <table>
               <tbody>
-                {project?.testcaseTemplates.map((testcaseTemplate, inx) => {
+                {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
                   return (
                     <tr key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
                       <td className="name">
@@ -156,7 +158,6 @@ function ProjectConfig() {
                 })}
               </tbody>
             </table>
-
             <PageButtons
               className="page-button"
               onBack={() => {
@@ -169,20 +170,19 @@ function ProjectConfig() {
           </Form>
         </PageContent>
       </Page>
-      {templateEditorPopupInfo.opened && (
-        <TestcaseTemplateEditorPopup
-          testcaseTemplate={templateEditorPopupInfo.testcaseTemplate}
-          testcaseItemTypes={testcaseItemTypes}
-          onClose={() => {
-            setTemplateEditorPopupInfo({
-              opened: false,
-            });
-          }}
-          onChange={template => {
-            onChangeTestcaseTemplate(templateEditorPopupInfo.inx, template);
-          }}
-        />
-      )}
+      <TestcaseTemplateEditorPopup
+        opened={templateEditorPopupInfo.opened}
+        testcaseTemplate={templateEditorPopupInfo.testcaseTemplate}
+        testcaseItemTypes={testcaseItemTypes}
+        onClose={() => {
+          setTemplateEditorPopupInfo({
+            opened: false,
+          });
+        }}
+        onChange={template => {
+          onChangeTestcaseTemplate(templateEditorPopupInfo.inx, template);
+        }}
+      />
     </>
   );
 }
