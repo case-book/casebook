@@ -58,6 +58,15 @@
             .layout {
               background-color: #080808;
               flex-grow: 1;
+
+              .empty-message {
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                > div {
+                  align-self: center;
+                }
+              }
             }
 
             ul {
@@ -99,6 +108,49 @@
                     font-size: 12px;
                     flex-grow: 1;
                     height: 20px;
+
+                    .type-text {
+                      position: relative;
+                      .options-list {
+                        left: calc(100% + 40px);
+                        position: absolute;
+                        top: -23px;
+                        background-color: $white;
+                        color: $black;
+                        border: 1px solid $border-color;
+                        white-space: nowrap;
+                        padding: 0.25rem 0.75rem;
+                        z-index: 1;
+                        border-radius: 2px;
+
+                        > .arrow {
+                          position: absolute;
+                          top: 23px;
+                          left: -5px;
+                          background-color: $white;
+                          transform: rotate(45deg);
+                          > div {
+                            width: 10px;
+                            height: 10px;
+                            border: 1px solid $border-color;
+                            border-top: none;
+                            border-right: none;
+                          }
+                        }
+
+                        > ul {
+                          list-style: none;
+                          padding: 0;
+                          margin: 0;
+
+                          > li {
+                            font-size: 14px;
+                            line-height: 100%;
+                            padding: 0.5rem;
+                          }
+                        }
+                      }
+                    }
 
                     > span {
                       align-self: center;

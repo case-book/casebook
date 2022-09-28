@@ -70,6 +70,7 @@ function Login() {
           <div className="auto-login">
             <div>
               <CheckBox
+                size="md"
                 type="checkbox"
                 value={info.activated}
                 label={t('자동 로그인')}
