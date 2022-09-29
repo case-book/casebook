@@ -14,7 +14,6 @@
     bottom: 0;
     overflow: hidden;
     > span {
-      display: inline-block;
       color: rgba(255, 255, 255, 0.05);
       font-size: 70px;
       transform: rotate(15deg);
@@ -143,6 +142,19 @@
               display: flex;
               > span {
                 align-self: center;
+                padding: 4px 0;
+                position: relative;
+
+                > span {
+                  height: 2px;
+                  display: none;
+                  background-color: $color-sunflower;
+                  position: absolute;
+                  bottom: -8px;
+                  left: -5px;
+                  right: -5px;
+                  border-radius: 2px;
+                }
               }
 
               &:hover {
@@ -155,17 +167,22 @@
                 position: absolute;
                 left: calc(100% + 8px);
                 white-space: nowrap;
-                top: 36px;
+                top: 33px;
               }
             }
-
-
 
             &.selected {
               a {
                 color: $white;
                 font-weight: normal;
                 position: relative;
+
+                > span {
+                  > span {
+                    display: block;
+                    display: none;
+                  }
+                }
               }
             }
 

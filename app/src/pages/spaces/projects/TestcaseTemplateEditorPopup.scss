@@ -16,8 +16,10 @@
     width: 0;
 
     > div.editor-content {
+      opacity: 0;
       .editor-title {
         margin-top: 1rem;
+        margin-right: 0.5rem;
         .title-text {
           padding-left: 1rem;
         }
@@ -41,12 +43,21 @@
         }
         .editor {
           display: flex;
-          margin-top: 1rem;
+          margin-top: 2rem;
           padding: 0;
           min-height: 600px;
 
           .sub-title {
             margin-bottom: 1rem;
+            display: flex;
+
+            > div {
+              align-self: center;
+            }
+
+            .text {
+              flex-grow: 1;
+            }
           }
 
           .items {
@@ -55,9 +66,29 @@
             display: flex;
             flex-direction: column;
 
+            > div {
+              display: flex;
+              flex-direction: column;
+              flex: 1 1 0;
+              margin-top: 2rem;
+
+              &:first-child {
+                margin-top: 0;
+              }
+            }
+
             .layout {
               background-color: #080808;
               flex-grow: 1;
+
+              .empty-message {
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                > div {
+                  align-self: center;
+                }
+              }
             }
 
             ul {
@@ -77,6 +108,10 @@
                 background-color: #222;
                 margin-right: 0.5rem;
                 margin-bottom: 0.5rem;
+
+                &.hidden {
+                  display: none;
+                }
 
                 &:hover {
                   background-color: #333;
@@ -99,6 +134,49 @@
                     font-size: 12px;
                     flex-grow: 1;
                     height: 20px;
+
+                    .type-text {
+                      position: relative;
+                      .options-list {
+                        left: calc(100% + 40px);
+                        position: absolute;
+                        top: -23px;
+                        background-color: $white;
+                        color: $black;
+                        border: 1px solid $border-color;
+                        white-space: nowrap;
+                        padding: 0.25rem 0.75rem;
+                        z-index: 1;
+                        border-radius: 2px;
+
+                        > .arrow {
+                          position: absolute;
+                          top: 23px;
+                          left: -5px;
+                          background-color: $white;
+                          transform: rotate(45deg);
+                          > div {
+                            width: 10px;
+                            height: 10px;
+                            border: 1px solid $border-color;
+                            border-top: none;
+                            border-right: none;
+                          }
+                        }
+
+                        > ul {
+                          list-style: none;
+                          padding: 0;
+                          margin: 0;
+
+                          > li {
+                            font-size: 14px;
+                            line-height: 100%;
+                            padding: 0.5rem;
+                          }
+                        }
+                      }
+                    }
 
                     > span {
                       align-self: center;
@@ -188,7 +266,9 @@
 
                 .properties-control {
                   > div {
-                    width: 100%;
+                    &.selector {
+                      width: 100%;
+                    }
 
                     > ul {
                       width: 100%;
@@ -260,6 +340,12 @@
     > div {
       width: 40%;
       transition: all 0.3s;
+
+      > div.editor-content {
+        opacity: 1 !important;
+        transition: all 0.3s;
+        transition-delay: 0.3s;
+      }
 
       @media (max-width: 2000px) {
         width: 50%;

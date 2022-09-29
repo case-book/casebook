@@ -126,36 +126,11 @@ function Header({ className, theme }) {
                         animationDelay: `${inx * 0.1}s`,
                       }}
                     >
-                      <Link
-                        to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
-                        onClick={e => {
-                          if (d.needSpace && !isSpaceSelected) {
-                            e.preventDefault();
-                            setMenuAlert({
-                              inx,
-                              message: '스페이스를 먼저 선택해주세요.',
-                            });
-
-                            if (timer.current) {
-                              clearTimeout(timer.current);
-                              timer.current = null;
-                            }
-
-                            timer.current = setTimeout(() => {
-                              timer.current = null;
-                              setMenuAlert({
-                                inx: null,
-                                message: '',
-                              });
-                            }, 2000);
-                          } else if (d.needSpace) {
-                            e.preventDefault();
-                            navigate(`/spaces/${spaceCode}${d.to}`);
-                          }
-                        }}
-                      >
-                        <span>{d.name}</span>
-                        {menuAlert.inx === inx && <span className="alert-message">{menuAlert.message}</span>}
+                      <Link to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}>
+                        <span className="text">
+                          {d.name}
+                          <span />
+                        </span>
                       </Link>
                       <div className="cursor">
                         <div />
@@ -215,7 +190,10 @@ function Header({ className, theme }) {
                           }
                         }}
                       >
-                        <span>{d.name}</span>
+                        <span className="text">
+                          {d.name}
+                          <span />
+                        </span>
                         {menuAlert.inx === inx && <span className="alert-message">{menuAlert.message}</span>}
                       </Link>
                       {d.key === 'space' && isSpaceSelected && (
@@ -270,7 +248,7 @@ function Header({ className, theme }) {
             </Button>
           )}
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
-          {!isLogin && <Link to="/users/login">{t('회원가입')}</Link>}
+          {!isLogin && <Link to="/users/join">{t('회원가입')}</Link>}
         </div>
       </div>
       {userMenuOpen && (

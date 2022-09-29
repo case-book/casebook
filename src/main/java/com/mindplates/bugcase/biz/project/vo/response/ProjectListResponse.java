@@ -27,7 +27,7 @@ public class ProjectListResponse {
         this.name = project.getName();
         this.description = project.getDescription();
         this.activated = project.isActivated();
-        this.testcaseCount = project.getTestcases().size();
+        this.testcaseCount = project.getTestcaseGroups().stream().reduce(0, (subtotal, testcaseGroup) -> subtotal + testcaseGroup.getTestcases().size(), Integer::sum);
         this.bugCount = 0;
         this.testrunCount = 0;
 

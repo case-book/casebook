@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
@@ -38,11 +39,11 @@ public class Project extends CommonEntity {
     @Column(name = "token", length = ColumnsDef.CODE)
     private String token;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    private List<Testcase> testcases;
+    private List<TestcaseGroup> testcaseGroups;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<TestcaseTemplate> testcaseTemplates;
 
@@ -50,7 +51,8 @@ public class Project extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<ProjectUser> users;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SELECT)
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
     private Space space;
 

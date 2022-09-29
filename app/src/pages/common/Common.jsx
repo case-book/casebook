@@ -126,7 +126,7 @@ function Common() {
           okText={controlStore.message?.okText || ''}
         />
       )}
-      {!loading && controlStore.error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || ''} message={controlStore.error?.message || ''} />}
+      {!loading && controlStore.error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || '요청 실패'} message={controlStore.error?.message || ''} />}
 
       <TransitionGroup className="loading-group">
         {loading && (

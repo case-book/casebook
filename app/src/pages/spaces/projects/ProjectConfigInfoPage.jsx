@@ -5,7 +5,7 @@ import ProjectService from '@/services/ProjectService';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import './ProjectConfigInfoPage.scss';
-import TestcaseTemplateViewerPopup from '@/pages/spaces/projects/TestcaseTemplateViewerPopup';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
 
 function ProjectConfigInfoPage() {
   const { t } = useTranslation();
@@ -71,16 +71,16 @@ function ProjectConfigInfoPage() {
           />
         </PageContent>
       </Page>
-      {templateViewerPopupInfo.opened && (
-        <TestcaseTemplateViewerPopup
-          testcaseTemplate={templateViewerPopupInfo.testcaseTemplate}
-          onClose={() => {
-            setTemplateViewerPopupInfo({
-              opened: false,
-            });
-          }}
-        />
-      )}
+      <TestcaseTemplateEditorPopup
+        editor={false}
+        opened={templateViewerPopupInfo.opened}
+        testcaseTemplate={templateViewerPopupInfo.testcaseTemplate}
+        onClose={() => {
+          setTemplateViewerPopupInfo({
+            opened: false,
+          });
+        }}
+      />
     </>
   );
 }

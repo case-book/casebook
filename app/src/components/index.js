@@ -27,6 +27,7 @@ import Text from './Text/Text';
 import Tag from './Tag/Tag';
 import TargetSelector from './TargetSelector/TargetSelector';
 import CloseIcon from './CloseIcon/CloseIcon';
+import Radio from './Radio/Radio';
 
 export {
   Selector,
@@ -57,4 +58,5 @@ export {
   Card,
   TargetSelector,
   CloseIcon,
+  Radio,
 };

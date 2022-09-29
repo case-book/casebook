@@ -16,9 +16,12 @@ public class TestcaseTemplateResponse {
     private String name;
     private List<TestcaseTemplateItemResponse> testcaseTemplateItems;
 
+    private Boolean isDefault;
+
     public TestcaseTemplateResponse(TestcaseTemplate testcaseTemplate) {
         this.id = testcaseTemplate.getId();
         this.name = testcaseTemplate.getName();
+        this.isDefault = testcaseTemplate.getIsDefault();
         this.testcaseTemplateItems = testcaseTemplate.getTestcaseTemplateItems().stream().map(TestcaseTemplateItemResponse::new).collect(Collectors.toList());
     }
 }

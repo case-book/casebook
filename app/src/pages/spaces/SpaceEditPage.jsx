@@ -96,15 +96,15 @@ function SpaceEditPage({ type }) {
                 minLength={1}
               />
             </BlockRow>
-
             <BlockRow>
               <Label required>{t('코드')}</Label>
               <Input
+                className="code"
                 value={space.code}
                 onChange={val =>
                   setSpace({
                     ...space,
-                    code: val,
+                    code: val.toUpperCase(),
                   })
                 }
                 required

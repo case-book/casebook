@@ -22,10 +22,12 @@ function ProjectConfig() {
   });
 
   const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
+  const [testcaseItemCategories, setTestcaseItemCategories] = useState([]);
 
   useEffect(() => {
-    ConfigService.selectTestcaseItemTypes(list => {
-      setTestcaseItemTypes(list);
+    ConfigService.selectTestcaseConfigs(info => {
+      setTestcaseItemTypes(info.testcaseItemTypes);
+      setTestcaseItemCategories(info.testcaseItemCategories);
     });
   }, []);
 
@@ -33,7 +35,6 @@ function ProjectConfig() {
     window.scrollTo(0, 0);
 
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      console.log(info);
       setProject(info);
     });
   }, [spaceCode, projectId]);
@@ -76,7 +77,6 @@ function ProjectConfig() {
     nextProject.testcaseTemplates.forEach(testcaseTemplate => {
       const nextTestcaseTemplate = testcaseTemplate;
       nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-      console.log(nextTestcaseTemplate);
     });
 
     TestcaseService.updateConfig(spaceCode, projectId, nextProject, () => {
@@ -174,6 +174,7 @@ function ProjectConfig() {
         opened={templateEditorPopupInfo.opened}
         testcaseTemplate={templateEditorPopupInfo.testcaseTemplate}
         testcaseItemTypes={testcaseItemTypes}
+        testcaseItemCategories={testcaseItemCategories}
         onClose={() => {
           setTemplateEditorPopupInfo({
             opened: false,
