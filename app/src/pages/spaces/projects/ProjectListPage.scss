@@ -1,4 +1,27 @@
 .project-list-page-wrapper {
+  display: flex;
+
+  .content {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  .no-project {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    > div {
+      align-self: center;
+      text-align: center;
+
+      > div {
+        &:last-child {
+          margin-top: 2rem;
+        }
+      }
+    }
+  }
+
   ul.project-list {
     list-style: none;
     margin: 0;
@@ -24,7 +47,6 @@
 
             ul.project-menu {
               > li {
-
                 &:hover {
                   color: $link-color;
                 }
@@ -122,80 +144,6 @@
                 font-size: 12px;
               }
             }
-          }
-        }
-      }
-    }
-  }
-
-  ul.project-card-list {
-    vertical-align: top;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: none;
-
-    li {
-      display: inline-flex;
-      flex-direction: column;
-      width: calc((100% - 2rem) / 3);
-      vertical-align: top;
-      opacity: 0;
-      animation: fade-in-animation 0.7s ease-out;
-      animation-fill-mode: forwards;
-      margin-right: 1rem;
-      margin-bottom: 1rem;
-
-      &:nth-child(3n) {
-        margin-right: 0;
-      }
-
-      .project-card-wrapper {
-        height: 240px;
-
-        .config-button {
-          position: absolute;
-          right: 0;
-          top: 0;
-        }
-
-        &:nth-child(3n) {
-          margin-right: 0;
-        }
-
-        .name-and-code {
-          text-align: center;
-          padding-bottom: 1rem;
-          padding-top: 1rem;
-          font-weight: bold;
-
-          .name {
-            font-size: 20px;
-            white-space: nowrap;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-right: 2rem;
-            padding-left: 2rem;
-          }
-        }
-
-        .description {
-          padding: 0;
-          text-align: center;
-          flex-grow: 1;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          background-color: $white;
-          max-height: 76px;
-          min-height: 76px;
-          display: flex;
-          justify-content: center;
-          border-radius: 8px;
-          overflow-y: auto;
-          margin-bottom: 1rem;
-          font-size: 14px;
-          > div {
-            align-self: center;
           }
         }
       }

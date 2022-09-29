@@ -4,8 +4,11 @@ import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Builder
@@ -21,24 +24,25 @@ public class Testcase extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "parent_id")
-    private Long parentId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_GROUP"))
+    private TestcaseGroup testcaseGroup;
 
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
-    @Column(name = "case_order")
-    private Integer caseOrder;
+    @Column(name = "item_order")
+    private Integer itemOrder;
 
     @Column(name = "closed")
     private Boolean closed;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
-    private Project project;
-
     @OneToOne
     @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_TEMPLATE"))
     private TestcaseTemplate testcaseTemplate;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<TestcaseItem> testcaseItems;
 
 }

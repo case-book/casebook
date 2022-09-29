@@ -56,12 +56,12 @@ function Join() {
           <div className="register-content">
             <Block className="block">
               <BlockRow>
-                <Label size="sm" minWidth={labelMinWidth} required>
+                <Label size="lg" minWidth={labelMinWidth} required>
                   {t('이메일')}
                 </Label>
                 <Input
                   type="email"
-                  size="md"
+                  size="lg"
                   required
                   placeholder="이메일"
                   value={userInfo.email}
@@ -75,12 +75,12 @@ function Join() {
                 />
               </BlockRow>
               <BlockRow>
-                <Label size="sm" minWidth={labelMinWidth} required>
+                <Label size="lg" minWidth={labelMinWidth} required>
                   {t('비밀번호')}
                 </Label>
                 <Input
                   type="password"
-                  size="md"
+                  size="lg"
                   required
                   placeholder="비밀번호"
                   value={userInfo.password}
@@ -94,12 +94,12 @@ function Join() {
                 />
               </BlockRow>
               <BlockRow>
-                <Label size="sm" minWidth={labelMinWidth} required>
+                <Label size="lg" minWidth={labelMinWidth} required>
                   {t('비밀번호')}
                 </Label>
                 <Input
                   type="password"
-                  size="md"
+                  size="lg"
                   required
                   placeholder="비밀번호 확인"
                   value={userInfo.passwordConfirm}
@@ -113,12 +113,12 @@ function Join() {
                 />
               </BlockRow>
               <BlockRow>
-                <Label size="sm" minWidth={labelMinWidth}>
+                <Label size="lg" minWidth={labelMinWidth}>
                   {t('이름')}
                 </Label>
                 <Input
                   type="text"
-                  size="md"
+                  size="lg"
                   required
                   placeholder="이름"
                   value={userInfo.name}

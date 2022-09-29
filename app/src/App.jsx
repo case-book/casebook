@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Common, Header, Login, Message, SpaceListPage } from '@/pages';
+import { Common, Header, Join, Login, Message, SpaceListPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
 import ProjectsRoutes from '@/pages/spaces/projects';
 import UsersRoutes from '@/pages/users';
@@ -51,7 +51,16 @@ function App() {
                 </CSSTransition>
               </TransitionGroup>
             )}
-            {!isLogin && <Login />}
+            {!isLogin && (
+              <TransitionGroup className="transition-group">
+                <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
+                  <Routes location={location}>
+                    <Route path="/users/join" element={<Join />} />
+                    <Route path="*" element={<Login />} />
+                  </Routes>
+                </CSSTransition>
+              </TransitionGroup>
+            )}
           </main>
         </div>
       )}
