@@ -1,8 +1,8 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
+import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.biz.project.entity.Project;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -27,6 +27,9 @@ public class TestcaseTemplate extends CommonEntity {
 
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
+
+    @Column(name = "is_default")
+    private Boolean isDefault;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM_TYPE__PROJECT"))

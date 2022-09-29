@@ -12,6 +12,30 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
+import TestcaseService from '@/services/TestcaseService';
+
+const defaultProjectConfig = {
+  testcaseTemplates: [
+    {
+      name: '기본 템플릿',
+      testcaseTemplateItems: [
+        { category: 'CASE', type: 'RADIO', itemOrder: 0, label: '중요도', options: ['상', '중', '하'], size: 4 },
+        { category: 'CASE', type: 'TEXT', itemOrder: 1, label: 'URL', options: [], size: 4 },
+        { category: 'CASE', type: 'CHECKBOX', itemOrder: 2, label: 'E2E', options: [], size: 4 },
+        { category: 'CASE', type: 'NUMBER', itemOrder: 3, label: '테스터', options: [], size: 4 },
+        { category: 'CASE', type: 'USER', itemOrder: 4, label: '담당자', options: [], size: 4 },
+        { category: 'CASE', type: 'CHECKBOX', itemOrder: 5, label: '회귀 테스트', options: [], size: 4 },
+        { category: 'CASE', type: 'EDITOR', itemOrder: 6, label: '테스트 준비 절차', options: [], size: 12 },
+        { category: 'CASE', type: 'EDITOR', itemOrder: 7, label: '테스트 절차', options: [], size: 12 },
+        { category: 'CASE', type: 'EDITOR', itemOrder: 8, label: '예상 절차', options: [], size: 12 },
+        { category: 'RESULT', type: 'RADIO', itemOrder: 0, label: '테스트 결과', options: ['성공', '실패', '수행 불가능'], size: 6 },
+        { category: 'RESULT', type: 'RADIO', itemOrder: 1, label: '테스트케이스 평가', options: ['1', '2', '3', '4', '5'], size: 6 },
+        { category: 'RESULT', type: 'EDITOR', itemOrder: 2, label: '비고', options: [], size: 12 },
+      ],
+      isDefault: true,
+    },
+  ],
+};
 
 function ProjectEditPage({ type }) {
   const { t } = useTranslation();
@@ -49,7 +73,9 @@ function ProjectEditPage({ type }) {
 
     if (type === 'new') {
       ProjectService.createProject(spaceCode, project, info => {
-        navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
+        TestcaseService.updateConfig(spaceCode, info.id, defaultProjectConfig, () => {
+          navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
+        });
       });
     } else if (type === 'edit') {
       ProjectService.updateProject(spaceCode, project, () => {

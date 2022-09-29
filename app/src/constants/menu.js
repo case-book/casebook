@@ -79,6 +79,15 @@ const MENUS = [
     login: true,
     project: true,
   },
+  {
+    to: '/info',
+    icon: <i className="fa-regular fa-newspaper" />,
+    name: '관리',
+    admin: false,
+    pc: true,
+    login: true,
+    project: true,
+  },
 ];
 
 export { STATIC_MENUS, MENUS };

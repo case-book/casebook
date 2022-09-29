@@ -1,79 +1,129 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { Button, CloseIcon, Input, Liner, Selector, Title } from '@/components';
+import { Button, CheckBox, CloseIcon, Input, Liner, Radio, Selector, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './TestcaseTemplateEditorPopup.scss';
 
-function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, opened, editor }) {
+function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor }) {
   const { t } = useTranslation();
 
   const [selectedItem, setSelectedItem] = useState({});
 
   const [template, setTemplate] = useState(null);
+  const [caseTemplateItems, setCaseTemplateItems] = useState([]);
+  const [resultTemplateItems, setResultTemplateItems] = useState([]);
 
   useEffect(() => {
     setTemplate(cloneDeep(testcaseTemplate));
+
     setSelectedItem({});
+
+    setCaseTemplateItems(testcaseTemplate?.testcaseTemplateItems?.filter(d => d.category === 'CASE') || []);
+    setResultTemplateItems(testcaseTemplate?.testcaseTemplateItems?.filter(d => d.category === 'RESULT') || []);
   }, [testcaseTemplate, opened]);
 
   const hasOptionType = value => {
     return value === 'RADIO' || value === 'SELECT';
   };
-  const onChangeTestcaseTemplateItem = (testcaseTemplateItemInx, key, val) => {
-    const nextTemplate = { ...template };
-    const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
+  const onChangeTestcaseTemplateItem = (testcaseTemplateItemInx, category, key, val) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
     nextTemplateItem[key] = val;
 
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
   };
 
-  const onChangeTestcaseTemplateItemOption = (testcaseTemplateItemInx, optionInx, val) => {
-    const nextTemplate = { ...template };
-    const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
+  const onChangeTestcaseTemplateItemCategory = (testcaseTemplateItemInx, currentCategory, nextCategory) => {
+    if (currentCategory === nextCategory) {
+      return;
+    }
+    const targetTemplateItems = currentCategory === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    const destTemplateItems = currentCategory !== 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+
+    const moveItem = targetTemplateItems.splice(testcaseTemplateItemInx, 1);
+
+    moveItem[0].category = currentCategory === 'CASE' ? 'RESULT' : 'CASE';
+    destTemplateItems.push(moveItem[0]);
+
+    if (currentCategory === 'CASE') {
+      setCaseTemplateItems(targetTemplateItems);
+      setResultTemplateItems(destTemplateItems);
+    } else {
+      setCaseTemplateItems(destTemplateItems);
+      setResultTemplateItems(targetTemplateItems);
+    }
+
+    const nextSelectedItem = { ...selectedItem };
+    nextSelectedItem.item.category = nextCategory;
+    nextSelectedItem.inx = destTemplateItems.length - 1;
+
+    setSelectedItem(nextSelectedItem);
+  };
+
+  const onChangeTestcaseTemplateItemOption = (testcaseTemplateItemInx, category, optionInx, val) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
     nextTemplateItem.options[optionInx] = val;
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
   };
 
-  const onDeleteTestcaseTemplateItemOption = (testcaseTemplateItemInx, optionInx) => {
-    const nextTemplate = { ...template };
-    const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
+  const onDeleteTestcaseTemplateItemOption = (testcaseTemplateItemInx, category, optionInx) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
     nextTemplateItem.options.splice(optionInx, 1);
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
   };
 
-  const onAddTestcaseTemplateItemOption = testcaseTemplateItemInx => {
-    const nextTemplate = { ...template };
-    const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
+  const onAddTestcaseTemplateItemOption = (testcaseTemplateItemInx, category) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
     if (!nextTemplateItem.options) {
       nextTemplateItem.options = [];
     }
     nextTemplateItem.options.push(`옵션 ${nextTemplateItem.options.length + 1}`);
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
   };
 
-  const addTestcaseTemplateItem = () => {
-    const nextTemplate = { ...template };
-
-    if (!nextTemplate.testcaseTemplateItems) {
-      nextTemplate.testcaseTemplateItems = [];
-    }
-
-    nextTemplate.testcaseTemplateItems.push({
+  const addTestcaseTemplateItem = category => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    nextTemplateItems.push({
       type: 'TEXT',
-      itemOrder: nextTemplate.testcaseTemplateItems.length,
-      label: '라벨',
+      itemOrder: nextTemplateItems.length,
+      label: t('라벨'),
       size: 4,
       options: null,
+      category,
     });
 
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
   };
 
-  const onChangeTestcaseTemplateItemSize = (testcaseTemplateItemInx, option) => {
-    const nextTemplate = { ...template };
-    const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
+  const onChangeTestcaseTemplateItemSize = (testcaseTemplateItemInx, category, option) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+
+    const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
 
     if (option === 'up') {
       nextTemplateItem.size += 1;
@@ -91,40 +141,101 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
       nextTemplateItem.size = 3;
     }
 
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
   };
 
-  const onDeleteTestcaseTemplateItem = testcaseTemplateItemInx => {
-    const nextTemplate = { ...template };
-    const nextTemplateItem = nextTemplate.testcaseTemplateItems[testcaseTemplateItemInx];
+  const onDeleteTestcaseTemplateItem = (testcaseTemplateItemInx, category) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
+    const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
     if (nextTemplateItem.id) {
       nextTemplateItem.crud = 'D';
     } else {
-      nextTemplate.testcaseTemplateItems.splice(testcaseTemplateItemInx, 1);
+      nextTemplateItems.splice(testcaseTemplateItemInx, 1);
     }
 
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
+    setSelectedItem({});
   };
 
-  const onChangeTestcaseTemplateItemOrder = (testcaseTemplateItemInx, option) => {
-    const nextTemplate = { ...template };
+  const onChangeTestcaseTemplateItemOrder = (testcaseTemplateItemInx, category, option) => {
+    const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
 
     if (option === 'left' && testcaseTemplateItemInx > 0) {
-      const target = nextTemplate.testcaseTemplateItems.splice(testcaseTemplateItemInx, 1);
-      nextTemplate.testcaseTemplateItems.splice(testcaseTemplateItemInx - 1, 0, target[0]);
+      const target = nextTemplateItems.splice(testcaseTemplateItemInx, 1);
+      nextTemplateItems.splice(testcaseTemplateItemInx - 1, 0, target[0]);
       setSelectedItem({ ...selectedItem, inx: selectedItem.inx - 1 });
-    } else if (option === 'right' && testcaseTemplateItemInx < nextTemplate.testcaseTemplateItems.length - 1) {
-      const target = nextTemplate.testcaseTemplateItems.splice(testcaseTemplateItemInx, 1);
-      nextTemplate.testcaseTemplateItems.splice(testcaseTemplateItemInx + 1, 0, target[0]);
+    } else if (option === 'right' && testcaseTemplateItemInx < nextTemplateItems.length - 1) {
+      const target = nextTemplateItems.splice(testcaseTemplateItemInx, 1);
+      nextTemplateItems.splice(testcaseTemplateItemInx + 1, 0, target[0]);
       setSelectedItem({ ...selectedItem, inx: selectedItem.inx + 1 });
     }
 
-    nextTemplate.testcaseTemplateItems.forEach((item, inx) => {
+    nextTemplateItems.forEach((item, inx) => {
       const nextItem = item;
       nextItem.itemOrder = inx;
     });
 
-    setTemplate(nextTemplate);
+    if (category === 'CASE') {
+      setCaseTemplateItems(nextTemplateItems);
+    } else {
+      setResultTemplateItems(nextTemplateItems);
+    }
+  };
+
+  const getItem = (testcaseTemplateItem, inx) => {
+    return (
+      <li
+        key={inx}
+        className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${
+          editor && selectedItem?.item?.category === testcaseTemplateItem.category && selectedItem?.inx === inx ? 'selected' : ''
+        }`}
+        style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}% - 0.5rem)` }}
+        onClick={() => {
+          if (selectedItem.inx === inx && selectedItem?.item?.category === testcaseTemplateItem.category) {
+            setSelectedItem({});
+          } else {
+            setSelectedItem({
+              inx,
+              item: testcaseTemplateItem,
+            });
+          }
+        }}
+      >
+        <div>
+          <div className="type">
+            <span className="type-text">
+              {testcaseTemplateItem.type}
+              {!editor && hasOptionType(testcaseTemplateItem.type) && inx === selectedItem?.inx && selectedItem?.item?.category === testcaseTemplateItem.category && (
+                <div className="options-list">
+                  <div className="arrow">
+                    <div />
+                  </div>
+                  <ul>
+                    {testcaseTemplateItem?.options?.map((option, jnx) => {
+                      return <li key={jnx}>{option}</li>;
+                    })}
+                  </ul>
+                </div>
+              )}
+            </span>
+            {hasOptionType(testcaseTemplateItem.type) && (
+              <span className="count-badge">
+                <span>{testcaseTemplateItem?.options?.length || 0}</span>
+              </span>
+            )}
+          </div>
+          <div className="item-info">{testcaseTemplateItem.label}</div>
+        </div>
+      </li>
+    );
   };
 
   return (
@@ -158,83 +269,95 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                   />
                 </div>
                 <div>
-                  <Button
-                    onClick={() => {
-                      addTestcaseTemplateItem();
+                  <CheckBox
+                    size="md"
+                    type="checkbox"
+                    value={template?.isDefault}
+                    label={t('기본 템플릿')}
+                    onChange={val => {
+                      setTemplate({
+                        ...template,
+                        isDefault: val,
+                      });
                     }}
-                  >
-                    아이템 추가
-                  </Button>
+                  />
                 </div>
               </div>
             )}
             <div className="editor">
               <div className="items">
-                <div className="sub-title">레이아웃</div>
-                <div className="layout">
-                  {template?.testcaseTemplateItems?.length < 1 && (
-                    <div className="empty-message">
-                      <div>아이템이 없습니다.</div>
+                <div>
+                  <div className="sub-title">
+                    <div className="text">{t('테스트케이스 레이아웃')}</div>
+                    {editor && (
+                      <div className="button">
+                        <Button
+                          size="xs"
+                          onClick={() => {
+                            addTestcaseTemplateItem('CASE');
+                          }}
+                        >
+                          {t('아이템 추가')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="layout">
+                    {caseTemplateItems?.length < 1 && (
+                      <div className="empty-message">
+                        <div>{t('아이템이 없습니다.')}</div>
+                      </div>
+                    )}
+                    {caseTemplateItems?.length > 0 && (
+                      <ul>
+                        {caseTemplateItems?.map((testcaseTemplateItem, inx) => {
+                          return getItem(testcaseTemplateItem, inx);
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <div className="sub-title">
+                    <div className="text">
+                      <div>{t('테스트 결과 레이아웃')}</div>
                     </div>
-                  )}
-                  {template?.testcaseTemplateItems?.length > 0 && (
-                    <ul>
-                      {template?.testcaseTemplateItems?.map((testcaseTemplateItem, inx) => {
-                        return (
-                          <li
-                            key={inx}
-                            className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${editor && selectedItem?.inx === inx ? 'selected' : ''}`}
-                            style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}% - 0.5rem)` }}
-                            onClick={() => {
-                              if (selectedItem.inx === inx) {
-                                setSelectedItem({});
-                              } else {
-                                setSelectedItem({
-                                  inx,
-                                  item: testcaseTemplateItem,
-                                });
-                              }
-                            }}
-                          >
-                            <div>
-                              <div className="type">
-                                <span className="type-text">
-                                  {testcaseTemplateItem.type}
-                                  {!editor && hasOptionType(testcaseTemplateItem.type) && inx === selectedItem?.inx && (
-                                    <div className="options-list">
-                                      <div className="arrow">
-                                        <div />
-                                      </div>
-                                      <ul>
-                                        {testcaseTemplateItem?.options?.map((option, jnx) => {
-                                          return <li key={jnx}>{option}</li>;
-                                        })}
-                                      </ul>
-                                    </div>
-                                  )}
-                                </span>
-                                {hasOptionType(testcaseTemplateItem.type) && (
-                                  <span className="count-badge">
-                                    <span>{testcaseTemplateItem.options.length}</span>
-                                  </span>
-                                )}
-                              </div>
-                              <div className="item-info">{testcaseTemplateItem.label}</div>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
+                    {editor && (
+                      <div className="button">
+                        <Button
+                          size="xs"
+                          onClick={() => {
+                            addTestcaseTemplateItem('RESULT');
+                          }}
+                        >
+                          {t('아이템 추가')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="layout">
+                    {resultTemplateItems?.length < 1 && (
+                      <div className="empty-message">
+                        <div>{t('아이템이 없습니다.')}</div>
+                      </div>
+                    )}
+                    {resultTemplateItems?.length > 0 && (
+                      <ul>
+                        {resultTemplateItems?.map((testcaseTemplateItem, inx) => {
+                          return getItem(testcaseTemplateItem, inx);
+                        })}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               </div>
               {editor && (
                 <div className="properties">
-                  <div className="sub-title">속성</div>
+                  <div className="sub-title">{t('속성')}</div>
                   <div className="properties-content">
                     {!selectedItem?.item && (
                       <div className="empty-message">
-                        <div>아이템을 선택해주세요</div>
+                        <div>{t('아이템을 선택해주세요.')}</div>
                       </div>
                     )}
                     {selectedItem?.item && (
@@ -244,7 +367,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             size="xs"
                             rounded
                             onClick={() => {
-                              onChangeTestcaseTemplateItemOrder(selectedItem.inx, 'left');
+                              onChangeTestcaseTemplateItemOrder(selectedItem.inx, selectedItem?.item?.category, 'left');
                             }}
                           >
                             <i className="fa-solid fa-arrow-left" />
@@ -253,7 +376,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             size="xs"
                             rounded
                             onClick={() => {
-                              onChangeTestcaseTemplateItemOrder(selectedItem.inx, 'right');
+                              onChangeTestcaseTemplateItemOrder(selectedItem.inx, selectedItem?.item?.category, 'right');
                             }}
                           >
                             <i className="fa-solid fa-arrow-right" />
@@ -263,7 +386,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             size="xs"
                             rounded
                             onClick={() => {
-                              onChangeTestcaseTemplateItemSize(selectedItem.inx, 'down');
+                              onChangeTestcaseTemplateItemSize(selectedItem.inx, selectedItem?.item?.category, 'down');
                             }}
                           >
                             <i className="fa-solid fa-right-left" />
@@ -272,7 +395,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             size="xs"
                             rounded
                             onClick={() => {
-                              onChangeTestcaseTemplateItemSize(selectedItem.inx, 'up');
+                              onChangeTestcaseTemplateItemSize(selectedItem.inx, selectedItem?.item?.category, 'up');
                             }}
                           >
                             <i className="fa-solid fa-left-right" />
@@ -281,7 +404,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             size="xs"
                             rounded
                             onClick={() => {
-                              onChangeTestcaseTemplateItemSize(selectedItem.inx, 'fill');
+                              onChangeTestcaseTemplateItemSize(selectedItem.inx, selectedItem?.item?.category, 'fill');
                             }}
                           >
                             <i className="fa-solid fa-expand" />
@@ -292,21 +415,40 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             rounded
                             color="danger"
                             onClick={() => {
-                              onDeleteTestcaseTemplateItem(selectedItem.inx);
+                              onDeleteTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category);
                             }}
                           >
                             <i className="fa-regular fa-trash-can" />
                           </Button>
                         </div>
+                        <div className="type">
+                          <div className="title">{t('카테고리')}</div>
+                          <div className="properties-control">
+                            {testcaseItemCategories.map(d => {
+                              return (
+                                <Radio
+                                  key={d}
+                                  label={d}
+                                  size="md"
+                                  value={d}
+                                  checked={d === selectedItem?.item?.category}
+                                  onChange={() => {
+                                    onChangeTestcaseTemplateItemCategory(selectedItem.inx, selectedItem?.item?.category, d);
+                                  }}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
                         <div className="label">
-                          <div className="title">라벨</div>
+                          <div className="title">{t('라벨')}</div>
                           <div className="properties-control">
                             <Input
                               size="md"
                               color="white"
                               value={selectedItem?.item?.label}
                               onChange={val => {
-                                onChangeTestcaseTemplateItem(selectedItem.inx, 'label', val);
+                                onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'label', val);
                               }}
                               required
                               minLength={1}
@@ -314,12 +456,11 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                           </div>
                         </div>
                         <div className="type">
-                          <div className="title">타입</div>
+                          <div className="title">{t('타입')}</div>
                           <div className="properties-control">
                             <Selector
                               className="selector"
-                              outline
-                              size="sm"
+                              size="md"
                               items={testcaseItemTypes.map(d => {
                                 return {
                                   key: d,
@@ -328,11 +469,12 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               })}
                               value={selectedItem?.item?.type}
                               onChange={val => {
-                                onChangeTestcaseTemplateItem(selectedItem.inx, 'type', val);
+                                onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'type', val);
                               }}
                             />
                           </div>
                         </div>
+
                         {hasOptionType(selectedItem?.item?.type) && (
                           <div className="options">
                             <div className="title">
@@ -341,10 +483,10 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                 <Button
                                   size="xs"
                                   onClick={() => {
-                                    onAddTestcaseTemplateItemOption(selectedItem.inx);
+                                    onAddTestcaseTemplateItemOption(selectedItem.inx, selectedItem?.item?.category);
                                   }}
                                 >
-                                  추가
+                                  {t('추가')}
                                 </Button>
                               </div>
                             </div>
@@ -361,7 +503,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                               color="white"
                                               value={d}
                                               onChange={val => {
-                                                onChangeTestcaseTemplateItemOption(selectedItem.inx, jnx, val);
+                                                onChangeTestcaseTemplateItemOption(selectedItem.inx, selectedItem.item.category, jnx, val);
                                               }}
                                               required
                                               minLength={1}
@@ -373,7 +515,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                               rounded
                                               color="danger"
                                               onClick={() => {
-                                                onDeleteTestcaseTemplateItemOption(selectedItem.inx, jnx);
+                                                onDeleteTestcaseTemplateItemOption(selectedItem.inx, selectedItem.item.category, jnx);
                                               }}
                                             >
                                               <i className="fa-regular fa-trash-can" />
@@ -410,7 +552,9 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                 <Button
                   onClick={() => {
                     if (onChange) {
-                      onChange(template);
+                      const nextTemplate = { ...template };
+                      nextTemplate.testcaseTemplateItems = [].concat(caseTemplateItems).concat(resultTemplateItems);
+                      onChange(nextTemplate);
                       onClose();
                     }
                   }}
@@ -441,8 +585,9 @@ TestcaseTemplateEditorPopup.defaultProps = {
   onClose: null,
   onChange: null,
   testcaseItemTypes: [],
+  testcaseItemCategories: [],
   opened: false,
-  editor: false,
+  editor: true,
 };
 
 TestcaseTemplateEditorPopup.propTypes = {
@@ -451,6 +596,7 @@ TestcaseTemplateEditorPopup.propTypes = {
   onClose: PropTypes.func,
   onChange: PropTypes.func,
   testcaseItemTypes: PropTypes.arrayOf(PropTypes.string),
+  testcaseItemCategories: PropTypes.arrayOf(PropTypes.string),
   opened: PropTypes.bool,
   editor: PropTypes.bool,
 };

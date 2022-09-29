@@ -15,7 +15,6 @@ function Spaces() {
 
   useEffect(() => {
     ProjectService.selectProjectList(spaceCode, list => {
-      console.log(list);
       setProjects(list);
     });
   }, []);

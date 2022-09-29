@@ -16,8 +16,10 @@
     width: 0;
 
     > div.editor-content {
+      opacity: 0;
       .editor-title {
         margin-top: 1rem;
+        margin-right: 0.5rem;
         .title-text {
           padding-left: 1rem;
         }
@@ -41,12 +43,21 @@
         }
         .editor {
           display: flex;
-          margin-top: 1rem;
+          margin-top: 2rem;
           padding: 0;
           min-height: 600px;
 
           .sub-title {
             margin-bottom: 1rem;
+            display: flex;
+
+            > div {
+              align-self: center;
+            }
+
+            .text {
+              flex-grow: 1;
+            }
           }
 
           .items {
@@ -54,6 +65,17 @@
             margin-right: 1rem;
             display: flex;
             flex-direction: column;
+
+            > div {
+              display: flex;
+              flex-direction: column;
+              flex: 1 1 0;
+              margin-top: 2rem;
+
+              &:first-child {
+                margin-top: 0;
+              }
+            }
 
             .layout {
               background-color: #080808;
@@ -86,6 +108,10 @@
                 background-color: #222;
                 margin-right: 0.5rem;
                 margin-bottom: 0.5rem;
+
+                &.hidden {
+                  display: none;
+                }
 
                 &:hover {
                   background-color: #333;
@@ -240,7 +266,9 @@
 
                 .properties-control {
                   > div {
-                    width: 100%;
+                    &.selector {
+                      width: 100%;
+                    }
 
                     > ul {
                       width: 100%;
@@ -312,6 +340,12 @@
     > div {
       width: 40%;
       transition: all 0.3s;
+
+      > div.editor-content {
+        opacity: 1 !important;
+        transition: all 0.3s;
+        transition-delay: 0.3s;
+      }
 
       @media (max-width: 2000px) {
         width: 50%;

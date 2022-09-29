@@ -13,9 +13,9 @@ ConfigService.selectSystemVersion = (successHandler, failHandler) => {
   );
 };
 
-ConfigService.selectTestcaseItemTypes = (successHandler, failHandler) => {
+ConfigService.selectTestcaseConfigs = (successHandler, failHandler) => {
   return request.get(
-    '/api/configs/systems/testcase/item-types',
+    '/api/configs/systems/testcase/configs',
     null,
     res => {
       successHandler(res);

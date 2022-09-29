@@ -21,11 +21,11 @@ export default class ContextStore {
   };
 
   setProjectId = projectId => {
-    this.projectId = projectId;
+    this.projectId = Number(projectId);
   };
 
   get isProjectSelected() {
-    return !!this.spaceCode && !!this.projectId;
+    return !!this.spaceCode && !!this.projectId && Number.isInteger(this.projectId);
   }
 
   get isSpaceSelected() {

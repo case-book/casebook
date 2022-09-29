@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
+import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
@@ -23,6 +24,10 @@ public class TestcaseTemplateItem extends CommonEntity {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(name = "category", nullable = false, length = ColumnsDef.CODE)
+    @Enumerated(EnumType.STRING)
+    private TestcaseItemCategory category;
 
     @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
     @Enumerated(EnumType.STRING)

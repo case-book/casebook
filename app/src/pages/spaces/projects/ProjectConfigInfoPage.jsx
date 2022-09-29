@@ -72,10 +72,9 @@ function ProjectConfigInfoPage() {
         </PageContent>
       </Page>
       <TestcaseTemplateEditorPopup
-        viewer
+        editor={false}
         opened={templateViewerPopupInfo.opened}
         testcaseTemplate={templateViewerPopupInfo.testcaseTemplate}
-        // testcaseItemTypes={testcaseItemTypes}
         onClose={() => {
           setTemplateViewerPopupInfo({
             opened: false,

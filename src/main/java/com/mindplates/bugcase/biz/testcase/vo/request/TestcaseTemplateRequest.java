@@ -15,6 +15,8 @@ public class TestcaseTemplateRequest {
 
     private String crud;
 
+    private Boolean isDefault;
+
     private List<TestcaseTemplateItemRequest> testcaseTemplateItems;
 
     public TestcaseTemplate buildEntity() {
@@ -22,6 +24,7 @@ public class TestcaseTemplateRequest {
         TestcaseTemplate testcaseTemplate = TestcaseTemplate.builder()
                 .id(id)
                 .name(name)
+                .isDefault(isDefault)
                 .deleted("D".equals(crud))
                 .build();
 
