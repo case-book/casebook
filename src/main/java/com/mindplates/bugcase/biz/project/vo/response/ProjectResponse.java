@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import lombok.*;
 
@@ -23,6 +24,8 @@ public class ProjectResponse {
     private String spaceName;
     private List<TestcaseTemplateResponse> testcaseTemplates;
 
+    private List<TestcaseGroupResponse> testcaseGroups;
+
     public ProjectResponse(Project project) {
         this.id = project.getId();
         this.name = project.getName();
@@ -33,6 +36,10 @@ public class ProjectResponse {
         this.spaceName = project.getSpace().getName();
         if (project.getTestcaseTemplates() != null && project.getTestcaseTemplates().size() > 0) {
             this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
+        }
+
+        if (project.getTestcaseGroups() != null && project.getTestcaseGroups().size() > 0) {
+            this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
         }
     }
 }

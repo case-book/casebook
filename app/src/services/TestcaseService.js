@@ -24,4 +24,18 @@ TestcaseService.selectConfig = (spaceCode, projectId, successHandler, failHandle
   );
 };
 
+TestcaseService.createTestcaseGroup = (spaceCode, projectId, testcaseGroup, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testcases/groups`,
+    testcaseGroup,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

@@ -2,9 +2,12 @@ package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseConfigRequest;
+import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupRequest;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.UserSession;
@@ -54,6 +57,21 @@ public class TestcaseController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(description = "테스트케이스 그룹 생성")
+    @PostMapping("/groups")
+    public TestcaseGroupResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest, @ApiIgnore UserSession userSession) {
+
+        Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, projectId);
+
+        if (!projectInfo.isPresent()) {
+            throw new ServiceException(HttpStatus.NOT_FOUND);
+        }
+
+        TestcaseGroup testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.buildEntity(projectId), userSession.getId());
+
+        return new TestcaseGroupResponse(testcaseGroup);
     }
 
 
