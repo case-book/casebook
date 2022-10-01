@@ -37,7 +37,7 @@ public class SessionUtil {
     public static UserSession getUserInfo(SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> attributes = headerAccessor.getSessionAttributes();
         if (attributes == null) {
-            throw new ServiceException("error.session");
+            throw new ServiceException("session.error.expired");
         }
 
         return (UserSession) attributes.get("USER_INFO");

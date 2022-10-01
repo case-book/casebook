@@ -56,7 +56,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         }
 
         if (!sessionUtil.isLogin(request)) {
-            throw new ServiceException(HttpStatus.UNAUTHORIZED, "error.session");
+            throw new ServiceException(HttpStatus.UNAUTHORIZED, "session.error.expired");
         }
 
         return true;

@@ -22,7 +22,7 @@ spring:
       hibernate:
         format_sql: true
         enable_lazy_load_no_trans: true
-        # type: trace
+        type: trace
   redis:
     host: localhost
     port: 6679
