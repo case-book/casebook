@@ -8,17 +8,11 @@ import lombok.Data;
 public class TestcaseGroupRequest {
 
     private Long id;
-
     private Long parentId;
-
     private Long depth;
-
     private String name;
     private Integer itemOrder;
-
-
     public TestcaseGroup buildEntity(Long projectId) {
-
         return TestcaseGroup.builder()
                 .id(id)
                 .parentId(parentId)
@@ -28,6 +22,4 @@ public class TestcaseGroupRequest {
                 .project(Project.builder().id(projectId).build())
                 .build();
     }
-
-
 }
