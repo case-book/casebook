@@ -38,4 +38,18 @@ TestcaseService.createTestcaseGroup = (spaceCode, projectId, testcaseGroup, succ
   );
 };
 
+TestcaseService.updateTestcaseGroupOrders = (spaceCode, projectId, testcaseGroupOrderChangeRequest, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/orders`,
+    testcaseGroupOrderChangeRequest,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

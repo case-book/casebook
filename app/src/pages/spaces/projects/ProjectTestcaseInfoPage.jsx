@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
@@ -13,6 +13,10 @@ function ProjectTestcaseInfoPage() {
   const [project, setProject] = useState(null);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [selectedTestcaseGroupId, setSelectedTestcaseGroupId] = useState(null);
+
+  const [dragChange, setDragChange] = useState(null);
+
+  const dragInfo = useRef({}).current;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -46,15 +50,14 @@ function ProjectTestcaseInfoPage() {
       }
     }
 
-    console.log(nextGroups);
     setTestcaseGroups(nextGroups);
   }, [project]);
 
   const addTestcaseGroup = () => {
+    const name = `그룹-${(testcaseGroups?.length || 0) + 1}`;
     let testcaseGroup = {
       parentId: null,
-
-      name: '그룹',
+      name,
       testcases: [],
     };
 
@@ -63,7 +66,7 @@ function ProjectTestcaseInfoPage() {
 
       testcaseGroup = {
         parentId: selectedGroup.id,
-        name: '그룹',
+        name,
         testcases: [],
       };
     }
@@ -73,31 +76,135 @@ function ProjectTestcaseInfoPage() {
       const nextTestcaseGroups = nextProject.testcaseGroups?.slice(0) || [];
       nextTestcaseGroups.push(info);
       nextProject.testcaseGroups = nextTestcaseGroups;
-      console.log(nextProject);
+
       setProject(nextProject);
     });
+  };
+
+  const setDragInfo = info => {
+    setDragChange(Date.now());
+
+    Object.keys(info).forEach(key => {
+      dragInfo[key] = info[key];
+    });
+  };
+
+  const onDrop = e => {
+    e.stopPropagation();
+    if (dragInfo.destinationId) {
+      TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, dragInfo, info => {
+        setProject(info);
+      });
+    }
   };
 
   const getGroup = group => {
     return (
       <li key={group.id} className={`${group.id === selectedTestcaseGroupId ? 'selected' : ''}`}>
         <div
-          className="group-content"
+          className={`group-content 
+          ${dragInfo.targetId === group.id ? 'drag-target' : ''} 
+          ${dragInfo.destinationId === group.id ? 'drag-destination' : ''} 
+          ${dragInfo.toChildren ? 'to-children' : ''}`}
           onClick={() => {
             setSelectedTestcaseGroupId(group.id);
           }}
+          onDragEnter={() => {
+            if (dragInfo.targetId !== group.id) {
+              setDragInfo({
+                destinationId: group.id,
+              });
+            } else {
+              setDragInfo({
+                destinationId: null,
+              });
+            }
+          }}
+          onDragLeave={() => {
+            setDragInfo({
+              destinationId: null,
+            });
+          }}
+          onDragOver={e => {
+            e.preventDefault();
+          }}
+          onDrop={onDrop}
         >
           <div className="icon">
-            <i className="fa-solid fa-folder" />
+            <i className="fa-solid fa-book" />
           </div>
-          <div>{group.name}</div>
+          <div
+            className="name"
+            onDragLeave={e => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            {group.name}
+          </div>
+          <div
+            draggable
+            className="grab"
+            onDragStart={() => {
+              setDragInfo({
+                targetId: group.id,
+                destinationId: null,
+              });
+            }}
+            onDragEnd={() => {
+              setDragChange(Date.now());
+              setDragInfo({
+                targetId: null,
+                destinationId: null,
+              });
+            }}
+            onDragLeave={e => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            <i className="fa-solid fa-grip-vertical" />
+          </div>
+          <div
+            className="bar"
+            onDrop={onDrop}
+            onDragEnter={() => {
+              if (dragInfo.targetId !== group.id) {
+                setDragInfo({
+                  destinationId: group.id,
+                  toChildren: true,
+                });
+              } else {
+                setDragInfo({
+                  destinationId: null,
+                });
+              }
+            }}
+            onDragLeave={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (dragInfo.targetId !== group.id) {
+                setDragInfo({
+                  toChildren: false,
+                });
+              } else {
+                setDragInfo({
+                  destinationId: null,
+                });
+              }
+            }}
+          />
         </div>
         {group.children && (
           <div className="group-children">
             <ul>
-              {group.children.map(d => {
-                return getGroup(d);
-              })}
+              {group.children
+                .sort((a, b) => {
+                  return a.itemOrder - b.itemOrder;
+                })
+                .map(d => {
+                  return getGroup(d);
+                })}
             </ul>
           </div>
         )}
@@ -112,23 +219,37 @@ function ProjectTestcaseInfoPage() {
         <div className="page-layout">
           <div className="testcase-groups">
             <div className="buttons">
-              <Button size="sm" onClick={addTestcaseGroup}>
+              <Button size="xs" onClick={addTestcaseGroup}>
                 그룹 추가
               </Button>
             </div>
             <div className="summary">설명</div>
             <div className="trees">
-              <div className="content-scroller">
+              <div className={`content-scroller ${dragChange}`}>
                 <ul>
-                  {testcaseGroups.map(d => {
-                    return getGroup(d);
-                  })}
+                  {testcaseGroups
+                    .sort((a, b) => {
+                      return a.itemOrder - b.itemOrder;
+                    })
+                    .map(d => {
+                      return getGroup(d);
+                    })}
                 </ul>
               </div>
             </div>
           </div>
-          <div className="testcases">
-            <div className="content-scroller">2</div>
+          <div
+            className="testcases"
+            onDrop={() => {}}
+            onDragEnter={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              setDragInfo({
+                destinationId: null,
+              });
+            }}
+          >
+            <div className="content-scroller" />
           </div>
         </div>
       </PageContent>

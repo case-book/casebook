@@ -2,10 +2,12 @@ package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseConfigRequest;
+import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupOrderChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupRequest;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
@@ -72,6 +74,13 @@ public class TestcaseController {
         TestcaseGroup testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.buildEntity(projectId), userSession.getId());
 
         return new TestcaseGroupResponse(testcaseGroup);
+    }
+
+    @Operation(description = "테스트케이스 그룹 위치 변경")
+    @PutMapping("/orders")
+    public ProjectResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupOrderChangeRequest testcaseGroupOrderChangeRequest) {
+        Project project = testcaseService.updateProjectTestcaseGroupOrderInfo(spaceCode, projectId, testcaseGroupOrderChangeRequest.getTargetId(), testcaseGroupOrderChangeRequest.getDestinationId(), testcaseGroupOrderChangeRequest.isToChildren());
+        return new ProjectResponse(project);
     }
 
 
