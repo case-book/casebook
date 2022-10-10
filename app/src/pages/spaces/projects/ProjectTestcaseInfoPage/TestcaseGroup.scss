@@ -67,15 +67,23 @@
       margin: 0;
       > li {
         display: block;
+        position: relative;
+
+        .border-bottom {
+          height: 1px;
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.3);
+        }
 
         .group-content {
           display: flex;
           border-radius: 2px;
           position: relative;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 
           .tree-mark {
-            overflow: hidden;
             width: 10px;
 
             > div {
@@ -90,15 +98,15 @@
                   height: calc(50% - 11px);
                   width: 1px;
                   border-left: 1px dotted $gray-700;
-                  left: 0;
+                  left: 7px;
                   top: 10px;
                 }
 
                 &.line-2 {
                   height: 1px;
-                  width: 100%;
+                  width: calc(100% - 2px);
                   top: 50%;
-                  left: 0;
+                  left: 7px;
                   _background-color: $white;
                   border-bottom: 1px dotted $gray-700;
                 }
@@ -194,6 +202,28 @@
         }
 
         .group-children {
+          .border-top {
+            display: none;
+          }
+          > ul {
+            > li:first-child {
+              > .border-top {
+                height: 1px;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                background-color: rgba(0, 0, 0, 0.3);
+                display: block;
+              }
+            }
+
+            > li:last-child {
+              > .border-bottom {
+                display: none;
+              }
+            }
+          }
         }
 
         &.selected {

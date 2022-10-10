@@ -49,6 +49,8 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
   const getGroup = (group, lastChild) => {
     return (
       <li key={group.id} className={`${group.id === selectedId ? 'selected' : ''}`}>
+        <div className="border-bottom" />
+        <div className="border-top" />
         <div
           className={`group-content 
           ${dragInfo.targetId === group.id ? 'drag-target' : ''} 
