@@ -5,12 +5,9 @@
   width: 100%;
   flex-direction: column;
   max-width: $max-page-width;
-  margin: 20px auto 40px;
-  _background-color: $white;
-  min-height: calc(100vh - 140px);
+  margin: 0 auto 20px;
+  min-height: calc(100vh - 120px);
   border-radius: 20px;
-  _border: 1px solid $gray-300;
-  _background-color: rgba(0, 0, 0, 0.075);
 
   &.info-page {
   }
@@ -26,6 +23,15 @@
 
     .page-content-wrapper {
       padding: 1rem;
+    }
+  }
+
+  &.wide {
+    max-width: 1920px;
+    width: auto;
+    @media (max-width: 2000px) {
+      margin-left: 20px;
+      margin-right: 20px;
     }
   }
 

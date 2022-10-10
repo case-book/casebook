@@ -1,0 +1,31 @@
+.project-testcase-info-page-wrapper {
+  display: flex;
+
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+    .page-layout {
+      display: flex;
+      flex-grow: 1;
+
+
+
+      .testcases {
+        flex-grow: 1;
+        position: relative;
+      }
+
+      .testcases {
+        .content-scroller {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow-y: auto;
+          padding: 1rem;
+        }
+      }
+    }
+  }
+}
