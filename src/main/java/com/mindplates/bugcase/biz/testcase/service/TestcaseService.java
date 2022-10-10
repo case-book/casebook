@@ -19,8 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -142,6 +141,49 @@ public class TestcaseService {
         projectRepository.save(project);
 
         return project;
+    }
+
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteTestcaseGroupInfo(String spaceCode, Long projectId, Long testcaseGroupId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        List<TestcaseGroup> testcaseGroups = project.getTestcaseGroups();
+        TestcaseGroup targetTestcaseGroup = testcaseGroups.stream().filter((testcaseGroup -> testcaseGroup.getId().equals(testcaseGroupId))).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        long maxDepth = testcaseGroups.stream().mapToLong(TestcaseGroup::getDepth).max().orElse(0L);
+
+        Map<Long, List<TestcaseGroup>> deletedTargets = new HashMap<>();
+        List<TestcaseGroup> startDepthList = new ArrayList<>();
+        startDepthList.add(targetTestcaseGroup);
+        deletedTargets.put(targetTestcaseGroup.getDepth(), startDepthList);
+
+        for (long i = targetTestcaseGroup.getDepth(); i <= maxDepth; i += 1) {
+            List<TestcaseGroup> parentList = deletedTargets.get(i);
+            long childrenDepth = i + 1;
+            if (parentList != null) {
+                parentList.stream().forEach((parentGroup -> {
+                    List<TestcaseGroup> children = testcaseGroups.stream()
+                            .filter((testcaseGroup -> testcaseGroup.getParentId() != null && testcaseGroup.getDepth().equals(childrenDepth) && parentGroup.getId().equals(testcaseGroup.getParentId()))).collect(Collectors.toList());
+                    List<TestcaseGroup> currentList = deletedTargets.get(childrenDepth);
+                    if (currentList == null) {
+                        currentList = new ArrayList<>();
+                    }
+                    currentList.addAll(children);
+                    deletedTargets.put(childrenDepth, currentList);
+                }));
+            }
+        }
+
+        List<Long> deleteGroupIds = new ArrayList<>();
+
+        for (long depth : deletedTargets.keySet()) {
+            List<TestcaseGroup> list = deletedTargets.get(depth);
+            list.stream().forEach((testcaseGroup -> deleteGroupIds.add(testcaseGroup.getId())));
+        }
+
+
+        testcaseGroupRepository.deleteByIds(deleteGroupIds);
     }
 
 

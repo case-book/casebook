@@ -19,9 +19,9 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
-    @Cacheable(key = "{#spaceCode,#id}", value = CacheConfig.PROJECT)
-    public Optional<Project> selectProjectInfo(String spaceCode, Long id) {
-        return projectRepository.findBySpaceCodeAndId(spaceCode, id);
+    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public Optional<Project> selectProjectInfo(String spaceCode, Long projectId) {
+        return projectRepository.findBySpaceCodeAndId(spaceCode, projectId);
     }
 
     public Project selectByName(String spaceCode, String name) {

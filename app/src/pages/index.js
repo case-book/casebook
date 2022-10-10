@@ -16,7 +16,7 @@ import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
 import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 import ProjectReportInfoPage from '@/pages/spaces/projects/ProjectReportInfoPage';
-import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage';
+import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
 import ProjectTestrunInfoPage from '@/pages/spaces/projects/ProjectTestrunInfoPage';
 
 export {

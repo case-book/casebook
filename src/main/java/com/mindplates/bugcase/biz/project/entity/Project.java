@@ -56,5 +56,10 @@ public class Project extends CommonEntity {
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
     private Space space;
 
+    @Column(name="testcase_group_seq", columnDefinition = "integer default 0")
+    private Integer testcaseGroupSeq = 0;
+
+    @Column(name="testcase_seq", columnDefinition = "integer default 0")
+    private Integer testcaseSeq = 0;
 
 }

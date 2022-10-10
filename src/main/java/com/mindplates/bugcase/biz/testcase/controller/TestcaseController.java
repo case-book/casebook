@@ -83,5 +83,12 @@ public class TestcaseController {
         return new ProjectResponse(project);
     }
 
+    @Operation(description = "테스트케이스 그룹 삭제")
+    @DeleteMapping("/groups/{groupId}")
+    public ResponseEntity deleteTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId) {
+        testcaseService.deleteTestcaseGroupInfo(spaceCode, projectId, groupId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }
