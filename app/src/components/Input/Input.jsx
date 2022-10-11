@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Input.scss';
 
-function Input({ className, type, value, size, disabled, border, required, onChange, placeholder, minLength, maxLength, onRef, underline, color }) {
+function Input({ className, type, value, size, disabled, border, required, onChange, placeholder, minLength, maxLength, onRef, underline, color, onKeyDown }) {
   return (
     <input
       ref={e => {
@@ -19,6 +19,7 @@ function Input({ className, type, value, size, disabled, border, required, onCha
           onChange(e.target.value, e);
         }
       }}
+      onKeyDown={onKeyDown}
       value={value}
       required={required}
       minLength={minLength}
@@ -42,6 +43,7 @@ Input.defaultProps = {
   onRef: null,
   underline: false,
   color: 'black',
+  onKeyDown: null,
 };
 
 Input.propTypes = {
@@ -59,6 +61,7 @@ Input.propTypes = {
   onRef: PropTypes.func,
   underline: PropTypes.bool,
   color: PropTypes.string,
+  onKeyDown: PropTypes.func,
 };
 
 export default Input;

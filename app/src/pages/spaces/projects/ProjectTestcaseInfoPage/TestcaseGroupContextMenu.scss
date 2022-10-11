@@ -1,0 +1,44 @@
+.testcase-group-context-menu-wrapper {
+  z-index: 2;
+  position: fixed;
+  background-color: transparent;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: none;
+
+  &.on {
+    display: block;
+  }
+
+  > div {
+    position: absolute;
+    background-color: $white;
+    padding: 4px;
+
+    min-width: 100px;
+    color: $black;
+    font-size: 14px;
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        padding: 0.5rem;
+        cursor: pointer;
+        border-bottom: 1px solid #ccc;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: $color-azure;
+          color: $white;
+        }
+      }
+    }
+  }
+}

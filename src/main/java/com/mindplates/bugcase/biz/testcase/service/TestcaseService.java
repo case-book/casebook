@@ -117,7 +117,7 @@ public class TestcaseService {
             targetGroup.setItemOrder(0);
 
         } else {
-            List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (testcaseGroup.getParentId().equals(destinationGroup.getParentId()))).sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
+            List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId()))).sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(0);
             sameParentList.forEach((testcaseGroup) -> {
@@ -184,6 +184,18 @@ public class TestcaseService {
 
 
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseGroup updateTestcaseGroupName(String spaceCode, Long projectId, Long groupId, String name) {
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testcaseGroup.setName(name);
+        testcaseGroup.setLastUpdateDate(LocalDateTime.now());
+        testcaseGroup.setLastUpdatedBy(sessionUtil.getUserId(req));
+        testcaseGroupRepository.save(testcaseGroup);
+        return testcaseGroup;
     }
 
 

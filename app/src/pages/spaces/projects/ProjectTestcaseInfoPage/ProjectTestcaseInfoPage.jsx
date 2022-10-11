@@ -98,6 +98,17 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
+  const onChangeTestcaseGroupName = (id, name) => {
+    TestcaseService.updateTestcaseGroupName(spaceCode, projectId, id, name, info => {
+      const nextProject = { ...project };
+      const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
+      if (inx > -1) {
+        nextProject.testcaseGroups[inx] = info;
+        setProject(nextProject);
+      }
+    });
+  };
+
   return (
     <Page className="project-testcase-info-page-wrapper" list wide>
       <PageTitle>{t('테스트케이스')}</PageTitle>
@@ -107,6 +118,7 @@ function ProjectTestcaseInfoPage() {
             testcaseGroups={testcaseGroups}
             addTestcaseGroup={addTestcaseGroup}
             onChangeTestcaseOrderChange={onChangeTestcaseOrderChange}
+            onChangeTestcaseGroupName={onChangeTestcaseGroupName}
             selectedId={selectedTestcaseGroupId}
             onSelect={setSelectedTestcaseGroupId}
             onDelete={onDeleteTestcaseGroup}

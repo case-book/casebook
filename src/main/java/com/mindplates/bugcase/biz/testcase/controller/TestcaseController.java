@@ -7,6 +7,7 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseConfigRequest;
+import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupNameChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupOrderChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupRequest;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
@@ -88,6 +89,13 @@ public class TestcaseController {
     public ResponseEntity deleteTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId) {
         testcaseService.deleteTestcaseGroupInfo(spaceCode, projectId, groupId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "테스트케이스 그룹 이름 변경")
+    @PutMapping("/groups/{groupId}/name")
+    public TestcaseGroupResponse updateTestcaseGroupName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupNameChangeRequest testcaseGroupNameChangeRequest) {
+        TestcaseGroup testcaseGroup = testcaseService.updateTestcaseGroupName(spaceCode, projectId, groupId, testcaseGroupNameChangeRequest.getName());
+        return new TestcaseGroupResponse(testcaseGroup);
     }
 
 

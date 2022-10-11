@@ -2,16 +2,30 @@ import React, { useRef, useState } from 'react';
 import { Button, Liner } from '@/components';
 import PropTypes from 'prop-types';
 import './TestcaseGroup.scss';
+import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
+import TestcaseGroupContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupContextMenu';
 
-function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrderChange, selectedId, onSelect, onDelete }) {
+function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrderChange, selectedId, onSelect, onDelete, onChangeTestcaseGroupName }) {
+  const dragInfo = useRef({
+    targetId: null,
+    destinationId: null,
+    toChildren: false,
+  }).current;
+
+  const [editInfo, setEditInfo] = useState({
+    id: null,
+    name: '',
+    clickTime: null,
+    clickId: null,
+  });
+
   const [dragChange, setDragChange] = useState(null);
   const [contextMenuInfo, setContextMenuInfo] = useState({
     id: null,
     x: null,
     y: null,
+    name: '',
   });
-
-  const dragInfo = useRef({}).current;
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -28,13 +42,14 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
     }
   };
 
-  const onContextMenu = (e, id) => {
+  const onContextMenu = (e, id, name) => {
     e.preventDefault();
 
     setContextMenuInfo({
       id,
       x: e.pageX,
       y: e.pageY,
+      name,
     });
   };
 
@@ -43,141 +58,44 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
       id: null,
       x: null,
       y: null,
+      name: '',
     });
   };
 
-  const getGroup = (group, lastChild) => {
-    return (
-      <li key={group.id} className={`${group.id === selectedId ? 'selected' : ''}`}>
-        <div
-          className={`group-content 
-          ${dragInfo.targetId === group.id ? 'drag-target' : ''} 
-          ${dragInfo.destinationId === group.id ? 'drag-destination' : ''}  
-          ${dragInfo.toChildren ? 'to-children' : ''} 
-          ${contextMenuInfo.id === group.id ? 'context-menu-target' : ''}`}
-          onContextMenu={e => {
-            onSelect(group.id);
-            onContextMenu(e, group.id);
-          }}
-          onClick={() => {
-            onSelect(group.id);
-          }}
-          onDragEnter={() => {
-            if (dragInfo.targetId !== group.id) {
-              setDragInfo({
-                destinationId: group.id,
-              });
-            } else {
-              setDragInfo({
-                destinationId: null,
-              });
-            }
-          }}
-          onDragLeave={() => {
-            setDragInfo({
-              destinationId: null,
-            });
-          }}
-          onDragOver={e => {
-            e.preventDefault();
-          }}
-          onDrop={onDrop}
-          style={{
-            marginLeft: `${group.depth * 10}px`,
-          }}
-        >
-          {group.depth > 0 && (
-            <div className={`tree-mark ${lastChild ? 'last-child' : ''}`}>
-              <div>
-                <div className="line line-1" />
-                <div className="line line-2" />
-              </div>
-            </div>
-          )}
-          <div className="icon">
-            <span>
-              <span>
-                <i className="fa-solid fa-book" />
-              </span>
-            </span>
-          </div>
-          <div
-            className="name"
-            onDragLeave={e => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            {group.name}
-          </div>
-          <div
-            draggable
-            className="grab"
-            onDragStart={() => {
-              setDragInfo({
-                targetId: group.id,
-                destinationId: null,
-              });
-            }}
-            onDragEnd={() => {
-              setDragChange(Date.now());
-              setDragInfo({
-                targetId: null,
-                destinationId: null,
-              });
-            }}
-            onDragLeave={e => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            <i className="fa-solid fa-grip-vertical" />
-          </div>
-          <div
-            className="bar"
-            onDrop={onDrop}
-            onDragEnter={() => {
-              if (dragInfo.targetId !== group.id) {
-                setDragInfo({
-                  destinationId: group.id,
-                  toChildren: true,
-                });
-              } else {
-                setDragInfo({
-                  destinationId: null,
-                });
-              }
-            }}
-            onDragLeave={e => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (dragInfo.targetId !== group.id) {
-                setDragInfo({
-                  toChildren: false,
-                });
-              } else {
-                setDragInfo({
-                  destinationId: null,
-                });
-              }
-            }}
-          />
-        </div>
-        {group.children && (
-          <div className="group-children">
-            <ul>
-              {group.children
-                .sort((a, b) => {
-                  return a.itemOrder - b.itemOrder;
-                })
-                .map((d, inx) => {
-                  return getGroup(d, group.children.length - 1 === inx);
-                })}
-            </ul>
-          </div>
-        )}
-      </li>
-    );
+  const onClickGroupName = (group, force) => {
+    if (editInfo.clickTime || force) {
+      if (force || (editInfo.clickId === group.id && Date.now() - editInfo.clickTime > 300 && Date.now() - editInfo.clickTime < 1200)) {
+        setEditInfo({ ...editInfo, id: group.id, clickTime: null, name: group.name, clickId: null });
+        setTimeout(() => {
+          const e = document.querySelector('.testcase-groups-wrapper input.name-editor');
+          if (e?.focus) {
+            e.focus();
+          }
+          if (e?.select) {
+            e.select();
+          }
+        }, 200);
+      } else {
+        setEditInfo({ ...editInfo, clickTime: null, clickId: null });
+      }
+    } else {
+      setEditInfo({
+        ...editInfo,
+        clickTime: Date.now(),
+        clickId: group.id,
+      });
+    }
+  };
+
+  const clearEditing = () => {
+    setEditInfo({ id: null, clickTime: null, name: '', clickId: null });
+  };
+
+  const onChangeEditName = name => {
+    setEditInfo({
+      ...editInfo,
+      name,
+    });
   };
 
   return (
@@ -199,50 +117,31 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
               .sort((a, b) => {
                 return a.itemOrder - b.itemOrder;
               })
-              .map(d => {
-                return getGroup(d);
+              .map(group => {
+                return (
+                  <TestcaseGroupItem
+                    key={group.id}
+                    group={group}
+                    dragInfo={dragInfo}
+                    setDragInfo={setDragInfo}
+                    onDrop={onDrop}
+                    editInfo={editInfo}
+                    contextMenuInfo={contextMenuInfo}
+                    onContextMenu={onContextMenu}
+                    selectedId={selectedId}
+                    onSelect={onSelect}
+                    lastChild={false}
+                    onChangeEditName={onChangeEditName}
+                    clearEditing={clearEditing}
+                    onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+                    onClickGroupName={onClickGroupName}
+                  />
+                );
               })}
           </ul>
         </div>
       </div>
-      {contextMenuInfo?.id && (
-        <div
-          className="context-menu"
-          onClick={() => {
-            onClearContextMenu();
-          }}
-        >
-          <div
-            style={{
-              left: contextMenuInfo.x,
-              top: contextMenuInfo.y,
-            }}
-            onClick={e => {
-              e.stopPropagation();
-            }}
-          >
-            <ul>
-              <li
-                onClick={() => {
-                  if (contextMenuInfo.id) {
-                    onDelete(contextMenuInfo.id);
-                    onClearContextMenu();
-                  }
-                }}
-              >
-                삭제
-              </li>
-              <li
-                onClick={() => {
-                  onClearContextMenu();
-                }}
-              >
-                이름 변경
-              </li>
-            </ul>
-          </div>
-        </div>
-      )}
+      <TestcaseGroupContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />
     </div>
   );
 }
@@ -276,6 +175,7 @@ TestcaseGroup.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   selectedId: PropTypes.number,
+  onChangeTestcaseGroupName: PropTypes.func.isRequired,
 };
 
 export default TestcaseGroup;

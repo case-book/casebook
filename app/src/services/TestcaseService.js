@@ -66,4 +66,18 @@ TestcaseService.deleteTestcaseGroup = (spaceCode, projectId, groupId, successHan
   );
 };
 
+TestcaseService.updateTestcaseGroupName = (spaceCode, projectId, groupId, name, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/groups/${groupId}/name`,
+    { name },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

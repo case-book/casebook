@@ -8,9 +8,11 @@
   border-radius: 2px;
   box-sizing: border-box;
   border: none;
-  border-bottom: 1px solid transparent;
-
   transition: border-bottom 0.5s;
+
+  &.underline {
+    border-bottom: 1px solid transparent;
+  }
 
   &:focus {
     box-shadow: none;
@@ -20,7 +22,7 @@
 
   &:invalid {
     _border-bottom: 1px solid $danger;
-    _border-bottom: 1px solid rgba(255,255,255,0.3);
+    _border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     transition: border-bottom 0.5s;
     border-radius: 2px 2px 0 0;
   }
