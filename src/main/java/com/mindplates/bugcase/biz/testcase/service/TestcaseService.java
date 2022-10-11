@@ -186,5 +186,17 @@ public class TestcaseService {
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseGroup updateTestcaseGroupName(String spaceCode, Long projectId, Long groupId, String name) {
+        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testcaseGroup.setName(name);
+        testcaseGroup.setLastUpdateDate(LocalDateTime.now());
+        testcaseGroup.setLastUpdatedBy(sessionUtil.getUserId(req));
+        testcaseGroupRepository.save(testcaseGroup);
+        return testcaseGroup;
+    }
+
 
 }

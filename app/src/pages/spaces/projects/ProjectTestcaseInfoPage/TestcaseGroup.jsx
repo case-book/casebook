@@ -1,17 +1,25 @@
 import React, { useRef, useState } from 'react';
-import { Button, Liner } from '@/components';
+import { Button, Input, Liner } from '@/components';
 import PropTypes from 'prop-types';
 import './TestcaseGroup.scss';
 
-function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrderChange, selectedId, onSelect, onDelete }) {
+function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrderChange, selectedId, onSelect, onDelete, onChangeTestcaseGroupName }) {
+  const dragInfo = useRef({}).current;
+
+  const [editInfo, setEditInfo] = useState({
+    id: null,
+    name: '',
+    clickTime: null,
+    clickId: null,
+  });
+
   const [dragChange, setDragChange] = useState(null);
   const [contextMenuInfo, setContextMenuInfo] = useState({
     id: null,
     x: null,
     y: null,
+    name: '',
   });
-
-  const dragInfo = useRef({}).current;
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -28,13 +36,14 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
     }
   };
 
-  const onContextMenu = (e, id) => {
+  const onContextMenu = (e, id, name) => {
     e.preventDefault();
 
     setContextMenuInfo({
       id,
       x: e.pageX,
       y: e.pageY,
+      name,
     });
   };
 
@@ -43,6 +52,39 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
       id: null,
       x: null,
       y: null,
+      name: '',
+    });
+  };
+
+  const onClickGroupName = (group, force) => {
+    if (editInfo.clickTime || force) {
+      if (force || (editInfo.clickId === group.id && Date.now() - editInfo.clickTime > 300 && Date.now() - editInfo.clickTime < 1200)) {
+        setEditInfo({ ...editInfo, id: group.id, clickTime: null, name: group.name, clickId: null });
+        setTimeout(() => {
+          const e = document.querySelector('input.name-editor');
+          if (e?.focus) {
+            e.focus();
+          }
+          if (e?.select) {
+            e.select();
+          }
+        }, 200);
+      } else {
+        setEditInfo({ ...editInfo, clickTime: null, clickId: null });
+      }
+    } else {
+      setEditInfo({ ...editInfo, clickTime: Date.now(), clickId: group.id });
+    }
+  };
+
+  const clearEditing = () => {
+    setEditInfo({ id: null, clickTime: null, name: '', clickId: null });
+  };
+
+  const onChangeEditName = name => {
+    setEditInfo({
+      ...editInfo,
+      name,
     });
   };
 
@@ -56,10 +98,12 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
           ${dragInfo.targetId === group.id ? 'drag-target' : ''} 
           ${dragInfo.destinationId === group.id ? 'drag-destination' : ''}  
           ${dragInfo.toChildren ? 'to-children' : ''} 
-          ${contextMenuInfo.id === group.id ? 'context-menu-target' : ''}`}
+          ${contextMenuInfo.id === group.id ? 'context-menu-target' : ''}
+          ${editInfo.id === group.id ? 'name-editing' : ''}
+          `}
           onContextMenu={e => {
             onSelect(group.id);
-            onContextMenu(e, group.id);
+            onContextMenu(e, group.id, group.name);
           }}
           onClick={() => {
             onSelect(group.id);
@@ -110,7 +154,35 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
               e.preventDefault();
             }}
           >
-            {group.name}
+            {editInfo.id === group.id && (
+              <Input
+                className="name-editor"
+                underline={false}
+                value={editInfo.name}
+                onChange={onChangeEditName}
+                size="sm"
+                required
+                minLength={1}
+                maxLength={100}
+                onKeyDown={e => {
+                  if (e.key === 'Escape') {
+                    clearEditing();
+                  } else if (e.key === 'Enter') {
+                    onChangeTestcaseGroupName(editInfo.id, editInfo.name);
+                    clearEditing();
+                  }
+                }}
+              />
+            )}
+            {editInfo.id !== group.id && (
+              <div
+                onClick={() => {
+                  onClickGroupName(group);
+                }}
+              >
+                {group.name}
+              </div>
+            )}
           </div>
           <div
             draggable
@@ -236,6 +308,14 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
               </li>
               <li
                 onClick={() => {
+                  onClickGroupName(
+                    {
+                      id: contextMenuInfo.id,
+                      name: contextMenuInfo.name,
+                    },
+                    true,
+                  );
+
                   onClearContextMenu();
                 }}
               >
@@ -278,6 +358,7 @@ TestcaseGroup.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   selectedId: PropTypes.number,
+  onChangeTestcaseGroupName: PropTypes.func.isRequired,
 };
 
 export default TestcaseGroup;

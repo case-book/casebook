@@ -82,6 +82,7 @@
           display: flex;
           border-radius: 2px;
           position: relative;
+          margin-top: 2px;
 
           .tree-mark {
             width: 10px;
@@ -155,11 +156,6 @@
             }
           }
 
-          &:hover {
-            background-color: $color-sunflower;
-            color: #333;
-          }
-
           > div {
             &.icon {
               padding: 0;
@@ -187,16 +183,62 @@
             &.name {
               flex-grow: 1;
               padding: 1rem 0.5rem 1rem 0;
+              width: calc(100% - 46px);
+
+              > div {
+                overflow-x: hidden;
+                text-overflow: ellipsis;
+
+                white-space: nowrap;
+              }
+
+              .name-editor {
+                background-color: $white;
+                color: #333;
+              }
             }
 
             &.grab {
               cursor: grab;
               padding: 1rem 1rem 1rem;
               height: 100%;
+              display: none;
 
               &:hover {
                 background-color: rgba(0, 0, 0, 0.1);
               }
+            }
+          }
+          &:hover {
+            background-color: $color-sunflower;
+            color: #333;
+            .grab {
+              display: block;
+            }
+            > div {
+              &.name {
+                width: calc(100% - 46px - 48px);
+              }
+            }
+          }
+
+          &.name-editing {
+            margin-left: 0 !important;
+            padding-left: 0.5rem;
+
+            .name {
+              padding-top: 0.5rem;
+              padding-bottom: 0.5rem;
+            }
+
+            input {
+              border-radius: 0;
+            }
+
+            .tree-mark,
+            .icon,
+            .grab {
+              display: none;
             }
           }
         }
@@ -234,6 +276,15 @@
             &:hover {
               background-color: darken($color-sunflower, 10%);
               color: #333;
+            }
+
+            &.name-editing {
+              background-color: $color-azure;
+              border-radius: 0;
+
+              input {
+                font-weight: bold;
+              }
             }
           }
         }
