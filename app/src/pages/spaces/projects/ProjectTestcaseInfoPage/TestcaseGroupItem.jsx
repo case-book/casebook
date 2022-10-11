@@ -2,6 +2,7 @@ import React from 'react';
 import { Input } from '@/components';
 import PropTypes from 'prop-types';
 import './TestcaseGroupItem.scss';
+import { NullableNumber } from '@/proptypes';
 
 function TestcaseGroupItem({
   group,
@@ -237,21 +238,21 @@ TestcaseGroupItem.propTypes = {
   }).isRequired,
   dragInfo: PropTypes.shape({
     toChildren: PropTypes.bool,
-    targetId: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
-    destinationId: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
+    targetId: NullableNumber,
+    destinationId: NullableNumber,
   }),
   editInfo: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.instanceOf(null)]),
+    id: NullableNumber,
     name: PropTypes.string,
-    clickTime: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
-    clickId: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
+    clickTime: NullableNumber,
+    clickId: NullableNumber,
   }),
   onContextMenu: PropTypes.func.isRequired,
   setDragInfo: PropTypes.func.isRequired,
   contextMenuInfo: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
-    x: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
-    y: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
+    id: NullableNumber,
+    x: NullableNumber,
+    y: NullableNumber,
     name: PropTypes.string,
   }).isRequired,
   onSelect: PropTypes.func.isRequired,

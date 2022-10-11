@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './TestcaseGroupContextMenu.scss';
+import { NullableNumber } from '@/proptypes';
 
 function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClickGroupName, onDelete }) {
   return (
@@ -59,9 +60,9 @@ TestcaseGroupContextMenu.defaultProps = {};
 
 TestcaseGroupContextMenu.propTypes = {
   contextMenuInfo: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
-    x: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
-    y: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(null)]),
+    id: NullableNumber,
+    x: NullableNumber,
+    y: NullableNumber,
     name: PropTypes.string,
   }).isRequired,
   onClearContextMenu: PropTypes.func.isRequired,
