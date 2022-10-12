@@ -109,14 +109,44 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
 
   return (
     <div className="testcase-groups-wrapper">
-      <div className="buttons">
-        <Button size="xs" onClick={addTestcase}>
-          <i className="fa-solid fa-plus" /> 테스트케이스
-        </Button>
-        <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
-        <Button size="xs" onClick={addTestcaseGroup}>
-          <i className="fa-solid fa-plus" /> 그룹
-        </Button>
+      <div className="testcase-manage-button">
+        <div className="left">
+          <div className="controller">
+            <div>
+              <div className="bg" />
+              <span className="controller-button start-button">
+                <i className="fa-solid fa-gamepad" />
+              </span>
+              <div className="vertical">
+                <span className="controller-button">
+                  <i className="fa-solid fa-angles-up" />
+                </span>
+                <span className="controller-button center-button" />
+                <span className="controller-button">
+                  <i className="fa-solid fa-angles-down" />
+                </span>
+              </div>
+              <div className="horizontal">
+                <span className="controller-button">
+                  <i className="fa-solid fa-arrow-right-arrow-left" />
+                </span>
+                <span className="controller-button center-button" />
+                <span className="controller-button">
+                  <i className="fa-solid fa-arrows-left-right-to-line" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="right">
+          <Button size="xs" onClick={addTestcase}>
+            <i className="fa-solid fa-plus" /> 테스트케이스
+          </Button>
+          <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+          <Button size="xs" onClick={addTestcaseGroup}>
+            <i className="fa-solid fa-plus" /> 그룹
+          </Button>
+        </div>
       </div>
       <div className="summary">설명</div>
       <div className="testcase-groups-content">

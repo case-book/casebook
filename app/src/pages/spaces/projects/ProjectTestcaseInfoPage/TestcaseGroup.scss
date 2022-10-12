@@ -6,11 +6,131 @@
   font-size: 13px;
   position: relative;
 
-  .buttons {
+  .testcase-manage-button {
     padding: 1rem 1rem 1rem;
     background-color: #222;
     text-align: right;
     border-radius: 4px 4px 0 0;
+    display: flex;
+    .left {
+      flex-grow: 1;
+      text-align: left;
+      display: flex;
+
+      .controller {
+        align-self: center;
+        > div {
+          width: 24px;
+          height: 24px;
+          position: relative;
+
+          .bg {
+            position: absolute;
+            top: -33px;
+            left: -33px;
+            width: 0;
+            height: 0;
+            z-index: 1;
+          }
+
+          .controller-button {
+            align-self: center;
+            width: 24px;
+            height: 24px;
+            background-color: $color-azure;
+            color: $white;
+            display: inline-flex;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            > i {
+              align-self: center;
+            }
+
+            &.start-button {
+              border-radius: 6px;
+            }
+
+            &:hover {
+              background-color: darken($color-azure, 10%);
+            }
+
+            &.center-button {
+              background-color: $color-azure;
+            }
+          }
+
+          .vertical {
+            position: absolute;
+            left: 0;
+            top: -24px;
+            width: 24px;
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            line-height: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+            transition: 0.3s all;
+
+            .controller-button {
+              &:first-child {
+                border-radius: 6px 6px 0 0;
+              }
+
+              &:last-child {
+                border-radius: 0 0 6px 6px;
+              }
+            }
+          }
+
+          .horizontal {
+            position: absolute;
+            top: 0;
+            left: -24px;
+            height: 24px;
+            display: flex;
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            z-index: 2;
+            transition: 0.3s all;
+
+            .controller-button {
+              &:first-child {
+                border-radius: 6px 0 0 6px;
+              }
+
+              &:last-child {
+                border-radius: 0 6px 6px 0;
+              }
+            }
+          }
+
+          &:hover {
+            .bg {
+              width: 90px;
+              height: 90px;
+            }
+
+            .vertical {
+              height: calc(24px * 3);
+              overflow: visible;
+              opacity: 1;
+              transition: 0.3s all;
+            }
+
+            .horizontal {
+              width: calc(24px * 3);
+              overflow: visible;
+              opacity: 1;
+              transition: 0.3s all;
+            }
+          }
+        }
+      }
+    }
   }
   .summary {
     padding: 0 1rem;
