@@ -9,6 +9,23 @@ const KeyValuePropTypes = PropTypes.arrayOf(
   }),
 );
 
+const TestcaseGroupPropTypes = PropTypes.shape({
+  depth: PropTypes.number,
+  id: PropTypes.number,
+  itemOrder: PropTypes.number,
+  name: PropTypes.string,
+  parentId: PropTypes.number,
+  children: PropTypes.arrayOf(
+    PropTypes.shape({
+      depth: PropTypes.number,
+      id: PropTypes.number,
+      itemOrder: PropTypes.number,
+      name: PropTypes.string,
+      parentId: PropTypes.number,
+    }),
+  ),
+});
+
 const TestcaseTemplatePropTypes = PropTypes.shape({
   activated: PropTypes.bool,
   creationDate: PropTypes.string,
@@ -32,8 +49,16 @@ const TestcaseTemplatePropTypes = PropTypes.shape({
       ),
     }),
   ),
+  testcases: PropTypes.arrayOf(
+    PropTypes.shape({
+      closed: PropTypes.bool,
+      id: PropTypes.number,
+      itemOrder: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
   token: PropTypes.string,
   duration: PropTypes.number,
 });
 
-export { NullableNumber, KeyValuePropTypes, TestcaseTemplatePropTypes };
+export { NullableNumber, KeyValuePropTypes, TestcaseTemplatePropTypes, TestcaseGroupPropTypes };

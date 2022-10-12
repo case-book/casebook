@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface TestcaseTemplateRepository extends JpaRepository<TestcaseTemplate, Long> {
     List<TestcaseTemplate> findAllByProjectId(Long projectId);
 
+    Optional<TestcaseTemplate> findAllByProjectIdAndIsDefaultTrue(Long projectId);
+
 }
 

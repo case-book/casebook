@@ -12,166 +12,240 @@ li.testcase-group-item-wrapper {
   }
 
   .group-content {
-    display: flex;
+    .group-info {
+      > div {
+        &.icon {
+          padding: 0;
+          display: flex;
+          margin-right: 8px;
+          margin-left: 8px;
+          > span {
+            align-self: center;
+            display: inline-flex;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            background-color: $color-salmon;
+            color: $black;
+            border-radius: 50%;
+
+            justify-content: center;
+
+            > span {
+              align-self: center;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .testcase-content {
+    .testcase-info {
+      > div {
+        &.icon {
+          padding: 0;
+          display: flex;
+          margin-right: 4px;
+          margin-left: 28px;
+          > span {
+            align-self: center;
+            display: inline-flex;
+            width: 10px;
+            height: 20px;
+            text-align: center;
+            color: $black;
+            justify-content: center;
+
+            > span {
+              width: 4px;
+              height: 4px;
+              border-radius: 50%;
+              background-color: $white;
+              align-self: center;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .group-content,
+  .testcase-content {
     border-radius: 2px;
-    position: relative;
     margin-top: 2px;
 
-    .tree-mark {
-      width: 10px;
+    > div.group-info,
+    > div.testcase-info {
+      display: flex;
+      position: relative;
+      cursor: pointer;
+      .tree-mark {
+        width: 10px;
 
-      > div {
-        width: 100%;
-        height: 100%;
-        position: relative;
+        > div {
+          width: 100%;
+          height: 100%;
+          position: relative;
 
-        .line {
-          position: absolute;
+          .line {
+            position: absolute;
 
-          &.line-1 {
-            height: calc(50% - 11px);
-            width: 1px;
-            border-left: 1px dotted $gray-700;
-            left: 7px;
-            top: 10px;
+            &.line-1 {
+              height: calc(50% - 11px);
+              width: 1px;
+              border-left: 1px dotted $gray-700;
+              left: 7px;
+              top: 10px;
+            }
+
+            &.line-2 {
+              height: 1px;
+              width: calc(100% - 2px);
+              top: 50%;
+              left: 7px;
+              _background-color: $white;
+              border-bottom: 1px dotted $gray-700;
+            }
           }
+        }
 
-          &.line-2 {
-            height: 1px;
-            width: calc(100% - 2px);
-            top: 50%;
-            left: 7px;
-            _background-color: $white;
-            border-bottom: 1px dotted $gray-700;
+        &._last-child {
+          > div {
+            .line {
+              &.line-1 {
+                height: 50%;
+                width: 1px;
+
+                left: 0;
+              }
+            }
           }
         }
       }
 
-      &._last-child {
-        > div {
-          .line {
-            &.line-1 {
-              height: 50%;
-              width: 1px;
+      .bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background-color: $color-pink;
+        border-radius: 4px;
+        opacity: 0;
+      }
 
-              left: 0;
+      &.drag-target {
+        background-color: #121212 !important;
+        color: #999 !important;
+      }
+
+      &.drag-destination {
+        .bar {
+          opacity: 1;
+        }
+
+        &.to-children {
+          .bar {
+            left: 1rem;
+          }
+        }
+      }
+
+      > div {
+        &.name {
+          flex-grow: 1;
+          padding: 0.5rem 0.5rem 0.5rem 0;
+          width: calc(100% - 46px);
+
+          > div {
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+          }
+
+          .name-editor {
+            background-color: $white;
+            color: #333;
+          }
+        }
+
+        &.grab {
+          cursor: grab;
+          padding: 0.5rem;
+          height: 100%;
+          display: none;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+          }
+        }
+      }
+      &:hover {
+        background-color: $color-sunflower;
+        color: #333;
+        .grab {
+          display: inline-block;
+        }
+        > div {
+          &.name {
+            width: calc(100% - 46px - 32px);
+          }
+
+          &.icon.case {
+            > span {
+              > span {
+                background-color: $black;
+              }
+            }
+          }
+
+          &.icon.group {
+            > span {
+              background-color: transparent;
+              > span {
+              }
             }
           }
         }
       }
     }
 
-    .bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 5px;
-      background-color: $color-pink;
-      border-radius: 4px;
-      opacity: 0;
-    }
-
-    &.drag-target {
-      background-color: #121212 !important;
-      color: #999 !important;
-    }
-
-    &.drag-destination {
-      .bar {
-        opacity: 1;
-      }
-
-      &.to-children {
-        .bar {
-          left: 1rem;
-        }
-      }
-    }
-
-    > div {
-      &.icon {
-        padding: 0;
-        display: flex;
-        margin-right: 8px;
-        margin-left: 8px;
-        > span {
-          align-self: center;
-          display: inline-flex;
-          width: 20px;
-          height: 20px;
-          text-align: center;
-          background-color: $color-salmon;
-          color: $black;
-          border-radius: 50%;
-          font-size: 12px;
-          justify-content: center;
-
-          > span {
-            align-self: center;
-          }
-        }
-      }
-
-      &.name {
-        flex-grow: 1;
-        padding: 1rem 0.5rem 1rem 0;
-        width: calc(100% - 46px);
-
-        > div {
-          overflow-x: hidden;
-          text-overflow: ellipsis;
-
-          white-space: nowrap;
-        }
-
-        .name-editor {
-          background-color: $white;
-          color: #333;
-        }
-      }
-
-      &.grab {
-        cursor: grab;
-        padding: 1rem 1rem 1rem;
-        height: 100%;
-        display: none;
-
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.1);
-        }
-      }
-    }
-    &:hover {
-      background-color: $color-sunflower;
-      color: #333;
-      .grab {
-        display: block;
-      }
-      > div {
-        &.name {
-          width: calc(100% - 46px - 48px);
-        }
-      }
-    }
-
-    &.name-editing {
+    .name-editing {
       margin-left: 0 !important;
-      padding-left: 0.5rem;
+      padding-left: 0.25rem;
+
+      width: 100%;
 
       .name {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        padding-right: 0.25rem;
       }
 
       input {
         border-radius: 0;
+        width: 100%;
       }
 
       .tree-mark,
       .icon,
       .grab {
-        display: none;
+        display: none !important;
+      }
+    }
+
+    > .group-testcases {
+      margin-left: 10px;
+
+      &.is-child {
+        margin-left: 20px;
+      }
+
+      > ul {
+        > li {
+        }
       }
     }
   }
@@ -201,23 +275,42 @@ li.testcase-group-item-wrapper {
     }
   }
 
-  &.selected {
-    > .group-content {
-      background-color: $color-sunflower;
-      color: #333;
+  .testcase-content.selected > .testcase-info,
+  &.selected > .group-content > .group-info {
+    background-color: $color-sunflower;
+    color: #333;
 
-      &:hover {
-        background-color: darken($color-sunflower, 10%);
-        color: #333;
+    > div {
+      &.icon.case {
+        > span {
+          > span {
+            background-color: $black;
+          }
+        }
       }
 
-      &.name-editing {
-        background-color: $color-azure;
-        border-radius: 0;
-
-        input {
-          font-weight: bold;
+      &.icon.group {
+        > span {
+          background-color: transparent;
+          > span {
+          }
         }
+      }
+    }
+
+    &:hover {
+      background-color: darken($color-sunflower, 10%);
+      color: #333;
+    }
+  }
+
+  &.name-editing {
+    > .group-info {
+      background-color: $color-tangerine;
+      border-radius: 0;
+
+      input {
+        font-weight: bold;
       }
     }
   }
