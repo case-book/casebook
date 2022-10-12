@@ -1,18 +1,22 @@
 import React, { useRef, useState } from 'react';
 import { Button, Liner } from '@/components';
 import PropTypes from 'prop-types';
-import './TestcaseGroup.scss';
 import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
 import TestcaseGroupContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupContextMenu';
+import { TestcaseGroupPropTypes } from '@/proptypes';
+import './TestcaseGroup.scss';
 
-function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrderChange, selectedId, onSelect, onDelete, onChangeTestcaseGroupName }) {
+function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase }) {
   const dragInfo = useRef({
+    targetType: null,
     targetId: null,
+    destinationType: null,
     destinationId: null,
     toChildren: false,
   }).current;
 
   const [editInfo, setEditInfo] = useState({
+    type: null,
     id: null,
     name: '',
     clickTime: null,
@@ -21,6 +25,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
 
   const [dragChange, setDragChange] = useState(null);
   const [contextMenuInfo, setContextMenuInfo] = useState({
+    type: null,
     id: null,
     x: null,
     y: null,
@@ -38,14 +43,15 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
   const onDrop = e => {
     e.stopPropagation();
     if (dragInfo.destinationId) {
-      onChangeTestcaseOrderChange(dragInfo);
+      onPositionChange(dragInfo);
     }
   };
 
-  const onContextMenu = (e, id, name) => {
+  const onContextMenu = (e, type, id, name) => {
     e.preventDefault();
 
     setContextMenuInfo({
+      type,
       id,
       x: e.pageX,
       y: e.pageY,
@@ -55,6 +61,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
 
   const onClearContextMenu = () => {
     setContextMenuInfo({
+      type: null,
       id: null,
       x: null,
       y: null,
@@ -62,10 +69,11 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
     });
   };
 
-  const onClickGroupName = (group, force) => {
+  const onClickGroupName = (type, item, force) => {
+    console.log(type, item, editInfo);
     if (editInfo.clickTime || force) {
-      if (force || (editInfo.clickId === group.id && Date.now() - editInfo.clickTime > 300 && Date.now() - editInfo.clickTime < 1200)) {
-        setEditInfo({ ...editInfo, id: group.id, clickTime: null, name: group.name, clickId: null });
+      if (force || (editInfo.type === type && editInfo.clickId === item.id && Date.now() - editInfo.clickTime > 300 && Date.now() - editInfo.clickTime < 1200)) {
+        setEditInfo({ ...editInfo, type, id: item.id, clickTime: null, name: item.name, clickId: null });
         setTimeout(() => {
           const e = document.querySelector('.testcase-groups-wrapper input.name-editor');
           if (e?.focus) {
@@ -81,14 +89,15 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
     } else {
       setEditInfo({
         ...editInfo,
+        type,
         clickTime: Date.now(),
-        clickId: group.id,
+        clickId: item.id,
       });
     }
   };
 
   const clearEditing = () => {
-    setEditInfo({ id: null, clickTime: null, name: '', clickId: null });
+    setEditInfo({ type: null, id: null, clickTime: null, name: '', clickId: null });
   };
 
   const onChangeEditName = name => {
@@ -100,17 +109,47 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
 
   return (
     <div className="testcase-groups-wrapper">
-      <div className="buttons">
-        <Button size="xs" onClick={addTestcaseGroup}>
-          케이스 추가
-        </Button>
-        <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
-        <Button size="xs" onClick={addTestcaseGroup}>
-          그룹 추가
-        </Button>
+      <div className="testcase-manage-button">
+        <div className="left">
+          <div className="controller">
+            <div>
+              <div className="bg" />
+              <span className="controller-button start-button">
+                <i className="fa-solid fa-gamepad" />
+              </span>
+              <div className="vertical">
+                <span className="controller-button">
+                  <i className="fa-solid fa-angles-up" />
+                </span>
+                <span className="controller-button center-button" />
+                <span className="controller-button">
+                  <i className="fa-solid fa-angles-down" />
+                </span>
+              </div>
+              <div className="horizontal">
+                <span className="controller-button">
+                  <i className="fa-solid fa-arrow-right-arrow-left" />
+                </span>
+                <span className="controller-button center-button" />
+                <span className="controller-button">
+                  <i className="fa-solid fa-arrows-left-right-to-line" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="right">
+          <Button size="xs" onClick={addTestcase}>
+            <i className="fa-solid fa-plus" /> 테스트케이스
+          </Button>
+          <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+          <Button size="xs" onClick={addTestcaseGroup}>
+            <i className="fa-solid fa-plus" /> 그룹
+          </Button>
+        </div>
       </div>
       <div className="summary">설명</div>
-      <div className="trees">
+      <div className="testcase-groups-content">
         <div className={`content-scroller ${dragChange}`}>
           <ul>
             {testcaseGroups
@@ -128,7 +167,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
                     editInfo={editInfo}
                     contextMenuInfo={contextMenuInfo}
                     onContextMenu={onContextMenu}
-                    selectedId={selectedId}
+                    selectedItemInfo={selectedItemInfo}
                     onSelect={onSelect}
                     lastChild={false}
                     onChangeEditName={onChangeEditName}
@@ -148,33 +187,23 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onChangeTestcaseOrder
 
 TestcaseGroup.defaultProps = {
   testcaseGroups: [],
-  selectedId: null,
+  selectedItemInfo: {
+    id: null,
+    type: null,
+  },
 };
 
 TestcaseGroup.propTypes = {
-  testcaseGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      depth: PropTypes.number,
-      id: PropTypes.number,
-      itemOrder: PropTypes.number,
-      name: PropTypes.string,
-      parentId: PropTypes.number,
-      children: PropTypes.arrayOf(
-        PropTypes.shape({
-          depth: PropTypes.number,
-          id: PropTypes.number,
-          itemOrder: PropTypes.number,
-          name: PropTypes.string,
-          parentId: PropTypes.number,
-        }),
-      ),
-    }),
-  ),
+  testcaseGroups: PropTypes.arrayOf(TestcaseGroupPropTypes),
   addTestcaseGroup: PropTypes.func.isRequired,
-  onChangeTestcaseOrderChange: PropTypes.func.isRequired,
+  addTestcase: PropTypes.func.isRequired,
+  onPositionChange: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
-  selectedId: PropTypes.number,
+  selectedItemInfo: PropTypes.shape({
+    id: PropTypes.number,
+    type: PropTypes.string,
+  }),
   onChangeTestcaseGroupName: PropTypes.func.isRequired,
 };
 

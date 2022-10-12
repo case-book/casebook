@@ -1,13 +1,15 @@
 package com.mindplates.bugcase.common.util;
 
 
-import com.mindplates.bugcase.common.entity.RoleCode;
-import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.constraints.Keys;
+import com.mindplates.bugcase.common.entity.RoleCode;
+import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.UserSession;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,6 +22,22 @@ public class SessionUtil {
 
     public SessionUtil() {
 
+    }
+
+    public static Long getUserId() {
+
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        Long id = null;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            UserSession userSession = (UserSession) session.getAttribute(Keys.SESSION_KEY);
+            if (userSession != null) {
+                id = userSession.getId();
+            }
+        }
+
+        return id;
     }
 
     public static UserSession getUserSessionInfo(HttpServletRequest request) {
@@ -63,7 +81,6 @@ public class SessionUtil {
 
         return false;
     }
-
 
 
     public UserSession getUserInfo(HttpServletRequest request) {

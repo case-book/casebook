@@ -2,14 +2,13 @@ import React from 'react';
 import { Input } from '@/components';
 import PropTypes from 'prop-types';
 import './TestcaseGroupItem.scss';
-import { NullableNumber } from '@/proptypes';
+import { NullableNumber, TestcaseGroupPropTypes } from '@/proptypes';
 
 function TestcaseGroupItem({
   group,
-  selectedId,
+  selectedItemInfo,
   dragInfo,
   onClickGroupName,
-
   onChangeEditName,
   onChangeTestcaseGroupName,
   clearEditing,
@@ -22,151 +21,328 @@ function TestcaseGroupItem({
   setDragInfo,
 }) {
   return (
-    <li key={group.id} className={`testcase-group-item-wrapper ${group.id === selectedId ? 'selected' : ''}`}>
+    <li key={group.id} className={`testcase-group-item-wrapper ${selectedItemInfo.type === 'group' && group.id === selectedItemInfo.id ? 'selected' : ''}`}>
       <div className="border-bottom" />
       <div className="border-top" />
-      <div
-        className={`group-content 
-          ${dragInfo.targetId === group.id ? 'drag-target' : ''} 
-          ${dragInfo.destinationId === group.id ? 'drag-destination' : ''}  
+      <div className="group-content">
+        <div
+          className={`group-info 
+          ${dragInfo.targetType === 'group' && dragInfo.targetId === group.id ? 'drag-target' : ''} 
+          ${dragInfo.destinationType === 'group' && dragInfo.destinationId === group.id ? 'drag-destination' : ''}  
           ${dragInfo.toChildren ? 'to-children' : ''} 
-          ${contextMenuInfo.id === group.id ? 'context-menu-target' : ''}
-          ${editInfo.id === group.id ? 'name-editing' : ''}
+          ${contextMenuInfo.type === 'group' && contextMenuInfo.id === group.id ? 'context-menu-target' : ''}
+          ${editInfo.type === 'group' && editInfo.id === group.id ? 'name-editing' : ''}
           `}
-        onContextMenu={e => {
-          onSelect(group.id);
-          onContextMenu(e, group.id, group.name);
-        }}
-        onClick={() => {
-          onSelect(group.id);
-        }}
-        onDragEnter={() => {
-          if (dragInfo.targetId !== group.id) {
-            setDragInfo({
-              destinationId: group.id,
-            });
-          } else {
-            setDragInfo({
-              destinationId: null,
-            });
-          }
-        }}
-        onDragLeave={() => {
-          setDragInfo({
-            destinationId: null,
-          });
-        }}
-        onDragOver={e => {
-          e.preventDefault();
-        }}
-        onDrop={onDrop}
-        style={{
-          marginLeft: `${group.depth * 10}px`,
-        }}
-      >
-        {group.depth > 0 && (
-          <div className={`tree-mark ${lastChild ? 'last-child' : ''}`}>
-            <div>
-              <div className="line line-1" />
-              <div className="line line-2" />
-            </div>
-          </div>
-        )}
-        <div className="icon">
-          <span>
-            <span>
-              <i className="fa-solid fa-book" />
-            </span>
-          </span>
-        </div>
-        <div
-          className="name"
-          onDragLeave={e => {
-            e.stopPropagation();
-            e.preventDefault();
+          onClick={() => {
+            onSelect({ id: group.id, type: 'group' });
           }}
-        >
-          {editInfo.id === group.id && (
-            <Input
-              className="name-editor"
-              underline={false}
-              value={editInfo.name}
-              onChange={onChangeEditName}
-              size="sm"
-              required
-              minLength={1}
-              maxLength={100}
-              onKeyDown={e => {
-                if (e.key === 'Escape') {
-                  clearEditing();
-                } else if (e.key === 'Enter') {
-                  onChangeTestcaseGroupName(editInfo.id, editInfo.name);
-                  clearEditing();
-                }
-              }}
-            />
-          )}
-          {editInfo.id !== group.id && (
-            <div
-              onClick={() => {
-                onClickGroupName(group);
-              }}
-            >
-              {group.name}
-            </div>
-          )}
-        </div>
-        <div
-          draggable
-          className="grab"
-          onDragStart={() => {
-            setDragInfo({
-              targetId: group.id,
-              destinationId: null,
-            });
+          onContextMenu={e => {
+            onSelect({ id: group.id, type: 'group' });
+            onContextMenu(e, 'group', group.id, group.name);
           }}
-          onDragEnd={() => {
-            setDragInfo({
-              targetId: null,
-              destinationId: null,
-            });
-          }}
-          onDragLeave={e => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}
-        >
-          <i className="fa-solid fa-grip-vertical" />
-        </div>
-        <div
-          className="bar"
-          onDrop={onDrop}
           onDragEnter={() => {
             if (dragInfo.targetId !== group.id) {
               setDragInfo({
+                destinationType: 'group',
                 destinationId: group.id,
-                toChildren: true,
               });
             } else {
               setDragInfo({
+                destinationType: null,
                 destinationId: null,
               });
             }
           }}
-          onDragLeave={e => {
-            e.stopPropagation();
+          onDragLeave={() => {
+            setDragInfo({
+              destinationType: null,
+              destinationId: null,
+            });
+          }}
+          onDragOver={e => {
             e.preventDefault();
-            if (dragInfo.targetId !== group.id) {
+          }}
+          onDrop={onDrop}
+          style={{
+            marginLeft: `${group.depth * 10}px`,
+          }}
+        >
+          {group.depth > 0 && (
+            <div className={`tree-mark ${lastChild ? 'last-child' : ''}`}>
+              <div>
+                <div className="line line-1" />
+                <div className="line line-2" />
+              </div>
+            </div>
+          )}
+          <div className="icon group">
+            <span>
+              <span>
+                <i className="fa-solid fa-book" />
+              </span>
+            </span>
+          </div>
+          <div
+            className="name"
+            onDragLeave={e => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            {editInfo.type === 'group' && editInfo.id === group.id && (
+              <Input
+                className="name-editor"
+                underline={false}
+                value={editInfo.name}
+                onChange={onChangeEditName}
+                size="xs"
+                required
+                minLength={1}
+                maxLength={100}
+                onKeyDown={e => {
+                  if (e.key === 'Escape') {
+                    clearEditing();
+                  } else if (e.key === 'Enter') {
+                    onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
+                    clearEditing();
+                  }
+                }}
+              />
+            )}
+            {!(editInfo.type === 'group' && editInfo.id === group.id) && (
+              <div
+                onClick={() => {
+                  onClickGroupName('group', group);
+                }}
+              >
+                {group.id}-{group.name}
+              </div>
+            )}
+          </div>
+          <div
+            draggable
+            className="grab"
+            onDragStart={() => {
               setDragInfo({
+                targetType: 'group',
+                targetId: group.id,
+                destinationType: null,
+                destinationId: null,
+              });
+            }}
+            onDragEnd={() => {
+              setDragInfo({
+                targetType: null,
+                targetId: null,
+                destinationType: null,
+                destinationId: null,
                 toChildren: false,
               });
-            } else {
-              setDragInfo({
-                destinationId: null,
-              });
-            }
-          }}
-        />
+            }}
+            onDragLeave={e => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          >
+            <i className="fa-solid fa-grip-vertical" />
+          </div>
+          <div
+            className="bar"
+            onDrop={onDrop}
+            onDragEnter={() => {
+              if (dragInfo.targetType === 'group' && dragInfo.targetId === group.id) {
+                setDragInfo({
+                  destinationType: null,
+                  destinationId: null,
+                });
+              } else {
+                setDragInfo({
+                  destinationType: 'group',
+                  destinationId: group.id,
+                  toChildren: dragInfo.targetType === 'group',
+                });
+              }
+            }}
+            onDragLeave={e => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (dragInfo.targetType === 'group' && dragInfo.targetId === group.id) {
+                setDragInfo({
+                  destinationType: null,
+                  destinationId: null,
+                });
+              } else {
+                setDragInfo({
+                  toChildren: false,
+                });
+              }
+            }}
+          />
+        </div>
+        {group.testcases?.length > 0 && (
+          <div className={`group-testcases ${group.depth > 0 ? 'is-child' : ''}`}>
+            <ul>
+              {group.testcases
+                .sort((a, b) => {
+                  return a.itemOrder - b.itemOrder;
+                })
+                .map(testcase => {
+                  return (
+                    <li className={`testcase-content ${selectedItemInfo.type === 'case' && testcase.id === selectedItemInfo.id ? 'selected' : ''}`} key={testcase.id}>
+                      <div
+                        className={`testcase-info
+                        ${dragInfo.targetType === 'case' && dragInfo.targetId === testcase.id ? 'drag-target' : ''} 
+                        ${dragInfo.destinationType === 'case' && dragInfo.destinationId === testcase.id ? 'drag-destination' : ''}
+                        ${contextMenuInfo.type === 'case' && contextMenuInfo.id === testcase.id ? 'context-menu-target' : ''}
+                        ${editInfo.type === 'case' && editInfo.id === testcase.id ? 'name-editing' : ''}
+                        `}
+                        onClick={e => {
+                          e.stopPropagation();
+                          onSelect({ id: testcase.id, type: 'case' });
+                        }}
+                        onDragEnter={e => {
+                          e.stopPropagation();
+                          if (dragInfo.targetType === 'case' && dragInfo.targetId !== testcase.id) {
+                            setDragInfo({
+                              destinationType: 'case',
+                              destinationId: testcase.id,
+                            });
+                          } else {
+                            setDragInfo({
+                              destinationType: null,
+                              destinationId: null,
+                            });
+                          }
+                        }}
+                        onDragLeave={e => {
+                          e.stopPropagation();
+                          setDragInfo({
+                            destinationType: null,
+                            destinationId: null,
+                          });
+                        }}
+                        onDragOver={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onDrop={onDrop}
+                        onContextMenu={e => {
+                          onSelect({ id: testcase.id, type: 'case' });
+                          onContextMenu(e, 'case', testcase.id, testcase.name);
+                        }}
+                      >
+                        <div className="icon case">
+                          <span>
+                            <span />
+                          </span>
+                        </div>
+
+                        <div
+                          className="name"
+                          onDragLeave={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                        >
+                          {editInfo.type === 'case' && editInfo.id === testcase.id && (
+                            <Input
+                              className="name-editor"
+                              underline={false}
+                              value={editInfo.name}
+                              onChange={onChangeEditName}
+                              size="xs"
+                              required
+                              minLength={1}
+                              maxLength={100}
+                              onKeyDown={e => {
+                                if (e.key === 'Escape') {
+                                  clearEditing();
+                                } else if (e.key === 'Enter') {
+                                  onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
+                                  clearEditing();
+                                }
+                              }}
+                            />
+                          )}
+                          {!(editInfo.type === 'case' && editInfo.id === testcase.id) && (
+                            <div
+                              onClick={() => {
+                                onClickGroupName('case', testcase);
+                              }}
+                            >
+                              {testcase.id}-{testcase.name}
+                            </div>
+                          )}
+                        </div>
+
+                        <div
+                          draggable
+                          className="grab"
+                          onDragStart={() => {
+                            setDragInfo({
+                              targetType: 'case',
+                              targetId: testcase.id,
+                              destinationType: null,
+                              destinationId: null,
+                            });
+                          }}
+                          onDragEnd={() => {
+                            setDragInfo({
+                              targetType: null,
+                              targetId: null,
+                              destinationType: null,
+                              destinationId: null,
+                              toChildren: false,
+                            });
+                          }}
+                          onDragLeave={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                        >
+                          <i className="fa-solid fa-grip-vertical" />
+                        </div>
+                        <div
+                          className="bar"
+                          onDrop={onDrop}
+                          onDragEnter={() => {
+                            if (dragInfo.targetType === 'case' && dragInfo.targetId !== testcase.id) {
+                              setDragInfo({
+                                destinationType: 'case',
+                                destinationId: testcase.id,
+                                toChildren: false,
+                              });
+                            } else {
+                              setDragInfo({
+                                destinationType: null,
+                                destinationId: null,
+                                toChildren: false,
+                              });
+                            }
+                          }}
+                          onDragLeave={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (dragInfo.targetType === 'case' && dragInfo.targetId !== testcase.id) {
+                              setDragInfo({
+                                toChildren: false,
+                              });
+                            } else {
+                              setDragInfo({
+                                destinationType: null,
+                                destinationId: null,
+                                toChildren: false,
+                              });
+                            }
+                          }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+            </ul>
+          </div>
+        )}
       </div>
       {group.children && (
         <div className="group-children">
@@ -186,7 +362,7 @@ function TestcaseGroupItem({
                     editInfo={editInfo}
                     contextMenuInfo={contextMenuInfo}
                     onContextMenu={onContextMenu}
-                    selectedId={selectedId}
+                    selectedItemInfo={selectedItemInfo}
                     onSelect={onSelect}
                     lastChild={(group?.children?.length || 0) - 1 === inx}
                     onChangeEditName={onChangeEditName}
@@ -204,7 +380,10 @@ function TestcaseGroupItem({
 }
 
 TestcaseGroupItem.defaultProps = {
-  selectedId: null,
+  selectedItemInfo: {
+    id: null,
+    type: null,
+  },
   lastChild: false,
   dragInfo: {
     targetId: null,
@@ -217,31 +396,20 @@ TestcaseGroupItem.defaultProps = {
     clickTime: null,
     clickId: null,
   },
+  group: {},
 };
 
 TestcaseGroupItem.propTypes = {
-  group: PropTypes.shape({
-    depth: PropTypes.number,
-    id: PropTypes.number,
-    itemOrder: PropTypes.number,
-    name: PropTypes.string,
-    parentId: PropTypes.number,
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
-        depth: PropTypes.number,
-        id: PropTypes.number,
-        itemOrder: PropTypes.number,
-        name: PropTypes.string,
-        parentId: PropTypes.number,
-      }),
-    ),
-  }).isRequired,
+  group: TestcaseGroupPropTypes,
   dragInfo: PropTypes.shape({
     toChildren: PropTypes.bool,
+    targetType: PropTypes.string,
     targetId: NullableNumber,
+    destinationType: PropTypes.string,
     destinationId: NullableNumber,
   }),
   editInfo: PropTypes.shape({
+    type: PropTypes.string,
     id: NullableNumber,
     name: PropTypes.string,
     clickTime: NullableNumber,
@@ -250,13 +418,17 @@ TestcaseGroupItem.propTypes = {
   onContextMenu: PropTypes.func.isRequired,
   setDragInfo: PropTypes.func.isRequired,
   contextMenuInfo: PropTypes.shape({
+    type: PropTypes.string,
     id: NullableNumber,
     x: NullableNumber,
     y: NullableNumber,
     name: PropTypes.string,
   }).isRequired,
   onSelect: PropTypes.func.isRequired,
-  selectedId: PropTypes.number,
+  selectedItemInfo: PropTypes.shape({
+    id: PropTypes.number,
+    type: PropTypes.string,
+  }),
   onDrop: PropTypes.func.isRequired,
   lastChild: PropTypes.bool,
   onChangeEditName: PropTypes.func.isRequired,

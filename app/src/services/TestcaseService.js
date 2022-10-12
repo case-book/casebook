@@ -38,9 +38,51 @@ TestcaseService.createTestcaseGroup = (spaceCode, projectId, testcaseGroup, succ
   );
 };
 
+TestcaseService.createTestcase = (spaceCode, projectId, testcaseGroupId, testcase, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testcases/groups/${testcaseGroupId}/cases`,
+    testcase,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 TestcaseService.updateTestcaseGroupOrders = (spaceCode, projectId, testcaseGroupOrderChangeRequest, successHandler, failHandler) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testcases/orders`,
+    testcaseGroupOrderChangeRequest,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+TestcaseService.updateTestcaseTestcaseGroup = (spaceCode, projectId, testcaseId, testcaseGroupOrderChangeRequest, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/group`,
+    testcaseGroupOrderChangeRequest,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+TestcaseService.updateTestcaseOrder = (spaceCode, projectId, testcaseId, testcaseGroupOrderChangeRequest, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/order`,
     testcaseGroupOrderChangeRequest,
     res => {
       successHandler(res);
@@ -69,6 +111,34 @@ TestcaseService.deleteTestcaseGroup = (spaceCode, projectId, groupId, successHan
 TestcaseService.updateTestcaseGroupName = (spaceCode, projectId, groupId, name, successHandler, failHandler) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testcases/groups/${groupId}/name`,
+    { name },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+TestcaseService.deleteTestcase = (spaceCode, projectId, testcaseId, successHandler, failHandler) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+TestcaseService.updateTestcaseName = (spaceCode, projectId, testcaseId, name, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/name`,
     { name },
     res => {
       successHandler(res);

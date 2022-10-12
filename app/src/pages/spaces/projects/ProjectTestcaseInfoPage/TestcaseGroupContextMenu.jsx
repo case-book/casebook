@@ -28,7 +28,7 @@ function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClick
           <li
             onClick={() => {
               if (contextMenuInfo.id) {
-                onDelete(contextMenuInfo.id);
+                onDelete(contextMenuInfo.type, contextMenuInfo.id);
                 onClearContextMenu();
               }
             }}
@@ -39,6 +39,7 @@ function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClick
             onClick={() => {
               onClickGroupName(
                 {
+                  type: contextMenuInfo.type,
                   id: contextMenuInfo.id,
                   name: contextMenuInfo.name,
                 },
@@ -60,6 +61,7 @@ TestcaseGroupContextMenu.defaultProps = {};
 
 TestcaseGroupContextMenu.propTypes = {
   contextMenuInfo: PropTypes.shape({
+    type: PropTypes.string,
     id: NullableNumber,
     x: NullableNumber,
     y: NullableNumber,

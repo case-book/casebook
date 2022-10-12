@@ -13,7 +13,10 @@ function ProjectTestcaseInfoPage() {
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
-  const [selectedTestcaseGroupId, setSelectedTestcaseGroupId] = useState(null);
+  const [selectedItemInfo, setSelectedItemInfo] = useState({
+    id: null,
+    type: null,
+  });
 
   const getProject = useCallback(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
@@ -65,8 +68,8 @@ function ProjectTestcaseInfoPage() {
       testcases: [],
     };
 
-    if (selectedTestcaseGroupId) {
-      const selectedGroup = project.testcaseGroups.find(d => d.id === selectedTestcaseGroupId);
+    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
+      const selectedGroup = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
 
       testcaseGroup = {
         parentId: selectedGroup.id,
@@ -85,28 +88,87 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
-  const onChangeTestcaseOrderChange = orderChangeInfo => {
-    TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, orderChangeInfo, info => {
-      setProject(info);
-    });
-  };
+  const addTestcase = () => {
+    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
+      const group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
+      const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
+      const testcase = {
+        testcaseGroupId: selectedItemInfo.id,
+        name,
+        testcases: [],
+      };
 
-  const onDeleteTestcaseGroup = id => {
-    TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
-      setSelectedTestcaseGroupId(null);
-      getProject();
-    });
-  };
-
-  const onChangeTestcaseGroupName = (id, name) => {
-    TestcaseService.updateTestcaseGroupName(spaceCode, projectId, id, name, info => {
-      const nextProject = { ...project };
-      const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
-      if (inx > -1) {
-        nextProject.testcaseGroups[inx] = info;
+      TestcaseService.createTestcase(spaceCode, projectId, selectedItemInfo.id, testcase, info => {
+        const nextProject = { ...project };
+        const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === selectedItemInfo.id);
+        if (!nextTestcaseGroup.testcases) {
+          nextTestcaseGroup.testcases = [];
+        }
+        nextTestcaseGroup.testcases.push(info);
         setProject(nextProject);
-      }
-    });
+      });
+    }
+  };
+
+  const onPositionChange = changeInfo => {
+    if (changeInfo.targetType === 'group' && changeInfo.destinationType === 'group') {
+      TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, changeInfo, () => {
+        getProject();
+      });
+    } else if (changeInfo.targetType === 'case' && changeInfo.destinationType === 'group') {
+      TestcaseService.updateTestcaseTestcaseGroup(spaceCode, projectId, changeInfo.targetId, changeInfo, () => {
+        getProject();
+      });
+    } else if (changeInfo.targetType === 'case' && changeInfo.destinationType === 'case') {
+      TestcaseService.updateTestcaseOrder(spaceCode, projectId, changeInfo.targetId, changeInfo, () => {
+        getProject();
+      });
+    }
+  };
+
+  const onDeleteTestcaseGroup = (type, id) => {
+    if (type === 'group') {
+      TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
+        setSelectedItemInfo({
+          id: null,
+          type: null,
+        });
+
+        getProject();
+      });
+    } else if (type === 'case') {
+      TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
+        setSelectedItemInfo({
+          id: null,
+          type: null,
+        });
+
+        getProject();
+      });
+    }
+  };
+
+  const onChangeTestcaseGroupName = (type, id, name) => {
+    if (type === 'group') {
+      TestcaseService.updateTestcaseGroupName(spaceCode, projectId, id, name, info => {
+        const nextProject = { ...project };
+        const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
+        if (inx > -1) {
+          nextProject.testcaseGroups[inx] = info;
+          setProject(nextProject);
+        }
+      });
+    } else if (type === 'case') {
+      TestcaseService.updateTestcaseName(spaceCode, projectId, id, name, info => {
+        const nextProject = { ...project };
+        const nextGroup = project?.testcaseGroups.find(d => d.id === info.testcaseGroupId);
+        const inx = nextGroup.testcases.findIndex(d => d.id === info.id);
+        if (inx > -1) {
+          nextGroup.testcases[inx] = info;
+          setProject(nextProject);
+        }
+      });
+    }
   };
 
   return (
@@ -114,16 +176,19 @@ function ProjectTestcaseInfoPage() {
       <PageTitle>{t('테스트케이스')}</PageTitle>
       <PageContent className="page-content">
         <div className="page-layout">
-          <TestcaseGroup
-            testcaseGroups={testcaseGroups}
-            addTestcaseGroup={addTestcaseGroup}
-            onChangeTestcaseOrderChange={onChangeTestcaseOrderChange}
-            onChangeTestcaseGroupName={onChangeTestcaseGroupName}
-            selectedId={selectedTestcaseGroupId}
-            onSelect={setSelectedTestcaseGroupId}
-            onDelete={onDeleteTestcaseGroup}
-          />
-
+          <div className="testcase-groups">
+            <TestcaseGroup
+              testcaseGroups={testcaseGroups}
+              addTestcaseGroup={addTestcaseGroup}
+              addTestcase={addTestcase}
+              onPositionChange={onPositionChange}
+              onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+              selectedItemInfo={selectedItemInfo}
+              onSelect={setSelectedItemInfo}
+              onDelete={onDeleteTestcaseGroup}
+            />
+          </div>
+          <div className="border-line" />
           <div className="testcases">
             <div className="content-scroller" />
           </div>
