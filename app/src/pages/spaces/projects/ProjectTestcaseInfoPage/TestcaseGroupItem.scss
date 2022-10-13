@@ -20,6 +20,7 @@ li.testcase-group-item-wrapper {
       display: flex;
       position: relative;
       cursor: pointer;
+      min-width: 120px;
 
       .child-tree-mark {
         width: 10px;

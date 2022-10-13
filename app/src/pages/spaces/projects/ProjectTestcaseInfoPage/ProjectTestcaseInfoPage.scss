@@ -9,11 +9,15 @@
       flex-grow: 1;
 
       .border-line {
-        width: 8px;
+        width: 10px;
+        cursor: ew-resize;
+        &:hover {
+          background-color: #000;
+        }
       }
 
       .testcase-groups {
-        min-width: 300px;
+        min-width: 120px;
         display: flex;
         background-color: #191919;
         border-radius: 4px;
@@ -31,6 +35,7 @@
           right: 0;
           bottom: 0;
           overflow-y: auto;
+          overflow-x: auto;
           padding: 1rem;
         }
       }

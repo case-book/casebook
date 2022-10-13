@@ -4,10 +4,17 @@ import PropTypes from 'prop-types';
 import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
 import TestcaseGroupContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupContextMenu';
 import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
+import { useResizeDetector } from 'react-resize-detector';
 import './TestcaseGroup.scss';
 
 function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase }) {
   const scroller = useRef(null);
+
+  const { width, ref } = useResizeDetector({
+    handleHeight: false,
+    refreshMode: 'throttle',
+    refreshRate: 100,
+  });
 
   const dragInfo = useRef({
     targetType: null,
@@ -126,7 +133,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
   }, [selectedItemInfo.time]);
 
   return (
-    <div className="testcase-groups-wrapper g-no-select">
+    <div className="testcase-groups-wrapper g-no-select" ref={ref}>
       <div className="testcase-manage-button">
         <div className="left">
           <div className="controller">
@@ -180,14 +187,14 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
             </div>
           </div>
         </div>
-        <div className="right">
-          <Button size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type}>
-            <i className="fa-solid fa-plus" />
-            <i className="fa-solid fa-flask" /> 케이스
+        <div className={`right ${width < 240 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
+          <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type}>
+            <i className="small-icon fa-solid fa-plus" />
+            <i className="fa-solid fa-flask" /> <span className="button-text">케이스</span>
           </Button>
-          <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+          <Liner className="liner" display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
           <Button size="xs" onClick={addTestcaseGroup}>
-            <i className="fa-solid fa-folder-plus" /> 그룹
+            <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
           </Button>
         </div>
       </div>

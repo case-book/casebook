@@ -170,6 +170,35 @@
         }
       }
     }
+
+    .right {
+      &.small-control {
+        .liner {
+          display: none !important;
+        }
+
+        .add-testcase-button {
+          margin-right: 0.5rem;
+        }
+
+        .button-text {
+          display: none;
+        }
+      }
+
+      &.smaller-control {
+        button {
+          padding: 0 6px;
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
+        }
+
+        .small-icon {
+          display: none;
+        }
+      }
+    }
   }
   .summary {
     padding: 0 1rem;
