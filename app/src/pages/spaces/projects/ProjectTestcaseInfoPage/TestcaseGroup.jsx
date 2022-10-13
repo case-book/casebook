@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Liner } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
@@ -7,6 +7,8 @@ import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/propty
 import './TestcaseGroup.scss';
 
 function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase }) {
+  const scroller = useRef(null);
+
   const dragInfo = useRef({
     targetType: null,
     targetId: null,
@@ -32,7 +34,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     name: '',
   });
 
-  const [allOpen, setAllOpen] = useState(null);
+  const [allOpen, setAllOpen] = useState(true);
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -108,8 +110,23 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     });
   };
 
+  useEffect(() => {
+    if (selectedItemInfo.time && scroller.current) {
+      setTimeout(() => {
+        const focusElement = scroller.current?.querySelector('.selected');
+        if (focusElement) {
+          const scrollerRect = scroller.current.getClientRects();
+          const elementRect = focusElement.getClientRects();
+          if (scrollerRect?.length > 0 && elementRect?.length > 0) {
+            scroller.current.scrollTop = elementRect[0].y - scrollerRect[0].y - 16;
+          }
+        }
+      }, 100);
+    }
+  }, [selectedItemInfo.time]);
+
   return (
-    <div className="testcase-groups-wrapper">
+    <div className="testcase-groups-wrapper g-no-select">
       <div className="testcase-manage-button">
         <div className="left">
           <div className="controller">
@@ -176,7 +193,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
       </div>
       <div className="summary">설명</div>
       <div className="testcase-groups-content">
-        <div className={`content-scroller ${dragChange}`}>
+        <div className={`content-scroller ${dragChange}`} ref={scroller}>
           <ul>
             {testcaseGroups
               .sort((a, b) => {
@@ -218,6 +235,7 @@ TestcaseGroup.defaultProps = {
   selectedItemInfo: {
     id: null,
     type: null,
+    time: null,
   },
 };
 
@@ -231,6 +249,7 @@ TestcaseGroup.propTypes = {
   selectedItemInfo: PropTypes.shape({
     id: NullableNumber,
     type: NullableString,
+    time: NullableNumber,
   }),
   onChangeTestcaseGroupName: PropTypes.func.isRequired,
 };

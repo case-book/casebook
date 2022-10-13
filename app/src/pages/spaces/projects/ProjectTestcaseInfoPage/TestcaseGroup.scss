@@ -179,7 +179,7 @@
     flex-grow: 1;
     position: relative;
 
-    > div {
+    > div.content-scroller {
       position: absolute;
       top: 0;
       left: 0;

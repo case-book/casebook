@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import dialogUtil from '@/utils/dialogUtil';
 import { useParams } from 'react-router';
 import { cloneDeep } from 'lodash';
 import { Page, PageContent, PageTitle } from '@/components';
@@ -17,6 +19,7 @@ function ProjectTestcaseInfoPage() {
   const [selectedItemInfo, setSelectedItemInfo] = useState({
     id: null,
     type: null,
+    time: null,
   });
 
   const getProject = useCallback(() => {
@@ -84,8 +87,13 @@ function ProjectTestcaseInfoPage() {
       const nextTestcaseGroups = nextProject.testcaseGroups?.slice(0) || [];
       nextTestcaseGroups.push(info);
       nextProject.testcaseGroups = nextTestcaseGroups;
-
       setProject(nextProject);
+
+      setSelectedItemInfo({
+        id: info.id,
+        type: 'group',
+        time: Date.now(),
+      });
     });
   };
 
@@ -119,6 +127,12 @@ function ProjectTestcaseInfoPage() {
       }
       nextTestcaseGroup.testcases.push(info);
       setProject(nextProject);
+
+      setSelectedItemInfo({
+        id: info.id,
+        type: 'case',
+        time: Date.now(),
+      });
     });
   };
 
@@ -139,25 +153,37 @@ function ProjectTestcaseInfoPage() {
   };
 
   const onDeleteTestcaseGroup = (type, id) => {
-    if (type === 'group') {
-      TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
-        setSelectedItemInfo({
-          id: null,
-          type: null,
-        });
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('데이터 삭제'),
+      type === 'group' ? '선택한 테스크케이스 그룹과 하위의 그룹 및 테스트케이스가 모두 삭제됩니다. 삭제하시겠습니까?' : '선택한 테스크케이스가 삭제됩니다. 삭제하시겠습니까?',
 
-        getProject();
-      });
-    } else if (type === 'case') {
-      TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
-        setSelectedItemInfo({
-          id: null,
-          type: null,
-        });
+      () => {
+        if (type === 'group') {
+          TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
+            setSelectedItemInfo({
+              id: null,
+              type: null,
+              time: null,
+            });
 
-        getProject();
-      });
-    }
+            getProject();
+          });
+        } else if (type === 'case') {
+          TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
+            setSelectedItemInfo({
+              id: null,
+              type: null,
+              time: null,
+            });
+
+            getProject();
+          });
+        }
+      },
+      null,
+      t('삭제'),
+    );
   };
 
   const onChangeTestcaseGroupName = (type, id, name) => {
