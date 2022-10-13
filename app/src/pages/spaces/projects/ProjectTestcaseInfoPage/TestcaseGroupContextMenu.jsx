@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './TestcaseGroupContextMenu.scss';
 import { NullableNumber } from '@/proptypes';
+import './TestcaseGroupContextMenu.scss';
 
 function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClickGroupName, onDelete }) {
   return (
@@ -38,8 +38,8 @@ function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClick
           <li
             onClick={() => {
               onClickGroupName(
+                contextMenuInfo.type,
                 {
-                  type: contextMenuInfo.type,
                   id: contextMenuInfo.id,
                   name: contextMenuInfo.name,
                 },

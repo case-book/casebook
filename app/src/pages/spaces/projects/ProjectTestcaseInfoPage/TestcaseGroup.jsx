@@ -1,12 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Liner } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
 import TestcaseGroupContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupContextMenu';
-import { TestcaseGroupPropTypes } from '@/proptypes';
+import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
+import { useResizeDetector } from 'react-resize-detector';
 import './TestcaseGroup.scss';
+import { getOption, setOption } from '@/utils/storageUtil';
+import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupSetting';
 
-function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase }) {
+function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase, min, setMin, countSummary }) {
+  const scroller = useRef(null);
+
+  const { width, ref } = useResizeDetector({
+    handleHeight: false,
+    refreshMode: 'throttle',
+    refreshRate: 100,
+  });
+
   const dragInfo = useRef({
     targetType: null,
     targetId: null,
@@ -30,6 +41,51 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     x: null,
     y: null,
     name: '',
+  });
+
+  const [allOpen, setAllOpen] = useState(true);
+
+  const [setting, setSetting] = useState(() => {
+    const storageSetting = getOption('testcase', 'testcase-group-layout', 'setting') || {};
+
+    return {
+      show: false,
+      testcaseGroupColumns: {
+        id: {
+          show: false,
+          name: '아이디',
+        },
+        itemOrder: {
+          show: false,
+          name: '순서',
+        },
+
+        testcase: {
+          show: true,
+          name: '테스트케이스',
+        },
+        testcaseCount: {
+          show: false,
+          name: '테스트케이스 개수',
+        },
+        ...storageSetting?.testcaseGroupColumns,
+      },
+      testcaseColumns: {
+        id: {
+          show: false,
+          name: '아이디',
+        },
+        itemOrder: {
+          show: false,
+          name: '순서',
+        },
+        closed: {
+          show: false,
+          name: '종료',
+        },
+        ...storageSetting?.testcaseColumns,
+      },
+    };
   });
 
   const setDragInfo = info => {
@@ -70,7 +126,6 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
   };
 
   const onClickGroupName = (type, item, force) => {
-    console.log(type, item, editInfo);
     if (editInfo.clickTime || force) {
       if (force || (editInfo.type === type && editInfo.clickId === item.id && Date.now() - editInfo.clickTime > 300 && Date.now() - editInfo.clickTime < 1200)) {
         setEditInfo({ ...editInfo, type, id: item.id, clickTime: null, name: item.name, clickId: null });
@@ -107,8 +162,39 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     });
   };
 
+  useEffect(() => {
+    if (selectedItemInfo.time && scroller.current) {
+      setTimeout(() => {
+        const focusElement = scroller.current?.querySelector('.selected');
+        if (focusElement) {
+          const scrollerRect = scroller.current.getClientRects();
+          const elementRect = focusElement.getClientRects();
+          if (scrollerRect?.length > 0 && elementRect?.length > 0) {
+            scroller.current.scrollTop = elementRect[0].y - scrollerRect[0].y - 16;
+          }
+        }
+      }, 100);
+    }
+  }, [selectedItemInfo.time]);
+
+  const onChangeSetting = (category, key, value) => {
+    const nextSetting = {
+      ...setting,
+      [category]: {
+        ...setting[category],
+        [key]: {
+          ...setting[category][key],
+          show: value,
+        },
+      },
+    };
+    setSetting(nextSetting);
+
+    setOption('testcase', 'testcase-group-layout', 'setting', nextSetting);
+  };
+
   return (
-    <div className="testcase-groups-wrapper">
+    <div className={`testcase-groups-wrapper g-no-select ${min ? 'min' : ''}`} ref={ref}>
       <div className="testcase-manage-button">
         <div className="left">
           <div className="controller">
@@ -117,68 +203,139 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
               <span className="controller-button start-button">
                 <i className="fa-solid fa-gamepad" />
               </span>
-              <div className="vertical">
-                <span className="controller-button">
-                  <i className="fa-solid fa-angles-up" />
-                </span>
-                <span className="controller-button center-button" />
-                <span className="controller-button">
-                  <i className="fa-solid fa-angles-down" />
-                </span>
-              </div>
+              {!min && (
+                <div className="vertical">
+                  <span
+                    className="controller-button"
+                    onClick={() => {
+                      setAllOpen(false);
+                    }}
+                  >
+                    <div className="all-open-toggle">
+                      <div className="tree-icon">
+                        <i className="fa-solid fa-folder-minus" />
+                      </div>
+                      <div className="all-text">
+                        <span>ALL</span>
+                      </div>
+                    </div>
+                  </span>
+                  <span className="controller-button center-button" />
+                  <span
+                    className="controller-button"
+                    onClick={() => {
+                      setAllOpen(true);
+                    }}
+                  >
+                    <div className="all-open-toggle">
+                      <div className="tree-icon">
+                        <i className="fa-solid fa-folder-plus" />
+                      </div>
+                      <div className="all-text">
+                        <span>ALL</span>
+                      </div>
+                    </div>
+                  </span>
+                </div>
+              )}
               <div className="horizontal">
-                <span className="controller-button">
-                  <i className="fa-solid fa-arrow-right-arrow-left" />
+                <span
+                  className="controller-button"
+                  onClick={() => {
+                    setMin(true);
+                  }}
+                >
+                  <i className="fa-solid fa-minimize" />
                 </span>
                 <span className="controller-button center-button" />
-                <span className="controller-button">
-                  <i className="fa-solid fa-arrows-left-right-to-line" />
+                <span
+                  className="controller-button"
+                  onClick={() => {
+                    setMin(false);
+                  }}
+                >
+                  <i className="fa-solid fa-maximize" />
                 </span>
               </div>
             </div>
           </div>
         </div>
-        <div className="right">
-          <Button size="xs" onClick={addTestcase}>
-            <i className="fa-solid fa-plus" /> 테스트케이스
+        <div className={`right ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
+          <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type}>
+            <i className="small-icon fa-solid fa-plus" />
+            <i className="fa-solid fa-flask" /> <span className="button-text">테스트케이스</span>
           </Button>
-          <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
+          <Liner className="liner" display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
           <Button size="xs" onClick={addTestcaseGroup}>
-            <i className="fa-solid fa-plus" /> 그룹
+            <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
           </Button>
         </div>
       </div>
-      <div className="summary">설명</div>
       <div className="testcase-groups-content">
-        <div className={`content-scroller ${dragChange}`}>
+        {min && (
+          <div className="min-content">
+            <div>
+              <div className="label">GROUP</div>
+              <div className="count">{countSummary.testcaseGroupCount}</div>
+            </div>
+            <div>
+              <div className="label">CASE</div>
+              <div className="count">{countSummary.testcaseCount}</div>
+            </div>
+          </div>
+        )}
+        <div className={`content-scroller ${dragChange}`} ref={scroller}>
           <ul>
-            {testcaseGroups
-              .sort((a, b) => {
-                return a.itemOrder - b.itemOrder;
-              })
-              .map(group => {
-                return (
-                  <TestcaseGroupItem
-                    key={group.id}
-                    group={group}
-                    dragInfo={dragInfo}
-                    setDragInfo={setDragInfo}
-                    onDrop={onDrop}
-                    editInfo={editInfo}
-                    contextMenuInfo={contextMenuInfo}
-                    onContextMenu={onContextMenu}
-                    selectedItemInfo={selectedItemInfo}
-                    onSelect={onSelect}
-                    lastChild={false}
-                    onChangeEditName={onChangeEditName}
-                    clearEditing={clearEditing}
-                    onChangeTestcaseGroupName={onChangeTestcaseGroupName}
-                    onClickGroupName={onClickGroupName}
-                  />
-                );
-              })}
+            {testcaseGroups.map(group => {
+              return (
+                <TestcaseGroupItem
+                  key={group.id}
+                  group={group}
+                  dragInfo={dragInfo}
+                  setDragInfo={setDragInfo}
+                  onDrop={onDrop}
+                  editInfo={editInfo}
+                  contextMenuInfo={contextMenuInfo}
+                  onContextMenu={onContextMenu}
+                  selectedItemInfo={selectedItemInfo}
+                  onSelect={onSelect}
+                  lastChild={false}
+                  onChangeEditName={onChangeEditName}
+                  clearEditing={clearEditing}
+                  onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+                  onClickGroupName={onClickGroupName}
+                  allOpen={allOpen}
+                  setAllOpen={setAllOpen}
+                  setting={setting}
+                />
+              );
+            })}
           </ul>
         </div>
+      </div>
+      <div className="testcase-config-button">
+        <Button
+          size="xs"
+          onClick={() => {
+            setSetting({
+              ...setting,
+              show: true,
+            });
+          }}
+          rounded
+        >
+          <i className="fa-solid fa-gear" />
+        </Button>
+        <TestcaseGroupSetting
+          setting={setting}
+          onChangeSetting={onChangeSetting}
+          onClose={() => {
+            setSetting({
+              ...setting,
+              show: false,
+            });
+          }}
+        />
       </div>
       <TestcaseGroupContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />
     </div>
@@ -190,6 +347,12 @@ TestcaseGroup.defaultProps = {
   selectedItemInfo: {
     id: null,
     type: null,
+    time: null,
+  },
+  min: false,
+  countSummary: {
+    testcaseGroupCount: 0,
+    testcaseCount: 0,
   },
 };
 
@@ -201,10 +364,17 @@ TestcaseGroup.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   selectedItemInfo: PropTypes.shape({
-    id: PropTypes.number,
-    type: PropTypes.string,
+    id: NullableNumber,
+    type: NullableString,
+    time: NullableNumber,
   }),
   onChangeTestcaseGroupName: PropTypes.func.isRequired,
+  min: PropTypes.bool,
+  setMin: PropTypes.func.isRequired,
+  countSummary: PropTypes.shape({
+    testcaseGroupCount: PropTypes.number,
+    testcaseCount: PropTypes.number,
+  }),
 };
 
 export default TestcaseGroup;

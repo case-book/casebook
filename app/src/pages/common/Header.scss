@@ -1,6 +1,5 @@
 .header-wrapper {
   _background: linear-gradient(to bottom, #000 0%, #000 20%, #111 50%);
-
   padding: 0 20px;
   position: relative;
   z-index: 2;
@@ -23,7 +22,7 @@
   }
 
   > div.header-content {
-    height: 100px;
+    height: 80px;
     display: flex;
     max-width: $max-width;
     margin: 0 auto;
@@ -64,6 +63,7 @@
 
       &.logo {
         font-size: 34px;
+        font-size: 28px;
         font-family: Rowdies, sans-serif;
         height: 100%;
 
@@ -110,6 +110,7 @@
       font-family: NanumGothic, sans-serif;
       font-weight: lighter;
       font-size: 20px;
+      font-size: 16px;
       height: 100%;
 
       > div {

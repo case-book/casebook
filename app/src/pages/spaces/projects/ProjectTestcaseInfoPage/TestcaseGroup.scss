@@ -3,8 +3,54 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: 14px;
   position: relative;
+
+  &.min {
+    .testcase-manage-button {
+      .right {
+        display: none;
+      }
+    }
+
+    .testcase-groups-content {
+      .content-scroller {
+        > ul {
+          width: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+
+  .min-content {
+    margin-top: 1rem;
+    > div {
+      padding: 0.5rem;
+      text-align: center;
+
+      .label {
+        font-family: NotoSans, sans-serif;
+        font-weight: bold;
+        font-size: 10px;
+      }
+
+      .count {
+        font-family: Rowdies, sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        margin-top: 4px;
+      }
+    }
+  }
+
+  .testcase-config-button {
+    padding: 1rem 1rem 1rem;
+    background-color: #111;
+    text-align: right;
+    position: relative;
+  }
 
   .testcase-manage-button {
     padding: 1rem 1rem 1rem;
@@ -57,6 +103,45 @@
 
             &.center-button {
               background-color: $color-azure;
+            }
+
+            .all-open-toggle {
+              text-align: center;
+              line-height: 100%;
+              position: relative;
+              height: 100%;
+              width: 100%;
+              display: flex;
+              justify-content: center;
+
+              > div.tree-icon {
+                line-height: 100%;
+                align-self: center;
+                padding-bottom: 8px;
+              }
+
+              .all-text {
+                font-size: 10px;
+                font-family: Cairo, sans-serif;
+                font-weight: bold;
+                position: absolute;
+                bottom: 2px;
+                left: 0;
+                right: 0;
+                text-align: center;
+                justify-content: center;
+                line-height: 0;
+
+                > span {
+                  background-color: $color-sunflower;
+                  color: #333;
+                  display: inline-block;
+                  line-height: 100%;
+                  padding: 1px 2px;
+                  border-radius: 2px;
+                  transform: scale(0.8);
+                }
+              }
             }
           }
 
@@ -131,16 +216,42 @@
         }
       }
     }
+
+    .right {
+      &.small-control {
+        .liner {
+          display: none !important;
+        }
+
+        .add-testcase-button {
+          margin-right: 0.5rem;
+        }
+
+        .button-text {
+          display: none;
+        }
+      }
+
+      &.smaller-control {
+        button {
+          padding: 0 6px;
+          width: 24px;
+          height: 24px;
+          border-radius: 6px;
+        }
+
+        .small-icon {
+          display: none;
+        }
+      }
+    }
   }
-  .summary {
-    padding: 0 1rem;
-    display: none;
-  }
+
   .testcase-groups-content {
     flex-grow: 1;
     position: relative;
 
-    > div {
+    > div.content-scroller {
       position: absolute;
       top: 0;
       left: 0;

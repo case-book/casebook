@@ -6,7 +6,7 @@
   flex-direction: column;
   max-width: $max-page-width;
   margin: 0 auto 20px;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 80px - 20px);
   border-radius: 20px;
 
   &.info-page {
@@ -22,7 +22,7 @@
     }
 
     .page-content-wrapper {
-      padding: 1rem;
+      padding: 0 1rem 1rem;
     }
   }
 

@@ -1,0 +1,74 @@
+.testcase-group-setting-setting-overlay-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.testcase-group-setting-wrapper {
+  position: absolute;
+  bottom: 100%;
+  right: 4px;
+  text-align: left;
+  background-color: #060606;
+  padding: 1rem;
+  z-index: 2;
+
+  .arrow {
+    position: absolute;
+    bottom: -10px;
+    text-align: right;
+    right: 15px;
+
+    > div {
+      width: 16px;
+      height: 16px;
+      background-color: #060606;
+
+      transform: rotate(45deg);
+      display: inline-block;
+    }
+  }
+
+  .setting-title {
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .setting-category {
+    margin-bottom: 1rem;
+
+    &.last {
+      margin-bottom: 0;
+    }
+
+    .title {
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      padding-left: 4px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0.75rem;
+      margin: 0;
+      background-color: #000;
+
+      li {
+        display: flex;
+        margin-bottom: 0.5rem;
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .label {
+          width: 120px;
+        }
+      }
+    }
+  }
+}

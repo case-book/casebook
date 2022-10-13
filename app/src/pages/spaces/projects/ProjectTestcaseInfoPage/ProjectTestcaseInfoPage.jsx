@@ -1,21 +1,38 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import dialogUtil from '@/utils/dialogUtil';
+import { useParams } from 'react-router';
+import { cloneDeep } from 'lodash';
 import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
-import { useParams } from 'react-router';
-import './ProjectTestcaseInfoPage.scss';
 import TestcaseService from '@/services/TestcaseService';
-import { cloneDeep } from 'lodash';
-import TestcaseGroup from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroup';
+import { getOption, setOption } from '@/utils/storageUtil';
+import TestcaseGroup from './TestcaseGroup';
+import './ProjectTestcaseInfoPage.scss';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
+  const [testcaseGroupWidth, setTestcaseGroupWidth] = useState(() => {
+    return getOption('testcase', 'testcase-group-layout', 'width') || 300;
+  });
+
+  const testcaseGroupElement = useRef(null);
+
+  const resizeInfo = useRef({
+    moving: false,
+    startX: null,
+    endX: null,
+    startWidth: null,
+  }).current;
+
   const [selectedItemInfo, setSelectedItemInfo] = useState({
     id: null,
     type: null,
+    time: null,
   });
 
   const getProject = useCallback(() => {
@@ -24,10 +41,33 @@ function ProjectTestcaseInfoPage() {
     });
   }, [spaceCode, projectId]);
 
+  const [min, setMin] = useState(false);
+
+  const [countSummary, setCountSummary] = useState({
+    testcaseGroupCount: 0,
+    testcaseCount: 0,
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
     getProject();
   }, [spaceCode, projectId]);
+
+  const sort = list => {
+    list.sort((a, b) => {
+      return a.itemOrder - b.itemOrder;
+    });
+
+    list.forEach(item => {
+      if (item?.children?.length > 0) {
+        sort(item.children);
+      }
+
+      if (item?.testcases?.length > 0) {
+        sort(item.testcases);
+      }
+    });
+  };
 
   useEffect(() => {
     let nextGroups = [];
@@ -57,6 +97,15 @@ function ProjectTestcaseInfoPage() {
       }
     }
 
+    setCountSummary({
+      testcaseGroupCount: project?.testcaseGroups?.length || 0,
+      testcaseCount: project?.testcaseGroups?.reduce((count, next) => {
+        return count + (next?.testcases?.length || 0);
+      }, 0),
+    });
+
+    sort(nextGroups);
+
     setTestcaseGroups(nextGroups);
   }, [project]);
 
@@ -83,31 +132,53 @@ function ProjectTestcaseInfoPage() {
       const nextTestcaseGroups = nextProject.testcaseGroups?.slice(0) || [];
       nextTestcaseGroups.push(info);
       nextProject.testcaseGroups = nextTestcaseGroups;
-
       setProject(nextProject);
+
+      setSelectedItemInfo({
+        id: info.id,
+        type: 'group',
+        time: Date.now(),
+      });
     });
   };
 
   const addTestcase = () => {
-    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
-      const group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
-      const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
-      const testcase = {
-        testcaseGroupId: selectedItemInfo.id,
-        name,
-        testcases: [],
-      };
+    let group = null;
 
-      TestcaseService.createTestcase(spaceCode, projectId, selectedItemInfo.id, testcase, info => {
-        const nextProject = { ...project };
-        const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === selectedItemInfo.id);
-        if (!nextTestcaseGroup.testcases) {
-          nextTestcaseGroup.testcases = [];
-        }
-        nextTestcaseGroup.testcases.push(info);
-        setProject(nextProject);
+    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
+      group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
+    } else if (selectedItemInfo.type === 'case' && selectedItemInfo.id) {
+      group = project.testcaseGroups.find(d => {
+        return d.testcases.findIndex(item => item.id === selectedItemInfo.id) > -1;
       });
     }
+
+    if (!group) {
+      return;
+    }
+
+    const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
+    const testcase = {
+      testcaseGroupId: group.id,
+      name,
+      testcases: [],
+    };
+
+    TestcaseService.createTestcase(spaceCode, projectId, group.id, testcase, info => {
+      const nextProject = { ...project };
+      const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === group.id);
+      if (!nextTestcaseGroup.testcases) {
+        nextTestcaseGroup.testcases = [];
+      }
+      nextTestcaseGroup.testcases.push(info);
+      setProject(nextProject);
+
+      setSelectedItemInfo({
+        id: info.id,
+        type: 'case',
+        time: Date.now(),
+      });
+    });
   };
 
   const onPositionChange = changeInfo => {
@@ -127,25 +198,37 @@ function ProjectTestcaseInfoPage() {
   };
 
   const onDeleteTestcaseGroup = (type, id) => {
-    if (type === 'group') {
-      TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
-        setSelectedItemInfo({
-          id: null,
-          type: null,
-        });
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('데이터 삭제'),
+      type === 'group' ? '선택한 테스크케이스 그룹과 하위의 그룹 및 테스트케이스가 모두 삭제됩니다. 삭제하시겠습니까?' : '선택한 테스크케이스가 삭제됩니다. 삭제하시겠습니까?',
 
-        getProject();
-      });
-    } else if (type === 'case') {
-      TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
-        setSelectedItemInfo({
-          id: null,
-          type: null,
-        });
+      () => {
+        if (type === 'group') {
+          TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
+            setSelectedItemInfo({
+              id: null,
+              type: null,
+              time: null,
+            });
 
-        getProject();
-      });
-    }
+            getProject();
+          });
+        } else if (type === 'case') {
+          TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
+            setSelectedItemInfo({
+              id: null,
+              type: null,
+              time: null,
+            });
+
+            getProject();
+          });
+        }
+      },
+      null,
+      t('삭제'),
+    );
   };
 
   const onChangeTestcaseGroupName = (type, id, name) => {
@@ -171,12 +254,61 @@ function ProjectTestcaseInfoPage() {
     }
   };
 
+  const onGrabMouseMove = e => {
+    if (resizeInfo.moving) {
+      const distanceX = e.clientX - resizeInfo.startX;
+      resizeInfo.endX = e.clientX;
+      if (testcaseGroupElement.current) {
+        testcaseGroupElement.current.style.width = `${resizeInfo.startWidth + distanceX}px`;
+      }
+    }
+  };
+
+  const onGrabMouseUp = () => {
+    if (resizeInfo.moving) {
+      document.removeEventListener('mousemove', onGrabMouseMove);
+      document.removeEventListener('mouseup', onGrabMouseUp);
+      const width = resizeInfo.startWidth + (resizeInfo.endX - resizeInfo.startX);
+      setTestcaseGroupWidth(width);
+      resizeInfo.moving = false;
+      resizeInfo.startX = null;
+      resizeInfo.startWidth = null;
+
+      setOption('testcase', 'testcase-group-layout', 'width', width);
+    }
+  };
+
+  const onGrabMouseDown = e => {
+    if (!testcaseGroupElement.current) {
+      return;
+    }
+
+    const rects = testcaseGroupElement.current.getClientRects();
+
+    if (rects?.length < 1) {
+      return;
+    }
+
+    document.addEventListener('mousemove', onGrabMouseMove);
+    document.addEventListener('mouseup', onGrabMouseUp);
+
+    resizeInfo.moving = true;
+    resizeInfo.startX = e.clientX;
+    resizeInfo.startWidth = rects[0].width;
+  };
+
   return (
     <Page className="project-testcase-info-page-wrapper" list wide>
       <PageTitle>{t('테스트케이스')}</PageTitle>
       <PageContent className="page-content">
         <div className="page-layout">
-          <div className="testcase-groups">
+          <div
+            className={`testcase-groups ${min ? 'min' : ''}`}
+            ref={testcaseGroupElement}
+            style={{
+              width: `${testcaseGroupWidth || 300}px`,
+            }}
+          >
             <TestcaseGroup
               testcaseGroups={testcaseGroups}
               addTestcaseGroup={addTestcaseGroup}
@@ -186,9 +318,12 @@ function ProjectTestcaseInfoPage() {
               selectedItemInfo={selectedItemInfo}
               onSelect={setSelectedItemInfo}
               onDelete={onDeleteTestcaseGroup}
+              min={min}
+              setMin={setMin}
+              countSummary={countSummary}
             />
           </div>
-          <div className="border-line" />
+          <div className="border-line" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
           <div className="testcases">
             <div className="content-scroller" />
           </div>
