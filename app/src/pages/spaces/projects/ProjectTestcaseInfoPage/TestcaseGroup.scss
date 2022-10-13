@@ -3,8 +3,54 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: 14px;
   position: relative;
+
+  &.min {
+    .testcase-manage-button {
+      .right {
+        display: none;
+      }
+    }
+
+    .testcase-groups-content {
+      .content-scroller {
+        > ul {
+          width: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+
+  .min-content {
+    margin-top: 1rem;
+    > div {
+      padding: 0.5rem;
+      text-align: center;
+
+      .label {
+        font-family: NotoSans, sans-serif;
+        font-weight: bold;
+        font-size: 10px;
+      }
+
+      .count {
+        font-family: Rowdies, sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        margin-top: 4px;
+      }
+    }
+  }
+
+  .testcase-config-button {
+    padding: 1rem 1rem 1rem;
+    background-color: #111;
+    text-align: right;
+    position: relative;
+  }
 
   .testcase-manage-button {
     padding: 1rem 1rem 1rem;
@@ -200,10 +246,7 @@
       }
     }
   }
-  .summary {
-    padding: 0 1rem;
-    display: none;
-  }
+
   .testcase-groups-content {
     flex-grow: 1;
     position: relative;

@@ -41,10 +41,33 @@ function ProjectTestcaseInfoPage() {
     });
   }, [spaceCode, projectId]);
 
+  const [min, setMin] = useState(false);
+
+  const [countSummary, setCountSummary] = useState({
+    testcaseGroupCount: 0,
+    testcaseCount: 0,
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
     getProject();
   }, [spaceCode, projectId]);
+
+  const sort = list => {
+    list.sort((a, b) => {
+      return a.itemOrder - b.itemOrder;
+    });
+
+    list.forEach(item => {
+      if (item?.children?.length > 0) {
+        sort(item.children);
+      }
+
+      if (item?.testcases?.length > 0) {
+        sort(item.testcases);
+      }
+    });
+  };
 
   useEffect(() => {
     let nextGroups = [];
@@ -73,6 +96,15 @@ function ProjectTestcaseInfoPage() {
         }
       }
     }
+
+    setCountSummary({
+      testcaseGroupCount: project?.testcaseGroups?.length || 0,
+      testcaseCount: project?.testcaseGroups?.reduce((count, next) => {
+        return count + (next?.testcases?.length || 0);
+      }, 0),
+    });
+
+    sort(nextGroups);
 
     setTestcaseGroups(nextGroups);
   }, [project]);
@@ -271,7 +303,7 @@ function ProjectTestcaseInfoPage() {
       <PageContent className="page-content">
         <div className="page-layout">
           <div
-            className="testcase-groups"
+            className={`testcase-groups ${min ? 'min' : ''}`}
             ref={testcaseGroupElement}
             style={{
               width: `${testcaseGroupWidth || 300}px`,
@@ -286,6 +318,9 @@ function ProjectTestcaseInfoPage() {
               selectedItemInfo={selectedItemInfo}
               onSelect={setSelectedItemInfo}
               onDelete={onDeleteTestcaseGroup}
+              min={min}
+              setMin={setMin}
+              countSummary={countSummary}
             />
           </div>
           <div className="border-line" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />

@@ -69,8 +69,8 @@ li.testcase-group-item-wrapper {
       .tree-toggle {
         padding: 0;
         display: flex;
-        margin-left: 8px;
-        margin-right: 8px;
+        margin-left: 4px;
+        margin-right: 4px;
         > span {
           align-self: center;
           display: inline-flex;
@@ -78,7 +78,6 @@ li.testcase-group-item-wrapper {
           height: 18px;
           justify-content: center;
           border-radius: 2px;
-          font-size: 12px;
 
           > i {
             align-self: center;
@@ -102,7 +101,7 @@ li.testcase-group-item-wrapper {
           align-self: center;
           display: inline-flex;
           line-height: 0;
-          font-size: 10px;
+          font-size: 13px;
           height: 18px;
           width: 18px;
           text-align: center;
@@ -120,11 +119,75 @@ li.testcase-group-item-wrapper {
         flex-grow: 1;
         padding: 0.5rem 0.5rem 0.5rem 0;
         width: calc(100% - 46px);
+        display: flex;
 
-        > div {
+        .case-col,
+        .group-col {
+          display: inline-flex;
+          font-size: 12px;
+          color: #333;
+          font-weight: bold;
+          border-radius: 2px;
+          margin-right: 4px;
+          font-family: Rowdies, sans-serif;
+
+          > div {
+            align-self: center;
+            &:first-child {
+              padding-left: 2px;
+              padding-right: 2px;
+              background-color: $color-storm;
+              border-radius: 2px 0 0 2px;
+            }
+
+            &:last-child {
+              font-family: Rowdies, sans-serif;
+              background-color: $color-sunflower;
+              border-radius: 0 2px 2px 0;
+              padding-left: 3px;
+              padding-right: 3px;
+            }
+          }
+
+          &.col-id {
+          }
+
+          &.col-itemOrder {
+          }
+
+          &.col-closed {
+            > div {
+              background-color: $color-tangerine;
+              color: $white;
+              font-weight: normal;
+              letter-spacing: -0.5px;
+            }
+          }
+        }
+
+        .col-testcase-count {
+          position: absolute;
+          top: -2px;
+          left: -4px;
+          width: 16px;
+          height: 16px;
+          background-color: $color-sunflower;
+          color: #333;
+          display: inline-flex;
+          justify-content: center;
+          border-radius: 50%;
+          font-family: Rowdies, sans-serif;
+          font-size: 10px;
+          > div {
+            align-self: center;
+            line-height: 0;
+          }
+        }
+
+        > .col-name {
+          flex-grow: 1;
           overflow-x: hidden;
           text-overflow: ellipsis;
-
           white-space: nowrap;
         }
 
@@ -141,7 +204,6 @@ li.testcase-group-item-wrapper {
         display: none;
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.1);
           background-color: $color-sunflower;
           color: #333;
         }
@@ -182,6 +244,10 @@ li.testcase-group-item-wrapper {
           padding-top: 0.25rem;
           padding-bottom: 0.25rem;
           padding-right: 0.25rem;
+
+          .group-col {
+            display: none;
+          }
         }
 
         input {
@@ -213,11 +279,6 @@ li.testcase-group-item-wrapper {
         .grab {
           display: inline-block;
         }
-        > div {
-          &.name {
-            width: calc(100% - 46px - 32px);
-          }
-        }
       }
 
       &.selected {
@@ -248,17 +309,6 @@ li.testcase-group-item-wrapper {
         > .border-bottom-liner {
           display: none;
         }
-      }
-    }
-  }
-
-  &.name-editing {
-    > .group-info {
-      background-color: $color-tangerine;
-      border-radius: 0;
-
-      input {
-        font-weight: bold;
       }
     }
   }

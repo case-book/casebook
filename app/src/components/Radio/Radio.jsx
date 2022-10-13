@@ -35,7 +35,7 @@ Radio.propTypes = {
   onChange: PropTypes.func,
   size: PropTypes.string,
   checked: PropTypes.bool,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 export default Radio;

@@ -63,4 +63,42 @@ const TestcaseTemplatePropTypes = PropTypes.shape({
   duration: PropTypes.number,
 });
 
-export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplatePropTypes, TestcaseGroupPropTypes };
+const TestcaseGroupSettingPropTypes = PropTypes.shape({
+  show: PropTypes.bool,
+  testcaseGroupColumns: PropTypes.shape({
+    id: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+
+    itemOrder: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+
+    testcase: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+    testcaseCount: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+  }),
+  testcaseColumns: PropTypes.shape({
+    id: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+    itemOrder: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+    closed: PropTypes.shape({
+      show: PropTypes.bool,
+      name: PropTypes.string,
+    }),
+  }),
+});
+
+export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplatePropTypes, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes };
