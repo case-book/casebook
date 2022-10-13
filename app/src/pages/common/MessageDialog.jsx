@@ -21,7 +21,7 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-  });
+  }, []);
 
   return (
     <Modal className={`common-dialog-wrapper message-dialog-wrapper  ${className} ${category}`} isOpen>

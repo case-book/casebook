@@ -58,6 +58,45 @@
             &.center-button {
               background-color: $color-azure;
             }
+
+            .all-open-toggle {
+              text-align: center;
+              line-height: 100%;
+              position: relative;
+              height: 100%;
+              width: 100%;
+              display: flex;
+              justify-content: center;
+
+              > div.tree-icon {
+                line-height: 100%;
+                align-self: center;
+                padding-bottom: 8px;
+              }
+
+              .all-text {
+                font-size: 10px;
+                font-family: Cairo, sans-serif;
+                font-weight: bold;
+                position: absolute;
+                bottom: 2px;
+                left: 0;
+                right: 0;
+                text-align: center;
+                justify-content: center;
+                line-height: 0;
+
+                > span {
+                  background-color: $color-sunflower;
+                  color: #333;
+                  display: inline-block;
+                  line-height: 100%;
+                  padding: 1px 2px;
+                  border-radius: 2px;
+                  transform: scale(0.8);
+                }
+              }
+            }
           }
 
           .vertical {

@@ -1,18 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'react-router';
+import { cloneDeep } from 'lodash';
 import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
-import { useParams } from 'react-router';
-import './ProjectTestcaseInfoPage.scss';
 import TestcaseService from '@/services/TestcaseService';
-import { cloneDeep } from 'lodash';
-import TestcaseGroup from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroup';
+import TestcaseGroup from './TestcaseGroup';
+import './ProjectTestcaseInfoPage.scss';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
+
   const [selectedItemInfo, setSelectedItemInfo] = useState({
     id: null,
     type: null,
@@ -89,25 +90,36 @@ function ProjectTestcaseInfoPage() {
   };
 
   const addTestcase = () => {
-    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
-      const group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
-      const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
-      const testcase = {
-        testcaseGroupId: selectedItemInfo.id,
-        name,
-        testcases: [],
-      };
+    let group = null;
 
-      TestcaseService.createTestcase(spaceCode, projectId, selectedItemInfo.id, testcase, info => {
-        const nextProject = { ...project };
-        const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === selectedItemInfo.id);
-        if (!nextTestcaseGroup.testcases) {
-          nextTestcaseGroup.testcases = [];
-        }
-        nextTestcaseGroup.testcases.push(info);
-        setProject(nextProject);
+    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
+      group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
+    } else if (selectedItemInfo.type === 'case' && selectedItemInfo.id) {
+      group = project.testcaseGroups.find(d => {
+        return d.testcases.findIndex(item => item.id === selectedItemInfo.id) > -1;
       });
     }
+
+    if (!group) {
+      return;
+    }
+
+    const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
+    const testcase = {
+      testcaseGroupId: group.id,
+      name,
+      testcases: [],
+    };
+
+    TestcaseService.createTestcase(spaceCode, projectId, group.id, testcase, info => {
+      const nextProject = { ...project };
+      const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === group.id);
+      if (!nextTestcaseGroup.testcases) {
+        nextTestcaseGroup.testcases = [];
+      }
+      nextTestcaseGroup.testcases.push(info);
+      setProject(nextProject);
+    });
   };
 
   const onPositionChange = changeInfo => {

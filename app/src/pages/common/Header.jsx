@@ -135,7 +135,7 @@ function Header({ className, theme }) {
                       <div className="cursor">
                         <div />
                       </div>
-                      <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 16px" />
+                      <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 10px" />
                     </li>
                   );
                 })}

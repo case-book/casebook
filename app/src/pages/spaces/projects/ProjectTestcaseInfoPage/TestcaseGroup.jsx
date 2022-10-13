@@ -3,7 +3,7 @@ import { Button, Liner } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
 import TestcaseGroupContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupContextMenu';
-import { TestcaseGroupPropTypes } from '@/proptypes';
+import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseGroup.scss';
 
 function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase }) {
@@ -31,6 +31,8 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     y: null,
     name: '',
   });
+
+  const [allOpen, setAllOpen] = useState(null);
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -70,7 +72,6 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
   };
 
   const onClickGroupName = (type, item, force) => {
-    console.log(type, item, editInfo);
     if (editInfo.clickTime || force) {
       if (force || (editInfo.type === type && editInfo.clickId === item.id && Date.now() - editInfo.clickTime > 300 && Date.now() - editInfo.clickTime < 1200)) {
         setEditInfo({ ...editInfo, type, id: item.id, clickTime: null, name: item.name, clickId: null });
@@ -118,12 +119,36 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
                 <i className="fa-solid fa-gamepad" />
               </span>
               <div className="vertical">
-                <span className="controller-button">
-                  <i className="fa-solid fa-angles-up" />
+                <span
+                  className="controller-button"
+                  onClick={() => {
+                    setAllOpen(false);
+                  }}
+                >
+                  <div className="all-open-toggle">
+                    <div className="tree-icon">
+                      <i className="fa-solid fa-folder-minus" />
+                    </div>
+                    <div className="all-text">
+                      <span>ALL</span>
+                    </div>
+                  </div>
                 </span>
                 <span className="controller-button center-button" />
-                <span className="controller-button">
-                  <i className="fa-solid fa-angles-down" />
+                <span
+                  className="controller-button"
+                  onClick={() => {
+                    setAllOpen(true);
+                  }}
+                >
+                  <div className="all-open-toggle">
+                    <div className="tree-icon">
+                      <i className="fa-solid fa-folder-plus" />
+                    </div>
+                    <div className="all-text">
+                      <span>ALL</span>
+                    </div>
+                  </div>
                 </span>
               </div>
               <div className="horizontal">
@@ -139,12 +164,13 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
           </div>
         </div>
         <div className="right">
-          <Button size="xs" onClick={addTestcase}>
-            <i className="fa-solid fa-plus" /> 테스트케이스
+          <Button size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type}>
+            <i className="fa-solid fa-plus" />
+            <i className="fa-solid fa-flask" /> 케이스
           </Button>
           <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
           <Button size="xs" onClick={addTestcaseGroup}>
-            <i className="fa-solid fa-plus" /> 그룹
+            <i className="fa-solid fa-folder-plus" /> 그룹
           </Button>
         </div>
       </div>
@@ -174,6 +200,8 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
                     clearEditing={clearEditing}
                     onChangeTestcaseGroupName={onChangeTestcaseGroupName}
                     onClickGroupName={onClickGroupName}
+                    allOpen={allOpen}
+                    setAllOpen={setAllOpen}
                   />
                 );
               })}
@@ -201,8 +229,8 @@ TestcaseGroup.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   selectedItemInfo: PropTypes.shape({
-    id: PropTypes.number,
-    type: PropTypes.string,
+    id: NullableNumber,
+    type: NullableString,
   }),
   onChangeTestcaseGroupName: PropTypes.func.isRequired,
 };

@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 
 const NullableNumber = PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([null])]);
 
+const NullableString = PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])]);
+
 const KeyValuePropTypes = PropTypes.arrayOf(
   PropTypes.shape({
     key: PropTypes.string,
@@ -61,4 +63,4 @@ const TestcaseTemplatePropTypes = PropTypes.shape({
   duration: PropTypes.number,
 });
 
-export { NullableNumber, KeyValuePropTypes, TestcaseTemplatePropTypes, TestcaseGroupPropTypes };
+export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplatePropTypes, TestcaseGroupPropTypes };

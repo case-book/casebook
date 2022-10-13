@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Input } from '@/components';
 import PropTypes from 'prop-types';
-import './TestcaseGroupItem.scss';
 import { NullableNumber, TestcaseGroupPropTypes } from '@/proptypes';
+import './TestcaseGroupItem.scss';
 
 function TestcaseGroupItem({
   group,
@@ -19,14 +19,48 @@ function TestcaseGroupItem({
   onContextMenu,
   editInfo,
   setDragInfo,
+  allOpen,
+  setAllOpen,
 }) {
+  const [treeOpen, setTreeOpen] = useState(false);
+
+  useEffect(() => {
+    if (allOpen !== null) {
+      setTreeOpen(allOpen);
+    }
+  }, [allOpen]);
+
+  const onKeyDown = e => {
+    if (e.key === 'Escape') {
+      clearEditing();
+    } else if (e.key === 'Enter') {
+      onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
+      clearEditing();
+    }
+  };
+
+  const clearDragInfo = () => {
+    setDragInfo({
+      targetType: null,
+      targetId: null,
+      destinationType: null,
+      destinationId: null,
+      toChildren: false,
+    });
+  };
+
+  const hasChild = useMemo(() => {
+    return group?.testcases?.length > 0 || group?.children?.length > 0;
+  }, [group]);
+
   return (
-    <li key={group.id} className={`testcase-group-item-wrapper ${selectedItemInfo.type === 'group' && group.id === selectedItemInfo.id ? 'selected' : ''}`}>
-      <div className="border-bottom" />
-      <div className="border-top" />
+    <li key={group.id} className="testcase-group-item-wrapper">
+      <div className="border-bottom-liner" />
+      <div className="border-top-liner" />
       <div className="group-content">
         <div
-          className={`group-info 
+          className={`group-info
+          ${selectedItemInfo.type === 'group' && group.id === selectedItemInfo.id ? 'selected' : ''} 
           ${dragInfo.targetType === 'group' && dragInfo.targetId === group.id ? 'drag-target' : ''} 
           ${dragInfo.destinationType === 'group' && dragInfo.destinationId === group.id ? 'drag-destination' : ''}  
           ${dragInfo.toChildren ? 'to-children' : ''} 
@@ -68,18 +102,28 @@ function TestcaseGroupItem({
           }}
         >
           {group.depth > 0 && (
-            <div className={`tree-mark ${lastChild ? 'last-child' : ''}`}>
+            <div className={`child-tree-mark ${lastChild ? 'last-child' : ''}`}>
               <div>
                 <div className="line line-1" />
                 <div className="line line-2" />
               </div>
             </div>
           )}
-          <div className="icon group">
-            <span>
-              <span>
-                <i className="fa-solid fa-book" />
-              </span>
+          <div className={`tree-toggle ${hasChild ? 'has-child' : ''}`}>
+            <span
+              onClick={e => {
+                e.stopPropagation();
+                setAllOpen(null);
+                setTreeOpen(!treeOpen);
+              }}
+            >
+              {hasChild && (
+                <>
+                  {!treeOpen && <i className="fa-solid fa-folder-plus" />}
+                  {treeOpen && <i className="fa-solid fa-folder-minus" />}
+                </>
+              )}
+              {!hasChild && <i className="fa-solid fa-folder" />}
             </span>
           </div>
           <div
@@ -90,24 +134,7 @@ function TestcaseGroupItem({
             }}
           >
             {editInfo.type === 'group' && editInfo.id === group.id && (
-              <Input
-                className="name-editor"
-                underline={false}
-                value={editInfo.name}
-                onChange={onChangeEditName}
-                size="xs"
-                required
-                minLength={1}
-                maxLength={100}
-                onKeyDown={e => {
-                  if (e.key === 'Escape') {
-                    clearEditing();
-                  } else if (e.key === 'Enter') {
-                    onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
-                    clearEditing();
-                  }
-                }}
-              />
+              <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="xs" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
             )}
             {!(editInfo.type === 'group' && editInfo.id === group.id) && (
               <div
@@ -115,7 +142,7 @@ function TestcaseGroupItem({
                   onClickGroupName('group', group);
                 }}
               >
-                {group.id}-{group.name}
+                {group.name}
               </div>
             )}
           </div>
@@ -130,15 +157,7 @@ function TestcaseGroupItem({
                 destinationId: null,
               });
             }}
-            onDragEnd={() => {
-              setDragInfo({
-                targetType: null,
-                targetId: null,
-                destinationType: null,
-                destinationId: null,
-                toChildren: false,
-              });
-            }}
+            onDragEnd={clearDragInfo}
             onDragLeave={e => {
               e.stopPropagation();
               e.preventDefault();
@@ -179,8 +198,13 @@ function TestcaseGroupItem({
             }}
           />
         </div>
-        {group.testcases?.length > 0 && (
-          <div className={`group-testcases ${group.depth > 0 ? 'is-child' : ''}`}>
+        {treeOpen && group.testcases?.length > 0 && (
+          <div
+            className="group-testcases"
+            style={{
+              marginLeft: `${12 + group.depth * 10 + (group.depth > 0 ? 10 : 0)}px`,
+            }}
+          >
             <ul>
               {group.testcases
                 .sort((a, b) => {
@@ -188,13 +212,14 @@ function TestcaseGroupItem({
                 })
                 .map(testcase => {
                   return (
-                    <li className={`testcase-content ${selectedItemInfo.type === 'case' && testcase.id === selectedItemInfo.id ? 'selected' : ''}`} key={testcase.id}>
+                    <li className="testcase-content" key={testcase.id}>
                       <div
                         className={`testcase-info
                         ${dragInfo.targetType === 'case' && dragInfo.targetId === testcase.id ? 'drag-target' : ''} 
                         ${dragInfo.destinationType === 'case' && dragInfo.destinationId === testcase.id ? 'drag-destination' : ''}
                         ${contextMenuInfo.type === 'case' && contextMenuInfo.id === testcase.id ? 'context-menu-target' : ''}
                         ${editInfo.type === 'case' && editInfo.id === testcase.id ? 'name-editing' : ''}
+                        ${selectedItemInfo.type === 'case' && testcase.id === selectedItemInfo.id ? 'selected' : ''}
                         `}
                         onClick={e => {
                           e.stopPropagation();
@@ -231,12 +256,11 @@ function TestcaseGroupItem({
                           onContextMenu(e, 'case', testcase.id, testcase.name);
                         }}
                       >
-                        <div className="icon case">
+                        <div className="case-icon">
                           <span>
-                            <span />
+                            <i className="fa-solid fa-flask" />
                           </span>
                         </div>
-
                         <div
                           className="name"
                           onDragLeave={e => {
@@ -245,24 +269,7 @@ function TestcaseGroupItem({
                           }}
                         >
                           {editInfo.type === 'case' && editInfo.id === testcase.id && (
-                            <Input
-                              className="name-editor"
-                              underline={false}
-                              value={editInfo.name}
-                              onChange={onChangeEditName}
-                              size="xs"
-                              required
-                              minLength={1}
-                              maxLength={100}
-                              onKeyDown={e => {
-                                if (e.key === 'Escape') {
-                                  clearEditing();
-                                } else if (e.key === 'Enter') {
-                                  onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
-                                  clearEditing();
-                                }
-                              }}
-                            />
+                            <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="xs" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
                           )}
                           {!(editInfo.type === 'case' && editInfo.id === testcase.id) && (
                             <div
@@ -270,11 +277,10 @@ function TestcaseGroupItem({
                                 onClickGroupName('case', testcase);
                               }}
                             >
-                              {testcase.id}-{testcase.name}
+                              {testcase.name}
                             </div>
                           )}
                         </div>
-
                         <div
                           draggable
                           className="grab"
@@ -286,15 +292,7 @@ function TestcaseGroupItem({
                               destinationId: null,
                             });
                           }}
-                          onDragEnd={() => {
-                            setDragInfo({
-                              targetType: null,
-                              targetId: null,
-                              destinationType: null,
-                              destinationId: null,
-                              toChildren: false,
-                            });
-                          }}
+                          onDragEnd={clearDragInfo}
                           onDragLeave={e => {
                             e.stopPropagation();
                             e.preventDefault();
@@ -344,7 +342,7 @@ function TestcaseGroupItem({
           </div>
         )}
       </div>
-      {group.children && (
+      {treeOpen && group.children && (
         <div className="group-children">
           <ul>
             {group.children
@@ -369,6 +367,8 @@ function TestcaseGroupItem({
                     clearEditing={clearEditing}
                     onChangeTestcaseGroupName={onChangeTestcaseGroupName}
                     onClickGroupName={onClickGroupName}
+                    allOpen={allOpen}
+                    setAllOpen={setAllOpen}
                   />
                 );
               })}
@@ -397,6 +397,7 @@ TestcaseGroupItem.defaultProps = {
     clickId: null,
   },
   group: {},
+  allOpen: null,
 };
 
 TestcaseGroupItem.propTypes = {
@@ -435,6 +436,8 @@ TestcaseGroupItem.propTypes = {
   clearEditing: PropTypes.func.isRequired,
   onChangeTestcaseGroupName: PropTypes.func.isRequired,
   onClickGroupName: PropTypes.func.isRequired,
+  allOpen: PropTypes.bool,
+  setAllOpen: PropTypes.func.isRequired,
 };
 
 export default TestcaseGroupItem;

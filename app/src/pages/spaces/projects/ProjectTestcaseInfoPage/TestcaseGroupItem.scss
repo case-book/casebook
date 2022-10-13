@@ -2,7 +2,7 @@ li.testcase-group-item-wrapper {
   display: block;
   position: relative;
 
-  .border-bottom {
+  .border-bottom-liner {
     height: 1px;
     position: absolute;
     left: 0;
@@ -11,76 +11,17 @@ li.testcase-group-item-wrapper {
     background-color: rgba(0, 0, 0, 0.3);
   }
 
-  .group-content {
-    .group-info {
-      > div {
-        &.icon {
-          padding: 0;
-          display: flex;
-          margin-right: 8px;
-          margin-left: 8px;
-          > span {
-            align-self: center;
-            display: inline-flex;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            background-color: $color-salmon;
-            color: $black;
-            border-radius: 50%;
-
-            justify-content: center;
-
-            > span {
-              align-self: center;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .testcase-content {
-    .testcase-info {
-      > div {
-        &.icon {
-          padding: 0;
-          display: flex;
-          margin-right: 4px;
-          margin-left: 28px;
-          > span {
-            align-self: center;
-            display: inline-flex;
-            width: 10px;
-            height: 20px;
-            text-align: center;
-            color: $black;
-            justify-content: center;
-
-            > span {
-              width: 4px;
-              height: 4px;
-              border-radius: 50%;
-              background-color: $white;
-              align-self: center;
-            }
-          }
-        }
-      }
-    }
-  }
-
   .group-content,
   .testcase-content {
     border-radius: 2px;
-    margin-top: 2px;
 
     > div.group-info,
     > div.testcase-info {
       display: flex;
       position: relative;
       cursor: pointer;
-      .tree-mark {
+
+      .child-tree-mark {
         width: 10px;
 
         > div {
@@ -124,15 +65,85 @@ li.testcase-group-item-wrapper {
         }
       }
 
-      .bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background-color: $color-pink;
-        border-radius: 4px;
-        opacity: 0;
+      .tree-toggle {
+        padding: 0;
+        display: flex;
+        margin-left: 8px;
+        margin-right: 8px;
+        > span {
+          align-self: center;
+          display: inline-flex;
+          width: 18px;
+          height: 18px;
+          justify-content: center;
+          border-radius: 2px;
+          font-size: 12px;
+
+          > i {
+            align-self: center;
+          }
+        }
+
+        &.has-child {
+          > span:hover {
+            background-color: $color-sunflower;
+            color: #333;
+          }
+        }
+      }
+
+      .case-icon {
+        padding: 0;
+        display: flex;
+        margin-right: 4px;
+        margin-left: 4px;
+        > span {
+          align-self: center;
+          display: inline-flex;
+          line-height: 0;
+          font-size: 10px;
+          height: 18px;
+          width: 18px;
+          text-align: center;
+          justify-content: center;
+          background-color: #111;
+          border-radius: 2px;
+
+          > i {
+            align-self: center;
+          }
+        }
+      }
+
+      .name {
+        flex-grow: 1;
+        padding: 0.5rem 0.5rem 0.5rem 0;
+        width: calc(100% - 46px);
+
+        > div {
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+
+          white-space: nowrap;
+        }
+
+        .name-editor {
+          background-color: $white;
+          color: #333;
+        }
+      }
+
+      .grab {
+        cursor: grab;
+        padding: 0.5rem;
+        height: 100%;
+        display: none;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.1);
+          background-color: $color-sunflower;
+          color: #333;
+        }
       }
 
       &.drag-target {
@@ -152,39 +163,52 @@ li.testcase-group-item-wrapper {
         }
       }
 
-      > div {
-        &.name {
-          flex-grow: 1;
-          padding: 0.5rem 0.5rem 0.5rem 0;
-          width: calc(100% - 46px);
+      &.name-editing {
+        margin-left: 0 !important;
+        padding-left: 0.25rem;
 
-          > div {
-            overflow-x: hidden;
-            text-overflow: ellipsis;
+        width: 100%;
 
-            white-space: nowrap;
-          }
-
-          .name-editor {
-            background-color: $white;
-            color: #333;
-          }
+        .tree-toggle {
+          display: none;
         }
 
-        &.grab {
-          cursor: grab;
-          padding: 0.5rem;
-          height: 100%;
+        .case-icon {
           display: none;
+        }
 
-          &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-          }
+        .name {
+          padding-top: 0.25rem;
+          padding-bottom: 0.25rem;
+          padding-right: 0.25rem;
+        }
+
+        input {
+          border-radius: 0;
+          width: 100%;
+        }
+
+        .child-tree-mark,
+        .icon,
+        .grab {
+          display: none !important;
         }
       }
+
+      .bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background-color: $color-azure;
+        border-radius: 1px;
+        opacity: 0;
+      }
+
       &:hover {
-        background-color: $color-sunflower;
-        color: #333;
+        background-color: #111;
+
         .grab {
           display: inline-block;
         }
@@ -192,71 +216,23 @@ li.testcase-group-item-wrapper {
           &.name {
             width: calc(100% - 46px - 32px);
           }
-
-          &.icon.case {
-            > span {
-              > span {
-                background-color: $black;
-              }
-            }
-          }
-
-          &.icon.group {
-            > span {
-              background-color: transparent;
-              > span {
-              }
-            }
-          }
         }
       }
-    }
 
-    .name-editing {
-      margin-left: 0 !important;
-      padding-left: 0.25rem;
-
-      width: 100%;
-
-      .name {
-        padding-top: 0.25rem;
-        padding-bottom: 0.25rem;
-        padding-right: 0.25rem;
-      }
-
-      input {
-        border-radius: 0;
-        width: 100%;
-      }
-
-      .tree-mark,
-      .icon,
-      .grab {
-        display: none !important;
-      }
-    }
-
-    > .group-testcases {
-      margin-left: 10px;
-
-      &.is-child {
-        margin-left: 20px;
-      }
-
-      > ul {
-        > li {
-        }
+      &.selected {
+        background-color: $color-azure;
+        font-weight: bold;
       }
     }
   }
 
   .group-children {
-    .border-top {
+    .border-top-liner {
       display: none;
     }
     > ul {
       > li:first-child {
-        > .border-top {
+        > .border-top-liner {
           height: 1px;
           position: absolute;
           left: 0;
@@ -268,39 +244,10 @@ li.testcase-group-item-wrapper {
       }
 
       > li:last-child {
-        > .border-bottom {
+        > .border-bottom-liner {
           display: none;
         }
       }
-    }
-  }
-
-  .testcase-content.selected > .testcase-info,
-  &.selected > .group-content > .group-info {
-    background-color: $color-sunflower;
-    color: #333;
-
-    > div {
-      &.icon.case {
-        > span {
-          > span {
-            background-color: $black;
-          }
-        }
-      }
-
-      &.icon.group {
-        > span {
-          background-color: transparent;
-          > span {
-          }
-        }
-      }
-    }
-
-    &:hover {
-      background-color: darken($color-sunflower, 10%);
-      color: #333;
     }
   }
 
