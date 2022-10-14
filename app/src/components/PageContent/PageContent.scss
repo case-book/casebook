@@ -6,4 +6,9 @@
   max-width: $max-width;
   _padding: 32px 64px;
   padding: 1rem;
+
+  &.flex {
+    display: flex;
+    flex-direction: column;
+  }
 }

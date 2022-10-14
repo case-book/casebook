@@ -11,6 +11,8 @@ public class TestcaseGroupResponse {
 
     private Long id;
 
+    private String seqId;
+
     private Long parentId;
 
     private Long depth;
@@ -22,6 +24,7 @@ public class TestcaseGroupResponse {
 
     public TestcaseGroupResponse(TestcaseGroup testcaseGroup) {
         this.id = testcaseGroup.getId();
+        this.seqId = testcaseGroup.getSeqId();
         this.parentId = testcaseGroup.getParentId();
         this.depth = testcaseGroup.getDepth();
         this.name = testcaseGroup.getName();

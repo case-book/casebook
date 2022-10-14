@@ -110,7 +110,7 @@ function ProjectTestcaseInfoPage() {
   }, [project]);
 
   const addTestcaseGroup = () => {
-    const name = `그룹-${(testcaseGroups?.length || 0) + 1}`;
+    const name = '그룹';
     let testcaseGroup = {
       parentId: null,
       name,
@@ -157,7 +157,7 @@ function ProjectTestcaseInfoPage() {
       return;
     }
 
-    const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
+    const name = '테스트케이스';
     const testcase = {
       testcaseGroupId: group.id,
       name,
@@ -201,7 +201,7 @@ function ProjectTestcaseInfoPage() {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('데이터 삭제'),
-      type === 'group' ? '선택한 테스크케이스 그룹과 하위의 그룹 및 테스트케이스가 모두 삭제됩니다. 삭제하시겠습니까?' : '선택한 테스크케이스가 삭제됩니다. 삭제하시겠습니까?',
+      type === 'group' ? '선택한 테스트케이스 그룹과 하위의 그룹 및 테스트케이스가 모두 삭제됩니다. 삭제하시겠습니까?' : '선택한 테스트케이스가 삭제됩니다. 삭제하시겠습니까?',
 
       () => {
         if (type === 'group') {

@@ -65,14 +65,7 @@ public class TestcaseController {
     @PostMapping("/groups")
     public TestcaseGroupResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest, @ApiIgnore UserSession userSession) {
 
-        Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, projectId);
-
-        if (!projectInfo.isPresent()) {
-            throw new ServiceException(HttpStatus.NOT_FOUND);
-        }
-
         TestcaseGroup testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.buildEntity(projectId), userSession.getId());
-
         return new TestcaseGroupResponse(testcaseGroup);
     }
 

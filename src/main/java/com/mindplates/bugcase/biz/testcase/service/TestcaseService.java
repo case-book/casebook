@@ -88,6 +88,12 @@ public class TestcaseService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public TestcaseGroup createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroup testcaseGroup, Long userId) {
 
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int groupSeq = project.getTestcaseGroupSeq() + 1;
+        project.setTestcaseGroupSeq(groupSeq);
+        testcaseGroup.setSeqId("G" + groupSeq);
+        testcaseGroup.setName(testcaseGroup.getName() + "-" + groupSeq);
+
         if (testcaseGroup.getParentId() != null) {
             TestcaseGroup testcaseGroupExist = testcaseGroupRepository.findByIdAndProjectId(testcaseGroup.getParentId(), projectId).orElseThrow(() -> new ServiceException("testcase.parent.group.notExist"));
             testcaseGroup.setDepth(testcaseGroupExist.getDepth() + 1);
@@ -104,6 +110,7 @@ public class TestcaseService {
         testcaseGroup.setLastUpdatedBy(userId);
 
         testcaseGroupRepository.save(testcaseGroup);
+        projectRepository.save(project);
         return testcaseGroup;
     }
 
@@ -215,11 +222,11 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public TestcaseGroup updateTestcaseGroupName(String spaceCode, Long projectId, Long groupId, String name) {
-        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Long userId = SessionUtil.getUserId();
         TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcaseGroup.setName(name);
         testcaseGroup.setLastUpdateDate(LocalDateTime.now());
-        testcaseGroup.setLastUpdatedBy(sessionUtil.getUserId(req));
+        testcaseGroup.setLastUpdatedBy(userId);
         testcaseGroupRepository.save(testcaseGroup);
         return testcaseGroup;
     }
@@ -227,7 +234,16 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Testcase createTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
+
         Long userId = SessionUtil.getUserId();
+
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int testcaseSeq = project.getTestcaseSeq() + 1;
+        project.setTestcaseSeq(testcaseSeq);
+        testcase.setSeqId("TC" + testcaseSeq);
+        testcase.setName(testcase.getName() + "-" + testcaseSeq);
+        testcase.setProject(Project.builder().id(projectId).build());
+
         TestcaseTemplate defaultTestcaseTemplate = testcaseTemplateRepository.findAllByProjectIdAndIsDefaultTrue(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "testcase.default.template.notExist"));
         testcase.setTestcaseTemplate(defaultTestcaseTemplate);
         Integer maxItemOrder = testcaseRepository.selectTestcaseGroupMaxItemOrder(testcase.getTestcaseGroup().getId());
@@ -245,6 +261,7 @@ public class TestcaseService {
         testcase.setCreatedBy(userId);
         testcase.setLastUpdatedBy(userId);
 
+        projectRepository.save(project);
         testcaseRepository.save(testcase);
         return testcase;
     }

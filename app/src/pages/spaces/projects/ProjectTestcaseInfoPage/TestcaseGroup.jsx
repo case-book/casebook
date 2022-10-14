@@ -166,14 +166,16 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     if (selectedItemInfo.time && scroller.current) {
       setTimeout(() => {
         const focusElement = scroller.current?.querySelector('.selected');
+
         if (focusElement) {
           const scrollerRect = scroller.current.getClientRects();
           const elementRect = focusElement.getClientRects();
+
           if (scrollerRect?.length > 0 && elementRect?.length > 0) {
             scroller.current.scrollTop = elementRect[0].y - scrollerRect[0].y - 16;
           }
         }
-      }, 100);
+      }, 400);
     }
   }, [selectedItemInfo.time]);
 
@@ -271,7 +273,16 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
           </Button>
         </div>
       </div>
-      <div className="testcase-groups-content">
+      <div
+        className="testcase-groups-content"
+        onClick={() => {
+          onSelect({
+            id: null,
+            type: null,
+            time: null,
+          });
+        }}
+      >
         {min && (
           <div className="min-content">
             <div>
@@ -313,30 +324,32 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
           </ul>
         </div>
       </div>
-      <div className="testcase-config-button">
-        <Button
-          size="xs"
-          onClick={() => {
-            setSetting({
-              ...setting,
-              show: true,
-            });
-          }}
-          rounded
-        >
-          <i className="fa-solid fa-gear" />
-        </Button>
-        <TestcaseGroupSetting
-          setting={setting}
-          onChangeSetting={onChangeSetting}
-          onClose={() => {
-            setSetting({
-              ...setting,
-              show: false,
-            });
-          }}
-        />
-      </div>
+      {!min && (
+        <div className="testcase-config-button">
+          <Button
+            size="xs"
+            onClick={() => {
+              setSetting({
+                ...setting,
+                show: true,
+              });
+            }}
+            rounded
+          >
+            <i className="fa-solid fa-gear" />
+          </Button>
+          <TestcaseGroupSetting
+            setting={setting}
+            onChangeSetting={onChangeSetting}
+            onClose={() => {
+              setSetting({
+                ...setting,
+                show: false,
+              });
+            }}
+          />
+        </div>
+      )}
       <TestcaseGroupContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />
     </div>
   );

@@ -36,6 +36,8 @@ public class ProjectService {
         project.setLastUpdateDate(now);
         project.setCreatedBy(userId);
         project.setLastUpdatedBy(userId);
+        project.setTestcaseSeq(0);
+        project.setTestcaseGroupSeq(0);
         projectRepository.save(project);
         return project;
     }

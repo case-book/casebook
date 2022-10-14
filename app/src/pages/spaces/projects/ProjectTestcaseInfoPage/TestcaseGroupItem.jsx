@@ -55,7 +55,7 @@ function TestcaseGroupItem({
   }, [group]);
 
   return (
-    <li key={group.id} className="testcase-group-item-wrapper">
+    <li key={group.id} className="testcase-group-item-wrapper" onClick={e => e.stopPropagation()}>
       <div className="border-bottom-liner" />
       <div className="border-top-liner" />
       <div className="group-content">
@@ -139,8 +139,7 @@ function TestcaseGroupItem({
             )}
             {setting.testcaseGroupColumns.id?.show && (
               <div className="group-col col-id">
-                <div>G</div>
-                <div>{group?.id}</div>
+                <div>{group?.seqId}</div>
               </div>
             )}
             {setting.testcaseGroupColumns.itemOrder?.show && (
@@ -291,8 +290,7 @@ function TestcaseGroupItem({
 
                         {setting.testcaseColumns.id?.show && (
                           <div className="case-col col-id">
-                            <div>TC</div>
-                            <div>{testcase?.id}</div>
+                            <div>{testcase?.seqId}</div>
                           </div>
                         )}
 
@@ -307,7 +305,7 @@ function TestcaseGroupItem({
 
                         {setting.testcaseColumns.closed?.show && testcase.closed && (
                           <div className="case-col col-closed">
-                            <div>{testcase?.itemOrder ? 'CLOSED' : ''}</div>
+                            <div>{testcase?.closed ? 'CLOSED' : ''}</div>
                           </div>
                         )}
 
