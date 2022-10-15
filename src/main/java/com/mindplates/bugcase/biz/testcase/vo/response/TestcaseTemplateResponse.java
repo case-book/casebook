@@ -14,9 +14,8 @@ import java.util.stream.Collectors;
 public class TestcaseTemplateResponse {
     private Long id;
     private String name;
-    private List<TestcaseTemplateItemResponse> testcaseTemplateItems;
-
     private Boolean isDefault;
+    private List<TestcaseTemplateItemResponse> testcaseTemplateItems;
 
     public TestcaseTemplateResponse(TestcaseTemplate testcaseTemplate) {
         this.id = testcaseTemplate.getId();

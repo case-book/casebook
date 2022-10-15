@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import React, { useEffect, useRef, useState } from 'react';
+import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import { useParams } from 'react-router';
 import { cloneDeep } from 'lodash';
@@ -8,7 +8,8 @@ import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
 import { getOption, setOption } from '@/utils/storageUtil';
-import TestcaseGroup from './TestcaseGroup';
+import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
+import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
 
 function ProjectTestcaseInfoPage() {
@@ -35,11 +36,34 @@ function ProjectTestcaseInfoPage() {
     time: null,
   });
 
-  const getProject = useCallback(() => {
+  const [contentLoading, setContentLoading] = useState(false);
+  const [content, setContent] = useState(null);
+  const [contentChanged, setContentChanged] = useState(false);
+
+  const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
-  }, [spaceCode, projectId]);
+  };
+
+  const getTestcase = testcaseId => {
+    setContentLoading(true);
+    TestcaseService.selectTestcase(
+      spaceCode,
+      projectId,
+      testcaseId,
+      info => {
+        setTimeout(() => {
+          setContentLoading(false);
+        }, 200);
+        setContentChanged(false);
+        setContent(info);
+      },
+      () => {
+        setContentLoading(false);
+      },
+    );
+  };
 
   const [min, setMin] = useState(false);
 
@@ -52,6 +76,21 @@ function ProjectTestcaseInfoPage() {
     window.scrollTo(0, 0);
     getProject();
   }, [spaceCode, projectId]);
+
+  const getContent = () => {
+    if (selectedItemInfo.type === ITEM_TYPE.TESTCASE) {
+      getTestcase(selectedItemInfo.id);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedItemInfo.id) {
+      getContent();
+    } else {
+      setContentChanged(false);
+      setContent(null);
+    }
+  }, [selectedItemInfo.id]);
 
   const sort = list => {
     list.sort((a, b) => {
@@ -110,14 +149,14 @@ function ProjectTestcaseInfoPage() {
   }, [project]);
 
   const addTestcaseGroup = () => {
-    const name = `그룹-${(testcaseGroups?.length || 0) + 1}`;
+    const name = '그룹';
     let testcaseGroup = {
       parentId: null,
       name,
       testcases: [],
     };
 
-    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
+    if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP && selectedItemInfo.id) {
       const selectedGroup = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
 
       testcaseGroup = {
@@ -136,7 +175,7 @@ function ProjectTestcaseInfoPage() {
 
       setSelectedItemInfo({
         id: info.id,
-        type: 'group',
+        type: ITEM_TYPE.TESTCASE_GROUP,
         time: Date.now(),
       });
     });
@@ -145,9 +184,9 @@ function ProjectTestcaseInfoPage() {
   const addTestcase = () => {
     let group = null;
 
-    if (selectedItemInfo.type === 'group' && selectedItemInfo.id) {
+    if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP && selectedItemInfo.id) {
       group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
-    } else if (selectedItemInfo.type === 'case' && selectedItemInfo.id) {
+    } else if (selectedItemInfo.type === ITEM_TYPE.TESTCASE && selectedItemInfo.id) {
       group = project.testcaseGroups.find(d => {
         return d.testcases.findIndex(item => item.id === selectedItemInfo.id) > -1;
       });
@@ -157,7 +196,7 @@ function ProjectTestcaseInfoPage() {
       return;
     }
 
-    const name = `테스트케이스-${(group?.testcases?.length || 0) + 1}`;
+    const name = '테스트케이스';
     const testcase = {
       testcaseGroupId: group.id,
       name,
@@ -175,22 +214,22 @@ function ProjectTestcaseInfoPage() {
 
       setSelectedItemInfo({
         id: info.id,
-        type: 'case',
+        type: ITEM_TYPE.TESTCASE,
         time: Date.now(),
       });
     });
   };
 
   const onPositionChange = changeInfo => {
-    if (changeInfo.targetType === 'group' && changeInfo.destinationType === 'group') {
+    if (changeInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && changeInfo.destinationType === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, changeInfo, () => {
         getProject();
       });
-    } else if (changeInfo.targetType === 'case' && changeInfo.destinationType === 'group') {
+    } else if (changeInfo.targetType === ITEM_TYPE.TESTCASE && changeInfo.destinationType === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseTestcaseGroup(spaceCode, projectId, changeInfo.targetId, changeInfo, () => {
         getProject();
       });
-    } else if (changeInfo.targetType === 'case' && changeInfo.destinationType === 'case') {
+    } else if (changeInfo.targetType === ITEM_TYPE.TESTCASE && changeInfo.destinationType === ITEM_TYPE.TESTCASE) {
       TestcaseService.updateTestcaseOrder(spaceCode, projectId, changeInfo.targetId, changeInfo, () => {
         getProject();
       });
@@ -201,10 +240,10 @@ function ProjectTestcaseInfoPage() {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('데이터 삭제'),
-      type === 'group' ? '선택한 테스크케이스 그룹과 하위의 그룹 및 테스트케이스가 모두 삭제됩니다. 삭제하시겠습니까?' : '선택한 테스크케이스가 삭제됩니다. 삭제하시겠습니까?',
+      type === ITEM_TYPE.TESTCASE_GROUP ? '선택한 테스트케이스 그룹과 하위의 그룹 및 테스트케이스가 모두 삭제됩니다. 삭제하시겠습니까?' : '선택한 테스트케이스가 삭제됩니다. 삭제하시겠습니까?',
 
       () => {
-        if (type === 'group') {
+        if (type === ITEM_TYPE.TESTCASE_GROUP) {
           TestcaseService.deleteTestcaseGroup(spaceCode, projectId, id, () => {
             setSelectedItemInfo({
               id: null,
@@ -214,7 +253,7 @@ function ProjectTestcaseInfoPage() {
 
             getProject();
           });
-        } else if (type === 'case') {
+        } else if (type === ITEM_TYPE.TESTCASE) {
           TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
             setSelectedItemInfo({
               id: null,
@@ -232,7 +271,7 @@ function ProjectTestcaseInfoPage() {
   };
 
   const onChangeTestcaseGroupName = (type, id, name) => {
-    if (type === 'group') {
+    if (type === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseGroupName(spaceCode, projectId, id, name, info => {
         const nextProject = { ...project };
         const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
@@ -241,7 +280,7 @@ function ProjectTestcaseInfoPage() {
           setProject(nextProject);
         }
       });
-    } else if (type === 'case') {
+    } else if (type === ITEM_TYPE.TESTCASE) {
       TestcaseService.updateTestcaseName(spaceCode, projectId, id, name, info => {
         const nextProject = { ...project };
         const nextGroup = project?.testcaseGroups.find(d => d.id === info.testcaseGroupId);
@@ -309,7 +348,7 @@ function ProjectTestcaseInfoPage() {
               width: `${testcaseGroupWidth || 300}px`,
             }}
           >
-            <TestcaseGroup
+            <TestcaseNavigator
               testcaseGroups={testcaseGroups}
               addTestcaseGroup={addTestcaseGroup}
               addTestcase={addTestcase}
@@ -321,11 +360,12 @@ function ProjectTestcaseInfoPage() {
               min={min}
               setMin={setMin}
               countSummary={countSummary}
+              contentChanged={contentChanged}
             />
           </div>
           <div className="border-line" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
           <div className="testcases">
-            <div className="content-scroller" />
+            <ContentManager type={selectedItemInfo?.type} content={content} testcaseTemplates={project?.testcaseTemplates} loading={contentLoading} setContentChanged={setContentChanged} />
           </div>
         </div>
       </PageContent>

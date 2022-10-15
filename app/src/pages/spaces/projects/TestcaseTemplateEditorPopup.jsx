@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import { Button, CheckBox, CloseIcon, Input, Liner, Radio, Selector, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { TestcaseTemplatePropTypes } from '@/proptypes';
+import { TestcaseTemplateEditPropTypes } from '@/proptypes';
 import './TestcaseTemplateEditorPopup.scss';
 
 function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor }) {
@@ -17,9 +17,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
 
   useEffect(() => {
     setTemplate(cloneDeep(testcaseTemplate));
-
     setSelectedItem({});
-
     setCaseTemplateItems(testcaseTemplate?.testcaseTemplateItems?.filter(d => d.category === 'CASE') || []);
     setResultTemplateItems(testcaseTemplate?.testcaseTemplateItems?.filter(d => d.category === 'RESULT') || []);
   }, [testcaseTemplate, opened]);
@@ -592,7 +590,7 @@ TestcaseTemplateEditorPopup.defaultProps = {
 
 TestcaseTemplateEditorPopup.propTypes = {
   className: PropTypes.string,
-  testcaseTemplate: TestcaseTemplatePropTypes,
+  testcaseTemplate: TestcaseTemplateEditPropTypes,
   onClose: PropTypes.func,
   onChange: PropTypes.func,
   testcaseItemTypes: PropTypes.arrayOf(PropTypes.string),

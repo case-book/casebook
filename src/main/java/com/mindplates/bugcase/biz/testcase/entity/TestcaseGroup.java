@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
@@ -13,7 +12,9 @@ import java.util.List;
 
 @Entity
 @Builder
-@Table(name = "testcase_group")
+@Table(name = "testcase_group", indexes = {
+        @Index(name = "IDX_TESTCASE_GROUP_PROJECT_ID_AND_SEQ_ID", columnList = "project_id, seq_id", unique = true)
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -24,6 +25,9 @@ public class TestcaseGroup extends CommonEntity {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(name = "seq_id", nullable = false, length = ColumnsDef.NAME)
+    private String seqId;
 
     @Column(name = "parent_id")
     private Long parentId;
@@ -44,7 +48,6 @@ public class TestcaseGroup extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<Testcase> testcases;
-
 
 
 }

@@ -28,7 +28,7 @@ const TestcaseGroupPropTypes = PropTypes.shape({
   ),
 });
 
-const TestcaseTemplatePropTypes = PropTypes.shape({
+const TestcaseTemplateEditPropTypes = PropTypes.shape({
   activated: PropTypes.bool,
   creationDate: PropTypes.string,
   description: PropTypes.string,
@@ -61,6 +61,23 @@ const TestcaseTemplatePropTypes = PropTypes.shape({
   ),
   token: PropTypes.string,
   duration: PropTypes.number,
+});
+
+const TestcaseTemplatePropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  isDefault: PropTypes.bool,
+  name: PropTypes.string,
+  testcaseTemplateItems: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.string,
+      id: PropTypes.number,
+      itemOrder: PropTypes.number,
+      label: PropTypes.string,
+      options: PropTypes.arrayOf(PropTypes.string),
+      size: PropTypes.number,
+      type: PropTypes.string,
+    }),
+  ),
 });
 
 const TestcaseGroupSettingPropTypes = PropTypes.shape({
@@ -101,4 +118,4 @@ const TestcaseGroupSettingPropTypes = PropTypes.shape({
   }),
 });
 
-export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplatePropTypes, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes };
+export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplateEditPropTypes, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes, TestcaseTemplatePropTypes };

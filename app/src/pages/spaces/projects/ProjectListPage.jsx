@@ -20,7 +20,7 @@ function Spaces() {
   }, []);
 
   return (
-    <Page className="project-list-page-wrapper" list>
+    <Page className="project-list-page-wrapper" list wide>
       <PageTitle
         className="page-title"
         links={[

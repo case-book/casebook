@@ -1,15 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Liner } from '@/components';
 import PropTypes from 'prop-types';
-import TestcaseGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupItem';
-import TestcaseGroupContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupContextMenu';
+import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
+import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
 import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
 import { useResizeDetector } from 'react-resize-detector';
-import './TestcaseGroup.scss';
 import { getOption, setOption } from '@/utils/storageUtil';
-import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseGroupSetting';
+import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
+import './TestcaseNavigator.scss';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
-function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, selectedItemInfo, onSelect, onDelete, onChangeTestcaseGroupName, addTestcase, min, setMin, countSummary }) {
+function TestcaseNavigator({
+  testcaseGroups,
+  addTestcaseGroup,
+  onPositionChange,
+  selectedItemInfo,
+  onSelect,
+  onDelete,
+  onChangeTestcaseGroupName,
+  addTestcase,
+  min,
+  setMin,
+  countSummary,
+  contentChanged,
+}) {
   const scroller = useRef(null);
 
   const { width, ref } = useResizeDetector({
@@ -103,16 +118,55 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     }
   };
 
+  const changeSelect = info => {
+    if (selectedItemInfo.id && contentChanged) {
+      dialogUtil.setConfirm(
+        MESSAGE_CATEGORY.WARNING,
+        '변경된 데이터가 저장되지 않았습니다.',
+        <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
+        () => {
+          onSelect(info);
+        },
+        null,
+        '확인',
+      );
+    } else {
+      onSelect(info);
+    }
+  };
+
   const onContextMenu = (e, type, id, name) => {
     e.preventDefault();
 
-    setContextMenuInfo({
-      type,
-      id,
-      x: e.pageX,
-      y: e.pageY,
-      name,
-    });
+    if (selectedItemInfo.id && contentChanged) {
+      dialogUtil.setConfirm(
+        MESSAGE_CATEGORY.WARNING,
+        '변경된 데이터가 저장되지 않았습니다.',
+        <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
+        () => {
+          console.log(id, type);
+          onSelect({ id, type });
+          setContextMenuInfo({
+            type,
+            id,
+            x: e.pageX,
+            y: e.pageY,
+            name,
+          });
+        },
+        null,
+        '확인',
+      );
+    } else {
+      onSelect({ id, type });
+      setContextMenuInfo({
+        type,
+        id,
+        x: e.pageX,
+        y: e.pageY,
+        name,
+      });
+    }
   };
 
   const onClearContextMenu = () => {
@@ -166,14 +220,16 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
     if (selectedItemInfo.time && scroller.current) {
       setTimeout(() => {
         const focusElement = scroller.current?.querySelector('.selected');
+
         if (focusElement) {
           const scrollerRect = scroller.current.getClientRects();
           const elementRect = focusElement.getClientRects();
+
           if (scrollerRect?.length > 0 && elementRect?.length > 0) {
             scroller.current.scrollTop = elementRect[0].y - scrollerRect[0].y - 16;
           }
         }
-      }, 100);
+      }, 400);
     }
   }, [selectedItemInfo.time]);
 
@@ -271,7 +327,16 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
           </Button>
         </div>
       </div>
-      <div className="testcase-groups-content">
+      <div
+        className="testcase-groups-content"
+        onClick={() => {
+          changeSelect({
+            id: null,
+            type: null,
+            time: null,
+          });
+        }}
+      >
         {min && (
           <div className="min-content">
             <div>
@@ -288,7 +353,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
           <ul>
             {testcaseGroups.map(group => {
               return (
-                <TestcaseGroupItem
+                <TestcaseNavigatorGroupItem
                   key={group.id}
                   group={group}
                   dragInfo={dragInfo}
@@ -298,7 +363,7 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
                   contextMenuInfo={contextMenuInfo}
                   onContextMenu={onContextMenu}
                   selectedItemInfo={selectedItemInfo}
-                  onSelect={onSelect}
+                  onSelect={changeSelect}
                   lastChild={false}
                   onChangeEditName={onChangeEditName}
                   clearEditing={clearEditing}
@@ -313,36 +378,38 @@ function TestcaseGroup({ testcaseGroups, addTestcaseGroup, onPositionChange, sel
           </ul>
         </div>
       </div>
-      <div className="testcase-config-button">
-        <Button
-          size="xs"
-          onClick={() => {
-            setSetting({
-              ...setting,
-              show: true,
-            });
-          }}
-          rounded
-        >
-          <i className="fa-solid fa-gear" />
-        </Button>
-        <TestcaseGroupSetting
-          setting={setting}
-          onChangeSetting={onChangeSetting}
-          onClose={() => {
-            setSetting({
-              ...setting,
-              show: false,
-            });
-          }}
-        />
-      </div>
-      <TestcaseGroupContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />
+      {!min && (
+        <div className="testcase-config-button">
+          <Button
+            size="xs"
+            onClick={() => {
+              setSetting({
+                ...setting,
+                show: true,
+              });
+            }}
+            rounded
+          >
+            <i className="fa-solid fa-gear" />
+          </Button>
+          <TestcaseGroupSetting
+            setting={setting}
+            onChangeSetting={onChangeSetting}
+            onClose={() => {
+              setSetting({
+                ...setting,
+                show: false,
+              });
+            }}
+          />
+        </div>
+      )}
+      <TestcaseNavigatorContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />
     </div>
   );
 }
 
-TestcaseGroup.defaultProps = {
+TestcaseNavigator.defaultProps = {
   testcaseGroups: [],
   selectedItemInfo: {
     id: null,
@@ -356,7 +423,7 @@ TestcaseGroup.defaultProps = {
   },
 };
 
-TestcaseGroup.propTypes = {
+TestcaseNavigator.propTypes = {
   testcaseGroups: PropTypes.arrayOf(TestcaseGroupPropTypes),
   addTestcaseGroup: PropTypes.func.isRequired,
   addTestcase: PropTypes.func.isRequired,
@@ -375,6 +442,7 @@ TestcaseGroup.propTypes = {
     testcaseGroupCount: PropTypes.number,
     testcaseCount: PropTypes.number,
   }),
+  contentChanged: PropTypes.bool.isRequired,
 };
 
-export default TestcaseGroup;
+export default TestcaseNavigator;

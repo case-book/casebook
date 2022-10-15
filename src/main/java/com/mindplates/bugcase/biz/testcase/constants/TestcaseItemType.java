@@ -14,6 +14,7 @@ public enum TestcaseItemType {
     NUMBER("NUMBER"),
     USER("USER"),
     SELECT("SELECT"),
+    URL("URL"),
     EDITOR("EDITOR"),;
     private String type;
 

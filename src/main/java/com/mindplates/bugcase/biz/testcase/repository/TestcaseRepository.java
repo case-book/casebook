@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
@@ -20,6 +21,8 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Modifying
     @Query("DELETE FROM Testcase t WHERE t.id = :id")
     void deleteById(@Param("id") Long id);
+
+    Optional<Testcase> findByIdAndProjectId(Long id, Long projectId);
 
 
 }

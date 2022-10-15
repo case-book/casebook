@@ -150,4 +150,18 @@ TestcaseService.updateTestcaseName = (spaceCode, projectId, testcaseId, name, su
   );
 };
 
+TestcaseService.selectTestcase = (spaceCode, projectId, testcaseId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

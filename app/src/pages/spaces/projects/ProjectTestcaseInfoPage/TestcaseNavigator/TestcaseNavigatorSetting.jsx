@@ -2,7 +2,7 @@ import React from 'react';
 import { Radio } from '@/components';
 import PropTypes from 'prop-types';
 import { TestcaseGroupSettingPropTypes } from '@/proptypes';
-import './TestcaseGroupSetting.scss';
+import './TestcaseNavigatorSetting.scss';
 
 function TestcaseGroup({ setting, onChangeSetting, onClose }) {
   return (
