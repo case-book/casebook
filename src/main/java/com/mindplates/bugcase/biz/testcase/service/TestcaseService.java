@@ -319,5 +319,9 @@ public class TestcaseService {
         return testcase;
     }
 
+    public Optional<Testcase> selectTestcaseInfo(Long projectId, Long testcaseId) {
+        return testcaseRepository.findByIdAndProjectId(testcaseId, projectId);
+    }
+
 
 }

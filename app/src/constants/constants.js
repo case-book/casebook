@@ -19,14 +19,9 @@ const MESSAGE_CATEGORY = {
   INFO: 'INFO',
 };
 
-const USER_GRADE = {
-  SILVER: '실버회원',
-  GOLD: '골드회원',
+const ITEM_TYPE = {
+  TESTCASE: 'case',
+  TESTCASE_GROUP: 'group',
 };
 
-const INQUIRY_TYPES = {
-  INQUIRY: '문의',
-  ANSWER: '답변',
-};
-
-export { LANGUAGES, USER_ROLE, MESSAGE_CATEGORY, COUNTRIES, USER_GRADE, INQUIRY_TYPES };
+export { LANGUAGES, USER_ROLE, MESSAGE_CATEGORY, COUNTRIES, ITEM_TYPE };

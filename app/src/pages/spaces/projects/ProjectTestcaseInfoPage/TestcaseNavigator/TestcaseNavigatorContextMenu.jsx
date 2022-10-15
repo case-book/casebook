@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NullableNumber } from '@/proptypes';
-import './TestcaseGroupContextMenu.scss';
+import './TestcaseNavigatorContextMenu.scss';
 
-function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClickGroupName, onDelete }) {
+function TestcaseNavigatorContextMenu({ onClearContextMenu, contextMenuInfo, onClickGroupName, onDelete }) {
   return (
     <div
       className={`testcase-group-context-menu-wrapper ${contextMenuInfo?.id ? 'on' : ''}`}
@@ -57,9 +57,9 @@ function TestcaseGroupContextMenu({ onClearContextMenu, contextMenuInfo, onClick
   );
 }
 
-TestcaseGroupContextMenu.defaultProps = {};
+TestcaseNavigatorContextMenu.defaultProps = {};
 
-TestcaseGroupContextMenu.propTypes = {
+TestcaseNavigatorContextMenu.propTypes = {
   contextMenuInfo: PropTypes.shape({
     type: PropTypes.string,
     id: NullableNumber,
@@ -72,4 +72,4 @@ TestcaseGroupContextMenu.propTypes = {
   onDelete: PropTypes.func.isRequired,
 };
 
-export default TestcaseGroupContextMenu;
+export default TestcaseNavigatorContextMenu;

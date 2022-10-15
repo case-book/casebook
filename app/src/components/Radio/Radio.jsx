@@ -4,13 +4,15 @@ import './Radio.scss';
 
 class Radio extends React.PureComponent {
   render() {
-    const { className, label, onChange, value, checked, size } = this.props;
+    const { className, label, onChange, value, checked, size, readOnly, type } = this.props;
 
     return (
       <div
-        className={`radio-wrapper ${size} ${className}`}
+        className={`radio-wrapper ${size} ${className} ${readOnly ? 'read-only' : 'active'} type-${type} ${checked ? 'checked' : ''}`}
         onClick={() => {
-          onChange(value);
+          if (!readOnly) {
+            onChange(value);
+          }
         }}
       >
         <input type="radio" checked={checked} readOnly />
@@ -27,6 +29,8 @@ Radio.defaultProps = {
   size: 'lg',
   checked: false,
   value: '',
+  readOnly: false,
+  type: 'default',
 };
 
 Radio.propTypes = {
@@ -36,6 +40,8 @@ Radio.propTypes = {
   size: PropTypes.string,
   checked: PropTypes.bool,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  readOnly: PropTypes.bool,
+  type: PropTypes.oneOf(['default', 'inline']),
 };
 
 export default Radio;

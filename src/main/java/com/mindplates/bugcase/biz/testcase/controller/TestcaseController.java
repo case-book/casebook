@@ -32,11 +32,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/{spaceCode}/projects/{projectId}/testcases")
 @AllArgsConstructor
 public class TestcaseController {
-
     private final ProjectService projectService;
-
     private final TestcaseService testcaseService;
-
 
     @Operation(description = "프로젝트 테스트케이스 설정 조회")
     @GetMapping("/templates")
@@ -44,7 +41,6 @@ public class TestcaseController {
         List<TestcaseTemplate> testcaseTemplates = testcaseService.selectTestcaseTemplateItemList(projectId);
         return testcaseTemplates.stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
     }
-
 
     @Operation(description = "테스트케이스 설정 수정")
     @PutMapping("/config")
@@ -124,8 +120,15 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 이름 변경")
     @PutMapping("/{testcaseId}/name")
-    public TestcaseResponse updateTestcaseName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameChangeRequest testcaseNameChangeRequest) {
+    public TestcaseSimpleResponse updateTestcaseName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameChangeRequest testcaseNameChangeRequest) {
         Testcase testcase = testcaseService.updateTestcaseName(spaceCode, projectId, testcaseId, testcaseNameChangeRequest.getName());
+        return new TestcaseSimpleResponse(testcase);
+    }
+
+    @Operation(description = "테스트케이스 상세 조회")
+    @GetMapping("/{testcaseId}")
+    public TestcaseResponse selectTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId) {
+        Testcase testcase = testcaseService.selectTestcaseInfo(projectId, testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestcaseResponse(testcase);
     }
 

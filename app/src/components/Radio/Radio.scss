@@ -4,12 +4,52 @@
   align-self: center;
   justify-content: center;
   padding: 0;
-  cursor: pointer;
   display: inline-flex;
-  cursor: pointer;
 
-  ~ .radio-wrapper {
-    margin-left: 0.5rem;
+  &.type-default {
+    ~ .radio-wrapper {
+      margin-left: 0.5rem;
+    }
+  }
+
+  &.type-inline {
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-right: none;
+    background-color: #202020;
+    color: $gray-400;
+
+    &.active {
+      &:hover {
+        background-color: darken($color-sunflower, 10%);
+        color: $black;
+      }
+    }
+
+    &.checked {
+      background-color: $color-sunflower;
+      color: $black;
+      font-weight: bold;
+
+      &:hover {
+        color: $black;
+        background-color: $color-sunflower;
+      }
+    }
+
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child {
+      border-right: 1px solid rgba(0, 0, 0, 0.4);
+      border-radius: 0 4px 4px 0;
+    }
+
+    input[type='radio'] {
+      display: none;
+    }
   }
 
   label {
@@ -17,8 +57,7 @@
     vertical-align: middle;
     align-self: center;
     justify-content: center;
-    transition: all 0.3s;
-    cursor: pointer;
+
     display: inline-block;
     line-height: 100%;
   }
@@ -31,20 +70,31 @@
     width: 1.25em;
     height: 1.25em;
     margin: 0 0.5rem 0 0;
-    cursor: pointer;
   }
 
   input[type='radio']:checked {
     border: 4px solid $color-sunflower;
   }
 
-  &:hover {
-    input[type='radio'] {
-      border: 4px solid $gray-500;
+  &.active {
+    cursor: pointer;
+
+    label {
+      cursor: pointer;
     }
 
-    input[type='radio']:checked {
-      border: 4px solid $color-sunflower;
+    input[type='radio'] {
+      cursor: pointer;
+    }
+
+    &:hover {
+      input[type='radio'] {
+        border: 4px solid $gray-500;
+      }
+
+      input[type='radio']:checked {
+        border: 4px solid $color-sunflower;
+      }
     }
   }
 
