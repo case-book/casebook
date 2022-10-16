@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './TextArea.scss';
 
-function TextArea({ className, value, maxLength, size, disabled, border, required, onChange, placeholder, rows }) {
+function TextArea({ className, value, maxLength, size, disabled, border, required, onChange, placeholder, rows, color }) {
   return (
     <textarea
-      className={`text-area-wrapper ${className} size-${size} ${border ? 'border' : ''}`}
+      className={`text-area-wrapper ${className} size-${size} ${border ? 'border' : ''} color-${color}`}
       disabled={disabled}
       placeholder={placeholder}
       onChange={e => {
@@ -33,6 +33,7 @@ TextArea.defaultProps = {
   placeholder: '',
   maxLength: null,
   rows: 4,
+  color: 'black',
 };
 
 TextArea.propTypes = {
@@ -46,6 +47,7 @@ TextArea.propTypes = {
   placeholder: PropTypes.string,
   maxLength: PropTypes.number,
   rows: PropTypes.number,
+  color: PropTypes.string,
 };
 
 export default TextArea;

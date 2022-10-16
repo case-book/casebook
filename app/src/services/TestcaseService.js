@@ -164,4 +164,18 @@ TestcaseService.selectTestcase = (spaceCode, projectId, testcaseId, successHandl
   );
 };
 
+TestcaseService.updateTestcase = (spaceCode, projectId, testcaseId, testcase, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}`,
+    testcase,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

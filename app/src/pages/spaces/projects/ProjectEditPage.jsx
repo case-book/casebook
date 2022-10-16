@@ -19,7 +19,7 @@ const defaultProjectConfig = {
     {
       name: '기본 템플릿',
       testcaseTemplateItems: [
-        { category: 'CASE', type: 'RADIO', itemOrder: 0, label: '중요도', options: ['상', '중', '하'], size: 4 },
+        { category: 'CASE', type: 'RADIO', itemOrder: 0, label: '중요도', options: ['상', '중', '하'], size: 4, defaultValue: '중' },
         { category: 'CASE', type: 'URL', itemOrder: 1, label: 'URL', options: [], size: 4 },
         { category: 'CASE', type: 'CHECKBOX', itemOrder: 2, label: 'E2E', options: [], size: 4 },
         { category: 'CASE', type: 'USER', itemOrder: 3, label: '테스터', options: [], size: 4 },

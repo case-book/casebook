@@ -9,6 +9,7 @@
   box-sizing: border-box;
   border: none;
   transition: border-bottom 0.5s;
+  font-family: NotoSans, sans-serif;
 
   &.underline {
     border-bottom: 1px solid transparent;
@@ -24,7 +25,10 @@
     _border-bottom: 1px solid $danger;
     _border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     transition: border-bottom 0.5s;
-    border-radius: 2px 2px 0 0;
+
+    &.underline {
+      border-radius: 2px 2px 0 0;
+    }
   }
 
   &.color-white {
