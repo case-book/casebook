@@ -472,7 +472,39 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             />
                           </div>
                         </div>
-
+                        {!hasOptionType(selectedItem?.item?.type) && selectedItem?.item?.type === 'CHECKBOX' && (
+                          <div className="default-value">
+                            <div className="title">{t('기본 값')}</div>
+                            <div className="properties-control">
+                              <CheckBox
+                                size="sm"
+                                value={selectedItem?.item?.defaultValue === 'Y'}
+                                onChange={() => {
+                                  if (selectedItem?.item?.defaultValue === 'Y') {
+                                    onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', 'N');
+                                  } else {
+                                    onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', 'Y');
+                                  }
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {!hasOptionType(selectedItem?.item?.type) && selectedItem?.item?.type !== 'CHECKBOX' && (
+                          <div className="default-value">
+                            <div className="title">{t('기본 값')}</div>
+                            <div className="properties-control">
+                              <Input
+                                size="md"
+                                color="white"
+                                value={selectedItem?.item?.defaultValue || ''}
+                                onChange={val => {
+                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', val);
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
                         {hasOptionType(selectedItem?.item?.type) && (
                           <div className="options">
                             <div className="title">
@@ -495,6 +527,19 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                     return (
                                       <li key={jnx}>
                                         <div>
+                                          <dic className="default-options">
+                                            <CheckBox
+                                              size="sm"
+                                              value={d === selectedItem?.item?.defaultValue}
+                                              onChange={() => {
+                                                if (selectedItem?.item?.defaultValue === d) {
+                                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', '');
+                                                } else {
+                                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', d);
+                                                }
+                                              }}
+                                            />
+                                          </dic>
                                           <div className="input">
                                             <Input
                                               size="sm"

@@ -132,5 +132,18 @@ public class TestcaseController {
         return new TestcaseResponse(testcase);
     }
 
+    @Operation(description = "테스트케이스 변경")
+    @PutMapping("/{testcaseId}")
+    public ResponseEntity updateTestcase(@PathVariable String spaceCode,
+                                         @PathVariable Long projectId,
+                                         @PathVariable Long testcaseId,
+                                         @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
+
+        Testcase testcase = testcaseUpdateRequest.buildEntity();
+
+        testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }

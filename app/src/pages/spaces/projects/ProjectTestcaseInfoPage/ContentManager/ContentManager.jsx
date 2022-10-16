@@ -8,7 +8,7 @@ import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { Loader } from '@/components';
 
-function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged }) {
+function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -21,11 +21,17 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
     setContent(next);
   };
 
+  const onSave = () => {
+    onSaveTestcase(content);
+  };
+
   return (
     <div className="content-manager-wrapper">
       <div className="content-scroller">
         {loading && <Loader />}
-        {content && type === ITEM_TYPE.TESTCASE && <TestcaseManager isEdit={isEdit} setIsEdit={setIsEdit} content={content} testcaseTemplates={testcaseTemplates} setContent={changeContent} />}
+        {content && type === ITEM_TYPE.TESTCASE && (
+          <TestcaseManager isEdit={isEdit} setIsEdit={setIsEdit} content={content} testcaseTemplates={testcaseTemplates} setContent={changeContent} onSave={onSave} />
+        )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && <TestcaseGroupManager content={content} />}
       </div>
     </div>
@@ -62,6 +68,7 @@ ContentManager.propTypes = {
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   loading: PropTypes.bool,
   setContentChanged: PropTypes.func.isRequired,
+  onSaveTestcase: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

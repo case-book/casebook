@@ -20,8 +20,8 @@ public class TestcaseTemplateItemResponse {
     private Integer itemOrder;
     private String label;
     private List<String> options;
-
     private Integer size;
+    private String defaultValue;
 
     public TestcaseTemplateItemResponse(TestcaseTemplateItem testcaseTemplateItem) {
         this.id = testcaseTemplateItem.getId();
@@ -31,6 +31,7 @@ public class TestcaseTemplateItemResponse {
         this.label = testcaseTemplateItem.getLabel();
         this.options = testcaseTemplateItem.getOptions();
         this.size = testcaseTemplateItem.getSize();
+        this.defaultValue = testcaseTemplateItem.getDefaultValue();
 
     }
 }

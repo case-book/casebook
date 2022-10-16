@@ -50,4 +50,7 @@ public class TestcaseTemplateItem extends CommonEntity {
     @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_TEMPLATE_ITEM__TESTCASE_TEMPLATE"))
     private TestcaseTemplate testcaseTemplate;
 
+    @Column(name = "default_value")
+    private String defaultValue;
+
 }

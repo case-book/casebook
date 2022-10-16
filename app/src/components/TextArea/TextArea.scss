@@ -7,9 +7,18 @@
   border-radius: 2px;
   resize: none;
   border: none;
-  _border-bottom: 1px solid $white !important;
   color: $white;
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1);
+
+  &.color-white {
+    color: $black;
+    background-color: $white;
+  }
+
+  &.color-black {
+    color: $white;
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 
   &:focus {
     box-shadow: none;

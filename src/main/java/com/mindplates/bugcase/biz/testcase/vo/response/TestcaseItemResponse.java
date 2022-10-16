@@ -14,7 +14,7 @@ public class TestcaseItemResponse {
 
     public TestcaseItemResponse(TestcaseItem testcaseItem) {
         this.id = testcaseItem.getId();
-        this.testcaseId = testcaseItem.getId();
+        this.testcaseId = testcaseItem.getTestcase().getId();
         this.testcaseTemplateItemId = testcaseItem.getTestcaseTemplateItem().getId();
         this.value = testcaseItem.getValue();
         this.text = testcaseItem.getText();

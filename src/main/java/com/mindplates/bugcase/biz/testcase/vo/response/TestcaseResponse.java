@@ -11,6 +11,8 @@ public class TestcaseResponse {
 
     private Long id;
     private String seqId;
+
+    private Long projectId;
     private Long testcaseGroupId;
     private Long testcaseTemplateId;
     private String name;
@@ -20,6 +22,7 @@ public class TestcaseResponse {
 
     public TestcaseResponse(Testcase testcase) {
         this.id = testcase.getId();
+        this.projectId = testcase.getProject().getId();
         this.seqId = testcase.getSeqId();
         this.testcaseGroupId = testcase.getTestcaseGroup().getId();
         this.testcaseTemplateId = testcase.getTestcaseTemplate().getId();

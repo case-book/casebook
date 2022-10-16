@@ -2,9 +2,7 @@ package com.mindplates.bugcase.biz.testcase.service;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.testcase.entity.*;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
@@ -12,6 +10,7 @@ import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
@@ -246,6 +245,28 @@ public class TestcaseService {
 
         TestcaseTemplate defaultTestcaseTemplate = testcaseTemplateRepository.findAllByProjectIdAndIsDefaultTrue(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "testcase.default.template.notExist"));
         testcase.setTestcaseTemplate(defaultTestcaseTemplate);
+
+        List<TestcaseTemplateItem> hasDefaultValueTemplateItemList = defaultTestcaseTemplate.getTestcaseTemplateItems().stream().filter(testcaseTemplateItem -> StringUtils.isNotBlank(testcaseTemplateItem.getDefaultValue())).collect(Collectors.toList());
+
+        List<TestcaseItem> testcaseItems = hasDefaultValueTemplateItemList.stream().map((testcaseTemplateItem -> {
+
+            TestcaseItem testcaseItem = TestcaseItem.builder()
+                    .testcaseTemplateItem(testcaseTemplateItem)
+                    .testcase(testcase).build();
+
+            if ("EDITOR".equals(testcaseTemplateItem.getType())) {
+                testcaseItem.setText(testcaseTemplateItem.getDefaultValue());
+            } else {
+                testcaseItem.setValue(testcaseTemplateItem.getDefaultValue());
+            }
+
+            return testcaseItem;
+
+        })).collect(Collectors.toList());
+
+        testcase.setTestcaseItems(testcaseItems);
+
+
         Integer maxItemOrder = testcaseRepository.selectTestcaseGroupMaxItemOrder(testcase.getTestcaseGroup().getId());
         if (maxItemOrder == null) {
             maxItemOrder = 0;
@@ -321,6 +342,19 @@ public class TestcaseService {
 
     public Optional<Testcase> selectTestcaseInfo(Long projectId, Long testcaseId) {
         return testcaseRepository.findByIdAndProjectId(testcaseId, projectId);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public Testcase updateTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
+        Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Long userId = SessionUtil.getUserId();
+        testcase.setSeqId(org.getSeqId());
+        testcase.setLastUpdateDate(LocalDateTime.now());
+        testcase.setLastUpdatedBy(userId);
+        testcaseRepository.save(testcase);
+        return testcase;
+
     }
 
 

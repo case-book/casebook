@@ -57,6 +57,7 @@ function ProjectTestcaseInfoPage() {
           setContentLoading(false);
         }, 200);
         setContentChanged(false);
+        console.log(info);
         setContent(info);
       },
       () => {
@@ -336,6 +337,13 @@ function ProjectTestcaseInfoPage() {
     resizeInfo.startWidth = rects[0].width;
   };
 
+  const onSaveTestcase = info => {
+    console.log(info);
+    TestcaseService.updateTestcase(spaceCode, projectId, info.id, info, result => {
+      console.log(result);
+    });
+  };
+
   return (
     <Page className="project-testcase-info-page-wrapper" list wide>
       <PageTitle>{t('테스트케이스')}</PageTitle>
@@ -365,7 +373,14 @@ function ProjectTestcaseInfoPage() {
           </div>
           <div className="border-line" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
           <div className="testcases">
-            <ContentManager type={selectedItemInfo?.type} content={content} testcaseTemplates={project?.testcaseTemplates} loading={contentLoading} setContentChanged={setContentChanged} />
+            <ContentManager
+              type={selectedItemInfo?.type}
+              content={content}
+              testcaseTemplates={project?.testcaseTemplates}
+              loading={contentLoading}
+              setContentChanged={setContentChanged}
+              onSaveTestcase={onSaveTestcase}
+            />
           </div>
         </div>
       </PageContent>

@@ -86,7 +86,7 @@ function ProjectConfig() {
 
   return (
     <>
-      <Page className="project-config-edit-page-wrapper">
+      <Page className="project-config-edit-page-wrapper" wide>
         <PageTitle>
           {project?.name} {t('CONFIG')}
         </PageTitle>

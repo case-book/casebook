@@ -1,19 +1,16 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
+import copy from 'copy-to-clipboard';
+import { Button, CheckBox, Input, Radio, TextArea } from '@/components';
 import './TestcaseManager.scss';
-import { Input, Radio } from '@/components';
 
-function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent }) {
+function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave }) {
   const { testcaseItems } = content;
 
   const testcaseTemplate = useMemo(() => {
     return testcaseTemplates.find(d => d.id === content?.testcaseTemplateId);
   }, [content?.testcaseTemplateId]);
-
-  console.log(testcaseTemplate);
-
-  console.log(content);
 
   const onChangeContent = (field, value) => {
     setContent({
@@ -22,23 +19,74 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
     });
   };
 
+  const [copied, setCopied] = useState(false);
+
+  const onChangeTestcaseItem = (testcaseTemplateItemId, field, value) => {
+    const nextTestcaseItems = testcaseItems.slice(0);
+
+    const index = nextTestcaseItems.findIndex(d => d.testcaseTemplateItemId === testcaseTemplateItemId);
+    let target = null;
+    if (index > -1) {
+      target = testcaseItems[index];
+    } else {
+      target = {
+        testcaseId: content.id,
+        testcaseTemplateItemId,
+      };
+      nextTestcaseItems.push(target);
+    }
+
+    target[field] = value;
+
+    setContent({
+      ...content,
+      testcaseItems: nextTestcaseItems,
+    });
+  };
+
   return (
     <div className={`testcase-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
       <div className="testcase-title">
         <div className="text">
-          {isEdit && (
-            <Input
-              value={content.name}
-              underline
-              size="md"
-              onChange={val => {
-                onChangeContent('name', val);
+          <div className="seq-id">
+            <div
+              onClick={() => {
+                setCopied(true);
+                setTimeout(() => {
+                  setCopied(false);
+                }, 1000);
+                copy(content.seqId);
               }}
-              required
-              minLength={1}
-            />
+            >
+              <div className={`copied-message ${copied ? 'copied' : ''}`}>
+                <span className="bg">
+                  <i className="fa-solid fa-certificate" />
+                </span>
+                <div className="icon">
+                  <span>
+                    <i className="fa-solid fa-copy" />
+                  </span>
+                </div>
+                <div className="text">COPIED</div>
+              </div>
+              <span className="seq-id-text">{content.seqId}</span>
+            </div>
+          </div>
+          {isEdit && (
+            <div className="control">
+              <Input
+                value={content.name}
+                size="md"
+                color="white"
+                onChange={val => {
+                  onChangeContent('name', val);
+                }}
+                required
+                minLength={1}
+              />
+            </div>
           )}
-          {!isEdit && content.name}
+          {!isEdit && <div className="name">{content.name}</div>}
         </div>
         <div className="button">
           <div
@@ -55,6 +103,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
           </div>
         </div>
       </div>
+      <div className="title-liner" />
       <div className="case-content">
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
@@ -76,11 +125,11 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                               key={d}
                               type="inline"
                               size="md"
-                              readOnly
-                              value={testcaseItem.value}
-                              checked={d === testcaseItem.value || d === '중'}
+                              readOnly={!isEdit}
+                              value={d}
+                              checked={d === testcaseItem.value}
                               onChange={val => {
-                                console.log(val);
+                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', val);
                               }}
                               label={d}
                             />
@@ -88,17 +137,98 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                         })}
                       </div>
                     )}
-                    {testcaseTemplateItem.type === 'CHECKBOX' && <div className="checkbox">{testcaseItem.value === 'Y' ? 'Y' : 'N'}</div>}
-                    {testcaseTemplateItem.type === 'EDITOR' && <div className="editor">{testcaseItem.text || testcaseItem.value || <span className="none-text">NONE</span>}</div>}
-                    {!(testcaseTemplateItem.type === 'RADIO' || testcaseTemplateItem.type === 'CHECKBOX' || testcaseTemplateItem.type === 'EDITOR') && (
-                      <div>{testcaseItem.text || testcaseItem.value || <span className="none-text">NONE</span>}</div>
+                    {testcaseTemplateItem.type === 'CHECKBOX' && (
+                      <div className="checkbox">
+                        {!isEdit && <div>{testcaseItem.value === 'Y' ? 'Y' : 'N'}</div>}
+                        {isEdit && (
+                          <CheckBox
+                            size="md"
+                            value={testcaseItem.value === 'Y'}
+                            onChange={() => {
+                              if (testcaseItem.value === 'Y') {
+                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'N');
+                              } else {
+                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'Y');
+                              }
+                            }}
+                          />
+                        )}
+                      </div>
                     )}
+                    {testcaseTemplateItem.type === 'URL' && (
+                      <div className="url">
+                        {!isEdit && <div>{testcaseItem.value}</div>}
+                        {isEdit && (
+                          <Input
+                            type="url"
+                            value={testcaseItem.value}
+                            size="md"
+                            color="white"
+                            onChange={val => {
+                              onChangeTestcaseItem(testcaseTemplateItem.id, 'value', val);
+                            }}
+                            required
+                            minLength={1}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {testcaseTemplateItem.type === 'USER' && (
+                      <div className="url">
+                        {!isEdit && <div>{testcaseItem.value}</div>}
+                        {isEdit && (
+                          <Input
+                            type="url"
+                            value={testcaseItem.value}
+                            size="md"
+                            color="white"
+                            onChange={val => {
+                              onChangeTestcaseItem(testcaseTemplateItem.id, 'value', val);
+                            }}
+                            required
+                            minLength={1}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {testcaseTemplateItem.type === 'EDITOR' && (
+                      <div className="editor">
+                        {!isEdit && <div>{testcaseItem.text || <span className="none-text">NONE</span>}</div>}
+                        {isEdit && (
+                          <TextArea
+                            className="text-area"
+                            value={testcaseItem.text || ''}
+                            rows={4}
+                            color="white"
+                            onChange={val => {
+                              onChangeTestcaseItem(testcaseTemplateItem.id, 'text', val);
+                            }}
+                          />
+                        )}
+                      </div>
+                    )}
+
+                    {!(
+                      testcaseTemplateItem.type === 'EDITOR' ||
+                      testcaseTemplateItem.type === 'USER' ||
+                      testcaseTemplateItem.type === 'URL' ||
+                      testcaseTemplateItem.type === 'RADIO' ||
+                      testcaseTemplateItem.type === 'CHECKBOX' ||
+                      testcaseTemplateItem.type === 'EDITOR'
+                    ) && <div>{testcaseItem.text || testcaseItem.value || <span className="none-text">NONE</span>}</div>}
                   </div>
                 </div>
               </div>
             );
           })}
       </div>
+      {isEdit && (
+        <div className="save-button">
+          <Button size="lg" onClick={onSave}>
+            저장
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -131,6 +261,7 @@ TestcaseManager.propTypes = {
   isEdit: PropTypes.bool.isRequired,
   setIsEdit: PropTypes.func.isRequired,
   setContent: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
 };
 
 export default TestcaseManager;
