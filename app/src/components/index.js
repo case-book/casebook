@@ -29,6 +29,7 @@ import TargetSelector from './TargetSelector/TargetSelector';
 import CloseIcon from './CloseIcon/CloseIcon';
 import Radio from './Radio/Radio';
 import Loader from './Loader/Loader';
+import UserSelector from './UserSelector/UserSelector';
 
 export {
   Selector,
@@ -61,4 +62,5 @@ export {
   CloseIcon,
   Radio,
   Loader,
+  UserSelector,
 };

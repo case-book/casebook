@@ -8,7 +8,7 @@ import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { Loader } from '@/components';
 
-function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase }) {
+function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -22,7 +22,15 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
   };
 
   const onSave = () => {
-    onSaveTestcase(content);
+    onSaveTestcase(content, () => {
+      setIsEdit(false);
+    });
+  };
+
+  const onCancel = () => {
+    setIsEdit(false);
+    setContentChanged(false);
+    setContent(cloneDeep(originalContent));
   };
 
   return (
@@ -30,7 +38,7 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
       <div className="content-scroller">
         {loading && <Loader />}
         {content && type === ITEM_TYPE.TESTCASE && (
-          <TestcaseManager isEdit={isEdit} setIsEdit={setIsEdit} content={content} testcaseTemplates={testcaseTemplates} setContent={changeContent} onSave={onSave} />
+          <TestcaseManager isEdit={isEdit} setIsEdit={setIsEdit} content={content} testcaseTemplates={testcaseTemplates} setContent={changeContent} onSave={onSave} onCancel={onCancel} users={users} />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && <TestcaseGroupManager content={content} />}
       </div>
@@ -43,6 +51,7 @@ ContentManager.defaultProps = {
   content: null,
   testcaseTemplates: [],
   loading: false,
+  users: [],
 };
 
 ContentManager.propTypes = {
@@ -69,6 +78,13 @@ ContentManager.propTypes = {
   loading: PropTypes.bool,
   setContentChanged: PropTypes.func.isRequired,
   onSaveTestcase: PropTypes.func.isRequired,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  ),
 };
 
 export default ContentManager;

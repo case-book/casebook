@@ -14,6 +14,7 @@ public class TestcaseItemRequest {
     private String value;
     private String text;
 
+    private String type;
 
     public TestcaseItem buildEntity() {
         return TestcaseItem.builder()
@@ -22,6 +23,7 @@ public class TestcaseItemRequest {
                 .testcase(Testcase.builder().id(testcaseId).build())
                 .value(value)
                 .text(text)
+                .type(type)
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
+import com.mindplates.bugcase.biz.user.vo.response.SimpleSpaceUserResponse;
 import lombok.*;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class SpaceResponse {
     private String description;
     private Boolean activated;
     private String token;
-    private List<SimpleUserResponse> users;
+    private List<SimpleSpaceUserResponse> users;
 
     private Long projectCount;
 
@@ -43,7 +43,7 @@ public class SpaceResponse {
 
         if (space.getUsers() != null) {
             this.users = space.getUsers().stream().map(
-                    (spaceUser) -> SimpleUserResponse.builder()
+                    (spaceUser) -> SimpleSpaceUserResponse.builder()
                             .id(spaceUser.getId())
                             .userId(spaceUser.getUser().getId())
                             .role(spaceUser.getRole())

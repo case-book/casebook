@@ -12,12 +12,15 @@ public class TestcaseItemResponse {
     private String value;
     private String text;
 
+    private String type;
+
     public TestcaseItemResponse(TestcaseItem testcaseItem) {
         this.id = testcaseItem.getId();
         this.testcaseId = testcaseItem.getTestcase().getId();
         this.testcaseTemplateItemId = testcaseItem.getTestcaseTemplateItem().getId();
         this.value = testcaseItem.getValue();
         this.text = testcaseItem.getText();
+        this.type = testcaseItem.getType();
     }
 
 }

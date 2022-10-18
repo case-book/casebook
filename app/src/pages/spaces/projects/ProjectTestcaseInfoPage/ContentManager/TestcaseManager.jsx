@@ -2,10 +2,11 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import copy from 'copy-to-clipboard';
-import { Button, CheckBox, Input, Radio, TextArea } from '@/components';
+import { Button, CheckBox, Input, Radio, TextArea, UserSelector } from '@/components';
 import './TestcaseManager.scss';
+import { getUserText } from '@/utils/userUtil';
 
-function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave }) {
+function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users }) {
   const { testcaseItems } = content;
 
   const testcaseTemplate = useMemo(() => {
@@ -21,7 +22,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
 
   const [copied, setCopied] = useState(false);
 
-  const onChangeTestcaseItem = (testcaseTemplateItemId, field, value) => {
+  const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value) => {
     const nextTestcaseItems = testcaseItems.slice(0);
 
     const index = nextTestcaseItems.findIndex(d => d.testcaseTemplateItemId === testcaseTemplateItemId);
@@ -30,13 +31,17 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       target = testcaseItems[index];
     } else {
       target = {
+        type,
         testcaseId: content.id,
         testcaseTemplateItemId,
       };
       nextTestcaseItems.push(target);
     }
 
+    target.type = type;
     target[field] = value;
+
+    console.log(target);
 
     setContent({
       ...content,
@@ -77,7 +82,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
               <Input
                 value={content.name}
                 size="md"
-                color="white"
+                color="gray"
                 onChange={val => {
                   onChangeContent('name', val);
                 }}
@@ -129,7 +134,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                               value={d}
                               checked={d === testcaseItem.value}
                               onChange={val => {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', val);
+                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
                               }}
                               label={d}
                             />
@@ -146,9 +151,9 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                             value={testcaseItem.value === 'Y'}
                             onChange={() => {
                               if (testcaseItem.value === 'Y') {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'N');
+                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'N');
                               } else {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'Y');
+                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'Y');
                               }
                             }}
                           />
@@ -163,9 +168,9 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                             type="url"
                             value={testcaseItem.value}
                             size="md"
-                            color="white"
+                            color="gray"
                             onChange={val => {
-                              onChangeTestcaseItem(testcaseTemplateItem.id, 'value', val);
+                              onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
                             }}
                             required
                             minLength={1}
@@ -175,18 +180,16 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                     )}
                     {testcaseTemplateItem.type === 'USER' && (
                       <div className="url">
-                        {!isEdit && <div>{testcaseItem.value}</div>}
+                        {!isEdit && <div>{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</div>}
                         {isEdit && (
-                          <Input
-                            type="url"
+                          <UserSelector
+                            users={users}
+                            type={testcaseItem.type}
                             value={testcaseItem.value}
-                            size="md"
                             color="white"
-                            onChange={val => {
-                              onChangeTestcaseItem(testcaseTemplateItem.id, 'value', val);
+                            onChange={(type, val) => {
+                              onChangeTestcaseItem(testcaseTemplateItem.id, type, 'value', val);
                             }}
-                            required
-                            minLength={1}
                           />
                         )}
                       </div>
@@ -199,9 +202,10 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                             className="text-area"
                             value={testcaseItem.text || ''}
                             rows={4}
-                            color="white"
+                            size="md"
+                            color="gray"
                             onChange={val => {
-                              onChangeTestcaseItem(testcaseTemplateItem.id, 'text', val);
+                              onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', val);
                             }}
                           />
                         )}
@@ -223,11 +227,17 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
           })}
       </div>
       {isEdit && (
-        <div className="save-button">
-          <Button size="lg" onClick={onSave}>
-            저장
-          </Button>
-        </div>
+        <>
+          <div className="title-liner" />
+          <div className="save-button">
+            <Button size="xl" color="white" onClick={onCancel}>
+              취소
+            </Button>
+            <Button size="xl" color="primary" onClick={onSave}>
+              저장
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
@@ -236,6 +246,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
 TestcaseManager.defaultProps = {
   content: null,
   testcaseTemplates: [],
+  users: [],
 };
 
 TestcaseManager.propTypes = {
@@ -252,7 +263,7 @@ TestcaseManager.propTypes = {
         id: PropTypes.number,
         testcaseId: PropTypes.number,
         testcaseTemplateItemId: PropTypes.number,
-        value: PropTypes.string,
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         text: PropTypes.string,
       }),
     ),
@@ -262,6 +273,14 @@ TestcaseManager.propTypes = {
   setIsEdit: PropTypes.func.isRequired,
   setContent: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  ),
 };
 
 export default TestcaseManager;
