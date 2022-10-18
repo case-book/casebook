@@ -3,12 +3,12 @@
   .title-liner {
     height: 3px;
     background-color: #000;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     margin-bottom: 1rem;
     border-radius: 3px;
   }
   .testcase-title {
-    padding: 1rem 0.5rem 1.5rem;
+    padding: 1rem 1rem 1.5rem;
     display: flex;
 
     > div {
@@ -137,6 +137,7 @@
 
       .label {
         padding: 0.5rem;
+        margin-bottom: 0.25rem;
         display: flex;
         font-family: Rowdies, NanumGothic, sans-serif;
 
@@ -153,8 +154,8 @@
       }
 
       .value {
-        padding: 0.5rem 1rem;
-        min-height: 40px;
+        padding: 1rem 1rem;
+        min-height: 51px;
         display: flex;
         background-color: rgba(0, 0, 0, 0.1);
         border-radius: 4px;
@@ -164,6 +165,10 @@
         &.RADIO {
           padding: 0 1rem 0 0;
           background-color: transparent;
+        }
+
+        &.EDITOR {
+          padding: 0;
         }
 
         > div {
@@ -177,6 +182,8 @@
 
         .editor {
           height: 120px;
+          white-space: pre-wrap;
+          padding: 1rem;
         }
       }
 
@@ -243,6 +250,19 @@
           .text-area {
             height: 100%;
           }
+
+          .editor {
+            padding: 0;
+          }
+
+          input {
+            padding-left: 1rem;
+            padding-right: 1rem;
+          }
+
+          textarea {
+            padding: 1rem;
+          }
         }
       }
     }
@@ -250,7 +270,13 @@
 
   .save-button {
     text-align: center;
-    margin-top: 1rem;
-    display: none;
+    margin-top: 2rem;
+    > button {
+      margin-right: 1rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 }

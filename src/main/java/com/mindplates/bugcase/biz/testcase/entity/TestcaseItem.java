@@ -29,6 +29,9 @@ public class TestcaseItem extends CommonEntity {
     @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM__TESTCASE"))
     private Testcase testcase;
 
+    @Column(name = "type", length = ColumnsDef.CODE)
+    private String type;
+
     @Column(name = "value", length = ColumnsDef.TEXT)
     private String value;
 

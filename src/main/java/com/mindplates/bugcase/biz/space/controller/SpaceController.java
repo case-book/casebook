@@ -2,10 +2,13 @@ package com.mindplates.bugcase.biz.space.controller;
 
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.space.entity.SpaceUser;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceRequest;
 import com.mindplates.bugcase.biz.space.vo.response.SimpleSpaceResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
+import com.mindplates.bugcase.biz.user.service.UserService;
+import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.annotation.DisableLogin;
@@ -30,6 +33,8 @@ public class SpaceController {
     private final SpaceService spaceService;
 
     private final ProjectService projectService;
+
+    private final UserService userService;
 
     private final SessionUtil sessionUtil;
 
@@ -89,6 +94,15 @@ public class SpaceController {
     public ResponseEntity<?> deleteSpaceInfo(@PathVariable Long spaceId) {
         spaceService.deleteSpaceInfo(spaceId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "스페이스 사용자 검색")
+    @GetMapping("/{spaceCode}/users")
+    public List<SimpleUserResponse> selectSpaceSpaceUserList(@PathVariable String spaceCode, @RequestParam(value = "query", required = false) String query) {
+
+        List<SpaceUser> spaceUsers = spaceService.selectSpaceUserList(spaceCode, query);
+        return spaceUsers.stream().map(spaceUser -> new SimpleUserResponse(spaceUser.getUser())).collect(Collectors.toList());
+
     }
 
 }

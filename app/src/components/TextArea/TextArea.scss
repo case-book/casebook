@@ -15,6 +15,11 @@
     background-color: $white;
   }
 
+  &.color-gray {
+    color: $black;
+    background-color: $gray-300;
+  }
+
   &.color-black {
     color: $white;
     background-color: rgba(255, 255, 255, 0.1);

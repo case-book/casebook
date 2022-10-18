@@ -68,4 +68,15 @@ SpaceService.deleteSpace = (spaceId, successHandler, failHandler) => {
   );
 };
 
+SpaceService.selectSpaceUserList = (spaceId, query, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceId}/users`,
+    { query },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default SpaceService;

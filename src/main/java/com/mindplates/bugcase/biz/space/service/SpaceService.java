@@ -3,11 +3,13 @@ package com.mindplates.bugcase.biz.space.service;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
+import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class SpaceService {
 
     private final SpaceRepository spaceRepository;
 
+    private final SpaceUserRepository spaceUserRepository;
 
     @Cacheable(key = "#id", value = CacheConfig.SPACE)
     public Optional<Space> selectSpaceInfo(Long id) {
@@ -78,6 +81,15 @@ public class SpaceService {
 
     public List<Space> selectUserSpaceList(Long userId) {
         return spaceRepository.findAllByUsersUserId(userId);
+    }
+
+    public List<SpaceUser> selectSpaceUserList(String spaceCode, String query) {
+        if (StringUtils.isNotBlank(query)) {
+            return spaceUserRepository.findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);
+        }
+
+        return spaceUserRepository.findAllBySpaceCode(spaceCode);
+
     }
 
 }

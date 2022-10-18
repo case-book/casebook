@@ -155,14 +155,14 @@
   }
 
   &.btn-primary {
-    background-color: $primary;
-    color: $white;
+    background-color: $color-sunflower;
+    color: $black;
     &:hover {
-      background-color: lighten($primary, 8%);
+      background-color: darken($color-sunflower, 8%);
     }
 
     &.disabled:hover {
-      background-color: $primary;
+      background-color: $color-sunflower;
     }
   }
 

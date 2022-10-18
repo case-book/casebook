@@ -11,11 +11,13 @@ import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
+import SpaceService from '@/services/SpaceService';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
+  const [spaceUsers, setSpaceUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [testcaseGroupWidth, setTestcaseGroupWidth] = useState(() => {
     return getOption('testcase', 'testcase-group-layout', 'width') || 300;
@@ -46,6 +48,15 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
+  const getSpaceUserList = () => {
+    SpaceService.selectSpaceUserList(spaceCode, null, users => {
+      setSpaceUsers(users);
+      console.log(users);
+    });
+  };
+
+  console.log(spaceUsers);
+
   const getTestcase = testcaseId => {
     setContentLoading(true);
     TestcaseService.selectTestcase(
@@ -57,7 +68,7 @@ function ProjectTestcaseInfoPage() {
           setContentLoading(false);
         }, 200);
         setContentChanged(false);
-        console.log(info);
+
         setContent(info);
       },
       () => {
@@ -76,6 +87,7 @@ function ProjectTestcaseInfoPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     getProject();
+    getSpaceUserList();
   }, [spaceCode, projectId]);
 
   const getContent = () => {
@@ -337,11 +349,34 @@ function ProjectTestcaseInfoPage() {
     resizeInfo.startWidth = rects[0].width;
   };
 
-  const onSaveTestcase = info => {
-    console.log(info);
-    TestcaseService.updateTestcase(spaceCode, projectId, info.id, info, result => {
-      console.log(result);
-    });
+  const onSaveTestcase = (info, handler) => {
+    setContentLoading(true);
+
+    TestcaseService.updateTestcase(
+      spaceCode,
+      projectId,
+      info.id,
+      info,
+      result => {
+        setTimeout(() => {
+          setContentLoading(false);
+        }, 200);
+        const nextProject = { ...project };
+        const nextGroup = nextProject.testcaseGroups.find(g => g.id === result.testcaseGroupId);
+        const index = nextGroup.testcases.findIndex(d => d.id === result.id);
+        if (index > -1) {
+          nextGroup.testcases[index] = result;
+        }
+        setProject(nextProject);
+        setContentChanged(false);
+        if (handler) {
+          handler();
+        }
+      },
+      () => {
+        setContentLoading(false);
+      },
+    );
   };
 
   return (
@@ -380,6 +415,7 @@ function ProjectTestcaseInfoPage() {
               loading={contentLoading}
               setContentChanged={setContentChanged}
               onSaveTestcase={onSaveTestcase}
+              users={spaceUsers}
             />
           </div>
         </div>

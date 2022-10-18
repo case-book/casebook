@@ -1,8 +1,8 @@
 package com.mindplates.bugcase.biz.user.service;
 
-import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
+import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.common.util.EncryptUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,19 +22,14 @@ public class UserService {
     private final EncryptUtil encryptUtil;
 
 
-
     public List<User> selectUserList() {
         return userRepository.findAll();
     }
 
 
-
-
     public User selectUserInfo(Long id) {
         return userRepository.findById(id).orElse(null);
     }
-
-
 
 
     public boolean existUserByEmail(String email, Long exceptUserId) {
@@ -43,8 +38,6 @@ public class UserService {
         }
         return userRepository.countByEmail(email) > 0L;
     }
-
-
 
 
     public User selectUserByUuid(String uuid) {
@@ -74,10 +67,6 @@ public class UserService {
         user.setCreatedBy(user.getId());
         return userRepository.save(user);
     }
-
-
-
-
 
 
     @Transactional
