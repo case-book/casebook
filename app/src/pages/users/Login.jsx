@@ -39,6 +39,7 @@ function Login() {
             <Input
               value={info.email}
               underline
+              color="white"
               size="xxl"
               onChange={val =>
                 setInfo({
@@ -55,6 +56,7 @@ function Login() {
             <Input
               type="password"
               underline
+              color="white"
               size="xxl"
               value={info.password}
               onChange={val =>

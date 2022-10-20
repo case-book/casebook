@@ -7,6 +7,7 @@ import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    private final TestcaseItemFileService projectFileService;
     private final SpaceService spaceService;
 
 
@@ -108,8 +110,6 @@ public class ProjectController {
         }
 
         return new ProjectResponse(project);
-
-
     }
 
 

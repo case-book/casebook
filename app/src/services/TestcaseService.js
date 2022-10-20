@@ -178,4 +178,14 @@ TestcaseService.updateTestcase = (spaceCode, projectId, testcaseId, testcase, su
   );
 };
 
+TestcaseService.createImage = (spaceCode, projectId, testcaseId, name, size, type, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('name', name);
+  formData.append('size', size);
+  formData.append('type', type);
+
+  return request.post(`/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/images`, formData, null, null, null, null, null, true);
+};
+
 export default TestcaseService;

@@ -1,14 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import './UserSelector.scss';
 import { USER_ASSIGNED_OPERATIONS } from '@/constants/constants';
 import { getUserText } from '@/utils/userUtil';
+import './UserSelector.scss';
 
 function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder, color }) {
   const [opened, setOpened] = useState(false);
+  const [bottomList, setBottomList] = useState(true);
   const [text, setText] = useState('');
   const [focus, setFocus] = useState(false);
   const element = useRef(null);
+  const list = useRef(null);
 
   const handleChange = (t, v) => {
     onChange(t, v);
@@ -24,11 +26,48 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
     return true;
   });
 
+  const handleOutsideClick = event => {
+    if (element.current && !element.current.contains(event.target)) {
+      setOpened(false);
+    }
+  };
+
+  useEffect(() => {
+    if (opened) {
+      document.addEventListener('mousedown', handleOutsideClick);
+
+      if (element.current) {
+        const elementRect = element.current.getClientRects();
+        if (elementRect.length > 0) {
+          const gab = window.innerHeight - elementRect[0].top;
+
+          if (gab < 200) {
+            setBottomList(false);
+          } else {
+            setBottomList(true);
+          }
+        }
+      }
+
+      if (list.current) {
+        const selectedItem = list.current.querySelector('.selected');
+        if (selectedItem) {
+          list.current.scrollTop = selectedItem.offsetTop;
+        }
+      }
+    } else {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [opened]);
+
   return (
-    <div className={`user-selector-wrapper ${className} size-${size} color-${color}`}>
+    <div className={`user-selector-wrapper ${className} size-${size} color-${color}`} ref={element}>
       <div className="control">
         <input
-          ref={element}
           type="text"
           disabled={disabled}
           placeholder={placeholder}
@@ -37,6 +76,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
           }}
           onFocus={() => {
             setText(getUserText(users, type, value) || '');
+            setOpened(true);
             setFocus(true);
           }}
           onBlur={() => {
@@ -69,11 +109,11 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
         }}
       >
         <div>
-          <i className="fa-solid fa-caret-down" />
+          <i className={`fas fa-chevron-${opened ? 'up' : 'down'} normal`} />
         </div>
       </div>
       {opened && (
-        <div className="user-list g-no-select">
+        <div className={`user-list g-no-select ${bottomList ? '' : 'bottom-top'}`} ref={list}>
           <ul>
             <li
               className={`special-option ${type === 'operation' && value === 'RND' ? 'selected' : ''}`}

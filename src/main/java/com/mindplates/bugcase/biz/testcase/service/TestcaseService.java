@@ -3,9 +3,7 @@ package com.mindplates.bugcase.biz.testcase.service;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.entity.*;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
+import com.mindplates.bugcase.biz.testcase.repository.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -13,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +37,12 @@ public class TestcaseService {
 
     private final TestcaseRepository testcaseRepository;
 
+    private final TestcaseItemRepository testcaseItemRepository;
+
+    private final TestcaseItemFileRepository testcaseItemFileRepository;
     private final ProjectRepository projectRepository;
+
+    private final TestcaseItemFileService testcaseItemFileService;
 
     private final SessionUtil sessionUtil;
 
@@ -207,15 +213,41 @@ public class TestcaseService {
             list.stream().forEach((testcaseGroup -> deleteGroupIds.add(testcaseGroup.getId())));
         }
 
+        List<TestcaseItemFile> files = testcaseItemFileRepository.findAllByTestcaseTestcaseGroupIdIn(deleteGroupIds);
 
+        testcaseItemFileRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
+
+        files.forEach((testcaseItemFile -> {
+            Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
+            try {
+                Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
+            } catch (Exception e) {
+                // ignore
+            }
+
+        }));
     }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteTestcaseInfo(String spaceCode, Long projectId, Long testcaseId) {
+
+        List<TestcaseItemFile> files = testcaseItemFileRepository.findAllByTestcaseId(testcaseId);
+        testcaseItemFileRepository.deleteByTestcaseId(testcaseId);
+        testcaseItemRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
+        files.forEach((testcaseItemFile -> {
+            Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
+            try {
+                Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
+            } catch (Exception e) {
+                // ignore
+            }
+
+        }));
     }
 
     @Transactional
@@ -252,6 +284,7 @@ public class TestcaseService {
 
             TestcaseItem testcaseItem = TestcaseItem.builder()
                     .testcaseTemplateItem(testcaseTemplateItem)
+                    .type(testcaseTemplateItem.getDefaultType())
                     .testcase(testcase).build();
 
             if ("EDITOR".equals(testcaseTemplateItem.getType())) {

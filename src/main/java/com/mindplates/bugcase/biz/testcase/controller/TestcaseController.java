@@ -2,27 +2,25 @@ package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.testcase.entity.*;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.*;
-import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
-import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
-import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
-import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.UserSession;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +32,8 @@ import java.util.stream.Collectors;
 public class TestcaseController {
     private final ProjectService projectService;
     private final TestcaseService testcaseService;
+
+    private final TestcaseItemFileService testcaseItemFileService;
 
     @Operation(description = "프로젝트 테스트케이스 설정 조회")
     @GetMapping("/templates")
@@ -142,6 +142,39 @@ public class TestcaseController {
         Testcase testcase = testcaseUpdateRequest.buildEntity();
         return new TestcaseResponse(testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase));
 
+    }
+
+    @PostMapping("/{testcaseId}/images")
+    public TestcaseItemFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type, HttpServletRequest req) {
+
+        String path = testcaseItemFileService.storeFile(projectId, file);
+
+        TestcaseItemFile testcaseItemFile = TestcaseItemFile.builder()
+                .project(Project.builder().id(projectId).build())
+                .testcase(Testcase.builder().id(testcaseId).build())
+                .name(name)
+                .size(size)
+                .type(type)
+                .path(path)
+                .build();
+
+        TestcaseItemFile projectFile = testcaseItemFileService.createTestcaseItemFile(testcaseItemFile);
+        return new TestcaseItemFileResponse(projectFile, spaceCode, projectId, testcaseId);
+    }
+
+
+    @GetMapping("/{testcaseId}/images/{imageId}")
+    public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId) {
+
+        TestcaseItemFile testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId);
+        Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseItemFile.getName(), StandardCharsets.UTF_8).build();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                .body(resource);
     }
 
 

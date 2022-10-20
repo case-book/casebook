@@ -8,13 +8,14 @@ class CheckBox extends React.PureComponent {
 
     return (
       <div
-        className={`check-box-wrapper ${size} ${className}`}
+        className={`check-box-wrapper ${size} ${className} ${value ? 'checked' : ''}`}
         onClick={() => {
           onChange(!value);
         }}
       >
-        <span className={`check-box-span ${value ? 'checked' : ''}`}>
-          <span />
+        <span className="checked-icon">
+          {value && <i className="fa-solid fa-square-check" />}
+          {!value && <i className="fa-solid fa-square" />}
         </span>
         <label className="g-no-select">{label}</label>
       </div>

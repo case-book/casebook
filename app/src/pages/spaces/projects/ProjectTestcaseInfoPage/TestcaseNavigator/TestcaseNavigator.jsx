@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Liner } from '@/components';
+import { Button, EmptyContent, Liner } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
 import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
@@ -144,7 +144,6 @@ function TestcaseNavigator({
         '변경된 데이터가 저장되지 않았습니다.',
         <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
         () => {
-          console.log(id, type);
           onSelect({ id, type });
           setContextMenuInfo({
             type,
@@ -341,41 +340,62 @@ function TestcaseNavigator({
           <div className="min-content">
             <div>
               <div className="label">GROUP</div>
-              <div className="count">{countSummary.testcaseGroupCount}</div>
+              <div className="count">{countSummary.testcaseGroupCount || 0}</div>
             </div>
             <div>
               <div className="label">CASE</div>
-              <div className="count">{countSummary.testcaseCount}</div>
+              <div className="count">{countSummary.testcaseCount || 0}</div>
             </div>
           </div>
         )}
         <div className={`content-scroller ${dragChange}`} ref={scroller}>
-          <ul>
-            {testcaseGroups.map(group => {
-              return (
-                <TestcaseNavigatorGroupItem
-                  key={group.id}
-                  group={group}
-                  dragInfo={dragInfo}
-                  setDragInfo={setDragInfo}
-                  onDrop={onDrop}
-                  editInfo={editInfo}
-                  contextMenuInfo={contextMenuInfo}
-                  onContextMenu={onContextMenu}
-                  selectedItemInfo={selectedItemInfo}
-                  onSelect={changeSelect}
-                  lastChild={false}
-                  onChangeEditName={onChangeEditName}
-                  clearEditing={clearEditing}
-                  onChangeTestcaseGroupName={onChangeTestcaseGroupName}
-                  onClickGroupName={onClickGroupName}
-                  allOpen={allOpen}
-                  setAllOpen={setAllOpen}
-                  setting={setting}
-                />
-              );
-            })}
-          </ul>
+          {!min && testcaseGroups?.length < 1 && (
+            <EmptyContent className="empty-content">
+              <div>테스트케이스 그룹이 없습니다.</div>
+              <div className="empty-control">
+                <Button size="xs" onClick={addTestcaseGroup}>
+                  {width < 180 && (
+                    <>
+                      <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
+                    </>
+                  )}
+                  {width >= 180 && (
+                    <>
+                      <i className="fa-solid fa-folder-plus" /> <span className="button-text">테스트케이스 그룹</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </EmptyContent>
+          )}
+          {testcaseGroups?.length > 0 && (
+            <ul>
+              {testcaseGroups.map(group => {
+                return (
+                  <TestcaseNavigatorGroupItem
+                    key={group.id}
+                    group={group}
+                    dragInfo={dragInfo}
+                    setDragInfo={setDragInfo}
+                    onDrop={onDrop}
+                    editInfo={editInfo}
+                    contextMenuInfo={contextMenuInfo}
+                    onContextMenu={onContextMenu}
+                    selectedItemInfo={selectedItemInfo}
+                    onSelect={changeSelect}
+                    lastChild={false}
+                    onChangeEditName={onChangeEditName}
+                    clearEditing={clearEditing}
+                    onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+                    onClickGroupName={onClickGroupName}
+                    allOpen={allOpen}
+                    setAllOpen={setAllOpen}
+                    setting={setting}
+                  />
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
       {!min && (

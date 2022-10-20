@@ -1,189 +1,189 @@
 .testcase-manager-wrapper {
-  min-height: 100%;
-  .title-liner {
-    height: 3px;
-    background-color: #000;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    margin-bottom: 1rem;
-    border-radius: 3px;
-  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
   .testcase-title {
-    padding: 1rem 1rem 1.5rem;
+    padding: 1.5rem 2rem 1.5rem;
     display: flex;
+    background-color: #222;
+    border-radius: 4px 4px 0 0;
 
     > div {
       align-self: center;
+    }
 
-      &.text {
-        font-size: 20px;
-        font-weight: bold;
+    .text {
+      font-size: 20px;
+      font-weight: bold;
+      flex-grow: 1;
+      display: flex;
+
+      .title-input {
         flex-grow: 1;
-        display: flex;
+      }
 
-        .control {
-          flex-grow: 1;
-          margin-left: 0.5rem;
-        }
+      > div {
+        align-self: center;
+        &.seq-id {
+          line-height: 0;
+          margin-right: 1rem;
 
-        > div {
-          align-self: center;
-          &.seq-id {
-            line-height: 0;
-            margin-right: 0.5rem;
+          .seq-id-text {
+            position: relative;
+            z-index: 2;
+          }
 
-            .seq-id-text {
-              position: relative;
-              z-index: 2;
-            }
+          > div {
+            cursor: pointer;
+            display: inline-block;
+            border-radius: 2px;
+            line-height: 100%;
+            font-size: 14px;
+            background-color: $color-sunflower;
+            color: #333;
+            padding: 2px;
+            font-family: Rowdies, sans-serif;
+            position: relative;
 
-            > div {
-              cursor: pointer;
-              display: inline-block;
-              border-radius: 2px;
-              line-height: 100%;
-              font-size: 14px;
-              background-color: $color-sunflower;
-              color: #333;
-              padding: 2px;
-              font-family: Rowdies, sans-serif;
-              position: relative;
+            .copied-message {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              text-align: center;
+              color: $color-azure;
+              transition: 0.3s all;
+              transition-timing-function: ease-in-out;
+              opacity: 0;
+              cursor: text;
 
-              .copied-message {
+              &.copied {
+                top: -30px;
+                transition: 0.3s all;
+                transition-timing-function: ease-in-out;
+                opacity: 1;
+              }
+
+              .bg {
+                font-size: 30px;
+              }
+              .icon {
                 position: absolute;
-                top: 0;
                 left: 0;
                 right: 0;
                 text-align: center;
-                color: $color-azure;
-                transition: 0.3s all;
-                transition-timing-function: ease-in-out;
-                opacity: 0;
+                bottom: 8px;
+                font-size: 16px;
+                color: $white;
+              }
 
-                &.copied {
-                  top: -30px;
-                  transition: 0.3s all;
-                  transition-timing-function: ease-in-out;
-                  opacity: 1;
-                }
-
-                .bg {
-                  font-size: 30px;
-                }
-                .icon {
-                  position: absolute;
-                  left: 0;
-                  right: 0;
-                  text-align: center;
-                  bottom: 8px;
-                  font-size: 16px;
-                  color: $white;
-                }
-
-                .text {
-                  color: $white;
-                  position: absolute;
-                  left: calc(100% + 8px);
-                  top: 6px;
-                  font-size: 10px;
-                }
+              .text {
+                color: $white;
+                position: absolute;
+                left: calc(100% + 8px);
+                top: 6px;
+                font-size: 10px;
               }
             }
           }
-          &.name {
-            flex-grow: 1;
-          }
+        }
+        &.name {
+          flex-grow: 1;
         }
       }
+    }
 
-      &.button {
-        margin-left: 1rem;
-        font-family: NotoSans, sans-serif;
-        > div {
-          display: inline-flex;
-          height: 36px;
-          cursor: pointer;
-
-          > span {
-            align-self: center;
-            display: inline-block;
-          }
-          .label {
-            font-size: 14px;
-            margin-right: 0.5rem;
-            padding-bottom: 2px;
-          }
-
-          .switch {
-            font-size: 26px;
-            line-height: 0;
-
-            &:hover {
-              color: $color-sunflower;
-            }
-
-            &.on {
-              color: $color-sunflower;
-            }
-          }
+    .title-button {
+      margin-left: 1rem;
+      button {
+        margin-right: 0.5rem;
+        &:last-child {
+          margin-right: 0;
         }
       }
     }
   }
 
+  .title-liner {
+    height: 3px;
+    background-color: #000;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+  }
+
   .case-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
     .case-item {
       vertical-align: top;
       display: inline-block;
-
-      .label {
-        padding: 0.5rem;
-        margin-bottom: 0.25rem;
-        display: flex;
-        font-family: Rowdies, NanumGothic, sans-serif;
-
-        .text {
-          flex-grow: 1;
-        }
-        .type {
-          font-size: 10px;
-          align-self: center;
-          font-family: Rowdies, sans-serif;
-          margin-right: 1rem;
-          color: $gray-500;
-        }
-      }
-
-      .value {
-        padding: 1rem 1rem;
-        min-height: 51px;
-        display: flex;
-        background-color: rgba(0, 0, 0, 0.1);
+      padding: 0.5rem;
+      > div {
+        background-color: #161616;
         border-radius: 4px;
-        margin: 0 0.5rem 1rem;
-        box-sizing: border-box;
+        _border: 1px solid rgba(255, 255, 255, 0.05);
 
-        &.RADIO {
-          padding: 0 1rem 0 0;
-          background-color: transparent;
-        }
-
-        &.EDITOR {
-          padding: 0;
-        }
-
-        > div {
-          align-self: center;
-          width: 100%;
-        }
-
-        .none-text {
-          color: $gray-600;
-        }
-
-        .editor {
-          height: 120px;
-          white-space: pre-wrap;
+        .label {
+          display: flex;
           padding: 1rem;
+          background-color: #141414;
+          border-radius: 4px 4px 0 0;
+
+          .text {
+            flex-grow: 1;
+            font-family: Rowdies, NotoSans, sans-serif;
+            line-height: 125%;
+          }
+          .type {
+            font-size: 10px;
+            align-self: center;
+            font-family: Rowdies, sans-serif;
+            color: $gray-500;
+          }
+        }
+
+        .case-liner {
+          margin: 0 2px;
+          height: 3px;
+          background-color: #000;
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          border-left: none;
+          border-right: none;
+        }
+
+        .value {
+          padding: 1rem 1rem;
+          min-height: 51px;
+          display: flex;
+          background-color: rgba(0, 0, 0, 0.2);
+          border-radius: 0 0 4px 4px;
+          box-sizing: border-box;
+
+          > div {
+            align-self: center;
+            width: 100%;
+          }
+
+          .select {
+            .selector {
+              width: 100%;
+            }
+          }
+
+          .none-text {
+            color: $gray-600;
+          }
+
+          .editor {
+            min-height: 120px;
+            white-space: pre-wrap;
+
+            > div {
+              white-space: normal;
+            }
+          }
         }
       }
 
@@ -237,45 +237,23 @@
   }
 
   &.is-edit {
-    .testcase-title {
-      padding-left: 0.5rem;
-    }
-
     .case-content {
       .case-item {
-        .value {
+        > div {
           background-color: transparent;
-          padding: 0 1rem 0 0;
 
-          .text-area {
-            height: 100%;
+          .label {
+            background-color: transparent;
           }
 
-          .editor {
-            padding: 0;
+          .case-liner {
           }
 
-          input {
-            padding-left: 1rem;
-            padding-right: 1rem;
-          }
-
-          textarea {
-            padding: 1rem;
+          .value {
+            padding: 1rem 1rem 0;
+            background-color: transparent;
           }
         }
-      }
-    }
-  }
-
-  .save-button {
-    text-align: center;
-    margin-top: 2rem;
-    > button {
-      margin-right: 1rem;
-
-      &:last-child {
-        margin-right: 0;
       }
     }
   }
