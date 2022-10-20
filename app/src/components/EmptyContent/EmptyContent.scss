@@ -1,0 +1,9 @@
+.empty-content-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  > div {
+    align-self: center;
+    text-align: center;
+  }
+}

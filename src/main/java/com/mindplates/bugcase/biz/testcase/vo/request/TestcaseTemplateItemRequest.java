@@ -21,6 +21,8 @@ public class TestcaseTemplateItemRequest {
 
     private String defaultValue;
 
+    private String defaultType;
+
     private String crud;
 
     public TestcaseTemplateItem buildEntity() {
@@ -34,6 +36,7 @@ public class TestcaseTemplateItemRequest {
                 .options(options)
                 .size(size)
                 .defaultValue(defaultValue)
+                .defaultType(defaultType)
                 .build();
     }
 

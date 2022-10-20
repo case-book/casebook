@@ -1,12 +1,17 @@
 .content-manager-wrapper {
-  .content-scroller {
+  .manager-content {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    overflow-y: auto;
-    overflow-x: auto;
-    padding: 1rem;
+    padding: 0;
+
+    .empty-content {
+      .icon {
+        font-size: 40px;
+        margin-bottom: 1rem;
+      }
+    }
   }
 }

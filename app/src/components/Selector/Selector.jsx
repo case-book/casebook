@@ -4,6 +4,7 @@ import './Selector.scss';
 
 function Selector({ className, onChange, items, value, addAll, outline, color, size, separator, minWidth, radius, disabled, onClick }) {
   const [open, setOpen] = useState(false);
+  const [bottomList, setBottomList] = useState(true);
 
   const element = useRef(null);
   const list = useRef(null);
@@ -18,9 +19,23 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
     if (open) {
       document.addEventListener('mousedown', handleOutsideClick);
 
+      if (element.current) {
+        const elementRect = element.current.getClientRects();
+        if (elementRect.length > 0) {
+          const gab = window.innerHeight - elementRect[0].top;
+          if (gab < 200) {
+            setBottomList(false);
+          } else {
+            setBottomList(true);
+          }
+        }
+      }
+
       if (list.current) {
         const selectedItem = list.current.querySelector('.selected');
-        list.current.scrollTop = selectedItem.offsetTop;
+        if (selectedItem) {
+          list.current.scrollTop = selectedItem.offsetTop;
+        }
       }
     } else {
       document.removeEventListener('mousedown', handleOutsideClick);
@@ -42,7 +57,7 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
   return (
     <div
       ref={element}
-      className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''}`}
+      className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''} color-${color}`}
       style={{
         minWidth: `${minWidth}`,
       }}
@@ -61,7 +76,7 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
         />
       )}
       <div
-        className={`${open ? 'open' : ''} selector-current ${outline ? 'outline' : ''} color-${color}`}
+        className={`${open ? 'open' : ''} selector-current ${outline ? 'outline' : ''}`}
         onClick={() => {
           if (!disabled) {
             setOpen(!open);
@@ -80,7 +95,7 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
         </span>
       </div>
       {open && (
-        <div ref={list} className={`${open ? 'd-block' : 'd-none'} selector-list scrollbar-sm`}>
+        <div ref={list} className={`${open ? 'd-block' : 'd-none'} ${bottomList ? '' : 'bottom-top'} selector-list scrollbar-sm`}>
           <ul>
             {addAll && (
               <li

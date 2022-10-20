@@ -6,9 +6,9 @@ import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPag
 import { ITEM_TYPE } from '@/constants/constants';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
-import { Loader } from '@/components';
+import { EmptyContent, Loader } from '@/components';
 
-function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users }) {
+function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users, createImage }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -35,10 +35,28 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
 
   return (
     <div className="content-manager-wrapper">
-      <div className="content-scroller">
+      <div className="manager-content">
         {loading && <Loader />}
+        {!content && (
+          <EmptyContent className="empty-content">
+            <div className="icon">
+              <i className="fa-solid fa-circle-info" />
+            </div>
+            <div>아이템을 선택해주세요.</div>
+          </EmptyContent>
+        )}
         {content && type === ITEM_TYPE.TESTCASE && (
-          <TestcaseManager isEdit={isEdit} setIsEdit={setIsEdit} content={content} testcaseTemplates={testcaseTemplates} setContent={changeContent} onSave={onSave} onCancel={onCancel} users={users} />
+          <TestcaseManager
+            isEdit={isEdit}
+            setIsEdit={setIsEdit}
+            content={content}
+            testcaseTemplates={testcaseTemplates}
+            setContent={changeContent}
+            onSave={onSave}
+            onCancel={onCancel}
+            users={users}
+            createImage={createImage}
+          />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && <TestcaseGroupManager content={content} />}
       </div>
@@ -85,6 +103,7 @@ ContentManager.propTypes = {
       email: PropTypes.string,
     }),
   ),
+  createImage: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

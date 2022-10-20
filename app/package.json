@@ -7,6 +7,8 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
+    "@toast-ui/react-editor": "^3.2.2",
     "axios": "^0.27.2",
     "craco": "^0.0.3",
     "lodash": "^4.17.21",

@@ -133,7 +133,7 @@
         padding-right: 0.5rem;
         align-self: center;
         line-height: 0;
-        font-size: 1px;
+        font-size: 14px;
 
         .hover {
           display: none;
@@ -144,37 +144,13 @@
         }
       }
     }
+  }
 
-    &.color-primary {
-      border: 1px solid $primary;
-
-      > span {
-        &.liner {
-          > span {
-            background-color: $primary;
-          }
-        }
-
-        &.icon {
-          color: $primary;
-        }
-      }
-
-      &:hover {
-        border: 1px solid darken($primary, 10%);
-
-        > span {
-          &.liner {
-            > span {
-              background-color: darken($primary, 10%);
-            }
-          }
-
-          &.icon {
-            color: darken($primary, 10%);
-          }
-        }
-      }
+  &.color-black {
+    .selector-current {
+      background-color: #121212;
+      color: $white;
+      border: 1px solid #494c56;
     }
   }
 
@@ -222,23 +198,33 @@
     position: absolute;
     background-color: $white;
     min-width: 100%;
-    margin-top: 2px;
+    margin-top: 4px;
     max-height: calc(30px * 6);
     overflow-y: auto;
     z-index: 3;
-
+    box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.1);
     color: $black;
+    border: 1px solid #494c56;
+    padding: 4px;
+
+    &.bottom-top {
+      margin-top: 0;
+      bottom: 100%;
+      margin-bottom: 4px;
+      border-radius: 2px;
+    }
 
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
       cursor: pointer;
-      border-radius: 0 0 2px 2px;
+      border-radius: 2px;
       font-size: 14px;
 
       li {
         padding: 8px;
+        height: 32px;
         text-transform: uppercase;
         border-bottom: 1px solid $border-color;
         position: relative;
@@ -248,9 +234,8 @@
         white-space: nowrap;
 
         &:last-child {
-          border-bottom: none;
+          border-bottom: none !important;
           margin-bottom: 0;
-          border-radius: 0 0 2px 2px;
         }
 
         .select-arrow {
@@ -271,6 +256,31 @@
 
         &:hover {
           background-color: lighten($yellow, 8%);
+        }
+      }
+    }
+  }
+
+  &.color-black {
+    .selector-list {
+      background-color: #121212;
+      box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+
+      ul {
+        color: $white;
+
+        li {
+          border-bottom: 1px solid $gray-700;
+
+          &.selected {
+            background-color: $color-sunflower;
+            color: $black;
+          }
+
+          &:hover {
+            background-color: $color-sunflower;
+            color: $black;
+          }
         }
       }
     }

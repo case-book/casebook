@@ -67,4 +67,4 @@ bug-case:
   # oauth-register-web-url: https://localhost:3000/users/oauth/register
 file:
   upload-dir: c:/fileupload/
-  image-file-extension: bmp,jpeg,png,jpg,gif,webp,svg
+  allowed-extension: bmp,jpeg,png,jpg,gif,webp,svg

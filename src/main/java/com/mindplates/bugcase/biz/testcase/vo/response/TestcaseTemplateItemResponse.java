@@ -23,6 +23,8 @@ public class TestcaseTemplateItemResponse {
     private Integer size;
     private String defaultValue;
 
+    private String defaultType;
+
     public TestcaseTemplateItemResponse(TestcaseTemplateItem testcaseTemplateItem) {
         this.id = testcaseTemplateItem.getId();
         this.category = testcaseTemplateItem.getCategory();
@@ -31,7 +33,7 @@ public class TestcaseTemplateItemResponse {
         this.label = testcaseTemplateItem.getLabel();
         this.options = testcaseTemplateItem.getOptions();
         this.size = testcaseTemplateItem.getSize();
-        this.defaultValue = testcaseTemplateItem.getDefaultValue();
+        this.defaultType = testcaseTemplateItem.getDefaultType();
 
     }
 }

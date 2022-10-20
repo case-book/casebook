@@ -51,14 +51,12 @@ function ProjectTestcaseInfoPage() {
   const getSpaceUserList = () => {
     SpaceService.selectSpaceUserList(spaceCode, null, users => {
       setSpaceUsers(users);
-      console.log(users);
     });
   };
 
-  console.log(spaceUsers);
-
   const getTestcase = testcaseId => {
     setContentLoading(true);
+    setContent(null);
     TestcaseService.selectTestcase(
       spaceCode,
       projectId,
@@ -379,6 +377,10 @@ function ProjectTestcaseInfoPage() {
     );
   };
 
+  const createImage = (testcaseId, name, size, type, file) => {
+    return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
+  };
+
   return (
     <Page className="project-testcase-info-page-wrapper" list wide>
       <PageTitle>{t('테스트케이스')}</PageTitle>
@@ -416,6 +418,7 @@ function ProjectTestcaseInfoPage() {
               setContentChanged={setContentChanged}
               onSaveTestcase={onSaveTestcase}
               users={spaceUsers}
+              createImage={createImage}
             />
           </div>
         </div>

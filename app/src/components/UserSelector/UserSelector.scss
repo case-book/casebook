@@ -5,109 +5,6 @@
   position: relative;
   z-index: 3;
 
-  .user-list {
-    position: absolute;
-    left: 0;
-    top: calc(100% + 4px);
-    background-color: $white;
-    border-radius: 2px;
-    width: 100%;
-    max-height: 212px;
-    overflow-y: auto;
-
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0.75rem;
-
-      > li {
-        height: 32px;
-        display: flex;
-        font-size: 14px;
-        border-bottom: 1px solid $gray-300;
-        cursor: pointer;
-
-        &.selected {
-          background-color: $color-sunflower;
-        }
-
-        &:hover {
-          background-color: $color-sunflower;
-        }
-        &:first-child {
-        }
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        &.empty:hover {
-          background-color: transparent;
-          cursor: text;
-        }
-
-        &.empty,
-        &.special-option {
-          color: $gray-700;
-          > .name {
-            flex-grow: 1;
-            text-align: center;
-          }
-        }
-
-        > div {
-          &.name {
-            padding: 0 0.75rem;
-            font-weight: bold;
-            align-self: center;
-          }
-
-          &.email {
-            padding-top: 6px;
-            flex-grow: 1;
-            > span {
-              font-size: 12px;
-              font-family: Cairo, sans-serif;
-              text-transform: uppercase;
-              display: inline-block;
-              padding: 4px 6px;
-              background-color: $gray-200;
-              line-height: 100%;
-              border-radius: 4px;
-            }
-          }
-
-          &.enter {
-            text-transform: uppercase;
-            align-self: center;
-            margin-right: 0.5rem;
-            > span {
-              font-size: 12px;
-              font-family: Cairo, sans-serif;
-              text-transform: uppercase;
-              display: inline-block;
-              padding: 4px 6px;
-              background-color: $gray-200;
-              line-height: 100%;
-              border-radius: 4px;
-            }
-          }
-        }
-
-        &:hover {
-          background-color: $color-sunflower;
-          > div {
-            &.email {
-              > span {
-                background-color: $white;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
   &.color-white {
     color: $black;
     background-color: $white;
@@ -120,7 +17,12 @@
 
   &.color-black {
     color: $white;
-    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #494c56;
+    background-color: #121212;
+
+    input {
+      color: $white;
+    }
   }
 
   > div {
@@ -133,13 +35,13 @@
       display: flex;
       height: 100%;
       cursor: pointer;
-      &:hover {
-        background-color: $color-sunflower;
-      }
+      font-size: 14px;
+
       > div {
         align-self: center;
-        padding: 0 0.75rem;
         border-left: 1px solid rgba(0, 0, 0, 0.1);
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
       }
     }
   }
@@ -227,6 +129,197 @@
       font-size: 12px;
       padding: 8px 12px;
       height: $xs-height;
+    }
+  }
+
+  .user-list {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 4px);
+    background-color: $white;
+    border-radius: 2px;
+    width: 100%;
+    max-height: 212px;
+    overflow-y: auto;
+    box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.1);
+    border: 1px solid #494c56;
+    padding: 4px;
+    left : -1px;
+    width: calc(100% + 2px);
+
+    &.bottom-top {
+      margin-top: 0;
+      bottom: 100%;
+      margin-bottom: 4px;
+      border-radius: 2px;
+      top : auto;
+
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      > li {
+        height: 32px;
+        display: flex;
+        font-size: 14px;
+        border-bottom: 1px solid $gray-300;
+        cursor: pointer;
+
+        &.selected {
+          background-color: $color-sunflower;
+        }
+
+        &:hover {
+          background-color: $color-sunflower;
+        }
+        &:first-child {
+        }
+
+        &:last-child {
+          border-bottom: none !important;
+        }
+
+        &.empty:hover {
+          background-color: transparent;
+          cursor: text;
+        }
+
+        &.empty,
+        &.special-option {
+          color: $gray-700;
+          > .name {
+            flex-grow: 1;
+            text-align: center;
+          }
+        }
+
+        > div {
+          &.name {
+            padding: 0 0.75rem;
+            font-weight: bold;
+            align-self: center;
+          }
+
+          &.email {
+            padding-top: 6px;
+            flex-grow: 1;
+            > span {
+              font-size: 12px;
+              font-family: Cairo, sans-serif;
+              text-transform: uppercase;
+              display: inline-block;
+              padding: 4px 6px;
+              background-color: $gray-200;
+              line-height: 100%;
+              border-radius: 4px;
+            }
+          }
+
+          &.enter {
+            text-transform: uppercase;
+            align-self: center;
+            margin-right: 0.5rem;
+            > span {
+              font-size: 12px;
+              font-family: Cairo, sans-serif;
+              text-transform: uppercase;
+              display: inline-block;
+              padding: 4px 6px;
+              background-color: $gray-200;
+              line-height: 100%;
+              border-radius: 4px;
+            }
+          }
+        }
+
+        &:hover {
+          background-color: $color-sunflower;
+          > div {
+            &.email {
+              > span {
+                background-color: $white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.color-black {
+    .user-list {
+      background-color: #121212;
+      box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+
+      ul {
+        > li {
+          border-bottom: 1px solid $gray-700;
+
+          &.empty,
+          &.special-option {
+            color: $gray-300;
+            > .name {
+              flex-grow: 1;
+              text-align: center;
+            }
+          }
+
+          &.selected {
+            background-color: $color-sunflower;
+            color: $black;
+            > div {
+              &.email,
+              &.enter {
+                > span {
+                  background-color: rgba(0, 0, 0, 0.15);
+                  color: $black;
+                }
+              }
+            }
+          }
+
+          &.empty:hover {
+            background-color: transparent;
+            cursor: text;
+            color: $gray-300;
+          }
+
+          > div {
+            &.email,
+            &.enter {
+              > span {
+                background-color: $gray-900;
+              }
+            }
+
+            &.enter {
+              text-transform: uppercase;
+              align-self: center;
+              margin-right: 0.5rem;
+              > span {
+                background-color: $gray-900;
+              }
+            }
+          }
+
+          &:hover {
+            background-color: $color-sunflower;
+            color: $black;
+            > div {
+              &.email,
+              &.enter {
+                > span {
+                  background-color: rgba(0, 0, 0, 0.15);
+                  color: $black;
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
