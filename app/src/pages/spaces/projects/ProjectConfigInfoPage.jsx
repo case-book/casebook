@@ -5,7 +5,7 @@ import ProjectService from '@/services/ProjectService';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import './ProjectConfigInfoPage.scss';
-import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/ProjectConfigEditPage/TestcaseTemplateEditorPopup';
 
 function ProjectConfigInfoPage() {
   const { t } = useTranslation();

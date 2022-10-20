@@ -7,7 +7,6 @@
       }
 
       .dialog-icon {
-        font-size: 26px;
         margin-right: 0.5rem;
       }
     }
@@ -20,7 +19,6 @@
   &.WARNING {
     .title,
     .dialog-icon {
-      color: $color-tangerine;
     }
   }
 

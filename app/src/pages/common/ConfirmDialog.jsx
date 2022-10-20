@@ -46,6 +46,7 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
         </div>
       </ModalBody>
       <ModalFooter>
+        <div className="bottom-liner" />
         <Button
           onClick={() => {
             if (noHandler) {
