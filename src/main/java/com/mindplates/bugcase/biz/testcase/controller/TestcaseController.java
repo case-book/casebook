@@ -46,10 +46,10 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 설정 수정")
     @PutMapping("/config")
-    public ResponseEntity<Resource> updateTestcaseConfig(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseConfigRequest testcaseConfigRequest, @ApiIgnore UserSession userSession) {
+    public ResponseEntity<Resource> updateTestcaseConfig(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseConfigRequest testcaseConfigRequest) {
 
 
-        testcaseService.saveTestcaseTemplateItemList(spaceCode, projectId, testcaseConfigRequest.buildEntity(), userSession.getId());
+        testcaseService.saveTestcaseTemplateItemList(spaceCode, projectId, testcaseConfigRequest.buildEntity());
 
 
         return ResponseEntity.ok().build();
@@ -57,9 +57,9 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
-    public TestcaseGroupResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest, @ApiIgnore UserSession userSession) {
+    public TestcaseGroupResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
 
-        TestcaseGroup testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.buildEntity(projectId), userSession.getId());
+        TestcaseGroup testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.buildEntity(projectId));
         return new TestcaseGroupResponse(testcaseGroup);
     }
 

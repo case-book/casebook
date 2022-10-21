@@ -61,10 +61,6 @@ public class UserService {
         user.setRecoveryToken("");
         user.setRecoveryMailSendResult(false);
         user.setUseYn(true);
-        user.setCreationDate(now);
-        user.setLastUpdateDate(now);
-        user.setLastUpdatedBy(user.getId());
-        user.setCreatedBy(user.getId());
         return userRepository.save(user);
     }
 

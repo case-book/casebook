@@ -44,7 +44,7 @@ public class ProjectController {
 
     @Operation(description = "프로젝트 생성")
     @PostMapping("")
-    public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectRequest projectRequest, @ApiIgnore UserSession userSession) {
+    public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectRequest projectRequest) {
 
         Project alreadyProject = projectService.selectByName(spaceCode, projectRequest.getName());
         if (alreadyProject != null) {
@@ -59,12 +59,12 @@ public class ProjectController {
             throw new ServiceException(HttpStatus.NOT_FOUND);
         }
 
-        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project, userSession.getId()));
+        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project));
     }
 
     @Operation(description = "프로젝트 수정")
     @PutMapping("/{id}")
-    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectRequest projectRequest, @ApiIgnore UserSession userSession) {
+    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectRequest projectRequest) {
 
         if (!id.equals(projectRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -82,7 +82,7 @@ public class ProjectController {
         nextProject.setDescription(projectRequest.getDescription());
         nextProject.setToken(projectRequest.getToken());
 
-        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject, userSession.getId()));
+        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject));
     }
 
     @Operation(description = "프로젝트 삭제")

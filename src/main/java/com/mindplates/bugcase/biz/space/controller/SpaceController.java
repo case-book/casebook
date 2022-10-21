@@ -84,7 +84,7 @@ public class SpaceController {
         space.setActivated(spaceRequest.getActivated());
         space.setToken(spaceRequest.getToken());
 
-        Space result = spaceService.updateSpaceInfo(space, 0L);
+        Space result = spaceService.updateSpaceInfo(space);
         return new SpaceResponse(result);
     }
 

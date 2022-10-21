@@ -15,10 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -58,7 +55,7 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public List<TestcaseTemplate> saveTestcaseTemplateItemList(String spaceCode, Long projectId, List<TestcaseTemplate> testcaseTemplates, Long userId) {
+    public List<TestcaseTemplate> saveTestcaseTemplateItemList(String spaceCode, Long projectId, List<TestcaseTemplate> testcaseTemplates) {
 
         /*
         Project projectInfo = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -90,7 +87,6 @@ public class TestcaseService {
 
                             TestcaseTemplate currentTestcaseTemplate = projectInfo.getTestcaseTemplates().stream().filter(t-> t.getId().equals(nextTestcaseTemplate.getId())).findAny().get();
                             currentTestcaseTemplate.setName(nextTestcaseTemplate.getName());
-                            currentTestcaseTemplate.setLastUpdatedBy(userId);
                             currentTestcaseTemplate.setProject(projectInfo);
 
                             // 템플릿 아이템 삭제
@@ -126,8 +122,6 @@ public class TestcaseService {
             testcaseTemplateRepository.delete(testcaseTemplate);
         }));
 
-        LocalDateTime now = LocalDateTime.now();
-
         AtomicBoolean hasDefault = new AtomicBoolean(false);
         List<TestcaseTemplate> testcaseTemplateList = testcaseTemplates
                 .stream()
@@ -142,19 +136,8 @@ public class TestcaseService {
                         hasDefault.set(true);
                     }
 
-                    if (testcaseTemplate.getId() == null) {
-                        testcaseTemplate.setCreationDate(now);
-                        testcaseTemplate.setCreatedBy(userId);
-                    }
 
-                    testcaseTemplate.setLastUpdateDate(now);
-                    testcaseTemplate.setLastUpdatedBy(userId);
                     testcaseTemplate.setProject(Project.builder().id(projectId).build());
-
-                    testcaseTemplate.getTestcaseTemplateItems().forEach((testcaseTemplateItem -> {
-                        testcaseTemplateItem.setLastUpdateDate(now);
-                        testcaseTemplateItem.setLastUpdatedBy(userId);
-                    }));
 
                     return testcaseTemplate;
                 })).collect(Collectors.toList());
@@ -168,7 +151,7 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseGroup createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroup testcaseGroup, Long userId) {
+    public TestcaseGroup createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroup testcaseGroup) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int groupSeq = project.getTestcaseGroupSeq() + 1;
@@ -185,11 +168,6 @@ public class TestcaseService {
 
         List<TestcaseGroup> sameParentGroups = testcaseGroupRepository.findAllByProjectIdAndParentId(projectId, testcaseGroup.getParentId());
         testcaseGroup.setItemOrder(sameParentGroups.size());
-        LocalDateTime now = LocalDateTime.now();
-        testcaseGroup.setCreationDate(now);
-        testcaseGroup.setLastUpdateDate(now);
-        testcaseGroup.setCreatedBy(userId);
-        testcaseGroup.setLastUpdatedBy(userId);
 
         testcaseGroupRepository.save(testcaseGroup);
         projectRepository.save(project);
@@ -200,7 +178,6 @@ public class TestcaseService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Project updateProjectTestcaseGroupOrderInfo(String spaceCode, Long projectId, Long targetId, Long destinationId, boolean toChildren) {
 
-        HttpServletRequest req = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -244,8 +221,7 @@ public class TestcaseService {
             targetGroup.setItemOrder(destinationGroup.getItemOrder() + 1);
         }
 
-        project.setLastUpdateDate(LocalDateTime.now());
-        project.setLastUpdatedBy(sessionUtil.getUserId(req));
+
         projectRepository.save(project);
 
         return project;
@@ -333,8 +309,6 @@ public class TestcaseService {
         Long userId = SessionUtil.getUserId();
         TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcaseGroup.setName(name);
-        testcaseGroup.setLastUpdateDate(LocalDateTime.now());
-        testcaseGroup.setLastUpdatedBy(userId);
         testcaseGroupRepository.save(testcaseGroup);
         return testcaseGroup;
     }
@@ -385,12 +359,7 @@ public class TestcaseService {
         }
 
         testcase.setItemOrder(maxItemOrder);
-        LocalDateTime now = LocalDateTime.now();
         testcase.setClosed(false);
-        testcase.setCreationDate(now);
-        testcase.setLastUpdateDate(now);
-        testcase.setCreatedBy(userId);
-        testcase.setLastUpdatedBy(userId);
 
         projectRepository.save(project);
         testcaseRepository.save(testcase);
@@ -407,13 +376,10 @@ public class TestcaseService {
         TestcaseGroup destinationTestcaseGroup = testcaseGroupRepository.findById(destinationGroupId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         targetTestcase.setItemOrder(0);
-        targetTestcase.setLastUpdateDate(now);
-        targetTestcase.setLastUpdatedBy(userId);
         targetTestcase.setTestcaseGroup(destinationTestcaseGroup);
 
         destinationTestcaseGroup.getTestcases().stream().forEach((testcase -> testcase.setItemOrder(testcase.getItemOrder() + 1)));
-        destinationTestcaseGroup.setLastUpdateDate(now);
-        destinationTestcaseGroup.setLastUpdatedBy(userId);
+
 
         testcaseGroupRepository.save(destinationTestcaseGroup);
         testcaseRepository.save(targetTestcase);
@@ -441,11 +407,8 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Testcase updateTestcaseName(String spaceCode, Long projectId, Long testcaseId, String name) {
-        Long userId = SessionUtil.getUserId();
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setName(name);
-        testcase.setLastUpdateDate(LocalDateTime.now());
-        testcase.setLastUpdatedBy(userId);
         testcaseRepository.save(testcase);
         return testcase;
     }
@@ -460,8 +423,6 @@ public class TestcaseService {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Long userId = SessionUtil.getUserId();
         testcase.setSeqId(org.getSeqId());
-        testcase.setLastUpdateDate(LocalDateTime.now());
-        testcase.setLastUpdatedBy(userId);
         testcaseRepository.save(testcase);
         return testcase;
 

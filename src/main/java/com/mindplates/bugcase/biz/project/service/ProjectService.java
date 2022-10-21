@@ -30,12 +30,7 @@ public class ProjectService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
-    public Project createProjectInfo(String spaceCode, Project project, Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        project.setCreationDate(now);
-        project.setLastUpdateDate(now);
-        project.setCreatedBy(userId);
-        project.setLastUpdatedBy(userId);
+    public Project createProjectInfo(String spaceCode, Project project) {
         project.setTestcaseSeq(0);
         project.setTestcaseGroupSeq(0);
         projectRepository.save(project);
@@ -44,10 +39,7 @@ public class ProjectService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
-    public Project updateProjectInfo(String spaceCode, Project project, Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        project.setLastUpdateDate(now);
-        project.setLastUpdatedBy(userId);
+    public Project updateProjectInfo(String spaceCode, Project project) {
         projectRepository.save(project);
         return project;
     }

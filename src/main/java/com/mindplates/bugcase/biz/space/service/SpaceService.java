@@ -51,12 +51,6 @@ public class SpaceService {
     @CacheEvict(key = "'supported'", value = CacheConfig.SPACE)
     @Transactional
     public Space createSpaceInfo(Space space, Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        space.setCreationDate(now);
-        space.setLastUpdateDate(now);
-        space.setCreatedBy(userId);
-        space.setLastUpdatedBy(userId);
-
         SpaceUser spaceUser = SpaceUser.builder().space(space).user(User.builder().id(userId).build()).role(RoleCode.ADMIN).build();
         space.setUsers(Arrays.asList(spaceUser));
         spaceRepository.save(space);
@@ -66,10 +60,7 @@ public class SpaceService {
 
     @CacheEvict(key = "#space.id", value = CacheConfig.SPACE)
     @Transactional
-    public Space updateSpaceInfo(Space space, Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        space.setLastUpdateDate(now);
-        space.setLastUpdatedBy(userId);
+    public Space updateSpaceInfo(Space space) {
         spaceRepository.save(space);
         return space;
     }
