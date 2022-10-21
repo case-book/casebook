@@ -39,6 +39,8 @@ public class TestcaseService {
 
     private final TestcaseItemRepository testcaseItemRepository;
 
+    private final TestcaseTemplateItemRepository testcaseTemplateItemRepository;
+
     private final TestcaseItemFileRepository testcaseItemFileRepository;
     private final ProjectRepository projectRepository;
 
@@ -58,6 +60,68 @@ public class TestcaseService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public List<TestcaseTemplate> saveTestcaseTemplateItemList(String spaceCode, Long projectId, List<TestcaseTemplate> testcaseTemplates, Long userId) {
 
+        /*
+        Project projectInfo = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        // 템플릿 삭제
+        testcaseTemplates.stream().filter((TestcaseTemplate::isDeleted)).forEach((testcaseTemplate -> {
+            projectInfo.getTestcaseTemplates().removeIf((t -> t.getId().equals(testcaseTemplate.getId())));
+            testcaseTemplateRepository.deleteById(testcaseTemplate.getId());
+        }));
+
+        // 신규 템플릿 추가
+        projectInfo.getTestcaseTemplates().addAll(testcaseTemplates.stream().filter(testcaseTemplate -> !testcaseTemplate.isDeleted() && testcaseTemplate.getId() == null).collect(Collectors.toList()));
+
+        // 기본 값 초기화
+        projectInfo.getTestcaseTemplates().forEach(testcaseTemplate -> testcaseTemplate.setIsDefault(false));
+
+        testcaseTemplates.stream()
+                .filter(testcaseTemplate -> !testcaseTemplate.isDeleted() && testcaseTemplate.getId() == null)
+                .forEach(testcaseTemplate -> {
+                    TestcaseTemplate next = projectInfo.getTestcaseTemplates().stream().filter(t-> t.getId().equals(testcaseTemplate.getId())).findAny().get();
+                    next.setName(testcaseTemplate.getName());
+                    next.setIsDefault(testcaseTemplate.getIsDefault());
+                });
+
+        // 템플릿 변경
+
+        testcaseTemplates.stream().filter(nextTestcaseTemplate -> !nextTestcaseTemplate.isDeleted() && nextTestcaseTemplate.getId() != null)
+                        .forEach(nextTestcaseTemplate -> {
+
+                            TestcaseTemplate currentTestcaseTemplate = projectInfo.getTestcaseTemplates().stream().filter(t-> t.getId().equals(nextTestcaseTemplate.getId())).findAny().get();
+                            currentTestcaseTemplate.setName(nextTestcaseTemplate.getName());
+                            currentTestcaseTemplate.setLastUpdatedBy(userId);
+                            currentTestcaseTemplate.setProject(projectInfo);
+
+                            // 템플릿 아이템 삭제
+                            List<TestcaseTemplateItem> currentTestcaseTemplateItems = currentTestcaseTemplate.getTestcaseTemplateItems();
+                            currentTestcaseTemplateItems.removeIf(currentTestcaseTemplateItem -> nextTestcaseTemplate.getTestcaseTemplateItems().stream().noneMatch(testcaseTemplateItem -> currentTestcaseTemplateItem.getId().equals(testcaseTemplateItem.getId())));
+
+                            // 템플릿 아이템 추가
+                            currentTestcaseTemplateItems.addAll(nextTestcaseTemplate.getTestcaseTemplateItems().stream().filter(nextTestcaseTemplateItem -> nextTestcaseTemplateItem.getId() == null).collect(Collectors.toList()));
+
+                            // 템플릿 아이템 변경
+                            nextTestcaseTemplate.getTestcaseTemplateItems().stream()
+                                    .filter(nextTestcaseTemplateItem -> nextTestcaseTemplateItem.getId() != null)
+                                    .forEach(nextTestcaseTemplateItem -> {
+                                        TestcaseTemplateItem currentTestcaseTemplateItem = currentTestcaseTemplateItems.stream().filter((currentItem -> currentItem.getId().equals(nextTestcaseTemplateItem.getId()))).findAny().get();
+                                        currentTestcaseTemplateItem.setType(nextTestcaseTemplateItem.getType());
+                                        currentTestcaseTemplateItem.setItemOrder(nextTestcaseTemplateItem.getItemOrder());
+                                        currentTestcaseTemplateItem.setLabel(nextTestcaseTemplateItem.getLabel());
+                                        currentTestcaseTemplateItem.setOptions(nextTestcaseTemplateItem.getOptions());
+                                        currentTestcaseTemplateItem.setSize(nextTestcaseTemplateItem.getSize());
+                                        currentTestcaseTemplateItem.setDefaultType(nextTestcaseTemplateItem.getDefaultType());
+                                        currentTestcaseTemplateItem.setDefaultValue(nextTestcaseTemplateItem.getDefaultValue());
+                                        currentTestcaseTemplateItem.setTestcaseTemplate(currentTestcaseTemplate);
+                                    });
+
+                        });
+
+        projectRepository.save(projectInfo);
+
+         */
+
+
         testcaseTemplates.stream().filter((TestcaseTemplate::isDeleted)).forEach((testcaseTemplate -> {
             testcaseTemplateRepository.delete(testcaseTemplate);
         }));
@@ -65,27 +129,40 @@ public class TestcaseService {
         LocalDateTime now = LocalDateTime.now();
 
         AtomicBoolean hasDefault = new AtomicBoolean(false);
-        testcaseTemplates.stream().filter((testcaseTemplate -> !testcaseTemplate.isDeleted())).forEach((testcaseTemplate -> {
+        List<TestcaseTemplate> testcaseTemplateList = testcaseTemplates
+                .stream()
+                .filter((testcaseTemplate -> !testcaseTemplate.isDeleted()))
+                .map((testcaseTemplate -> {
 
-            if (hasDefault.get() && testcaseTemplate.getIsDefault()) {
-                testcaseTemplate.setIsDefault(false);
-            }
+                    if (hasDefault.get() && testcaseTemplate.getIsDefault() != null && testcaseTemplate.getIsDefault()) {
+                        testcaseTemplate.setIsDefault(false);
+                    }
 
-            if (!hasDefault.get() && testcaseTemplate.getIsDefault()) {
-                hasDefault.set(true);
-            }
+                    if (!hasDefault.get() && testcaseTemplate.getIsDefault() != null && testcaseTemplate.getIsDefault()) {
+                        hasDefault.set(true);
+                    }
 
-            if (testcaseTemplate.getId() == null) {
-                testcaseTemplate.setCreationDate(now);
-                testcaseTemplate.setCreatedBy(userId);
-            }
+                    if (testcaseTemplate.getId() == null) {
+                        testcaseTemplate.setCreationDate(now);
+                        testcaseTemplate.setCreatedBy(userId);
+                    }
 
-            testcaseTemplate.setLastUpdateDate(now);
-            testcaseTemplate.setLastUpdatedBy(userId);
-        }));
+                    testcaseTemplate.setLastUpdateDate(now);
+                    testcaseTemplate.setLastUpdatedBy(userId);
+                    testcaseTemplate.setProject(Project.builder().id(projectId).build());
+
+                    testcaseTemplate.getTestcaseTemplateItems().forEach((testcaseTemplateItem -> {
+                        testcaseTemplateItem.setLastUpdateDate(now);
+                        testcaseTemplateItem.setLastUpdatedBy(userId);
+                    }));
+
+                    return testcaseTemplate;
+                })).collect(Collectors.toList());
 
 
-        testcaseTemplateRepository.saveAll(testcaseTemplates.stream().filter((testcaseTemplate -> !testcaseTemplate.isDeleted())).collect(Collectors.toList()));
+        testcaseTemplateRepository.saveAll(testcaseTemplateList);
+
+
         return testcaseTemplates;
     }
 

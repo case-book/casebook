@@ -2,7 +2,10 @@ package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
-import com.mindplates.bugcase.biz.testcase.entity.*;
+import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.*;
@@ -22,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -46,13 +48,9 @@ public class TestcaseController {
     @PutMapping("/config")
     public ResponseEntity<Resource> updateTestcaseConfig(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseConfigRequest testcaseConfigRequest, @ApiIgnore UserSession userSession) {
 
-        Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, projectId);
 
-        testcaseService.saveTestcaseTemplateItemList(spaceCode, projectId, testcaseConfigRequest.buildEntity(projectId), userSession.getId());
+        testcaseService.saveTestcaseTemplateItemList(spaceCode, projectId, testcaseConfigRequest.buildEntity(), userSession.getId());
 
-        if (!projectInfo.isPresent()) {
-            throw new ServiceException(HttpStatus.NOT_FOUND);
-        }
 
         return ResponseEntity.ok().build();
     }

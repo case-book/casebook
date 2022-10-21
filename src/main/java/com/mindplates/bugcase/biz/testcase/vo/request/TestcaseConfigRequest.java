@@ -12,10 +12,9 @@ public class TestcaseConfigRequest {
 
     private List<TestcaseTemplateRequest> testcaseTemplates;
 
-    public List<TestcaseTemplate> buildEntity(Long projectId) {
+    public List<TestcaseTemplate> buildEntity() {
         return testcaseTemplates.stream().map((testcaseTemplateRequest -> {
             TestcaseTemplate testcaseTemplate = testcaseTemplateRequest.buildEntity();
-            testcaseTemplate.setProject(Project.builder().id(projectId).build());
             return testcaseTemplate;
         })).collect(Collectors.toList());
     }
