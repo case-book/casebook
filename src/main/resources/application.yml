@@ -43,7 +43,7 @@ spring:
       max-request-size: 215MB
   jwt:
     secret: CHANGE_THIS_SECRET
-    expireMinutes: 60
+    expireMinutes: 1440
 server:
   port: 8080
   servlet:

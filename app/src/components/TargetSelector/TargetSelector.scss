@@ -9,8 +9,12 @@
   > div {
     align-self: center;
     font-size: 14px;
-    line-height: 0;
     color: $gray-600;
+
+    .selected-name {
+      display: inline-block;
+      padding-top: 2px;
+    }
     .icon {
       margin-left: 0.25rem;
     }
@@ -27,41 +31,37 @@
 
   .target-selector-list {
     position: absolute;
-    top: calc(100% - 24px);
+    top: calc(100% - 20px);
     right: -1rem;
-    background-color: #191919;
-    padding: 1rem;
-    line-height: 120%;
-    color: $white;
-    border-radius: 4px;
+    background-color: $white;
+    min-width: 100%;
+    max-width: 120px;
+    color: $black !important;
+    box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+    max-height: 201px;
+    overflow-y: auto;
+    border-radius: 2px;
 
     > ul {
       margin: 0;
       padding: 0;
       list-style: none;
-      font-size: 16px;
-      line-height: 120%;
 
       li {
         white-space: nowrap;
-        margin-bottom: 0.5rem;
         cursor: pointer;
 
         > span {
-          padding: 0.25rem 0.5rem;
+          padding: 0.5rem;
           display: inline-block;
           width: 100%;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+          line-height: 125%;
         }
 
         &:last-child {
           margin-bottom: 0;
-        }
-
-        &:hover {
-          > span {
-            border-radius: 2px;
-            color: $color-sunflower;
-          }
         }
 
         &.selected {
@@ -69,6 +69,12 @@
             background-color: $color-sunflower;
             color: $black;
             font-weight: bold;
+          }
+        }
+
+        &:hover {
+          > span {
+            color: $color-azure;
           }
         }
       }
