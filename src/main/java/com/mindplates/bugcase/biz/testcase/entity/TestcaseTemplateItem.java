@@ -5,10 +5,25 @@ import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.framework.converter.StringListConverter;
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
@@ -20,40 +35,40 @@ import java.util.List;
 @Setter
 public class TestcaseTemplateItem extends CommonEntity {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Column(name = "category", nullable = false, length = ColumnsDef.CODE)
-    @Enumerated(EnumType.STRING)
-    private TestcaseItemCategory category;
+  @Column(name = "category", nullable = false, length = ColumnsDef.CODE)
+  @Enumerated(EnumType.STRING)
+  private TestcaseItemCategory category;
 
-    @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
-    @Enumerated(EnumType.STRING)
-    private TestcaseItemType type;
+  @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
+  @Enumerated(EnumType.STRING)
+  private TestcaseItemType type;
 
-    @Column(name = "item_order")
-    private Integer itemOrder;
+  @Column(name = "item_order")
+  private Integer itemOrder;
 
-    @Column(name = "label", nullable = false, length = ColumnsDef.NAME)
-    private String label;
+  @Column(name = "label", nullable = false, length = ColumnsDef.NAME)
+  private String label;
 
-    @Column(name = "options", length = ColumnsDef.TEXT)
-    @Convert(converter = StringListConverter.class)
-    private List<String> options;
+  @Column(name = "options", length = ColumnsDef.TEXT)
+  @Convert(converter = StringListConverter.class)
+  private List<String> options;
 
-    @Column(name = "size")
-    private Integer size;
+  @Column(name = "size")
+  private Integer size;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_TEMPLATE_ITEM__TESTCASE_TEMPLATE"))
-    private TestcaseTemplate testcaseTemplate;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_TEMPLATE_ITEM__TESTCASE_TEMPLATE"))
+  private TestcaseTemplate testcaseTemplate;
 
-    @Column(name = "default_type")
-    private String defaultType;
+  @Column(name = "default_type")
+  private String defaultType;
 
-    @Column(name = "default_value")
-    private String defaultValue;
+  @Column(name = "default_value")
+  private String defaultValue;
 
 }

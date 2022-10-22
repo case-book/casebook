@@ -6,21 +6,21 @@ import lombok.Data;
 @Data
 public class TestcaseItemResponse {
 
-    private Long id;
-    private Long testcaseId;
-    private Long testcaseTemplateItemId;
-    private String value;
-    private String text;
+  private Long id;
+  private Long testcaseId;
+  private Long testcaseTemplateItemId;
+  private String value;
+  private String text;
 
-    private String type;
+  private String type;
 
-    public TestcaseItemResponse(TestcaseItem testcaseItem) {
-        this.id = testcaseItem.getId();
-        this.testcaseId = testcaseItem.getTestcase().getId();
-        this.testcaseTemplateItemId = testcaseItem.getTestcaseTemplateItem().getId();
-        this.value = testcaseItem.getValue();
-        this.text = testcaseItem.getText();
-        this.type = testcaseItem.getType();
-    }
+  public TestcaseItemResponse(TestcaseItem testcaseItem) {
+    this.id = testcaseItem.getId();
+    this.testcaseId = testcaseItem.getTestcase().getId();
+    this.testcaseTemplateItemId = testcaseItem.getTestcaseTemplateItem().getId();
+    this.value = testcaseItem.getValue();
+    this.text = testcaseItem.getText();
+    this.type = testcaseItem.getType();
+  }
 
 }

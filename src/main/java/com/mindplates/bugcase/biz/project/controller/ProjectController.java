@@ -9,19 +9,24 @@ import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.vo.UserSession;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -29,88 +34,88 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ProjectController {
 
-    private final ProjectService projectService;
+  private final ProjectService projectService;
 
-    private final TestcaseItemFileService projectFileService;
-    private final SpaceService spaceService;
+  private final TestcaseItemFileService projectFileService;
+  private final SpaceService spaceService;
 
 
-    @Operation(description = "스페이스 프로젝트 목록 조회")
-    @GetMapping("")
-    public List<ProjectListResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode) {
-        List<Project> projects = projectService.selectSpaceProjectList(spaceCode);
-        return projects.stream().map(ProjectListResponse::new).collect(Collectors.toList());
+  @Operation(description = "스페이스 프로젝트 목록 조회")
+  @GetMapping("")
+  public List<ProjectListResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode) {
+    List<Project> projects = projectService.selectSpaceProjectList(spaceCode);
+    return projects.stream().map(ProjectListResponse::new).collect(Collectors.toList());
+  }
+
+  @Operation(description = "프로젝트 생성")
+  @PostMapping("")
+  public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectRequest projectRequest) {
+
+    Project alreadyProject = projectService.selectByName(spaceCode, projectRequest.getName());
+    if (alreadyProject != null) {
+      throw new ServiceException("project.duplicated");
     }
 
-    @Operation(description = "프로젝트 생성")
-    @PostMapping("")
-    public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectRequest projectRequest) {
-
-        Project alreadyProject = projectService.selectByName(spaceCode, projectRequest.getName());
-        if (alreadyProject != null) {
-            throw new ServiceException("project.duplicated");
-        }
-
-        Project project = projectRequest.buildEntity();
-        Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
-        if (space.isPresent()) {
-            project.setSpace(space.get());
-        } else {
-            throw new ServiceException(HttpStatus.NOT_FOUND);
-        }
-
-        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project));
+    Project project = projectRequest.buildEntity();
+    Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
+    if (space.isPresent()) {
+      project.setSpace(space.get());
+    } else {
+      throw new ServiceException(HttpStatus.NOT_FOUND);
     }
 
-    @Operation(description = "프로젝트 수정")
-    @PutMapping("/{id}")
-    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectRequest projectRequest) {
+    return new ProjectResponse(projectService.createProjectInfo(spaceCode, project));
+  }
 
-        if (!id.equals(projectRequest.getId())) {
-            throw new ServiceException(HttpStatus.BAD_REQUEST);
-        }
+  @Operation(description = "프로젝트 수정")
+  @PutMapping("/{id}")
+  public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectRequest projectRequest) {
 
-        Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, id);
-
-        if (!projectInfo.isPresent()) {
-            throw new ServiceException(HttpStatus.NOT_FOUND);
-        }
-
-        Project nextProject = projectInfo.get();
-        nextProject.setName(projectRequest.getName());
-        nextProject.setActivated(projectRequest.getActivated());
-        nextProject.setDescription(projectRequest.getDescription());
-        nextProject.setToken(projectRequest.getToken());
-
-        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject));
+    if (!id.equals(projectRequest.getId())) {
+      throw new ServiceException(HttpStatus.BAD_REQUEST);
     }
 
-    @Operation(description = "프로젝트 삭제")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
-        Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        projectService.deleteProjectInfo(spaceCode, project);
-        return new ResponseEntity<>(HttpStatus.OK);
+    Optional<Project> projectInfo = projectService.selectProjectInfo(spaceCode, id);
+
+    if (!projectInfo.isPresent()) {
+      throw new ServiceException(HttpStatus.NOT_FOUND);
     }
 
-    @Operation(description = "프로젝트 조회")
-    @GetMapping("/{id}")
-    public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @ApiIgnore UserSession userSession) {
-        spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        boolean isSpaceMember = spaceService.selectIsSpaceMember(spaceCode, userSession.getId());
+    Project nextProject = projectInfo.get();
+    nextProject.setName(projectRequest.getName());
+    nextProject.setActivated(projectRequest.getActivated());
+    nextProject.setDescription(projectRequest.getDescription());
+    nextProject.setToken(projectRequest.getToken());
 
-        if (!isSpaceMember) {
-            throw new ServiceException("common.not.authorized");
-        }
+    return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject));
+  }
 
-        Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+  @Operation(description = "프로젝트 삭제")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
+    Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    projectService.deleteProjectInfo(spaceCode, project);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 
-        if (!project.isActivated()) {
-            throw new ServiceException(HttpStatus.LOCKED);
-        }
+  @Operation(description = "프로젝트 조회")
+  @GetMapping("/{id}")
+  public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
+    spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    boolean isSpaceMember = spaceService.selectIsSpaceMember(spaceCode, SessionUtil.getUserId());
 
-        return new ProjectResponse(project);
+    if (!isSpaceMember) {
+      throw new ServiceException("common.not.authorized");
     }
+
+    Project project = projectService.selectProjectInfo(spaceCode, id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+    if (!project.isActivated()) {
+      throw new ServiceException(HttpStatus.LOCKED);
+    }
+
+    return new ProjectResponse(project);
+  }
 
 
 }

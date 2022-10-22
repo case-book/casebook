@@ -10,6 +10,7 @@ import './Header.scss';
 import { setOption } from '@/utils/storageUtil';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
+import { setToken } from '@/utils/request';
 
 function Header({ className, theme }) {
   const {
@@ -31,7 +32,9 @@ function Header({ className, theme }) {
   const [projectList, setProjectList] = useState([]);
 
   useEffect(() => {
-    if (spaceCode) {
+    const spaceCodeRegex = /^[A-Z\d_]+$/;
+
+    if (spaceCodeRegex.test(spaceCode)) {
       ProjectService.selectProjectList(
         spaceCode,
         list => {
@@ -53,6 +56,7 @@ function Header({ className, theme }) {
     e.stopPropagation();
 
     setUserMenuOpen(false);
+    setToken('');
     setOption('user', 'info', 'uuid', '');
     UserService.logout(
       () => {

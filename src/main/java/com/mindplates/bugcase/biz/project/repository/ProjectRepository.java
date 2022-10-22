@@ -1,22 +1,21 @@
 package com.mindplates.bugcase.biz.project.repository;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    Optional<Project> findBySpaceCodeAndName(String spaceCode, String name);
-    Optional<Project> findBySpaceCodeAndId(String spaceCode, Long id);
+  Optional<Project> findBySpaceCodeAndName(String spaceCode, String name);
 
-    List<Project> findAllBySpaceCode(String spaceCode);
+  Optional<Project> findBySpaceCodeAndId(String spaceCode, Long id);
 
-    List<Project> findAllBySpaceId(Long spaceId);
+  List<Project> findAllBySpaceCode(String spaceCode);
 
-    Long countBySpaceId(Long spaceId);
+  List<Project> findAllBySpaceId(Long spaceId);
 
+  Long countBySpaceId(Long spaceId);
 
 
 }

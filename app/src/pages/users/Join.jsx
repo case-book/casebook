@@ -8,6 +8,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import useStores from '@/hooks/useStores';
 import { getOption } from '@/utils/storageUtil';
+import { setToken } from '@/utils/request';
 
 const labelMinWidth = '100px';
 
@@ -43,6 +44,7 @@ function Join() {
     }
 
     UserService.join(next, data => {
+      setToken(data.token);
       userStore.setUser(data);
       navigate('/');
     });

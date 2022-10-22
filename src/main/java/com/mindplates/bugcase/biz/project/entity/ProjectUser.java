@@ -1,11 +1,25 @@
 package com.mindplates.bugcase.biz.project.entity;
 
-import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.common.entity.RoleCode;
 import com.mindplates.bugcase.biz.user.entity.User;
-import lombok.*;
-
-import javax.persistence.*;
+import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.entity.UserRole;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Builder
@@ -16,20 +30,20 @@ import javax.persistence.*;
 @Table(name = "project_user")
 public class ProjectUser extends CommonEntity {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long id;
 
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private RoleCode role;
+  @Column(name = "role")
+  @Enumerated(EnumType.STRING)
+  private UserRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER__PROJECT"))
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER__PROJECT"))
+  private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT__USER"))
-    private Project project;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT__USER"))
+  private Project project;
 }

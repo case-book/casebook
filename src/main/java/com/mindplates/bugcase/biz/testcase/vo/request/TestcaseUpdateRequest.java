@@ -4,35 +4,34 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
-import lombok.Data;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
 
 @Data
 public class TestcaseUpdateRequest {
 
-    private Long id;
-    private Long testcaseGroupId;
+  private Long id;
+  private Long testcaseGroupId;
 
-    private Long projectId;
-    private Long testcaseTemplateId;
-    private String name;
-    private Integer itemOrder;
-    private Boolean closed;
+  private Long projectId;
+  private Long testcaseTemplateId;
+  private String name;
+  private Integer itemOrder;
+  private Boolean closed;
 
-    private List<TestcaseItemRequest> testcaseItems;
+  private List<TestcaseItemRequest> testcaseItems;
 
-    public Testcase buildEntity() {
-        return Testcase.builder()
-                .id(id)
-                .project(Project.builder().id(projectId).build())
-                .testcaseGroup(TestcaseGroup.builder().id(testcaseGroupId).build())
-                .testcaseTemplate(TestcaseTemplate.builder().id(testcaseTemplateId).build())
-                .name(name)
-                .itemOrder(itemOrder)
-                .closed(closed)
-                .testcaseItems(testcaseItems.stream().map(TestcaseItemRequest::buildEntity).collect(Collectors.toList()))
-                .build();
-    }
+  public Testcase buildEntity() {
+    return Testcase.builder()
+        .id(id)
+        .project(Project.builder().id(projectId).build())
+        .testcaseGroup(TestcaseGroup.builder().id(testcaseGroupId).build())
+        .testcaseTemplate(TestcaseTemplate.builder().id(testcaseTemplateId).build())
+        .name(name)
+        .itemOrder(itemOrder)
+        .closed(closed)
+        .testcaseItems(testcaseItems.stream().map(TestcaseItemRequest::buildEntity).collect(Collectors.toList()))
+        .build();
+  }
 }
