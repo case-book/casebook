@@ -1,8 +1,75 @@
 .header-wrapper {
-  _background: linear-gradient(to bottom, #000 0%, #000 20%, #111 50%);
+  box-shadow: #060606 0 0 4px 1px;
+  border-bottom: 1px solid #000;
+  background-color: #111;
+  background-color: #111111;
   padding: 0 20px;
   position: relative;
   z-index: 2;
+
+  &.hide {
+    .header-content {
+      .back-navigator,
+      .spacer,
+      .static-menu,
+      .user-menu {
+        display: none;
+      }
+
+      .logo {
+        font-size: 16px;
+        margin-right: 1rem;
+      }
+
+      .menu {
+        font-size: 13px;
+
+        ul {
+          li {
+            padding: 0 0.75rem;
+
+            &.selected {
+              background-color: $color-sunflower;
+              > a {
+                color: $black !important;
+                font-weight: bold;
+              }
+            }
+          }
+        }
+
+        .liner {
+          display: none !important;
+        }
+      }
+
+      .header-toggle {
+        flex-grow: 1;
+        justify-content: right;
+        height: 100%;
+
+        > button {
+          height: 100%;
+          background-color: $color-sunflower;
+          color: $black;
+          width: 40px;
+          border-radius: 0 !important;
+          border: none;
+          .icon {
+            font-size: 14px;
+            padding: 0;
+          }
+
+          &:hover {
+            background-color: darken($color-sunflower, 5%);
+          }
+        }
+      }
+
+      height: 29px;
+    }
+  }
+
   &.theme-black {
   }
 
@@ -13,6 +80,7 @@
     right: 0;
     bottom: 0;
     overflow: hidden;
+
     > span {
       color: rgba(255, 255, 255, 0.05);
       font-size: 70px;
@@ -22,7 +90,7 @@
   }
 
   > div.header-content {
-    height: 80px;
+    height: 79px;
     display: flex;
     max-width: $max-width;
     margin: 0 auto;
@@ -70,10 +138,12 @@
         > div {
           display: flex;
           height: 100%;
+
           &:hover {
             color: $color-sunflower;
             cursor: pointer;
           }
+
           > div {
             align-self: center;
           }
@@ -82,6 +152,7 @@
 
       &.spacer {
         align-self: center;
+
         > div {
           height: 18px;
           width: 1px;
@@ -107,9 +178,7 @@
     .static-menu,
     .menu {
       display: flex;
-      font-family: NanumGothic, sans-serif;
-      font-weight: lighter;
-      font-size: 20px;
+      font-family: NotoSans, sans-serif;
       font-size: 16px;
       height: 100%;
 
@@ -142,6 +211,7 @@
               align-self: center;
               height: 100%;
               display: flex;
+
               > span {
                 align-self: center;
                 padding: 4px 0;
@@ -169,7 +239,7 @@
                 position: absolute;
                 left: calc(100% + 8px);
                 white-space: nowrap;
-                top: 33px;
+                top: 26px;
               }
             }
 
@@ -198,7 +268,8 @@
       }
     }
 
-    .user-menu {
+    .user-menu,
+    .header-toggle {
       display: flex;
       animation: fade-in-animation 1s ease-out;
       animation-fill-mode: forwards;
@@ -210,7 +281,8 @@
 
       a {
         color: $white;
-        font-size: 18px;
+        font-family: $font-family-menu;
+
         &:hover {
           color: $color-sunflower;
         }
@@ -220,9 +292,13 @@
         margin-left: 1rem;
       }
 
-      .user-icon {
+      .icon {
         font-size: 20px;
       }
+    }
+
+    .header-toggle {
+      margin-left: 1rem;
     }
   }
 
@@ -241,11 +317,11 @@
       > div {
         position: absolute;
         top: 75px;
-        right: -22px;
+        right: 23px;
         background-color: $white;
 
-        @media (max-width: 1980px) {
-          right: 10px;
+        @media (max-width: 1960px) {
+          right: 43px;
         }
 
         .arrow {
@@ -254,10 +330,10 @@
           left: 0;
           right: 0;
           text-align: right;
-          padding-right: 35px;
+          padding-right: 40px;
 
-          @media (max-width: 1980px) {
-            padding-right: 21px;
+          @media (max-width: 1960px) {
+
           }
 
           > div {
@@ -282,11 +358,14 @@
           z-index: 1;
           line-height: 100%;
           background-color: $white;
+
           li {
             line-height: 100%;
+
             &:hover {
               background-color: $color-sunflower;
             }
+
             a {
               color: $black;
               font-weight: bold;
@@ -336,6 +415,7 @@
           li {
             a {
               color: $white;
+
               &:hover {
                 color: $color-sunflower;
               }

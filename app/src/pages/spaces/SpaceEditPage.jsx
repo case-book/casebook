@@ -85,6 +85,7 @@ function SpaceEditPage({ type }) {
             <BlockRow>
               <Label required>{t('이름')}</Label>
               <Input
+                placeholder="스페이스 이름을 입력해주세요."
                 value={space.name}
                 onChange={val =>
                   setSpace({
@@ -101,6 +102,8 @@ function SpaceEditPage({ type }) {
               <Input
                 className="code"
                 value={space.code}
+                placeholder="영문자 및 숫자, -, _ 기호로 코드를 입력할 수 있습니다."
+                pattern="^[A-Z\d_-]+$"
                 onChange={val =>
                   setSpace({
                     ...space,

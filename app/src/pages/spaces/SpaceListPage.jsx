@@ -17,7 +17,7 @@ function SpaceListPage() {
   }, []);
 
   return (
-    <Page className="space-list-page-wrapper" list>
+    <Page className="space-list-page-wrapper" list wide>
       <PageTitle
         className="page-title"
         links={[

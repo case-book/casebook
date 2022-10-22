@@ -70,6 +70,13 @@ public class ResourceVoter extends WebExpressionVoter {
         } else {
           String spaceInfo = spacesMatcher.group(1);
 
+          if (spaceInfo.indexOf('/') > -1) {
+            String[] values = spaceInfo.split("/");
+            if (values.length > 0) {
+              spaceInfo = values[0];
+            }
+          }
+
           if (!StringUtils.isBlank(spaceInfo) && !"my".equals(spaceInfo)) {
             boolean isUser = spaceService.selectIsSpaceMember(spaceInfo, userId);
             if (isUser) {

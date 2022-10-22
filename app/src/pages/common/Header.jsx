@@ -15,7 +15,7 @@ import { setToken } from '@/utils/request';
 function Header({ className, theme }) {
   const {
     userStore: { isLogin, setUser, user },
-    controlStore: { hideHeader },
+    controlStore: { hideHeader, setHideHeader },
     contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected },
   } = useStores();
 
@@ -32,7 +32,7 @@ function Header({ className, theme }) {
   const [projectList, setProjectList] = useState([]);
 
   useEffect(() => {
-    const spaceCodeRegex = /^[A-Z\d_]+$/;
+    const spaceCodeRegex = /^[A-Z\d_-]+$/;
 
     if (spaceCodeRegex.test(spaceCode)) {
       ProjectService.selectProjectList(
@@ -146,7 +146,6 @@ function Header({ className, theme }) {
             </ul>
           </div>
         </div>
-
         <div className={`static-menu ${isProjectSelected ? 'project-selected' : ''}`}>
           {isLogin && (
             <div>
@@ -240,19 +239,32 @@ function Header({ className, theme }) {
           {isLogin && (
             <Button
               rounded
-              outline
               onClick={e => {
                 e.preventDefault();
                 setUserMenuOpen(true);
               }}
             >
-              <div className="user-icon">
+              <div className="icon">
                 <i className="fa-solid fa-skull" />
               </div>
             </Button>
           )}
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
           {!isLogin && <Link to="/users/join">{t('회원가입')}</Link>}
+        </div>
+        <div className="header-toggle">
+          <Button
+            rounded
+            onClick={e => {
+              e.preventDefault();
+              setHideHeader(!hideHeader);
+            }}
+          >
+            <div className="icon">
+              {!hideHeader && <i className="fa-solid fa-turn-up" />}
+              {hideHeader && <i className="fa-solid fa-arrow-down" />}
+            </div>
+          </Button>
         </div>
       </div>
       {userMenuOpen && (
