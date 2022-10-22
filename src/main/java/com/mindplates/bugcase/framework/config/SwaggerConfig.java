@@ -15,12 +15,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Import(SpringDataRestConfiguration.class)
 public class SwaggerConfig {
 
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.mindplates.bugcase.biz"))
-                .paths(PathSelectors.any())
-                .build();
-    }
+  @Bean
+  public Docket api() {
+    return new Docket(DocumentationType.SWAGGER_2)
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("com.mindplates.bugcase.biz"))
+        .paths(PathSelectors.any())
+        .build();
+  }
 }

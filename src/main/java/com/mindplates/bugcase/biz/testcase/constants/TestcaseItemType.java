@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum TestcaseItemType {
-    CHECKBOX("CHECKBOX"),
-    RADIO("RADIO"),
-    TEXT("TEXT"),
-    NUMBER("NUMBER"),
-    USER("USER"),
-    SELECT("SELECT"),
-    URL("URL"),
-    EDITOR("EDITOR"),;
-    private String type;
+  CHECKBOX("CHECKBOX"),
+  RADIO("RADIO"),
+  TEXT("TEXT"),
+  NUMBER("NUMBER"),
+  USER("USER"),
+  SELECT("SELECT"),
+  URL("URL"),
+  EDITOR("EDITOR"),
+  ;
+  private String type;
 
 }

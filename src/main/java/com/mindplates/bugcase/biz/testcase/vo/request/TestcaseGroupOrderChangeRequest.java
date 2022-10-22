@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class TestcaseGroupOrderChangeRequest {
 
-    private Long targetId;
-    private Long destinationId;
-    private boolean toChildren;
-    
+  private Long targetId;
+  private Long destinationId;
+  private boolean toChildren;
+
 
 }

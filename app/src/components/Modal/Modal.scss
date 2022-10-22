@@ -56,8 +56,8 @@
     }
 
     .modal-header-wrapper {
-      font-size: 20px;
-      padding: 2rem;
+      font-size: 18px;
+      padding: 1.5rem;
       display: flex;
       background-color: #282828;
       border-radius: 4px 4px 0 0;
@@ -72,15 +72,15 @@
 
       .close-button {
         position: relative;
-        height: 23px;
-        width: 23px;
+        height: 28px;
+        width: 28px;
+        line-height: 0;
         span {
-          width: 34px;
-          height: 34px;
+          width: 28px;
+          height: 28px;
           cursor: pointer;
           display: inline-block;
           position: absolute;
-          top: -6px;
 
           svg {
             width: 1em;
@@ -104,16 +104,21 @@
     }
 
     .modal-body-wrapper {
-      padding: 2rem;
+      padding: 1.5rem;
     }
 
     .modal-footer-wrapper {
       text-align: center;
-      padding: 0 2rem;
-      > div {
-        border-top: 1px solid $gray-700;
-        padding: 2rem 0;
+      padding: 0 1.5rem 1.5rem;
+      .bottom-liner {
+        height: 3px;
+        background-color: #000;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+        margin-bottom: 1.5rem;
+      }
 
+      > div {
         > button {
           margin-right: 1rem;
           min-width: 60px;

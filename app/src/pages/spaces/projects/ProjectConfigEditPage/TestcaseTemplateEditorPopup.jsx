@@ -308,9 +308,11 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                     )}
                     {caseTemplateItems?.length > 0 && (
                       <ul>
-                        {caseTemplateItems?.map((testcaseTemplateItem, inx) => {
-                          return getItem(testcaseTemplateItem, inx);
-                        })}
+                        {caseTemplateItems
+                          ?.sort((a, b) => a.itemOrder - b.itemOrder)
+                          .map((testcaseTemplateItem, inx) => {
+                            return getItem(testcaseTemplateItem, inx);
+                          })}
                       </ul>
                     )}
                   </div>

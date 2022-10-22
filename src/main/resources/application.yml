@@ -41,6 +41,9 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 200MB
       max-request-size: 215MB
+  jwt:
+    secret: CHANGE_THIS_SECRET
+    expireMinutes: 60
 server:
   port: 8080
   servlet:

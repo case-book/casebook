@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum RoleCode {
+public enum SystemRole {
 
-    SUPER_MAN("ROOT"),
-    ADMIN("ADMIN"),
-    MEMBER("MEMBER");
-    private String code;
+  ROLE_ADMIN("ROLE_ADMIN"),
+  ROLE_USER("ROLE_USER");
+  private String code;
 
 }

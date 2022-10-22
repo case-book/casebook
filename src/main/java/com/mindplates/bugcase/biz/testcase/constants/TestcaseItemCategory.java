@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum TestcaseItemCategory {
-    CASE("CASE"),
-    RESULT("RESULT");
-    private String category;
+  CASE("CASE"),
+  RESULT("RESULT");
+  private String category;
 
 }

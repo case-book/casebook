@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
+import { setToken } from '@/utils/request';
 
 function Login() {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ function Login() {
   const onSubmit = e => {
     e.preventDefault();
     UserService.login(info, data => {
+      setToken(data.token);
       userStore.setUser(data);
       navigate('/');
     });

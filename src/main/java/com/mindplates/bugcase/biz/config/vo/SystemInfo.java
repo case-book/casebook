@@ -6,6 +6,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class SystemInfo {
-    private String name;
-    private String version;
+
+  private String name;
+  private String version;
 }

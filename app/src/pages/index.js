@@ -11,7 +11,7 @@ import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
 import ProjectOverviewInfoPage from '@/pages/spaces/projects/ProjectOverviewInfoPage';
 import ProjectConfigInfoPage from '@/pages/spaces/projects/ProjectConfigInfoPage';
-import EditProjectConfig from '@/pages/spaces/projects/ProjectConfigEditPage';
+import EditProjectConfig from '@/pages/spaces/projects/ProjectConfigEditPage/ProjectConfigEditPage';
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
 import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';

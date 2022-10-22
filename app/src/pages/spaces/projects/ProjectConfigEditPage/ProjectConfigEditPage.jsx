@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Form, Page, PageButtons, PageContent, PageTitle, Tag, Title } from '@/components';
 import TestcaseService from '@/services/TestcaseService';
 import './ProjectConfigEditPage.scss';
-import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/ProjectConfigEditPage/TestcaseTemplateEditorPopup';
 
 function ProjectConfig() {
   const { t } = useTranslation();
@@ -56,6 +56,8 @@ function ProjectConfig() {
   const onChangeTestcaseTemplate = (inx, template) => {
     const nextProject = { ...project };
     nextProject.testcaseTemplates[inx] = template;
+
+    console.log(template);
     setProject(nextProject);
   };
 
