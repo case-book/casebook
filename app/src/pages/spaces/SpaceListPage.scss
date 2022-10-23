@@ -133,14 +133,6 @@
                     }
                   }
 
-                  &.bugs {
-                    > div {
-                      background-color: $color-tangerine;
-                      border: 1px solid transparent;
-                      color: $white;
-                    }
-                  }
-
                   &.projects {
                     > div {
                       background-color: $color-storm;
@@ -168,10 +160,6 @@
                   margin-top: 0.5rem;
                   font-size: 40px;
                   font-family: Rowdies, sans-serif;
-
-                  &.bugs {
-                    font-family: RubikWetPaint, sans-serif;
-                  }
                 }
               }
             }

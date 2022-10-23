@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import './BlockRow.scss';
 
 function BlockRow({ className, children, expand }) {
-  return <div className={`block-row-wrapper ${className} ${expand ? 'expand' : ''}`}>{children}</div>;
+  return (
+    <div className={`block-row-wrapper ${className} ${expand ? 'expand' : ''}`}>
+      <div className="block-row-content">{children}</div>
+      <div className="block-row-liner" />
+    </div>
+  );
 }
 
 BlockRow.defaultProps = {

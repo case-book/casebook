@@ -23,6 +23,8 @@
   &.color-black {
     color: $white;
     background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #494c56;
+    background-color: #121212;
   }
 
   &:focus {
@@ -52,6 +54,7 @@
 
   &.size-md {
     font-size: 16px;
+    padding: 12px;
   }
 
   &.size-sm {

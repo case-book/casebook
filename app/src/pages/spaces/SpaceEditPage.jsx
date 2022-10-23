@@ -117,6 +117,7 @@ function SpaceEditPage({ type }) {
             <BlockRow>
               <Label>{t('설명')}</Label>
               <TextArea
+                placeholder="스페이스에 대한 설명을 입력해주세요."
                 value={space.description || ''}
                 rows={4}
                 onChange={val => {
@@ -128,10 +129,11 @@ function SpaceEditPage({ type }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label>{t('활성화')}</Label>
+              <Label>{t('사용 여부')}</Label>
               <CheckBox
                 type="checkbox"
                 value={space.activated}
+                label="전체 스페이스의 기능을 ON/OFF 할 수 있습니다."
                 onChange={val =>
                   setSpace({
                     ...space,
@@ -145,6 +147,7 @@ function SpaceEditPage({ type }) {
               <Text inline>{space.token}</Text>
               <Button
                 rounded
+                size="sm"
                 onClick={() => {
                   setSpace({
                     ...space,
@@ -158,6 +161,7 @@ function SpaceEditPage({ type }) {
           </Block>
           <PageButtons
             onDelete={type === 'edit' ? onDelete : null}
+            onDeleteText="스페이스 삭제"
             onCancel={() => {
               if (type === 'edit') {
                 navigate(`/spaces/${id}/info`);

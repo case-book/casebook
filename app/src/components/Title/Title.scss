@@ -1,10 +1,20 @@
 .title-wrapper {
-  display: flex;
-  padding: 1rem 0.5rem 2rem;
-  font-weight: bold;
+  > .title-content {
+    padding: 1rem 0.5rem calc(2rem - 4px);
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+  }
 
-  &.border {
-    border-bottom: 1px solid #2e2e2e;
+  > .title-bottom-liner {
+    height: 4px;
+    background-color: #030303;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: none;
+    border-right: none;
+    border-radius: 3px;
+
+    width: 100%;
   }
 
   > div {

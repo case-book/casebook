@@ -140,19 +140,6 @@ function SpaceListPage() {
                         </div>
                         <div>
                           <div>
-                            <div className="icon bugs">
-                              <div>
-                                <i className="fa-solid fa-shield-virus" />
-                              </div>
-                            </div>
-                            <div className="label bugs">BUGS</div>
-                            <div className="counter bugs">
-                              <div>{Math.floor(Math.random() * 20)}</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
                             <div className="icon users">
                               <div>
                                 <i className="fa-solid fa-shield-cat" />
