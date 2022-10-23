@@ -5,10 +5,19 @@
   flex-direction: column;
   max-width: $max-width;
   _padding: 32px 64px;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #191919;
+  border-radius: 4px;
 
   &.flex {
     display: flex;
     flex-direction: column;
+  }
+}
+
+.list-page {
+  .page-content-wrapper {
+    background-color: transparent;
+    padding: 0;
   }
 }

@@ -1,218 +1,195 @@
 .space-list-page-wrapper {
-  ul.space-card-list {
-    vertical-align: top;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .space-list-content {
+    display: flex;
+    width: 100%;
 
-    li {
-      display: inline-flex;
-      flex-direction: column;
-      width: calc((100% - 2rem) / 3);
-      vertical-align: top;
-      opacity: 0;
-      animation: fade-in-animation 0.7s ease-out;
-      animation-fill-mode: forwards;
-      margin-right: 1rem;
-      margin-bottom: 1rem;
+    .arrow {
+      align-self: center;
+      height: 400px;
+      display: flex;
+      padding-bottom: 1rem;
+      button {
+        background-color: transparent;
+        color: $white;
+        width: 50px;
+        height: 100%;
+        font-size: 30px;
 
-      &:nth-child(3n) {
-        margin-right: 0;
-      }
-
-      .space-card {
-        height: 376px;
         &:hover {
-          .name-and-code {
-            .name {
-              color: $link-color;
-            }
-          }
-        }
-        .config-button {
-          position: absolute;
-          right: 0;
-          top: 0;
-        }
-
-        .name-and-code {
-          text-align: center;
-          padding-bottom: 1rem;
-          padding-top: 1rem;
-          font-weight: bold;
-
-          .name {
-            font-size: 20px;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding-right: 2rem;
-            padding-left: 2rem;
-          }
-        }
-
-        .description {
-          padding: 0;
-          text-align: center;
-          flex-grow: 1;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          background-color: $white;
-          max-height: 76px;
-          min-height: 76px;
-          display: flex;
-          justify-content: center;
-          border-radius: 8px;
-          overflow-y: auto;
-          margin-bottom: 1rem;
-          font-size: 14px;
-          > div {
-            align-self: center;
-          }
-        }
-
-        .counter-info {
-          height: 163px;
-          display: flex;
-          background-color: $white;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          border-radius: 8px;
-
-          > div {
-            flex: 1 1 0;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            > div {
-              align-self: center;
-            }
-
-            .icon {
-              font-size: 20px;
-
-              > div {
-                display: inline-flex;
-                width: 34px;
-                height: 34px;
-                justify-content: center;
-                background-color: $white;
-                border: 1px solid rgba(0, 0, 0, 0.3);
-                border-radius: 50%;
-                i {
-                  align-self: center;
-                }
-              }
-
-              &.bugs {
-                > div {
-                  background-color: $color-tangerine;
-                  border: 1px solid transparent;
-                  color: $white;
-                }
-              }
-
-              &.projects {
-                > div {
-                  background-color: $color-storm;
-                  border: 1px solid transparent;
-                  color: $white;
-                }
-              }
-
-              &.users {
-                > div {
-                  background-color: $color-factory-yellow;
-                  border: 1px solid transparent;
-                  color: $black;
-                }
-              }
-            }
-
-            .label {
-              font-size: 12px;
-              margin-top: 0.25rem;
-              font-weight: bold;
-            }
-
-            .counter {
-              margin-top: 0.5rem;
-              font-size: 40px;
-              font-family: Rowdies, sans-serif;
-
-              &.bugs {
-                font-family: RubikWetPaint, sans-serif;
-              }
-            }
-          }
-        }
-
-        .new-space-card-content {
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          background-color: transparent !important;
-          > div {
-            align-self: center;
-            background-color: transparent;
-
-            > div {
-              text-align: center;
-              background-color: transparent;
-            }
-
-            .plus-icon {
-              font-size: 40px;
-              margin-bottom: 1rem;
-            }
-
-            font-size: 16px;
-          }
-
-          &:hover {
-            color: $link-color;
-          }
+          color: $color-sunflower;
         }
       }
     }
-  }
 
-  &.wide {
-    ul.space-card-list {
-      li {
-        width: calc((100% - 4rem) / 5);
+    .space-card-list {
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      display: flex;
 
-        &:nth-child(5n) {
-          margin-right: 0;
-        }
+      > ul {
+        vertical-align: top;
+        list-style: none;
+        padding: 0 1rem;
+        margin: 0;
 
-        &:nth-child(3n) {
+        li {
+          display: inline-flex;
+          flex-direction: column;
+          width: 360px;
+          vertical-align: top;
+          opacity: 0;
+          animation: fade-in-animation 0.7s ease-out;
+          animation-fill-mode: forwards;
           margin-right: 1rem;
-        }
+          margin-bottom: 1rem;
 
-        @media (max-width: 1920px) {
-          width: calc((100% - 3rem) / 4);
-          &:nth-child(5n) {
-            margin-right: 1rem;
-          }
-
-          &:nth-child(4n) {
+          &:last-child {
             margin-right: 0;
           }
-        }
 
-        @media (max-width: 1600px) {
-          width: calc((100% - 2rem) / 3);
-          &:nth-child(5n) {
-            margin-right: 1rem;
-          }
+          .space-card {
+            height: 376px;
+            &:hover {
+              .name-and-code {
+                .name {
+                  color: $link-color;
+                }
+              }
+            }
+            .config-button {
+              position: absolute;
+              right: 0;
+              top: 0;
+            }
 
-          &:nth-child(4n) {
-            margin-right: 1rem;
-          }
+            .name-and-code {
+              text-align: center;
+              padding-bottom: 1rem;
+              padding-top: 1rem;
+              font-weight: bold;
 
-          &:nth-child(3n) {
-            margin-right: 0;
+              .name {
+                font-size: 20px;
+                margin-bottom: 4px;
+                white-space: nowrap;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding-right: 2rem;
+                padding-left: 2rem;
+              }
+            }
+
+            .description {
+              padding: 0;
+              text-align: center;
+              flex-grow: 1;
+              border: 1px solid rgba(0, 0, 0, 0.1);
+              background-color: $white;
+              max-height: 76px;
+              min-height: 76px;
+              display: flex;
+              justify-content: center;
+              border-radius: 8px;
+              overflow-y: auto;
+              margin-bottom: 1rem;
+              font-size: 14px;
+              > div {
+                align-self: center;
+              }
+            }
+
+            .counter-info {
+              height: 163px;
+              display: flex;
+              background-color: $white;
+              border: 1px solid rgba(0, 0, 0, 0.1);
+              border-radius: 8px;
+
+              > div {
+                flex: 1 1 0;
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                > div {
+                  align-self: center;
+                }
+
+                .icon {
+                  font-size: 20px;
+
+                  > div {
+                    display: inline-flex;
+                    width: 34px;
+                    height: 34px;
+                    justify-content: center;
+                    background-color: $white;
+                    border: 1px solid rgba(0, 0, 0, 0.3);
+                    border-radius: 50%;
+                    i {
+                      align-self: center;
+                    }
+                  }
+
+                  &.projects {
+                    > div {
+                      background-color: $color-storm;
+                      border: 1px solid transparent;
+                      color: $white;
+                    }
+                  }
+
+                  &.users {
+                    > div {
+                      background-color: $color-factory-yellow;
+                      border: 1px solid transparent;
+                      color: $black;
+                    }
+                  }
+                }
+
+                .label {
+                  font-size: 12px;
+                  margin-top: 0.25rem;
+                  font-weight: bold;
+                }
+
+                .counter {
+                  margin-top: 0.5rem;
+                  font-size: 40px;
+                  font-family: Rowdies, sans-serif;
+                }
+              }
+            }
+
+            .new-space-card-content {
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              background-color: transparent !important;
+              > div {
+                align-self: center;
+                background-color: transparent;
+
+                > div {
+                  text-align: center;
+                  background-color: transparent;
+                }
+
+                .plus-icon {
+                  font-size: 40px;
+                  margin-bottom: 1rem;
+                }
+
+                font-size: 16px;
+              }
+
+              &:hover {
+                color: $link-color;
+              }
+            }
           }
         }
       }

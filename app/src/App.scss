@@ -5,6 +5,26 @@
     min-height: 100vh;
 
     .main-content {
+      .bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        display: none;
+        > div {
+          position: absolute;
+          top: -30%;
+          left: -20%;
+          width: 1200px;
+          height: 1200px;
+          background: radial-gradient(#000, #060606, #060606);
+          background: #030303;
+          border-radius: 50%;
+          _transition: all 10s;
+        }
+      }
       .transition-group {
         position: relative;
 

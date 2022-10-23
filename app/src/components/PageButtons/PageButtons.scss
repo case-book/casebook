@@ -2,7 +2,7 @@
   text-align: center;
   padding: 0;
   max-width: $max-width;
-  margin: 4rem auto 0;
+  margin: 2rem auto 0;
 
   .bottom-liner {
     margin-bottom: 1.5rem;
@@ -44,7 +44,12 @@
       left: 1rem;
 
       > button {
-        color: $danger;
+        background: transparent;
+        color: $danger !important;
+        &:hover {
+          background-color: $danger !important;
+          color: $white !important;
+        }
       }
     }
 

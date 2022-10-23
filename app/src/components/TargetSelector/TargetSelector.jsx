@@ -35,7 +35,7 @@ function TargetSelector({ className, value, list, onClick }) {
       }}
     >
       <div>
-        <span className="selected-name">{text?.value || value}</span>
+        <span className="selected-name">{text?.value}</span>
         <span className="icon">
           <i className="fa-solid fa-chevron-down" />
         </span>
@@ -44,45 +44,6 @@ function TargetSelector({ className, value, list, onClick }) {
       {opened && (
         <div className="target-selector-list g-no-select">
           <ul>
-            {list?.map(target => {
-              return (
-                <li
-                  key={target.key}
-                  className={target.key === value ? 'selected' : ''}
-                  onClick={() => {
-                    onClick(target.key);
-                  }}
-                >
-                  <span>{target.value}</span>
-                </li>
-              );
-            })}
-            {list?.map(target => {
-              return (
-                <li
-                  key={target.key}
-                  className={target.key === value ? 'selected' : ''}
-                  onClick={() => {
-                    onClick(target.key);
-                  }}
-                >
-                  <span>{target.value}</span>
-                </li>
-              );
-            })}
-            {list?.map(target => {
-              return (
-                <li
-                  key={target.key}
-                  className={target.key === value ? 'selected' : ''}
-                  onClick={() => {
-                    onClick(target.key);
-                  }}
-                >
-                  <span>{target.value}</span>
-                </li>
-              );
-            })}
             {list?.map(target => {
               return (
                 <li

@@ -24,7 +24,7 @@ function TextArea({ className, value, maxLength, size, disabled, border, require
 
 TextArea.defaultProps = {
   className: '',
-  size: 'lg',
+  size: 'md',
   value: '',
   required: false,
   disabled: false,

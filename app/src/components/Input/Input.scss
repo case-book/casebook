@@ -2,7 +2,7 @@
   display: block;
   position: relative;
   width: 100%;
-  padding: 8px;
+  padding: 0 8px;
   height: auto;
   z-index: 2;
   border-radius: 2px;
@@ -73,6 +73,7 @@
   &.size-md {
     font-size: 16px;
     height: $md-height;
+    padding: 0 12px;
   }
 
   &.size-sm {

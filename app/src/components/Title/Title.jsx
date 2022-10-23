@@ -5,8 +5,11 @@ import './Title.scss';
 function Title({ className, children, type, control, border }) {
   return (
     <div className={`title-wrapper ${type} ${className} ${border ? 'border' : ''}`}>
-      <div className="title-text">{children}</div>
-      {control && <div className="control">{control}</div>}
+      <div className="title-content">
+        <div className="title-text">{children}</div>
+        {control && <div className="control">{control}</div>}
+      </div>
+      {border && <div className="title-bottom-liner" />}
     </div>
   );
 }

@@ -38,6 +38,9 @@ function App() {
         <div className="app-content">
           <Header theme={theme} />
           <main className="main-content">
+            <div className="bg">
+              <div />
+            </div>
             {isLogin && (
               <TransitionGroup className="transition-group">
                 <CSSTransition key={location.pathname} classNames="fade" timeout={500}>

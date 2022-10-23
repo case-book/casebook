@@ -42,7 +42,7 @@ Label.defaultProps = {
   minWidth: '100px',
   required: false,
   separator: false,
-  size: 'lg',
+  size: 'md',
   verticalAlign: 'center',
   children: null,
 };
