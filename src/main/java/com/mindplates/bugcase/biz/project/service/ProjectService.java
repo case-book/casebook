@@ -52,6 +52,10 @@ public class ProjectService {
     return projectRepository.findAllBySpaceCode(spaceCode);
   }
 
+  public List<Project> selectSpaceProjectList(Long spaceId) {
+    return projectRepository.findAllBySpaceId(spaceId);
+  }
+
   public Long selectSpaceProjectCount(Long spaceId) {
     return projectRepository.countBySpaceId(spaceId);
   }

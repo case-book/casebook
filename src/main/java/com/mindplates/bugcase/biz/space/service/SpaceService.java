@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.biz.space.service;
 
+import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
@@ -29,6 +31,8 @@ public class SpaceService {
 
   private final SpaceUserRepository spaceUserRepository;
 
+  private final ProjectService projectService;
+
   @Cacheable(key = "#id", value = CacheConfig.SPACE)
   public Optional<Space> selectSpaceInfo(Long id) {
     return spaceRepository.findById(id);
@@ -42,6 +46,11 @@ public class SpaceService {
   @CacheEvict(key = "#id", value = CacheConfig.SPACE)
   @Transactional
   public void deleteSpaceInfo(Long id) {
+    Space space = spaceRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    List<Project> projects = projectService.selectSpaceProjectList(id);
+    for (Project project : projects) {
+      projectService.deleteProjectInfo(space.getCode(), project);
+    }
     spaceRepository.deleteById(id);
   }
 
