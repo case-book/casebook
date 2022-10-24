@@ -4,12 +4,18 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
 import { useResizeDetector } from 'react-resize-detector';
+import useStores from '@/hooks/useStores';
 import './SpaceListPage.scss';
 
 const scrollUnit = 360 + 16;
 
 function SpaceListPage() {
   const { t } = useTranslation();
+
+  const {
+    configStore: { version },
+  } = useStores();
+
   const navigate = useNavigate();
   const [spaces, setSpaces] = useState([]);
   const listContentElement = useRef(null);
@@ -197,6 +203,15 @@ function SpaceListPage() {
               </Button>
             </div>
           )}
+        </div>
+        <div className="version">
+          <div className="app-version">
+            {process.env.REACT_APP_NAME}-{process.env.REACT_APP_VERSION}
+          </div>
+          <div className="slash">/</div>
+          <div className="api-version">
+            {version?.name}-{version?.version}
+          </div>
         </div>
       </PageContent>
     </Page>
