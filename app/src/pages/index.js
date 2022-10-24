@@ -18,6 +18,7 @@ import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 import ProjectReportInfoPage from '@/pages/spaces/projects/ProjectReportInfoPage';
 import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
 import ProjectTestrunInfoPage from '@/pages/spaces/projects/ProjectTestrunInfoPage';
+import SystemInfoPage from '@/pages/configs/SystemInfoPage';
 
 export {
   ProjectConfigInfoPage,
@@ -38,4 +39,5 @@ export {
   ProjectReportInfoPage,
   ProjectTestcaseInfoPage,
   ProjectTestrunInfoPage,
+  SystemInfoPage,
 };

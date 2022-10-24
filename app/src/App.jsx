@@ -9,6 +9,7 @@ import { MENUS } from '@/constants/menu';
 import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import './App.scss';
+import ConfigsRoutes from '@/pages/configs';
 
 function App() {
   const {
@@ -49,6 +50,7 @@ function App() {
                     <Route path="/users/*" element={<UsersRoutes />} />
                     <Route path="/spaces/*" element={<SpacesRoutes />} />
                     <Route path="/projects/*" element={<ProjectsRoutes />} />
+                    <Route path="/configs/*" element={<ConfigsRoutes />} />
                     <Route path="*" element={<Message code="404" />} />
                   </Routes>
                 </CSSTransition>
