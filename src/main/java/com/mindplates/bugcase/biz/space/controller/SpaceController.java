@@ -51,8 +51,8 @@ public class SpaceController {
 
   @Operation(description = "스페이스 목록 조회")
   @GetMapping("")
-  public List<SimpleSpaceResponse> selectSpaceList() {
-    List<Space> spaces = spaceService.selectSpaceList();
+  public List<SimpleSpaceResponse> selectSpaceList(@RequestParam(value = "query") String query) {
+    List<Space> spaces = spaceService.selectSpaceList(query);
     return spaces.stream().map(SimpleSpaceResponse::new).collect(Collectors.toList());
   }
 
