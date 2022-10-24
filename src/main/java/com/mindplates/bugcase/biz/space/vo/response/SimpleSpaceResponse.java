@@ -18,12 +18,16 @@ public class SimpleSpaceResponse {
   private String name;
   private String code;
   private Boolean activated;
+  private Boolean allowSearch;
+  private Boolean allowAutoJoin;
 
   public SimpleSpaceResponse(Space space) {
     this.id = space.getId();
     this.name = space.getName();
     this.code = space.getCode();
     this.activated = space.getActivated();
+    this.allowSearch = space.getAllowSearch();
+    this.allowAutoJoin = space.getAllowAutoJoin();
   }
 
 

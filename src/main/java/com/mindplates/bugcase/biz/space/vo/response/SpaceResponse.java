@@ -24,8 +24,11 @@ public class SpaceResponse {
   private Boolean activated;
   private String token;
   private List<SimpleSpaceUserResponse> users;
-
   private Long projectCount;
+
+  private Boolean allowSearch;
+
+  private Boolean allowAutoJoin;
 
   public SpaceResponse(Space space) {
     this(space, null);
@@ -43,6 +46,8 @@ public class SpaceResponse {
     this.code = space.getCode();
     this.description = space.getDescription();
     this.activated = space.getActivated();
+    this.allowSearch = space.getAllowSearch();
+    this.allowAutoJoin = space.getAllowAutoJoin();
     this.token = space.getToken();
 
     if (space.getUsers() != null) {

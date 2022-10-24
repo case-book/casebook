@@ -39,8 +39,16 @@ function SpaceInfoPage() {
             <Text>{space?.description}</Text>
           </BlockRow>
           <BlockRow>
-            <Label>{t('활성화')}</Label>
+            <Label>{t('사용 여부')}</Label>
             <Text>{space?.activated ? 'Y' : 'N'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('검색 허용')}</Label>
+            <Text>{space?.allowSearch ? 'Y' : 'N'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('자동 가입')}</Label>
+            <Text>{space?.allowAutoJoin ? 'Y' : 'N'}</Text>
           </BlockRow>
           <BlockRow>
             <Label>{t('토큰')}</Label>

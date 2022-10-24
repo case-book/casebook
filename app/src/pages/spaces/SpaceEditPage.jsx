@@ -29,6 +29,8 @@ function SpaceEditPage({ type }) {
     description: '',
     activated: true,
     token: uuidv4(),
+    allowSearch: true,
+    allowAutoJoin: false,
   });
 
   useEffect(() => {
@@ -138,6 +140,34 @@ function SpaceEditPage({ type }) {
                   setSpace({
                     ...space,
                     activated: val,
+                  })
+                }
+              />
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('검색 허용')}</Label>
+              <CheckBox
+                type="checkbox"
+                value={space.allowSearch}
+                label="스페이스 검색 결과 포함 여부를 설정할 수 있습니다."
+                onChange={val =>
+                  setSpace({
+                    ...space,
+                    allowSearch: val,
+                  })
+                }
+              />
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('자동 가입')}</Label>
+              <CheckBox
+                type="checkbox"
+                value={space.allowAutoJoin}
+                label="가입 신청 과정 없이 바로 스페이스에 사용자가 참여할 수 있습니다."
+                onChange={val =>
+                  setSpace({
+                    ...space,
+                    allowAutoJoin: val,
                   })
                 }
               />
