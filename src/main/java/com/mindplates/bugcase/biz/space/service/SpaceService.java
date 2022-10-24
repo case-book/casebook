@@ -47,7 +47,7 @@ public class SpaceService {
 
   @Caching(evict = {
       @CacheEvict(key = "#space.code", value = CacheConfig.SPACE),
-      @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
+      // @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
   })
   @Transactional
   public void deleteSpaceInfo(Space space) {
@@ -61,7 +61,7 @@ public class SpaceService {
 
   @Caching(evict = {
       @CacheEvict(key = "#space.code", value = CacheConfig.SPACE),
-      @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
+      // @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
   })
   @Transactional
   public Space createSpaceInfo(Space space, Long userId) {
@@ -73,7 +73,7 @@ public class SpaceService {
 
   @Caching(evict = {
       @CacheEvict(key = "#next.code", value = CacheConfig.SPACE),
-      @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
+      // @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
   })
   @Transactional
   public Space updateSpaceInfo(Space next) {
@@ -84,9 +84,9 @@ public class SpaceService {
   }
 
 
-  @Cacheable(key = "'all-space-list'", value = CacheConfig.SPACE)
-  public List<Space> selectSpaceList() {
-    return spaceRepository.findAll();
+  // @Cacheable(key = "'all-space-list'", value = CacheConfig.SPACE)
+  public List<Space> selectSpaceList(String query) {
+    return spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%");
   }
 
   public List<Space> selectUserSpaceList(Long userId) {

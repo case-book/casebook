@@ -13,14 +13,17 @@ SpaceService.createSpace = (space, successHandler, failHandler) => {
   );
 };
 
-SpaceService.selectSpaceList = (successHandler, failHandler) => {
+SpaceService.selectSpaceList = (query, successHandler, failHandler) => {
   return request.get(
     '/api/spaces',
-    null,
+    { query },
     res => {
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    false,
   );
 };
 
