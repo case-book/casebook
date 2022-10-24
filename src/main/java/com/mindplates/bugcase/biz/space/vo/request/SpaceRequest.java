@@ -23,6 +23,10 @@ public class SpaceRequest {
   private String token;
   private List<SpaceUserRequest> users;
 
+  private Boolean allowSearch;
+
+  private Boolean allowAutoJoin;
+
   public Space buildEntity() {
 
     Space space = Space.builder()
@@ -32,6 +36,8 @@ public class SpaceRequest {
         .description(description)
         .activated(activated)
         .token(token)
+        .allowSearch(allowSearch)
+        .allowAutoJoin(allowAutoJoin)
         .build();
 
     if (users != null) {

@@ -50,12 +50,23 @@ public class Space extends CommonEntity {
   @Column(name = "activated")
   private Boolean activated;
 
+  @Column(name = "allow_search")
+  private Boolean allowSearch;
+
+  @Column(name = "allow_auto_join")
+  private Boolean allowAutoJoin;
+
   @Column(name = "token", length = ColumnsDef.CODE)
   private String token;
 
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
   @Fetch(value = FetchMode.SUBSELECT)
   private List<SpaceUser> users;
+
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL)
+  @Column(updatable = false, insertable = false)
+  @Fetch(value = FetchMode.SUBSELECT)
+  private List<SpaceApplicant> applicants;
 
   public void merge(Space space) {
     this.name = space.getName();

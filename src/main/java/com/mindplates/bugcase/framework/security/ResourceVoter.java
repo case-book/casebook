@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.framework.security;
 
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.common.entity.SystemRole;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -22,6 +23,8 @@ public class ResourceVoter extends WebExpressionVoter {
   public static final Pattern USERS_PATTERN = Pattern.compile("^/api/users/my$");
   public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects(.*)");
   public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
+
+  public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
   private final SpaceService spaceService;
 
   @Override
@@ -45,8 +48,10 @@ public class ResourceVoter extends WebExpressionVoter {
       Matcher usersMatcher = USERS_PATTERN.matcher(request.getRequestURI());
       Matcher spacesMatcher = SPACES_PATTERN.matcher(request.getRequestURI());
       Matcher projectsMatcher = PROJECTS_PATTERN.matcher(request.getRequestURI());
-
-      if (usersMatcher.matches()) {
+      Matcher adminMatcher = ADMIN_PATTERN.matcher(request.getRequestURI());
+      if (adminMatcher.matches()) {
+        return SystemRole.ROLE_ADMIN.toString().equals(user.getRoles()) ? ACCESS_GRANTED : ACCESS_DENIED;
+      } else if (usersMatcher.matches()) {
         return ACCESS_GRANTED;
       } else if (projectsMatcher.matches()) {
         String spaceCode = projectsMatcher.group(1);

@@ -56,6 +56,7 @@ function Common() {
   const getUserProfile = () => {
     UserService.getMyInfo(
       info => {
+        console.log(info);
         userStore.setUser(info);
         userStore.setTried(true);
       },

@@ -20,6 +20,16 @@ const STATIC_MENUS = [
     prefixSpace: true,
     selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects$/],
   },
+  {
+    key: 'configs',
+    to: '/configs/system',
+    icon: <i className="fas fa-home-alt" />,
+    name: '시스템 설정',
+    admin: true,
+    pc: true,
+    prefixSpace: false,
+    selectedAlias: [/^\/configs\/*$/],
+  },
 ];
 
 const MENUS = [

@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,28 +34,35 @@ public class SpaceService {
 
   private final ProjectService projectService;
 
-  @Cacheable(key = "#id", value = CacheConfig.SPACE)
   public Optional<Space> selectSpaceInfo(Long id) {
     return spaceRepository.findById(id);
   }
 
 
+  @Cacheable(key = "#code", value = CacheConfig.SPACE)
   public Optional<Space> selectSpaceInfo(String code) {
     return spaceRepository.findByCode(code);
   }
 
-  @CacheEvict(key = "#id", value = CacheConfig.SPACE)
+
+  @Caching(evict = {
+      @CacheEvict(key = "#space.code", value = CacheConfig.SPACE),
+      @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
+  })
   @Transactional
-  public void deleteSpaceInfo(Long id) {
-    Space space = spaceRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-    List<Project> projects = projectService.selectSpaceProjectList(id);
+  public void deleteSpaceInfo(Space space) {
+    List<Project> projects = projectService.selectSpaceProjectList(space.getId());
     for (Project project : projects) {
       projectService.deleteProjectInfo(space.getCode(), project);
     }
-    spaceRepository.deleteById(id);
+    spaceRepository.deleteById(space.getId());
   }
 
-  @CacheEvict(key = "'supported'", value = CacheConfig.SPACE)
+
+  @Caching(evict = {
+      @CacheEvict(key = "#space.code", value = CacheConfig.SPACE),
+      @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
+  })
   @Transactional
   public Space createSpaceInfo(Space space, Long userId) {
     SpaceUser spaceUser = SpaceUser.builder().space(space).user(User.builder().id(userId).build()).role(UserRole.ADMIN).build();
@@ -63,8 +71,10 @@ public class SpaceService {
     return space;
   }
 
-
-  @CacheEvict(key = "#space.id", value = CacheConfig.SPACE)
+  @Caching(evict = {
+      @CacheEvict(key = "#next.code", value = CacheConfig.SPACE),
+      @CacheEvict(key = "'all-space-list'", value = CacheConfig.SPACE)
+  })
   @Transactional
   public Space updateSpaceInfo(Space next) {
     Space space = this.selectSpaceInfo(next.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -74,6 +84,7 @@ public class SpaceService {
   }
 
 
+  @Cacheable(key = "'all-space-list'", value = CacheConfig.SPACE)
   public List<Space> selectSpaceList() {
     return spaceRepository.findAll();
   }

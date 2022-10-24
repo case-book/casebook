@@ -94,7 +94,8 @@ public class SpaceController {
   @Operation(description = "스페이스 정보 삭제")
   @DeleteMapping("/{spaceId}")
   public ResponseEntity<?> deleteSpaceInfo(@PathVariable Long spaceId) {
-    spaceService.deleteSpaceInfo(spaceId);
+    Space space = spaceService.selectSpaceInfo(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    spaceService.deleteSpaceInfo(space);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
