@@ -31,6 +31,12 @@ public class SessionUtil {
     return id;
   }
 
+  public static SecurityUser getSecurityUser() {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return (SecurityUser) authentication.getPrincipal();
+  }
+
 
     /*
     public Long getUserId(HttpServletRequest request) {

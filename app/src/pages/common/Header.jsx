@@ -40,7 +40,9 @@ function Header({ className, theme }) {
         list => {
           setProjectList(list);
         },
-        null,
+        () => {
+          return true;
+        },
         false,
       );
     }
@@ -237,6 +239,19 @@ function Header({ className, theme }) {
             </div>
           )}
         </div>
+        {isLogin && (
+          <div className="notification-menu">
+            <Button
+              rounded
+              onClick={e => {
+                e.preventDefault();
+                setUserMenuOpen(true);
+              }}
+            >
+              <i className="fa-solid fa-bell" />
+            </Button>
+          </div>
+        )}
         <div className="user-menu">
           {isLogin && (
             <Button

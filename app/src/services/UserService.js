@@ -180,4 +180,15 @@ UserService.updateMySetting = (setting, successHandler, failHandler) => {
   );
 };
 
+UserService.getUserNotification = (successHandler, failHandler) => {
+  return request.get(
+    '/api/users/my/notifications',
+    {},
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default UserService;

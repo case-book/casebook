@@ -53,12 +53,18 @@ function Common() {
 
   const [loading, setLoading] = useState(false);
 
+  const getUserNotification = () => {
+    UserService.getUserNotification(info => {
+      console.log(info);
+    });
+  };
+
   const getUserProfile = () => {
     UserService.getMyInfo(
       info => {
-        console.log(info);
         userStore.setUser(info);
         userStore.setTried(true);
+        getUserNotification();
       },
       () => {
         userStore.setTried(true);

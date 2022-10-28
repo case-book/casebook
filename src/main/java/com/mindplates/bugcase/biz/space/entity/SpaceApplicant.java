@@ -13,6 +13,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -28,7 +29,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "space_applicant")
+@Table(name = "space_applicant", indexes = {
+    @Index(name = "IDX_SPACE_APPLICANT_SPACE_ID_AND_USER_ID", columnList = "space_id, user_id", unique = true)
+})
 public class SpaceApplicant extends CommonEntity {
 
   @Id
@@ -36,7 +39,7 @@ public class SpaceApplicant extends CommonEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_SPACE_APPLICANT__USER"))
   private User user;
 
@@ -47,4 +50,7 @@ public class SpaceApplicant extends CommonEntity {
   @Column(name = "approval_status_code", length = ColumnsDef.CODE)
   @Enumerated(EnumType.STRING)
   private ApprovalStatusCode approvalStatusCode;
+
+  @Column(name = "message", length = ColumnsDef.TEXT)
+  private String message;
 }

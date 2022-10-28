@@ -1,0 +1,333 @@
+.space-info-content {
+  display: flex;
+  height: 100%;
+  padding: 0 1rem;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    min-height: 400px;
+
+    &.general-info-row {
+      max-height: 400px;
+      margin-bottom: 1rem;
+    }
+
+    &.project-row {
+      flex-grow: 1;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      border-radius: 4px;
+    }
+  }
+
+  .general-info {
+    min-width: 500px;
+    max-width: 500px;
+    background-color: #191919;
+    margin-right: 1rem;
+  }
+
+  .project-info {
+    min-width: 500px;
+    max-width: 500px;
+    background-color: #191919;
+    margin-right: 1rem;
+    display: flex;
+  }
+
+  .member-info {
+    flex-grow: 1;
+    background-color: #191919;
+  }
+
+  .box {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+
+    .box-title {
+      padding: 1rem 1.5rem;
+      display: flex;
+      font-size: 18px;
+      height: 60px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+      margin-bottom: 0.5rem;
+      background-color: #202020;
+      border-radius: 4px 4px 0 0;
+      > span {
+        align-self: center;
+        &:first-child {
+          flex-grow: 1;
+        }
+      }
+    }
+
+    .box-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin: 0 1rem 1rem;
+      position: relative;
+
+      .scroller {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow-y: auto;
+        padding-right: 1rem;
+      }
+
+      &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      .data-row {
+        display: flex;
+        padding: 0.75rem 0.5rem;
+        > div {
+          align-self: center;
+        }
+        .data-row-label {
+          flex-grow: 0;
+          min-width: 70px;
+          text-align: right;
+          margin-right: 1rem;
+          color: $gray-500;
+        }
+        .data-row-value {
+          flex-grow: 1;
+
+          &.token {
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      table.project-list,
+      table.user-list,
+      table.applicant-list {
+        td {
+          padding: 0.75rem 1rem;
+          border-top: none;
+          border-bottom: none;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+          vertical-align: middle;
+        }
+      }
+
+      table.applicant-list,
+      table.user-list {
+        td {
+          &.user-info {
+            white-space: nowrap;
+            text-transform: uppercase;
+            .name {
+              margin-bottom: 4px;
+            }
+            .email {
+              font-size: 12px;
+              font-family: Cairo, sans-serif;
+              line-height: 100%;
+            }
+          }
+
+          &.message {
+            width: 1px;
+            white-space: nowrap;
+            position: relative;
+
+            .message-tooltip-overlay {
+              position: fixed;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              z-index: 4;
+            }
+
+            .message-tooltip {
+              position: absolute;
+              right: 100%;
+              font-size: 14px;
+              top: 16px;
+              padding: 0.75rem;
+              background-color: $white;
+              color: $black;
+              text-align: left;
+              border-radius: 2px;
+              z-index: 5;
+
+              .arrow {
+                width: 8px;
+                height: 8px;
+                position: absolute;
+                transform: rotate(45deg);
+                top: 8px;
+                right: -4px;
+                background-color: $white;
+              }
+
+              .message-content {
+                max-width: 200px;
+                min-width: 200px;
+                max-height: 200px;
+                white-space: pre-wrap;
+                overflow-y: auto;
+              }
+            }
+          }
+
+          &._message {
+            font-size: 14px;
+            color: var(--yt-spec-text-primary);
+            font-family: 'Roboto', 'Arial', sans-serif;
+            width: 1px;
+
+            font-weight: 500;
+            max-height: 4.4rem;
+            overflow: hidden;
+            display: block;
+            -webkit-line-clamp: 2;
+            display: box;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            white-space: normal;
+            line-height: 180%;
+            max-height: 56px;
+            min-height: 56px;
+            padding-top: 0;
+            white-space: pre-wrap;
+          }
+
+          &.role {
+            width: 1px;
+            white-space: nowrap;
+            text-align: right;
+            padding-right: 0.5rem;
+            padding-left: 0;
+
+            > button {
+              margin-right: 0.5rem;
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+
+            > .tag {
+              background-color: #242424;
+
+              .icon {
+                display: inline-block;
+                min-width: 14px;
+                text-align: left;
+              }
+            }
+
+            &.ADMIN {
+              > .tag {
+              }
+            }
+          }
+
+          &.request-status {
+            padding: 0 0 0 1rem;
+            width: 1px;
+            white-space: nowrap;
+            > div {
+              min-width: 80px;
+              text-align: center;
+              padding: 6px;
+            }
+
+            &.REQUEST,
+            &.REQUEST_AGAIN {
+              > div {
+                background-color: $color-sunflower;
+                color: #111;
+              }
+            }
+
+            &.APPROVAL {
+              > div {
+                background-color: $color-azure;
+                color: $white;
+              }
+            }
+
+            &.REJECTED {
+              > div {
+                background-color: $color-tangerine;
+                color: $white;
+              }
+            }
+          }
+
+          &.user-info {
+            text-transform: uppercase;
+            font-size: 14px;
+          }
+        }
+      }
+
+      table.project-list {
+        td {
+          &.project-name {
+            white-space: nowrap;
+            text-transform: uppercase;
+          }
+
+          &.activated {
+            text-transform: uppercase;
+            font-family: Cairo, sans-serif;
+            font-weight: bold;
+            width: 80px;
+            text-align: center;
+          }
+
+          &.testcase-count,
+          &.bug-count {
+            padding: 0;
+            width: 36px;
+            text-align: center;
+            > div {
+              display: inline-flex;
+              width: 26px;
+              height: 26px;
+              justify-content: center;
+              border-radius: 50%;
+              > span {
+                font-size: 13px;
+                align-self: center;
+                font-family: Rowdies, NotoSans, sans-serif, sans-serif;
+              }
+            }
+          }
+
+          &.bug-count {
+            > div {
+              background-color: $color-tangerine;
+            }
+          }
+
+          &.testcase-count {
+            > div {
+              background-color: $color-sunflower;
+              color: black;
+            }
+          }
+        }
+      }
+    }
+  }
+}

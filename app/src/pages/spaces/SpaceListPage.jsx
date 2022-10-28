@@ -300,7 +300,8 @@ function SpaceListPage() {
                   {queryList.map(space => {
                     return (
                       <li key={space.id}>
-                        <div className="name">{space.name}</div>
+                        {space.isMember && <span className="member">MEMBER</span>}
+                        <Link to={`/spaces/${space.code}/info`}>{space.name}</Link>
                       </li>
                     );
                   })}

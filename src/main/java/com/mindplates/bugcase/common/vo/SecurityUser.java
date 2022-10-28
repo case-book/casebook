@@ -19,6 +19,8 @@ public class SecurityUser implements UserDetails, Serializable {
   private String password;
   private String roles;
 
+  private String email;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     ArrayList<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();

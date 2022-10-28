@@ -140,7 +140,7 @@ function ProjectTestcaseInfoPage() {
 
               parentGroup.children.push(d);
             } else {
-              console.log(`NO PARENT - ${d.parentId}`);
+              console.error(`NO PARENT - ${d.parentId}`);
             }
           });
         }

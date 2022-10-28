@@ -26,7 +26,7 @@ Radio.defaultProps = {
   className: '',
   label: '',
   onChange: null,
-  size: 'lg',
+  size: 'md',
   checked: false,
   value: '',
   readOnly: false,

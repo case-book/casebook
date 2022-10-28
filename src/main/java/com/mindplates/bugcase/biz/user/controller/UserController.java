@@ -1,5 +1,8 @@
 package com.mindplates.bugcase.biz.user.controller;
 
+import com.mindplates.bugcase.biz.notification.dto.NotificationDTO;
+import com.mindplates.bugcase.biz.notification.service.NotificationService;
+import com.mindplates.bugcase.biz.notification.vo.NotificationResponse;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.user.entity.User;
@@ -15,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -40,6 +44,8 @@ public class UserController {
   private final UserService userService;
 
   private final SpaceService spaceService;
+
+  private final NotificationService notificationService;
 
   private final JwtTokenProvider jwtTokenProvider;
 
@@ -77,6 +83,12 @@ public class UserController {
     }
   }
 
+  @Operation(description = "내 알림 정보 조회")
+  @GetMapping("/my/notifications")
+  public List<NotificationResponse> selectUserNotificationList() {
+    List<NotificationDTO> notifications = notificationService.selectUserNotificationList(SessionUtil.getUserId());
+    return notifications.stream().map(NotificationResponse::new).collect(Collectors.toList());
+  }
 
   @Operation(description = "로그인")
   @PostMapping("/login")
