@@ -20,6 +20,20 @@
     background-color: #202020;
     color: $gray-400;
 
+    &.lg {
+    }
+
+    &.md {
+    }
+
+    &.sm {
+    }
+
+    &.xs {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
     &.active {
       &:hover {
         background-color: darken($color-sunflower, 10%);
@@ -98,45 +112,10 @@
     }
   }
 
-  .check-box-span {
-    border: 1px solid $gray-600;
-    display: inline-block;
-    vertical-align: middle;
-    align-self: center;
-    justify-content: center;
-    margin-right: 8px;
-    transition: all 0.3s;
-    cursor: pointer;
-    border-radius: 2px;
-
-    > span {
-      display: inline-block;
-      width: 100%;
-      height: 100%;
-      transition: all 0.3s;
-      border-radius: 2px;
-    }
-    line-height: 0;
-    padding: 2px;
-
-    &.checked {
-      > span {
-        background-color: $yellow;
-        transition: all 0.3s;
-        border: 1px solid rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
-
   &.lg {
     height: $lg-height;
     label {
       font-size: 16px;
-    }
-
-    .check-box-span {
-      width: 28px;
-      height: 28px;
     }
   }
 
@@ -146,11 +125,6 @@
     label {
       font-size: 16px;
     }
-
-    .check-box-span {
-      width: 24px;
-      height: 24px;
-    }
   }
 
   &.sm {
@@ -159,17 +133,13 @@
     label {
       font-size: 14px;
     }
-
-    .check-box-span {
-      width: 20px;
-      height: 20px;
-    }
   }
 
-  &:hover {
-    .check-box-span {
-      border-color: $yellow;
-      transition: all 0.3s;
+  &.xs {
+    height: $xs-height;
+    line-height: 0;
+    label {
+      font-size: 12px;
     }
   }
 }

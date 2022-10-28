@@ -118,4 +118,36 @@ const TestcaseGroupSettingPropTypes = PropTypes.shape({
   }),
 });
 
-export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplateEditPropTypes, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes, TestcaseTemplatePropTypes };
+const SpacePropTypes = PropTypes.shape({
+  name: PropTypes.string,
+  code: PropTypes.string,
+  description: PropTypes.string,
+  activated: PropTypes.bool,
+  allowSearch: PropTypes.bool,
+  allowAutoJoin: PropTypes.bool,
+  token: PropTypes.string,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  ),
+  admins: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+      email: PropTypes.string,
+    }),
+  ),
+  applicants: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      userName: PropTypes.string,
+      userEmail: PropTypes.string,
+    }),
+  ),
+  applicant: PropTypes.shape({}),
+});
+
+export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplateEditPropTypes, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes, TestcaseTemplatePropTypes, SpacePropTypes };

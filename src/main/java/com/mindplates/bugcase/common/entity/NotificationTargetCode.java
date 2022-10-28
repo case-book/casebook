@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum ApprovalStatusCode {
+public enum NotificationTargetCode {
 
-  REQUEST("REQUEST"),
-  REQUEST_AGAIN("REQUEST_AGAIN"),
-  APPROVAL("APPROVAL"),
-  REJECTED("REJECTED");
+  USER("USER"),
+  SPACE("SPACE"),
+  PROJECT("PROJECT");
   private String code;
 
 }

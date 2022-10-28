@@ -56,8 +56,6 @@ function ProjectConfig() {
   const onChangeTestcaseTemplate = (inx, template) => {
     const nextProject = { ...project };
     nextProject.testcaseTemplates[inx] = template;
-
-    console.log(template);
     setProject(nextProject);
   };
 

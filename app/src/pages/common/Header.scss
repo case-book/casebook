@@ -268,6 +268,7 @@
       }
     }
 
+    .notification-menu,
     .user-menu,
     .header-toggle {
       display: flex;
@@ -297,8 +298,9 @@
       }
     }
 
+    .user-menu,
     .header-toggle {
-      margin-left: 1rem;
+      margin-left: 0.5rem;
     }
   }
 
@@ -320,7 +322,7 @@
         right: 23px;
         background-color: $white;
 
-        @media (max-width: 1960px) {
+        @media (max-width: 1660px) {
           right: 43px;
         }
 
@@ -332,7 +334,7 @@
           text-align: right;
           padding-right: 40px;
 
-          @media (max-width: 1960px) {
+          @media (max-width: 1660px) {
 
           }
 

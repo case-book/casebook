@@ -1,6 +1,6 @@
 import SpaceListPage from '@/pages/spaces/SpaceListPage';
 import SpaceEditPage from '@/pages/spaces/SpaceEditPage';
-import SpaceInfoPage from '@/pages/spaces/SpaceInfoPage';
+import SpaceInfoPage from '@/pages/spaces/SpaceInfoPage/SpaceInfoPage';
 
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';

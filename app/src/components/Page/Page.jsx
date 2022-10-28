@@ -1,17 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import useStores from '@/hooks/useStores';
-import './Page.scss';
 import { observer } from 'mobx-react';
+import './Page.scss';
 
-function Page({ className, children, colored, list, wide }) {
+function Page({ className, children, colored, list, wide, pure }) {
   const {
     themeStore: { theme },
     controlStore: { hideHeader },
   } = useStores();
 
   return (
-    <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} theme-${theme} ${hideHeader ? 'hide-header' : ''}`}>
+    <div
+      className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} ${pure ? 'pure-page' : ''} theme-${theme} ${
+        hideHeader ? 'hide-header' : ''
+      }`}
+    >
       {children}
     </div>
   );
@@ -23,6 +27,7 @@ Page.defaultProps = {
   colored: false,
   list: false,
   wide: false,
+  pure: false,
 };
 
 Page.propTypes = {
@@ -31,6 +36,7 @@ Page.propTypes = {
   colored: PropTypes.bool,
   list: PropTypes.bool,
   wide: PropTypes.bool,
+  pure: PropTypes.bool,
 };
 
 export default observer(Page);

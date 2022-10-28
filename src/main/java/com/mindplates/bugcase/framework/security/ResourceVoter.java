@@ -3,7 +3,9 @@ package com.mindplates.bugcase.framework.security;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.common.entity.SystemRole;
 import com.mindplates.bugcase.common.vo.SecurityUser;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -20,11 +22,12 @@ import org.springframework.security.web.access.expression.WebExpressionVoter;
 @RequiredArgsConstructor
 public class ResourceVoter extends WebExpressionVoter {
 
-  public static final Pattern USERS_PATTERN = Pattern.compile("^/api/users/my$");
+  public static final Pattern USERS_PATTERN = Pattern.compile("^/api/users/my/?(.*)?$");
   public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects(.*)");
   public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
-
   public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
+
+  List<Pattern> allPassPatterns = Arrays.asList(Pattern.compile("^/api/spaces/(.*)/accessible$"), Pattern.compile("^/api/spaces/(.*)/applicants$"));
   private final SpaceService spaceService;
 
   @Override
@@ -45,6 +48,12 @@ public class ResourceVoter extends WebExpressionVoter {
       Long userId = user.getId();
 
       HttpServletRequest request = fi.getRequest();
+
+      boolean allPass = allPassPatterns.stream().anyMatch((pattern) -> pattern.matcher(request.getRequestURI()).matches());
+      if (allPass) {
+        return ACCESS_GRANTED;
+      }
+
       Matcher usersMatcher = USERS_PATTERN.matcher(request.getRequestURI());
       Matcher spacesMatcher = SPACES_PATTERN.matcher(request.getRequestURI());
       Matcher projectsMatcher = PROJECTS_PATTERN.matcher(request.getRequestURI());
@@ -64,9 +73,23 @@ public class ResourceVoter extends WebExpressionVoter {
 
         if (method == HttpMethod.PUT || method == HttpMethod.DELETE) {
           String spaceInfo = spacesMatcher.group(1);
+
+          if (spaceInfo.indexOf('/') > -1) {
+            String[] values = spaceInfo.split("/");
+            if (values.length > 0) {
+              spaceInfo = values[0];
+            }
+          }
+
           boolean isNumber = NumberUtils.isCreatable(spaceInfo);
-          boolean isAdmin = spaceService.selectIsSpaceAdmin(Long.parseLong(spaceInfo), userId);
-          if (isNumber && isAdmin) {
+          boolean isAdmin = false;
+          if (isNumber) {
+            isAdmin = spaceService.selectIsSpaceAdmin(Long.parseLong(spaceInfo), userId);
+          } else {
+            isAdmin = spaceService.selectIsSpaceAdmin(spaceInfo, userId);
+          }
+
+          if (isAdmin) {
             return ACCESS_GRANTED;
           }
           return ACCESS_DENIED;

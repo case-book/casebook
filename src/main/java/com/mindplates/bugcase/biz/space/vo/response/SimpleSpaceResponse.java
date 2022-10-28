@@ -21,13 +21,20 @@ public class SimpleSpaceResponse {
   private Boolean allowSearch;
   private Boolean allowAutoJoin;
 
+  private Boolean isMember;
+
   public SimpleSpaceResponse(Space space) {
+    this(space, null);
+  }
+
+  public SimpleSpaceResponse(Space space, Long userId) {
     this.id = space.getId();
     this.name = space.getName();
     this.code = space.getCode();
-    this.activated = space.getActivated();
-    this.allowSearch = space.getAllowSearch();
-    this.allowAutoJoin = space.getAllowAutoJoin();
+    this.activated = space.isActivated();
+    this.allowSearch = space.isAllowSearch();
+    this.allowAutoJoin = space.isAllowAutoJoin();
+    this.isMember = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId)));
   }
 
 

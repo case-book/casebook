@@ -209,7 +209,7 @@
     padding: 1rem;
     color: $gray-500;
 
-    @media (max-width: 1960px) {
+    @media (max-width: 1660px) {
       bottom: -20px;
     }
     > div {
@@ -292,9 +292,8 @@
       .search-list {
         flex-grow: 1;
         display: flex;
-        padding: 0 1rem;
+        padding: 1rem 1rem 0;
         overflow-y: auto;
-        margin-top: 1rem;
 
         .empty-content {
           width: 100%;
@@ -305,13 +304,16 @@
           padding: 0;
           margin: 0;
           vertical-align: top;
+          overflow: visible;
 
           li {
             display: inline-block;
             vertical-align: top;
             cursor: pointer;
+            overflow: visible;
+            position: relative;
 
-            .name {
+            > a {
               display: inline-block;
               padding: 1rem 2rem;
               background-color: rgba(255, 255, 255, 0.1);
@@ -319,14 +321,30 @@
               border-radius: 20px;
               border-radius: 20px 0 20px 20px;
               border-radius: 14px 0 14px 14px;
-
               line-height: 100%;
               box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.1);
               margin-bottom: 1rem;
+              color: $white;
+            }
+
+            .member {
+              position: absolute;
+              font-size: 10px;
+              top: -8px;
+              right: 12px;
+              display: inline-block;
+              background-color: $color-sunflower;
+              color: $black;
+              font-weight: bold;
+              padding: 4px;
+              line-height: 100%;
+              border-radius: 2px;
+              font-family: Cairo, sans-serif;
+              z-index: 114;
             }
 
             &:hover {
-              .name {
+              > a {
                 background-color: $color-azure;
                 color: $color-azure;
                 color: $white;
