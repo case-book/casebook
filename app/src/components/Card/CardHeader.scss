@@ -1,0 +1,16 @@
+.card-header-wrapper {
+  @include title;
+  padding: 1rem 1.5rem;
+  font-size: 18px;
+  height: 60px;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  > div {
+    align-self: center;
+  }
+  > .card-header-content {
+    flex-grow: 1;
+  }
+  > .card-header-control {
+  }
+}

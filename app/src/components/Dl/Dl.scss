@@ -1,0 +1,8 @@
+.dl-wrapper {
+  display: flex;
+  padding: 0.75rem 0.5rem;
+  > .dt-wrapper,
+  > .dd-wrapper {
+    align-self: center;
+  }
+}

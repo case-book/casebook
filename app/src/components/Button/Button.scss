@@ -65,11 +65,11 @@
     color: $black;
 
     &:hover {
-      background-color: $yellow;
+      background-color: $primary-color;
     }
 
     &.disabled:hover {
-      background-color: $white;
+      background-color: $primary-color;
     }
   }
 

@@ -66,6 +66,67 @@
     }
   }
 
+  &.type-line {
+    border: none;
+    padding: 0 1rem;
+    background-color: transparent;
+    color: $gray-500;
+    position: relative;
+
+    &::after {
+      position: absolute;
+      content: '';
+      height: 2px;
+      width: 100%;
+      bottom: -2px;
+      left: 0;
+      background-color: $gray-700;
+      right: 0;
+      -webkit-transition: all 0.3s ease 0s;
+      transition: all 0.3s ease 0s;
+    }
+
+    &.lg {
+    }
+
+    &.md {
+    }
+
+    &.sm {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+
+    &.xs {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+
+    }
+
+    &.active {
+      &:hover {
+        color: $gray-400;
+      }
+    }
+
+    &.checked {
+      color: $primary-color;
+      font-weight: bold;
+
+      &:hover {
+        color: $primary-color;
+      }
+
+      &::after {
+        background-color: $primary-color;
+      }
+    }
+
+    input[type='radio'] {
+      display: none;
+    }
+  }
+
   label {
     margin: 0;
     vertical-align: middle;
