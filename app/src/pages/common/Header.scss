@@ -1,8 +1,7 @@
 .header-wrapper {
   box-shadow: #060606 0 0 4px 1px;
   border-bottom: 1px solid #000;
-  background-color: #111;
-  background-color: #111111;
+  background-color: $header-bg-color;
   padding: 0 20px;
   position: relative;
   z-index: 2;
@@ -130,7 +129,6 @@
       }
 
       &.logo {
-        font-size: 34px;
         font-size: 28px;
         font-family: Rowdies, sans-serif;
         height: 100%;
@@ -157,7 +155,7 @@
           height: 18px;
           width: 1px;
           background-color: $white;
-          margin: 0 2rem;
+          margin: 0 1.5rem;
         }
       }
     }
@@ -212,21 +210,24 @@
               height: 100%;
               display: flex;
 
+              &::after {
+                position: absolute;
+                content: '';
+                height: 2px;
+                bottom: 0;
+                left: -0.5rem;
+                background-color: $gray-700;
+                right: -0.5rem;
+                -webkit-transition: all 0.3s ease 0s;
+                transition: all 0.3s ease 0s;
+                opacity: 0;
+              }
+
+
               > span {
                 align-self: center;
                 padding: 4px 0;
                 position: relative;
-
-                > span {
-                  height: 2px;
-                  display: none;
-                  background-color: $color-sunflower;
-                  position: absolute;
-                  bottom: -8px;
-                  left: -5px;
-                  right: -5px;
-                  border-radius: 2px;
-                }
               }
 
               &:hover {
@@ -249,11 +250,9 @@
                 font-weight: normal;
                 position: relative;
 
-                > span {
-                  > span {
-                    display: block;
-                    display: none;
-                  }
+                &::after {
+                  background-color: $primary-color;
+                  opacity: 0;
                 }
               }
             }
@@ -335,7 +334,6 @@
           padding-right: 40px;
 
           @media (max-width: 1660px) {
-
           }
 
           > div {

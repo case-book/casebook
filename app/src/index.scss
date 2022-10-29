@@ -110,7 +110,7 @@ html {
   }
 
   &.theme-black {
-    background-color: #060606;
+    background-color: $body-bg-color;
     color: $white;
     transition: background-color 0.3s, color 0.3s;
   }
@@ -203,7 +203,7 @@ hr {
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #191919;
+
   tr {
     &:first-child {
       td {
@@ -255,10 +255,10 @@ table {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background-color: $gray-800;
+  background-color: $gray-900;
+
 }
 ::-webkit-scrollbar-thumb {
-  background-color: $gray-300;
-  border-radius: 30px;
-  border-radius: 0;
+  background-color: $gray-500;
+  border-radius: 6px;
 }

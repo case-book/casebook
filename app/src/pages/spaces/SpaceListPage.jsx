@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, CloseIcon, EmptyContent, Input, Page, PageContent, PageTitle, Tag } from '@/components';
+import { Button, Card, CardContent, CloseIcon, EmptyContent, Input, Page, PageContent, PageTitle, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
@@ -155,56 +155,57 @@ function SpaceListPage() {
                         navigate(`/spaces/${space.code}/projects`);
                       }}
                     >
-                      <div className="config-button">
-                        <Button
-                          outline
-                          rounded
-                          size="sm"
-                          onClick={e => {
-                            e.stopPropagation();
-                            navigate(`/spaces/${space.code}/info`);
-                          }}
-                        >
-                          <i className="fa-solid fa-gear" />
-                        </Button>
-                      </div>
-                      <div className="name-and-code">
-                        <div className="name">{space.name}</div>
-                        <div className="code">
-                          <Tag color="white">{space.code}</Tag>
+                      <CardContent>
+                        <div className="config-button">
+                          <Button
+                            rounded
+                            size="sm"
+                            onClick={e => {
+                              e.stopPropagation();
+                              navigate(`/spaces/${space.code}/info`);
+                            }}
+                          >
+                            <i className="fa-solid fa-gear" />
+                          </Button>
                         </div>
-                      </div>
-                      <div className="description">
-                        <div>{space.description}</div>
-                      </div>
-                      <div className="counter-info">
-                        <div>
+                        <div className="name-and-code">
+                          <div className="name">{space.name}</div>
+                          <div className="code">
+                            <Tag>{space.code}</Tag>
+                          </div>
+                        </div>
+                        <div className="description">
+                          <div>{space.description}</div>
+                        </div>
+                        <div className="counter-info">
                           <div>
-                            <div className="icon projects">
-                              <div>
-                                <i className="fa-solid fa-shield-heart" />
+                            <div>
+                              <div className="icon projects">
+                                <div>
+                                  <i className="fa-solid fa-shield-heart" />
+                                </div>
+                              </div>
+                              <div className="label projects">PROJECTS</div>
+                              <div className="counter projects">
+                                <div>{space.projectCount}</div>
                               </div>
                             </div>
-                            <div className="label projects">PROJECTS</div>
-                            <div className="counter projects">
-                              <div>{space.projectCount}</div>
+                          </div>
+                          <div>
+                            <div>
+                              <div className="icon users">
+                                <div>
+                                  <i className="fa-solid fa-shield-cat" />
+                                </div>
+                              </div>
+                              <div className="label users">USERS</div>
+                              <div className="counter users">
+                                <div>{space.users?.length}</div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div>
-                          <div>
-                            <div className="icon users">
-                              <div>
-                                <i className="fa-solid fa-shield-cat" />
-                              </div>
-                            </div>
-                            <div className="label users">USERS</div>
-                            <div className="counter users">
-                              <div>{space.users?.length}</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      </CardContent>
                     </Card>
                   </li>
                 );

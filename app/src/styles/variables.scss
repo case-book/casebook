@@ -1,4 +1,4 @@
-$primary: #ff8c00;
+$primary: #ffbc4b;
 $secondary: #7bde89;
 $danger: #f21646;
 $point: #d184d8;
@@ -65,6 +65,19 @@ $color-white: #fff;
 $color-muted-black: #837e7e;
 
 $font-family-menu: NotoSans, sans-serif;
+
+$body-bg-color: #060606;
+$body-bg-color: #09080d;
+$card-bg-color: #16151a;
+$header-bg-color: #121117;
+$primary-color: #ffbc4b;
+$primary-color: #ffbc4b;
+$secondary-color: #7bde89;
+
+@mixin title() {
+  font-weight: bold;
+  font-family: $font-family-menu;
+}
 
 @mixin shadow() {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);

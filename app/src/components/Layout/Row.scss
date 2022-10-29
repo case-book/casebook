@@ -1,0 +1,13 @@
+.row-wrapper {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.grow-1 {
+    flex-grow: 1;
+  }
+}

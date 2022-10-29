@@ -41,7 +41,7 @@ Radio.propTypes = {
   checked: PropTypes.bool,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   readOnly: PropTypes.bool,
-  type: PropTypes.oneOf(['default', 'inline']),
+  type: PropTypes.oneOf(['default', 'inline', 'line']),
 };
 
 export default Radio;

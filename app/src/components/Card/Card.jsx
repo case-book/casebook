@@ -5,7 +5,7 @@ import './Card.scss';
 function Card({ className, children, onClick, color, point, circle }) {
   return (
     <div
-      className={`card-wrapper ${className} color-${color}`}
+      className={`card-wrapper ${className} color-${color} ${onClick ? 'clickable' : ''}`}
       onClick={() => {
         if (onClick) {
           onClick();
@@ -20,7 +20,7 @@ function Card({ className, children, onClick, color, point, circle }) {
       )}
       {point && <div className="point point-1" />}
       {point && <div className="point point-2" />}
-      <div className="card-content">{children}</div>
+      {children}
     </div>
   );
 }

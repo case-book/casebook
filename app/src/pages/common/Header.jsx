@@ -197,10 +197,7 @@ function Header({ className, theme }) {
                             }
                           }}
                         >
-                          <span className="text">
-                            {d.name}
-                            <span />
-                          </span>
+                          <span className="text">{d.name}</span>
                           {menuAlert.inx === inx && <span className="alert-message">{menuAlert.message}</span>}
                         </Link>
                         {d.key === 'space' && isSpaceSelected && (
@@ -231,7 +228,7 @@ function Header({ className, theme }) {
                             }}
                           />
                         )}
-                        <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 16px" />
+                        <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 12px" />
                       </li>
                     );
                   })}

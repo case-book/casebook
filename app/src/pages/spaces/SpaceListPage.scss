@@ -54,14 +54,14 @@
             &:hover {
               .name-and-code {
                 .name {
-                  color: $link-color;
+                  color: $primary-color;
                 }
               }
             }
             .config-button {
               position: absolute;
-              right: 0;
-              top: 0;
+              right: 1rem;
+              top: 1rem;
             }
 
             .name-and-code {
@@ -86,8 +86,7 @@
               padding: 0;
               text-align: center;
               flex-grow: 1;
-              border: 1px solid rgba(0, 0, 0, 0.1);
-              background-color: $white;
+              color: $white;
               max-height: 76px;
               min-height: 76px;
               display: flex;
@@ -95,7 +94,9 @@
               border-radius: 8px;
               overflow-y: auto;
               margin-bottom: 1rem;
-              font-size: 14px;
+              font-size: 15px;
+              background-color: #16151a;
+              border: 1px solid rgba(255, 255, 255, 0.04);
               > div {
                 align-self: center;
               }
@@ -104,9 +105,10 @@
             .counter-info {
               height: 163px;
               display: flex;
-              background-color: $white;
-              border: 1px solid rgba(0, 0, 0, 0.1);
+              background-color: #16151a;
+              border: 1px solid rgba(255, 255, 255, 0.04);
               border-radius: 8px;
+              padding: 0 2rem;
 
               > div {
                 flex: 1 1 0;
@@ -135,15 +137,13 @@
 
                   &.projects {
                     > div {
-                      background-color: $color-storm;
                       border: 1px solid transparent;
-                      color: $white;
+                      color: $black;
                     }
                   }
 
                   &.users {
                     > div {
-                      background-color: $color-factory-yellow;
                       border: 1px solid transparent;
                       color: $black;
                     }
@@ -226,11 +226,7 @@
     top: 0;
     left: 0;
     right: 0;
-    background-color: #000;
-    background-color: $color-azure;
-    background-color: #000;
-    background-color: #191919;
-    background-color: #191919;
+    background-color: $card-bg-color;
 
     z-index: 4;
     height: 0;
