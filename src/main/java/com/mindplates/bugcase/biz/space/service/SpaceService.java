@@ -11,6 +11,7 @@ import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.ApprovalStatusCode;
+import com.mindplates.bugcase.common.entity.NotificationTargetCode;
 import com.mindplates.bugcase.common.entity.UserRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
@@ -89,6 +90,29 @@ public class SpaceService {
   public Space updateSpaceInfo(Space next) {
     Space space = this.selectSpaceInfo(next.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     space.merge(next);
+
+    next.getUsers().forEach((spaceUser -> {
+      if ("D" .equals(spaceUser.getCrud())) {
+        space.getUsers().removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
+        space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
+        notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, space.getId(), spaceUser.getUser().getId(), "관리자에 의해 '" + space.getName() + "'" + " 스페이스에서 제외되었습니다.", "/spaces/" + space.getCode() + "/info");
+      } else if ("U" .equals(spaceUser.getCrud())) {
+        SpaceUser updateUser = space.getUsers().stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId()))).findAny().orElse(null);
+
+        if (updateUser != null) {
+          if (!updateUser.getRole().equals(spaceUser.getRole())) {
+            notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, space.getId(), spaceUser.getUser().getId(), "관리자에 의해 '" + space.getName() + "'" + " 스페이스의 권한(" + spaceUser.getRole() + ")이 변경되었습니다.", "/spaces/" + space.getCode() + "/info");
+          }
+          updateUser.setRole(spaceUser.getRole());
+        }
+      }
+    }));
+
+    boolean hasAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRole.ADMIN)));
+    if (!hasAdmin) {
+      throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
+    }
+
     spaceRepository.save(space);
     return space;
   }
@@ -225,6 +249,34 @@ public class SpaceService {
     }
 
     spaceRepository.save(space);
+
+    return space;
+  }
+
+  @Caching(evict = {
+      @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+  })
+  @Transactional
+  public Space deleteSpaceUser(String spaceCode, Long userId) {
+    Space space = this.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    boolean isSpaceAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRole.ADMIN)));
+    SecurityUser user = SessionUtil.getSecurityUser();
+    if (!(user.getId().equals(userId) || isSpaceAdmin)) {
+      throw new ServiceException(HttpStatus.FORBIDDEN);
+    }
+
+    User targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny().map(spaceUser -> spaceUser.getUser()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+    space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
+    space.getUsers().removeIf((spaceUser -> spaceUser.getUser().getId().equals(userId)));
+
+    boolean hasAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRole.ADMIN)));
+    if (!hasAdmin) {
+      throw new ServiceException(HttpStatus.BAD_GATEWAY, "no.space.admin.exist");
+    }
+
+    spaceRepository.save(space);
+    notificationService.createSpaceUserWithdrawInfo(space, targetUser.getName() + " [" + targetUser.getEmail() + "]");
 
     return space;
   }

@@ -46,7 +46,7 @@ public class SpaceRequest {
               .id(spaceUser.getId())
               .user(com.mindplates.bugcase.biz.user.entity.User.builder().id(spaceUser.getUserId()).build())
               .role(spaceUser.getRole())
-              .CRUD(spaceUser.getCRUD())
+              .crud(spaceUser.getCrud())
               .space(space).build()).collect(Collectors.toList());
 
       space.setUsers(spaceUsers);

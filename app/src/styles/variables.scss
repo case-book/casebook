@@ -3,7 +3,7 @@ $secondary: #7bde89;
 $danger: #f21646;
 $point: #d184d8;
 $yellow: #ffbb20;
-$warning: #e25a75;
+$warning: #ff4935;
 $white: #ffffff;
 $light: #f8f9fa;
 $green: #397d02;
@@ -65,6 +65,7 @@ $color-white: #fff;
 $color-muted-black: #837e7e;
 
 $font-family-menu: NotoSans, sans-serif;
+$font-family-count: Rowdies, NotoSans, sans-serif;
 
 $body-bg-color: #060606;
 $body-bg-color: #09080d;
@@ -73,6 +74,7 @@ $header-bg-color: #121117;
 $primary-color: #ffbc4b;
 $primary-color: #ffbc4b;
 $secondary-color: #7bde89;
+$third-color: #3e8ef1;
 
 @mixin title() {
   font-weight: bold;
@@ -81,4 +83,17 @@ $secondary-color: #7bde89;
 
 @mixin shadow() {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+}
+
+@mixin white-scroller() {
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #f8f8f8;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #CCC;
+    border-radius: 4px;
+  }
 }

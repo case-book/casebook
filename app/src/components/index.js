@@ -37,6 +37,10 @@ import Dt from './Dl/Dt';
 import Dd from './Dl/Dd';
 import Row from './Layout/Row';
 import Col from './Layout/Col';
+import Table from './Table/Table';
+import Tbody from './Table/Tbody';
+import Tr from './Table/Tr';
+import Td from './Table/Td';
 
 export {
   Selector,
@@ -78,4 +82,8 @@ export {
   Dd,
   Col,
   Row,
+  Table,
+  Tbody,
+  Tr,
+  Td,
 };

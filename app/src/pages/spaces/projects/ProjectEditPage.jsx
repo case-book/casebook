@@ -104,7 +104,7 @@ function ProjectEditPage({ type }) {
       <PageTitle>{type === 'edit' ? t('프로젝트') : t('새 프로젝트')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
-          <Block className="pt-0">
+          <Block>
             <BlockRow>
               <Label>{t('스페이스')}</Label>
               <Text>{space?.name}</Text>

@@ -4,7 +4,7 @@
   background-color: $header-bg-color;
   padding: 0 20px;
   position: relative;
-  z-index: 2;
+  z-index: 4;
 
   &.hide {
     .header-content {
@@ -223,7 +223,6 @@
                 opacity: 0;
               }
 
-
               > span {
                 align-self: center;
                 padding: 4px 0;
@@ -267,6 +266,28 @@
       }
     }
 
+    .notification-menu {
+      position: relative;
+      .notification-count {
+        font-family: $font-family-count;
+        font-size: 13px;
+        position: absolute;
+        right: -7px;
+        top: -7px;
+        background-color: $third-color;
+        color: $white;
+        display: inline-flex;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        justify-content: center;
+
+        > span {
+          align-self: center;
+        }
+      }
+    }
+
     .notification-menu,
     .user-menu,
     .header-toggle {
@@ -303,6 +324,119 @@
     }
   }
 
+  .notification-list {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    color: $black;
+    z-index: 2114;
+
+    > div {
+      position: relative;
+      max-width: $max-width;
+      margin: 0 auto;
+
+      > div {
+        position: absolute;
+        top: 75px;
+        right: 0;
+        background-color: $white;
+        width: 380px;
+        z-index: 2114;
+        border-radius: 4px;
+
+        @media (max-width: 1660px) {
+          right: 0;
+        }
+
+        .arrow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          text-align: right;
+          padding-right: 98px;
+
+          @media (max-width: 1660px) {
+          }
+
+          > div {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            transform: rotate(45deg);
+            position: relative;
+            top: -8px;
+            border-right: none;
+            border-bottom: none;
+            background-color: $white;
+          }
+        }
+
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0.5rem;
+          position: relative;
+          z-index: 1;
+
+          max-height: 500px;
+          overflow-y: auto;
+          @include white-scroller;
+
+          li {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+            .message {
+              flex-grow: 1;
+              overflow-x: hidden;
+              text-overflow: ellipsis;
+              font-size: 14px;
+              font-family: NotoSans, sans-serif;
+
+              > a,
+              > span {
+                font-weight: 500;
+                max-height: 4.4rem;
+                overflow: hidden;
+                display: block;
+                -webkit-line-clamp: 2;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                text-overflow: ellipsis;
+                white-space: normal;
+              }
+              > a {
+                color: $link-color;
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+
+            .time {
+              margin-top: 4px;
+              text-align: right;
+              font-size: 12px;
+              font-weight: 500;
+              font-family: $font-family-count;
+            }
+
+            &.has-next {
+              text-align: center;
+              border-bottom: none;
+              padding-top: 1.5rem;
+              padding-bottom: 1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .my-info-menu {
     position: fixed;
     top: 0;
@@ -320,6 +454,7 @@
         top: 75px;
         right: 23px;
         background-color: $white;
+        border-radius: 4px;
 
         @media (max-width: 1660px) {
           right: 43px;
@@ -357,7 +492,6 @@
           position: relative;
           z-index: 1;
           line-height: 100%;
-          background-color: $white;
 
           li {
             line-height: 100%;

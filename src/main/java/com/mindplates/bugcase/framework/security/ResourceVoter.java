@@ -27,7 +27,7 @@ public class ResourceVoter extends WebExpressionVoter {
   public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
   public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
 
-  List<Pattern> allPassPatterns = Arrays.asList(Pattern.compile("^/api/spaces/(.*)/accessible$"), Pattern.compile("^/api/spaces/(.*)/applicants$"));
+  List<Pattern> allPassPatterns = Arrays.asList(Pattern.compile("^/api/spaces/(.*)/accessible$"), Pattern.compile("^/api/spaces/(.*)/applicants$"), Pattern.compile("^/api/spaces/(.*)/users/my$"));
   private final SpaceService spaceService;
 
   @Override

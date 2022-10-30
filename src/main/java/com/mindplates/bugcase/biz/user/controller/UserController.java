@@ -90,6 +90,13 @@ public class UserController {
     return notifications.stream().map(NotificationResponse::new).collect(Collectors.toList());
   }
 
+  @Operation(description = "내 알림 정보 조회")
+  @GetMapping("/my/notifications/count")
+  public Long selectUserNotificationCount() {
+    Long count = notificationService.selectUserNotificationCount(SessionUtil.getUserId());
+    return count;
+  }
+
   @Operation(description = "로그인")
   @PostMapping("/login")
   public MyInfoResponse login(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request) throws NoSuchAlgorithmException {

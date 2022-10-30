@@ -2,11 +2,14 @@ package com.mindplates.bugcase.biz.notification.repository;
 
 import com.mindplates.bugcase.biz.notification.entity.Notification;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-  List<Notification> findAllByUserId(Long userId);
+  List<Notification> findAllByUserId(Long userId, Pageable Pageable);
+
+  Long countByUserId(Long userId);
 
 
 }

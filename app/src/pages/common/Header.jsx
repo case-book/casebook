@@ -11,10 +11,11 @@ import { setOption } from '@/utils/storageUtil';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import { setToken } from '@/utils/request';
+import moment from 'moment';
 
 function Header({ className, theme }) {
   const {
-    userStore: { isLogin, setUser, user },
+    userStore: { isLogin, setUser, user, notification, setNotificationLastSeen },
     controlStore: { hideHeader, setHideHeader },
     contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected },
   } = useStores();
@@ -30,6 +31,10 @@ function Header({ className, theme }) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const [projectList, setProjectList] = useState([]);
+
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  const [notificationOpen, setNotificationOpen] = useState(false);
 
   useEffect(() => {
     const spaceCodeRegex = /^[A-Z\d_-]+$/;
@@ -47,6 +52,15 @@ function Header({ className, theme }) {
       );
     }
   }, [spaceCode]);
+
+  useEffect(() => {
+    console.log(notification.lastSeen);
+    if (notification?.list?.length > 0) {
+      const count = (notification?.list.filter(d => moment(d.creationDate).valueOf() > (notification.lastSeen || 0)) || []).length;
+      console.log(count);
+      setNotificationCount(count);
+    }
+  }, [notification]);
 
   const [menuAlert, setMenuAlert] = useState({
     inx: null,
@@ -242,9 +256,15 @@ function Header({ className, theme }) {
               rounded
               onClick={e => {
                 e.preventDefault();
-                setUserMenuOpen(true);
+                setNotificationOpen(true);
+                setNotificationLastSeen();
               }}
             >
+              {notificationCount > 0 && (
+                <span className="notification-count">
+                  <span>{notificationCount > 9 ? '9+' : notificationCount}</span>
+                </span>
+              )}
               <i className="fa-solid fa-bell" />
             </Button>
           </div>
@@ -281,6 +301,52 @@ function Header({ className, theme }) {
           </Button>
         </div>
       </div>
+      {notificationOpen && (
+        <div
+          className="notification-list"
+          onClick={() => {
+            setNotificationOpen(false);
+          }}
+        >
+          <div>
+            <div>
+              <div className="arrow">
+                <div />
+              </div>
+              <ul>
+                {notification?.list.map(d => {
+                  return (
+                    <li key={d.id}>
+                      <div className="message">
+                        {d.url && (
+                          <Link
+                            to={d.url}
+                            onClick={e => {
+                              e.stopPropagation();
+                              setNotificationOpen(false);
+                            }}
+                          >
+                            {d.message}
+                          </Link>
+                        )}
+                        {!d.url && <span>{d.message}</span>}
+                      </div>
+                      <div className="time">{moment(d.creationDate).format('YYYY-MM-DD HH:mm:ss')}</div>
+                    </li>
+                  );
+                })}
+                {notification.hasNext && (
+                  <li className="has-next">
+                    <Button size="sm" color="primary" onClick={() => {}}>
+                      더 보기
+                    </Button>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
       {userMenuOpen && (
         <div
           className="my-info-menu"

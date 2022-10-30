@@ -43,6 +43,7 @@ function ErrorDialog({ className, title, message, okHandler, okText }) {
         </div>
       </ModalBody>
       <ModalFooter>
+        <div className="bottom-liner" />
         <Button
           onClick={() => {
             controlStore.setError(null);

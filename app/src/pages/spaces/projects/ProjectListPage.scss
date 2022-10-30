@@ -27,56 +27,67 @@
     margin: 0;
     padding: 0;
 
-    &.white {
-      > li {
-        background-color: $white;
-        color: $black;
-
-        > div {
-          &.project-info {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-
-            .name {
-              font-weight: bold;
-              &:hover {
-                color: $link-color;
-              }
-            }
-
-            ul.project-menu {
-              > li {
-                &:hover {
-                  color: $link-color;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
     > li {
-      background-color: #191919;
-      border: 1px solid #2e2e2e;
-      _background-color: $white;
-      _color: $black;
-      margin-bottom: 1rem;
-      display: flex;
-      padding-left: 0.5rem;
-      border-radius: 4px;
+      margin-bottom: 2rem;
+      display: inline-block;
+      margin-right: 2rem;
+      width: 300px;
+      height: 360px;
 
-      > div {
-        &.project-info {
-          flex-grow: 1;
-          display: flex;
-          flex-direction: column;
+      > div.book {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        .book-shadow {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          border-radius: 4px;
+          border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .book-1 {
+          background-color: darken($card-bg-color, 2%);
+          top: 4px;
+          left: 4px;
+          z-index: 3;
+        }
+
+        .book-2 {
+          background-color: darken($card-bg-color, 3%);
+          top: 8px;
+          left: 8px;
+          z-index: 2;
+        }
+
+        .book-3 {
+          background-color: darken($card-bg-color, 4%);
+          top: 12px;
+          left: 12px;
+          z-index: 1;
+        }
+
+        .book-content {
+          background-color: $card-bg-color;
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 4;
+          border-radius: 4px;
+          border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .project-info {
           .name {
-            font-size: 24px;
+            font-size: 20px;
             flex-grow: 1;
-            padding: 1rem;
-            margin-top: 2px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            @include title;
             &:hover {
               color: $color-sunflower;
               cursor: pointer;
@@ -86,6 +97,7 @@
           ul.project-menu {
             list-style: none;
             padding: 0 1rem 1rem;
+            display: none;
 
             > li {
               display: inline-flex;
@@ -108,9 +120,11 @@
             }
           }
         }
-        &.project-status {
+        .project-status {
           margin-left: 1rem;
           display: flex;
+          display: none;
+
           > div {
             align-self: center;
             display: flex;

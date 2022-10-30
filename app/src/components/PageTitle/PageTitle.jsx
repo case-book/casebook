@@ -45,7 +45,7 @@ function PageTitle({ className, children, links, control }) {
             })}
           </div>
         )}
-        {control && <div className="control">{control}</div>}
+        {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
         <div className="menu-button">
           <Button
             size="sm"

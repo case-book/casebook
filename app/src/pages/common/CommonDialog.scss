@@ -1,4 +1,8 @@
 .common-dialog-wrapper {
+  > div {
+    box-shadow: 0 0 40px 1px #000;
+  }
+
   .modal-header {
     .title {
       display: inline-flex;
@@ -12,30 +16,14 @@
     }
   }
 
-  .modal-body {
+  .modal-body-wrapper {
     line-height: 180%;
+    padding: 1rem;
   }
 
   &.WARNING {
     .title,
     .dialog-icon {
-    }
-  }
-
-  &.error-dialog {
-    > div {
-      box-shadow: 0 0 40px 1px #000;
-    }
-    .modal-header-wrapper {
-      padding: 1.5rem 2rem;
-    }
-    .modal-body-wrapper {
-      text-align: center;
-      padding: 3rem 2px 1.5rem;
-    }
-    .modal-footer-wrapper > div {
-      padding: 1.5rem 0;
-      border-top: none;
     }
   }
 }
