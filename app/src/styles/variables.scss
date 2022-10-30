@@ -74,6 +74,7 @@ $header-bg-color: #121117;
 $primary-color: #ffbc4b;
 $primary-color: #ffbc4b;
 $secondary-color: #7bde89;
+$third-color: #3e8ef1;
 
 @mixin title() {
   font-weight: bold;
@@ -82,4 +83,17 @@ $secondary-color: #7bde89;
 
 @mixin shadow() {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+}
+
+@mixin white-scroller() {
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #f8f8f8;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #CCC;
+    border-radius: 4px;
+  }
 }

@@ -54,8 +54,9 @@ function Common() {
   const [loading, setLoading] = useState(false);
 
   const getUserNotification = () => {
-    UserService.getUserNotification(info => {
-      console.log(info);
+    UserService.getUserNotification(notifications => {
+      console.log(notifications);
+      userStore.setNotification(0, notifications);
     });
   };
 

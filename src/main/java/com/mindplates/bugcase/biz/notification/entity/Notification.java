@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "notification", indexes = {
     @Index(name = "IDX_NOTIFICATION_USER_ID", columnList = "user_id"),
+    @Index(name = "IDX_NOTIFICATION_USER_ID_AND_CREATION_DATE", columnList = "user_id, creation_date"),
     @Index(name = "IDX_NOTIFICATION_TARGET_AND_TARGET_ID", columnList = "target, target_id")
 })
 public class Notification extends CommonEntity {
