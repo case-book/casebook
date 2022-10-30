@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, TextArea, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import SpaceService from '@/services/SpaceService';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-import moment from 'moment';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
@@ -33,15 +32,15 @@ function SpaceEditPage({ type }) {
     allowAutoJoin: false,
   });
 
+  const isEdit = useMemo(() => {
+    return type === 'edit';
+  }, [type]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (id && type === 'edit') {
+    if (id && isEdit) {
       SpaceService.selectSpaceInfo(id, info => {
-        const data = { ...info };
-        if (data.permissionDate) {
-          data.permissionDate = moment(data.permissionDate, 'YYYY-MM-DD').format('YYYYMMDD');
-        }
-        setSpace(data);
+        setSpace(info);
       });
     }
   }, [type, id]);
@@ -54,11 +53,43 @@ function SpaceEditPage({ type }) {
         addSpace(result);
         navigate('/spaces');
       });
-    } else if (type === 'edit') {
+    } else if (isEdit) {
+      if ((space?.users?.filter(d => d.crud !== 'D') || []).length < 1) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '스페이스 사용자 오류', '최소한 1명의 스페이스 사용자는 존재해야 합니다.');
+        return;
+      }
+
+      if ((space?.users?.filter(d => d.crud !== 'D' && d.role === 'ADMIN') || []).length < 1) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '스페이스 사용자 오류', '최소한 1명의 스페이스 관리자는 지정되어야 합니다.');
+        return;
+      }
+
       SpaceService.updateSpace(space, () => {
-        navigate('/spaces');
+        navigate(`/spaces/${id}/info`);
       });
     }
+  };
+
+  const changeSpaceUserRole = (spaceUserId, field, value) => {
+    const next = { ...space };
+    const spaceUser = next.users.find(d => d.id === spaceUserId);
+    spaceUser.crud = 'U';
+    spaceUser[field] = value;
+    setSpace(next);
+  };
+
+  const removeSpaceUser = spaceUserId => {
+    const next = { ...space };
+    const spaceUser = next.users.find(d => d.id === spaceUserId);
+    spaceUser.crud = 'D';
+    setSpace(next);
+  };
+
+  const undoRemovalSpaceUser = spaceUserId => {
+    const next = { ...space };
+    const spaceUser = next.users.find(d => d.id === spaceUserId);
+    spaceUser.crud = 'U';
+    setSpace(next);
   };
 
   const onDelete = () => {
@@ -79,11 +110,21 @@ function SpaceEditPage({ type }) {
 
   return (
     <Page className="space-edit-page-wrapper">
-      <PageTitle>{type === 'edit' ? t('스페이스') : t('새 스페이스')}</PageTitle>
+      <PageTitle
+        control={
+          <div>
+            <Button size="sm" color="danger" onClick={onDelete}>
+              {t('스페이스 삭제')}
+            </Button>
+          </div>
+        }
+      >
+        {isEdit ? t('스페이스') : t('새 스페이스')}
+      </PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Title>기본 정보</Title>
-          <Block className="pt-0">
+          <Block>
             <BlockRow>
               <Label required>{t('이름')}</Label>
               <Input
@@ -101,20 +142,24 @@ function SpaceEditPage({ type }) {
             </BlockRow>
             <BlockRow>
               <Label required>{t('코드')}</Label>
-              <Input
-                className="code"
-                value={space.code}
-                placeholder="영문자 및 숫자, -, _ 기호로 코드를 입력할 수 있습니다."
-                pattern="^[A-Z\d_-]+$"
-                onChange={val =>
-                  setSpace({
-                    ...space,
-                    code: val.toUpperCase(),
-                  })
-                }
-                required
-                minLength={1}
-              />
+              {!isEdit && (
+                <Input
+                  className="code"
+                  value={space.code}
+                  placeholder="영문자 및 숫자, -, _ 기호로 코드를 입력할 수 있습니다."
+                  pattern="^[A-Z\d_-]+$"
+                  disabled={isEdit}
+                  onChange={val =>
+                    setSpace({
+                      ...space,
+                      code: val.toUpperCase(),
+                    })
+                  }
+                  required
+                  minLength={1}
+                />
+              )}
+              {isEdit && <Text>{space.code}</Text>}
             </BlockRow>
             <BlockRow>
               <Label>{t('설명')}</Label>
@@ -189,11 +234,83 @@ function SpaceEditPage({ type }) {
               </Button>
             </BlockRow>
           </Block>
+          {isEdit && (
+            <>
+              <Title>스페이스 사용자</Title>
+              <Block>
+                {space?.users?.length > 0 && (
+                  <Table className="space-user-list" cols={['1px', '100%', '1px']}>
+                    <Tbody>
+                      {space?.users?.map(spaceUser => {
+                        return (
+                          <Tr key={spaceUser.id} className={spaceUser.crud === 'D' ? 'deleted' : ''}>
+                            <Td className="user-info">{spaceUser.name}</Td>
+                            <Td className="user-email">
+                              <Tag className="tag" border={false} uppercase>
+                                {spaceUser.email}
+                              </Tag>
+                            </Td>
+                            <Td className={`role ${spaceUser.role}`}>
+                              {spaceUser.crud === 'D' && (
+                                <Tag className="tag" border={false} color="danger">
+                                  {t('삭제')}
+                                </Tag>
+                              )}
+                              {spaceUser.crud !== 'D' && (
+                                <Tag className="tag" border={false}>
+                                  <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
+                                  {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
+                                </Tag>
+                              )}
+                              {spaceUser.crud !== 'D' && (
+                                <Button
+                                  size="sm"
+                                  rounded
+                                  color="primary"
+                                  onClick={() => {
+                                    changeSpaceUserRole(spaceUser.id, 'role', spaceUser.role === 'ADMIN' ? 'USER' : 'ADMIN');
+                                  }}
+                                >
+                                  <i className="fa-solid fa-arrow-right-arrow-left" />
+                                </Button>
+                              )}
+                              {spaceUser.crud === 'D' && (
+                                <Button
+                                  size="sm"
+                                  rounded
+                                  color="danger"
+                                  onClick={() => {
+                                    undoRemovalSpaceUser(spaceUser.id);
+                                  }}
+                                >
+                                  <i className="fa-solid fa-rotate-left" />
+                                </Button>
+                              )}
+                              {spaceUser.crud !== 'D' && (
+                                <Button
+                                  size="sm"
+                                  rounded
+                                  color="danger"
+                                  onClick={() => {
+                                    removeSpaceUser(spaceUser.id);
+                                  }}
+                                >
+                                  <i className="fa-solid fa-trash-can" />
+                                </Button>
+                              )}
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                )}
+              </Block>
+            </>
+          )}
           <PageButtons
-            onDelete={type === 'edit' ? onDelete : null}
-            onDeleteText="스페이스 삭제"
             onCancel={() => {
-              if (type === 'edit') {
+              if (isEdit) {
                 navigate(`/spaces/${id}/info`);
               } else {
                 navigate('/');

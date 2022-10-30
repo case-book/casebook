@@ -28,7 +28,7 @@ public class NotificationService {
   }
 
   @Transactional
-  public void createSpaceJoinNotificationInfo(Space space, String message) {
+  public void createNotificationInfoToSpaceAdmins(Space space, String message) {
 
     List<Notification> notifications = new ArrayList();
     space.getUsers().stream().filter((spaceUser -> UserRole.ADMIN.equals(spaceUser.getRole()))).forEach((spaceUser -> {
@@ -46,12 +46,12 @@ public class NotificationService {
 
   @Transactional
   public void createSpaceJoinRequestCancelNotificationInfo(Space space, String userName) {
-    this.createSpaceJoinNotificationInfo(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여 신청을 취소하였습니다.");
+    this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여 신청을 취소하였습니다.");
   }
 
   @Transactional
   public void createSpaceSelfJoinNotificationInfo(Space space, String userName) {
-    this.createSpaceJoinNotificationInfo(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 자동 참여하였습니다.");
+    this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 자동 참여하였습니다.");
   }
 
   @Transactional
@@ -61,7 +61,7 @@ public class NotificationService {
       status = "승인";
     }
 
-    this.createSpaceJoinNotificationInfo(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님의 참여 요청이 " + status + " 되었습니다.");
+    this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님의 참여 요청이 " + status + " 되었습니다.");
 
     notificationRepository.save(Notification.builder()
         .message("'" + space.getName() + "'" + " 스페이스 참여 요청이 " + status + " 되었습니다.")
@@ -75,16 +75,22 @@ public class NotificationService {
 
   @Transactional
   public void createSpaceJoinRequestNotificationInfo(Space space, String userName) {
-    this.createSpaceJoinNotificationInfo(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여를 요청하였습니다.");
+    this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여를 요청하였습니다.");
   }
 
   @Transactional
   public void createSpaceJoinAgainRequestNotificationInfo(Space space, String userName) {
-    this.createSpaceJoinNotificationInfo(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여를 재요청하였습니다.");
+    this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여를 재요청하였습니다.");
   }
 
   public List<NotificationDTO> selectUserNotificationList(Long userId) {
     return notificationRepository.findAllByUserId(userId).stream().map((NotificationDTO::new)).collect(Collectors.toList());
   }
+
+  @Transactional
+  public void createSpaceUserWithdrawInfo(Space space, String userInfo) {
+    this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에서 사용자 '" + userInfo + "'님이 탈퇴하였습니다.");
+  }
+
 
 }

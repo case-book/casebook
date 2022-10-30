@@ -1,0 +1,10 @@
+.table-wrapper {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.block-wrapper {
+  > table:first-child {
+    margin-top: 1rem;
+  }
+}

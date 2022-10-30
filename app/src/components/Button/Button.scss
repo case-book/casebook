@@ -111,6 +111,32 @@
     }
   }
 
+  &.btn-warning {
+    background-color: $warning;
+    color: $white !important;
+
+    &:hover {
+      background-color: darken($warning, 10%);
+    }
+
+    &.disabled:hover {
+      background-color: $warning;
+    }
+  }
+
+  &.btn-outline-warning {
+    background-color: $white;
+    color: $warning;
+    border: 1px solid $warning;
+    &:hover {
+      border: 1px solid darken($warning, 10%);
+      color: darken($warning, 10%);
+      &.disabled {
+        opacity: 0.4;
+      }
+    }
+  }
+
   &.rounded {
     border-radius: 50% !important;
     padding-left: 0;

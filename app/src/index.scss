@@ -200,32 +200,6 @@ hr {
   background-color: #2e2e2e;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  tr {
-    &:first-child {
-      td {
-        border-top: 1px solid #2e2e2e;
-      }
-    }
-    td {
-      padding: 1.5rem;
-      border-bottom: 1px solid #2e2e2e;
-      vertical-align: middle;
-
-      &.name {
-        width: 100%;
-      }
-
-      &.count {
-        white-space: nowrap;
-      }
-    }
-  }
-}
-
 .g-empty-message {
   height: 100%;
   display: flex;
@@ -256,7 +230,6 @@ table {
 }
 ::-webkit-scrollbar-track {
   background-color: $gray-900;
-
 }
 ::-webkit-scrollbar-thumb {
   background-color: $gray-500;

@@ -9,49 +9,17 @@
     max-width: 500px;
   }
 
+  .project-info.is-user {
+    max-width: none;
+    flex-grow: 1;
+  }
+
   .member-info {
     flex-grow: 1;
   }
 
-  table.project-list,
-  table.user-list,
   table.applicant-list {
     td {
-      padding: 0.75rem 1rem;
-      border-top: none;
-      border-bottom: none;
-      _border-bottom: 1px solid #101010;
-      vertical-align: middle;
-    }
-
-    tr {
-      border: 1px solid #080808;
-      &:nth-child(2n-1) {
-        background-color: rgba(0, 0, 0, 0.08);
-      }
-
-      &:nth-child(2n) {
-        background-color: rgba(255, 255, 255, 0.02);
-      }
-    }
-  }
-
-  table.applicant-list,
-  table.user-list {
-    td {
-      &.user-info {
-        white-space: nowrap;
-        text-transform: uppercase;
-        width: 1px;
-      }
-
-      &.user-email {
-        white-space: nowrap;
-        text-transform: uppercase;
-        width: 100%;
-        padding-left: 0;
-      }
-
       &.message {
         width: 1px;
         white-space: nowrap;
@@ -99,12 +67,6 @@
       }
 
       &.role {
-        width: 1px;
-        white-space: nowrap;
-        text-align: right;
-        padding-left: 0;
-        padding-right: 1rem;
-
         > button {
           margin-right: 0.5rem;
           &:last-child {
@@ -117,11 +79,6 @@
             display: inline-block;
             min-width: 14px;
             text-align: left;
-          }
-        }
-
-        &.ADMIN {
-          > .tag {
           }
         }
       }
@@ -164,24 +121,20 @@
   table.project-list {
     td {
       &.project-name {
-        white-space: nowrap;
-        text-transform: uppercase;
         font-weight: bold;
       }
 
       &.activated {
-        text-transform: uppercase;
-        font-family: Cairo, sans-serif;
         font-weight: bold;
         width: 80px;
         text-align: center;
+        padding-left: 0;
+        padding-right: 8px;
       }
 
       &.testcase-count,
       &.bug-count {
-        padding: 0;
-        width: 36px;
-        text-align: center;
+        padding: 0 8px 0 0;
         > div {
           display: inline-flex;
           width: 26px;
@@ -191,7 +144,7 @@
           > span {
             font-size: 13px;
             align-self: center;
-            font-family: Rowdies, NotoSans, sans-serif, sans-serif;
+            font-family: $font-family-count;
           }
         }
       }

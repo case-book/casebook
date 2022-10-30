@@ -46,6 +46,7 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
         </div>
       </ModalBody>
       <ModalFooter>
+        <div className="bottom-liner" />
         <Button
           onClick={() => {
             controlStore.setMessage(null);

@@ -11,8 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -22,7 +20,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 @Entity
 @Builder
@@ -74,7 +71,6 @@ public class Space extends CommonEntity {
 
   public void merge(Space space) {
     this.name = space.getName();
-    this.code = space.getCode();
     this.description = space.getDescription();
     this.activated = space.isActivated();
     this.token = space.getToken();

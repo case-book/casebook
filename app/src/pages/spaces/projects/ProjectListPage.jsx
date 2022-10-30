@@ -54,68 +54,75 @@ function Spaces() {
             {projects?.map(project => {
               return (
                 <li key={project.id}>
-                  <div className="project-info">
-                    <div
-                      className="name"
-                      onClick={() => {
-                        navigate(`/spaces/${spaceCode}/projects/${project.id}`);
-                      }}
-                    >
-                      {project.name}
-                    </div>
-                    <ul className="project-menu">
-                      {MENUS.map((menu, inx) => {
-                        return (
-                          <li key={inx}>
-                            <div
-                              onClick={() => {
-                                navigate(`/spaces/${spaceCode}/projects/${project.id}${menu.to}`);
-                              }}
-                            >
-                              {menu.name}
-                            </div>
-                            <div>
-                              <Liner className="liner" display="inline-block" width="1px" height="8px" color="black" margin="0 0.5rem" />
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                  <div className="project-status">
-                    <div>
-                      <div
-                        onClick={() => {
-                          navigate(`/spaces/${spaceCode}/projects/${project.id}/testcases`);
-                        }}
-                      >
-                        <div className="icon">
-                          <i className="fa-solid fa-briefcase" />
+                  <div className="book">
+                    <div className="book-shadow book-1" />
+                    <div className="book-shadow book-2" />
+                    <div className="book-shadow book-3" />
+                    <div className="book-content">
+                      <div className="project-info">
+                        <div
+                          className="name"
+                          onClick={() => {
+                            navigate(`/spaces/${spaceCode}/projects/${project.id}`);
+                          }}
+                        >
+                          {project.name}
                         </div>
-                        <div className="count">{project.testcaseCount}</div>
-                        <div className="label">TESTCASES</div>
+                        <ul className="project-menu">
+                          {MENUS.map((menu, inx) => {
+                            return (
+                              <li key={inx}>
+                                <div
+                                  onClick={() => {
+                                    navigate(`/spaces/${spaceCode}/projects/${project.id}${menu.to}`);
+                                  }}
+                                >
+                                  {menu.name}
+                                </div>
+                                <div>
+                                  <Liner className="liner" display="inline-block" width="1px" height="8px" color="black" margin="0 0.5rem" />
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
                       </div>
-                      <div
-                        onClick={() => {
-                          navigate(`/spaces/${spaceCode}/projects/${project.id}/bugs`);
-                        }}
-                      >
-                        <div className="icon">
-                          <i className="fa-solid fa-virus" />
+                      <div className="project-status">
+                        <div>
+                          <div
+                            onClick={() => {
+                              navigate(`/spaces/${spaceCode}/projects/${project.id}/testcases`);
+                            }}
+                          >
+                            <div className="icon">
+                              <i className="fa-solid fa-briefcase" />
+                            </div>
+                            <div className="count">{project.testcaseCount}</div>
+                            <div className="label">TESTCASES</div>
+                          </div>
+                          <div
+                            onClick={() => {
+                              navigate(`/spaces/${spaceCode}/projects/${project.id}/bugs`);
+                            }}
+                          >
+                            <div className="icon">
+                              <i className="fa-solid fa-virus" />
+                            </div>
+                            <div className="count bugs">{project.bugCount}</div>
+                            <div className="label">BUGS</div>
+                          </div>
+                          <div
+                            onClick={() => {
+                              navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
+                            }}
+                          >
+                            <div className="icon">
+                              <i className="fa-regular fa-newspaper" />
+                            </div>
+                            <div className="count">{project.testrunCount}</div>
+                            <div className="label">TESTRUN</div>
+                          </div>
                         </div>
-                        <div className="count bugs">{project.bugCount}</div>
-                        <div className="label">BUGS</div>
-                      </div>
-                      <div
-                        onClick={() => {
-                          navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
-                        }}
-                      >
-                        <div className="icon">
-                          <i className="fa-regular fa-newspaper" />
-                        </div>
-                        <div className="count">{project.testrunCount}</div>
-                        <div className="label">TESTRUN</div>
                       </div>
                     </div>
                   </div>

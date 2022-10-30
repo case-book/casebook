@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Card, CardContent, CardHeader, Col, Dd, Dl, Dt, EmptyContent, PageContent, PageTitle, Radio, Row, Tag } from '@/components';
+import { Button, Card, CardContent, CardHeader, Col, Dd, Dl, Dt, EmptyContent, PageContent, PageTitle, Radio, Row, Table, Tag, Tbody, Td, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -7,6 +7,8 @@ import SpaceService from '@/services/SpaceService';
 import { SpacePropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
 import './SpaceContent.scss';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 function SpaceContent({ space, onRefresh }) {
   const { t } = useTranslation();
@@ -34,6 +36,21 @@ function SpaceContent({ space, onRefresh }) {
     SpaceService.rejectSpaceJoinRequest(id, applicantId, () => {
       onRefresh();
     });
+  };
+
+  const withdraw = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('스페이스 탈퇴'),
+      <div>{t('스페이스를 탈퇴하면, 스페이스 및 스페이스 하위 프로젝트들에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?')}</div>,
+      () => {
+        SpaceService.withdrawSpace(id, () => {
+          onRefresh();
+        });
+      },
+      null,
+      t('탈퇴'),
+    );
   };
 
   const applicants = useMemo(() => {
@@ -86,7 +103,18 @@ function SpaceContent({ space, onRefresh }) {
 
   return (
     <>
-      <PageTitle links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('스페이스 변경')}</Link>] : null}>{t('스페이스')}</PageTitle>
+      <PageTitle
+        links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('스페이스 변경')}</Link>] : null}
+        control={
+          <div>
+            <Button size="sm" color="danger" onClick={withdraw}>
+              {t('스페이스 탈퇴')}
+            </Button>
+          </div>
+        }
+      >
+        {t('스페이스')}
+      </PageTitle>
       <PageContent className="space-info-content">
         <Row minHeight="400px" flexGrow="auto">
           <Col className="general-info">
@@ -152,76 +180,75 @@ function SpaceContent({ space, onRefresh }) {
                   </EmptyContent>
                 )}
                 {users?.length > 0 && (
-                  <table className="user-list">
-                    <tbody>
+                  <Table cols={['1px', '100%', '1px']}>
+                    <Tbody>
                       {users?.map(user => {
                         return (
-                          <tr key={user.id}>
-                            <td className="user-info">{user.name}</td>
-                            <td className="user-email">
-                              <Tag className="tag" border={false}>
+                          <Tr key={user.id}>
+                            <Td className="user-info">{user.name}</Td>
+                            <Td className="user-email">
+                              <Tag className="tag" border={false} uppercase>
                                 {user.email}
                               </Tag>
-                            </td>
-                            <td className={`role ${user.role}`}>
+                            </Td>
+                            <Td className={`role ${user.role}`}>
                               <Tag className="tag" border={false}>
                                 <span className="icon">{user.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
                                 {user.role === 'ADMIN' ? t('관리자') : t('사용자')}
                               </Tag>
-                            </td>
-                          </tr>
+                            </Td>
+                          </Tr>
                         );
                       })}
-                    </tbody>
-                  </table>
+                    </Tbody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
           </Col>
         </Row>
-
-        {space.admin && (
-          <Row minHeight="400px" flexGrow="1">
-            <Col className="project-info">
-              <Card className="card">
-                <CardHeader>{t('프로젝트')}</CardHeader>
-                <CardContent scroll>
-                  {space?.projects?.length < 1 && (
-                    <EmptyContent className="empty-content">
-                      <div>{t('프로젝트가 없습니다.')}</div>
-                    </EmptyContent>
-                  )}
-                  {space?.projects.length > 0 && (
-                    <table className="project-list">
-                      <tbody>
-                        {space?.projects?.map(project => {
-                          return (
-                            <tr key={project.id}>
-                              <td className="project-name">
-                                <Link to={`/spaces/${space.code}/projects/${project.id}`}>{project.name}</Link>
-                              </td>
-                              <td className="activated">
-                                <Tag>{project.activated ? 'activated' : 'disabled'}</Tag>
-                              </td>
-                              <td className="testcase-count">
-                                <div>
-                                  <span>{project.testcaseCount}</span>
-                                </div>
-                              </td>
-                              <td className="bug-count">
-                                <div>
-                                  <span>{project.bugCount}</span>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  )}
-                </CardContent>
-              </Card>
-            </Col>
+        <Row minHeight="400px" flexGrow="1">
+          <Col className={`project-info ${space.admin ? 'is-admin' : 'is-user'}`}>
+            <Card className="card">
+              <CardHeader>{t('프로젝트')}</CardHeader>
+              <CardContent scroll>
+                {space?.projects?.length < 1 && (
+                  <EmptyContent className="empty-content">
+                    <div>{t('프로젝트가 없습니다.')}</div>
+                  </EmptyContent>
+                )}
+                {space?.projects.length > 0 && (
+                  <Table className="project-list" cols={['100%', '1px', '1px']}>
+                    <Tbody>
+                      {space?.projects?.map(project => {
+                        return (
+                          <Tr key={project.id}>
+                            <Td className="project-name">
+                              <Link to={`/spaces/${space.code}/projects/${project.id}`}>{project.name}</Link>
+                            </Td>
+                            <Td className="activated">
+                              <Tag uppercase>{project.activated ? 'activated' : 'disabled'}</Tag>
+                            </Td>
+                            <Td className="testcase-count">
+                              <div>
+                                <span>{project.testcaseCount}</span>
+                              </div>
+                            </Td>
+                            <Td className="bug-count">
+                              <div>
+                                <span>{project.bugCount}</span>
+                              </div>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </Col>
+          {space.admin && (
             <Col className="member-info">
               <Card className="card">
                 <CardHeader
@@ -250,21 +277,21 @@ function SpaceContent({ space, onRefresh }) {
                     </EmptyContent>
                   )}
                   {applicants?.length > 0 && (
-                    <table className="applicant-list">
-                      <tbody>
+                    <Table className="applicant-list" cols={['1px', '1px', '100%', '1px', '1px']}>
+                      <Tbody>
                         {applicants?.map(applicant => {
                           return (
-                            <tr key={applicant.id}>
-                              <td className={`request-status ${applicant.approvalStatusCode}`}>
+                            <Tr key={applicant.id}>
+                              <Td className={`request-status ${applicant.approvalStatusCode}`}>
                                 <Tag rounded={false}>{getApprovalStatusName(applicant.approvalStatusCode)}</Tag>
-                              </td>
-                              <td className="user-info">{applicant.userName}</td>
-                              <td className="user-email">
-                                <Tag className="tag" border={false}>
+                              </Td>
+                              <Td className="user-info">{applicant.userName}</Td>
+                              <Td className="user-email">
+                                <Tag className="tag" border={false} uppercase>
                                   {applicant.userEmail}
                                 </Tag>
-                              </td>
-                              <td className="message">
+                              </Td>
+                              <Td className="message">
                                 {tooltipId === applicant.id && (
                                   <>
                                     <div
@@ -295,8 +322,8 @@ function SpaceContent({ space, onRefresh }) {
                                     <i className="fa-regular fa-envelope" /> {t('메세지')}
                                   </Button>
                                 )}
-                              </td>
-                              <td className="role">
+                              </Td>
+                              <Td className="role">
                                 {(applicant.approvalStatusCode === 'REQUEST' || applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
                                   <>
                                     <Button
@@ -319,18 +346,18 @@ function SpaceContent({ space, onRefresh }) {
                                     </Button>
                                   </>
                                 )}
-                              </td>
-                            </tr>
+                              </Td>
+                            </Tr>
                           );
                         })}
-                      </tbody>
-                    </table>
+                      </Tbody>
+                    </Table>
                   )}
                 </CardContent>
               </Card>
             </Col>
-          </Row>
-        )}
+          )}
+        </Row>
       </PageContent>
     </>
   );

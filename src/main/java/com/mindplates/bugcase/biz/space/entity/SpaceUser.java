@@ -49,6 +49,6 @@ public class SpaceUser extends CommonEntity {
   private Space space;
 
   @Transient
-  private String CRUD;
+  private String crud;
 
 }

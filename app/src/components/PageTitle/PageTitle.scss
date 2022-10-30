@@ -39,6 +39,20 @@
 
   .control {
     margin-left: 0.5rem;
+    flex-grow: 1;
+    text-align: right;
+
+    &.has-link {
+      flex-grow: 0;
+    }
+    > div {
+      button {
+        margin-right: 0.5rem;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
   }
 
   .links {

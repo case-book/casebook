@@ -137,4 +137,15 @@ SpaceService.rejectSpaceJoinRequest = (spaceCode, applicantId, successHandler, f
   );
 };
 
+SpaceService.withdrawSpace = (spaceCode, successHandler, failHandler) => {
+  return request.del(
+    `/api/spaces/${spaceCode}/users/my`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default SpaceService;

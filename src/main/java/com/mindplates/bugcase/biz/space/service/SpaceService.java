@@ -89,6 +89,24 @@ public class SpaceService {
   public Space updateSpaceInfo(Space next) {
     Space space = this.selectSpaceInfo(next.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     space.merge(next);
+
+    next.getUsers().forEach((spaceUser -> {
+      if ("D" .equals(spaceUser.getCrud())) {
+        space.getUsers().removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
+        space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
+      } else if ("U" .equals(spaceUser.getCrud())) {
+        SpaceUser updateUser = space.getUsers().stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId()))).findAny().orElse(null);
+        if (updateUser != null) {
+          updateUser.setRole(spaceUser.getRole());
+        }
+      }
+    }));
+
+    boolean hasAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRole.ADMIN)));
+    if (!hasAdmin) {
+      throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
+    }
+
     spaceRepository.save(space);
     return space;
   }
@@ -225,6 +243,34 @@ public class SpaceService {
     }
 
     spaceRepository.save(space);
+
+    return space;
+  }
+
+  @Caching(evict = {
+      @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
+  })
+  @Transactional
+  public Space deleteSpaceUser(String spaceCode, Long userId) {
+    Space space = this.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    boolean isSpaceAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRole.ADMIN)));
+    SecurityUser user = SessionUtil.getSecurityUser();
+    if (!(user.getId().equals(userId) || isSpaceAdmin)) {
+      throw new ServiceException(HttpStatus.FORBIDDEN);
+    }
+
+    User targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny().map(spaceUser -> spaceUser.getUser()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+    space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
+    space.getUsers().removeIf((spaceUser -> spaceUser.getUser().getId().equals(userId)));
+
+    boolean hasAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRole.ADMIN)));
+    if (!hasAdmin) {
+      throw new ServiceException(HttpStatus.BAD_GATEWAY, "no.space.admin.exist");
+    }
+
+    spaceRepository.save(space);
+    notificationService.createSpaceUserWithdrawInfo(space, targetUser.getName() + " [" + targetUser.getEmail() + "]");
 
     return space;
   }
