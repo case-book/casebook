@@ -5,7 +5,6 @@ import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.entity.SystemRole;
 import com.mindplates.bugcase.common.util.EncryptUtil;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,8 +44,6 @@ public class UserService {
 
   @Transactional
   public User createUser(User user) {
-    LocalDateTime now = LocalDateTime.now();
-
     String plainText = user.getPassword();
     byte[] saltBytes = encryptUtil.getSaltByteArray();
     String salt = encryptUtil.getSaltString(saltBytes);
@@ -60,6 +57,11 @@ public class UserService {
     user.setRecoveryToken("");
     user.setRecoveryMailSendResult(false);
     user.setUseYn(true);
+    return userRepository.save(user);
+  }
+
+  @Transactional
+  public User updateUser(User user) {
     return userRepository.save(user);
   }
 

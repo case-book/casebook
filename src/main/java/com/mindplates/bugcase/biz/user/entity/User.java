@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.user.entity;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.common.entity.SystemRole;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -86,5 +87,8 @@ public class User extends CommonEntity {
 
   @Column(name = "timezone", length = ColumnsDef.CODE)
   private String timezone;
+
+  @Column(name = "last_seen")
+  private LocalDateTime lastSeen;
 
 }

@@ -180,14 +180,31 @@ UserService.updateMySetting = (setting, successHandler, failHandler) => {
   );
 };
 
-UserService.getUserNotification = (successHandler, failHandler) => {
+UserService.getUserNotificationCount = (successHandler, failHandler) => {
   return request.get(
-    '/api/users/my/notifications',
+    '/api/users/my/notifications/count',
     {},
     res => {
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+UserService.getUserNotificationList = (pageNo, successHandler, failHandler) => {
+  return request.get(
+    '/api/users/my/notifications',
+    { pageNo },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
   );
 };
 

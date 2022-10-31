@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.user.controller;
 
 import com.mindplates.bugcase.biz.notification.dto.NotificationDTO;
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
+import com.mindplates.bugcase.biz.notification.vo.NotificationInfoResponse;
 import com.mindplates.bugcase.biz.notification.vo.NotificationResponse;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
@@ -16,6 +17,7 @@ import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -39,8 +42,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class UserController {
 
-  private final SessionUtil sessionUtil;
-
   private final UserService userService;
 
   private final SpaceService spaceService;
@@ -48,6 +49,8 @@ public class UserController {
   private final NotificationService notificationService;
 
   private final JwtTokenProvider jwtTokenProvider;
+
+  private static int NOTIFICATION_PAGE_SIZE = 10;
 
 
   @Operation(description = "회원 가입")
@@ -85,16 +88,34 @@ public class UserController {
 
   @Operation(description = "내 알림 정보 조회")
   @GetMapping("/my/notifications")
-  public List<NotificationResponse> selectUserNotificationList() {
-    List<NotificationDTO> notifications = notificationService.selectUserNotificationList(SessionUtil.getUserId());
-    return notifications.stream().map(NotificationResponse::new).collect(Collectors.toList());
+  public NotificationInfoResponse selectUserNotificationList(@RequestParam(value = "pageNo") int pageNo) {
+    User user = userService.selectUserInfo(SessionUtil.getUserId());
+
+    if (user == null) {
+      throw new ServiceException(HttpStatus.BAD_GATEWAY);
+    }
+
+    LocalDateTime currentLastSeen = user.getLastSeen();
+    List<NotificationDTO> notifications = notificationService.selectUserNotificationList(SessionUtil.getUserId(), pageNo, NOTIFICATION_PAGE_SIZE);
+
+    if (pageNo == 0) {
+      user.setLastSeen(LocalDateTime.now());
+      userService.updateUser(user);
+    }
+
+    return NotificationInfoResponse.builder()
+        .lastSeen(currentLastSeen)
+        .hasNext(notifications.size() >= NOTIFICATION_PAGE_SIZE)
+        .pageNo(pageNo)
+        .notifications(notifications.stream().map(NotificationResponse::new).collect(Collectors.toList()))
+        .build();
   }
 
-  @Operation(description = "내 알림 정보 조회")
+  @Operation(description = "내 알림 카운트 조회")
   @GetMapping("/my/notifications/count")
   public Long selectUserNotificationCount() {
-    Long count = notificationService.selectUserNotificationCount(SessionUtil.getUserId());
-    return count;
+    User user = userService.selectUserInfo(SessionUtil.getUserId());
+    return notificationService.selectUserNotificationCount(SessionUtil.getUserId(), user.getLastSeen(), NOTIFICATION_PAGE_SIZE);
   }
 
   @Operation(description = "로그인")

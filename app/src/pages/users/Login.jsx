@@ -22,11 +22,18 @@ function Login() {
     autoLogin: true,
   });
 
+  const getUserNotificationCount = () => {
+    UserService.getUserNotificationCount(count => {
+      userStore.setNotificationCount(count);
+    });
+  };
+
   const onSubmit = e => {
     e.preventDefault();
     UserService.login(info, data => {
       setToken(data.token);
       userStore.setUser(data);
+      getUserNotificationCount();
       navigate('/');
     });
   };
