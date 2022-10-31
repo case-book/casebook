@@ -53,10 +53,9 @@ function Common() {
 
   const [loading, setLoading] = useState(false);
 
-  const getUserNotification = () => {
-    UserService.getUserNotification(notifications => {
-      console.log(notifications);
-      userStore.setNotification(0, notifications);
+  const getUserNotificationCount = () => {
+    UserService.getUserNotificationCount(count => {
+      userStore.setNotificationCount(count);
     });
   };
 
@@ -65,7 +64,7 @@ function Common() {
       info => {
         userStore.setUser(info);
         userStore.setTried(true);
-        getUserNotification();
+        getUserNotificationCount();
       },
       () => {
         userStore.setTried(true);

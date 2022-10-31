@@ -15,12 +15,18 @@ import moment from 'moment';
 
 function Header({ className, theme }) {
   const {
-    userStore: { isLogin, setUser, user, notification, setNotificationLastSeen },
+    userStore: { isLogin, setUser, user, notificationCount, setNotificationCount },
     controlStore: { hideHeader, setHideHeader },
     contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected },
   } = useStores();
 
   const navigate = useNavigate();
+
+  const notificationScrollerElement = useRef(null);
+
+  const notificationListElement = useRef(null);
+
+  const fetching = useRef(false);
 
   const location = useLocation();
 
@@ -32,9 +38,46 @@ function Header({ className, theme }) {
 
   const [projectList, setProjectList] = useState([]);
 
-  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationInfo, setNotificationInfo] = useState({
+    lastSeen: null,
+    notifications: [],
+    hasNext: false,
+    pageNo: 0,
+  });
 
   const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const getNotificationInfo = pageNo => {
+    fetching.current = true;
+    UserService.getUserNotificationList(pageNo, info => {
+      if (pageNo === 0) {
+        fetching.current = false;
+      } else {
+        setTimeout(() => {
+          fetching.current = false;
+        }, 500);
+      }
+
+      if (info.pageNo > 0) {
+        setNotificationInfo({
+          ...info,
+          lastSeen: notificationInfo.lastSeen,
+          notifications: notificationInfo.notifications.concat(info.notifications),
+        });
+      } else {
+        setNotificationCount(0);
+        setNotificationInfo(info);
+      }
+    });
+  };
+
+  const openUserNotificationPopup = opened => {
+    if (opened) {
+      getNotificationInfo(0);
+    }
+
+    setNotificationOpen(opened);
+  };
 
   useEffect(() => {
     const spaceCodeRegex = /^[A-Z\d_-]+$/;
@@ -52,15 +95,6 @@ function Header({ className, theme }) {
       );
     }
   }, [spaceCode]);
-
-  useEffect(() => {
-    console.log(notification.lastSeen);
-    if (notification?.list?.length > 0) {
-      const count = (notification?.list.filter(d => moment(d.creationDate).valueOf() > (notification.lastSeen || 0)) || []).length;
-      console.log(count);
-      setNotificationCount(count);
-    }
-  }, [notification]);
 
   const [menuAlert, setMenuAlert] = useState({
     inx: null,
@@ -256,8 +290,7 @@ function Header({ className, theme }) {
               rounded
               onClick={e => {
                 e.preventDefault();
-                setNotificationOpen(true);
-                setNotificationLastSeen();
+                openUserNotificationPopup(true);
               }}
             >
               {notificationCount > 0 && (
@@ -305,7 +338,7 @@ function Header({ className, theme }) {
         <div
           className="notification-list"
           onClick={() => {
-            setNotificationOpen(false);
+            openUserNotificationPopup(false);
           }}
         >
           <div>
@@ -313,36 +346,62 @@ function Header({ className, theme }) {
               <div className="arrow">
                 <div />
               </div>
-              <ul>
-                {notification?.list.map(d => {
-                  return (
-                    <li key={d.id}>
-                      <div className="message">
-                        {d.url && (
-                          <Link
-                            to={d.url}
-                            onClick={e => {
-                              e.stopPropagation();
-                              setNotificationOpen(false);
-                            }}
-                          >
-                            {d.message}
-                          </Link>
-                        )}
-                        {!d.url && <span>{d.message}</span>}
-                      </div>
-                      <div className="time">{moment(d.creationDate).format('YYYY-MM-DD HH:mm:ss')}</div>
+              <div
+                className="notification-list-scroller"
+                ref={notificationScrollerElement}
+                onClick={e => e.stopPropagation()}
+                onScroll={() => {
+                  if (notificationScrollerElement.current && notificationListElement.current) {
+                    if (
+                      !fetching.current &&
+                      notificationInfo.hasNext &&
+                      notificationListElement.current.offsetHeight - (notificationScrollerElement.current.scrollTop + notificationScrollerElement.current.offsetHeight) < 40
+                    ) {
+                      getNotificationInfo(notificationInfo.pageNo + 1);
+                    }
+                  }
+                }}
+              >
+                <ul ref={notificationListElement}>
+                  {notificationInfo?.notifications.map(d => {
+                    return (
+                      <li key={d.id} className={moment(d.creationDate).isAfter(moment(notificationInfo.lastSeen)) ? 'unread' : ''}>
+                        <div className="message">
+                          {d.url && (
+                            <Link
+                              to={d.url}
+                              onClick={e => {
+                                e.stopPropagation();
+                                openUserNotificationPopup(false);
+                              }}
+                            >
+                              {d.message}
+                            </Link>
+                          )}
+                          {!d.url && <span>{d.message}</span>}
+                        </div>
+                        <div className="time">{moment(d.creationDate).format('YYYY-MM-DD HH:mm:ss')}</div>
+                      </li>
+                    );
+                  })}
+                  {!notificationInfo.hasNext && <li className="end-list">다음 알림이 없습니다.</li>}
+                  {notificationInfo.hasNext && (
+                    <li className="has-next">
+                      <Button
+                        size="sm"
+                        color="primary"
+                        onClick={() => {
+                          if (notificationInfo.hasNext) {
+                            getNotificationInfo(notificationInfo.pageNo + 1);
+                          }
+                        }}
+                      >
+                        더 보기
+                      </Button>
                     </li>
-                  );
-                })}
-                {notification.hasNext && (
-                  <li className="has-next">
-                    <Button size="sm" color="primary" onClick={() => {}}>
-                      더 보기
-                    </Button>
-                  </li>
-                )}
-              </ul>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

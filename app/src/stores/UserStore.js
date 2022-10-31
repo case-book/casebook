@@ -1,5 +1,4 @@
 import { action, computed, makeObservable, observable } from 'mobx';
-import { getOption, setOption } from '@/utils/storageUtil';
 
 export default class UserStore {
   user = {
@@ -12,12 +11,7 @@ export default class UserStore {
     spaces: null,
   };
 
-  notification = {
-    pageNo: 0,
-    list: [],
-    lastSeen: getOption('user', 'notification', 'lastSeen') || null,
-    hasNext: false,
-  };
+  notificationCount = 0;
 
   tried = null;
 
@@ -25,13 +19,12 @@ export default class UserStore {
     makeObservable(this, {
       user: observable,
       tried: observable,
-      notification: observable,
+      notificationCount: observable,
       setUser: action,
       setTried: action,
       isLogin: computed,
       addSpace: action,
-      setNotification: action,
-      setNotificationLastSeen: action,
+      setNotificationCount: action,
     });
   }
 
@@ -41,24 +34,8 @@ export default class UserStore {
     };
   };
 
-  setNotification = (pageNo, list) => {
-    this.notification = {
-      ...this.notification,
-      pageNo,
-      list,
-      hasNext: list?.length >= 10,
-    };
-  };
-
-  setNotificationLastSeen = () => {
-    const lastSeen = Date.now();
-    const nextNotification = {
-      ...this.notification,
-      lastSeen,
-    };
-
-    setOption('user', 'notification', 'lastSeen', lastSeen);
-    this.notification = nextNotification;
+  setNotificationCount = count => {
+    this.notificationCount = count;
   };
 
   addSpace = space => {

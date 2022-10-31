@@ -4,8 +4,12 @@ import com.mindplates.bugcase.biz.notification.dto.NotificationDTO;
 import com.mindplates.bugcase.biz.notification.entity.Notification;
 import com.mindplates.bugcase.biz.notification.repository.NotificationRepository;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.entity.NotificationTargetCode;
 import com.mindplates.bugcase.common.entity.UserRole;
+import com.mindplates.bugcase.common.exception.ServiceException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +29,20 @@ public class NotificationService {
 
   private final NotificationRepository notificationRepository;
 
-  public List<NotificationDTO> selectUserNotificationList(Long userId) {
-    Pageable pageInfo = PageRequest.of(0, 10, Sort.by("creationDate").descending());
-    return notificationRepository.findAllByUserId(userId, pageInfo).stream().map((NotificationDTO::new)).collect(Collectors.toList());
+  private final UserRepository userRepository;
+
+  public List<NotificationDTO> selectUserNotificationList(Long userId, int pageNo, int pageSize) {
+    Pageable pageInfo = PageRequest.of(pageNo, pageSize, Sort.by("creationDate").descending());
+    return notificationRepository.findAllByUserIdOrderByCreationDateDesc(userId, pageInfo).stream().map((NotificationDTO::new)).collect(Collectors.toList());
   }
 
-  public Long selectUserNotificationCount(Long userId) {
-    return notificationRepository.countByUserId(userId);
+  public Long selectUserNotificationCount(Long userId, LocalDateTime lastSeen, int pageSize) {
+    if (lastSeen == null) {
+      return notificationRepository.countByUserId(userId);
+    } else {
+      Pageable pageInfo = PageRequest.of(0, pageSize, Sort.by("creationDate").descending());
+      return Long.parseLong(Integer.toString(notificationRepository.findAllByUserIdAndCreationDateAfterOrderByCreationDateDesc(userId, lastSeen, pageInfo).size()));
+    }
   }
 
   @Transactional
