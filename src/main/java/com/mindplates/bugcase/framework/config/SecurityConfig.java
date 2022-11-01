@@ -62,7 +62,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     web.ignoring().antMatchers("/api/configs/systems/**")
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .antMatchers("/api/configs/systems/**")
-        .antMatchers("/api/users/login", "/api/users/logout", "/api/users/join");
+        .antMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
+            .antMatchers("/ws/**");
 
   }
 
@@ -74,10 +75,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
         .accessDeniedHandler(accessDeniedHandler)
         .and()
-        .authorizeRequests().anyRequest().authenticated()
+        .authorizeRequests().antMatchers("/ws/**").permitAll().anyRequest().authenticated()
         .accessDecisionManager(accessDecisionManager())
         .and()
         .formLogin().disable();
+
+
 
     http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
         UsernamePasswordAuthenticationFilter.class);

@@ -11,8 +11,13 @@ import com.mindplates.bugcase.common.entity.UserRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.mindplates.bugcase.common.message.MessageSendService;
+import com.mindplates.bugcase.common.message.vo.MessageData;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +36,8 @@ public class NotificationService {
 
   private final UserRepository userRepository;
 
+  private final MessageSendService messageSendService;
+
   public List<NotificationDTO> selectUserNotificationList(Long userId, int pageNo, int pageSize) {
     Pageable pageInfo = PageRequest.of(pageNo, pageSize, Sort.by("creationDate").descending());
     return notificationRepository.findAllByUserIdOrderByCreationDateDesc(userId, pageInfo).stream().map((NotificationDTO::new)).collect(Collectors.toList());
@@ -46,16 +53,14 @@ public class NotificationService {
   }
 
   @Transactional
-  public Notification saveNotificationInfo(Notification notification) {
-    notificationRepository.save(notification);
-    return notification;
-  }
-
-  @Transactional
   public void createNotificationInfoToSpaceAdmins(Space space, String message) {
 
     List<Notification> notifications = new ArrayList();
     space.getUsers().stream().filter((spaceUser -> UserRole.ADMIN.equals(spaceUser.getRole()))).forEach((adminUser -> {
+
+      MessageData messageData = MessageData.builder().type("NEW-NOTIFICATION").build();
+      messageSendService.sendTo("users/" + adminUser.getUser().getId(), messageData);
+
       notifications.add(Notification.builder()
           .message(message)
           .target(NotificationTargetCode.SPACE)
@@ -65,11 +70,17 @@ public class NotificationService {
           .build());
     }));
 
+
+
     notificationRepository.saveAll(notifications);
   }
 
   @Transactional
   public void createNotificationInfoToUser(NotificationTargetCode targetCode, Long targetId, Long userId, String message, String url) {
+
+    MessageData messageData = MessageData.builder().type("NEW-NOTIFICATION").build();
+    messageSendService.sendTo("users/" + userId, messageData);
+
     notificationRepository.save(Notification.builder()
         .message(message)
         .target(targetCode)
@@ -97,6 +108,9 @@ public class NotificationService {
     }
 
     this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님의 참여 요청이 " + status + " 되었습니다.");
+
+    MessageData messageData = MessageData.builder().type("NEW-NOTIFICATION").build();
+    messageSendService.sendTo("users/" + applicantUserId, messageData);
 
     notificationRepository.save(Notification.builder()
         .message("'" + space.getName() + "'" + " 스페이스 참여 요청이 " + status + " 되었습니다.")

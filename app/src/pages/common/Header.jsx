@@ -4,14 +4,14 @@ import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
-import { Button, Liner, TargetSelector } from '@/components';
+import { Button, Liner, Loader, TargetSelector } from '@/components';
 import { MENUS, STATIC_MENUS } from '@/constants/menu';
 import './Header.scss';
 import { setOption } from '@/utils/storageUtil';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import { setToken } from '@/utils/request';
-import moment from 'moment';
+import NotificationList from '@/components/NotificationList/NotificationList';
 
 function Header({ className, theme }) {
   const {
@@ -38,6 +38,8 @@ function Header({ className, theme }) {
 
   const [projectList, setProjectList] = useState([]);
 
+  const [notificationLoading, setNotificationLoading] = useState(false);
+
   const [notificationInfo, setNotificationInfo] = useState({
     lastSeen: null,
     notifications: [],
@@ -47,28 +49,52 @@ function Header({ className, theme }) {
 
   const [notificationOpen, setNotificationOpen] = useState(false);
 
-  const getNotificationInfo = pageNo => {
-    fetching.current = true;
-    UserService.getUserNotificationList(pageNo, info => {
-      if (pageNo === 0) {
-        fetching.current = false;
-      } else {
-        setTimeout(() => {
-          fetching.current = false;
-        }, 500);
-      }
+  const [notificationChangeEffect, setNotificationChangeEffect] = useState(false);
 
-      if (info.pageNo > 0) {
-        setNotificationInfo({
-          ...info,
-          lastSeen: notificationInfo.lastSeen,
-          notifications: notificationInfo.notifications.concat(info.notifications),
-        });
-      } else {
-        setNotificationCount(0);
-        setNotificationInfo(info);
-      }
-    });
+  useEffect(() => {
+    if (notificationCount > 0) {
+      setNotificationChangeEffect(true);
+      setTimeout(() => {
+        setNotificationChangeEffect(false);
+      }, 1000);
+    }
+  }, [notificationCount]);
+
+  const getNotificationInfo = pageNo => {
+    setNotificationLoading(true);
+    fetching.current = true;
+    UserService.getUserNotificationList(
+      pageNo,
+      info => {
+        if (pageNo === 0) {
+          fetching.current = false;
+        } else {
+          setTimeout(() => {
+            fetching.current = false;
+          }, 500);
+        }
+
+        if (info.pageNo > 0) {
+          setNotificationInfo({
+            ...info,
+            lastSeen: notificationInfo.lastSeen,
+            notifications: notificationInfo.notifications.concat(info.notifications),
+          });
+        } else {
+          setNotificationCount(0);
+          setNotificationInfo(info);
+        }
+
+        setTimeout(() => {
+          setNotificationLoading(false);
+        }, 200);
+      },
+      () => {
+        setTimeout(() => {
+          setNotificationLoading(false);
+        }, 200);
+      },
+    );
   };
 
   const openUserNotificationPopup = opened => {
@@ -288,6 +314,7 @@ function Header({ className, theme }) {
           <div className="notification-menu">
             <Button
               rounded
+              className={notificationChangeEffect ? 'effect' : ''}
               onClick={e => {
                 e.preventDefault();
                 openUserNotificationPopup(true);
@@ -343,6 +370,9 @@ function Header({ className, theme }) {
         >
           <div>
             <div>
+              <div className={`notification-loader ${notificationLoading ? 'loading' : ''}`}>
+                <Loader color="primary" />
+              </div>
               <div className="arrow">
                 <div />
               </div>
@@ -362,45 +392,20 @@ function Header({ className, theme }) {
                   }
                 }}
               >
-                <ul ref={notificationListElement}>
-                  {notificationInfo?.notifications.map(d => {
-                    return (
-                      <li key={d.id} className={moment(d.creationDate).isAfter(moment(notificationInfo.lastSeen)) ? 'unread' : ''}>
-                        <div className="message">
-                          {d.url && (
-                            <Link
-                              to={d.url}
-                              onClick={e => {
-                                e.stopPropagation();
-                                openUserNotificationPopup(false);
-                              }}
-                            >
-                              {d.message}
-                            </Link>
-                          )}
-                          {!d.url && <span>{d.message}</span>}
-                        </div>
-                        <div className="time">{moment(d.creationDate).format('YYYY-MM-DD HH:mm:ss')}</div>
-                      </li>
-                    );
-                  })}
-                  {!notificationInfo.hasNext && <li className="end-list">다음 알림이 없습니다.</li>}
-                  {notificationInfo.hasNext && (
-                    <li className="has-next">
-                      <Button
-                        size="sm"
-                        color="primary"
-                        onClick={() => {
-                          if (notificationInfo.hasNext) {
-                            getNotificationInfo(notificationInfo.pageNo + 1);
-                          }
-                        }}
-                      >
-                        더 보기
-                      </Button>
-                    </li>
-                  )}
-                </ul>
+                <NotificationList
+                  elementRef={notificationListElement}
+                  notificationList={notificationInfo?.notifications}
+                  lastSeen={notificationInfo.lastSeen}
+                  hasNext={notificationInfo.hasNext}
+                  onLinkClick={() => {
+                    openUserNotificationPopup(false);
+                  }}
+                  onMoreClick={() => {
+                    if (notificationInfo.hasNext) {
+                      getNotificationInfo(notificationInfo.pageNo + 1);
+                    }
+                  }}
+                />
               </div>
             </div>
           </div>

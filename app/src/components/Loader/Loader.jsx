@@ -1,9 +1,10 @@
 import React from 'react';
 import './Loader.scss';
+import PropTypes from 'prop-types';
 
-function Loader() {
+function Loader({ color }) {
   return (
-    <div className="loader-wrapper">
+    <div className={`loader-wrapper color-${color}`}>
       <div>
         <div className="lds-facebook">
           <div />
@@ -15,8 +16,12 @@ function Loader() {
   );
 }
 
-Loader.defaultProps = {};
+Loader.defaultProps = {
+  color: '',
+};
 
-Loader.propTypes = {};
+Loader.propTypes = {
+  color: PropTypes.string,
+};
 
 export default Loader;
