@@ -46,6 +46,18 @@
 }
 
 @font-face {
+  font-family: 'AzeretMono';
+  font-style: normal;
+  src: url('./fonts/Azeret_Mono/AzeretMono-Regular.ttf') format('woff'), url('./fonts/Azeret_Mono/AzeretMono-Regular.ttf') format('woff2');
+}
+
+@font-face {
+  font-family: 'SpaceMono';
+  font-style: normal;
+  src: url('./fonts/Space_Mono/SpaceMono-Regular.ttf') format('woff'), url('./fonts/Space_Mono/SpaceMono-Regular.ttf') format('woff2');
+}
+
+@font-face {
   font-family: 'NotoSans';
   font-style: normal;
   font-weight: 300;

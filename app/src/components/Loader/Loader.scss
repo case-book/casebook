@@ -13,6 +13,18 @@
     align-self: center;
   }
 
+  &.color-primary {
+    .lds-facebook div {
+      display: inline-block;
+      position: absolute;
+      left: 8px;
+      width: 12px;
+      background: $primary-color;
+      animation: lds-facebook 0.5s ease-in-out infinite;
+      border-radius: 2px;
+    }
+  }
+
   .lds-facebook {
     display: inline-block;
     position: relative;

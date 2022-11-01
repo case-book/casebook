@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -13,16 +13,20 @@ import './Common.scss';
 
 import { getOption, setOption } from '@/utils/storageUtil';
 import { useLocation } from 'react-router-dom';
+import { SocketClient } from '@/components';
 
 function Common() {
   const {
     userStore,
+    userStore: { user },
     configStore: { setVersion },
     controlStore,
     contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
   } = useStores();
 
   const location = useLocation();
+
+  const socket = useRef(null);
 
   useEffect(() => {
     let nextSpaceCode = null;
@@ -111,8 +115,47 @@ function Common() {
     }
   }, [controlStore.requestLoading]);
 
+  const onMessage = useCallback(info => {
+    const {
+      data: { type, data },
+    } = info;
+
+    console.log(type, data);
+
+    switch (type) {
+      case 'NEW-NOTIFICATION': {
+        userStore.setNotificationCount(userStore.notificationCount + 1);
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  }, []);
+
   return (
     <div>
+      {user?.id && (
+        <SocketClient
+          topics={[`/sub/users/${user?.id}`]}
+          headers={{
+            'X-AUTH-TOKEN': window.sessionStorage.getItem('token'),
+          }}
+          onMessage={onMessage}
+          onConnect={() => {
+            console.log('onConnect');
+            // setConnectTried(true);
+          }}
+          onDisconnect={() => {
+            console.log('onDisconnect');
+            // setConnectTried(true);
+          }}
+          setRef={client => {
+            socket.current = client;
+          }}
+        />
+      )}
       {!loading && controlStore.confirm?.message && (
         <ConfirmDialog
           category={controlStore.confirm?.category || ''}
@@ -134,7 +177,6 @@ function Common() {
         />
       )}
       {!loading && controlStore.error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || '요청 실패'} message={controlStore.error?.message || ''} />}
-
       <TransitionGroup className="loading-group">
         {loading && (
           <CSSTransition classNames="fade" timeout={500}>

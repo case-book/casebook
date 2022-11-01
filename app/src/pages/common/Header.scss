@@ -1,3 +1,21 @@
+@keyframes bell {
+  0% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 .header-wrapper {
   box-shadow: #060606 0 0 4px 1px;
   border-bottom: 1px solid #000;
@@ -268,6 +286,19 @@
 
     .notification-menu {
       position: relative;
+
+      > button {
+        transition: all 0.5s;
+        box-shadow: 0 0 0 0 $primary-color;
+
+        &.effect {
+          transition: all 0.5s;
+          box-shadow: 0 0 20px 1px $primary-color;
+          i {
+            animation: bell 0.25s linear infinite;
+          }
+        }
+      }
       .notification-count {
         font-family: $font-family-count;
         font-size: 13px;
@@ -331,7 +362,6 @@
     bottom: 0;
     right: 0;
     color: $black;
-    z-index: 2114;
 
     > div {
       position: relative;
@@ -344,7 +374,6 @@
         right: 0;
         background-color: $white;
         width: 380px;
-        z-index: 2114;
         border-radius: 4px;
 
         @media (max-width: 1660px) {
@@ -375,77 +404,31 @@
           }
         }
 
+        .notification-loader {
+          z-index: 10;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 0;
+          position: absolute;
+          > div {
+            align-self: center;
+            display: none;
+          }
+          &.loading {
+            height: 100%;
+            > div {
+              display: flex;
+            }
+          }
+          display: flex;
+        }
+
         .notification-list-scroller {
           overflow-y: auto;
           @include white-scroller;
           max-height: 500px;
-          ul {
-            list-style: none;
-            margin: 0;
-            padding: 0.5rem;
-            position: relative;
-            z-index: 1;
-
-            li {
-              padding: 0.5rem;
-              border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-
-              &.unread {
-                background-color: rgba(255, 188, 75, 0.4);
-              }
-
-              .message {
-                flex-grow: 1;
-                overflow-x: hidden;
-                text-overflow: ellipsis;
-                font-size: 14px;
-                font-family: NotoSans, sans-serif;
-
-                > a,
-                > span {
-                  font-weight: 500;
-                  max-height: 4.4rem;
-                  overflow: hidden;
-                  display: block;
-                  -webkit-line-clamp: 2;
-                  display: -webkit-box;
-                  -webkit-box-orient: vertical;
-                  text-overflow: ellipsis;
-                  white-space: normal;
-                }
-                > a {
-                  color: $link-color;
-                  &:hover {
-                    text-decoration: underline;
-                  }
-                }
-              }
-
-              .time {
-                margin-top: 4px;
-                text-align: right;
-                font-size: 12px;
-                font-weight: 500;
-                font-family: $font-family-count;
-              }
-
-              &.end-list {
-                text-align: center;
-                border-bottom: none;
-                padding-top: 1.5rem;
-                padding-bottom: 1rem;
-                font-size: 14px;
-                font-family: NotoSans, sans-serif;
-              }
-
-              &.has-next {
-                text-align: center;
-                border-bottom: none;
-                padding-top: 1.5rem;
-                padding-bottom: 1rem;
-              }
-            }
-          }
+          position: relative;
         }
       }
     }

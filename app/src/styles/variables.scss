@@ -66,6 +66,7 @@ $color-muted-black: #837e7e;
 
 $font-family-menu: NotoSans, sans-serif;
 $font-family-count: Rowdies, NotoSans, sans-serif;
+$font-family-date: AzeretMono, monospace;
 
 $body-bg-color: #060606;
 $body-bg-color: #09080d;
@@ -81,6 +82,12 @@ $third-color: #3e8ef1;
   font-family: $font-family-menu;
 }
 
+@mixin date() {
+  font-weight: bold;
+  font-family: $font-family-date;
+  color: $gray-800;
+}
+
 @mixin shadow() {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
 }
@@ -93,7 +100,7 @@ $third-color: #3e8ef1;
     background-color: #f8f8f8;
   }
   &::-webkit-scrollbar-thumb {
-    background-color: #CCC;
+    background-color: #ccc;
     border-radius: 4px;
   }
 }

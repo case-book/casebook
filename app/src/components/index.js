@@ -41,6 +41,7 @@ import Table from './Table/Table';
 import Tbody from './Table/Tbody';
 import Tr from './Table/Tr';
 import Td from './Table/Td';
+import SocketClient from './SocketClient/SocketClient';
 
 export {
   Selector,
@@ -86,4 +87,5 @@ export {
   Tbody,
   Tr,
   Td,
+  SocketClient,
 };
