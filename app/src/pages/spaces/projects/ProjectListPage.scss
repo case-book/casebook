@@ -26,66 +26,30 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    text-align: center;
 
     > li {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       display: inline-block;
-      margin-right: 2rem;
-      width: 300px;
-      height: 360px;
+      margin-right: 1rem;
+      width: calc((100% - 3rem) / 4);
+      height: 300px;
 
-      > div.book {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        position: relative;
+      &:nth-child(4n) {
+        margin-right: 0;
+      }
 
-        .book-shadow {
-          width: 100%;
-          height: 100%;
-          position: absolute;
-          border-radius: 4px;
-          border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .book-1 {
-          background-color: darken($card-bg-color, 2%);
-          top: 4px;
-          left: 4px;
-          z-index: 3;
-        }
-
-        .book-2 {
-          background-color: darken($card-bg-color, 3%);
-          top: 8px;
-          left: 8px;
-          z-index: 2;
-        }
-
-        .book-3 {
-          background-color: darken($card-bg-color, 4%);
-          top: 12px;
-          left: 12px;
-          z-index: 1;
-        }
-
-        .book-content {
-          background-color: $card-bg-color;
-          width: 100%;
-          height: 100%;
-          position: absolute;
-          top: 0;
-          left: 0;
-          z-index: 4;
-          border-radius: 4px;
-          border: 1px solid rgba(255, 255, 255, 0.04);
-        }
+      .project-card {
         .project-info {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
           .name {
             font-size: 20px;
-            flex-grow: 1;
-            padding: 1.5rem 1rem;
+            flex-grow: 0;
+            padding: 1.25rem 1rem;
             text-align: center;
             @include title;
             &:hover {
@@ -94,68 +58,233 @@
             }
           }
 
-          ul.project-menu {
-            list-style: none;
-            padding: 0 1rem 1rem;
-            display: none;
+          .summary {
+            flex-grow: 1;
+            display: flex;
+            padding: 0 1rem;
 
-            > li {
-              display: inline-flex;
+            > div {
+              flex-grow: 1;
+              display: flex;
+              flex-direction: column;
 
-              cursor: pointer;
-
-              &:hover {
-                color: $color-sunflower;
+              .description {
+                font-size: 14px;
+                padding: 8px 12px;
+                line-height: 160%;
+                height: 58px;
+                background-color: #16151a;
+                border-radius: 4px;
+                overflow: hidden;
+                display: block;
+                -webkit-line-clamp: 2;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                text-overflow: ellipsis;
+                white-space: normal;
+                font-family: NotoSans, sans-serif;
               }
 
-              > div {
-                align-self: center;
-              }
+              .count {
+                flex-grow: 1;
+                display: flex;
+                > div {
+                  flex: 1 1 0;
+                  display: flex;
+                  justify-content: center;
+                  padding: 0;
+                  margin-right: 1rem;
 
-              &:last-child {
-                .liner {
-                  display: none !important;
+                  &:last-child {
+                    margin-right: 0;
+                  }
+
+                  > div {
+                    align-self: center;
+                    text-align: center;
+                    width: 100%;
+                    background-color: $card-bg-color;
+                    padding: 0.5rem 0;
+                    border-radius: 4px;
+                    cursor: pointer;
+
+                    .icon {
+                      font-size: 18px;
+                      color: $gray-500;
+                    }
+
+                    &.bug-count {
+                      color: #ff4935;
+                      &:hover {
+                        color: $white;
+                        background-color: #ff4935;
+                        transition: 0.3s all;
+                        .icon {
+                          color: $white;
+                          transition: 0.3s all;
+                        }
+                      }
+                    }
+
+                    &.tc-count {
+                      color: #3e8ef1;
+                      &:hover {
+                        color: $white;
+                        background-color: #3e8ef1;
+                        transition: 0.3s all;
+                        .icon {
+                          color: $white;
+                          transition: 0.3s all;
+                        }
+                      }
+                    }
+
+                    &.tr-count {
+                      color: #7bde89;
+                      &:hover {
+                        color: black;
+                        background-color: #7bde89;
+                        transition: 0.3s all;
+                        .icon {
+                          color: black;
+                          transition: 0.3s all;
+                        }
+                      }
+                    }
+
+                    .number {
+                      text-align: center;
+                      font-size: 34px;
+                      @include number;
+                    }
+
+                    .label {
+                      font-size: 10px;
+                      line-height: 100%;
+                      font-family: Cairo, sans-serif;
+                      font-weight: bold;
+                    }
+                  }
                 }
               }
             }
           }
-        }
-        .project-status {
-          margin-left: 1rem;
-          display: flex;
-          display: none;
 
-          > div {
-            align-self: center;
-            display: flex;
-            line-height: 100%;
-            > div {
-              width: 120px;
+          .side-menu {
+            ul {
+              list-style: none;
+              padding: 0 1rem 1rem;
+              margin: 0;
               text-align: center;
-              padding: 1rem;
-
-              &:hover {
-                background-color: $color-sunflower;
-                color: $black;
+              > li {
+                display: inline-flex;
+                width: 32px;
+                height: 32px;
+                margin-right: 8px;
+                justify-content: center;
+                border-radius: 12px;
+                background-color: #111;
+                border: 1px solid rgba(255, 255, 255, 0.09);
+                position: relative;
                 cursor: pointer;
-              }
-
-              .icon {
-                font-size: 16px;
-                margin-bottom: 0.5rem;
-              }
-
-              .count {
-                font-family: Rowdies, sans-serif;
-                font-size: 24px;
-                margin-bottom: 0.5rem;
-                &.bugs {
-                  font-family: RubikWetPaint, sans-serif;
+                .tooltip {
+                  position: absolute;
+                  white-space: nowrap;
+                  font-size: 12px;
+                  width: 100px;
+                  top: -36px;
+                  color: $white;
+                  font-family: NotoSans, sans-serif;
+                  height: 24px;
+                  left: -34px;
+                  text-align: center;
+                  display: none;
+                  .arrow {
+                    width: 6px;
+                    height: 6px;
+                    display: inline-block;
+                    position: absolute;
+                    transform: rotate(45deg);
+                    bottom: -7px;
+                    left: 47px;
+                    background-color: #000;
+                  }
+                  > span {
+                    background-color: #000;
+                    position: relative;
+                    display: inline-block;
+                    line-height: 100%;
+                    padding: 8px;
+                    border-radius: 4px;
+                  }
                 }
-              }
 
-              .label {
-                font-size: 12px;
+                &:hover {
+                  > div {
+                    color: $white;
+                    transition: all 0.3s;
+                  }
+
+                  .tooltip {
+                    display: block;
+                  }
+                }
+
+                &.dashboard:hover {
+                  background-color: #ffbc4b;
+                  transition: all 0.3s;
+                  > div {
+                    color: #000;
+                  }
+                }
+
+                &.bugs:hover {
+                  background-color: #ff4935;
+                  transition: all 0.3s;
+                }
+
+                &.testcases:hover {
+                  background-color: #3e8ef1;
+                  transition: all 0.3s;
+                }
+
+                &.testruns:hover {
+                  background-color: #7bde89;
+                  transition: all 0.3s;
+                  > div {
+                    color: #000;
+                  }
+                }
+
+                &.reports:hover {
+                  background-color: #a4c9d8;
+                  transition: all 0.3s;
+                  > div {
+                    color: #000;
+                  }
+                }
+
+                &.config:hover {
+                  background-color: #837e7e;
+                  transition: all 0.3s;
+                }
+
+                &.info:hover {
+                  background-color: #cdf567;
+                  transition: all 0.3s;
+                  > div {
+                    color: #000;
+                  }
+                }
+
+                > div {
+                  align-self: center;
+                  color: $gray-800;
+                }
+
+                &:last-child {
+                  margin-right: 0;
+                }
               }
             }
           }

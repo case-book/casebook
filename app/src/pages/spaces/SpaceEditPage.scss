@@ -1,25 +1,5 @@
 .space-edit-page-wrapper {
-  .space-user-list {
-    .role {
-      text-align: right;
-      .tag {
-        min-width: 70px;
-        text-align: center;
-      }
-      button {
-        margin-left: 0.5rem;
-      }
-    }
-
-    .deleted {
-      .user-info,
-      .user-email {
-
-        color: $danger;
-        .tag {
-          color: $danger;
-        }
-      }
-    }
+  .member-manager {
+    margin-top: 1.5rem;
   }
 }

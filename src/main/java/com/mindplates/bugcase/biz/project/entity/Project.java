@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
@@ -63,6 +64,11 @@ public class Project extends CommonEntity {
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   @Fetch(value = FetchMode.SELECT)
   private List<ProjectUser> users;
+
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Fetch(value = FetchMode.SUBSELECT)
+  @Column(updatable = false, insertable = false)
+  private List<ProjectApplicant> applicants;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @Fetch(value = FetchMode.SELECT)

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './ProjectEditPage.scss';
-import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea } from '@/components';
+import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,6 +13,7 @@ import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
+import MemberManager from '@/components/MemberManager/MemberManager';
 
 const defaultProjectConfig = {
   testcaseTemplates: [
@@ -52,6 +53,10 @@ function ProjectEditPage({ type }) {
     activated: true,
     token: uuidv4(),
   });
+
+  const isEdit = useMemo(() => {
+    return type === 'edit';
+  }, [type]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -101,7 +106,17 @@ function ProjectEditPage({ type }) {
 
   return (
     <Page className="project-edit-page-wrapper">
-      <PageTitle>{type === 'edit' ? t('프로젝트') : t('새 프로젝트')}</PageTitle>
+      <PageTitle
+        control={
+          <div>
+            <Button size="sm" color="danger" onClick={onDelete}>
+              {t('프로젝트 삭제')}
+            </Button>
+          </div>
+        }
+      >
+        {type === 'edit' ? t('프로젝트') : t('새 프로젝트')}
+      </PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Block>
@@ -166,8 +181,15 @@ function ProjectEditPage({ type }) {
               </Button>
             </BlockRow>
           </Block>
+          {isEdit && (
+            <>
+              <Title>프로젝트 사용자</Title>
+              <Block>
+                <MemberManager className="member-manager" edit users={project?.users} onChangeUserRole={() => {}} onUndoRemovalUSer={() => {}} onRemoveUSer={() => {}} />
+              </Block>
+            </>
+          )}
           <PageButtons
-            onDelete={onDelete}
             onCancel={() => {
               navigate(-1);
             }}

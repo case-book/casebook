@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Liner, Page, PageContent, PageTitle } from '@/components';
+import { Button, Card, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -7,7 +7,7 @@ import ProjectService from '@/services/ProjectService';
 import './ProjectListPage.scss';
 import { MENUS } from '@/constants/menu';
 
-function Spaces() {
+function ProjectListPage() {
   const { t } = useTranslation();
   const { spaceCode } = useParams();
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ function Spaces() {
     ProjectService.selectProjectList(spaceCode, list => {
       setProjects(list);
     });
-  }, []);
+  }, [spaceCode]);
 
   return (
     <Page className="project-list-page-wrapper" list wide>
@@ -32,7 +32,7 @@ function Spaces() {
         {t('프로젝트')}
       </PageTitle>
       <PageContent className="content">
-        {!(projects?.length > 0) && (
+        {projects?.length <= 0 && (
           <div className="no-project">
             <div>
               <div>아직 생성된 프로젝트가 없습니다.</div>
@@ -50,82 +50,92 @@ function Spaces() {
           </div>
         )}
         {projects?.length > 0 && (
-          <ul className="project-list white">
+          <ul className="project-list">
             {projects?.map(project => {
               return (
                 <li key={project.id}>
-                  <div className="book">
-                    <div className="book-shadow book-1" />
-                    <div className="book-shadow book-2" />
-                    <div className="book-shadow book-3" />
-                    <div className="book-content">
-                      <div className="project-info">
-                        <div
-                          className="name"
-                          onClick={() => {
-                            navigate(`/spaces/${spaceCode}/projects/${project.id}`);
-                          }}
-                        >
-                          {project.name}
+                  <Card className="project-card" circle>
+                    <div className="project-info">
+                      <div
+                        className="name"
+                        onClick={() => {
+                          navigate(`/spaces/${spaceCode}/projects/${project.id}`);
+                        }}
+                      >
+                        {project.name}
+                      </div>
+                      <div className="summary">
+                        <div>
+                          <div className="description">{project.description}</div>
+                          <div className="count">
+                            <div>
+                              <div
+                                className="bug-count"
+                                onClick={() => {
+                                  navigate(`/spaces/${spaceCode}/projects/${project.id}/bugs`);
+                                }}
+                              >
+                                <div className="icon">
+                                  <i className="fa-solid fa-virus" />
+                                </div>
+                                <div className="number">{project.bugCount}</div>
+                                <div className="label">BUGS</div>
+                              </div>
+                            </div>
+                            <div>
+                              <div
+                                className="tc-count"
+                                onClick={() => {
+                                  navigate(`/spaces/${spaceCode}/projects/${project.id}/testcases`);
+                                }}
+                              >
+                                <div className="icon">
+                                  <i className="fa-solid fa-vial-virus" />
+                                </div>
+                                <div className="number">{project.testcaseCount}</div>
+                                <div className="label">TESTCASES</div>
+                              </div>
+                            </div>
+                            <div>
+                              <div
+                                className="tr-count"
+                                onClick={() => {
+                                  navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
+                                }}
+                              >
+                                <div className="icon">
+                                  <i className="fa-solid fa-scale-balanced" />
+                                </div>
+                                <div className="number">{project.testrunCount}</div>
+                                <div className="label">TESTRUNS</div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <ul className="project-menu">
+                      </div>
+                      <div className="side-menu">
+                        <ul>
                           {MENUS.map((menu, inx) => {
                             return (
-                              <li key={inx}>
+                              <li key={inx} className={menu.key}>
                                 <div
                                   onClick={() => {
                                     navigate(`/spaces/${spaceCode}/projects/${project.id}${menu.to}`);
                                   }}
                                 >
-                                  {menu.name}
-                                </div>
-                                <div>
-                                  <Liner className="liner" display="inline-block" width="1px" height="8px" color="black" margin="0 0.5rem" />
+                                  <div className="tooltip">
+                                    <span>{menu.name}</span>
+                                    <div className="arrow" />
+                                  </div>
+                                  {menu.icon}
                                 </div>
                               </li>
                             );
                           })}
                         </ul>
                       </div>
-                      <div className="project-status">
-                        <div>
-                          <div
-                            onClick={() => {
-                              navigate(`/spaces/${spaceCode}/projects/${project.id}/testcases`);
-                            }}
-                          >
-                            <div className="icon">
-                              <i className="fa-solid fa-briefcase" />
-                            </div>
-                            <div className="count">{project.testcaseCount}</div>
-                            <div className="label">TESTCASES</div>
-                          </div>
-                          <div
-                            onClick={() => {
-                              navigate(`/spaces/${spaceCode}/projects/${project.id}/bugs`);
-                            }}
-                          >
-                            <div className="icon">
-                              <i className="fa-solid fa-virus" />
-                            </div>
-                            <div className="count bugs">{project.bugCount}</div>
-                            <div className="label">BUGS</div>
-                          </div>
-                          <div
-                            onClick={() => {
-                              navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
-                            }}
-                          >
-                            <div className="icon">
-                              <i className="fa-regular fa-newspaper" />
-                            </div>
-                            <div className="count">{project.testrunCount}</div>
-                            <div className="label">TESTRUN</div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                  </div>
+                  </Card>
                 </li>
               );
             })}
@@ -136,4 +146,4 @@ function Spaces() {
   );
 }
 
-export default Spaces;
+export default ProjectListPage;

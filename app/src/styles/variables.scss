@@ -88,6 +88,11 @@ $third-color: #3e8ef1;
   color: $gray-800;
 }
 
+@mixin number() {
+  font-weight: bold;
+  font-family: $font-family-count;
+}
+
 @mixin shadow() {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
 }

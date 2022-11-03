@@ -6,7 +6,7 @@
   max-width: $max-width;
   _padding: 32px 64px;
   padding: 1rem 1.5rem;
-  background-color: #191919;
+  background-color: $card-bg-color;
   border-radius: 4px;
 
   &.flex {

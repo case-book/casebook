@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import './SpaceContent.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import MemberManager from '@/components/MemberManager/MemberManager';
 
 function SpaceContent({ space, onRefresh }) {
   const { t } = useTranslation();
@@ -179,30 +180,7 @@ function SpaceContent({ space, onRefresh }) {
                     <div>{t('프로젝트가 없습니다.')}</div>
                   </EmptyContent>
                 )}
-                {users?.length > 0 && (
-                  <Table cols={['1px', '100%', '1px']}>
-                    <Tbody>
-                      {users?.map(user => {
-                        return (
-                          <Tr key={user.id}>
-                            <Td className="user-info">{user.name}</Td>
-                            <Td className="user-email">
-                              <Tag className="tag" border={false} uppercase>
-                                {user.email}
-                              </Tag>
-                            </Td>
-                            <Td className={`role ${user.role}`}>
-                              <Tag className="tag" border={false}>
-                                <span className="icon">{user.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
-                                {user.role === 'ADMIN' ? t('관리자') : t('사용자')}
-                              </Tag>
-                            </Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                )}
+                {users?.length > 0 && <MemberManager users={users} />}
               </CardContent>
             </Card>
           </Col>

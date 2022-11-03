@@ -3,7 +3,7 @@ package com.mindplates.bugcase.biz.space.vo.response;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.user.vo.response.SimpleSpaceUserResponse;
+import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
 import com.mindplates.bugcase.common.entity.UserRole;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +26,8 @@ public class SpaceResponse {
   private String description;
   private boolean activated;
   private String token;
-  private List<SimpleSpaceUserResponse> users;
+  private List<SimpleMemberResponse> users;
   private List<SpaceApplicantResponse> applicants;
-
   private List<ProjectListResponse> projects;
   private Long projectCount;
   private boolean allowSearch = false;
@@ -47,7 +46,7 @@ public class SpaceResponse {
     this.token = space.getToken();
     if (space.getUsers() != null) {
       this.users = space.getUsers().stream().map(
-          (spaceUser) -> SimpleSpaceUserResponse.builder()
+          (spaceUser) -> SimpleMemberResponse.builder()
               .id(spaceUser.getId())
               .userId(spaceUser.getUser().getId())
               .role(spaceUser.getRole())
