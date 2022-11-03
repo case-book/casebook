@@ -64,7 +64,7 @@ public class ProjectController {
       throw new ServiceException(HttpStatus.NOT_FOUND);
     }
 
-    return new ProjectResponse(projectService.createProjectInfo(spaceCode, project));
+    return new ProjectResponse(projectService.createProjectInfo(spaceCode, project, SessionUtil.getUserId()), SessionUtil.getUserId());
   }
 
   @Operation(description = "프로젝트 수정")
@@ -87,7 +87,7 @@ public class ProjectController {
     nextProject.setDescription(projectRequest.getDescription());
     nextProject.setToken(projectRequest.getToken());
 
-    return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject));
+    return new ProjectResponse(projectService.updateProjectInfo(spaceCode, nextProject), SessionUtil.getUserId());
   }
 
   @Operation(description = "프로젝트 삭제")
@@ -114,7 +114,7 @@ public class ProjectController {
       throw new ServiceException(HttpStatus.LOCKED);
     }
 
-    return new ProjectResponse(project);
+    return new ProjectResponse(project, SessionUtil.getUserId());
   }
 
 

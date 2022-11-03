@@ -15,7 +15,7 @@ function PageTitle({ className, children, links, control }) {
   } = useStores();
 
   return (
-    <div className={`page-title-wrapper ${className}`}>
+    <div className={`page-title-wrapper g-no-select ${className}`}>
       <div>
         <div
           className="icon"

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, TextArea, Title, Tr } from '@/components';
+import { Block, Button, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +11,7 @@ import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './SpaceEditPage.scss';
+import MemberManager from '@/components/MemberManager/MemberManager';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
@@ -238,73 +239,7 @@ function SpaceEditPage({ type }) {
             <>
               <Title>스페이스 사용자</Title>
               <Block>
-                {space?.users?.length > 0 && (
-                  <Table className="space-user-list" cols={['1px', '100%', '1px']}>
-                    <Tbody>
-                      {space?.users?.map(spaceUser => {
-                        return (
-                          <Tr key={spaceUser.id} className={spaceUser.crud === 'D' ? 'deleted' : ''}>
-                            <Td className="user-info">{spaceUser.name}</Td>
-                            <Td className="user-email">
-                              <Tag className="tag" border={false} uppercase>
-                                {spaceUser.email}
-                              </Tag>
-                            </Td>
-                            <Td className={`role ${spaceUser.role}`}>
-                              {spaceUser.crud === 'D' && (
-                                <Tag className="tag" border={false} color="danger">
-                                  {t('삭제')}
-                                </Tag>
-                              )}
-                              {spaceUser.crud !== 'D' && (
-                                <Tag className="tag" border={false}>
-                                  <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
-                                  {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
-                                </Tag>
-                              )}
-                              {spaceUser.crud !== 'D' && (
-                                <Button
-                                  size="sm"
-                                  rounded
-                                  color="primary"
-                                  onClick={() => {
-                                    changeSpaceUserRole(spaceUser.id, 'role', spaceUser.role === 'ADMIN' ? 'USER' : 'ADMIN');
-                                  }}
-                                >
-                                  <i className="fa-solid fa-arrow-right-arrow-left" />
-                                </Button>
-                              )}
-                              {spaceUser.crud === 'D' && (
-                                <Button
-                                  size="sm"
-                                  rounded
-                                  color="danger"
-                                  onClick={() => {
-                                    undoRemovalSpaceUser(spaceUser.id);
-                                  }}
-                                >
-                                  <i className="fa-solid fa-rotate-left" />
-                                </Button>
-                              )}
-                              {spaceUser.crud !== 'D' && (
-                                <Button
-                                  size="sm"
-                                  rounded
-                                  color="danger"
-                                  onClick={() => {
-                                    removeSpaceUser(spaceUser.id);
-                                  }}
-                                >
-                                  <i className="fa-solid fa-trash-can" />
-                                </Button>
-                              )}
-                            </Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                )}
+                <MemberManager className="member-manager" edit users={space?.users} onChangeUserRole={changeSpaceUserRole} onUndoRemovalUSer={undoRemovalSpaceUser} onRemoveUSer={removeSpaceUser} />
               </Block>
             </>
           )}

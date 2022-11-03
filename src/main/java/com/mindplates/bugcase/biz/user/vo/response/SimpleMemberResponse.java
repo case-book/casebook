@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class SimpleSpaceUserResponse {
+public class SimpleMemberResponse {
 
   private Long id;
   private Long userId;

@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
-import com.mindplates.bugcase.biz.user.vo.response.SimpleSpaceUserResponse;
+import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
 import com.mindplates.bugcase.common.entity.UserRole;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +25,7 @@ public class SpaceAccessibleResponse {
   private String description;
   private Boolean activated;
 
-  private List<SimpleSpaceUserResponse> admins;
+  private List<SimpleMemberResponse> admins;
   private Boolean allowSearch;
   private Boolean allowAutoJoin;
 
@@ -44,7 +44,7 @@ public class SpaceAccessibleResponse {
 
     if (space.isAllowSearch() && space.getUsers() != null) {
       this.admins = space.getUsers().stream().filter((spaceUser -> UserRole.ADMIN.equals(spaceUser.getRole()))).map(
-          (spaceUser) -> SimpleSpaceUserResponse.builder()
+          (spaceUser) -> SimpleMemberResponse.builder()
               .id(spaceUser.getId())
               .userId(spaceUser.getUser().getId())
               .role(spaceUser.getRole())
