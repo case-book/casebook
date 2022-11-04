@@ -144,10 +144,8 @@
     line-height: 100%;
 
     &.btn-xs {
-      width: 26px;
-      height: 26px;
-      width: 22px;
-      height: 22px;
+      width: $xs-height;
+      height: $xs-height;
       padding-left: 0;
       padding-right: 0;
       padding-top: 0;
@@ -160,24 +158,18 @@
     }
 
     &.btn-sm {
-      width: 31px;
-      height: 31px;
-      width: 28px;
-      height: 28px;
+      width: $sm-height;
+      height: $sm-height;
     }
 
     &.btn-md {
-      width: 38px;
-      height: 38px;
-      width: 35px;
-      height: 35px;
+      width: $md-height;
+      height: $md-height;
     }
 
     &.btn-lg {
-      width: 48px;
-      height: 48px;
-      width: 44px;
-      height: 44px;
+      width: $lg-height;
+      height: $lg-height;
     }
   }
 

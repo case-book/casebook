@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { observer } from 'mobx-react';
 import ConfirmDialog from '@/pages/common/ConfirmDialog';
@@ -177,15 +176,12 @@ function Common() {
         />
       )}
       {!loading && controlStore.error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || '요청 실패'} message={controlStore.error?.message || ''} />}
-      <TransitionGroup className="loading-group">
-        {loading && (
-          <CSSTransition classNames="fade" timeout={500}>
-            <div className="request-loading">
-              <div className="loader" />
-            </div>
-          </CSSTransition>
-        )}
-      </TransitionGroup>
+
+      {loading && (
+        <div className="request-loading">
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 }

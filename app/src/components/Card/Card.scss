@@ -1,7 +1,14 @@
+.theme-LIGHT {
+  .card-wrapper {
+    background-color: $white;
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+  }
+}
+
 .card-wrapper {
   position: relative;
   border-radius: 4px;
-  background-color: $card-bg-color;
+  background-color: $card-bg-color-dark;
   border: 1px solid rgba(255, 255, 255, 0.04);
   display: flex;
   flex-direction: column;

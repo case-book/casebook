@@ -136,7 +136,7 @@ function SpaceListPage() {
               </Button>
             </div>
           )}
-          <div className="space-card-list" ref={listContentElement}>
+          <div className="space-card-list scrollbar-sm" ref={listContentElement}>
             <ul ref={listElement}>
               {spaces?.map((space, inx) => {
                 return (

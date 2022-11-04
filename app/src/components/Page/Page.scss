@@ -8,16 +8,23 @@
   min-height: calc(100vh - 80px - 40px);
   border-radius: 20px;
   display: flex;
+
+  &.hide-header {
+    min-height: calc(100vh - 30px - 40px);
+  }
+
   @media (max-width: 1660px) {
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
     min-height: calc(100vh - 80px - 20px);
+
+    &.hide-header {
+      min-height: calc(100vh - 30px - 20px);
+    }
   }
 
-  &.hide-header {
-    min-height: calc(100vh - 30px - 20px);
-  }
+
 
   &.info-page {
   }

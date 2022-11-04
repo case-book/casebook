@@ -42,6 +42,8 @@ import Tbody from './Table/Tbody';
 import Tr from './Table/Tr';
 import Td from './Table/Td';
 import SocketClient from './SocketClient/SocketClient';
+import Switch from './Switch/Switch';
+import Star from './Star/Star';
 
 export {
   Selector,
@@ -88,4 +90,6 @@ export {
   Tr,
   Td,
   SocketClient,
+  Switch,
+  Star,
 };
