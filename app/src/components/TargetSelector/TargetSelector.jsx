@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './TargetSelector.scss';
+import { observer } from 'mobx-react';
+import useStores from '@/hooks/useStores';
 
 function TargetSelector({ className, value, list, onClick }) {
+  const {
+    themeStore: { theme },
+  } = useStores();
   const [opened, setOpened] = useState(false);
   const element = useRef(null);
 
@@ -29,7 +34,7 @@ function TargetSelector({ className, value, list, onClick }) {
   return (
     <div
       ref={element}
-      className={`target-selector-wrapper ${className} ${opened ? 'opened' : ''}`}
+      className={`target-selector-wrapper ${className} ${opened ? 'opened' : ''} theme-${theme}`}
       onClick={() => {
         setOpened(!opened);
       }}
@@ -42,7 +47,7 @@ function TargetSelector({ className, value, list, onClick }) {
       </div>
 
       {opened && (
-        <div className="target-selector-list g-no-select">
+        <div className="target-selector-list g-no-select scrollbar-sm">
           <ul>
             {list?.map(target => {
               return (
@@ -82,4 +87,4 @@ TargetSelector.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-export default TargetSelector;
+export default observer(TargetSelector);

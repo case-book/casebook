@@ -1,0 +1,112 @@
+@keyframes switch-bounce {
+  0% {
+    width: 20px;
+  }
+
+  25% {
+    width: 10px;
+  }
+
+  75% {
+    width: 40px;
+  }
+
+  100% {
+    width: 20px;
+  }
+}
+
+@keyframes switch-bounce-inverse {
+  0% {
+    width: 20px;
+  }
+
+  25% {
+    width: 40px;
+  }
+
+  75% {
+    width: 10px;
+  }
+
+  100% {
+    width: 20px;
+  }
+}
+
+.theme-LIGHT {
+  .switch-wrapper {
+    background-color: $gray-200;
+  }
+}
+
+.switch-wrapper {
+  display: inline-flex;
+  background-color: rgba(0, 0, 0, 0.4);
+  background-color: #000;
+  padding: 0 8px;
+  line-height: 100%;
+  border-radius: 20px;
+  margin-right: 0.5rem;
+  cursor: pointer;
+
+  .track {
+    width: 40px;
+    line-height: 0;
+    align-self: center;
+
+    .ball {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 8px;
+      background-color: $gray-700;
+      transition: all 0.3s;
+      animation: switch-bounce-inverse 0.3s linear;
+    }
+  }
+
+  &.outline {
+    border: 1px solid $input-border-color;
+    &:hover {
+      border: 1px solid $input-border-focus-color;
+      &.disabled {
+        border: 1px solid $border-color;
+      }
+    }
+  }
+
+  &.checked {
+    .ball {
+      display: inline-block;
+      background-color: $primary-color;
+      margin-left: 20px;
+      transition: all 0.3s;
+      animation: switch-bounce 0.3s linear;
+    }
+  }
+
+  &.size-xxl {
+    height: $xxl-height;
+  }
+
+  &.size-xl {
+    height: $xl-height;
+  }
+
+  &.size-lg {
+    height: $lg-height;
+  }
+
+  &.size-md {
+    height: $md-height;
+  }
+
+  &.size-sm {
+    height: $sm-height;
+  }
+
+  &.size-xs {
+    height: $xs-height;
+  }
+}

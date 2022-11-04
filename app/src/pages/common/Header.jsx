@@ -4,7 +4,7 @@ import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
-import { Button, Liner, Loader, TargetSelector } from '@/components';
+import { Button, Liner, Loader, Switch, TargetSelector } from '@/components';
 import { MENUS, STATIC_MENUS } from '@/constants/menu';
 import './Header.scss';
 import { setOption } from '@/utils/storageUtil';
@@ -12,11 +12,13 @@ import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import { setToken } from '@/utils/request';
 import NotificationList from '@/components/NotificationList/NotificationList';
+import { THEMES } from '@/constants/constants';
 
-function Header({ className, theme }) {
+function Header({ className }) {
   const {
     userStore: { isLogin, setUser, user, notificationCount, setNotificationCount },
     controlStore: { hideHeader, setHideHeader },
+    themeStore: { theme, setTheme },
     contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected },
   } = useStores();
 
@@ -149,7 +151,7 @@ function Header({ className, theme }) {
   const isRoot = location.pathname === '/';
 
   return (
-    <header className={`${className} header-wrapper ${hideHeader ? 'hide' : ''} ${isRoot ? 'is-main' : ''} theme-${theme}`}>
+    <header className={`${className} g-no-select header-wrapper ${hideHeader ? 'hide' : ''} ${isRoot ? 'is-main' : ''} theme-${theme}`}>
       <div className="header-bg">
         <span>
           <i className="fa-solid fa-chess-rook" />
@@ -302,13 +304,23 @@ function Header({ className, theme }) {
                             }}
                           />
                         )}
-                        <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'white' ? 'black' : 'white'} margin="0 12px" />
+                        <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 12px" />
                       </li>
                     );
                   })}
               </ul>
             </div>
           )}
+        </div>
+        <div className="theme-selector">
+          <div>
+            <Switch
+              value={theme === THEMES.DARK}
+              onClick={() => {
+                setTheme(theme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK);
+              }}
+            />
+          </div>
         </div>
         {isLogin && (
           <div className="notification-menu">
@@ -451,12 +463,10 @@ function Header({ className, theme }) {
 
 Header.defaultProps = {
   className: '',
-  theme: 'white',
 };
 
 Header.propTypes = {
   className: PropTypes.string,
-  theme: PropTypes.string,
 };
 
 export default observer(Header);

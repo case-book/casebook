@@ -1,3 +1,72 @@
+.theme-LIGHT {
+  .page-title-liner {
+    > div {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  .page-title-wrapper {
+    height: 80px;
+
+    > div {
+      max-width: $max-width;
+      margin: 0 auto;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      > div {
+        align-self: center;
+
+        &.icon {
+          &:hover {
+            color: $color-primary-light;
+          }
+        }
+
+        &.title-text {
+          flex-grow: 0;
+          line-height: 100%;
+          font-weight: bold;
+          font-size: 24px;
+        }
+      }
+    }
+
+    .control {
+      margin-left: 0.5rem;
+      flex-grow: 1;
+      text-align: right;
+
+      &.has-link {
+        flex-grow: 0;
+      }
+      > div {
+        button {
+          margin-right: 0.5rem;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    .links {
+      > div {
+        > a {
+          color: $gray-600;
+
+          &:visited {
+            color: $gray-600;
+          }
+          &:hover {
+            color: $black;
+          }
+        }
+      }
+    }
+  }
+}
+
 .page-title-wrapper {
   height: 80px;
 

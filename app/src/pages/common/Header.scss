@@ -19,15 +19,96 @@
 .header-wrapper {
   box-shadow: #060606 0 0 4px 1px;
   border-bottom: 1px solid #000;
-  background-color: $header-bg-color;
+  background-color: $header-bg-color-dark;
   padding: 0 20px;
   position: relative;
   z-index: 4;
+
+  &.theme-DARK {
+  }
+
+  &.theme-LIGHT {
+    background-color: $header-bg-color-light;
+    border-bottom: none;
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+
+    > div.header-content {
+      > div {
+        &.back-navigator {
+          > div {
+            &:hover {
+              color: $color-primary-light;
+            }
+          }
+        }
+
+        &.logo {
+          > div {
+            &:hover {
+              color: $color-primary-light;
+              cursor: pointer;
+            }
+          }
+        }
+
+        &.spacer {
+          align-self: center;
+
+          > div {
+            background-color: $gray-500;
+          }
+        }
+      }
+
+      .static-menu,
+      .menu {
+        font-family: NanumGothic, sans-serif;
+        > div {
+          > ul {
+            > li {
+              a {
+                color: $gray-600;
+                font-family: NanumGothic, sans-serif;
+
+                &::after {
+                  background-color: black;
+                }
+
+                &:hover {
+                  color: $black;
+                }
+              }
+
+              &.selected {
+                a {
+                  color: $black;
+                  position: relative;
+
+                  &::after {
+                    background-color: $color-primary-light;
+                    opacity: 0;
+                  }
+                }
+              }
+
+              &:last-child {
+                .liner {
+                  display: none !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
   &.hide {
     .header-content {
       .back-navigator,
       .spacer,
+      .theme-selector,
+      .notification-menu,
       .static-menu,
       .user-menu {
         display: none;
@@ -85,9 +166,6 @@
 
       height: 29px;
     }
-  }
-
-  &.theme-black {
   }
 
   > div.header-bg {
@@ -282,6 +360,9 @@
           }
         }
       }
+    }
+
+    .theme-selector {
     }
 
     .notification-menu {

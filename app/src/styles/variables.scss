@@ -68,14 +68,22 @@ $font-family-menu: NotoSans, sans-serif;
 $font-family-count: Rowdies, NotoSans, sans-serif;
 $font-family-date: AzeretMono, monospace;
 
-$body-bg-color: #060606;
-$body-bg-color: #09080d;
-$card-bg-color: #16151a;
-$header-bg-color: #121117;
+$gray-200 : #eaeef3;
+
+$body-bg-color-dark: #09080d;
+$body-bg-color-light: #eaeef3;
+$card-bg-color-dark: #16151a;
+$card-bg-color-light: white;
+$header-bg-color-dark: #121117;
+$header-bg-color-light: #eaeef3;
+$header-bg-color-light: white;
 $primary-color: #ffbc4b;
 $primary-color: #ffbc4b;
 $secondary-color: #7bde89;
 $third-color: #3e8ef1;
+
+$color-primary-dark: #ffbc4b;
+$color-primary-light: #3e8ef1;
 
 @mixin title() {
   font-weight: bold;
