@@ -361,7 +361,11 @@ function Header({ className }) {
             </Button>
           )}
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
-          {!isLogin && <Link to="/users/join">{t('회원가입')}</Link>}
+          {!isLogin && (
+            <Link className="join-link" to="/users/join">
+              {t('회원가입')}
+            </Link>
+          )}
         </div>
         <div className="header-toggle">
           <Button

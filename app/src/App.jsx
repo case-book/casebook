@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Common, Header, Join, Login, Message, SpaceListPage } from '@/pages';
@@ -7,9 +7,9 @@ import ProjectsRoutes from '@/pages/spaces/projects';
 import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
-import './App.scss';
 import ConfigsRoutes from '@/pages/configs';
 import { Star } from '@/components';
+import './App.scss';
 
 function App() {
   const {
@@ -18,6 +18,30 @@ function App() {
   } = useStores();
 
   const location = useLocation();
+
+  const [starInfo, setStarInfo] = useState({
+    star1: {
+      top: -30,
+      left: -20,
+    },
+    star2: {
+      bottom: 0,
+      right: 0,
+    },
+  });
+
+  useEffect(() => {
+    setStarInfo({
+      star1: {
+        top: `-${25 + Math.round(Math.random() * 20)}%`,
+        left: `-${20 + Math.round(Math.random() * 10)}%`,
+      },
+      star2: {
+        bottom: `${-10 + Math.round(Math.random() * 10)}%`,
+        right: `${-20 + Math.round(Math.random() * 20)}%`,
+      },
+    });
+  }, []);
 
   useEffect(() => {
     document.querySelector('html').setAttribute('class', `theme-${theme}`);
@@ -38,10 +62,22 @@ function App() {
           <Header />
           <main className="main-content">
             <div className="bg">
-              <div className="star star-1">
+              <div
+                className="star star-1"
+                style={{
+                  top: `${starInfo.star1.top}`,
+                  left: `${starInfo.star1.left}`,
+                }}
+              >
                 <Star />
               </div>
-              <div className="star star-2">
+              <div
+                className="star star-2"
+                style={{
+                  bottom: `${starInfo.star2.bottom}`,
+                  right: `${starInfo.star2.right}`,
+                }}
+              >
                 <Star />
               </div>
             </div>

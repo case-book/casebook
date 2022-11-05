@@ -435,6 +435,10 @@
       animation: fade-in-animation 1s ease-out;
       animation-fill-mode: forwards;
 
+      .join-link {
+        margin-right: 0.5rem;
+      }
+
       a,
       button {
         align-self: center;

@@ -43,7 +43,7 @@ Input.defaultProps = {
   maxLength: null,
   onRef: null,
   underline: false,
-  color: 'black',
+  color: '',
   onKeyDown: null,
   pattern: null,
 };

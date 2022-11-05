@@ -46,6 +46,7 @@ function Login() {
           <div className="label">{t('이메일')}</div>
           <div className="input">
             <Input
+              type="email"
               value={info.email}
               color="white"
               size="xl"

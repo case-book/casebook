@@ -1,8 +1,14 @@
 .theme-LIGHT {
-  .login-wrapper {
-    > div.login-box {
+  .join-wrapper {
+    > div.join-box {
       background-color: $white;
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+
+      .input {
+        input:invalid {
+          border-bottom: 1px solid $danger;
+        }
+      }
 
       @media (max-width: 640px) {
         background-color: transparent;
@@ -15,7 +21,7 @@
     }
   }
 }
-.login-wrapper {
+.join-wrapper {
   display: flex;
   flex-grow: 1;
   position: relative;
@@ -24,7 +30,7 @@
   min-height: calc(100vh - 100px);
   justify-content: center;
 
-  > div.login-box {
+  > div.join-box {
     align-self: center;
     padding: 2rem 4rem;
     margin-bottom: 80px;
@@ -38,9 +44,10 @@
       width: 100%;
       padding: 2rem 2rem;
       margin-bottom: 0;
+      align-self: flex-start;
     }
 
-    .login-title {
+    .join-title {
       text-align: center;
       font-size: 30px;
       font-family: Rowdies, sans-serif;
@@ -53,51 +60,16 @@
     }
 
     .input {
-      margin-bottom: 1rem;
-    }
+      margin-bottom: 2rem;
 
-    .auto-login {
-      display: flex;
-
-      > div {
-        align-self: center;
-
-        &:first-child {
-          flex-grow: 1;
-          text-align: right;
-        }
+      input:invalid {
+        border-bottom: 1px solid transparent;
       }
     }
 
     .button {
+      margin-top: 4rem;
       text-align: center;
-      margin-top: 1rem;
-    }
-
-    .join {
-      margin-top: 1rem;
-      text-align: center;
-    }
-
-    .message {
-      text-align: center;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: -50px;
-      font-weight: bold;
-
-      @media (max-width: 640px) {
-        top: -20px;
-      }
-
-      > span {
-        display: inline-block;
-        padding: 0.75rem 1rem;
-        font-size: 16px;
-        color: $danger;
-        border-radius: 8px;
-      }
     }
   }
 }
