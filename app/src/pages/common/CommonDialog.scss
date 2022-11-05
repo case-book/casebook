@@ -26,4 +26,11 @@
     .dialog-icon {
     }
   }
+
+  &.error-dialog {
+    .message {
+      text-align: center;
+      padding: 1rem 0;
+    }
+  }
 }

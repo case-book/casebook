@@ -274,7 +274,12 @@ function Header({ className }) {
                           }}
                         >
                           <span className="text">{d.name}</span>
-                          {menuAlert.inx === inx && <span className="alert-message">{menuAlert.message}</span>}
+                          {menuAlert.inx === inx && (
+                            <span className="alert-message">
+                              <div />
+                              {menuAlert.message}
+                            </span>
+                          )}
                         </Link>
                         {d.key === 'space' && isSpaceSelected && (
                           <TargetSelector

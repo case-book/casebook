@@ -6,7 +6,7 @@ function Button({ className, type, size, outline, children, shadow, color, round
   return (
     <button
       type={type}
-      className={`btn-wrapper btn${outline ? '-outline' : ''}${color ? `-${color}` : ''} btn-${size} ${className} ${disabled ? 'disabled' : ''} ${shadow ? '' : 'shadow-none'} ${
+      className={`g-no-select btn-wrapper btn${outline ? '-outline' : ''}${color ? `-${color}` : ''} btn-${size} ${className} ${disabled ? 'disabled' : ''} ${shadow ? '' : 'shadow-none'} ${
         rounded ? 'rounded' : ''
       }`}
       color={color}

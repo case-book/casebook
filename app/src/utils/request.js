@@ -80,7 +80,7 @@ const processError = (handler, error) => {
       }
     } else if (error.response.data && error.response.data.message) {
       if (!handlerResponse) {
-        rootStore.controlStore.setError(error.response.status, error.response.data.message);
+        rootStore.controlStore.setError('오류', error.response.data.message);
       }
     } else if (!handlerResponse) {
       rootStore.controlStore.setError(error.response.status, '알 수 없는 오류가 발생하였습니다.');

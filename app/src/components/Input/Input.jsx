@@ -36,7 +36,7 @@ Input.defaultProps = {
   value: '',
   required: false,
   disabled: false,
-  border: true,
+  border: false,
   onChange: null,
   placeholder: '',
   minLength: null,

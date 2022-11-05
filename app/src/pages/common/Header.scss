@@ -100,6 +100,18 @@
           }
         }
       }
+
+      .notification-menu,
+      .user-menu,
+      .header-toggle {
+        a {
+          color: $black;
+
+          &:hover {
+            color: $color-primary-light;
+          }
+        }
+      }
     }
   }
 
@@ -330,12 +342,28 @@
               }
 
               .alert-message {
-                color: $color-tangerine;
-                font-size: 14px;
+                background-color: $color-tangerine;
+                color: $white;
+                font-size: 12px;
                 position: absolute;
-                left: calc(100% + 8px);
+                left: -60px;
                 white-space: nowrap;
-                top: 26px;
+                top: 4px;
+                line-height: 100%;
+                border-radius: 2px;
+                padding: 5px 8px;
+                font-family: NotoSans, sans-serif;
+
+                > div {
+                  display: inline-block;
+                  width: 6px;
+                  height: 6px;
+                  background-color: $color-tangerine;
+                  position: absolute;
+                  bottom: -3px;
+                  left: calc(50% - 2px);
+                  transform: rotate(45deg);
+                }
               }
             }
 

@@ -1,3 +1,18 @@
+.theme-LIGHT {
+  .check-box-wrapper {
+    .checked-icon {
+      border: 1px solid $input-border-color;
+    }
+
+    &.checked {
+      .checked-icon {
+        color: $color-primary-light;
+        border: 1px solid $input-border-color;
+        background-color: $white;
+      }
+    }
+  }
+}
 .check-box-wrapper {
   position: relative;
   vertical-align: middle;
@@ -8,32 +23,38 @@
   display: inline-flex;
 
   label {
-    margin-left: 1rem;
+    margin-left: 0.5rem;
     vertical-align: middle;
     align-self: center;
     justify-content: center;
     transition: all 0.3s;
     cursor: pointer;
     display: inline-block;
+    font-family: NotoSans, sans-serif;
     line-height: 100%;
   }
 
   .checked-icon {
     align-self: center;
     color: $gray-400;
+    border: 1px solid transparent;
+    padding: 3px;
+    line-height: 100%;
+    border-radius: 2px;
+    background-color: $white;
   }
 
   &.checked {
     .checked-icon {
-      color: $color-sunflower;
+      background-color: $color-primary-dark;
+      color: $black;
+      display: inline-flex;
+      justify-content: center;
+      border-radius: 2px;
     }
   }
 
-  &:hover {
-    .checked-icon {
-      color: lighten($color-sunflower, 5%);
-    }
-  }
+
 
   &.lg {
     height: $lg-height;
@@ -53,7 +74,13 @@
     }
 
     .checked-icon {
-      font-size: 28px;
+      font-size: 16px;
+      width: 24px;
+      height: 24px;
+
+      i {
+        align-self: center;
+      }
     }
   }
 

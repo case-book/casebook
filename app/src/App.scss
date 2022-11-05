@@ -6,6 +6,9 @@
     .app-content {
       .main-content {
         > .bg {
+          @media (max-width: 640px) {
+            display: none !important;
+          }
           > .star {
             fill: $gray-500;
             &.star-1 {
