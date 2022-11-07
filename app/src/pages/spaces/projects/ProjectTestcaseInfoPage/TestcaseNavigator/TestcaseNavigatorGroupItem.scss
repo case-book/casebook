@@ -2,15 +2,6 @@ li.testcase-group-item-wrapper {
   display: block;
   position: relative;
 
-  .border-bottom-liner {
-    height: 1px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-
   .group-content,
   .testcase-content {
     border-radius: 2px;
@@ -51,19 +42,6 @@ li.testcase-group-item-wrapper {
             }
           }
         }
-
-        &._last-child {
-          > div {
-            .line {
-              &.line-1 {
-                height: 50%;
-                width: 1px;
-
-                left: 0;
-              }
-            }
-          }
-        }
       }
 
       .tree-toggle {
@@ -86,8 +64,7 @@ li.testcase-group-item-wrapper {
 
         &.has-child {
           > span:hover {
-            background-color: $color-sunflower;
-            color: #333;
+            color: $color-primary-light;
           }
         }
       }
@@ -101,13 +78,14 @@ li.testcase-group-item-wrapper {
           align-self: center;
           display: inline-flex;
           line-height: 0;
-          font-size: 13px;
+          font-size: 10px;
           height: 18px;
           width: 18px;
           text-align: center;
           justify-content: center;
-          background-color: #111;
-          border-radius: 2px;
+          background-color: $gray-700;
+          color: $white;
+          border-radius: 5px;
 
           > i {
             align-self: center;
@@ -136,13 +114,13 @@ li.testcase-group-item-wrapper {
             &:first-child {
               padding-left: 2px;
               padding-right: 2px;
-              background-color: $color-storm;
+              background-color: $color-tag;
               border-radius: 2px 0 0 2px;
             }
 
             &:last-child {
               font-family: Rowdies, sans-serif;
-              background-color: $color-sunflower;
+              background-color: $color-tag;
               border-radius: 0 2px 2px 0;
               padding-left: 3px;
               padding-right: 3px;
@@ -175,7 +153,7 @@ li.testcase-group-item-wrapper {
           left: -4px;
           width: 16px;
           height: 16px;
-          background-color: $color-sunflower;
+          background-color: $color-point;
           color: #333;
           display: inline-flex;
           justify-content: center;
@@ -208,8 +186,8 @@ li.testcase-group-item-wrapper {
         display: none;
 
         &:hover {
-          background-color: $color-sunflower;
-          color: #333;
+          background-color: $color-point;
+          color: $black;
         }
       }
 
@@ -272,13 +250,13 @@ li.testcase-group-item-wrapper {
         left: 0;
         right: 0;
         height: 5px;
-        background-color: $color-azure;
+        background-color: $color-point;
         border-radius: 1px;
         opacity: 0;
       }
 
       &:hover {
-        background-color: #111;
+        background-color: $gray-200;
 
         .grab {
           display: inline-block;
@@ -286,8 +264,9 @@ li.testcase-group-item-wrapper {
       }
 
       &.selected {
-        background-color: $color-azure;
+        background-color: $color-primary-light;
         font-weight: bold;
+        color: $white;
       }
     }
   }
@@ -306,12 +285,70 @@ li.testcase-group-item-wrapper {
           top: 0;
           background-color: rgba(0, 0, 0, 0.3);
           display: block;
+          z-index: 2;
         }
       }
+    }
+  }
+}
 
-      > li:last-child {
-        > .border-bottom-liner {
-          display: none;
+.theme-DARK {
+  li.testcase-group-item-wrapper {
+    .group-content,
+    .testcase-content {
+      > div.group-info,
+      > div.testcase-info {
+        .child-tree-mark {
+          > div {
+            .line {
+              &.line-1 {
+                border-left: 1px dotted $gray-500;
+              }
+
+              &.line-2 {
+                border-bottom: 1px dotted $gray-500;
+              }
+            }
+          }
+        }
+
+        .tree-toggle {
+          &.has-child {
+            > span:hover {
+              color: $color-primary-dark;
+            }
+          }
+        }
+
+        .case-icon {
+          > span {
+            background-color: #333;
+          }
+        }
+
+        &:hover {
+          background-color: #111;
+        }
+
+        &.selected {
+          background-color: $color-primary-dark;
+          color: $black;
+        }
+      }
+    }
+
+    .group-children {
+      > ul {
+        > li:first-child {
+          > .border-top-liner {
+            height: 1px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: block;
+          }
         }
       }
     }

@@ -13,9 +13,8 @@ class CheckBox extends React.PureComponent {
           onChange(!value);
         }}
       >
-        <span className="checked-icon">
-          {value && <i className="fa-solid fa-square-check" />}
-          {!value && <i className="fa-solid fa-square" />}
+        <span className="checked-icon g-no-select">
+          <span>{value && <i className="fa-solid fa-check" />}</span>
         </span>
         <label className="g-no-select">{label}</label>
       </div>

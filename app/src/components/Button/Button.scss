@@ -1,5 +1,21 @@
+.theme-LIGHT {
+  .btn-wrapper {
+    &.btn-primary {
+      color: $white;
+      background-color: $color-primary-light;
+      &:hover {
+        background-color: darken($color-primary-light, 8%);
+      }
+
+      &.disabled:hover {
+        background-color: $color-primary-light;
+      }
+    }
+  }
+}
+
 .btn-wrapper {
-  border-radius: 1px;
+  border-radius: 2px;
   background-color: transparent;
   border: none;
   padding: 0 12px;

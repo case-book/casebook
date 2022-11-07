@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Login.scss';
 import { Button, CheckBox, Form, Input } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { setToken } from '@/utils/request';
@@ -46,10 +46,11 @@ function Login() {
           <div className="label">{t('이메일')}</div>
           <div className="input">
             <Input
+              type="email"
               value={info.email}
-              underline
               color="white"
-              size="xxl"
+              size="xl"
+              underline
               onChange={val =>
                 setInfo({
                   ...info,
@@ -64,9 +65,9 @@ function Login() {
           <div className="input">
             <Input
               type="password"
-              underline
               color="white"
-              size="xxl"
+              underline
+              size="xl"
               value={info.password}
               onChange={val =>
                 setInfo({
@@ -95,9 +96,12 @@ function Login() {
             </div>
           </div>
           <div className="button">
-            <Button type="submit" size="xl">
+            <Button type="submit" color="primary" size="xl">
               로그인
             </Button>
+          </div>
+          <div className="join">
+            <Link to="/users/join">회원 가입</Link>
           </div>
         </Form>
         {location.pathname !== '/users/login' && (

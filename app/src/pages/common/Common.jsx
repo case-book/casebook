@@ -176,7 +176,6 @@ function Common() {
         />
       )}
       {!loading && controlStore.error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || '요청 실패'} message={controlStore.error?.message || ''} />}
-
       {loading && (
         <div className="request-loading">
           <div className="loader" />

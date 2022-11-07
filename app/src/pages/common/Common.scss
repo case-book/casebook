@@ -1,3 +1,14 @@
+@keyframes LoaderAnimation {
+  0%,
+  10% {
+    transform: translateY(128px);
+  }
+  90%,
+  100% {
+    transform: translateY(0px);
+  }
+}
+
 $logo-color-1: #fe0000;
 
 .loading-group {
@@ -35,17 +46,6 @@ $logo-color-1: #fe0000;
   justify-content: center;
   flex-direction: column;
 
-  @keyframes LoaderAnimation {
-    0%,
-    10% {
-      transform: translateY(128px);
-    }
-    90%,
-    100% {
-      transform: translateY(0px);
-    }
-  }
-
   .loader {
     align-self: center;
     position: relative;
@@ -69,7 +69,23 @@ $logo-color-1: #fe0000;
     position: absolute;
     inset: 0;
     margin: auto;
-    background: $color-tangerine;
+    background: $color-primary-dark;
     animation: LoaderAnimation 1s ease-in-out infinite alternate;
+  }
+}
+
+.theme-LIGHT {
+  .request-loading {
+    .loader:after {
+      background: #eee;
+    }
+    .loader:before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      background: $color-primary-light;
+      animation: LoaderAnimation 1s ease-in-out infinite alternate;
+    }
   }
 }

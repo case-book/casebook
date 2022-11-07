@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Block, BlockRow, Form, Input, Label, Page, PageButtons, PageContent, PageTitle } from '@/components';
+import { Button, Form, Input } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import useStores from '@/hooks/useStores';
 import { getOption } from '@/utils/storageUtil';
 import { setToken } from '@/utils/request';
-
-const labelMinWidth = '100px';
+import './Join.scss';
 
 function Join() {
   const { userStore } = useStores();
@@ -51,102 +50,93 @@ function Join() {
   };
 
   return (
-    <Page className="oauth-register-wrapper">
-      <PageTitle>{t('사용자 등록')}</PageTitle>
-      <PageContent>
-        <Form className="form" onSubmit={onSubmit}>
-          <div className="register-content">
-            <Block className="block">
-              <BlockRow>
-                <Label size="lg" minWidth={labelMinWidth} required>
-                  {t('이메일')}
-                </Label>
-                <Input
-                  type="email"
-                  size="lg"
-                  required
-                  placeholder="이메일"
-                  value={userInfo.email}
-                  onChange={val =>
-                    setUserInfo({
-                      ...userInfo,
-                      email: val,
-                    })
-                  }
-                  minLength={1}
-                />
-              </BlockRow>
-              <BlockRow>
-                <Label size="lg" minWidth={labelMinWidth} required>
-                  {t('비밀번호')}
-                </Label>
-                <Input
-                  type="password"
-                  size="lg"
-                  required
-                  placeholder="비밀번호"
-                  value={userInfo.password}
-                  onChange={val =>
-                    setUserInfo({
-                      ...userInfo,
-                      password: val,
-                    })
-                  }
-                  minLength={1}
-                />
-              </BlockRow>
-              <BlockRow>
-                <Label size="lg" minWidth={labelMinWidth} required>
-                  {t('비밀번호')}
-                </Label>
-                <Input
-                  type="password"
-                  size="lg"
-                  required
-                  placeholder="비밀번호 확인"
-                  value={userInfo.passwordConfirm}
-                  onChange={val =>
-                    setUserInfo({
-                      ...userInfo,
-                      passwordConfirm: val,
-                    })
-                  }
-                  minLength={1}
-                />
-              </BlockRow>
-              <BlockRow>
-                <Label size="lg" minWidth={labelMinWidth}>
-                  {t('이름')}
-                </Label>
-                <Input
-                  type="text"
-                  size="lg"
-                  required
-                  placeholder="이름"
-                  value={userInfo.name}
-                  onChange={val =>
-                    setUserInfo({
-                      ...userInfo,
-                      name: val,
-                    })
-                  }
-                  minLength={1}
-                />
-              </BlockRow>
-            </Block>
-            <PageButtons
-              className="page-button"
-              onList={() => {
-                navigate('/');
-              }}
-              onListText="취소"
-              onSubmit={() => {}}
-              onSubmitText="회원가입"
+    <div className="join-wrapper">
+      <div className="join-box">
+        <div className="join-title">JOIN</div>
+        <Form onSubmit={onSubmit}>
+          <div className="label">{t('이메일')}</div>
+          <div className="input">
+            <Input
+              type="email"
+              underline
+              size="lg"
+              required
+              placeholder="이메일"
+              value={userInfo.email}
+              onChange={val =>
+                setUserInfo({
+                  ...userInfo,
+                  email: val,
+                })
+              }
+              minLength={1}
             />
           </div>
+          <div className="label">{t('이름')}</div>
+          <div className="input">
+            <Input
+              type="text"
+              underline
+              size="lg"
+              required
+              placeholder="이름"
+              value={userInfo.name}
+              onChange={val =>
+                setUserInfo({
+                  ...userInfo,
+                  name: val,
+                })
+              }
+              minLength={1}
+            />
+          </div>
+          <div className="label">{t('비밀번호')}</div>
+          <div className="input">
+            <Input
+              type="password"
+              underline
+              size="lg"
+              required
+              placeholder="비밀번호"
+              value={userInfo.password}
+              onChange={val =>
+                setUserInfo({
+                  ...userInfo,
+                  password: val,
+                })
+              }
+              minLength={1}
+            />
+          </div>
+          <div className="label">{t('비밀번호 확인')}</div>
+          <div className="input">
+            <Input
+              type="password"
+              underline
+              size="lg"
+              required
+              placeholder="비밀번호 확인"
+              value={userInfo.passwordConfirm}
+              onChange={val =>
+                setUserInfo({
+                  ...userInfo,
+                  passwordConfirm: val,
+                })
+              }
+              minLength={1}
+            />
+          </div>
+          <div className="button">
+            <Button type="submit" color="primary" size="xl">
+              회원 가입
+            </Button>
+          </div>
+          <div className="login">
+            <Link to="/users/login">로그인</Link>
+          </div>
         </Form>
-      </PageContent>
-    </Page>
+      </div>
+    </div>
   );
 }
 

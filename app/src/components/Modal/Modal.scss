@@ -1,3 +1,52 @@
+.theme-LIGHT {
+  .modal-wrapper {
+    > div {
+      background-color: $white;
+      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+
+      > .exit-button {
+        > span {
+          width: 100%;
+          height: 100%;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+
+      .modal-header-wrapper {
+        background-color: $white;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+        .close-button {
+          span {
+            svg {
+              fill: $black;
+            }
+
+            &:hover {
+              svg {
+                fill: $color-primary-light;
+              }
+            }
+          }
+        }
+      }
+
+      .modal-footer-wrapper {
+        text-align: center;
+        padding: 0 1.5rem 1.5rem;
+        .bottom-liner {
+          height: 1px;
+          background-color: $gray-500;
+          border: none;
+        }
+      }
+    }
+  }
+}
+
 .modal-wrapper {
   position: fixed;
   top: 0;
@@ -42,13 +91,10 @@
       justify-content: center;
       cursor: pointer;
 
-      font-size: 24px;
-      color: $white;
-
       > span {
         width: 100%;
         height: 100%;
-        img {
+        svg {
           width: 100%;
           height: 100%;
         }
@@ -57,9 +103,9 @@
 
     .modal-header-wrapper {
       font-size: 18px;
-      padding: 1.5rem;
+      padding: 1.25rem 1.5rem;
       display: flex;
-      background-color: #282828;
+      background-color: rgba(0, 0, 0, 0.2);
       border-radius: 4px 4px 0 0;
 
       > div {
@@ -83,15 +129,11 @@
           position: absolute;
 
           svg {
-            width: 1em;
-            height: 1em;
+            width: 100%;
+            height: 100%;
             vertical-align: middle;
             fill: white;
             overflow: hidden;
-          }
-          svg {
-            width: 100%;
-            height: 100%;
           }
 
           &:hover {

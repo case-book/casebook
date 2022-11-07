@@ -1,3 +1,24 @@
+.theme-LIGHT {
+  .input-wrapper {
+    color: $black;
+    border: none;
+    background-color: $white;
+    &.underline {
+      border-bottom: 1px solid $input-border-color;
+      border-radius: 2px 2px 0 0;
+    }
+
+    &:invalid {
+      transition: border-bottom 0.5s;
+      &.underline {
+        border-radius: 2px 2px 0 0;
+        border-bottom: 1px solid $danger;
+        transition: border-bottom 0.5s;
+      }
+    }
+  }
+}
+
 .input-wrapper {
   display: block;
   position: relative;
@@ -7,12 +28,18 @@
   z-index: 2;
   border-radius: 2px;
   box-sizing: border-box;
-  border: none;
   transition: border-bottom 0.5s;
   font-family: NotoSans, sans-serif;
+  color: $white;
+  border: none;
+  background-color: #121212;
 
   &.underline {
     border-bottom: 1px solid transparent;
+  }
+
+  &.border {
+    border: 1px solid #494c56;
   }
 
   &:focus {
@@ -22,12 +49,9 @@
   }
 
   &:invalid {
-    _border-bottom: 1px solid $danger;
-    _border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    transition: border-bottom 0.5s;
-
     &.underline {
-      border-radius: 2px 2px 0 0;
+      border-bottom: 1px solid $danger;
+      transition: border-bottom 0.5s;
     }
   }
 
@@ -42,10 +66,7 @@
   }
 
   &.color-black {
-    color: $white;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid #494c56;
-    background-color: #121212;
+
   }
 
   &[type='range'] {

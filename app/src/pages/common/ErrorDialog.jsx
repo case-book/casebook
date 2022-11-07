@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import './CommonDialog.scss';
 
-function ErrorDialog({ className, title, message, okHandler, okText }) {
+function ErrorDialog({ className, title, message }) {
   const { t } = useTranslation();
   const { controlStore } = useStores();
 
@@ -39,20 +39,17 @@ function ErrorDialog({ className, title, message, okHandler, okText }) {
       </ModalHeader>
       <ModalBody>
         <div>
-          <div>{message}</div>
+          <div className="message">{message}</div>
         </div>
       </ModalBody>
       <ModalFooter>
-        <div className="bottom-liner" />
         <Button
+          outline
           onClick={() => {
             controlStore.setError(null);
-            if (okHandler) {
-              okHandler();
-            }
           }}
         >
-          {okText || t('확인')}
+          {t('확인')}
         </Button>
       </ModalFooter>
     </Modal>
@@ -63,16 +60,12 @@ ErrorDialog.defaultProps = {
   className: '',
   title: '',
   message: '',
-  okHandler: null,
-  okText: '',
 };
 
 ErrorDialog.propTypes = {
   className: PropTypes.string,
   title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   message: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  okHandler: PropTypes.func,
-  okText: PropTypes.string,
 };
 
 export default ErrorDialog;
