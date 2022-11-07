@@ -52,7 +52,7 @@
             text-align: center;
             @include title;
             &:hover {
-              color: $color-sunflower;
+              color: $color-primary-light;
               cursor: pointer;
             }
           }
@@ -72,7 +72,7 @@
                 padding: 8px 12px;
                 line-height: 160%;
                 height: 58px;
-                background-color: #16151a;
+                background-color: $gray-100;
                 border-radius: 4px;
                 overflow: hidden;
                 display: block;
@@ -102,7 +102,7 @@
                     align-self: center;
                     text-align: center;
                     width: 100%;
-                    background-color: $card-bg-color-dark;
+                    background-color: $gray-100;
                     padding: 0.5rem 0;
                     border-radius: 4px;
                     cursor: pointer;
@@ -182,8 +182,8 @@
                 margin-right: 8px;
                 justify-content: center;
                 border-radius: 12px;
-                background-color: #111;
-                border: 1px solid rgba(255, 255, 255, 0.09);
+                background-color: $white;
+                border: 1px solid rgba(0, 0, 0, 0.12);
                 position: relative;
                 cursor: pointer;
                 .tooltip {
@@ -283,6 +283,49 @@
 
                 &:last-child {
                   margin-right: 0;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.theme-DARK {
+  .project-list-page-wrapper {
+    ul.project-list {
+      > li {
+        .project-card {
+          .project-info {
+            .name {
+              &:hover {
+                color: $color-primary-dark;
+              }
+            }
+
+            .summary {
+              > div {
+                .description {
+                  background-color: #16151a;
+                }
+
+                .count {
+                  > div {
+                    > div {
+                      background-color: $card-bg-color-dark;
+                    }
+                  }
+                }
+              }
+            }
+
+            .side-menu {
+              ul {
+                > li {
+                  background-color: #111;
+                  border: 1px solid rgba(255, 255, 255, 0.09);
                 }
               }
             }

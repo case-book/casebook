@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Input } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
@@ -126,11 +126,13 @@ function Join() {
               minLength={1}
             />
           </div>
-
           <div className="button">
             <Button type="submit" color="primary" size="xl">
               회원 가입
             </Button>
+          </div>
+          <div className="login">
+            <Link to="/users/login">로그인</Link>
           </div>
         </Form>
       </div>

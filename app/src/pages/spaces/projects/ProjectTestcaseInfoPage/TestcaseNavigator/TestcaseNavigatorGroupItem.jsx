@@ -57,7 +57,6 @@ function TestcaseNavigatorGroupItem({
 
   return (
     <li key={group.id} className="testcase-group-item-wrapper" onClick={e => e.stopPropagation()}>
-      <div className="border-bottom-liner" />
       <div className="border-top-liner" />
       <div className="group-content">
         <div

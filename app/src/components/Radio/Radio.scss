@@ -36,19 +36,19 @@
 
     &.active {
       &:hover {
-        background-color: darken($color-sunflower, 10%);
+        background-color: darken($color-primary-light, 10%);
         color: $black;
       }
     }
 
     &.checked {
-      background-color: $color-sunflower;
+      background-color: $color-primary-light;
       color: $black;
       font-weight: bold;
 
       &:hover {
         color: $black;
-        background-color: $color-sunflower;
+        background-color: $color-primary-light;
       }
     }
 
@@ -100,7 +100,6 @@
     &.xs {
       padding-left: 0.5rem;
       padding-right: 0.5rem;
-
     }
 
     &.active {
@@ -110,15 +109,15 @@
     }
 
     &.checked {
-      color: $primary-color;
+      color: $color-primary-light;
       font-weight: bold;
 
       &:hover {
-        color: $primary-color;
+        color: $color-primary-light;
       }
 
       &::after {
-        background-color: $primary-color;
+        background-color: $color-primary-light;
       }
     }
 
@@ -148,7 +147,7 @@
   }
 
   input[type='radio']:checked {
-    border: 4px solid $color-sunflower;
+    border: 4px solid $color-primary-light;
   }
 
   &.active {
@@ -168,7 +167,7 @@
       }
 
       input[type='radio']:checked {
-        border: 4px solid $color-sunflower;
+        border: 4px solid $color-primary-light;
       }
     }
   }
@@ -201,6 +200,52 @@
     line-height: 0;
     label {
       font-size: 12px;
+    }
+  }
+}
+
+.theme-DARK {
+  .radio-wrapper {
+    &.type-inline {
+      &.active {
+        &:hover {
+          background-color: darken($color-primary-dark, 10%);
+        }
+      }
+
+      &.checked {
+        background-color: $color-primary-dark;
+
+        &:hover {
+          background-color: $color-primary-dark;
+        }
+      }
+    }
+
+    &.type-line {
+      &.checked {
+        color: $color-primary-dark;
+
+        &:hover {
+          color: $color-primary-dark;
+        }
+
+        &::after {
+          background-color: $color-primary-dark;
+        }
+      }
+    }
+
+    input[type='radio']:checked {
+      border: 4px solid $color-primary-dark;
+    }
+
+    &.active {
+      &:hover {
+        input[type='radio']:checked {
+          border: 4px solid $color-primary-dark;
+        }
+      }
     }
   }
 }

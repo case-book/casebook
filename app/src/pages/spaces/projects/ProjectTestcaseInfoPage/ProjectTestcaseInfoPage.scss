@@ -12,14 +12,14 @@
         width: 10px;
         cursor: ew-resize;
         &:hover {
-          background-color: #000;
+          background-color: $gray-400;
         }
       }
 
       .testcase-groups {
         min-width: 120px;
         display: flex;
-        background-color: #191919;
+        background-color: $card-bg-color-light;
         border-radius: 4px;
 
         &.min {
@@ -31,10 +31,30 @@
       .testcases {
         flex-grow: 1;
         position: relative;
-        background-color: #242424;
-        background-color: #191919;
+        background-color: $card-bg-color-light;
         border-radius: 4px;
+      }
+    }
+  }
+}
 
+.theme-DARK {
+  .project-testcase-info-page-wrapper {
+    .page-content {
+      .page-layout {
+        .border-line {
+          &:hover {
+            background-color: #000;
+          }
+        }
+
+        .testcase-groups {
+          background-color: $card-bg-color-dark;
+        }
+
+        .testcases {
+          background-color: $card-bg-color-dark;
+        }
       }
     }
   }
