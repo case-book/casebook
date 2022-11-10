@@ -8,15 +8,18 @@ class Radio extends React.PureComponent {
 
     return (
       <div
-        className={`radio-wrapper ${size} ${className} ${readOnly ? 'read-only' : 'active'} type-${type} ${checked ? 'checked' : ''}`}
+        className={`radio-wrapper g-no-select ${size} ${className} ${readOnly ? 'read-only' : 'active'} type-${type} ${checked ? 'checked' : ''}`}
         onClick={() => {
           if (!readOnly) {
             onChange(value);
           }
         }}
       >
-        <input type="radio" checked={checked} readOnly />
-        <label className="g-no-select">{label}</label>
+        <div className="border" />
+        <div className="radio-content">
+          <input type="radio" checked={checked} readOnly />
+          <label>{label}</label>
+        </div>
       </div>
     );
   }

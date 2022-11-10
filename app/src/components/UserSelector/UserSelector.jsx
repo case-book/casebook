@@ -4,7 +4,7 @@ import { USER_ASSIGNED_OPERATIONS } from '@/constants/constants';
 import { getUserText } from '@/utils/userUtil';
 import './UserSelector.scss';
 
-function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder, color }) {
+function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder }) {
   const [opened, setOpened] = useState(false);
   const [bottomList, setBottomList] = useState(true);
   const [text, setText] = useState('');
@@ -65,7 +65,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
   }, [opened]);
 
   return (
-    <div className={`user-selector-wrapper ${className} size-${size} color-${color}`} ref={element}>
+    <div className={`user-selector-wrapper g-no-select ${className} size-${size}`} ref={element}>
       <div className="control">
         <input
           type="text"
@@ -88,6 +88,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
               if (filteredList.length === 1) {
                 handleChange('user', filteredList[0].id);
                 element.current.blur();
+                console.log(element.current.blur);
               } else {
                 setOpened(true);
               }
@@ -179,8 +180,6 @@ UserSelector.defaultProps = {
   onChange: null,
   placeholder: '',
 
-  color: 'black',
-
   users: [],
 };
 
@@ -195,8 +194,6 @@ UserSelector.propTypes = {
 
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
-
-  color: PropTypes.string,
 
   users: PropTypes.arrayOf(
     PropTypes.shape({
