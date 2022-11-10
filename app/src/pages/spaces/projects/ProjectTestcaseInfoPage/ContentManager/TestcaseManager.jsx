@@ -14,8 +14,13 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getUserText } from '@/utils/userUtil';
 import { getBaseURL } from '@/utils/configUtil';
 import './TestcaseManager.scss';
+import useStores from '@/hooks/useStores';
 
 function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createImage }) {
+  const {
+    themeStore: { theme },
+  } = useStores();
+
   const { testcaseItems } = content;
   const editors = useRef({});
 
@@ -105,6 +110,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
           {!isEdit && (
             <Button
               size="md"
+              outline
               color="white"
               onClick={() => {
                 setIsEdit(true);
@@ -115,10 +121,10 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
           )}
           {isEdit && (
             <>
-              <Button size="md" color="white" onClick={onCancel}>
+              <Button outline size="md" color="white" onClick={onCancel}>
                 취소
               </Button>
-              <Button size="md" color="primary" onClick={onSave}>
+              <Button size="md" color="primary" outline onClick={onSave}>
                 저장
               </Button>
             </>
@@ -190,6 +196,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                               type={testcaseTemplateItem.type.toLowerCase()}
                               value={testcaseItem.value}
                               size="md"
+                              outline
                               color="black"
                               onChange={val => {
                                 onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
@@ -230,7 +237,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                               users={users}
                               type={testcaseItem.type}
                               value={testcaseItem.value}
-                              color="black"
                               onChange={(type, val) => {
                                 onChangeTestcaseItem(testcaseTemplateItem.id, type, 'value', val);
                               }}
@@ -240,13 +246,13 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                       )}
                       {testcaseTemplateItem.type === 'EDITOR' && (
                         <div className="editor">
-                          {!isEdit && <Viewer theme="dark" initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
+                          {!isEdit && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
                           {isEdit && (
                             <Editor
                               ref={e => {
                                 editors.current[testcaseTemplateItem.id] = e;
                               }}
-                              theme="dark"
+                              theme={theme === 'DARK' ? 'dark' : 'white'}
                               placeholder="내용을 입력해주세요."
                               previewStyle="vertical"
                               height="400px"

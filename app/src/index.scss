@@ -261,23 +261,22 @@ hr {
   height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background-color: $gray-900;
+  background-color: $gray-300;
 }
 ::-webkit-scrollbar-thumb {
   background-color: $gray-500;
-  border-radius: 6px;
 }
 
-.theme-LIGHT {
+.theme-DARK {
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background-color: $gray-600;
+    background-color: $gray-900;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: $color-azure;
+    background-color: $gray-500;
     border-radius: 6px;
   }
 }

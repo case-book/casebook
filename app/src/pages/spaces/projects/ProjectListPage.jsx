@@ -39,6 +39,7 @@ function ProjectListPage() {
               <div>
                 <Button
                   size="lg"
+                  outline
                   onClick={() => {
                     navigate(`/spaces/${spaceCode}/projects/new`);
                   }}

@@ -86,6 +86,11 @@ $third-color: #3e8ef1;
 $color-primary-dark: #ffbc4b;
 $color-primary-light: #3e8ef1;
 
+$color-border-light: #dadde6;
+$color-form-control-light: $white;
+$color-border-dark: #494c56;
+$color-form-control-dark: #121212;
+
 @mixin title() {
   font-weight: bold;
   font-family: $font-family-menu;

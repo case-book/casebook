@@ -402,6 +402,7 @@ function TestcaseNavigator({
         <div className="testcase-config-button">
           <Button
             size="xs"
+            outline
             onClick={() => {
               setSetting({
                 ...setting,

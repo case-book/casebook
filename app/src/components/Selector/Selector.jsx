@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './Selector.scss';
 
-function Selector({ className, onChange, items, value, addAll, outline, color, size, separator, minWidth, radius, disabled, onClick }) {
+function Selector({ className, onChange, items, value, addAll, size, separator, minWidth, radius, disabled, onClick }) {
   const [open, setOpen] = useState(false);
   const [bottomList, setBottomList] = useState(true);
 
@@ -57,7 +57,7 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
   return (
     <div
       ref={element}
-      className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''} color-${color}`}
+      className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''}`}
       style={{
         minWidth: `${minWidth}`,
       }}
@@ -76,7 +76,7 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
         />
       )}
       <div
-        className={`${open ? 'open' : ''} selector-current ${outline ? 'outline' : ''}`}
+        className={`${open ? 'open' : ''} selector-current`}
         onClick={() => {
           if (!disabled) {
             setOpen(!open);
@@ -134,8 +134,7 @@ function Selector({ className, onChange, items, value, addAll, outline, color, s
 Selector.defaultProps = {
   className: '',
   addAll: false,
-  outline: false,
-  color: '',
+
   size: 'md',
   separator: true,
   minWidth: 'auto',
@@ -158,8 +157,7 @@ Selector.propTypes = {
   ),
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   addAll: PropTypes.bool,
-  outline: PropTypes.bool,
-  color: PropTypes.string,
+
   size: PropTypes.string,
   separator: PropTypes.bool,
   minWidth: PropTypes.string,
