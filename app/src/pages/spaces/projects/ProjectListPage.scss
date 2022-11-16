@@ -263,17 +263,10 @@
                   }
                 }
 
-                &.config:hover {
+                &.info:hover {
                   background-color: #837e7e;
                   transition: all 0.3s;
-                }
 
-                &.info:hover {
-                  background-color: #cdf567;
-                  transition: all 0.3s;
-                  > div {
-                    color: #000;
-                  }
                 }
 
                 > div {

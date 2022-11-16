@@ -3,17 +3,24 @@
     padding: 1rem 0.5rem calc(2rem - 4px);
     font-weight: bold;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+
+    .title-text {
+      flex-grow: 1;
+      align-self: center;
+    }
+    .control {
+      align-self: center;
+    }
   }
 
   > .title-bottom-liner {
-    height: 4px;
-    background-color: #030303;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    height: 1px;
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     border-left: none;
     border-right: none;
     border-radius: 3px;
-
     width: 100%;
   }
 
@@ -49,5 +56,13 @@
 
   &.h5 {
     font-size: 10px;
+  }
+}
+
+.theme-DARK {
+  .title-wrapper {
+    > .title-bottom-liner {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
   }
 }

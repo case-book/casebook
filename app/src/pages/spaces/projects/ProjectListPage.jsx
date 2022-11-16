@@ -118,12 +118,14 @@ function ProjectListPage() {
                         <ul>
                           {MENUS.map((menu, inx) => {
                             return (
-                              <li key={inx} className={menu.key}>
-                                <div
-                                  onClick={() => {
-                                    navigate(`/spaces/${spaceCode}/projects/${project.id}${menu.to}`);
-                                  }}
-                                >
+                              <li
+                                key={inx}
+                                className={menu.key}
+                                onClick={() => {
+                                  navigate(`/spaces/${spaceCode}/projects/${project.id}${menu.to}`);
+                                }}
+                              >
+                                <div>
                                   <div className="tooltip">
                                     <span>{menu.name}</span>
                                     <div className="arrow" />

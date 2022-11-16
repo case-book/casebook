@@ -118,6 +118,7 @@ function SpaceListPage() {
           {navigator && (
             <div className="arrow">
               <Button
+                shadow={false}
                 onClick={() => {
                   if (listContentElement.current) {
                     let nextScrollLeft = listContentElement.current.scrollLeft;
@@ -238,6 +239,7 @@ function SpaceListPage() {
           {navigator && (
             <div className="arrow">
               <Button
+                shadow={false}
                 onClick={() => {
                   if (listContentElement.current) {
                     let nextScrollLeft = listContentElement.current.scrollLeft;

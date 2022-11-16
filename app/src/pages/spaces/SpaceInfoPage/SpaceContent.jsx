@@ -175,12 +175,7 @@ function SpaceContent({ space, onRefresh }) {
                 {t('스페이스 사용자')}
               </CardHeader>
               <CardContent scroll>
-                {users?.length < 1 && (
-                  <EmptyContent className="empty-content">
-                    <div>{t('프로젝트가 없습니다.')}</div>
-                  </EmptyContent>
-                )}
-                {users?.length > 0 && <MemberManager users={users} />}
+                <MemberManager users={users} />
               </CardContent>
             </Card>
           </Col>
