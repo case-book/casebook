@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Card.scss';
 
-function Card({ className, children, onClick, color, point, circle }) {
+function Card({ className, children, onClick, color, point, circle, border }) {
   return (
     <div
-      className={`card-wrapper ${className} color-${color} ${onClick ? 'clickable' : ''}`}
+      className={`card-wrapper ${className} color-${color} ${onClick ? 'clickable' : ''} ${border ? 'border' : ''}`}
       onClick={() => {
         if (onClick) {
           onClick();
@@ -31,6 +31,7 @@ Card.defaultProps = {
   color: 'white',
   point: false,
   circle: false,
+  border: false,
 };
 
 Card.propTypes = {
@@ -40,6 +41,7 @@ Card.propTypes = {
   color: PropTypes.string,
   point: PropTypes.bool,
   circle: PropTypes.bool,
+  border: PropTypes.bool,
 };
 
 export default Card;

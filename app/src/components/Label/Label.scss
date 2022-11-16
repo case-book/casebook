@@ -1,7 +1,7 @@
 .label-wrapper {
   display: inline-flex;
   margin-right: 1rem;
-  color: $gray-500;
+  color: $gray-600;
   position: relative;
   font-weight: bold;
 
@@ -15,7 +15,7 @@
 
   &.required {
     > span {
-      color: $gray-200;
+      color: $gray-700;
     }
   }
 

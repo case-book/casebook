@@ -6,31 +6,13 @@
   z-index: 2;
   border-radius: 2px;
   resize: none;
-  border: none;
-  color: $white;
-  background-color: rgba(255, 255, 255, 0.1);
-
-  &.color-white {
-    color: $black;
-    background-color: $white;
-  }
-
-  &.color-gray {
-    color: $black;
-    background-color: $gray-300;
-  }
-
-  &.color-black {
-    color: $white;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid #494c56;
-    background-color: #121212;
-  }
+  border: 1px solid $color-border-light;
+  color: $black;
 
   &:focus {
     box-shadow: none;
     outline: none;
-    border-color: $input-border-focus-color;
+    border-color: $color-border-light-focus;
   }
 
   &:invalid {
@@ -75,5 +57,87 @@
     _border-bottom: 1px solid $white !important;
     color: $white;
     background-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+.theme-DARK {
+  .text-area-wrapper {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 8px;
+    z-index: 2;
+    border-radius: 2px;
+    resize: none;
+    border: none;
+    color: $white;
+    background-color: rgba(255, 255, 255, 0.1);
+
+    &.color-white {
+      color: $black;
+      background-color: $white;
+    }
+
+    &.color-gray {
+      color: $black;
+      background-color: $gray-300;
+    }
+
+    &.color-black {
+      color: $white;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid #494c56;
+      background-color: #121212;
+    }
+
+    &:focus {
+      box-shadow: none;
+      outline: none;
+      border-color: $input-border-focus-color;
+    }
+
+    &:invalid {
+      border: 1px solid $danger;
+    }
+
+    &.size-xxl {
+      font-size: 20px;
+      padding: 12px;
+    }
+
+    &.size-xl {
+      font-size: 20px;
+      padding: 12px;
+    }
+
+    &.size-lg {
+      font-size: 18px;
+      padding: 12px;
+    }
+
+    &.size-md {
+      font-size: 16px;
+      padding: 12px;
+    }
+
+    &.size-sm {
+      font-size: 14px;
+    }
+
+    &.size-xs {
+      font-size: 12px;
+    }
+
+    &.disabled {
+      background-color: $gray-100;
+      opacity: 0.6;
+    }
+
+    &.underline {
+      border: none;
+      _border-bottom: 1px solid $white !important;
+      color: $white;
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
   }
 }

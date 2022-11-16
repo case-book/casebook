@@ -1,9 +1,10 @@
 .tag-wrapper {
   display: inline-block;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 100%;
-  padding: 8px 8px;
-  font-family: NotoSans, sans-serif;
+  padding: 4px;
+  font-family: Cairo, sans-serif;
+  font-weight: bold;
   background-color: #242424;
 
   &.uppercase {
@@ -11,7 +12,7 @@
   }
 
   &.rounded {
-    border-radius: 10px;
+    border-radius: 4px;
   }
 
   &.color-black {
@@ -25,6 +26,15 @@
 
   &.color-white {
     color: $black;
+    &.border {
+      border: 2px solid $border-color;
+      padding: 6px 8px;
+    }
+  }
+
+  &.color-primary {
+    color: $white;
+    background-color: $color-primary-light;
     &.border {
       border: 2px solid $border-color;
       padding: 6px 8px;

@@ -23,7 +23,6 @@ function ProjectsRoutes() {
       <Route path="/:projectId/config/edit" element={<EditProjectConfig />} />
       <Route path="/:projectId/config" element={<ProjectConfigInfoPage />} />
       <Route path="/:projectId" element={<ProjectOverviewInfoPage />} />
-
       <Route path="/:projectId/testcases" element={<ProjectTestcaseInfoPage />} />
       <Route path="/:projectId/testruns" element={<ProjectTestrunInfoPage />} />
       <Route path="/:projectId/bugs" element={<ProjectBugInfoPage />} />

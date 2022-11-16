@@ -24,7 +24,7 @@
   &:focus {
     box-shadow: none;
     outline: none;
-    border-color: $input-border-focus-color;
+    border-color: $color-border-light-focus;
   }
 
   &:invalid {

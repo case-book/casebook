@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Table, Tag, Tbody, Td, Tr } from '@/components';
+import { Button, EmptyContent, Table, Tag, Tbody, Td, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './MemberManager.scss';
@@ -9,6 +9,11 @@ function MemberManager({ className, users, edit, onChangeUserRole, onUndoRemoval
 
   return (
     <div className={`member-list-wrapper ${className}`}>
+      {users?.length < 1 && (
+        <EmptyContent className="empty-content">
+          <div>{t('사용자가 없습니다.')}</div>
+        </EmptyContent>
+      )}
       {users?.length > 0 && (
         <Table cols={['1px', '100%', '1px']}>
           <Tbody>

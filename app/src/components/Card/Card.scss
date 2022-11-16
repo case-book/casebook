@@ -1,19 +1,17 @@
-.theme-LIGHT {
-  .card-wrapper {
-    background-color: $white;
-    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
-  }
-}
-
 .card-wrapper {
   position: relative;
   border-radius: 4px;
-  background-color: $card-bg-color-dark;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  background-color: $white;
+  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+
+  &.border {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
 
   &.clickable {
     cursor: pointer;
@@ -75,5 +73,12 @@
   .card-content {
     position: relative;
     height: 100%;
+  }
+}
+
+.theme-DARK {
+  .card-wrapper {
+    background-color: $card-bg-color-dark;
+    border: 1px solid rgba(255, 255, 255, 0.04);
   }
 }

@@ -2,8 +2,15 @@
   height: 100%;
   display: flex;
   justify-content: center;
+  background-color: $gray-100;
   > div {
     align-self: center;
     text-align: center;
+  }
+}
+
+.theme-DARK {
+  .empty-content-wrapper {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
