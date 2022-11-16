@@ -7,7 +7,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import './ProjectInfoPage.scss';
 import ProjectService from '@/services/ProjectService';
 import MemberManager from '@/components/MemberManager/MemberManager';
-import TestcaseTemplateEditorPopup2 from '@/pages/spaces/projects/ProjectConfigEditPage/TestcaseTemplateEditorPopup2';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -113,7 +113,7 @@ function ProjectInfoPage() {
           />
         </PageContent>
       </Page>
-      <TestcaseTemplateEditorPopup2
+      <TestcaseTemplateEditorPopup
         editor={false}
         opened={templateViewerPopupInfo.opened}
         testcaseTemplate={templateViewerPopupInfo.testcaseTemplate}

@@ -4,9 +4,9 @@ import { cloneDeep } from 'lodash';
 import { Button, CheckBox, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Selector } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { TestcaseTemplateEditPropTypes } from '@/proptypes';
-import './TestcaseTemplateEditorPopup2.scss';
+import './TestcaseTemplateEditorPopup.scss';
 
-function TestcaseTemplateEditorPopup2({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor }) {
+function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor }) {
   const { t } = useTranslation();
 
   const [selectedItem, setSelectedItem] = useState({});
@@ -238,7 +238,7 @@ function TestcaseTemplateEditorPopup2({ className, testcaseTemplate, onClose, on
 
   return (
     <Modal
-      className={`${className} testcase-template-editor-popup-wrapper2 ${editor ? 'is-edit' : ''}`}
+      className={`${className} testcase-template-editor-popup-wrapper ${editor ? 'is-edit' : ''}`}
       isOpen={opened}
       size="xxl"
       toggle={() => {
@@ -630,7 +630,7 @@ function TestcaseTemplateEditorPopup2({ className, testcaseTemplate, onClose, on
   );
 }
 
-TestcaseTemplateEditorPopup2.defaultProps = {
+TestcaseTemplateEditorPopup.defaultProps = {
   className: '',
   testcaseTemplate: null,
   onClose: null,
@@ -641,7 +641,7 @@ TestcaseTemplateEditorPopup2.defaultProps = {
   editor: true,
 };
 
-TestcaseTemplateEditorPopup2.propTypes = {
+TestcaseTemplateEditorPopup.propTypes = {
   className: PropTypes.string,
   testcaseTemplate: TestcaseTemplateEditPropTypes,
   onClose: PropTypes.func,
@@ -652,4 +652,4 @@ TestcaseTemplateEditorPopup2.propTypes = {
   editor: PropTypes.bool,
 };
 
-export default TestcaseTemplateEditorPopup2;
+export default TestcaseTemplateEditorPopup;

@@ -14,7 +14,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
 import MemberManager from '@/components/MemberManager/MemberManager';
-import TestcaseTemplateEditorPopup2 from '@/pages/spaces/projects/ProjectConfigEditPage/TestcaseTemplateEditorPopup2';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
 
@@ -344,7 +344,7 @@ function ProjectEditPage({ type }) {
           </Form>
         </PageContent>
       </Page>
-      <TestcaseTemplateEditorPopup2
+      <TestcaseTemplateEditorPopup
         opened={templateEditorPopupInfo.opened}
         testcaseTemplate={templateEditorPopupInfo.testcaseTemplate}
         testcaseItemTypes={testcaseItemTypes}
