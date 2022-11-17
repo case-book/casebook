@@ -160,6 +160,7 @@ function SpaceListPage() {
                         <div className="config-button">
                           <Button
                             rounded
+                            outline
                             size="sm"
                             onClick={e => {
                               e.stopPropagation();

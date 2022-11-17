@@ -12,7 +12,6 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
-import TestcaseService from '@/services/TestcaseService';
 import MemberManager from '@/components/MemberManager/MemberManager';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
@@ -97,27 +96,17 @@ function ProjectEditPage({ type }) {
 
     if (type === 'new') {
       ProjectService.createProject(spaceCode, project, info => {
-        const nextProject = { ...project };
-        nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-          const nextTestcaseTemplate = testcaseTemplate;
-          nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-        });
-
-        TestcaseService.updateConfig(spaceCode, info.id, nextProject, () => {
-          navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
-        });
+        navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
       });
     } else if (type === 'edit') {
-      ProjectService.updateProject(spaceCode, project, () => {
-        const nextProject = { ...project };
-        nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-          const nextTestcaseTemplate = testcaseTemplate;
-          nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-        });
+      const nextProject = { ...project };
+      nextProject.testcaseTemplates.forEach(testcaseTemplate => {
+        const nextTestcaseTemplate = testcaseTemplate;
+        nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
+      });
 
-        TestcaseService.updateConfig(spaceCode, projectId, nextProject, () => {
-          navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
-        });
+      ProjectService.updateProject(spaceCode, nextProject, () => {
+        navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
       });
     }
   };
@@ -140,6 +129,15 @@ function ProjectEditPage({ type }) {
   const onChangeTestcaseTemplate = (inx, template) => {
     const nextProject = { ...project };
     nextProject.testcaseTemplates[inx] = template;
+
+    if (template.isDefault) {
+      nextProject.testcaseTemplates.forEach((item, i) => {
+        const nextItem = item;
+        if (i !== inx && nextItem.isDefault) {
+          nextItem.isDefault = false;
+        }
+      });
+    }
     setProject(nextProject);
   };
 

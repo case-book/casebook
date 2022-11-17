@@ -1,4 +1,4 @@
-package com.mindplates.bugcase.biz.testcase.vo.request;
+package com.mindplates.bugcase.biz.project.vo.request;
 
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;

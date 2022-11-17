@@ -1,5 +1,6 @@
-package com.mindplates.bugcase.biz.testcase.vo.request;
+package com.mindplates.bugcase.biz.project.vo.request;
 
+import com.mindplates.bugcase.biz.project.vo.request.TestcaseTemplateItemRequest;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import java.util.List;

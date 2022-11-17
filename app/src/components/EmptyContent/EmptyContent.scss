@@ -3,6 +3,8 @@
   display: flex;
   justify-content: center;
   background-color: $gray-100;
+  font-family: NotoSans, sans-serif;
+  color: $gray-700;
   > div {
     align-self: center;
     text-align: center;
