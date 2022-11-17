@@ -17,6 +17,7 @@
 
   &.size-sm {
     height: $sm-height;
+    font-size: 14px;
     .selector-current {
       > span {
         &.text {

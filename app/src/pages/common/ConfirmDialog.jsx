@@ -46,8 +46,8 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
         </div>
       </ModalBody>
       <ModalFooter>
-        <div className="bottom-liner" />
         <Button
+          outline
           onClick={() => {
             if (noHandler) {
               noHandler();
@@ -58,6 +58,7 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
           {noText || t('취소')}
         </Button>
         <Button
+          outline
           onClick={() => {
             if (okHandler) {
               okHandler();

@@ -12,11 +12,11 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
-import TestcaseService from '@/services/TestcaseService';
-import MemberManager from '@/components/MemberManager/MemberManager';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
+import MemberCardManager from '@/components/MemberManager/MemberCardManager';
+import useStores from '@/hooks/useStores';
 
 const defaultProjectConfig = {
   testcaseTemplates: [
@@ -44,6 +44,8 @@ const defaultProjectConfig = {
 function ProjectEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
+
+  const { userStore } = useStores();
 
   const navigate = useNavigate();
 
@@ -92,33 +94,67 @@ function ProjectEditPage({ type }) {
     });
   }, [spaceCode]);
 
+  const updateProject = () => {
+    const nextProject = { ...project };
+    nextProject.testcaseTemplates.forEach(testcaseTemplate => {
+      const nextTestcaseTemplate = testcaseTemplate;
+      nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
+    });
+
+    ProjectService.updateProject(spaceCode, nextProject, () => {
+      navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
+    });
+  };
+
   const onSubmit = e => {
     e.preventDefault();
 
     if (type === 'new') {
       ProjectService.createProject(spaceCode, project, info => {
-        const nextProject = { ...project };
-        nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-          const nextTestcaseTemplate = testcaseTemplate;
-          nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-        });
-
-        TestcaseService.updateConfig(spaceCode, info.id, nextProject, () => {
-          navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
-        });
+        navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
       });
     } else if (type === 'edit') {
-      ProjectService.updateProject(spaceCode, project, () => {
-        const nextProject = { ...project };
-        nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-          const nextTestcaseTemplate = testcaseTemplate;
-          nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-        });
+      if (project.users.filter(user => user.crud !== 'D').length < 1) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '프로젝트 설정 오류', '최소한 1명의 프로젝트 사용자는 존재해야 합니다.');
+        return;
+      }
 
-        TestcaseService.updateConfig(spaceCode, projectId, nextProject, () => {
-          navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
-        });
-      });
+      if (project.users.filter(user => user.crud !== 'D' && user.role === 'ADMIN').length < 1) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '프로젝트 설정 오류', '최소한 1명의 관리자는 지정되어야 합니다.');
+        return;
+      }
+
+      const currentUser = project.users.find(user => user.userId === userStore.user?.id);
+
+      if (currentUser.crud !== 'D' && currentUser.role === 'USER') {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 권한 경고'),
+          <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 편집할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          () => {
+            updateProject();
+          },
+          null,
+          t('확인'),
+        );
+        return;
+      }
+
+      if (currentUser.crud === 'D') {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 권한 경고'),
+          <div>{t('프로젝트 사용자에서 현재 사용자가 제외되었습니다. 저장 후 더 이상 프로젝트에 접근할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          () => {
+            updateProject();
+          },
+          null,
+          t('확인'),
+        );
+        return;
+      }
+
+      updateProject();
     }
   };
 
@@ -140,6 +176,15 @@ function ProjectEditPage({ type }) {
   const onChangeTestcaseTemplate = (inx, template) => {
     const nextProject = { ...project };
     nextProject.testcaseTemplates[inx] = template;
+
+    if (template.isDefault) {
+      nextProject.testcaseTemplates.forEach((item, i) => {
+        const nextItem = item;
+        if (i !== inx && nextItem.isDefault) {
+          nextItem.isDefault = false;
+        }
+      });
+    }
     setProject(nextProject);
   };
 
@@ -168,6 +213,28 @@ function ProjectEditPage({ type }) {
     setProject(nextProject);
   };
 
+  const changeSpaceUserRole = (userId, field, value) => {
+    const next = { ...project };
+    const projectUser = next.users.find(d => d.id === userId);
+    projectUser.crud = 'U';
+    projectUser[field] = value;
+    setSpace(next);
+  };
+
+  const removeSpaceUser = userId => {
+    const next = { ...project };
+    const projectUser = next.users.find(d => d.id === userId);
+    projectUser.crud = 'D';
+    setSpace(next);
+  };
+
+  const undoRemovalSpaceUser = spaceUserId => {
+    const next = { ...project };
+    const projectUser = next.users.find(d => d.id === spaceUserId);
+    projectUser.crud = 'U';
+    setSpace(next);
+  };
+
   return (
     <>
       <Page className="project-edit-page-wrapper">
@@ -184,6 +251,7 @@ function ProjectEditPage({ type }) {
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
+            <Title>{t('프로젝트 정보')}</Title>
             <Block>
               <BlockRow>
                 <Label>{t('스페이스')}</Label>
@@ -268,7 +336,7 @@ function ProjectEditPage({ type }) {
               <ul className="template-list">
                 {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
                   return (
-                    <li key={testcaseTemplate.id} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
+                    <li key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
                       <Card border className="testcase-template" point>
                         <CardHeader className="name">
                           {!testcaseTemplate.id && (
@@ -292,7 +360,7 @@ function ProjectEditPage({ type }) {
                               <span className="control-button">
                                 <Button
                                   rounded
-                                  size="sm"
+                                  size="xs"
                                   color="danger"
                                   onClick={e => {
                                     e.stopPropagation();
@@ -328,7 +396,14 @@ function ProjectEditPage({ type }) {
               <>
                 <Title>프로젝트 사용자</Title>
                 <Block>
-                  <MemberManager className="member-manager" edit users={project?.users} onChangeUserRole={() => {}} onUndoRemovalUSer={() => {}} onRemoveUSer={() => {}} />
+                  <MemberCardManager
+                    className="member-manager"
+                    edit
+                    users={project?.users}
+                    onChangeUserRole={changeSpaceUserRole}
+                    onUndoRemovalUSer={undoRemovalSpaceUser}
+                    onRemoveUSer={removeSpaceUser}
+                  />
                 </Block>
               </>
             )}

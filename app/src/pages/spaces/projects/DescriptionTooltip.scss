@@ -1,0 +1,107 @@
+.description-tooltip-wrapper {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  background-color: $color-primary-light;
+  color: $white;
+  justify-content: center;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+
+  .description-tooltip {
+    position: absolute;
+    background-color: $white;
+    color: $black;
+    font-family: NotoSans, sans-serif;
+    line-height: 120%;
+    font-weight: normal;
+    font-size: 14px;
+    padding: 10px;
+
+    z-index: 100;
+    top: -8px;
+    white-space: pre;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    min-width: 160px;
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+    cursor: text;
+
+    > .arrow {
+      position: absolute;
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      transform: rotate(45deg);
+
+      background-color: $white;
+    }
+
+    &.left {
+      left: calc(100% + 8px);
+
+      > .arrow {
+        top: 12px;
+        left: -6px;
+        border-left: 1px solid rgba(0, 0, 0, 0.15);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    &.right {
+      right: 28px;
+
+      > .arrow {
+        top: 12px;
+        right: -6px;
+        border-right: 1px solid rgba(0, 0, 0, 0.15);
+        border-top: 1px solid rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .tooltip-title {
+      border-bottom: 1px solid $gray-400;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      span:first-child {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  i {
+    align-self: center;
+  }
+  &:last-child {
+    margin-right: 0;
+  }
+
+  .copy-button {
+    line-height: 0;
+
+    .copy-text {
+      position: relative;
+      z-index: 2;
+      font-size: 13px;
+      font-family: NotoSans, sans-serif;
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    > div {
+      cursor: pointer;
+      display: inline-block;
+      border-radius: 2px;
+      line-height: 100%;
+      font-size: 14px;
+      background-color: $color-sunflower;
+      color: #333;
+      padding: 2px;
+      font-family: Rowdies, sans-serif;
+      position: relative;
+    }
+  }
+}

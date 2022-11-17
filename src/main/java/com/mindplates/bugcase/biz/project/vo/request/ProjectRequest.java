@@ -1,29 +1,59 @@
 package com.mindplates.bugcase.biz.project.vo.request;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectUser;
+import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseTemplateRequest;
 import lombok.Data;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ProjectRequest {
 
-  private Long id;
-  private String name;
-  private String description;
-  private String token;
-  private Boolean activated;
+    private Long id;
+    private String name;
+    private String description;
+    private String token;
+    private Boolean activated;
 
-  public Project buildEntity() {
+    private List<TestcaseTemplateRequest> testcaseTemplates;
 
-    Project project = Project.builder()
-        .id(id)
-        .name(name)
-        .description(description)
-        .token(token)
-        .activated(activated)
-        .build();
+    private List<ProjectUserRequest> users;
 
-    return project;
-  }
+    public Project buildEntity() {
+
+        Project project = Project.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .token(token)
+                .activated(activated)
+                .build();
+
+        if (users != null) {
+            List<ProjectUser> projectUsers = users.stream().map(
+                    (spaceUser) -> ProjectUser.builder()
+                            .id(spaceUser.getId())
+                            .user(com.mindplates.bugcase.biz.user.entity.User.builder().id(spaceUser.getUserId()).build())
+                            .role(spaceUser.getRole())
+                            .crud(spaceUser.getCrud())
+                            .project(project).build()).collect(Collectors.toList());
+
+            project.setUsers(projectUsers);
+        }
+
+        /*
+        project.setTestcaseTemplates(testcaseTemplates.stream().map((testcaseTemplateRequest -> {
+            TestcaseTemplate testcaseTemplate = testcaseTemplateRequest.buildEntity();
+            testcaseTemplate.setProject(project);
+            return testcaseTemplate;
+        })).collect(Collectors.toList()));
+
+         */
+
+        return project;
+    }
 
 
 }

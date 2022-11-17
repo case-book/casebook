@@ -28,6 +28,10 @@
     border-radius: 2px;
     background-color: $white;
     height: 100%;
+    display: inline-flex;
+    > span {
+      align-self: center;
+    }
   }
 
   &.checked {
@@ -48,6 +52,9 @@
     }
 
     .checked-icon {
+      font-size: 20px;
+      width: $lg-height;
+      height: $lg-height;
     }
   }
 
@@ -59,13 +66,9 @@
     }
 
     .checked-icon {
-      font-size: 16px;
-      width: 24px;
-      height: 24px;
-
-      i {
-        align-self: center;
-      }
+      font-size: 18px;
+      width: $md-height;
+      height: $md-height;
     }
   }
 
@@ -77,8 +80,9 @@
     }
 
     .checked-icon {
-      width: 16px;
-      height: 16px;
+      width: $sm-height;
+      height: $sm-height;
+      font-size: 16px;
     }
   }
 

@@ -1,15 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { Button, CheckBox, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Selector } from '@/components';
+import { Button, CheckBox, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Selector, TextArea } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { TestcaseTemplateEditPropTypes } from '@/proptypes';
 import './TestcaseTemplateEditorPopup.scss';
+import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
 
 function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor }) {
   const { t } = useTranslation();
 
+  const element = useRef(null);
   const [selectedItem, setSelectedItem] = useState({});
+  const [openTooltipInfo, setOpenTooltipInfo] = useState({
+    inx: null,
+    type: '',
+  });
 
   const [template, setTemplate] = useState(null);
   const [caseTemplateItems, setCaseTemplateItems] = useState([]);
@@ -229,6 +235,67 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                 <span>{testcaseTemplateItem?.options?.length || 0}</span>
               </span>
             )}
+            {(testcaseTemplateItem.description || testcaseTemplateItem.example) && (
+              <div className="desc-and-example">
+                {testcaseTemplateItem.description && (
+                  <DescriptionTooltip
+                    onClose={() => {
+                      setOpenTooltipInfo({
+                        inx: null,
+                        type: null,
+                      });
+                    }}
+                    parentElement={element}
+                    icon={<i className="fa-solid fa-info" />}
+                    title="설명"
+                    text={testcaseTemplateItem.description}
+                    opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'description'}
+                    onClick={() => {
+                      if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'description') {
+                        setOpenTooltipInfo({
+                          inx: null,
+                          type: null,
+                        });
+                      } else {
+                        setOpenTooltipInfo({
+                          inx,
+                          type: 'description',
+                        });
+                      }
+                    }}
+                  />
+                )}
+                {testcaseTemplateItem.example && (
+                  <DescriptionTooltip
+                    onClose={() => {
+                      setOpenTooltipInfo({
+                        inx: null,
+                        type: null,
+                      });
+                    }}
+                    parentElement={element}
+                    icon={<i className="fa-solid fa-receipt" />}
+                    title="샘플"
+                    clipboard
+                    text={testcaseTemplateItem.example}
+                    opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'example'}
+                    onClick={() => {
+                      if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'example') {
+                        setOpenTooltipInfo({
+                          inx: null,
+                          type: null,
+                        });
+                      } else {
+                        setOpenTooltipInfo({
+                          inx,
+                          type: 'example',
+                        });
+                      }
+                    }}
+                  />
+                )}
+              </div>
+            )}
           </div>
           <div className="item-info">{testcaseTemplateItem.label}</div>
         </div>
@@ -254,7 +321,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
         {template?.name}
       </ModalHeader>
       <ModalBody className="testcase-template-editor-content">
-        <div onClick={e => e.stopPropagation()}>
+        <div onClick={e => e.stopPropagation()} ref={element}>
           <div className="editor-content">
             <div className="template-content">
               {editor && (
@@ -431,7 +498,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                   <Radio
                                     key={d}
                                     label={d}
-                                    size="md"
+                                    size="sm"
                                     value={d}
                                     checked={d === selectedItem?.item?.category}
                                     onChange={() => {
@@ -446,7 +513,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             <div className="title">{t('라벨')}</div>
                             <div className="properties-control">
                               <Input
-                                size="md"
+                                size="sm"
                                 color="white"
                                 value={selectedItem?.item?.label}
                                 onChange={val => {
@@ -457,12 +524,40 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               />
                             </div>
                           </div>
+                          <div className="label">
+                            <div className="title">{t('설명')}</div>
+                            <div className="properties-control">
+                              <TextArea
+                                value={selectedItem?.item?.description || ''}
+                                placeholder={`"${selectedItem?.item?.label}" 항목에 대한 설명`}
+                                size="sm"
+                                rows={3}
+                                onChange={val => {
+                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'description', val);
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="label">
+                            <div className="title">{t('샘플')}</div>
+                            <div className="properties-control">
+                              <TextArea
+                                value={selectedItem?.item?.example || ''}
+                                placeholder={`"${selectedItem?.item?.label}"에 입력에 참고할 샘플 데이터`}
+                                size="sm"
+                                rows={3}
+                                onChange={val => {
+                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'example', val);
+                                }}
+                              />
+                            </div>
+                          </div>
                           <div className="type">
                             <div className="title">{t('타입')}</div>
                             <div className="properties-control">
                               <Selector
                                 className="selector"
-                                size="md"
+                                size="sm"
                                 items={testcaseItemTypes.map(d => {
                                   return {
                                     key: d,
@@ -478,7 +573,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                           </div>
                           {!hasOptionType(selectedItem?.item?.type) && selectedItem?.item?.type === 'CHECKBOX' && (
                             <div className="default-value">
-                              <div className="title">{t('기본 값')}</div>
+                              <div className="title">{t('기본 선택 여부')}</div>
                               <div className="properties-control">
                                 <CheckBox
                                   size="sm"
@@ -499,8 +594,9 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               <div className="title">{t('기본 값')}</div>
                               <div className="properties-control">
                                 <Input
-                                  size="md"
+                                  size="sm"
                                   color="white"
+                                  placeholder={`"${selectedItem?.item?.label}" 생성시 입력될 기본 값`}
                                   value={selectedItem?.item?.defaultValue || ''}
                                   onChange={val => {
                                     onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', val);
@@ -516,6 +612,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                 <div className="option-button">
                                   <Button
                                     size="xs"
+                                    outline
                                     onClick={() => {
                                       onAddTestcaseTemplateItemOption(selectedItem.inx, selectedItem?.item?.category);
                                     }}
@@ -531,7 +628,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                       return (
                                         <li key={jnx}>
                                           <div>
-                                            <dic className="default-options">
+                                            <div className="default-options">
                                               <CheckBox
                                                 size="sm"
                                                 value={d === selectedItem?.item?.defaultValue}
@@ -543,7 +640,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                                   }
                                                 }}
                                               />
-                                            </dic>
+                                            </div>
                                             <div className="input">
                                               <Input
                                                 size="sm"
@@ -558,7 +655,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                             </div>
                                             <div className="button">
                                               <Button
-                                                size="sm"
+                                                size="xs"
                                                 rounded
                                                 color="danger"
                                                 onClick={() => {
