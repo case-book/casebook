@@ -78,7 +78,7 @@ public class ProjectController {
         })).filter(testcaseTemplate -> !testcaseTemplate.isDeleted()).collect(Collectors.toList());
 
 
-        if (testcaseTemplates.size() > 0 && !hasDefault.get()) {
+        if (!testcaseTemplates.isEmpty() && !hasDefault.get()) {
             testcaseTemplates.get(0).setIsDefault(true);
         }
 

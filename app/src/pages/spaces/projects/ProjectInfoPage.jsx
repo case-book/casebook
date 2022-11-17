@@ -19,12 +19,9 @@ function ProjectInfoPage() {
     testcaseTemplate: null,
   });
 
-  console.log(templateViewerPopupInfo);
-
   useEffect(() => {
     window.scrollTo(0, 0);
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      console.log(info);
       setProject(info);
     });
   }, [projectId]);

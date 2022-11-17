@@ -11,7 +11,6 @@ public class ColumnsDef {
   public static final int EMAIL = 200;
   public static final int TEL = 50;
   public static final int PASSWORD = 100;
-
   public static final int PATH = 200;
 
 }

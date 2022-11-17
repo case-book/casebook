@@ -16,6 +16,7 @@ import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplat
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
+import useStores from '@/hooks/useStores';
 
 const defaultProjectConfig = {
   testcaseTemplates: [
@@ -43,6 +44,8 @@ const defaultProjectConfig = {
 function ProjectEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
+
+  const { userStore } = useStores();
 
   const navigate = useNavigate();
 
@@ -91,6 +94,18 @@ function ProjectEditPage({ type }) {
     });
   }, [spaceCode]);
 
+  const updateProject = () => {
+    const nextProject = { ...project };
+    nextProject.testcaseTemplates.forEach(testcaseTemplate => {
+      const nextTestcaseTemplate = testcaseTemplate;
+      nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
+    });
+
+    ProjectService.updateProject(spaceCode, nextProject, () => {
+      navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
+    });
+  };
+
   const onSubmit = e => {
     e.preventDefault();
 
@@ -99,15 +114,47 @@ function ProjectEditPage({ type }) {
         navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
       });
     } else if (type === 'edit') {
-      const nextProject = { ...project };
-      nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-        const nextTestcaseTemplate = testcaseTemplate;
-        nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-      });
+      if (project.users.filter(user => user.crud !== 'D').length < 1) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '프로젝트 설정 오류', '최소한 1명의 프로젝트 사용자는 존재해야 합니다.');
+        return;
+      }
 
-      ProjectService.updateProject(spaceCode, nextProject, () => {
-        navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
-      });
+      if (project.users.filter(user => user.crud !== 'D' && user.role === 'ADMIN').length < 1) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '프로젝트 설정 오류', '최소한 1명의 관리자는 지정되어야 합니다.');
+        return;
+      }
+
+      const currentUser = project.users.find(user => user.userId === userStore.user?.id);
+
+      if (currentUser.crud !== 'D' && currentUser.role === 'USER') {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 권한 경고'),
+          <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 편집할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          () => {
+            updateProject();
+          },
+          null,
+          t('확인'),
+        );
+        return;
+      }
+
+      if (currentUser.crud === 'D') {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 권한 경고'),
+          <div>{t('프로젝트 사용자에서 현재 사용자가 제외되었습니다. 저장 후 더 이상 프로젝트에 접근할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          () => {
+            updateProject();
+          },
+          null,
+          t('확인'),
+        );
+        return;
+      }
+
+      updateProject();
     }
   };
 
@@ -204,6 +251,7 @@ function ProjectEditPage({ type }) {
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
+            <Title>{t('프로젝트 정보')}</Title>
             <Block>
               <BlockRow>
                 <Label>{t('스페이스')}</Label>

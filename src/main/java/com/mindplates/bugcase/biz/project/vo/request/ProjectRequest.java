@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.vo.request;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
+import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseTemplateRequest;
 import lombok.Data;
 
 import java.util.List;

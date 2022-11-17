@@ -7,8 +7,6 @@ import './MemberManager.scss';
 function MemberManager({ className, users, edit, onChangeUserRole, onUndoRemovalUSer, onRemoveUSer }) {
   const { t } = useTranslation();
 
-  console.log(users);
-
   return (
     <div className={`member-list-wrapper ${className}`}>
       {users?.length < 1 && (

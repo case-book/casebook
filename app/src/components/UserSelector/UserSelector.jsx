@@ -88,7 +88,6 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
               if (filteredList.length === 1) {
                 handleChange('user', filteredList[0].id);
                 element.current.blur();
-                console.log(element.current.blur);
               } else {
                 setOpened(true);
               }

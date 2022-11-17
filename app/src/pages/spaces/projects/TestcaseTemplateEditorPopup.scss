@@ -200,6 +200,12 @@
                     }
                   }
 
+                  .desc-and-example {
+                    position: absolute;
+                    right: 0;
+                    font-size: 10px;
+                  }
+
                   > .item-info {
                     font-size: 16px;
                     padding: 0.5rem;
@@ -296,6 +302,7 @@
 
                           .button {
                             margin-left: 0.5rem;
+                            display: flex;
                           }
                         }
                       }
