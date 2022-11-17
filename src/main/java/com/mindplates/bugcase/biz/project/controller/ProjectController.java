@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
@@ -125,6 +126,17 @@ public class ProjectController {
         if (testcaseTemplates.size() > 0 && !hasDefault.get()) {
             testcaseTemplates.get(0).setIsDefault(true);
         }
+
+        List<ProjectUser> projectUserList = projectRequest.getUsers().stream().map(
+                (spaceUser) -> ProjectUser.builder()
+                        .id(spaceUser.getId())
+                        .user(com.mindplates.bugcase.biz.user.entity.User.builder().id(spaceUser.getUserId()).build())
+                        .role(spaceUser.getRole())
+                        .crud(spaceUser.getCrud())
+                        .project(nextProject).build()).collect(Collectors.toList());
+
+        nextProject.setUsers(projectUserList);
+
 
         nextProject.setTestcaseTemplates(testcaseTemplates);
 

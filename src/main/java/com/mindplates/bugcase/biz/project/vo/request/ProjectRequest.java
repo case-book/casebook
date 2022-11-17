@@ -1,9 +1,11 @@
 package com.mindplates.bugcase.biz.project.vo.request;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import lombok.Data;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ProjectRequest {
@@ -16,6 +18,8 @@ public class ProjectRequest {
 
     private List<TestcaseTemplateRequest> testcaseTemplates;
 
+    private List<ProjectUserRequest> users;
+
     public Project buildEntity() {
 
         Project project = Project.builder()
@@ -25,6 +29,18 @@ public class ProjectRequest {
                 .token(token)
                 .activated(activated)
                 .build();
+
+        if (users != null) {
+            List<ProjectUser> projectUsers = users.stream().map(
+                    (spaceUser) -> ProjectUser.builder()
+                            .id(spaceUser.getId())
+                            .user(com.mindplates.bugcase.biz.user.entity.User.builder().id(spaceUser.getUserId()).build())
+                            .role(spaceUser.getRole())
+                            .crud(spaceUser.getCrud())
+                            .project(project).build()).collect(Collectors.toList());
+
+            project.setUsers(projectUsers);
+        }
 
         /*
         project.setTestcaseTemplates(testcaseTemplates.stream().map((testcaseTemplateRequest -> {

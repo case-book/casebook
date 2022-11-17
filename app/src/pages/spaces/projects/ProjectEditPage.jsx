@@ -12,10 +12,10 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
-import MemberManager from '@/components/MemberManager/MemberManager';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
+import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 
 const defaultProjectConfig = {
   testcaseTemplates: [
@@ -166,6 +166,28 @@ function ProjectEditPage({ type }) {
     setProject(nextProject);
   };
 
+  const changeSpaceUserRole = (userId, field, value) => {
+    const next = { ...project };
+    const projectUser = next.users.find(d => d.id === userId);
+    projectUser.crud = 'U';
+    projectUser[field] = value;
+    setSpace(next);
+  };
+
+  const removeSpaceUser = userId => {
+    const next = { ...project };
+    const projectUser = next.users.find(d => d.id === userId);
+    projectUser.crud = 'D';
+    setSpace(next);
+  };
+
+  const undoRemovalSpaceUser = spaceUserId => {
+    const next = { ...project };
+    const projectUser = next.users.find(d => d.id === spaceUserId);
+    projectUser.crud = 'U';
+    setSpace(next);
+  };
+
   return (
     <>
       <Page className="project-edit-page-wrapper">
@@ -266,7 +288,7 @@ function ProjectEditPage({ type }) {
               <ul className="template-list">
                 {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
                   return (
-                    <li key={testcaseTemplate.id} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
+                    <li key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
                       <Card border className="testcase-template" point>
                         <CardHeader className="name">
                           {!testcaseTemplate.id && (
@@ -290,7 +312,7 @@ function ProjectEditPage({ type }) {
                               <span className="control-button">
                                 <Button
                                   rounded
-                                  size="sm"
+                                  size="xs"
                                   color="danger"
                                   onClick={e => {
                                     e.stopPropagation();
@@ -326,7 +348,14 @@ function ProjectEditPage({ type }) {
               <>
                 <Title>프로젝트 사용자</Title>
                 <Block>
-                  <MemberManager className="member-manager" edit users={project?.users} onChangeUserRole={() => {}} onUndoRemovalUSer={() => {}} onRemoveUSer={() => {}} />
+                  <MemberCardManager
+                    className="member-manager"
+                    edit
+                    users={project?.users}
+                    onChangeUserRole={changeSpaceUserRole}
+                    onUndoRemovalUSer={undoRemovalSpaceUser}
+                    onRemoveUSer={removeSpaceUser}
+                  />
                 </Block>
               </>
             )}

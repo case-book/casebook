@@ -6,8 +6,8 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import './ProjectInfoPage.scss';
 import ProjectService from '@/services/ProjectService';
-import MemberManager from '@/components/MemberManager/MemberManager';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
+import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -99,7 +99,7 @@ function ProjectInfoPage() {
           </Block>
           <Title>프로젝트 사용자</Title>
           <Block>
-            <MemberManager className="member-manager" users={project?.users} />
+            <MemberCardManager className="member-manager" users={project?.users} />
           </Block>
           <PageButtons
             outline
