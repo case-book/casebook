@@ -1,0 +1,47 @@
+.max-example-editor-wrapper {
+  width: 100%;
+  height: 100%;
+  padding-top: 1rem;
+
+  > div {
+    width: 100%;
+    height: 100%;
+    background-color: $white;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    display: flex;
+    margin-bottom: 0.5rem;
+    > div {
+      align-self: center;
+      &:first-child {
+        flex-grow: 1;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .properties-control {
+    flex-grow: 1;
+  }
+
+  &.max {
+    padding-top: 0;
+    > div {
+      padding: 1rem;
+      border-radius: 0 0 4px 4px;
+    }
+
+    .title {
+      margin-bottom: 1rem;
+      > div {
+        &:first-child {
+          font-size: 18px;
+          @include title;
+        }
+      }
+    }
+  }
+}

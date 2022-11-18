@@ -34,6 +34,17 @@
       }
 
       .template-content {
+        .max-example-editor {
+          position: absolute;
+          top: 69px;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 21;
+          background-color: rgba(0, 0, 0, 0.3);
+
+
+        }
         .control {
           display: flex;
           margin-bottom: 1rem;
@@ -91,134 +102,6 @@
               margin: 0 -0.5rem -0.5rem 0;
               text-align: left;
               overflow-y: auto;
-
-              li.testcase-template-item {
-                padding: 0.5rem;
-                margin: 0;
-                position: relative;
-                text-align: left;
-                vertical-align: top;
-
-                min-height: 70px;
-                display: inline-flex;
-                box-sizing: border-box;
-                font-family: NotoSans, sans-serif;
-
-
-                &.hidden {
-                  display: none;
-                }
-
-                &:hover {
-                }
-
-                &.selected {
-                  > div {
-                    background-color: $color-sunflower;
-                    color: $black;
-                  }
-                }
-
-                > div {
-                  width: 100%;
-                  position: relative;
-                  padding: 0.75rem;
-                  background-color: #f7f7f7;
-                  border-radius: 8px;
-                  border: 1px solid rgba(0, 0, 0, 0.04);
-
-                  > .type {
-                    line-height: 100%;
-                    display: flex;
-                    font-weight: bold;
-                    position: relative;
-                    font-size: 12px;
-                    flex-grow: 1;
-                    height: 20px;
-
-                    .type-text {
-                      position: relative;
-                      .options-list {
-                        left: calc(100% + 40px);
-                        position: absolute;
-                        top: -10px;
-                        background-color: $white;
-                        color: $black;
-                        border: 1px solid $border-color;
-                        white-space: nowrap;
-                        padding: 0.25rem 0.75rem;
-                        z-index: 1;
-                        border-radius: 2px;
-
-                        > .arrow {
-                          position: absolute;
-                          top: 10px;
-                          left: -5px;
-                          background-color: $white;
-                          transform: rotate(45deg);
-                          > div {
-                            width: 10px;
-                            height: 10px;
-                            border: 1px solid $border-color;
-                            border-top: none;
-                            border-right: none;
-                          }
-                        }
-
-                        > ul {
-                          list-style: none;
-                          padding: 0;
-                          margin: 0;
-
-                          > li {
-                            font-size: 14px;
-                            line-height: 100%;
-                            padding: 0.5rem;
-                          }
-                        }
-                      }
-                    }
-
-                    > span {
-                      align-self: center;
-
-                      &.count-badge {
-                        cursor: pointer;
-                        margin-left: 0.5rem;
-                        width: 20px;
-                        height: 20px;
-                        display: inline-flex;
-                        justify-content: center;
-                        border-radius: 50%;
-                        background-color: $color-tangerine;
-                        font-size: 12px;
-                        color: $white;
-
-                        > span {
-                          align-self: center;
-                          line-height: 100%;
-                          font-family: Cairo, sans-serif;
-                          font-weight: bold;
-                        }
-                      }
-                    }
-                  }
-
-                  .desc-and-example {
-                    position: absolute;
-                    right: 0;
-                  }
-
-                  > .item-info {
-                    font-size: 16px;
-                    padding: 0.5rem;
-                  }
-
-                  &:last-child {
-                    margin-right: 0;
-                  }
-                }
-              }
             }
           }
 
@@ -233,6 +116,8 @@
             right: 27px;
             height: calc(100% - 151px);
             border-left: 1px solid rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            padding-right: 0.5rem;
 
             .sub-title {
               padding-left: 1rem;
@@ -255,11 +140,19 @@
               }
 
               .properties-button {
+                background-color: $gray-100;
+                padding: 0.5rem;
+                border-radius: 8px;
                 text-align: right;
                 button {
                   margin-right: 0.25rem;
                 }
               }
+
+              .example-editor {
+                height: 200px;
+              }
+
 
               .label,
               .type,

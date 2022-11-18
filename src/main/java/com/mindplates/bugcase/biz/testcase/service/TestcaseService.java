@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.entity.*;
 import com.mindplates.bugcase.biz.testcase.repository.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,8 @@ public class TestcaseService {
     private final SessionUtil sessionUtil;
 
     private final CacheManager cacheManager;
+
+    private final FileUtil fileUtil;
 
 
     public List<TestcaseTemplate> selectTestcaseTemplateItemList(Long projectId) {
@@ -176,7 +179,7 @@ public class TestcaseService {
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
 
         files.forEach((testcaseItemFile -> {
-            Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
+            Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
             try {
                 Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
             } catch (Exception e) {
@@ -195,7 +198,7 @@ public class TestcaseService {
         testcaseItemRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
         files.forEach((testcaseItemFile -> {
-            Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
+            Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
             try {
                 Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
             } catch (Exception e) {

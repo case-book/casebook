@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import './ProjectInfoPage.scss';
 import ProjectService from '@/services/ProjectService';
-import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 
 function ProjectInfoPage() {

@@ -6,11 +6,9 @@ import { Button, CheckBox, Input, Radio, Selector, TextArea, UserSelector } from
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
-
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-
 import { getUserText } from '@/utils/userUtil';
 import { getBaseURL } from '@/utils/configUtil';
 import './TestcaseManager.scss';
@@ -20,7 +18,7 @@ import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 
-function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createImage }) {
+function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -206,6 +204,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                     <div className="text">{testcaseTemplateItem.label}</div>
                     {testcaseTemplateItem.description && (
                       <DescriptionTooltip
+                        type={testcaseTemplateItem.type}
                         onClose={() => {
                           setOpenTooltipInfo({
                             inx: null,
@@ -237,6 +236,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                     )}
                     {testcaseTemplateItem.example && (
                       <DescriptionTooltip
+                        type={testcaseTemplateItem.type}
                         onClose={() => {
                           setOpenTooltipInfo({
                             inx: null,
@@ -369,7 +369,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                         </div>
                       )}
                       {testcaseTemplateItem.type === 'EDITOR' && (
-                        <div className="editor">
+                        <div className="editor" key={`${content.id}-${theme}`}>
                           {!isEdit && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
                           {isEdit && (
                             <Editor
@@ -381,7 +381,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                               previewStyle="vertical"
                               height="400px"
                               initialEditType="wysiwyg"
-                              hideModeSwitch
                               plugins={[colorSyntax]}
                               autofocus={false}
                               toolbarItems={[
@@ -393,7 +392,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                               ]}
                               hooks={{
                                 addImageBlobHook: async (blob, callback) => {
-                                  const result = await createImage(content.id, blob.name, blob.size, blob.type, blob);
+                                  const result = await createTestcaseImage(content.id, blob.name, blob.size, blob.type, blob);
                                   callback(
                                     `${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/testcases/${result.data.testcaseId}/images/${result.data.id}?uuid=${
                                       result.data.uuid
@@ -459,7 +458,7 @@ TestcaseManager.propTypes = {
       email: PropTypes.string,
     }),
   ),
-  createImage: PropTypes.func.isRequired,
+  createTestcaseImage: PropTypes.func.isRequired,
 };
 
 export default TestcaseManager;

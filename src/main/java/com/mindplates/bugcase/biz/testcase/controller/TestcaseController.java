@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
@@ -11,6 +10,7 @@ import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.*;
 import com.mindplates.bugcase.biz.testcase.vo.response.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.FileUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +32,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TestcaseController {
 
-    private final ProjectService projectService;
-    private final TestcaseService testcaseService;
 
+    private final TestcaseService testcaseService;
     private final TestcaseItemFileService testcaseItemFileService;
+
+    private final FileUtil fileUtil;
 
     @Operation(description = "프로젝트 테스트케이스 설정 조회")
     @GetMapping("/templates")
@@ -136,7 +137,7 @@ public class TestcaseController {
     public TestcaseItemFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type,
                                                             HttpServletRequest req) {
 
-        String path = testcaseItemFileService.storeFile(projectId, file);
+        String path = testcaseItemFileService.createImage(projectId, file);
 
         TestcaseItemFile testcaseItemFile = TestcaseItemFile.builder()
                 .project(Project.builder().id(projectId).build())
@@ -157,7 +158,7 @@ public class TestcaseController {
     public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
 
         TestcaseItemFile testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId, uuid);
-        Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
+        Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
 
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseItemFile.getName(), StandardCharsets.UTF_8).build();
 
