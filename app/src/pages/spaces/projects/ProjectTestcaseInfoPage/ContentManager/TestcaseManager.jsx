@@ -74,20 +74,22 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
   };
 
   const onChangeTestcaseTemplate = testcaseTemplateId => {
-    dialogUtil.setConfirm(
-      MESSAGE_CATEGORY.WARNING,
-      t('템플릿 변경 알림'),
-      <div>{t('테스크케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
-      () => {
-        setContent({
-          ...content,
-          testcaseTemplateId,
-          testcaseItems: [],
-        });
-      },
-      null,
-      t('확인'),
-    );
+    if (content?.testcaseTemplateId !== testcaseTemplateId) {
+      dialogUtil.setConfirm(
+        MESSAGE_CATEGORY.WARNING,
+        t('템플릿 변경 알림'),
+        <div>{t('테스크케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
+        () => {
+          setContent({
+            ...content,
+            testcaseTemplateId,
+            testcaseItems: [],
+          });
+        },
+        null,
+        t('확인'),
+      );
+    }
   };
 
   return (
