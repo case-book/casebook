@@ -41,8 +41,8 @@ axios.defaults.baseURL = baseUrl;
 axios.defaults.headers.common.Accept = 'application/json';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
-if (window.sessionStorage.getItem('token')) {
-  axios.defaults.headers.common['X-AUTH-TOKEN'] = window.sessionStorage.getItem('token');
+if (window.localStorage.getItem('token')) {
+  axios.defaults.headers.common['X-AUTH-TOKEN'] = window.localStorage.getItem('token');
 }
 
 const processSuccess = (handler, response, ref) => {
@@ -53,7 +53,7 @@ const processSuccess = (handler, response, ref) => {
 
 export const setToken = token => {
   axios.defaults.headers.common['X-AUTH-TOKEN'] = token;
-  window.sessionStorage.setItem('token', token);
+  window.localStorage.setItem('token', token);
 };
 
 const processError = (handler, error) => {

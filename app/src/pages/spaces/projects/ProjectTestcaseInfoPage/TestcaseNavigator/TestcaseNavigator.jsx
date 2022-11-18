@@ -353,7 +353,7 @@ function TestcaseNavigator({
             <EmptyContent className="empty-content">
               <div>테스트케이스 그룹이 없습니다.</div>
               <div className="empty-control">
-                <Button size="xs" onClick={addTestcaseGroup}>
+                <Button outline size="sm" onClick={addTestcaseGroup}>
                   {width < 180 && (
                     <>
                       <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>

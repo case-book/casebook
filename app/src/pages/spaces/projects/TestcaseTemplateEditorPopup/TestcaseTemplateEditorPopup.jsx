@@ -5,21 +5,20 @@ import { Button, CheckBox, EmptyContent, Input, Liner, Modal, ModalBody, ModalFo
 import { useTranslation } from 'react-i18next';
 import { TestcaseTemplateEditPropTypes } from '@/proptypes';
 import './TestcaseTemplateEditorPopup.scss';
-import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
+import TestcaseTemplateItem from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateItem';
+import ExampleEditor from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/ExampleEditor';
 
-function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor }) {
+function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor, createProjectImage }) {
   const { t } = useTranslation();
 
   const element = useRef(null);
+
   const [selectedItem, setSelectedItem] = useState({});
-  const [openTooltipInfo, setOpenTooltipInfo] = useState({
-    inx: null,
-    type: '',
-  });
 
   const [template, setTemplate] = useState(null);
   const [caseTemplateItems, setCaseTemplateItems] = useState([]);
   const [resultTemplateItems, setResultTemplateItems] = useState([]);
+  const [exampleMax, setExampleMax] = useState(false);
 
   useEffect(() => {
     setTemplate(cloneDeep(testcaseTemplate));
@@ -194,115 +193,6 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
     }
   };
 
-  const getItem = (testcaseTemplateItem, inx) => {
-    return (
-      <li
-        key={inx}
-        className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${
-          editor && selectedItem?.item?.category === testcaseTemplateItem.category && selectedItem?.inx === inx ? 'selected' : ''
-        }`}
-        style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}% - 0.5rem)` }}
-        onClick={() => {
-          if (selectedItem.inx === inx && selectedItem?.item?.category === testcaseTemplateItem.category) {
-            setSelectedItem({});
-          } else {
-            setSelectedItem({
-              inx,
-              item: testcaseTemplateItem,
-            });
-          }
-        }}
-      >
-        <div>
-          <div className="type">
-            <span className="type-text">
-              {testcaseTemplateItem.type}
-              {!editor && hasOptionType(testcaseTemplateItem.type) && inx === selectedItem?.inx && selectedItem?.item?.category === testcaseTemplateItem.category && (
-                <div className="options-list">
-                  <div className="arrow">
-                    <div />
-                  </div>
-                  <ul>
-                    {testcaseTemplateItem?.options?.map((option, jnx) => {
-                      return <li key={jnx}>{option}</li>;
-                    })}
-                  </ul>
-                </div>
-              )}
-            </span>
-            {hasOptionType(testcaseTemplateItem.type) && (
-              <span className="count-badge">
-                <span>{testcaseTemplateItem?.options?.length || 0}</span>
-              </span>
-            )}
-            {(testcaseTemplateItem.description || testcaseTemplateItem.example) && (
-              <div className="desc-and-example">
-                {testcaseTemplateItem.description && (
-                  <DescriptionTooltip
-                    onClose={() => {
-                      setOpenTooltipInfo({
-                        inx: null,
-                        type: null,
-                      });
-                    }}
-                    parentElement={element}
-                    icon={<i className="fa-solid fa-info" />}
-                    title="설명"
-                    text={testcaseTemplateItem.description}
-                    opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'description'}
-                    onClick={() => {
-                      if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'description') {
-                        setOpenTooltipInfo({
-                          inx: null,
-                          type: null,
-                        });
-                      } else {
-                        setOpenTooltipInfo({
-                          inx,
-                          type: 'description',
-                        });
-                      }
-                    }}
-                  />
-                )}
-                {testcaseTemplateItem.example && (
-                  <DescriptionTooltip
-                    onClose={() => {
-                      setOpenTooltipInfo({
-                        inx: null,
-                        type: null,
-                      });
-                    }}
-                    parentElement={element}
-                    icon={<i className="fa-solid fa-receipt" />}
-                    title="샘플"
-                    clipboard
-                    text={testcaseTemplateItem.example}
-                    opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'example'}
-                    onClick={() => {
-                      if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'example') {
-                        setOpenTooltipInfo({
-                          inx: null,
-                          type: null,
-                        });
-                      } else {
-                        setOpenTooltipInfo({
-                          inx,
-                          type: 'example',
-                        });
-                      }
-                    }}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-          <div className="item-info">{testcaseTemplateItem.label}</div>
-        </div>
-      </li>
-    );
-  };
-
   return (
     <Modal
       className={`${className} testcase-template-editor-popup-wrapper ${editor ? 'is-edit' : ''}`}
@@ -324,6 +214,20 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
         <div onClick={e => e.stopPropagation()} ref={element}>
           <div className="editor-content">
             <div className="template-content">
+              {exampleMax && (
+                <div className={`max-example-editor ${exampleMax ? 'max' : ''}`}>
+                  <ExampleEditor
+                    onChange={value => {
+                      onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'example', value);
+                    }}
+                    initialValue={selectedItem?.item?.example || ''}
+                    max={exampleMax}
+                    setMax={setExampleMax}
+                    itemId={selectedItem.id}
+                  />
+                </div>
+              )}
+
               {editor && (
                 <div className="control">
                   <div>
@@ -381,7 +285,26 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                           {caseTemplateItems
                             ?.sort((a, b) => a.itemOrder - b.itemOrder)
                             .map((testcaseTemplateItem, inx) => {
-                              return getItem(testcaseTemplateItem, inx);
+                              return (
+                                <TestcaseTemplateItem
+                                  key={testcaseTemplateItem.id}
+                                  inx={inx}
+                                  editor={editor}
+                                  testcaseTemplateItem={testcaseTemplateItem}
+                                  selected={selectedItem?.item?.category === testcaseTemplateItem.category && selectedItem?.inx === inx}
+                                  onClick={() => {
+                                    if (selectedItem.inx === inx && selectedItem?.item?.category === testcaseTemplateItem.category) {
+                                      setSelectedItem({});
+                                    } else {
+                                      setSelectedItem({
+                                        inx,
+                                        item: testcaseTemplateItem,
+                                      });
+                                    }
+                                  }}
+                                  parentElement={element}
+                                />
+                              );
                             })}
                         </ul>
                       )}
@@ -411,7 +334,26 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                       {resultTemplateItems?.length > 0 && (
                         <ul>
                           {resultTemplateItems?.map((testcaseTemplateItem, inx) => {
-                            return getItem(testcaseTemplateItem, inx);
+                            return (
+                              <TestcaseTemplateItem
+                                key={testcaseTemplateItem.id}
+                                inx={inx}
+                                editor={editor}
+                                testcaseTemplateItem={testcaseTemplateItem}
+                                selected={selectedItem?.item?.category === testcaseTemplateItem.category && selectedItem?.inx === inx}
+                                onClick={() => {
+                                  if (selectedItem.inx === inx && selectedItem?.item?.category === testcaseTemplateItem.category) {
+                                    setSelectedItem({});
+                                  } else {
+                                    setSelectedItem({
+                                      inx,
+                                      item: testcaseTemplateItem,
+                                    });
+                                  }
+                                }}
+                                parentElement={element}
+                              />
+                            );
                           })}
                         </ul>
                       )}
@@ -538,20 +480,37 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               />
                             </div>
                           </div>
-                          <div className="label">
-                            <div className="title">{t('샘플')}</div>
-                            <div className="properties-control">
-                              <TextArea
-                                value={selectedItem?.item?.example || ''}
-                                placeholder={`"${selectedItem?.item?.label}"에 입력에 참고할 샘플 데이터`}
-                                size="sm"
-                                rows={3}
-                                onChange={val => {
-                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'example', val);
+                          {(selectedItem?.item?.type === 'URL' || selectedItem?.item?.type === 'TEXT' || selectedItem?.item?.type === 'NUMBER') && (
+                            <div className="label">
+                              <div className="title">{t('샘플')}</div>
+                              <div className="properties-control">
+                                <TextArea
+                                  value={selectedItem?.item?.example || ''}
+                                  placeholder={`"${selectedItem?.item?.label}"에 입력에 참고할 샘플 데이터`}
+                                  size="sm"
+                                  rows={3}
+                                  onChange={val => {
+                                    onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'example', val);
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          {selectedItem?.item?.type === 'EDITOR' && (
+                            <div className={`example-editor ${exampleMax ? 'max' : ''}`}>
+                              <ExampleEditor
+                                onChange={value => {
+                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'example', value);
                                 }}
+                                initialValue={selectedItem?.item?.example || ''}
+                                max={exampleMax}
+                                setMax={setExampleMax}
+                                itemId={selectedItem.id}
+                                buttonText="확대"
+                                createProjectImage={createProjectImage}
                               />
                             </div>
-                          </div>
+                          )}
                           <div className="type">
                             <div className="title">{t('타입')}</div>
                             <div className="properties-control">
@@ -736,6 +695,7 @@ TestcaseTemplateEditorPopup.defaultProps = {
   testcaseItemCategories: [],
   opened: false,
   editor: true,
+  createProjectImage: null,
 };
 
 TestcaseTemplateEditorPopup.propTypes = {
@@ -747,6 +707,7 @@ TestcaseTemplateEditorPopup.propTypes = {
   testcaseItemCategories: PropTypes.arrayOf(PropTypes.string),
   opened: PropTypes.bool,
   editor: PropTypes.bool,
+  createProjectImage: PropTypes.func,
 };
 
 export default TestcaseTemplateEditorPopup;

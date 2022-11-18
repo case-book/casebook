@@ -12,7 +12,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
-import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup';
+import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
@@ -235,6 +235,10 @@ function ProjectEditPage({ type }) {
     setSpace(next);
   };
 
+  const createProjectImage = (name, size, typeText, file) => {
+    return ProjectService.createImage(spaceCode, projectId, name, size, typeText, file);
+  };
+
   return (
     <>
       <Page className="project-edit-page-wrapper">
@@ -432,6 +436,7 @@ function ProjectEditPage({ type }) {
         onChange={template => {
           onChangeTestcaseTemplate(templateEditorPopupInfo.inx, template);
         }}
+        createProjectImage={createProjectImage}
       />
     </>
   );

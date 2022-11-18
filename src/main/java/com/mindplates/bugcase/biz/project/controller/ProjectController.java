@@ -1,27 +1,33 @@
 package com.mindplates.bugcase.biz.project.controller;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
+import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectRequest;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
-import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -33,8 +39,11 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    private final TestcaseItemFileService projectFileService;
     private final SpaceService spaceService;
+
+    private final ProjectFileService projectFileService;
+
+    private final FileUtil fileUtil;
 
 
     @Operation(description = "스페이스 프로젝트 목록 조회")
@@ -168,6 +177,38 @@ public class ProjectController {
         }
 
         return new ProjectResponse(project, SessionUtil.getUserId());
+    }
+
+    @PostMapping("/{id}/images")
+    public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
+
+        String path = projectFileService.createImage(id, file);
+
+        ProjectFile testcaseItemFile = ProjectFile.builder()
+                .project(Project.builder().id(id).build())
+                .name(name)
+                .size(size)
+                .type(type)
+                .path(path)
+                .uuid(UUID.randomUUID().toString())
+                .build();
+
+        ProjectFile projectFile = projectFileService.createProjectFile(testcaseItemFile);
+        return new ProjectFileResponse(projectFile, spaceCode, id);
+    }
+
+    @GetMapping("/{id}/images/{imageId}")
+    public ResponseEntity<Resource> selectProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
+
+        ProjectFile projectFile = projectFileService.selectProjectFile(id, imageId, uuid);
+        Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
+
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(projectFile.getName(), StandardCharsets.UTF_8).build();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                .body(resource);
     }
 
 

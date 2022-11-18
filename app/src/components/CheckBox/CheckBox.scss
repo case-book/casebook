@@ -97,13 +97,13 @@
 .theme-DARK {
   .check-box-wrapper {
     .checked-icon {
-      border: 1px solid transparent;
+      background-color: #121212;
+      border: 1px solid #494c56;
     }
 
     &.checked {
       .checked-icon {
-        background-color: $color-primary-dark;
-        color: $black;
+        color: $color-primary-dark;
       }
     }
   }

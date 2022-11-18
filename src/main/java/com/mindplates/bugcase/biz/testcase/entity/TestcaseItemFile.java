@@ -52,5 +52,9 @@ public class TestcaseItemFile extends CommonEntity {
   @Column(name = "size", nullable = false)
   private Long size;
 
+  @Column(name = "uuid", nullable = false, length = ColumnsDef.CODE)
+  private String uuid;
+
+
 
 }

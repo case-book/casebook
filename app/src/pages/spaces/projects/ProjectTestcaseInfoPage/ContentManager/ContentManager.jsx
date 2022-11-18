@@ -8,7 +8,7 @@ import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
 
-function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users, createImage }) {
+function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users, createTestcaseImage }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -55,7 +55,7 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
             onSave={onSave}
             onCancel={onCancel}
             users={users}
-            createImage={createImage}
+            createTestcaseImage={createTestcaseImage}
           />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && <TestcaseGroupManager content={content} />}
@@ -103,7 +103,7 @@ ContentManager.propTypes = {
       email: PropTypes.string,
     }),
   ),
-  createImage: PropTypes.func.isRequired,
+  createTestcaseImage: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

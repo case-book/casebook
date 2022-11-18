@@ -149,7 +149,7 @@ function TestcaseNavigatorGroupItem({
                 <div>{group?.itemOrder}</div>
               </div>
             )}
-            {setting.testcaseGroupColumns.testcaseCount?.show && group?.testcases.length > 0 && (
+            {setting.testcaseGroupColumns.testcaseCount?.show && group?.testcases?.length > 0 && (
               <div className="col-testcase-count">
                 <div>{group?.testcases.length}</div>
               </div>

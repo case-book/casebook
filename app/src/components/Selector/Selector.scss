@@ -2,13 +2,15 @@
   display: inline-block;
   position: relative;
   border: 1px solid $color-border-light;
+  font-family: NotoSans, sans-serif;
+  font-weight: normal;
 
   &.size-xs {
     height: $xs-height;
     font-size: 0.8rem;
     .selector-current {
       > span {
-        &.text {
+        &.selector-selected-text {
           max-height: $xs-height;
         }
       }
@@ -20,7 +22,7 @@
     font-size: 14px;
     .selector-current {
       > span {
-        &.text {
+        &.selector-selected-text {
           max-height: $sm-height;
         }
       }
@@ -32,7 +34,7 @@
 
     .selector-current {
       > span {
-        &.text {
+        &.selector-selected-text {
           max-height: $md-height;
         }
       }
@@ -43,7 +45,7 @@
     height: $lg-height;
     .selector-current {
       > span {
-        &.text {
+        &.selector-selected-text {
           max-height: $lg-height;
         }
       }
@@ -90,7 +92,7 @@
       display: inline-block;
       padding: 0 6px;
 
-      &.text {
+      &.selector-selected-text {
         text-transform: uppercase;
         flex: 1;
         align-self: center;

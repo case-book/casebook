@@ -56,7 +56,7 @@ function ProjectTestcaseInfoPage() {
 
   const getTestcase = testcaseId => {
     setContentLoading(true);
-    setContent(null);
+
     TestcaseService.selectTestcase(
       spaceCode,
       projectId,
@@ -377,7 +377,7 @@ function ProjectTestcaseInfoPage() {
     );
   };
 
-  const createImage = (testcaseId, name, size, type, file) => {
+  const createTestcaseImage = (testcaseId, name, size, type, file) => {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
 
@@ -418,7 +418,7 @@ function ProjectTestcaseInfoPage() {
               setContentChanged={setContentChanged}
               onSaveTestcase={onSaveTestcase}
               users={spaceUsers}
-              createImage={createImage}
+              createTestcaseImage={createTestcaseImage}
             />
           </div>
         </div>

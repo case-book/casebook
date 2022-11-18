@@ -1,7 +1,7 @@
-package com.mindplates.bugcase.biz.testcase.service;
+package com.mindplates.bugcase.biz.project.service;
 
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemFileRepository;
+import com.mindplates.bugcase.biz.project.entity.ProjectFile;
+import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.framework.config.FileConfig;
@@ -19,19 +19,18 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TestcaseItemFileService {
+public class ProjectFileService {
 
-    private final TestcaseItemFileRepository testcaseItemFileRepository;
+    private final ProjectFileRepository projectFileRepository;
 
     private final List<String> allowedExtensions;
     private final Path fileStorageLocation;
-
     private final FileUtil fileUtil;
 
+    public ProjectFileService(FileConfig fileConfig, ProjectFileRepository projectFileRepository, FileUtil fileUtil) {
 
-    public TestcaseItemFileService(FileConfig fileConfig, TestcaseItemFileRepository testcaseItemFileRepository, FileUtil fileUtil) {
         this.fileUtil = fileUtil;
-        this.testcaseItemFileRepository = testcaseItemFileRepository;
+        this.projectFileRepository = projectFileRepository;
 
         this.fileStorageLocation = Paths.get(fileConfig.getUploadDir()).toAbsolutePath().normalize();
         this.allowedExtensions = Arrays.asList(fileConfig.getAllowedExtension().split(","));
@@ -43,21 +42,21 @@ public class TestcaseItemFileService {
         }
     }
 
-    public TestcaseItemFile createTestcaseItemFile(TestcaseItemFile projectFile) {
-        testcaseItemFileRepository.save(projectFile);
+    public ProjectFile createProjectFile(ProjectFile projectFile) {
+        projectFileRepository.save(projectFile);
         return projectFile;
     }
 
-    public TestcaseItemFile selectTestcaseItemFile(Long projectId, Long testcaseId, Long imageId, String uuid) {
-        return testcaseItemFileRepository.findByIdAndProjectIdAndTestcaseIdAndUuid(imageId, projectId, testcaseId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    public ProjectFile selectProjectFile(Long projectId, Long imageId, String uuid) {
+        return projectFileRepository.findByIdAndProjectIdAndUuid(imageId, projectId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
-    public void deleteProjectTestcaseItemFile(Long projectId) {
+    public void deleteProjectFile(Long projectId) {
 
-        List<TestcaseItemFile> projectTestcaseItemFiles = testcaseItemFileRepository.findAllByProjectId(projectId);
+        List<ProjectFile> projectFiles = projectFileRepository.findAllByProjectId(projectId);
 
-        projectTestcaseItemFiles.forEach((testcaseItemFile -> {
-            Path filePath = this.fileStorageLocation.resolve(testcaseItemFile.getPath()).normalize();
+        projectFiles.forEach((projectFile -> {
+            Path filePath = this.fileStorageLocation.resolve(projectFile.getPath()).normalize();
             if (Files.exists(filePath)) {
                 try {
                     Files.deleteIfExists(filePath);
@@ -65,7 +64,7 @@ public class TestcaseItemFileService {
                     // ignore
                 }
             }
-            testcaseItemFileRepository.delete(testcaseItemFile);
+            projectFileRepository.delete(projectFile);
         }));
     }
 

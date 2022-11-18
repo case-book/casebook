@@ -18,6 +18,7 @@ public class TestcaseResponse {
   private Integer itemOrder;
   private Boolean closed;
   private List<TestcaseItemResponse> testcaseItems;
+  private String description;
 
   public TestcaseResponse(Testcase testcase) {
     this.id = testcase.getId();
@@ -29,6 +30,7 @@ public class TestcaseResponse {
     this.itemOrder = testcase.getItemOrder();
     this.closed = testcase.getClosed();
     this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemResponse::new).collect(Collectors.toList());
+    this.description = testcase.getDescription();
   }
 
 }
