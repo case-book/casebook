@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.project.service;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.UserRole;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -21,6 +22,8 @@ import java.util.Optional;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+
+    private final TestcaseItemFileService testcaseItemFileService;
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Optional<Project> selectProjectInfo(String spaceCode, Long projectId) {
@@ -52,6 +55,7 @@ public class ProjectService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, Project project) {
+        testcaseItemFileService.deleteProjectTestcaseItemFile(project.getId());
         projectRepository.delete(project);
     }
 

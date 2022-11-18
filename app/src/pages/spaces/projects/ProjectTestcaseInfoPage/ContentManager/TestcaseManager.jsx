@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import copy from 'copy-to-clipboard';
-import { Button, CheckBox, Input, Radio, Selector, UserSelector } from '@/components';
+import { Button, CheckBox, Input, Radio, Selector, TextArea, UserSelector } from '@/components';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -70,6 +70,13 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
     setContent({
       ...content,
       testcaseItems: nextTestcaseItems,
+    });
+  };
+
+  const onChangeTestcaseTemplateDescription = description => {
+    setContent({
+      ...content,
+      description,
     });
   };
 
@@ -180,6 +187,13 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       </div>
       <div className="title-liner" />
       <div className="case-content" ref={caseContentElement}>
+        <div className="case-description">
+          <div className="description-title">설명</div>
+          <div className="description-content">
+            {!isEdit && <div>{content.description}</div>}
+            {isEdit && <TextArea placeholder="테스트케이스에 대한 설명을 입력해주세요." value={content.description || ''} rows={2} onChange={onChangeTestcaseTemplateDescription} autoHeight />}
+          </div>
+        </div>
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
           .map((testcaseTemplateItem, inx) => {
@@ -419,6 +433,7 @@ TestcaseManager.propTypes = {
     testcaseGroupId: PropTypes.number,
     testcaseTemplateId: PropTypes.number,
     name: PropTypes.string,
+    description: PropTypes.string,
     itemOrder: PropTypes.number,
     closed: PropTypes.bool,
     testcaseItems: PropTypes.arrayOf(

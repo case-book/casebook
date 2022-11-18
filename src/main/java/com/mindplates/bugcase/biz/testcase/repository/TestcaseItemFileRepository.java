@@ -19,10 +19,16 @@ public interface TestcaseItemFileRepository extends JpaRepository<TestcaseItemFi
   void deleteByTestcaseId(@Param("testcaseId") Long testcaseId);
 
   @Modifying
+  @Query("DELETE FROM TestcaseItemFile tif WHERE tif.project.id = :projectId")
+  void deleteByProjectId(@Param("projectId") Long projectId);
+
+  @Modifying
   @Query("DELETE FROM TestcaseItemFile tif WHERE tif.testcase.id IN (SELECT t.id from Testcase t where t.testcaseGroup.id in (:ids))")
   void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);
 
   List<TestcaseItemFile> findAllByTestcaseId(Long testcaseId);
+
+  List<TestcaseItemFile> findAllByProjectId(Long projectId);
 
   List<TestcaseItemFile> findAllByTestcaseTestcaseGroupIdIn(List<Long> ids);
 

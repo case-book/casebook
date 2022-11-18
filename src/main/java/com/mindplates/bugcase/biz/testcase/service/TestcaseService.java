@@ -321,7 +321,6 @@ public class TestcaseService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Testcase updateTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        Long userId = SessionUtil.getUserId();
         testcase.setSeqId(org.getSeqId());
         testcaseRepository.save(testcase);
         return testcase;

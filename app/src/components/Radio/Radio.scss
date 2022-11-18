@@ -109,7 +109,8 @@
     color: $black;
 
     > div.border {
-      border: 1px solid #bbb;
+
+      border : 1px solid $color-border-light;
     }
 
     &:nth-child(1) {
@@ -316,63 +317,8 @@
       }
     }
 
-    &.lg {
-      height: $lg-height;
-      label {
-        font-size: 16px;
-      }
-    }
-
-    &.md {
-      height: $md-height;
-
-      label {
-        font-size: 16px;
-      }
-    }
-
-    &.sm {
-      height: $sm-height;
-      line-height: 0;
-      label {
-        font-size: 14px;
-      }
-    }
-
-    &.xs {
-      height: $xs-height;
-      line-height: 0;
-      label {
-        font-size: 12px;
-      }
-    }
-
-    &.type-default {
-      ~ .radio-wrapper {
-        margin-left: 0.5rem;
-      }
-    }
-
-    > div.border {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
-    > div.radio-content {
-      display: flex;
-      z-index: 2;
-      position: relative;
-      > label {
-        align-self: center;
-        line-height: 160%;
-      }
-    }
-
     &.type-inline {
-      background-color: #111;
+      background-color: #121212;
       color: $white;
 
       > div.border {
