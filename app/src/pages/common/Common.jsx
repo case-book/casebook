@@ -139,7 +139,7 @@ function Common() {
         <SocketClient
           topics={[`/sub/users/${user?.id}`]}
           headers={{
-            'X-AUTH-TOKEN': window.sessionStorage.getItem('token'),
+            'X-AUTH-TOKEN': window.localStorage.getItem('token'),
           }}
           onMessage={onMessage}
           onConnect={() => {

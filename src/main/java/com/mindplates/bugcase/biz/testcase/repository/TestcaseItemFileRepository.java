@@ -12,7 +12,7 @@ public interface TestcaseItemFileRepository extends JpaRepository<TestcaseItemFi
 
   Optional<TestcaseItemFile> findByProjectIdAndId(Long projectId, Long imageId);
 
-  Optional<TestcaseItemFile> findByProjectIdAndTestcaseIdAndId(Long projectId, Long testcaseId, Long imageId);
+  Optional<TestcaseItemFile> findByIdAndProjectIdAndTestcaseIdAndUuid(Long imageId, Long projectId, Long testcaseId, String uuid);
 
   @Modifying
   @Query("DELETE FROM TestcaseItemFile tif WHERE tif.testcase.id = :testcaseId")

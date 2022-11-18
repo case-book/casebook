@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -144,6 +145,7 @@ public class TestcaseController {
                 .size(size)
                 .type(type)
                 .path(path)
+                .uuid(UUID.randomUUID().toString())
                 .build();
 
         TestcaseItemFile projectFile = testcaseItemFileService.createTestcaseItemFile(testcaseItemFile);
@@ -152,9 +154,9 @@ public class TestcaseController {
 
 
     @GetMapping("/{testcaseId}/images/{imageId}")
-    public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId) {
+    public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
 
-        TestcaseItemFile testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId);
+        TestcaseItemFile testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId, uuid);
         Resource resource = testcaseItemFileService.loadFileAsResource(testcaseItemFile.getPath());
 
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseItemFile.getName(), StandardCharsets.UTF_8).build();

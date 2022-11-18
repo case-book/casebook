@@ -52,8 +52,8 @@ public class TestcaseItemFileService {
     return projectFile;
   }
 
-  public TestcaseItemFile selectTestcaseItemFile(Long projectId, Long testcaseId, Long imageId) {
-    return testcaseItemFileRepository.findByProjectIdAndTestcaseIdAndId(projectId, testcaseId, imageId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+  public TestcaseItemFile selectTestcaseItemFile(Long projectId, Long testcaseId, Long imageId, String uuid) {
+    return testcaseItemFileRepository.findByIdAndProjectIdAndTestcaseIdAndUuid(imageId, projectId, testcaseId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
   }
 
 

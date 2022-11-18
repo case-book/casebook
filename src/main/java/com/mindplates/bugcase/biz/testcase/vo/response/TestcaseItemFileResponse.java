@@ -19,12 +19,11 @@ public class TestcaseItemFileResponse {
   private String type;
   private String path;
   private Long size;
-
   private String spaceCode;
-
   private Long projectId;
 
   private Long testcaseId;
+  private String uuid;
 
   public TestcaseItemFileResponse(TestcaseItemFile testcaseItemFile, String spaceCode, Long projectId, Long testcaseId) {
     this.id = testcaseItemFile.getId();
@@ -35,6 +34,7 @@ public class TestcaseItemFileResponse {
     this.spaceCode = spaceCode;
     this.projectId = projectId;
     this.testcaseId = testcaseId;
+    this.uuid = testcaseItemFile.getUuid();
 
   }
 }

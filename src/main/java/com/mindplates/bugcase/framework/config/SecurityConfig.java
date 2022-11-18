@@ -60,6 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .antMatchers("/api/configs/systems/**")
                 .antMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
+                .antMatchers("/api/**/projects/**/testcases/**/images/**")
                 .antMatchers("/ws/**");
 
     }
