@@ -25,12 +25,11 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
         const elementRect = parentElement.current.getClientRects();
         if (elementRect.length > 0) {
           const tooltipRect = tooltip.current.getClientRects();
-          const gab = tooltipRect[0].left + tooltipRect[0].width - (elementRect[0].left + elementRect[0].width);
 
-          if (gab > -100) {
-            setLeftList(false);
-          } else {
+          if (elementRect[0].right > tooltipRect[0].right + 200) {
             setLeftList(true);
+          } else {
+            setLeftList(false);
           }
         }
       }

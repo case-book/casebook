@@ -13,17 +13,30 @@
     }
 
     .text {
-      font-size: 20px;
       font-weight: bold;
       flex-grow: 1;
       display: flex;
 
+      .name {
+        font-size: 20px;
+      }
+
       .title-input {
         flex-grow: 1;
+        display: flex;
+
+        > div.name-input {
+          flex-grow: 1;
+        }
+
+        > div.type-input {
+          margin-right: 0.5rem;
+        }
       }
 
       > div {
         align-self: center;
+
         &.seq-id {
           line-height: 0;
           margin-right: 1rem;
@@ -67,6 +80,7 @@
               .bg {
                 font-size: 30px;
               }
+
               .icon {
                 position: absolute;
                 left: 0;
@@ -87,6 +101,7 @@
             }
           }
         }
+
         &.name {
           flex-grow: 1;
         }
@@ -95,8 +110,10 @@
 
     .title-button {
       margin-left: 1rem;
+
       button {
         margin-right: 0.5rem;
+
         &:last-child {
           margin-right: 0;
         }
@@ -113,10 +130,12 @@
     flex-grow: 1;
     overflow-y: auto;
     padding: 1rem;
+
     .case-item {
       vertical-align: top;
       display: inline-block;
       padding: 0.5rem;
+
       > div {
         border-radius: 0;
 
@@ -131,6 +150,7 @@
             color: $gray-700;
             line-height: 125%;
           }
+
           .type {
             font-size: 10px;
             align-self: center;
@@ -219,6 +239,7 @@
       &.size-10 {
         width: calc((100% / 12) * 10);
       }
+
       &.size-11 {
         width: calc((100% / 12) * 11);
       }
@@ -283,6 +304,7 @@
 
         > div {
           align-self: center;
+
           &.seq-id {
             line-height: 0;
             margin-right: 1rem;
@@ -326,6 +348,7 @@
                 .bg {
                   font-size: 30px;
                 }
+
                 .icon {
                   position: absolute;
                   left: 0;
@@ -346,6 +369,7 @@
               }
             }
           }
+
           &.name {
             flex-grow: 1;
           }
@@ -354,8 +378,10 @@
 
       .title-button {
         margin-left: 1rem;
+
         button {
           margin-right: 0.5rem;
+
           &:last-child {
             margin-right: 0;
           }
@@ -371,10 +397,12 @@
       flex-grow: 1;
       overflow-y: auto;
       padding: 1rem;
+
       .case-item {
         vertical-align: top;
         display: inline-block;
         padding: 0.5rem;
+
         > div {
           background-color: #161616;
           border-radius: 4px;
@@ -391,6 +419,7 @@
               font-family: Rowdies, NotoSans, sans-serif;
               line-height: 125%;
             }
+
             .type {
               font-size: 10px;
               align-self: center;
@@ -481,6 +510,7 @@
         &.size-10 {
           width: calc((100% / 12) * 10);
         }
+
         &.size-11 {
           width: calc((100% / 12) * 11);
         }

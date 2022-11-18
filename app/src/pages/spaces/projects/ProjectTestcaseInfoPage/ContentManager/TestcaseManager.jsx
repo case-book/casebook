@@ -15,14 +15,20 @@ import { getUserText } from '@/utils/userUtil';
 import { getBaseURL } from '@/utils/configUtil';
 import './TestcaseManager.scss';
 import useStores from '@/hooks/useStores';
+import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { useTranslation } from 'react-i18next';
 
 function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createImage }) {
   const {
     themeStore: { theme },
   } = useStores();
 
+  const { t } = useTranslation();
   const { testcaseItems } = content;
   const editors = useRef({});
+  const caseContentElement = useRef(null);
 
   const testcaseTemplate = useMemo(() => {
     return testcaseTemplates.find(d => d.id === content?.testcaseTemplateId);
@@ -34,6 +40,11 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       [field]: value,
     });
   };
+
+  const [openTooltipInfo, setOpenTooltipInfo] = useState({
+    inx: null,
+    type: '',
+  });
 
   const [copied, setCopied] = useState(false);
 
@@ -60,6 +71,23 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       ...content,
       testcaseItems: nextTestcaseItems,
     });
+  };
+
+  const onChangeTestcaseTemplate = testcaseTemplateId => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('템플릿 변경 알림'),
+      <div>{t('테스크케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
+      () => {
+        setContent({
+          ...content,
+          testcaseTemplateId,
+          testcaseItems: [],
+        });
+      },
+      null,
+      t('확인'),
+    );
   };
 
   return (
@@ -92,16 +120,33 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
           </div>
           {isEdit && (
             <div className="title-input">
-              <Input
-                value={content.name}
-                size="md"
-                color="black"
-                onChange={val => {
-                  onChangeContent('name', val);
-                }}
-                required
-                minLength={1}
-              />
+              <div className="type-input">
+                <Selector
+                  color="black"
+                  className="selector"
+                  size="md"
+                  items={testcaseTemplates?.map(d => {
+                    return {
+                      key: d.id,
+                      value: d.name,
+                    };
+                  })}
+                  value={testcaseTemplate.id}
+                  onChange={onChangeTestcaseTemplate}
+                />
+              </div>
+              <div className="name-input">
+                <Input
+                  value={content.name}
+                  size="md"
+                  color="black"
+                  onChange={val => {
+                    onChangeContent('name', val);
+                  }}
+                  required
+                  minLength={1}
+                />
+              </div>
             </div>
           )}
           {!isEdit && <div className="name">{content.name}</div>}
@@ -132,10 +177,10 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
         </div>
       </div>
       <div className="title-liner" />
-      <div className="case-content">
+      <div className="case-content" ref={caseContentElement}>
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
-          .map(testcaseTemplateItem => {
+          .map((testcaseTemplateItem, inx) => {
             const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
 
             return (
@@ -143,6 +188,69 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                 <div>
                   <div className="label">
                     <div className="text">{testcaseTemplateItem.label}</div>
+                    {testcaseTemplateItem.description && (
+                      <DescriptionTooltip
+                        onClose={() => {
+                          setOpenTooltipInfo({
+                            inx: null,
+                            type: null,
+                            category: null,
+                          });
+                        }}
+                        parentElement={caseContentElement}
+                        icon={<i className="fa-solid fa-info" />}
+                        title="설명"
+                        text={testcaseTemplateItem.description}
+                        opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'description' && openTooltipInfo.category === 'CASE'}
+                        onClick={() => {
+                          if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'description' && openTooltipInfo.category === 'CASE') {
+                            setOpenTooltipInfo({
+                              inx: null,
+                              type: null,
+                              category: null,
+                            });
+                          } else {
+                            setOpenTooltipInfo({
+                              inx,
+                              type: 'description',
+                              category: 'CASE',
+                            });
+                          }
+                        }}
+                      />
+                    )}
+                    {testcaseTemplateItem.example && (
+                      <DescriptionTooltip
+                        onClose={() => {
+                          setOpenTooltipInfo({
+                            inx: null,
+                            type: null,
+                            category: null,
+                          });
+                        }}
+                        parentElement={caseContentElement}
+                        icon={<i className="fa-solid fa-receipt" />}
+                        title="샘플"
+                        clipboard
+                        text={testcaseTemplateItem.example}
+                        opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'example' && openTooltipInfo.category === 'CASE'}
+                        onClick={() => {
+                          if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'example' && openTooltipInfo.category === 'CASE') {
+                            setOpenTooltipInfo({
+                              inx: null,
+                              type: null,
+                              category: null,
+                            });
+                          } else {
+                            setOpenTooltipInfo({
+                              inx,
+                              type: 'example',
+                              category: 'CASE',
+                            });
+                          }
+                        }}
+                      />
+                    )}
                     <div className="type">{testcaseTemplateItem.type}</div>
                   </div>
                   <div className="case-liner" />

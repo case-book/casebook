@@ -201,7 +201,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
         className={`testcase-template-item ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${
           editor && selectedItem?.item?.category === testcaseTemplateItem.category && selectedItem?.inx === inx ? 'selected' : ''
         }`}
-        style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}% - 0.5rem)` }}
+        style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}%)` }}
         onClick={() => {
           if (selectedItem.inx === inx && selectedItem?.item?.category === testcaseTemplateItem.category) {
             setSelectedItem({});

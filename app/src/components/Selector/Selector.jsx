@@ -83,7 +83,7 @@ function Selector({ className, onChange, items, value, addAll, size, separator, 
           }
         }}
       >
-        <span className="text">{selectedItem ? selectedItem.value : ' '}</span>
+        <span className="selector-selected-text">{selectedItem ? selectedItem.value : ' '}</span>
         {separator && (
           <span className="liner">
             <span />
