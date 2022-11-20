@@ -3,6 +3,7 @@ svg.close-icon-wrapper {
   overflow: hidden;
   width: 100%;
   height: 100%;
+  fill: black;
 
   &.color-white {
     fill: white;
@@ -45,5 +46,11 @@ svg.close-icon-wrapper {
   &.size-auto {
     width: 100%;
     height: 100%;
+  }
+}
+
+.theme-DARK {
+  svg.close-icon-wrapper {
+    fill: white;
   }
 }

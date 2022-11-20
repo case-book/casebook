@@ -27,7 +27,7 @@ function CloseIcon({ className, color, size, onClick }) {
 
 CloseIcon.defaultProps = {
   className: '',
-  color: 'white',
+  color: '',
   size: 'md',
   onClick: null,
 };
