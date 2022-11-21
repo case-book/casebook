@@ -111,6 +111,20 @@ TestcaseService.updateTestcaseGroupName = (spaceCode, projectId, groupId, name, 
   );
 };
 
+TestcaseService.updateTestcaseGroup = (spaceCode, projectId, groupId, group, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/groups/${groupId}`,
+    group,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 TestcaseService.deleteTestcase = (spaceCode, projectId, testcaseId, successHandler, failHandler) => {
   return request.del(
     `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}`,

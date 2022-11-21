@@ -75,6 +75,14 @@ public class TestcaseController {
         return new TestcaseGroupResponse(testcaseGroup);
     }
 
+    @Operation(description = "테스트케이스 그룹 정보 변경")
+    @PutMapping("/groups/{groupId}")
+    public TestcaseGroupResponse updateTestcaseGroupInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupUpdateRequest testcaseGroupUpdateRequest) {
+        TestcaseGroup testcaseGroup = testcaseService.selectTestcaseGroupInfo(projectId, groupId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testcaseService.updateTestcaseGroupInfo(spaceCode, projectId, groupId, testcaseGroupUpdateRequest.getName(), testcaseGroupUpdateRequest.getDescription());
+        return new TestcaseGroupResponse(testcaseGroup);
+    }
+
     @Operation(description = "테스트케이스 생성")
     @PostMapping("/groups/{groupId}/cases")
     public TestcaseSimpleResponse createTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseCreateRequest testcaseCreateRequest) {

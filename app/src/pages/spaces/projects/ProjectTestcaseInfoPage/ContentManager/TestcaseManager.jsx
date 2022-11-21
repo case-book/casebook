@@ -138,7 +138,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                       value: d.name,
                     };
                   })}
-                  value={testcaseTemplate.id}
+                  value={testcaseTemplate?.id}
                   onChange={onChangeTestcaseTemplate}
                 />
               </div>

@@ -66,7 +66,6 @@ function ProjectTestcaseInfoPage() {
           setContentLoading(false);
         }, 200);
         setContentChanged(false);
-
         setContent(info);
       },
       () => {
@@ -91,6 +90,10 @@ function ProjectTestcaseInfoPage() {
   const getContent = () => {
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE) {
       getTestcase(selectedItemInfo.id);
+    } else {
+      const group = testcaseGroups.find(d => d.id === selectedItemInfo.id);
+      setContentChanged(false);
+      setContent(group);
     }
   };
 
@@ -377,6 +380,21 @@ function ProjectTestcaseInfoPage() {
     );
   };
 
+  const onSaveTestcaseGroup = (groupInfo, handler) => {
+    TestcaseService.updateTestcaseGroup(spaceCode, projectId, groupInfo.id, groupInfo, info => {
+      const nextProject = { ...project };
+      const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
+      if (inx > -1) {
+        nextProject.testcaseGroups[inx] = info;
+        setProject(nextProject);
+      }
+      setContentChanged(false);
+      if (handler) {
+        handler();
+      }
+    });
+  };
+
   const createTestcaseImage = (testcaseId, name, size, type, file) => {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
@@ -417,6 +435,7 @@ function ProjectTestcaseInfoPage() {
               loading={contentLoading}
               setContentChanged={setContentChanged}
               onSaveTestcase={onSaveTestcase}
+              onSaveTestcaseGroup={onSaveTestcaseGroup}
               users={spaceUsers}
               createTestcaseImage={createTestcaseImage}
             />

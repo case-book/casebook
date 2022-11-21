@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -220,6 +219,16 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseGroup updateTestcaseGroupInfo(String spaceCode, Long projectId, Long groupId, String name, String description) {
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testcaseGroup.setName(name);
+        testcaseGroup.setDescription(description);
+        testcaseGroupRepository.save(testcaseGroup);
+        return testcaseGroup;
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Testcase createTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
 
         Long userId = SessionUtil.getUserId();
@@ -273,8 +282,6 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void updateTestcaseTestcaseGroupInfo(String spaceCode, Long projectId, Long targetTestcaseId, Long destinationGroupId) {
-        Long userId = SessionUtil.getUserId();
-        LocalDateTime now = LocalDateTime.now();
 
         Testcase targetTestcase = testcaseRepository.findById(targetTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestcaseGroup destinationTestcaseGroup = testcaseGroupRepository.findById(destinationGroupId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -318,6 +325,10 @@ public class TestcaseService {
 
     public Optional<Testcase> selectTestcaseInfo(Long projectId, Long testcaseId) {
         return testcaseRepository.findByIdAndProjectId(testcaseId, projectId);
+    }
+
+    public Optional<TestcaseGroup> selectTestcaseGroupInfo(Long projectId, Long testcaseId) {
+        return testcaseGroupRepository.findByIdAndProjectId(testcaseId, projectId);
     }
 
     @Transactional
