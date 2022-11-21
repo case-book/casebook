@@ -8,7 +8,7 @@ import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
 
-function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users, createTestcaseImage }) {
+function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users, createTestcaseImage, onSaveTestcaseGroup }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -19,12 +19,6 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
   const changeContent = next => {
     setContentChanged(true);
     setContent(next);
-  };
-
-  const onSave = () => {
-    onSaveTestcase(content, () => {
-      setIsEdit(false);
-    });
   };
 
   const onCancel = () => {
@@ -52,13 +46,30 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
             content={content}
             testcaseTemplates={testcaseTemplates}
             setContent={changeContent}
-            onSave={onSave}
+            onSave={() => {
+              onSaveTestcase(content, () => {
+                setIsEdit(false);
+              });
+            }}
             onCancel={onCancel}
             users={users}
             createTestcaseImage={createTestcaseImage}
           />
         )}
-        {content && type === ITEM_TYPE.TESTCASE_GROUP && <TestcaseGroupManager content={content} />}
+        {content && type === ITEM_TYPE.TESTCASE_GROUP && (
+          <TestcaseGroupManager
+            isEdit={isEdit}
+            setIsEdit={setIsEdit}
+            content={content}
+            onSave={() => {
+              onSaveTestcaseGroup(content, () => {
+                setIsEdit(false);
+              });
+            }}
+            onCancel={onCancel}
+            setContent={changeContent}
+          />
+        )}
       </div>
     </div>
   );
@@ -96,6 +107,7 @@ ContentManager.propTypes = {
   loading: PropTypes.bool,
   setContentChanged: PropTypes.func.isRequired,
   onSaveTestcase: PropTypes.func.isRequired,
+  onSaveTestcaseGroup: PropTypes.func.isRequired,
   users: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,

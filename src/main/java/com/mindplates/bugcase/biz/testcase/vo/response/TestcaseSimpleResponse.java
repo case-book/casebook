@@ -11,6 +11,8 @@ public class TestcaseSimpleResponse {
   private Long testcaseGroupId;
   private Long testcaseTemplateId;
   private String name;
+
+  private String description;
   private Integer itemOrder;
   private Boolean closed;
 
@@ -20,6 +22,7 @@ public class TestcaseSimpleResponse {
     this.testcaseGroupId = testcase.getTestcaseGroup().getId();
     this.testcaseTemplateId = testcase.getTestcaseTemplate().getId();
     this.name = testcase.getName();
+    this.description = testcase.getDescription();
     this.itemOrder = testcase.getItemOrder();
     this.closed = testcase.getClosed();
   }

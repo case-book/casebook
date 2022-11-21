@@ -17,6 +17,8 @@ public class TestcaseGroupResponse {
   private Long depth;
 
   private String name;
+
+  private String description;
   private Integer itemOrder;
 
   private List<TestcaseSimpleResponse> testcases;
@@ -27,6 +29,7 @@ public class TestcaseGroupResponse {
     this.parentId = testcaseGroup.getParentId();
     this.depth = testcaseGroup.getDepth();
     this.name = testcaseGroup.getName();
+    this.description = testcaseGroup.getDescription();
     this.itemOrder = testcaseGroup.getItemOrder();
     if (testcaseGroup.getTestcases() != null) {
       this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseSimpleResponse::new).collect(Collectors.toList());

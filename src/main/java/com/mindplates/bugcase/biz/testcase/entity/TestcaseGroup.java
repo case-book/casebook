@@ -53,6 +53,9 @@ public class TestcaseGroup extends CommonEntity {
   @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
   private String name;
 
+  @Column(name = "description", length = ColumnsDef.TEXT)
+  private String description;
+
   @Column(name = "item_order")
   private Integer itemOrder;
 
