@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './TestcaseGroupManager.scss';
 import { Button, EmptyContent, Input, TextArea } from '@/components';
 import PropTypes from 'prop-types';
 
-function TestcaseGroupManager({ isEdit, setIsEdit, onSave, onCancel, content, setContent }) {
+function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent }) {
   const { t } = useTranslation();
+
+  const [editInfo, setEditInfo] = useState({
+    id: null,
+    content: null,
+  });
 
   const onChangeContent = (field, value) => {
     setContent({
@@ -52,7 +57,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSave, onCancel, content, se
               <Button outline size="md" color="white" onClick={onCancel}>
                 취소
               </Button>
-              <Button size="md" color="primary" outline onClick={onSave}>
+              <Button size="md" color="primary" outline onClick={onSaveTestcaseGroup}>
                 저장
               </Button>
             </>
@@ -61,10 +66,28 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSave, onCancel, content, se
       </div>
       <div className="title-liner" />
       <div className="group-content">
-        <div className="group-description">
-          <div className="description-title">설명</div>
+        <div className={`group-description ${content.description ? '' : 'empty'}`}>
           <div className="description-content">
-            {!isEdit && <div>{content.description}</div>}
+            {!isEdit && (
+              <div className="text">
+                {content.description && (
+                  <div className="left">
+                    <i className="fa-solid fa-quote-left" />
+                  </div>
+                )}
+                {content.description && <div className="description">{content.description}</div>}
+                {!content.description && (
+                  <div className="description empty">
+                    <div>{t('설명이 없습니다')}</div>
+                  </div>
+                )}
+                {content.description && (
+                  <div className="right">
+                    <i className="fa-solid fa-quote-right" />
+                  </div>
+                )}
+              </div>
+            )}
             {isEdit && (
               <TextArea
                 placeholder="테스트케이스 그룹에 대한 설명을 입력해주세요."
@@ -78,11 +101,25 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSave, onCancel, content, se
             )}
           </div>
         </div>
-        <div className="list-title">테스트케이스 리스트</div>
+        <div className="list-title">
+          <div>테스트케이스 리스트</div>
+          <div>
+            <Button
+              size="sm"
+              outline
+              color="white"
+              onClick={() => {
+                addTestcase(false);
+              }}
+            >
+              {t('추가')}
+            </Button>
+          </div>
+        </div>
         {content.testcases?.length < 1 && (
           <div className="empty-layout">
-            <EmptyContent className="empty-content">
-              <div>{t('사용자가 없습니다.')}</div>
+            <EmptyContent className="empty-content" color="transparent">
+              <div>{t('테스트케이스가 없습니다.')}</div>
             </EmptyContent>
           </div>
         )}
@@ -92,14 +129,129 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSave, onCancel, content, se
               ?.sort((a, b) => a.itemOrder - b.itemOrder)
               .map(testcase => {
                 return (
-                  <li key={testcase.id}>
+                  <li
+                    className={editInfo.id && editInfo.id === testcase.id ? '' : 'g-clickable'}
+                    key={testcase.id}
+                    onClick={() => {
+                      if (!(editInfo.id && editInfo.id === testcase.id)) {
+                        getPopupContent(testcase.id);
+                      }
+                    }}
+                  >
                     <div className="id-name">
                       <div className="seq-id">
                         <div>{testcase.seqId}</div>
                       </div>
-                      <div className="name">{testcase.name}</div>
+                      <div className="name">
+                        {editInfo.id !== testcase.id && <span>{testcase.name}</span>}
+                        {editInfo.id === testcase.id && (
+                          <Input
+                            className="name-editor"
+                            underline={false}
+                            value={editInfo.content.name}
+                            onChange={val => {
+                              setEditInfo({
+                                ...editInfo,
+                                content: {
+                                  ...editInfo.content,
+                                  name: val,
+                                },
+                              });
+                            }}
+                            size="sm"
+                            required
+                            minLength={1}
+                            maxLength={100}
+                            onKeyDown={e => {
+                              if (e.key === 'Escape') {
+                                setEditInfo({
+                                  id: null,
+                                  content: null,
+                                });
+                              } else if (e.key === 'Enter') {
+                                onChangeTestcaseNameAndDescription(editInfo.id, editInfo.content.name, editInfo.content.description, () => {
+                                  setEditInfo({
+                                    id: null,
+                                    content: null,
+                                  });
+                                });
+                              }
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="edit-button">
+                        {editInfo.id && editInfo.id === testcase.id && (
+                          <Button
+                            size="sm"
+                            outline
+                            color="white"
+                            onClick={e => {
+                              e.stopPropagation();
+                              setEditInfo({
+                                id: null,
+                                content: null,
+                              });
+                            }}
+                          >
+                            {t('취소')}
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          outline
+                          color="white"
+                          onClick={e => {
+                            e.stopPropagation();
+                            if (editInfo.id && editInfo.id === testcase.id) {
+                              onChangeTestcaseNameAndDescription(editInfo.id, editInfo.content.name, editInfo.content.description, () => {
+                                setEditInfo({
+                                  id: null,
+                                  content: null,
+                                });
+                              });
+                            } else {
+                              setTimeout(() => {
+                                const inputElement = e.target.parentElement?.parentElement?.querySelector('input');
+                                if (inputElement) {
+                                  inputElement.focus();
+                                }
+                              }, 200);
+
+                              setEditInfo({
+                                id: testcase.id,
+                                content: {
+                                  ...testcase,
+                                },
+                              });
+                            }
+                          }}
+                        >
+                          {!(editInfo.id && editInfo.id === testcase.id) && t('변경')}
+                          {editInfo.id && editInfo.id === testcase.id && t('저장')}
+                        </Button>
+                      </div>
                     </div>
-                    {testcase.description && <div className="description">{testcase.description}</div>}
+                    {editInfo.id && editInfo.id === testcase.id && (
+                      <TextArea
+                        className="testcase-description"
+                        placeholder="테스트케이스에 대한 설명을 입력해주세요."
+                        value={editInfo.content.description || ''}
+                        rows={2}
+                        size="sm"
+                        onChange={val => {
+                          setEditInfo({
+                            ...editInfo,
+                            content: {
+                              ...editInfo.content,
+                              description: val,
+                            },
+                          });
+                        }}
+                        autoHeight
+                      />
+                    )}
+                    {!(editInfo.id && editInfo.id === testcase.id) && testcase.description && <div className="description">{testcase.description}</div>}
                   </li>
                 );
               })}
@@ -117,7 +269,7 @@ TestcaseGroupManager.defaultProps = {
 TestcaseGroupManager.propTypes = {
   isEdit: PropTypes.bool.isRequired,
   setIsEdit: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
+  onSaveTestcaseGroup: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   content: PropTypes.shape({
     id: PropTypes.number,
@@ -140,6 +292,10 @@ TestcaseGroupManager.propTypes = {
     ),
   }),
   setContent: PropTypes.func.isRequired,
+  addTestcase: PropTypes.func.isRequired,
+  onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,
+
+  getPopupContent: PropTypes.func.isRequired,
 };
 
 export default TestcaseGroupManager;

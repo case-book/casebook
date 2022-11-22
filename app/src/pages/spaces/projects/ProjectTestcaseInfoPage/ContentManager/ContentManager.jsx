@@ -8,7 +8,22 @@ import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
 
-function ContentManager({ type, content: originalContent, testcaseTemplates, loading, setContentChanged, onSaveTestcase, users, createTestcaseImage, onSaveTestcaseGroup }) {
+function ContentManager({
+  type,
+  content: originalContent,
+  testcaseTemplates,
+  loading,
+  setContentChanged,
+  onSaveTestcase,
+  users,
+  createTestcaseImage,
+  onSaveTestcaseGroup,
+  addTestcase,
+  onChangeTestcaseNameAndDescription,
+  getPopupContent,
+  popupContent,
+  setPopupContent,
+}) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -39,6 +54,31 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
             <div>아이템을 선택해주세요.</div>
           </EmptyContent>
         )}
+
+        {popupContent && (
+          <div
+            className="testcase-editor-popup"
+            onClick={() => {
+              setPopupContent(null);
+            }}
+          >
+            <div onClick={e => e.stopPropagation()}>
+              <TestcaseManager
+                isEdit={isEdit}
+                setIsEdit={setIsEdit}
+                content={popupContent}
+                testcaseTemplates={testcaseTemplates}
+                setContent={setPopupContent}
+                onSave={() => {
+                  onSaveTestcase(popupContent);
+                }}
+                onCancel={onCancel}
+                users={users}
+                createTestcaseImage={createTestcaseImage}
+              />
+            </div>
+          </div>
+        )}
         {content && type === ITEM_TYPE.TESTCASE && (
           <TestcaseManager
             isEdit={isEdit}
@@ -61,13 +101,16 @@ function ContentManager({ type, content: originalContent, testcaseTemplates, loa
             isEdit={isEdit}
             setIsEdit={setIsEdit}
             content={content}
-            onSave={() => {
+            setContent={changeContent}
+            addTestcase={addTestcase}
+            onSaveTestcaseGroup={() => {
               onSaveTestcaseGroup(content, () => {
                 setIsEdit(false);
               });
             }}
             onCancel={onCancel}
-            setContent={changeContent}
+            getPopupContent={getPopupContent}
+            onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
           />
         )}
       </div>
@@ -81,6 +124,7 @@ ContentManager.defaultProps = {
   testcaseTemplates: [],
   loading: false,
   users: [],
+  popupContent: null,
 };
 
 ContentManager.propTypes = {
@@ -116,6 +160,28 @@ ContentManager.propTypes = {
     }),
   ),
   createTestcaseImage: PropTypes.func.isRequired,
+  addTestcase: PropTypes.func.isRequired,
+  onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,
+  getPopupContent: PropTypes.func.isRequired,
+  popupContent: PropTypes.shape({
+    id: PropTypes.number,
+    seqId: PropTypes.string,
+    testcaseGroupId: PropTypes.number,
+    testcaseTemplateId: PropTypes.number,
+    name: PropTypes.string,
+    itemOrder: PropTypes.number,
+    closed: PropTypes.bool,
+    testcaseItems: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        testcaseId: PropTypes.number,
+        testcaseTemplateItemId: PropTypes.number,
+        value: PropTypes.string,
+        text: PropTypes.string,
+      }),
+    ),
+  }),
+  setPopupContent: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

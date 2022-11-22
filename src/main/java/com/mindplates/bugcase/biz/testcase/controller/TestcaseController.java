@@ -122,6 +122,13 @@ public class TestcaseController {
         return new TestcaseSimpleResponse(testcase);
     }
 
+    @Operation(description = "테스트케이스 이름 및 설명 변경")
+    @PutMapping("/{testcaseId}/info")
+    public TestcaseSimpleResponse updateTestcaseNameAndDescription(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameDescriptionChangeRequest testcaseNameDescriptionChangeRequest) {
+        Testcase testcase = testcaseService.updateTestcaseNameAndDescription(spaceCode, projectId, testcaseId, testcaseNameDescriptionChangeRequest.getName(), testcaseNameDescriptionChangeRequest.getDescription());
+        return new TestcaseSimpleResponse(testcase);
+    }
+
     @Operation(description = "테스트케이스 상세 조회")
     @GetMapping("/{testcaseId}")
     public TestcaseResponse selectTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId) {
