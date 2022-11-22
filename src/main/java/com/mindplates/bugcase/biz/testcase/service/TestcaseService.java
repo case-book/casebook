@@ -323,6 +323,16 @@ public class TestcaseService {
         return testcase;
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public Testcase updateTestcaseNameAndDescription(String spaceCode, Long projectId, Long testcaseId, String name, String description) {
+        Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testcase.setName(name);
+        testcase.setDescription(description);
+        testcaseRepository.save(testcase);
+        return testcase;
+    }
+
     public Optional<Testcase> selectTestcaseInfo(Long projectId, Long testcaseId) {
         return testcaseRepository.findByIdAndProjectId(testcaseId, projectId);
     }

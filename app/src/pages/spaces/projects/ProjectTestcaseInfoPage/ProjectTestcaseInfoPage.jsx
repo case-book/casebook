@@ -40,6 +40,7 @@ function ProjectTestcaseInfoPage() {
 
   const [contentLoading, setContentLoading] = useState(false);
   const [content, setContent] = useState(null);
+  const [popupContent, setPopupContent] = useState(null);
   const [contentChanged, setContentChanged] = useState(false);
 
   const getProject = () => {
@@ -74,6 +75,12 @@ function ProjectTestcaseInfoPage() {
     );
   };
 
+  const getPopupContentTestcase = testcaseId => {
+    TestcaseService.selectTestcase(spaceCode, projectId, testcaseId, info => {
+      setPopupContent(info);
+    });
+  };
+
   const [min, setMin] = useState(false);
 
   const [countSummary, setCountSummary] = useState({
@@ -95,6 +102,10 @@ function ProjectTestcaseInfoPage() {
       setContentChanged(false);
       setContent(group);
     }
+  };
+
+  const getPopupContent = testcaseId => {
+    getPopupContentTestcase(testcaseId);
   };
 
   useEffect(() => {
@@ -195,7 +206,7 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
-  const addTestcase = () => {
+  const addTestcase = (focus = true) => {
     let group = null;
 
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP && selectedItemInfo.id) {
@@ -226,11 +237,17 @@ function ProjectTestcaseInfoPage() {
       nextTestcaseGroup.testcases.push(info);
       setProject(nextProject);
 
-      setSelectedItemInfo({
-        id: info.id,
-        type: ITEM_TYPE.TESTCASE,
-        time: Date.now(),
-      });
+      if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP) {
+        setContent({ ...nextTestcaseGroup });
+      }
+
+      if (focus) {
+        setSelectedItemInfo({
+          id: info.id,
+          type: ITEM_TYPE.TESTCASE,
+          time: Date.now(),
+        });
+      }
     });
   };
 
@@ -307,6 +324,24 @@ function ProjectTestcaseInfoPage() {
     }
   };
 
+  const onChangeTestcaseNameAndDescription = (id, name, description, handler) => {
+    TestcaseService.updateTestcaseNameAndDescription(spaceCode, projectId, id, name, description, info => {
+      const nextProject = { ...project };
+      const nextGroup = project?.testcaseGroups.find(d => d.id === info.testcaseGroupId);
+      const inx = nextGroup.testcases.findIndex(d => d.id === info.id);
+      if (inx > -1) {
+        nextGroup.testcases[inx] = info;
+        setProject(nextProject);
+
+        setContent({ ...nextGroup });
+
+        if (handler) {
+          handler(info);
+        }
+      }
+    });
+  };
+
   const onGrabMouseMove = e => {
     if (resizeInfo.moving) {
       const distanceX = e.clientX - resizeInfo.startX;
@@ -368,6 +403,15 @@ function ProjectTestcaseInfoPage() {
         if (index > -1) {
           nextGroup.testcases[index] = result;
         }
+
+        if (result.id === popupContent?.id) {
+          setPopupContent({ ...result });
+        }
+
+        if (content.seqId[0] === 'G' && content.id === result.testcaseGroupId) {
+          setContent({ ...nextGroup });
+        }
+
         setProject(nextProject);
         setContentChanged(false);
         if (handler) {
@@ -429,8 +473,11 @@ function ProjectTestcaseInfoPage() {
           <div className="border-line" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
           <div className="testcases">
             <ContentManager
+              getPopupContent={getPopupContent}
+              popupContent={popupContent}
               type={selectedItemInfo?.type}
               content={content}
+              addTestcase={addTestcase}
               testcaseTemplates={project?.testcaseTemplates}
               loading={contentLoading}
               setContentChanged={setContentChanged}
@@ -438,6 +485,8 @@ function ProjectTestcaseInfoPage() {
               onSaveTestcaseGroup={onSaveTestcaseGroup}
               users={spaceUsers}
               createTestcaseImage={createTestcaseImage}
+              onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
+              setPopupContent={setPopupContent}
             />
           </div>
         </div>

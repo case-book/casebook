@@ -2,9 +2,16 @@
   height: 100%;
   display: flex;
   justify-content: center;
-  background-color: $gray-100;
+
   font-family: NotoSans, sans-serif;
   color: $gray-700;
+  &.color-gray {
+    background-color: $gray-100;
+  }
+
+  &.color-transparent {
+    background-color: transparent;
+  }
   > div {
     align-self: center;
     text-align: center;
