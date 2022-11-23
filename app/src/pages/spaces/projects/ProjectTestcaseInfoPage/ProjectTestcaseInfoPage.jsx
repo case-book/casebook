@@ -94,11 +94,30 @@ function ProjectTestcaseInfoPage() {
     getSpaceUserList();
   }, [spaceCode, projectId]);
 
+  const findGroup = (id, groups) => {
+    if (!groups || groups?.length < 1) {
+      return null;
+    }
+
+    if (groups.find(d => d.id === id)) {
+      return groups.find(d => d.id === id);
+    }
+
+    for (let i = 0; i < groups.length; i += 1) {
+      const group = findGroup(id, groups[i].children);
+      if (group) {
+        return group;
+      }
+    }
+
+    return null;
+  };
+
   const getContent = () => {
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE) {
       getTestcase(selectedItemInfo.id);
     } else {
-      const group = testcaseGroups.find(d => d.id === selectedItemInfo.id);
+      const group = findGroup(selectedItemInfo.id, testcaseGroups);
       setContentChanged(false);
       setContent(group);
     }
@@ -169,11 +188,14 @@ function ProjectTestcaseInfoPage() {
     });
 
     sort(nextGroups);
-
     setTestcaseGroups(nextGroups);
   }, [project]);
 
-  const addTestcaseGroup = () => {
+  useEffect(() => {
+    getContent();
+  }, [testcaseGroups]);
+
+  const addTestcaseGroup = (focus = true) => {
     const name = '그룹';
     let testcaseGroup = {
       parentId: null,
@@ -198,11 +220,13 @@ function ProjectTestcaseInfoPage() {
       nextProject.testcaseGroups = nextTestcaseGroups;
       setProject(nextProject);
 
-      setSelectedItemInfo({
-        id: info.id,
-        type: ITEM_TYPE.TESTCASE_GROUP,
-        time: Date.now(),
-      });
+      if (focus) {
+        setSelectedItemInfo({
+          id: info.id,
+          type: ITEM_TYPE.TESTCASE_GROUP,
+          time: Date.now(),
+        });
+      }
     });
   };
 
@@ -477,6 +501,7 @@ function ProjectTestcaseInfoPage() {
               popupContent={popupContent}
               type={selectedItemInfo?.type}
               content={content}
+              addTestcaseGroup={addTestcaseGroup}
               addTestcase={addTestcase}
               testcaseTemplates={project?.testcaseTemplates}
               loading={contentLoading}
@@ -487,6 +512,7 @@ function ProjectTestcaseInfoPage() {
               createTestcaseImage={createTestcaseImage}
               onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
               setPopupContent={setPopupContent}
+              onSelect={setSelectedItemInfo}
             />
           </div>
         </div>

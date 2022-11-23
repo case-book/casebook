@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import './TestcaseGroupManager.scss';
 import { Button, EmptyContent, Input, TextArea } from '@/components';
 import PropTypes from 'prop-types';
+import { ITEM_TYPE } from '@/constants/constants';
 
-function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent }) {
+function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent, addTestcaseGroup, onSelect }) {
   const { t } = useTranslation();
 
   const [editInfo, setEditInfo] = useState({
@@ -66,7 +67,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
       </div>
       <div className="title-liner" />
       <div className="group-content">
-        <div className={`group-description ${content.description ? '' : 'empty'}`}>
+        <div className={`group-description ${!isEdit && content.description ? '' : 'empty'}`}>
           <div className="description-content">
             {!isEdit && (
               <div className="text">
@@ -90,6 +91,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
             )}
             {isEdit && (
               <TextArea
+                size="sm"
                 placeholder="테스트케이스 그룹에 대한 설명을 입력해주세요."
                 value={content.description || ''}
                 rows={2}
@@ -116,7 +118,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
             </Button>
           </div>
         </div>
-        {content.testcases?.length < 1 && (
+        {(!content.testcases || content.testcases?.length < 1) && (
           <div className="empty-layout">
             <EmptyContent className="empty-content" color="transparent">
               <div>{t('테스트케이스가 없습니다.')}</div>
@@ -124,7 +126,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
           </div>
         )}
         {content.testcases?.length > 0 && (
-          <ul>
+          <ul className="testcase-list">
             {content.testcases
               ?.sort((a, b) => a.itemOrder - b.itemOrder)
               .map(testcase => {
@@ -257,6 +259,57 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
               })}
           </ul>
         )}
+        <div className="list-title">
+          <div>하위 그룹 리스트</div>
+          <div>
+            <Button
+              size="sm"
+              outline
+              color="white"
+              onClick={() => {
+                addTestcaseGroup(false);
+              }}
+            >
+              {t('그룹 추가')}
+            </Button>
+          </div>
+        </div>
+        {(!content.children || content.children?.length < 1) && (
+          <div className="empty-layout">
+            <EmptyContent className="empty-content" color="transparent">
+              <div>{t('하위 그룹이 없습니다.')}</div>
+            </EmptyContent>
+          </div>
+        )}
+        {content.children?.length > 0 && (
+          <ul className="group-list">
+            {content.children
+              ?.sort((a, b) => a.itemOrder - b.itemOrder)
+              .map(group => {
+                return (
+                  <li
+                    onClick={() => {
+                      onSelect({
+                        id: group.id,
+                        type: ITEM_TYPE.TESTCASE_GROUP,
+                        time: Date.now(),
+                      });
+                    }}
+                  >
+                    <div>
+                      <div className="seq-id-name">
+                        <div className="seq-id">
+                          <span>{group.seqId}</span>
+                        </div>
+                        <div>{group.name}</div>
+                      </div>
+                      <div className="description">{group.description}</div>
+                    </div>
+                  </li>
+                );
+              })}
+          </ul>
+        )}
       </div>
     </div>
   );
@@ -290,12 +343,24 @@ TestcaseGroupManager.propTypes = {
         description: PropTypes.string,
       }),
     ),
+    children: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        depth: PropTypes.number,
+        description: PropTypes.string,
+        itemOrder: PropTypes.number,
+        name: PropTypes.string,
+        parentId: PropTypes.number,
+        seqId: PropTypes.string,
+      }),
+    ),
   }),
   setContent: PropTypes.func.isRequired,
   addTestcase: PropTypes.func.isRequired,
+  addTestcaseGroup: PropTypes.func.isRequired,
   onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,
-
   getPopupContent: PropTypes.func.isRequired,
+  onSelect: PropTypes.func.isRequired,
 };
 
 export default TestcaseGroupManager;
