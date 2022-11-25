@@ -25,7 +25,7 @@ Liner.defaultProps = {
   className: '',
   width: '1px',
   height: '16px',
-  color: 'white',
+  color: '',
   margin: '',
   display: 'block',
 };

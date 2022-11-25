@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager';
-import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager';
+import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager/TestcaseManager';
+import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
 import { ITEM_TYPE } from '@/constants/constants';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';

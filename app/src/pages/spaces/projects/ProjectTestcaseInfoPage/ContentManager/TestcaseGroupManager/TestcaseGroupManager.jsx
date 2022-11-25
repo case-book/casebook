@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './TestcaseGroupManager.scss';
-import { Button, EmptyContent, Input, TextArea } from '@/components';
+import { Button, EmptyContent, Input, SeqId, TextArea } from '@/components';
 import PropTypes from 'prop-types';
 import { ITEM_TYPE } from '@/constants/constants';
+import './TestcaseGroupManager.scss';
 
 function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent, addTestcaseGroup, onSelect }) {
   const { t } = useTranslation();
@@ -24,6 +24,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
     <div className={`testcase-group-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
       <div className="testcase-group-title">
         <div className="title-info">
+          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
           {isEdit && (
             <div className="control">
               <Input
@@ -141,9 +142,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                     }}
                   >
                     <div className="id-name">
-                      <div className="seq-id">
-                        <div>{testcase.seqId}</div>
-                      </div>
+                      <SeqId type={ITEM_TYPE.TESTCASE}>{testcase.seqId}</SeqId>
                       <div className="name">
                         {editInfo.id !== testcase.id && <span>{testcase.name}</span>}
                         {editInfo.id === testcase.id && (
@@ -288,6 +287,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
               .map(group => {
                 return (
                   <li
+                    key={group.id}
                     onClick={() => {
                       onSelect({
                         id: group.id,
@@ -298,9 +298,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                   >
                     <div>
                       <div className="seq-id-name">
-                        <div className="seq-id">
-                          <span>{group.seqId}</span>
-                        </div>
+                        <SeqId type={ITEM_TYPE.TESTCASE_GROUP}>{group.seqId}</SeqId>
                         <div>{group.name}</div>
                       </div>
                       <div className="description">{group.description}</div>
@@ -326,6 +324,7 @@ TestcaseGroupManager.propTypes = {
   onCancel: PropTypes.func.isRequired,
   content: PropTypes.shape({
     id: PropTypes.number,
+    seqId: PropTypes.string,
     depth: PropTypes.number,
     itemOrder: PropTypes.number,
     name: PropTypes.string,

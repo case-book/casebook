@@ -99,6 +99,10 @@ li.testcase-group-item-wrapper {
         width: calc(100% - 46px);
         display: flex;
 
+        .seq-id {
+          font-size: 12px;
+        }
+
         .case-col,
         .group-col {
           display: inline-flex;
@@ -171,6 +175,7 @@ li.testcase-group-item-wrapper {
           overflow-x: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          align-self: center;
         }
 
         .name-editor {

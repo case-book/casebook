@@ -44,6 +44,7 @@ import Td from './Table/Td';
 import SocketClient from './SocketClient/SocketClient';
 import Switch from './Switch/Switch';
 import Star from './Star/Star';
+import SeqId from './SeqId/SeqId';
 
 export {
   Selector,
@@ -92,4 +93,5 @@ export {
   SocketClient,
   Switch,
   Star,
+  SeqId,
 };

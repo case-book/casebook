@@ -2,9 +2,9 @@
   height: 100%;
   display: flex;
   justify-content: center;
-
   font-family: NotoSans, sans-serif;
   color: $gray-700;
+  border-radius: 4px;
   &.color-gray {
     background-color: $gray-100;
   }

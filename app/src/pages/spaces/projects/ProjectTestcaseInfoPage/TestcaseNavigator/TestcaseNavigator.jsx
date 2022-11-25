@@ -316,12 +316,12 @@ function TestcaseNavigator({
           </div>
         </div>
         <div className={`right ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
-          <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type} color="primary">
+          <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type} color="white" outline>
             <i className="small-icon fa-solid fa-plus" />
             <i className="fa-solid fa-flask" /> <span className="button-text">테스트케이스</span>
           </Button>
-          <Liner className="liner" display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />
-          <Button size="xs" onClick={addTestcaseGroup} color="primary">
+          <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+          <Button size="xs" onClick={addTestcaseGroup} color="white" outline>
             <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
           </Button>
         </div>

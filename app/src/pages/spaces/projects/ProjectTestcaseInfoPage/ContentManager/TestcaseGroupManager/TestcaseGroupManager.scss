@@ -16,7 +16,6 @@
       font-weight: bold;
       flex-grow: 1;
       display: flex;
-      font-size: 20px;
 
       > div {
         align-self: center;
@@ -29,6 +28,7 @@
 
       .text {
         flex-grow: 1;
+        font-size: 20px;
       }
     }
 
@@ -168,23 +168,6 @@
           > div {
             align-self: center;
           }
-          .seq-id {
-            margin-right: 0.5rem;
-            > div {
-              cursor: pointer;
-              display: inline-block;
-              border-radius: 2px;
-              line-height: 100%;
-              font-size: 14px;
-              background-color: #ffbc4b;
-              color: #333;
-              padding: 2px;
-              font-family: Rowdies, sans-serif;
-              position: relative;
-              min-width: 42px;
-              text-align: center;
-            }
-          }
 
           .name {
             flex-grow: 1;
@@ -245,26 +228,6 @@
         > div {
           .seq-id-name {
             display: flex;
-            .seq-id {
-              display: inline-flex;
-              font-size: 12px;
-              color: #333;
-              font-weight: bold;
-              margin-right: 4px;
-              font-family: Rowdies, sans-serif;
-
-              > span {
-                border-radius: 2px;
-                font-family: Rowdies, sans-serif;
-                background-color: #7bde89;
-                padding-left: 3px;
-                padding-right: 3px;
-                min-width: 40px;
-                display: inline-block;
-                text-align: center;
-                align-self: center;
-              }
-            }
           }
 
           .description {

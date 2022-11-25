@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Input } from '@/components';
+import { Input, SeqId } from '@/components';
 import PropTypes from 'prop-types';
 import { ITEM_TYPE } from '@/constants/constants';
 import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
@@ -137,9 +137,9 @@ function TestcaseNavigatorGroupItem({
               <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="xs" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
             )}
             {setting.testcaseGroupColumns.id?.show && (
-              <div className="group-col col-id">
-                <div>{group?.seqId}</div>
-              </div>
+              <SeqId size="sm" className="seq-id" type={ITEM_TYPE.TESTCASE_GROUP}>
+                {group?.seqId}
+              </SeqId>
             )}
             {setting.testcaseGroupColumns.itemOrder?.show && (
               <div className="group-col col-itemOrder">
@@ -287,9 +287,9 @@ function TestcaseNavigatorGroupItem({
                         )}
 
                         {setting.testcaseColumns.id?.show && (
-                          <div className="case-col col-id">
-                            <div>{testcase?.seqId}</div>
-                          </div>
+                          <SeqId size="sm" className="seq-id" type={ITEM_TYPE.TESTCASE}>
+                            {testcase?.seqId}
+                          </SeqId>
                         )}
 
                         {setting.testcaseColumns.itemOrder?.show && (
