@@ -1,0 +1,48 @@
+.member-card-wrapper {
+  &.selected {
+    background-color: $color-primary-light;
+    color: $white;
+  }
+
+  .user-name {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 0.5rem;
+
+    > div {
+      > div {
+        display: flex;
+        div {
+          align-self: center;
+        }
+        div:first-child {
+          flex-grow: 1;
+        }
+
+        .role {
+          display: inline-flex;
+          text-align: right;
+
+          &.ADMIN {
+            > div {
+              background-color: $color-primary-light;
+            }
+          }
+
+          button {
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  .user-info {
+    > div {
+      padding-top: 0;
+      text-transform: uppercase;
+      font-family: Cairo, sans-serif;
+      font-size: 14px;
+    }
+  }
+}

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './TestcaseGroupManager.scss';
-import { Button, EmptyContent, Input, TextArea } from '@/components';
+import { Button, EmptyContent, Input, SeqId, TextArea } from '@/components';
 import PropTypes from 'prop-types';
 import { ITEM_TYPE } from '@/constants/constants';
+import './TestcaseGroupManager.scss';
 
-function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent, addTestcaseGroup, onSelect }) {
+function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent }) {
   const { t } = useTranslation();
 
   const [editInfo, setEditInfo] = useState({
@@ -24,6 +24,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
     <div className={`testcase-group-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
       <div className="testcase-group-title">
         <div className="title-info">
+          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
           {isEdit && (
             <div className="control">
               <Input
@@ -141,9 +142,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                     }}
                   >
                     <div className="id-name">
-                      <div className="seq-id">
-                        <div>{testcase.seqId}</div>
-                      </div>
+                      <SeqId type={ITEM_TYPE.TESTCASE}>{testcase.seqId}</SeqId>
                       <div className="name">
                         {editInfo.id !== testcase.id && <span>{testcase.name}</span>}
                         {editInfo.id === testcase.id && (
@@ -259,57 +258,6 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
               })}
           </ul>
         )}
-        <div className="list-title">
-          <div>하위 그룹 리스트</div>
-          <div>
-            <Button
-              size="sm"
-              outline
-              color="white"
-              onClick={() => {
-                addTestcaseGroup(false);
-              }}
-            >
-              {t('그룹 추가')}
-            </Button>
-          </div>
-        </div>
-        {(!content.children || content.children?.length < 1) && (
-          <div className="empty-layout">
-            <EmptyContent className="empty-content" color="transparent">
-              <div>{t('하위 그룹이 없습니다.')}</div>
-            </EmptyContent>
-          </div>
-        )}
-        {content.children?.length > 0 && (
-          <ul className="group-list">
-            {content.children
-              ?.sort((a, b) => a.itemOrder - b.itemOrder)
-              .map(group => {
-                return (
-                  <li
-                    onClick={() => {
-                      onSelect({
-                        id: group.id,
-                        type: ITEM_TYPE.TESTCASE_GROUP,
-                        time: Date.now(),
-                      });
-                    }}
-                  >
-                    <div>
-                      <div className="seq-id-name">
-                        <div className="seq-id">
-                          <span>{group.seqId}</span>
-                        </div>
-                        <div>{group.name}</div>
-                      </div>
-                      <div className="description">{group.description}</div>
-                    </div>
-                  </li>
-                );
-              })}
-          </ul>
-        )}
       </div>
     </div>
   );
@@ -326,6 +274,7 @@ TestcaseGroupManager.propTypes = {
   onCancel: PropTypes.func.isRequired,
   content: PropTypes.shape({
     id: PropTypes.number,
+    seqId: PropTypes.string,
     depth: PropTypes.number,
     itemOrder: PropTypes.number,
     name: PropTypes.string,
@@ -357,10 +306,8 @@ TestcaseGroupManager.propTypes = {
   }),
   setContent: PropTypes.func.isRequired,
   addTestcase: PropTypes.func.isRequired,
-  addTestcaseGroup: PropTypes.func.isRequired,
   onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,
   getPopupContent: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired,
 };
 
 export default TestcaseGroupManager;

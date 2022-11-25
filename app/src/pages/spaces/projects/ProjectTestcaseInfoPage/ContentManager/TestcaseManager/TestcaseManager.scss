@@ -37,71 +37,6 @@
       > div {
         align-self: center;
 
-        &.seq-id {
-          line-height: 0;
-          margin-right: 1rem;
-
-          .seq-id-text {
-            position: relative;
-            z-index: 2;
-          }
-
-          > div {
-            cursor: pointer;
-            display: inline-block;
-            border-radius: 2px;
-            line-height: 100%;
-            font-size: 14px;
-            background-color: $color-sunflower;
-            color: #333;
-            padding: 2px;
-            font-family: Rowdies, sans-serif;
-            position: relative;
-
-            .copied-message {
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              text-align: center;
-              color: $color-azure;
-              transition: 0.3s all;
-              transition-timing-function: ease-in-out;
-              opacity: 0;
-              cursor: text;
-
-              &.copied {
-                top: -30px;
-                transition: 0.3s all;
-                transition-timing-function: ease-in-out;
-                opacity: 1;
-              }
-
-              .bg {
-                font-size: 30px;
-              }
-
-              .icon {
-                position: absolute;
-                left: 0;
-                right: 0;
-                text-align: center;
-                bottom: 8px;
-                font-size: 16px;
-                color: $white;
-              }
-
-              .text {
-                color: $white;
-                position: absolute;
-                left: calc(100% + 8px);
-                top: 6px;
-                font-size: 10px;
-              }
-            }
-          }
-        }
-
         &.name {
           flex-grow: 1;
         }
@@ -307,7 +242,6 @@
             min-height: auto;
 
             &.EDITOR {
-
             }
           }
         }
@@ -333,7 +267,6 @@
       }
 
       .text {
-
         font-weight: bold;
         flex-grow: 1;
         display: flex;
@@ -344,71 +277,6 @@
 
         > div {
           align-self: center;
-
-          &.seq-id {
-            line-height: 0;
-            margin-right: 1rem;
-
-            .seq-id-text {
-              position: relative;
-              z-index: 2;
-            }
-
-            > div {
-              cursor: pointer;
-              display: inline-block;
-              border-radius: 2px;
-              line-height: 100%;
-              font-size: 14px;
-              background-color: $color-sunflower;
-              color: #333;
-              padding: 2px;
-              font-family: Rowdies, sans-serif;
-              position: relative;
-
-              .copied-message {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                text-align: center;
-                color: $color-azure;
-                transition: 0.3s all;
-                transition-timing-function: ease-in-out;
-                opacity: 0;
-                cursor: text;
-
-                &.copied {
-                  top: -30px;
-                  transition: 0.3s all;
-                  transition-timing-function: ease-in-out;
-                  opacity: 1;
-                }
-
-                .bg {
-                  font-size: 30px;
-                }
-
-                .icon {
-                  position: absolute;
-                  left: 0;
-                  right: 0;
-                  text-align: center;
-                  bottom: 8px;
-                  font-size: 16px;
-                  color: $white;
-                }
-
-                .text {
-                  color: $white;
-                  position: absolute;
-                  left: calc(100% + 8px);
-                  top: 6px;
-                  font-size: 10px;
-                }
-              }
-            }
-          }
 
           &.name {
             flex-grow: 1;

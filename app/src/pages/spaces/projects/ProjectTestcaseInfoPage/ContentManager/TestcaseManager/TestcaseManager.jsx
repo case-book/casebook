@@ -1,8 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import copy from 'copy-to-clipboard';
-import { Button, CheckBox, Input, Radio, Selector, TextArea, UserSelector } from '@/components';
+import { Button, CheckBox, Input, Radio, Selector, SeqId, TextArea, UserSelector } from '@/components';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -15,7 +14,7 @@ import './TestcaseManager.scss';
 import useStores from '@/hooks/useStores';
 import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 
 function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage }) {
@@ -43,8 +42,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
     inx: null,
     type: '',
   });
-
-  const [copied, setCopied] = useState(false);
 
   const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value) => {
     const nextTestcaseItems = testcaseItems.slice(0);
@@ -101,30 +98,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
     <div className={`testcase-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
       <div className="testcase-title">
         <div className="text">
-          <div className="seq-id">
-            <div
-              onClick={() => {
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 1000);
-                copy(content.seqId);
-              }}
-            >
-              <div className={`copied-message ${copied ? 'copied' : ''}`} onClick={e => e.stopPropagation()}>
-                <span className="bg">
-                  <i className="fa-solid fa-certificate" />
-                </span>
-                <div className="icon">
-                  <span>
-                    <i className="fa-solid fa-copy" />
-                  </span>
-                </div>
-                <div className="text">COPIED</div>
-              </div>
-              <span className="seq-id-text">{content.seqId}</span>
-            </div>
-          </div>
+          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
           {isEdit && (
             <div className="title-input">
               <div className="type-input">

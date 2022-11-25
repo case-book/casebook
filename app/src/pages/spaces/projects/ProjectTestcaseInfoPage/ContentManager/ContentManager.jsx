@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager';
-import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager';
+import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager/TestcaseManager';
+import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
 import { ITEM_TYPE } from '@/constants/constants';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
@@ -19,12 +19,10 @@ function ContentManager({
   createTestcaseImage,
   onSaveTestcaseGroup,
   addTestcase,
-  addTestcaseGroup,
   onChangeTestcaseNameAndDescription,
   getPopupContent,
   popupContent,
   setPopupContent,
-  onSelect,
 }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
@@ -105,7 +103,6 @@ function ContentManager({
             content={content}
             setContent={changeContent}
             addTestcase={addTestcase}
-            addTestcaseGroup={addTestcaseGroup}
             onSaveTestcaseGroup={() => {
               onSaveTestcaseGroup(content, () => {
                 setIsEdit(false);
@@ -114,7 +111,6 @@ function ContentManager({
             onCancel={onCancel}
             getPopupContent={getPopupContent}
             onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
-            onSelect={onSelect}
           />
         )}
       </div>
@@ -165,7 +161,6 @@ ContentManager.propTypes = {
   ),
   createTestcaseImage: PropTypes.func.isRequired,
   addTestcase: PropTypes.func.isRequired,
-  addTestcaseGroup: PropTypes.func.isRequired,
   onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,
   getPopupContent: PropTypes.func.isRequired,
   popupContent: PropTypes.shape({
@@ -187,7 +182,6 @@ ContentManager.propTypes = {
     ),
   }),
   setPopupContent: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

@@ -136,7 +136,7 @@ public class ProjectController {
             testcaseTemplates.get(0).setIsDefault(true);
         }
 
-        List<ProjectUser> projectUserList = projectRequest.getUsers().stream().map(
+        List<ProjectUser> projectUserList = projectRequest.getUsers().stream().filter((spaceUser) -> spaceUser.getCrud() == null || !spaceUser.getCrud().equals("D")).map(
                 (spaceUser) -> ProjectUser.builder()
                         .id(spaceUser.getId())
                         .user(com.mindplates.bugcase.biz.user.entity.User.builder().id(spaceUser.getUserId()).build())

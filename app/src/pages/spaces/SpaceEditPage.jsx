@@ -244,6 +244,7 @@ function SpaceEditPage({ type }) {
             </>
           )}
           <PageButtons
+            outline
             onCancel={() => {
               if (isEdit) {
                 navigate(`/spaces/${id}/info`);
