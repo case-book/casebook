@@ -501,7 +501,6 @@ function ProjectTestcaseInfoPage() {
               popupContent={popupContent}
               type={selectedItemInfo?.type}
               content={content}
-              addTestcaseGroup={addTestcaseGroup}
               addTestcase={addTestcase}
               testcaseTemplates={project?.testcaseTemplates}
               loading={contentLoading}
@@ -512,7 +511,6 @@ function ProjectTestcaseInfoPage() {
               createTestcaseImage={createTestcaseImage}
               onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
               setPopupContent={setPopupContent}
-              onSelect={setSelectedItemInfo}
             />
           </div>
         </div>

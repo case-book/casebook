@@ -1,95 +1,171 @@
-import React from 'react';
-import { Button, Card, CardContent, CardHeader, EmptyContent, Tag } from '@/components';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button, EmptyContent, Input, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import SpaceService from '@/services/SpaceService';
+import MemberCard from '@/components/MemberManager/MemberCard';
 import './MemberCardManager.scss';
+import { cloneDeep } from 'lodash';
 
-function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRemovalUSer, onRemoveUSer }) {
+function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRemovalUser, onRemoveUser, opened, setOpened, onApply, spaceCode }) {
   const { t } = useTranslation();
 
+  const [spaceUsers, setSpaceUsers] = useState([]);
+  const [query, setQuery] = useState('');
+  const [searched, setSearched] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
+  const getSpaceUserList = () => {
+    SpaceService.selectSpaceUserList(spaceCode, query, list => {
+      setSpaceUsers(list);
+      setSearched(true);
+    });
+  };
+
+  useEffect(() => {
+    if (opened) {
+      setSpaceUsers([]);
+      setSearched(false);
+      setSelectedUsers(cloneDeep(users));
+    }
+  }, [opened]);
+
+  const userIdMap = useMemo(() => {
+    const map = {};
+    selectedUsers?.forEach(u => {
+      if (u.crud !== 'D') {
+        map[u.userId] = true;
+      }
+    });
+    return map;
+  }, [selectedUsers]);
+
   return (
-    <div className={`member-card-manager-wrapper ${className}`}>
-      {users?.length < 1 && (
-        <EmptyContent className="empty-content">
-          <div>{t('사용자가 없습니다.')}</div>
-        </EmptyContent>
-      )}
-      {users?.length > 0 && (
-        <ul>
-          <li>
+    <>
+      <div className={`member-card-manager-wrapper ${className}`}>
+        {users?.length < 1 && (
+          <EmptyContent className="empty-content">
+            <div>{t('사용자가 없습니다.')}</div>
+          </EmptyContent>
+        )}
+        {users?.length > 0 && (
+          <ul>
             {users?.map(spaceUser => {
               return (
-                <Card border point key={spaceUser.id} className={spaceUser.crud === 'D' ? 'deleted' : ''}>
-                  <CardHeader className="user-name">
-                    <div>
-                      {spaceUser.crud === 'D' && <span className="deleted-text">{t('DELETED')}</span>}
-                      <div className="name-text">{spaceUser.name}</div>
-                      {!edit && (
-                        <div className={`role ${spaceUser.role}`}>
-                          <Tag className="tag" border={false}>
-                            <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
-                            {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
-                          </Tag>
-                        </div>
-                      )}
-                      {edit && (
-                        <div className={`role ${spaceUser.role}`}>
-                          {spaceUser.crud !== 'D' && (
-                            <Tag className="tag" border={false}>
-                              <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
-                              {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
-                            </Tag>
-                          )}
-                          {spaceUser.crud !== 'D' && (
-                            <Button
-                              size="xs"
-                              rounded
-                              color="primary"
-                              onClick={() => {
-                                onChangeUserRole(spaceUser.id, 'role', spaceUser.role === 'ADMIN' ? 'USER' : 'ADMIN');
-                              }}
-                            >
-                              <i className="fa-solid fa-arrow-right-arrow-left" />
-                            </Button>
-                          )}
-                          {spaceUser.crud === 'D' && (
-                            <Button
-                              size="xs"
-                              rounded
-                              color="danger"
-                              onClick={() => {
-                                onUndoRemovalUSer(spaceUser.id);
-                              }}
-                            >
-                              <i className="fa-solid fa-rotate-left" />
-                            </Button>
-                          )}
-                          {spaceUser.crud !== 'D' && (
-                            <Button
-                              size="xs"
-                              rounded
-                              color="danger"
-                              onClick={() => {
-                                onRemoveUSer(spaceUser.id);
-                              }}
-                            >
-                              <i className="fa-solid fa-trash-can" />
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="user-info">
-                    <div>{spaceUser.email}</div>
-                  </CardContent>
-                </Card>
+                <li key={spaceUser.id}>
+                  <MemberCard spaceUser={spaceUser} edit={edit} onChangeUserRole={onChangeUserRole} onUndoRemovalUser={onUndoRemovalUser} onRemoveUser={onRemoveUser} />
+                </li>
               );
             })}
-          </li>
-        </ul>
+          </ul>
+        )}
+      </div>
+      {opened && (
+        <Modal className="project-user-add-popup-wrapper" size="xl" isOpen>
+          <ModalHeader
+            className="modal-header"
+            onClose={() => {
+              setOpened(false);
+            }}
+          >
+            스페이스 사용자
+          </ModalHeader>
+          <ModalBody className="space-user-body">
+            <div className="space-user-content">
+              <div className="search">
+                <div>검색</div>
+                <div>
+                  <Input type="query" value={query} onChange={setQuery} minLength={1} />
+                </div>
+                <div>
+                  <Button
+                    outline
+                    onClick={() => {
+                      getSpaceUserList();
+                    }}
+                  >
+                    {t('검색')}
+                  </Button>
+                </div>
+              </div>
+              <div className="space-user-list">
+                {!searched && (
+                  <EmptyContent className="empty-content">
+                    <div>{t('사용자를 검색해주세요.')}</div>
+                  </EmptyContent>
+                )}
+                {searched && spaceUsers?.length < 1 && (
+                  <EmptyContent className="empty-content">
+                    <div>{t('검색 결과가 없습니다.')}</div>
+                  </EmptyContent>
+                )}
+                {searched && spaceUsers?.length > 0 && (
+                  <ul>
+                    {spaceUsers?.map(user => {
+                      return (
+                        <li key={user.id}>
+                          <MemberCard
+                            selected={userIdMap[user.id]}
+                            onSelect={u => {
+                              const nextSelectedUsers = selectedUsers.slice(0);
+                              const userIndex = nextSelectedUsers.findIndex(d => d.userId === u.id);
+
+                              if (userIndex > -1) {
+                                if (nextSelectedUsers[userIndex].id) {
+                                  if (nextSelectedUsers[userIndex].crud === 'D') {
+                                    nextSelectedUsers[userIndex].crud = 'U';
+                                  } else {
+                                    nextSelectedUsers[userIndex].crud = 'D';
+                                  }
+                                } else {
+                                  nextSelectedUsers.splice(userIndex, 1);
+                                }
+                              } else {
+                                nextSelectedUsers.push({
+                                  userId: u.id,
+                                  name: u.name,
+                                  email: u.email,
+                                  role: 'USER',
+                                });
+                              }
+
+                              setSelectedUsers(nextSelectedUsers);
+                            }}
+                            spaceUser={user}
+                            edit={false}
+                            onRemoveUser={onRemoveUser}
+                            showRole={false}
+                          />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              outline
+              onClick={() => {
+                setOpened(false);
+              }}
+            >
+              {t('취소')}
+            </Button>
+            <Button
+              outline
+              onClick={() => {
+                onApply(selectedUsers);
+                setOpened(false);
+              }}
+            >
+              {t('확인')}
+            </Button>
+          </ModalFooter>
+        </Modal>
       )}
-    </div>
+    </>
   );
 }
 
@@ -98,12 +174,14 @@ MemberCardManager.defaultProps = {
   edit: false,
   users: [],
   onChangeUserRole: null,
-  onUndoRemovalUSer: null,
-  onRemoveUSer: null,
+  onUndoRemovalUser: null,
+  onRemoveUser: null,
+  opened: false,
 };
 
 MemberCardManager.propTypes = {
   className: PropTypes.string,
+  spaceCode: PropTypes.string.isRequired,
   edit: PropTypes.bool,
   users: PropTypes.arrayOf(
     PropTypes.shape({
@@ -113,8 +191,11 @@ MemberCardManager.propTypes = {
     }),
   ),
   onChangeUserRole: PropTypes.func,
-  onUndoRemovalUSer: PropTypes.func,
-  onRemoveUSer: PropTypes.func,
+  onUndoRemovalUser: PropTypes.func,
+  onRemoveUser: PropTypes.func,
+  opened: PropTypes.bool,
+  setOpened: PropTypes.func.isRequired,
+  onApply: PropTypes.func.isRequired,
 };
 
 export default MemberCardManager;

@@ -132,9 +132,9 @@
       padding: 1rem;
       font-family: NotoSans, sans-serif;
       display: flex;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      background-color: $gray-100;
-      border-radius: 4px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      _background-color: $gray-100;
+      _border-radius: 4px;
 
       > div {
         align-self: center;
@@ -145,7 +145,7 @@
     }
 
     .empty-layout {
-      _flex-grow: 1;
+      flex-grow: 1;
     }
 
     > ul.testcase-list {
@@ -218,27 +218,6 @@
       list-style: none;
       padding: 0 1rem;
       margin: 0;
-
-      > li {
-        border-bottom: none;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-        padding: 0.75rem 0.75rem;
-        font-family: NotoSans, sans-serif;
-
-        > div {
-          .seq-id-name {
-            display: flex;
-          }
-
-          .description {
-            font-size: 12px;
-          }
-        }
-
-        &:hover {
-          background-color: lighten($color-primary-light, 37%);
-        }
-      }
     }
   }
 

@@ -52,6 +52,7 @@ function ProjectEditPage({ type }) {
   const [space, setSpace] = useState(null);
   const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
   const [testcaseItemCategories, setTestcaseItemCategories] = useState([]);
+  const [opened, setOpened] = useState(false);
 
   const [templateEditorPopupInfo, setTemplateEditorPopupInfo] = useState({
     opened: false,
@@ -213,26 +214,31 @@ function ProjectEditPage({ type }) {
     setProject(nextProject);
   };
 
-  const changeSpaceUserRole = (userId, field, value) => {
+  const changeProjectUserRole = (userId, field, value) => {
     const next = { ...project };
-    const projectUser = next.users.find(d => d.id === userId);
+    const projectUser = next.users.find(d => d.userId === userId);
     projectUser.crud = 'U';
     projectUser[field] = value;
-    setSpace(next);
+    setProject(next);
   };
 
-  const removeSpaceUser = userId => {
+  const removeProjectUser = userId => {
     const next = { ...project };
-    const projectUser = next.users.find(d => d.id === userId);
-    projectUser.crud = 'D';
-    setSpace(next);
+    const userIndex = next.users.findIndex(d => d.userId === userId);
+    if (next.users[userIndex].id) {
+      next.users[userIndex].crud = 'D';
+    } else {
+      next.users.splice(userIndex, 1);
+    }
+
+    setProject(next);
   };
 
-  const undoRemovalSpaceUser = spaceUserId => {
+  const undoRemovalProjectUser = spaceUserId => {
     const next = { ...project };
-    const projectUser = next.users.find(d => d.id === spaceUserId);
+    const projectUser = next.users.find(d => d.userId === spaceUserId);
     projectUser.crud = 'U';
-    setSpace(next);
+    setProject(next);
   };
 
   const createProjectImage = (name, size, typeText, file) => {
@@ -398,15 +404,37 @@ function ProjectEditPage({ type }) {
             </Block>
             {isEdit && (
               <>
-                <Title>프로젝트 사용자</Title>
+                <Title
+                  control={
+                    <Button
+                      size="sm"
+                      outline
+                      onClick={() => {
+                        setOpened(true);
+                      }}
+                    >
+                      사용자 추가
+                    </Button>
+                  }
+                >
+                  {t('프로젝트 사용자')}
+                </Title>
                 <Block>
                   <MemberCardManager
                     className="member-manager"
                     edit
                     users={project?.users}
-                    onChangeUserRole={changeSpaceUserRole}
-                    onUndoRemovalUSer={undoRemovalSpaceUser}
-                    onRemoveUSer={removeSpaceUser}
+                    onChangeUserRole={changeProjectUserRole}
+                    onUndoRemovalUser={undoRemovalProjectUser}
+                    onRemoveUser={removeProjectUser}
+                    opened={opened}
+                    setOpened={setOpened}
+                    spaceCode={spaceCode}
+                    onApply={users => {
+                      const next = { ...project };
+                      next.users = users;
+                      setProject(next);
+                    }}
                   />
                 </Block>
               </>

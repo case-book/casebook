@@ -19,12 +19,10 @@ function ContentManager({
   createTestcaseImage,
   onSaveTestcaseGroup,
   addTestcase,
-  addTestcaseGroup,
   onChangeTestcaseNameAndDescription,
   getPopupContent,
   popupContent,
   setPopupContent,
-  onSelect,
 }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
@@ -105,7 +103,6 @@ function ContentManager({
             content={content}
             setContent={changeContent}
             addTestcase={addTestcase}
-            addTestcaseGroup={addTestcaseGroup}
             onSaveTestcaseGroup={() => {
               onSaveTestcaseGroup(content, () => {
                 setIsEdit(false);
@@ -114,7 +111,6 @@ function ContentManager({
             onCancel={onCancel}
             getPopupContent={getPopupContent}
             onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
-            onSelect={onSelect}
           />
         )}
       </div>
@@ -165,7 +161,6 @@ ContentManager.propTypes = {
   ),
   createTestcaseImage: PropTypes.func.isRequired,
   addTestcase: PropTypes.func.isRequired,
-  addTestcaseGroup: PropTypes.func.isRequired,
   onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,
   getPopupContent: PropTypes.func.isRequired,
   popupContent: PropTypes.shape({
@@ -187,7 +182,6 @@ ContentManager.propTypes = {
     ),
   }),
   setPopupContent: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired,
 };
 
 export default ContentManager;
