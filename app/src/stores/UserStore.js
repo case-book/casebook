@@ -1,4 +1,12 @@
 import { action, computed, makeObservable, observable } from 'mobx';
+import { COUNTRIES, LANGUAGES } from '@/constants/constants';
+
+const locales = (window.navigator.language || '').split('-');
+const defaultLanguage = locales[0];
+const defaultCountry = locales[1];
+
+const language = Object.keys(LANGUAGES).includes(defaultLanguage) ? defaultLanguage : 'en';
+const country = Object.keys(COUNTRIES).includes(defaultCountry) ? defaultCountry : 'US';
 
 export default class UserStore {
   user = {
@@ -9,6 +17,8 @@ export default class UserStore {
     email: null,
     name: null,
     spaces: null,
+    country,
+    language,
   };
 
   notificationCount = 0;

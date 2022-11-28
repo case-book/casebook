@@ -1,0 +1,58 @@
+.date-range-wrapper {
+  display: flex;
+  border: 1px solid $color-border-light;
+  padding: 0 12px;
+  background-color: $white;
+  border-radius: 2px;
+  font-family: NotoSans, sans-serif;
+
+  .react-datepicker-popper {
+    z-index: 3;
+  }
+
+  @media (max-width: 576px) {
+    display: block;
+  }
+
+  > div {
+    align-self: center;
+
+    @media (max-width: 768px) {
+      flex: 1 1 0;
+      font-size: 14px;
+    }
+
+    &.dash {
+      margin: 0 0.5rem;
+      flex: 0;
+      @media (max-width: 576px) {
+        display: none !important;
+      }
+    }
+
+    .end-date-picker {
+      justify-content: flex-end;
+    }
+  }
+
+  &.size-md {
+    height: $md-height;
+
+
+    @media (max-width: 576px) {
+      height: 76px;
+      > div {
+        height: 38px;
+        display: flex;
+
+        > div {
+          align-self: center;
+        }
+
+        &.dash {
+          display: none;
+        }
+      }
+    }
+  }
+}
