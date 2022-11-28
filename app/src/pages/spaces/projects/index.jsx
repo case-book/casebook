@@ -1,16 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import {
-  Message,
-  ProjectBugInfoPage,
-  ProjectEditPage,
-  ProjectInfoPage,
-  ProjectOverviewInfoPage,
-  ProjectReportInfoPage,
-  ProjectTestcaseInfoPage,
-  ProjectTestrunInfoPage,
-  SpaceProjectListPage,
-} from '@/pages';
+import { Message, ProjectBugInfoPage, ProjectEditPage, ProjectInfoPage, ProjectOverviewInfoPage, ProjectReportInfoPage, ProjectTestcaseInfoPage, SpaceProjectListPage } from '@/pages';
+import TestrunsRoutes from '@/pages/spaces/projects/testruns';
 
 function ProjectsRoutes() {
   return (
@@ -20,12 +11,11 @@ function ProjectsRoutes() {
       <Route path="/:projectId/info" element={<ProjectInfoPage />} />
       <Route path="/:projectId" element={<ProjectOverviewInfoPage />} />
       <Route path="/:projectId/testcases" element={<ProjectTestcaseInfoPage />} />
-      <Route path="/:projectId/testruns" element={<ProjectTestrunInfoPage />} />
+      <Route path="/:projectId/testruns/*" element={<TestrunsRoutes />} />
       <Route path="/:projectId/bugs" element={<ProjectBugInfoPage />} />
       <Route path="/:projectId/reports" element={<ProjectReportInfoPage />} />
-
       <Route path="/" element={<SpaceProjectListPage />} />
-      <Route path="*" element={<Message code="404111" />} />
+      <Route path="*" element={<Message code="404" />} />
     </Routes>
   );
 }

@@ -42,7 +42,7 @@ public class Testcase extends CommonEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @Column(name = "seq_id", nullable = false, length = ColumnsDef.NAME)
+  @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
   private String seqId;
 
   @ManyToOne(fetch = FetchType.EAGER)

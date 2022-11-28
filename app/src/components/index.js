@@ -1,3 +1,4 @@
+import DatePicker from 'react-datepicker';
 import Tabs from './Tabs/Tabs';
 import Page from './Page/Page';
 import PageTitle from './PageTitle/PageTitle';
@@ -45,6 +46,7 @@ import SocketClient from './SocketClient/SocketClient';
 import Switch from './Switch/Switch';
 import Star from './Star/Star';
 import SeqId from './SeqId/SeqId';
+import DateRange from './DateRange/DateRange';
 
 export {
   Selector,
@@ -94,4 +96,6 @@ export {
   Switch,
   Star,
   SeqId,
+  DatePicker,
+  DateRange,
 };

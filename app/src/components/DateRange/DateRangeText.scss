@@ -1,0 +1,11 @@
+.date-range-text-wrapper {
+  display: inline-flex;
+
+  > div {
+    align-self: center;
+  }
+
+  @media (max-width: 576px) {
+    display: block;
+  }
+}

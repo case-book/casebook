@@ -41,7 +41,7 @@ public class TestcaseGroup extends CommonEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @Column(name = "seq_id", nullable = false, length = ColumnsDef.NAME)
+  @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
   private String seqId;
 
   @Column(name = "parent_id")

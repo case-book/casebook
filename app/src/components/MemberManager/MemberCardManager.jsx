@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, EmptyContent, Input, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -15,12 +15,14 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
   const [searched, setSearched] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const getSpaceUserList = () => {
-    SpaceService.selectSpaceUserList(spaceCode, query, list => {
-      setSpaceUsers(list);
-      setSearched(true);
-    });
-  };
+  const getSpaceUserList = useCallback(() => {
+    if (spaceCode) {
+      SpaceService.selectSpaceUserList(spaceCode, query, list => {
+        setSpaceUsers(list);
+        setSearched(true);
+      });
+    }
+  }, [spaceCode, query]);
 
   useEffect(() => {
     if (opened) {
@@ -52,7 +54,7 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
           <ul>
             {users?.map(spaceUser => {
               return (
-                <li key={spaceUser.id}>
+                <li key={spaceUser.userId}>
                   <MemberCard spaceUser={spaceUser} edit={edit} onChangeUserRole={onChangeUserRole} onUndoRemovalUser={onUndoRemovalUser} onRemoveUser={onRemoveUser} />
                 </li>
               );
@@ -65,7 +67,9 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
           <ModalHeader
             className="modal-header"
             onClose={() => {
-              setOpened(false);
+              if (setOpened) {
+                setOpened(false);
+              }
             }}
           >
             스페이스 사용자
@@ -75,7 +79,18 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
               <div className="search">
                 <div>검색</div>
                 <div>
-                  <Input type="query" value={query} onChange={setQuery} minLength={1} />
+                  <Input
+                    type="query"
+                    value={query}
+                    onChange={setQuery}
+                    minLength={1}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        getSpaceUserList();
+                      }
+                    }}
+                  />
                 </div>
                 <div>
                   <Button
@@ -148,7 +163,9 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
             <Button
               outline
               onClick={() => {
-                setOpened(false);
+                if (setOpened) {
+                  setOpened(false);
+                }
               }}
             >
               {t('취소')}
@@ -156,8 +173,13 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
             <Button
               outline
               onClick={() => {
-                onApply(selectedUsers);
-                setOpened(false);
+                if (onApply) {
+                  onApply(selectedUsers);
+                }
+
+                if (setOpened) {
+                  setOpened(false);
+                }
               }}
             >
               {t('확인')}
@@ -177,11 +199,14 @@ MemberCardManager.defaultProps = {
   onUndoRemovalUser: null,
   onRemoveUser: null,
   opened: false,
+  setOpened: null,
+  spaceCode: null,
+  onApply: null,
 };
 
 MemberCardManager.propTypes = {
   className: PropTypes.string,
-  spaceCode: PropTypes.string.isRequired,
+  spaceCode: PropTypes.string,
   edit: PropTypes.bool,
   users: PropTypes.arrayOf(
     PropTypes.shape({
@@ -194,8 +219,8 @@ MemberCardManager.propTypes = {
   onUndoRemovalUser: PropTypes.func,
   onRemoveUser: PropTypes.func,
   opened: PropTypes.bool,
-  setOpened: PropTypes.func.isRequired,
-  onApply: PropTypes.func.isRequired,
+  setOpened: PropTypes.func,
+  onApply: PropTypes.func,
 };
 
 export default MemberCardManager;

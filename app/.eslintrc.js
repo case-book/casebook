@@ -24,6 +24,7 @@ module.exports = {
     'react/jsx-filename-extension': 'off',
     'jsx-a11y/no-noninteractive-element-interactions': 'off',
     'import/no-extraneous-dependencies': 'off',
+    'import/no-cycle': 'off',
   },
   extends: ['react-app', 'airbnb', 'prettier', 'plugin:storybook/recommended'],
   plugins: ['react', 'prettier'],

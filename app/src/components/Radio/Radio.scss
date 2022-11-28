@@ -109,7 +109,6 @@
     color: $black;
 
     > div.border {
-
       border : 1px solid $color-border-light;
     }
 
@@ -282,7 +281,7 @@
     &.active {
       &:hover {
         input[type='radio'] {
-          border: 4px solid $gray-500;
+          border: 4px solid $gray-700;
         }
 
         input[type='radio']:checked {

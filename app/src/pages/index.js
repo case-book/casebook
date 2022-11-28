@@ -16,8 +16,11 @@ import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 import ProjectReportInfoPage from '@/pages/spaces/projects/ProjectReportInfoPage';
 import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
-import ProjectTestrunInfoPage from '@/pages/spaces/projects/ProjectTestrunInfoPage';
+
 import SystemInfoPage from '@/pages/configs/SystemInfoPage';
+
+import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage';
+import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
 
 export {
   ProjectOverviewInfoPage,
@@ -35,6 +38,7 @@ export {
   ProjectBugInfoPage,
   ProjectReportInfoPage,
   ProjectTestcaseInfoPage,
-  ProjectTestrunInfoPage,
   SystemInfoPage,
+  TestrunListPage,
+  TestrunEditPage,
 };

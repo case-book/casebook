@@ -1,0 +1,24 @@
+.date-custom-input-wrapper {
+  font-family: NotoSans, sans-serif;
+  display: flex;
+  cursor: pointer;
+  > div {
+    align-self: center;
+
+    &.calendar {
+      margin-right: 0.5rem;
+    }
+
+    &.value {
+      margin-right: 0.5rem;
+
+      @media (max-width: 640px) {
+        _font-size: 14px;
+      }
+    }
+
+    &.status {
+      margin-right: 0.25rem;
+    }
+  }
+}
