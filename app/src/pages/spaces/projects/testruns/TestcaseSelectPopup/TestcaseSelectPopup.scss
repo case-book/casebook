@@ -1,0 +1,20 @@
+.testcase-select-popup-wrapper {
+  .modal-body {
+    position: relative;
+
+    .condition {
+      padding: 0;
+      margin-bottom: 1rem;
+      text-align: right;
+      display: none;
+    }
+
+    .testcase-select-list {
+      > ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CloseIcon, DateRange, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Radio, Text, TextArea, Title } from '@/components';
+import { Block, Button, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
@@ -12,6 +12,7 @@ import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import './TestrunEditPage.scss';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
+import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -25,17 +26,6 @@ end.setMinutes(0);
 end.setSeconds(0);
 end.setMilliseconds(0);
 
-const TESTCASE_SELECTION_TYPES = [
-  {
-    key: 'ALL',
-    value: '모든 테스트케이스',
-  },
-  {
-    key: 'CHOICE',
-    value: '테스트케이스 선택',
-  },
-];
-
 const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
@@ -48,11 +38,9 @@ function TestrunEditPage({ type }) {
 
   const navigate = useNavigate();
 
-  const [testcaseSelectionType, setTestcaseSelectionType] = useState(TESTCASE_SELECTION_TYPES[0].key);
-
-  const [allUserSelection, setAllUserSelection] = useState(true);
-
   const [projectUserSelectPopupOpened, setProjectUserSelectPopupOpened] = useState(false);
+
+  const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [project, setProject] = useState(null);
 
@@ -74,52 +62,54 @@ function TestrunEditPage({ type }) {
     return type === 'edit';
   }, [type]);
 
-  useEffect(() => {
-    if (project && allUserSelection) {
-      setTestrun({
-        ...testrun,
-        testrunUsers: project.users?.map(d => {
-          return { ...d };
-        }),
-      });
-    }
-  }, [project, allUserSelection]);
+  const selectAllUser = () => {
+    const nextTestrun = {
+      ...testrun,
+      testrunUsers: project.users?.map(d => {
+        return { ...d };
+      }),
+    };
+    setTestrun(nextTestrun);
+  };
 
-  useEffect(() => {
-    let nextTestrun = { ...testrun };
-
-    if (project && allUserSelection) {
-      nextTestrun = {
-        ...nextTestrun,
-        testrunUsers: project.users?.map(d => {
-          return { ...d };
-        }),
-      };
-    }
-
-    if (project && testcaseSelectionType === 'ALL') {
-      nextTestrun = {
-        ...nextTestrun,
-        testcaseGroups: project.testcaseGroups?.map(d => {
-          return {
-            testcaseGroupId: d.id,
-            testcases: d.testcases?.map(item => {
-              return {
-                testcaseId: item.id,
-              };
-            }),
-          };
-        }),
-      };
-
-      setTestrun(nextTestrun);
-    }
-  }, [project, allUserSelection, testcaseSelectionType]);
+  const selectAllTestcase = () => {
+    const nextTestrun = {
+      ...testrun,
+      testcaseGroups: project.testcaseGroups?.map(d => {
+        return {
+          testcaseGroupId: d.id,
+          testcases: d.testcases?.map(item => {
+            return {
+              testcaseId: item.id,
+            };
+          }),
+        };
+      }),
+    };
+    setTestrun(nextTestrun);
+  };
 
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      console.log(info);
       setProject(info);
+      if (!isEdit) {
+        setTestrun({
+          ...testrun,
+          testrunUsers: info.users?.map(d => {
+            return { ...d };
+          }),
+          testcaseGroups: info.testcaseGroups?.map(d => {
+            return {
+              testcaseGroupId: d.id,
+              testcases: d.testcases?.map(item => {
+                return {
+                  testcaseId: item.id,
+                };
+              }),
+            };
+          }),
+        });
+      }
     });
   }, [type, projectId]);
 
@@ -154,15 +144,9 @@ function TestrunEditPage({ type }) {
     const nextIndex = nextTestrunUsers.findIndex(d => d.userId === userId);
     if (nextIndex > -1) {
       nextTestrunUsers.splice(nextIndex, 1);
-      if (nextTestrunUsers.length !== project.users.length) {
-        setAllUserSelection(false);
-      }
       onChangeTestrun('testrunUsers', nextTestrunUsers);
     }
   };
-
-  console.log(project);
-  console.log(testrun);
 
   return (
     <>
@@ -238,34 +222,29 @@ function TestrunEditPage({ type }) {
               </BlockRow>
               <BlockRow className="testrun-users-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
-                <div className="testrun-users-type">
-                  <Radio
-                    value
-                    checked={allUserSelection}
-                    onChange={() => {
-                      setAllUserSelection(true);
-                    }}
-                    label="모든 사용자"
-                  />
-                  <Radio
-                    value={false}
-                    checked={!allUserSelection}
-                    onChange={() => {
-                      setAllUserSelection(false);
-                    }}
-                    label="사용자 선택"
-                  />
-                  <Button
-                    outline
-                    onClick={() => {
+                <Text>
+                  <Link
+                    to="/"
+                    onClick={e => {
+                      e.preventDefault();
                       setProjectUserSelectPopupOpened(true);
                     }}
                   >
-                    사용자 선택
+                    {t('테스터 선택')}
+                  </Link>
+                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 1rem" />
+                  <Button
+                    outline
+                    size="sm"
+                    onClick={() => {
+                      selectAllUser();
+                    }}
+                  >
+                    {t('모든 사용자 추가')}
                   </Button>
-                </div>
+                </Text>
               </BlockRow>
-              <BlockRow className="testrun-users-row">
+              <BlockRow>
                 <Label minWidth={labelMinWidth} />
                 {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
                 {testrun.testrunUsers?.length > 0 && (
@@ -290,27 +269,33 @@ function TestrunEditPage({ type }) {
               </BlockRow>
               <BlockRow className="testrun-selection-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
-                <div className="testrun-selection-type">
-                  {TESTCASE_SELECTION_TYPES.map(d => {
-                    return (
-                      <Radio
-                        key={d.key}
-                        value={d.key}
-                        checked={testcaseSelectionType === d.key}
-                        onChange={() => {
-                          setTestcaseSelectionType(d.key);
-                        }}
-                        label={d.value}
-                      />
-                    );
-                  })}
-                </div>
+                <Text>
+                  <Link
+                    to="/"
+                    onClick={e => {
+                      e.preventDefault();
+                      setTestcaseSelectPopupOpened(true);
+                    }}
+                  >
+                    {t('테스터케이스 선택')}
+                  </Link>
+                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 1rem" />
+                  <Button
+                    outline
+                    size="sm"
+                    onClick={() => {
+                      selectAllTestcase();
+                    }}
+                  >
+                    {t('모든 테스트케이스 추가')}
+                  </Button>
+                </Text>
               </BlockRow>
-              <BlockRow className="testrun-groups-row">
+              <BlockRow className="testcase-summary-row">
                 <Label minWidth={labelMinWidth} />
                 <Text className="testcase-summary">
                   <span>{testrun.testcaseGroups?.length}</span>
-                  <span>그룹</span>
+                  <span>{t('그룹')}</span>
                   <span>
                     {testrun.testcaseGroups?.reduce((b, n) => {
                       return b + (n.testcases?.length || 0);
@@ -319,6 +304,33 @@ function TestrunEditPage({ type }) {
                   <span>케이스</span>
                 </Text>
               </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} />
+                <ul className="testrun-testcases">
+                  {testrun.testcaseGroups?.map(d => {
+                    return (
+                      <li key={d.testcaseGroupId}>
+                        <div>
+                          {project.testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
+                          {d.testcases?.length > 0 && (
+                            <span className="badge">
+                              <span>{d.testcases?.length}</span>
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <CloseIcon
+                            onClick={() => {
+                              removeTestrunUser(d.userId);
+                            }}
+                            size="xs"
+                          />
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </BlockRow>
             </Block>
             <PageButtons
               outline
@@ -326,7 +338,7 @@ function TestrunEditPage({ type }) {
                 navigate(-1);
               }}
               onSubmit={() => {}}
-              onSubmitText="저장"
+              onSubmitText={t('저장')}
               onCancelIcon=""
             />
           </Form>
@@ -337,6 +349,18 @@ function TestrunEditPage({ type }) {
           users={project.users}
           selectedUsers={testrun.testrunUsers}
           setOpened={setProjectUserSelectPopupOpened}
+          onApply={selectedUsers => {
+            onChangeTestrun('testrunUsers', selectedUsers);
+          }}
+        />
+      )}
+      {testcaseSelectPopupOpened && (
+        <TestcaseSelectPopup
+          testcaseGroups={project.testcaseGroups}
+          selectedTestcaseGroups={testrun.testcaseGroups}
+          users={project.users}
+          selectedUsers={testrun.testrunUsers}
+          setOpened={setTestcaseSelectPopupOpened}
           onApply={selectedUsers => {
             onChangeTestrun('testrunUsers', selectedUsers);
           }}

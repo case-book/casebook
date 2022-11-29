@@ -1,47 +1,94 @@
 .testrun-edit-page-wrapper {
-  .testrun-users-type {
-    display: flex;
-    button {
-    }
-  }
-
-  .testrun-users-type-row {
-    > div {
-      padding-bottom: 0;
-    }
-  }
-
-  .testrun-users-row {
-    > div {
-    }
-  }
-
+  .testrun-users-type-row,
   .testrun-selection-type-row {
     > div {
       padding-bottom: 0;
+      a {
+        font-weight: bold;
+        display: inline-block;
+        _border-bottom: 1px solid $link-color;
+        _padding: 0 0.25rem 0;
+      }
     }
-  }
-
-  .testrun-groups-row {
   }
 
   ul.testrun-users {
     list-style: none;
     padding: 0;
     margin: 0;
+    margin-bottom: -1rem;
 
     > li {
       display: inline-flex;
       margin-right: 1rem;
       border: 1px solid $color-border-light;
-      border-radius: 2px;
+      border-radius: 20px;
+      background-color: $gray-100;
+      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+      margin-bottom: 1rem;
       > div {
         align-self: center;
         &:first-child {
-          padding: 0.5rem;
+          padding: 0.75rem 0.75rem 0.75rem 1rem;
         }
         &:last-child {
-          padding: 0 0.5rem 0 0;
+          padding: 0 1rem 0 0;
+
+          svg {
+            &:hover {
+              fill: $danger;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ul.testrun-testcases {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: -1rem;
+
+    > li {
+      display: inline-flex;
+      margin-right: 1rem;
+      border: 1px solid $color-border-light;
+      border-radius: 20px;
+      background-color: $gray-100;
+      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+      margin-bottom: 1rem;
+      > div {
+        align-self: center;
+        &:first-child {
+          padding: 0.75rem 0.75rem 0.75rem 1rem;
+          position: relative;
+          .badge {
+            font-family: Rowdies, NotoSans, sans-serif;
+            font-size: 13px;
+            position: absolute;
+            left: -5px;
+            top: -8px;
+            background-color: #333;
+            color: #ffffff;
+            display: inline-flex;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            justify-content: center;
+            > span {
+              align-self: center;
+            }
+          }
+        }
+        &:last-child {
+          padding: 0 1rem 0 0;
+
+          svg {
+            &:hover {
+              fill: $danger;
+            }
+          }
         }
       }
     }
@@ -52,9 +99,12 @@
     border-radius: 8px;
   }
 
-  .testcase-summary {
-    span {
-      margin-right: 0.5rem;
+  .testcase-summary-row {
+    display: none;
+    .testcase-summary {
+      span {
+        margin-right: 0.5rem;
+      }
     }
   }
 }

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import { useParams } from 'react-router';
-import { cloneDeep } from 'lodash';
 import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
@@ -12,6 +11,7 @@ import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/T
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
 import SpaceService from '@/services/SpaceService';
+import testcaseUtil from '@/utils/testcaseUtil';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
@@ -136,59 +136,18 @@ function ProjectTestcaseInfoPage() {
     }
   }, [selectedItemInfo.id]);
 
-  const sort = list => {
-    list.sort((a, b) => {
-      return a.itemOrder - b.itemOrder;
-    });
-
-    list.forEach(item => {
-      if (item?.children?.length > 0) {
-        sort(item.children);
-      }
-
-      if (item?.testcases?.length > 0) {
-        sort(item.testcases);
-      }
-    });
-  };
-
   useEffect(() => {
-    let nextGroups = [];
     if (project?.testcaseGroups?.length > 0) {
-      const groups = cloneDeep(project?.testcaseGroups);
-      const depths = groups.map(d => d.depth) || [];
-      const maxDepth = Math.max(...depths);
+      setCountSummary({
+        testcaseGroupCount: project?.testcaseGroups?.length || 0,
+        testcaseCount: project?.testcaseGroups?.reduce((count, next) => {
+          return count + (next?.testcases?.length || 0);
+        }, 0),
+      });
 
-      for (let i = maxDepth; i >= 0; i -= 1) {
-        const targetDepthGroups = groups.filter(d => d.depth === i);
-        if (i === 0) {
-          nextGroups = nextGroups.concat(targetDepthGroups);
-        } else {
-          targetDepthGroups.forEach(d => {
-            const parentGroup = groups.find(group => group.id === d.parentId);
-            if (parentGroup) {
-              if (!parentGroup?.children) {
-                parentGroup.children = [];
-              }
-
-              parentGroup.children.push(d);
-            } else {
-              console.error(`NO PARENT - ${d.parentId}`);
-            }
-          });
-        }
-      }
+      const nextGroups = testcaseUtil.getTestcaseTreeData(project?.testcaseGroups);
+      setTestcaseGroups(nextGroups);
     }
-
-    setCountSummary({
-      testcaseGroupCount: project?.testcaseGroups?.length || 0,
-      testcaseCount: project?.testcaseGroups?.reduce((count, next) => {
-        return count + (next?.testcases?.length || 0);
-      }, 0),
-    });
-
-    sort(nextGroups);
-    setTestcaseGroups(nextGroups);
   }, [project]);
 
   useEffect(() => {
