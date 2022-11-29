@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, EmptyContent, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import './ProjectUserSelectPopup.scss';
 import { cloneDeep } from 'lodash';
+import './ProjectUserSelectPopup.scss';
 
 function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
   const { t } = useTranslation();
@@ -32,6 +32,20 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
     setCurrentSelectedUsers(nextCurrentSelectedUsers);
   };
 
+  const allCheck = useCallback(() => {
+    if (currentSelectedUsers.length === projectUsers.length) {
+      setCurrentSelectedUsers([]);
+    } else {
+      setCurrentSelectedUsers(
+        projectUsers.map(d => {
+          return {
+            ...d,
+          };
+        }),
+      );
+    }
+  }, [currentSelectedUsers, projectUsers]);
+
   return (
     <Modal className="project-user-select-popup-wrapper" isOpen>
       <ModalHeader
@@ -52,26 +66,33 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
             </EmptyContent>
           )}
           {projectUsers?.length > 0 && (
-            <ul>
-              {projectUsers?.map(user => {
-                const selected = currentSelectedUsers.findIndex(d => d.userId === user.userId) > -1;
-                return (
-                  <li
-                    key={user.id}
-                    className={selected ? 'selected' : ''}
-                    onClick={() => {
-                      onClick(user);
-                    }}
-                  >
-                    <div>
-                      {selected && <i className="fa-solid fa-circle-check" />}
-                      {!selected && <i className="fa-regular fa-circle-check" />}
-                    </div>
-                    <div>{user.name}</div>
-                  </li>
-                );
-              })}
-            </ul>
+            <>
+              <div className="condition">
+                <Button size="sm" outline onClick={allCheck}>
+                  <i className="fa-solid fa-circle-check" /> {t('전체')}
+                </Button>
+              </div>
+              <ul>
+                {projectUsers?.map(user => {
+                  const selected = currentSelectedUsers.findIndex(d => d.userId === user.userId) > -1;
+                  return (
+                    <li
+                      key={user.id}
+                      className={selected ? 'selected' : ''}
+                      onClick={() => {
+                        onClick(user);
+                      }}
+                    >
+                      <div>
+                        {selected && <i className="fa-solid fa-circle-check" />}
+                        {!selected && <i className="fa-regular fa-circle-check" />}
+                      </div>
+                      <div>{user.name}</div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
         </div>
       </ModalBody>

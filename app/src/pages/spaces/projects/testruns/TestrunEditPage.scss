@@ -47,6 +47,11 @@
     }
   }
 
+  .no-user {
+    background-color: $gray-100;
+    border-radius: 8px;
+  }
+
   .testcase-summary {
     span {
       margin-right: 0.5rem;

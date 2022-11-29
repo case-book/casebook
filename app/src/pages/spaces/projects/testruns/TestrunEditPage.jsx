@@ -28,7 +28,7 @@ end.setMilliseconds(0);
 const TESTCASE_SELECTION_TYPES = [
   {
     key: 'ALL',
-    value: '전제 테스트케이스',
+    value: '모든 테스트케이스',
   },
   {
     key: 'CHOICE',
@@ -267,23 +267,26 @@ function TestrunEditPage({ type }) {
               </BlockRow>
               <BlockRow className="testrun-users-row">
                 <Label minWidth={labelMinWidth} />
-                <ul className="testrun-users">
-                  {testrun.testrunUsers?.map(d => {
-                    return (
-                      <li key={d.userId}>
-                        <div>{d.name}</div>
-                        <div>
-                          <CloseIcon
-                            onClick={() => {
-                              removeTestrunUser(d.userId);
-                            }}
-                            size="xs"
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
+                {testrun.testrunUsers?.length > 0 && (
+                  <ul className="testrun-users">
+                    {testrun.testrunUsers?.map(d => {
+                      return (
+                        <li key={d.userId}>
+                          <div>{d.name}</div>
+                          <div>
+                            <CloseIcon
+                              onClick={() => {
+                                removeTestrunUser(d.userId);
+                              }}
+                              size="xs"
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </BlockRow>
               <BlockRow className="testrun-selection-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
