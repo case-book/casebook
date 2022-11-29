@@ -1,0 +1,71 @@
+.testcase-selector-group-wrapper {
+  .group-info {
+    display: flex;
+
+    > div {
+      padding: 0.5rem 0.5rem;
+
+      &:nth-child(2) {
+        padding-right: 0;
+        padding-left: 0.5rem;
+      }
+
+      &:nth-child(3) {
+        padding-left: 0.25rem;
+      }
+    }
+  }
+
+  .testcase-list {
+    padding: 0 1rem;
+
+    &.opened {
+      margin-top: -1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      > li {
+        padding: 0.5rem;
+        > .testcase-info {
+          display: flex;
+          line-height: 100%;
+          > div {
+            &:nth-child(1) {
+              margin-right: 0.5rem;
+              display: inline-flex;
+              position: relative;
+              width: 16px;
+              height: 16px;
+
+              .line-1,
+              .line-2 {
+                position: absolute;
+                background-color: $gray-600;
+              }
+
+              .line-1 {
+                width: 1px;
+                height: 8px;
+                left: 8px;
+                top: 0;
+              }
+
+              .line-2 {
+                width: 8px;
+                height: 1px;
+                left: 8px;
+                top: 8px;
+              }
+            }
+            &:nth-child(2) {
+              margin-right: 0.25rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
