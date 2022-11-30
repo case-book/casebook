@@ -4,7 +4,7 @@ import { DATE_FORMATS, DATE_FORMATS_TYPES, TIMEZONES } from '@/constants/constan
 
 function getUserLocale() {
   const { user } = rootStore.userStore;
-  return `${user.language || 'en'}_${user.country || 'US'}`;
+  return `${user.language || 'ko'}_${user.country || 'KR'}`;
 }
 
 /**

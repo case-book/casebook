@@ -1,9 +1,31 @@
 .testcase-selector-group-wrapper {
+  .group-info,
+  .testcase-list ul > li {
+    color: $gray-600;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $gray-100;
+    }
+  }
+
+  .testcase-list ul > li.selected,
+  .group-info.selected {
+    color: $black;
+    font-weight: bold;
+  }
+
   .group-info {
     display: flex;
 
     > div {
       padding: 0.5rem 0.5rem;
+
+      .tree-control {
+        &:hover {
+          color: $color-primary-light;
+        }
+      }
 
       &:nth-child(2) {
         padding-right: 0;
@@ -17,7 +39,7 @@
   }
 
   .testcase-list {
-    padding: 0 1rem;
+    padding: 0 0 0 1rem;
 
     &.opened {
       margin-top: -1rem;
@@ -28,10 +50,11 @@
       padding: 0;
       margin: 0;
       > li {
-        padding: 0.5rem;
         > .testcase-info {
           display: flex;
           line-height: 100%;
+          padding: 0.5rem;
+
           > div {
             &:nth-child(1) {
               margin-right: 0.5rem;

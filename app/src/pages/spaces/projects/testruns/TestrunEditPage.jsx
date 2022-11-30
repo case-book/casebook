@@ -148,6 +148,14 @@ function TestrunEditPage({ type }) {
     }
   };
 
+  const resetRange = () => {
+    setTestrun({
+      ...testrun,
+      startDateTime: null,
+      endDateTime: null,
+    });
+  };
+
   return (
     <>
       <Page className="testrun-edit-page-wrapper">
@@ -201,7 +209,7 @@ function TestrunEditPage({ type }) {
                   }}
                 />
               </BlockRow>
-              <BlockRow>
+              <BlockRow className="testrun-range-type-row">
                 <Label minWidth={labelMinWidth} required>
                   {t('테스트 기간')}
                 </Label>
@@ -219,6 +227,16 @@ function TestrunEditPage({ type }) {
                     });
                   }}
                 />
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+                <Link
+                  to="/"
+                  onClick={e => {
+                    e.preventDefault();
+                    resetRange();
+                  }}
+                >
+                  {t('기간 없음')}
+                </Link>
               </BlockRow>
               <BlockRow className="testrun-users-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
@@ -248,7 +266,7 @@ function TestrunEditPage({ type }) {
                 <Label minWidth={labelMinWidth} />
                 {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
                 {testrun.testrunUsers?.length > 0 && (
-                  <ul className="testrun-users">
+                  <ul className="testrun-users g-no-select">
                     {testrun.testrunUsers?.map(d => {
                       return (
                         <li key={d.userId}>
@@ -306,30 +324,33 @@ function TestrunEditPage({ type }) {
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth} />
-                <ul className="testrun-testcases">
-                  {testrun.testcaseGroups?.map(d => {
-                    return (
-                      <li key={d.testcaseGroupId}>
-                        <div>
-                          {project.testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
-                          {d.testcases?.length > 0 && (
-                            <span className="badge">
-                              <span>{d.testcases?.length}</span>
-                            </span>
-                          )}
-                        </div>
-                        <div>
-                          <CloseIcon
-                            onClick={() => {
-                              removeTestrunUser(d.userId);
-                            }}
-                            size="xs"
-                          />
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                {testrun.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
+                {testrun.testcaseGroups?.length > 0 && (
+                  <ul className="testrun-testcases g-no-select">
+                    {testrun.testcaseGroups?.map(d => {
+                      return (
+                        <li key={d.testcaseGroupId}>
+                          <div>
+                            {project.testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
+                            {d.testcases?.length > 0 && (
+                              <span className="badge">
+                                <span>{d.testcases?.length}</span>
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <CloseIcon
+                              onClick={() => {
+                                removeTestrunUser(d.userId);
+                              }}
+                              size="xs"
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </BlockRow>
             </Block>
             <PageButtons
@@ -361,8 +382,8 @@ function TestrunEditPage({ type }) {
           users={project.users}
           selectedUsers={testrun.testrunUsers}
           setOpened={setTestcaseSelectPopupOpened}
-          onApply={selectedUsers => {
-            onChangeTestrun('testrunUsers', selectedUsers);
+          onApply={selectedTestcaseGroups => {
+            onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
           }}
         />
       )}

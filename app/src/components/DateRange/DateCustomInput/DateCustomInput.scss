@@ -12,6 +12,10 @@
     &.value {
       margin-right: 0.5rem;
 
+      &.none {
+        color: $gray-600;
+      }
+
       @media (max-width: 640px) {
         _font-size: 14px;
       }
