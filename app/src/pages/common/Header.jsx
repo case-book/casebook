@@ -330,6 +330,7 @@ function Header({ className }) {
         {isLogin && (
           <div className="notification-menu">
             <Button
+              outline
               rounded
               className={notificationChangeEffect ? 'effect' : ''}
               onClick={e => {
@@ -349,6 +350,7 @@ function Header({ className }) {
         <div className="user-menu">
           {isLogin && (
             <Button
+              outline
               rounded
               onClick={e => {
                 e.preventDefault();
@@ -369,6 +371,7 @@ function Header({ className }) {
         </div>
         <div className="header-toggle">
           <Button
+            outline
             rounded
             onClick={e => {
               e.preventDefault();

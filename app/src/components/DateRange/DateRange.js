@@ -19,7 +19,7 @@ function DateRange({ className, language, startDate, endDate, onChange, size, sh
       <div>
         <DatePicker
           className="date-picker start-date-picker"
-          selected={new Date(startDate)}
+          selected={startDate ? new Date(startDate) : null}
           showTimeSelect={showTimeSelect}
           showTimeSelectOnly={showTimeSelectOnly}
           onChange={date => {
@@ -34,7 +34,7 @@ function DateRange({ className, language, startDate, endDate, onChange, size, sh
       <div>
         <DatePicker
           className="date-picker end-date-picker"
-          selected={new Date(endDate)}
+          selected={endDate ? new Date(endDate) : null}
           showTimeSelect={showTimeSelect}
           showTimeSelectOnly={showTimeSelectOnly}
           onChange={date => {

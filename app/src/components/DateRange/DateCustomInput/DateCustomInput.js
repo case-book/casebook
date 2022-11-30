@@ -18,7 +18,7 @@ class DateCustomInput extends React.PureComponent {
         <div className="calendar">
           <i className="fa-solid fa-calendar-days" />
         </div>
-        <div className="value">{value}</div>
+        <div className={`value ${value ? '' : 'none'}`}>{value || 'NONE'}</div>
         <div className="status">
           <i className="fa-solid fa-chevron-down" />
         </div>

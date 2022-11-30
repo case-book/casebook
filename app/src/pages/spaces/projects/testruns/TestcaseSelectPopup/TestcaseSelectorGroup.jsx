@@ -3,22 +3,28 @@ import PropTypes from 'prop-types';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseSelectorGroup.scss';
 
-function TestcaseSelectorGroup({ testcaseGroup, selected, onClick }) {
+function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups }) {
   const [opened, setOpened] = useState(true);
   const hasChild = testcaseGroup.testcases?.length > 0;
 
   return (
     <div
       className="testcase-selector-group-wrapper"
-      onClick={() => {}}
       style={{
         marginLeft: `${testcaseGroup.depth}rem`,
       }}
     >
-      <div className="group-info">
+      <div
+        className={`group-info ${selected ? 'selected' : ''}`}
+        onClick={() => {
+          onClick(testcaseGroup.id, null);
+        }}
+      >
         <div>
           <div
-            onClick={() => {
+            className="tree-control"
+            onClick={e => {
+              e.stopPropagation();
               setOpened(!opened);
             }}
           >
@@ -37,16 +43,24 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick }) {
         <div className="testcase-list">
           <ul>
             {testcaseGroup.testcases.map(testcase => {
+              const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
+              const testcaseSelected = selectedTestcaseGroup?.testcases?.findIndex(i => i.testcaseId === testcase.id) > -1;
+
               return (
-                <li key={testcase.id}>
-                  <div className="testcase-info">
+                <li className={testcaseSelected ? 'selected' : ''} key={testcase.id}>
+                  <div
+                    className="testcase-info"
+                    onClick={() => {
+                      onClick(testcaseGroup.id, testcase.id);
+                    }}
+                  >
                     <div>
                       <div className="line-1" />
                       <div className="line-2" />
                     </div>
                     <div>
-                      {selected && <i className="fa-solid fa-circle-check" />}
-                      {!selected && <i className="fa-regular fa-circle-check" />}
+                      {testcaseSelected && <i className="fa-solid fa-circle-check" />}
+                      {!testcaseSelected && <i className="fa-regular fa-circle-check" />}
                     </div>
                     <div>{testcase.name}</div>
                   </div>
@@ -57,7 +71,8 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick }) {
         </div>
       )}
       {testcaseGroup.children?.map(d => {
-        return <TestcaseSelectorGroup key={d.id} testcaseGroup={d} selected={selected} onClick={onClick} />;
+        const childrenSelected = selectedTestcaseGroups.findIndex(i => i.testcaseGroupId === d.id) > -1;
+        return <TestcaseSelectorGroup key={d.id} testcaseGroup={d} selected={childrenSelected} onClick={onClick} selectedTestcaseGroups={selectedTestcaseGroups} />;
       })}
     </div>
   );
@@ -66,13 +81,23 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick }) {
 TestcaseSelectorGroup.defaultProps = {
   testcaseGroup: {},
   selected: false,
-  onClick: null,
+  selectedTestcaseGroups: [],
 };
 
 TestcaseSelectorGroup.propTypes = {
   testcaseGroup: TestcaseGroupPropTypes,
   selected: PropTypes.bool,
-  onClick: PropTypes.func,
+  onClick: PropTypes.func.isRequired,
+  selectedTestcaseGroups: PropTypes.arrayOf(
+    PropTypes.shape({
+      testcaseGroupId: PropTypes.number,
+      testcases: PropTypes.arrayOf(
+        PropTypes.shape({
+          testcaseId: PropTypes.number,
+        }),
+      ),
+    }),
+  ),
 };
 
 export default TestcaseSelectorGroup;

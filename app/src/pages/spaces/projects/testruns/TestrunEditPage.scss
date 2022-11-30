@@ -1,13 +1,13 @@
 .testrun-edit-page-wrapper {
   .testrun-users-type-row,
-  .testrun-selection-type-row {
+  .testrun-selection-type-row,
+  .testrun-range-type-row {
     > div {
       padding-bottom: 0;
       a {
         font-weight: bold;
         display: inline-block;
-        _border-bottom: 1px solid $link-color;
-        _padding: 0 0.25rem 0;
+        align-self: center;
       }
     }
   }
@@ -15,8 +15,7 @@
   ul.testrun-users {
     list-style: none;
     padding: 0;
-    margin: 0;
-    margin-bottom: -1rem;
+    margin: 0 0 -1rem 0;
 
     > li {
       display: inline-flex;
@@ -26,6 +25,7 @@
       background-color: $gray-100;
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
       margin-bottom: 1rem;
+      font-size: 14px;
       > div {
         align-self: center;
         &:first-child {
@@ -47,8 +47,7 @@
   ul.testrun-testcases {
     list-style: none;
     padding: 0;
-    margin: 0;
-    margin-bottom: -1rem;
+    margin: 0 0 -1rem 0;
 
     > li {
       display: inline-flex;
@@ -58,6 +57,7 @@
       background-color: $gray-100;
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
       margin-bottom: 1rem;
+      font-size: 14px;
       > div {
         align-self: center;
         &:first-child {
@@ -97,6 +97,7 @@
   .no-user {
     background-color: $gray-100;
     border-radius: 8px;
+    padding: 0.75rem;
   }
 
   .testcase-summary-row {
