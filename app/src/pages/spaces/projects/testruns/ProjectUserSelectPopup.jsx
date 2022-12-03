@@ -26,7 +26,7 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
     if (index > -1) {
       nextCurrentSelectedUsers.splice(index, 1);
     } else {
-      nextCurrentSelectedUsers.push({ ...user });
+      nextCurrentSelectedUsers.push({ userId: user.userId, email: user.email, name: user.name });
     }
 
     setCurrentSelectedUsers(nextCurrentSelectedUsers);
@@ -38,9 +38,7 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
     } else {
       setCurrentSelectedUsers(
         projectUsers.map(d => {
-          return {
-            ...d,
-          };
+          return { userId: d.userId, email: d.email, name: d.name };
         }),
       );
     }

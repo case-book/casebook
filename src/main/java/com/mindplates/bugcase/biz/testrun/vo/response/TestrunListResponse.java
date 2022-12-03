@@ -15,17 +15,12 @@ import java.time.LocalDateTime;
 public class TestrunListResponse {
 
     private Long id;
-
     private String seqId;
     private String name;
     private String description;
-
     private LocalDateTime startDateTime;
-
     private LocalDateTime endDateTime;
-
     private boolean opened;
-
     private int totalTestcaseCount;
     private int passedTestcaseCount;
     private int failedTestcaseCount;
@@ -33,6 +28,7 @@ public class TestrunListResponse {
 
     public TestrunListResponse(Testrun testrun) {
         this.id = testrun.getId();
+        this.seqId = testrun.getSeqId();
         this.name = testrun.getName();
         this.description = testrun.getDescription();
         this.startDateTime = testrun.getStartDateTime();
