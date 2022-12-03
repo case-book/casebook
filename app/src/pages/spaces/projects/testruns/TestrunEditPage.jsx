@@ -13,6 +13,8 @@ import useStores from '@/hooks/useStores';
 import './TestrunEditPage.scss';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
 import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
+import TestrunService from '@/services/TestrunService';
+import moment from 'moment';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -66,7 +68,7 @@ function TestrunEditPage({ type }) {
     const nextTestrun = {
       ...testrun,
       testrunUsers: project.users?.map(d => {
-        return { ...d };
+        return { userId: d.userId, email: d.email, name: d.name };
       }),
     };
     setTestrun(nextTestrun);
@@ -96,7 +98,7 @@ function TestrunEditPage({ type }) {
         setTestrun({
           ...testrun,
           testrunUsers: info.users?.map(d => {
-            return { ...d };
+            return { userId: d.userId, email: d.email, name: d.name };
           }),
           testcaseGroups: info.testcaseGroups?.map(d => {
             return {
@@ -115,6 +117,15 @@ function TestrunEditPage({ type }) {
 
   const onSubmit = e => {
     e.preventDefault();
+
+    TestrunService.createProjectTestrunInfo(
+      spaceCode,
+      projectId,
+      { ...testrun, projectId, startDateTime: moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss'), endDateTime: moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') },
+      () => {
+        navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+      },
+    );
   };
 
   const onDelete = () => {

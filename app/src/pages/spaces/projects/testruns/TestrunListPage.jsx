@@ -4,19 +4,19 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import './TestrunListPage.scss';
-import { MENUS } from '@/constants/menu';
 import TestrunService from '@/services/TestrunService';
+import dateUtil from '@/utils/dateUtil';
 
 function TestrunListPage() {
   const { t } = useTranslation();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
-  const [projects, setProjects] = useState([]);
+  const [testruns, setTestruns] = useState([]);
 
   useEffect(() => {
     TestrunService.selectProjectTestrunList(spaceCode, projectId, list => {
       console.log(list);
-      setProjects(list);
+      setTestruns(list);
     });
   }, [spaceCode]);
 
@@ -33,7 +33,7 @@ function TestrunListPage() {
         {t('테스트 런')}
       </PageTitle>
       <PageContent className="content">
-        {projects?.length <= 0 && (
+        {testruns?.length <= 0 && (
           <div className="no-project">
             <div>
               <div>아직 실행된 테스트런이 없습니다.</div>
@@ -42,7 +42,7 @@ function TestrunListPage() {
                   size="lg"
                   outline
                   onClick={() => {
-                    navigate(`/spaces/${spaceCode}/projects/new`);
+                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
                   }}
                 >
                   <i className="fa-solid fa-plus" /> 테스트 런
@@ -51,94 +51,23 @@ function TestrunListPage() {
             </div>
           </div>
         )}
-        {projects?.length > 0 && (
-          <ul className="project-list">
-            {projects?.map(project => {
+        {testruns?.length > 0 && (
+          <ul className="testrun-list">
+            {testruns?.map(testrun => {
               return (
-                <li key={project.id}>
-                  <Card className="project-card" circle>
-                    <div className="project-info">
-                      <div
-                        className="name"
-                        onClick={() => {
-                          navigate(`/spaces/${spaceCode}/projects/${project.id}`);
-                        }}
-                      >
-                        {project.name}
-                      </div>
-                      <div className="summary">
-                        <div>
-                          <div className="description">{project.description}</div>
-                          <div className="count">
-                            <div>
-                              <div
-                                className="bug-count"
-                                onClick={() => {
-                                  navigate(`/spaces/${spaceCode}/projects/${project.id}/bugs`);
-                                }}
-                              >
-                                <div className="icon">
-                                  <i className="fa-solid fa-virus" />
-                                </div>
-                                <div className="number">{project.bugCount}</div>
-                                <div className="label">BUGS</div>
-                              </div>
-                            </div>
-                            <div>
-                              <div
-                                className="tc-count"
-                                onClick={() => {
-                                  navigate(`/spaces/${spaceCode}/projects/${project.id}/testcases`);
-                                }}
-                              >
-                                <div className="icon">
-                                  <i className="fa-solid fa-vial-virus" />
-                                </div>
-                                <div className="number">{project.testcaseCount}</div>
-                                <div className="label">TESTCASES</div>
-                              </div>
-                            </div>
-                            <div>
-                              <div
-                                className="tr-count"
-                                onClick={() => {
-                                  navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
-                                }}
-                              >
-                                <div className="icon">
-                                  <i className="fa-solid fa-scale-balanced" />
-                                </div>
-                                <div className="number">{project.testrunCount}</div>
-                                <div className="label">TESTRUNS</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="side-menu">
-                        <ul>
-                          {MENUS.map((menu, inx) => {
-                            return (
-                              <li
-                                key={inx}
-                                className={menu.key}
-                                onClick={() => {
-                                  navigate(`/spaces/${spaceCode}/projects/${project.id}${menu.to}`);
-                                }}
-                              >
-                                <div>
-                                  <div className="tooltip">
-                                    <span>{menu.name}</span>
-                                    <div className="arrow" />
-                                  </div>
-                                  {menu.icon}
-                                </div>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
+                <li key={testrun.id}>
+                  <Card className="testrun-card" circle>
+                    <div>{testrun.name}</div>
+                    <div>{testrun.seqId}</div>
+                    <div>{testrun.description}</div>
+                    <div>{testrun.opened ? 'OPENED' : 'CLOSED'}</div>
+                    <div>
+                      <div>{dateUtil.getDateString(testrun.startDateTime)}</div>
+                      <div>{dateUtil.getDateString(testrun.endDateTime)}</div>
                     </div>
+                    <div>{testrun.passedTestcaseCount}</div>
+                    <div>{testrun.totalTestcaseCount}</div>
+                    <div>{testrun.totalTestcaseCount}</div>
                   </Card>
                 </li>
               );

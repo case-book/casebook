@@ -81,4 +81,7 @@ public class Project extends CommonEntity {
   @Column(name = "testcase_seq", columnDefinition = "integer default 0")
   private Integer testcaseSeq = 0;
 
+  @Column(name = "testrun_seq", columnDefinition = "integer default 0")
+  private Integer testrunSeq = 0;
+
 }
