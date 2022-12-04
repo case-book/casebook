@@ -2,9 +2,9 @@ import * as request from '@/utils/request';
 
 const TestrunService = {};
 
-TestrunService.selectProjectTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, successHandler, failHandler, loading = true) => {
   return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns`,
+    `/api/${spaceCode}/projects/${projectId}/testruns?status=${option}`,
     null,
     res => {
       successHandler(res);

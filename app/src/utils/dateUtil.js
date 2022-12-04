@@ -20,6 +20,37 @@ function getDateString(val, format) {
     .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
 }
 
+function getEndDateString(startVal, endVal, format) {
+  const start = moment.utc(startVal);
+  const end = moment.utc(endVal);
+
+  if (start.year() === end.year() && start.month() === end.month() && start.date() === end.date()) {
+    return moment
+      .utc(endVal)
+      .local()
+      .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.hoursMinutes].moment);
+  }
+
+  if (start.year() === end.year() && start.month() === end.month()) {
+    return moment
+      .utc(endVal)
+      .local()
+      .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.daysHoursMinutes].moment);
+  }
+
+  if (start.year() === end.year()) {
+    return moment
+      .utc(endVal)
+      .local()
+      .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.monthsDaysHoursMinutes].moment);
+  }
+
+  return moment
+    .utc(endVal)
+    .local()
+    .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
+}
+
 function getLocalDateISOString(val) {
   return moment.utc(val).local().format('YYYY-MM-DD');
 }
@@ -138,6 +169,7 @@ function getDurationMinutes(val, format) {
 
 const dateUtil = {
   getDateString,
+  getEndDateString,
   getDate,
   getTime,
   isSameDay,

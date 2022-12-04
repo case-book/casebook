@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
-    List<Testrun> findAllByProjectId(Long projectId);
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
+
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened);
 
 }
 

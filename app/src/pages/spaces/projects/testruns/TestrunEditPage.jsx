@@ -121,7 +121,12 @@ function TestrunEditPage({ type }) {
     TestrunService.createProjectTestrunInfo(
       spaceCode,
       projectId,
-      { ...testrun, projectId, startDateTime: moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss'), endDateTime: moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') },
+      {
+        ...testrun,
+        projectId,
+        startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+        endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+      },
       () => {
         navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
       },

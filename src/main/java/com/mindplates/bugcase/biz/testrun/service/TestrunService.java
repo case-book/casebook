@@ -28,8 +28,14 @@ public class TestrunService {
 
     private final ProjectService projectService;
 
-    public List<Testrun> selectProjectTestrunList(long projectId) {
-        return testrunRepository.findAllByProjectId(projectId);
+    public List<Testrun> selectProjectTestrunList(String spaceCode, long projectId, String status) {
+
+        if ("ALL".equals(status)) {
+            return testrunRepository.findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(spaceCode, projectId);
+        }
+
+        return testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
+
     }
 
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {

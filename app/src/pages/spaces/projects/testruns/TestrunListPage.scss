@@ -28,10 +28,178 @@
     padding: 0;
 
     > li {
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
+      font-family: NotoSans, sans-serif;
+      line-height: 120%;
 
       .testrun-card {
         padding: 1rem;
+        .testrun-name {
+          display: flex;
+          margin-bottom: 0.5rem;
+          position: relative;
+          z-index: 1;
+          > div {
+            align-self: center;
+            &:nth-child(1) {
+              margin-right: 0.5rem;
+            }
+
+            &.name {
+              flex-grow: 1;
+              font-size: 18px;
+            }
+
+            &.status {
+              flex-grow: 0;
+
+              .tag {
+                min-width: 54px;
+                text-align: center;
+              }
+
+              .OPENED {
+                background-color: $color-primary-light;
+              }
+
+              .CLOSED {
+                background-color: $gray-600;
+              }
+            }
+          }
+        }
+
+        .date-range {
+          font-size: 14px;
+          display: flex;
+
+          > div {
+            align-self: center;
+          }
+
+          > div.span-info {
+            margin-left: 0.5rem;
+
+            &.time-passed {
+              color: $danger;
+            }
+          }
+
+          > div.dash {
+            margin: 0 0.5rem;
+            > div {
+              width: 10px;
+              height: 1px;
+              background-color: $gray-600;
+            }
+          }
+
+          > div.start-date,
+          > div.end-date,
+          > div.no-date {
+            display: inline-flex;
+            padding: 0.5rem 0.75rem;
+            background-color: $gray-200;
+            border-radius: 20px;
+            line-height: 100%;
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            &.no-date {
+              background-color: transparent;
+            }
+          }
+        }
+
+        .count-info {
+          display: flex;
+          margin-top: 0.5rem;
+
+          > div {
+            align-self: center;
+          }
+
+          > .bar {
+            position: relative;
+            background-color: $gray-200;
+            height: 20px;
+            width: 200px;
+            border-radius: 4px;
+            display: flex;
+            margin-right: 0.5rem;
+
+            > div {
+              border-radius: 0;
+            }
+
+            > div.passed {
+              height: 100%;
+              background-color: $naver-color;
+              border-radius: 4px;
+              &.has-failed {
+                border-radius: 4px 0 0 4px;
+              }
+            }
+            > div.failed {
+              height: 100%;
+              background-color: $danger;
+              border-radius: 4px;
+              &.has-passed {
+                border-radius: 0 4px 4px 0;
+              }
+            }
+          }
+
+          .slash {
+            padding: 0 0.5rem;
+            > div {
+              height: 10px;
+              width: 1px;
+              background-color: $gray-600;
+              transform: rotate(20deg);
+            }
+          }
+
+          .total-count {
+            > span {
+              display: inline-flex;
+              font-family: Rowdies, NotoSans, sans-serif;
+              font-size: 13px;
+              width: 24px;
+              height: 24px;
+              justify-content: center;
+              border-radius: 50%;
+              line-height: 100%;
+              > span {
+                align-self: center;
+                line-height: 100%;
+              }
+            }
+
+            &.passed {
+              > span {
+                background-color: $naver-color;
+                color: $white;
+              }
+            }
+
+            &.failed {
+              > span {
+                background-color: $danger;
+                color: $white;
+              }
+            }
+
+            &.total {
+              > span {
+                background-color: black;
+                color: $white;
+              }
+            }
+          }
+        }
       }
     }
   }
