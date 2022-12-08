@@ -16,7 +16,7 @@ function sort(list) {
   });
 }
 
-function getTestcaseTreeData(targetGroups) {
+function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
   let nextGroups = [];
   if (targetGroups.length > 0) {
     const groups = cloneDeep(targetGroups);
@@ -29,7 +29,7 @@ function getTestcaseTreeData(targetGroups) {
         nextGroups = nextGroups.concat(targetDepthGroups);
       } else {
         targetDepthGroups.forEach(d => {
-          const parentGroup = groups.find(group => group.id === d.parentId);
+          const parentGroup = groups.find(group => group[groupIdFieldName] === d.parentId);
           if (parentGroup) {
             if (!parentGroup?.children) {
               parentGroup.children = [];

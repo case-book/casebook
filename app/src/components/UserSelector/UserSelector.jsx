@@ -65,7 +65,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
   }, [opened]);
 
   return (
-    <div className={`user-selector-wrapper g-no-select ${className} size-${size}`} ref={element}>
+    <div className={`user-selector-wrapper g-no-select ${className} size-${size} ${opened ? 'opened' : ''}`} ref={element}>
       <div className="control">
         <input
           type="text"

@@ -55,11 +55,11 @@ public class ProjectResponse {
                             .build()).collect(Collectors.toList());
         }
 
-        if (project.getTestcaseTemplates() != null && project.getTestcaseTemplates().size() > 0) {
+        if (project.getTestcaseTemplates() != null && !project.getTestcaseTemplates().isEmpty()) {
             this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
         }
 
-        if (project.getTestcaseGroups() != null && project.getTestcaseGroups().size() > 0) {
+        if (project.getTestcaseGroups() != null && !project.getTestcaseGroups().isEmpty()) {
             this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
         }
     }

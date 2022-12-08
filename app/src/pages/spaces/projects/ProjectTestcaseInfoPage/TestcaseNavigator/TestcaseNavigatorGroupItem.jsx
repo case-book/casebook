@@ -33,11 +33,13 @@ function TestcaseNavigatorGroupItem({
   }, [allOpen]);
 
   const onKeyDown = e => {
-    if (e.key === 'Escape') {
-      clearEditing();
-    } else if (e.key === 'Enter') {
-      onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
-      clearEditing();
+    if (onChangeTestcaseGroupName) {
+      if (e.key === 'Escape') {
+        clearEditing();
+      } else if (e.key === 'Enter') {
+        onChangeTestcaseGroupName(editInfo.type, editInfo.id, editInfo.name);
+        clearEditing();
+      }
     }
   };
 
@@ -433,6 +435,7 @@ TestcaseNavigatorGroupItem.defaultProps = {
   group: {},
   allOpen: null,
   setting: {},
+  onChangeTestcaseGroupName: null,
 };
 
 TestcaseNavigatorGroupItem.propTypes = {
@@ -469,7 +472,7 @@ TestcaseNavigatorGroupItem.propTypes = {
   lastChild: PropTypes.bool,
   onChangeEditName: PropTypes.func.isRequired,
   clearEditing: PropTypes.func.isRequired,
-  onChangeTestcaseGroupName: PropTypes.func.isRequired,
+  onChangeTestcaseGroupName: PropTypes.func,
   onClickGroupName: PropTypes.func.isRequired,
   allOpen: PropTypes.bool,
   setAllOpen: PropTypes.func.isRequired,
