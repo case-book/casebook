@@ -25,8 +25,8 @@ public class TestrunTestcaseGroupTestcaseItem extends CommonEntity {
   Long id;
 
   @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "testcase_item_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE_ITEM__TESTCASE_ITEM"))
-  private TestcaseItem testcaseItem;
+  @JoinColumn(name = "testcase_template_item_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE_ITEM__TESTCASE_TEMPLATE_ITEM"))
+  private TestcaseTemplateItem testcaseTemplateItem;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "testrun_testcase_group_testcase_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE_ITEM__TESTRUN_TESTCASE_GROUP_TESTCASE"))

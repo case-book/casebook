@@ -8,6 +8,10 @@
   background-color: $white;
   border: 1px solid $color-border-light;
 
+  &.opened {
+    z-index: 21;
+  }
+
   > div {
     align-self: center;
     &.control {

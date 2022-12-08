@@ -113,7 +113,7 @@ function TestcaseNavigator({
 
   const onDrop = e => {
     e.stopPropagation();
-    if (dragInfo.destinationId) {
+    if (dragInfo.destinationId && onPositionChange) {
       onPositionChange(dragInfo);
     }
   };
@@ -131,40 +131,43 @@ function TestcaseNavigator({
         '확인',
       );
     } else {
+      console.log(info);
       onSelect(info);
     }
   };
 
   const onContextMenu = (e, type, id, name) => {
-    e.preventDefault();
+    if (onDelete) {
+      e.preventDefault();
 
-    if (selectedItemInfo.id && contentChanged) {
-      dialogUtil.setConfirm(
-        MESSAGE_CATEGORY.WARNING,
-        '변경된 데이터가 저장되지 않았습니다.',
-        <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
-        () => {
-          onSelect({ id, type });
-          setContextMenuInfo({
-            type,
-            id,
-            x: e.pageX,
-            y: e.pageY,
-            name,
-          });
-        },
-        null,
-        '확인',
-      );
-    } else {
-      onSelect({ id, type });
-      setContextMenuInfo({
-        type,
-        id,
-        x: e.pageX,
-        y: e.pageY,
-        name,
-      });
+      if (selectedItemInfo.id && contentChanged) {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          '변경된 데이터가 저장되지 않았습니다.',
+          <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
+          () => {
+            onSelect({ id, type });
+            setContextMenuInfo({
+              type,
+              id,
+              x: e.pageX,
+              y: e.pageY,
+              name,
+            });
+          },
+          null,
+          '확인',
+        );
+      } else {
+        onSelect({ id, type });
+        setContextMenuInfo({
+          type,
+          id,
+          x: e.pageX,
+          y: e.pageY,
+          name,
+        });
+      }
     }
   };
 
@@ -315,16 +318,20 @@ function TestcaseNavigator({
             </div>
           </div>
         </div>
-        <div className={`right ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
-          <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type} color="white" outline>
-            <i className="small-icon fa-solid fa-plus" />
-            <i className="fa-solid fa-flask" /> <span className="button-text">테스트케이스</span>
-          </Button>
-          <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
-          <Button size="xs" onClick={addTestcaseGroup} color="white" outline>
-            <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
-          </Button>
-        </div>
+        {addTestcase && addTestcaseGroup && (
+          <div className={`right ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
+            <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type} color="white" outline>
+              <i className="small-icon fa-solid fa-plus" />
+              <i className="fa-solid fa-flask" /> <span className="button-text">테스트케이스</span>
+            </Button>
+            <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+            {addTestcaseGroup && (
+              <Button size="xs" onClick={addTestcaseGroup} color="white" outline>
+                <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       <div
         className="testcase-groups-content"
@@ -352,20 +359,22 @@ function TestcaseNavigator({
           {!min && testcaseGroups?.length < 1 && (
             <EmptyContent className="empty-content">
               <div>테스트케이스 그룹이 없습니다.</div>
-              <div className="empty-control">
-                <Button outline size="sm" onClick={addTestcaseGroup}>
-                  {width < 180 && (
-                    <>
-                      <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
-                    </>
-                  )}
-                  {width >= 180 && (
-                    <>
-                      <i className="fa-solid fa-folder-plus" /> <span className="button-text">테스트케이스 그룹</span>
-                    </>
-                  )}
-                </Button>
-              </div>
+              {addTestcaseGroup && (
+                <div className="empty-control">
+                  <Button outline size="sm" onClick={addTestcaseGroup}>
+                    {width < 180 && (
+                      <>
+                        <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
+                      </>
+                    )}
+                    {width >= 180 && (
+                      <>
+                        <i className="fa-solid fa-folder-plus" /> <span className="button-text">테스트케이스 그룹</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
             </EmptyContent>
           )}
           {testcaseGroups?.length > 0 && (
@@ -425,7 +434,7 @@ function TestcaseNavigator({
           />
         </div>
       )}
-      <TestcaseNavigatorContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />
+      {onDelete && <TestcaseNavigatorContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />}
     </div>
   );
 }
@@ -442,28 +451,34 @@ TestcaseNavigator.defaultProps = {
     testcaseGroupCount: 0,
     testcaseCount: 0,
   },
+  addTestcaseGroup: null,
+  addTestcase: null,
+  onPositionChange: null,
+  onChangeTestcaseGroupName: null,
+  onDelete: null,
+  contentChanged: false,
 };
 
 TestcaseNavigator.propTypes = {
   testcaseGroups: PropTypes.arrayOf(TestcaseGroupPropTypes),
-  addTestcaseGroup: PropTypes.func.isRequired,
-  addTestcase: PropTypes.func.isRequired,
-  onPositionChange: PropTypes.func.isRequired,
+  addTestcaseGroup: PropTypes.func,
+  addTestcase: PropTypes.func,
+  onPositionChange: PropTypes.func,
   onSelect: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+  onDelete: PropTypes.func,
   selectedItemInfo: PropTypes.shape({
     id: NullableNumber,
     type: NullableString,
     time: NullableNumber,
   }),
-  onChangeTestcaseGroupName: PropTypes.func.isRequired,
+  onChangeTestcaseGroupName: PropTypes.func,
   min: PropTypes.bool,
   setMin: PropTypes.func.isRequired,
   countSummary: PropTypes.shape({
     testcaseGroupCount: PropTypes.number,
     testcaseCount: PropTypes.number,
   }),
-  contentChanged: PropTypes.bool.isRequired,
+  contentChanged: PropTypes.bool,
 };
 
 export default TestcaseNavigator;

@@ -9,6 +9,8 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.entity.*;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,15 @@ public class TestrunService {
 
     private final ProjectService projectService;
 
+    private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
+
+    private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
+
+    public TestrunTestcaseGroupTestcase selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
+        return testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
+
+
     public List<Testrun> selectProjectTestrunList(String spaceCode, long projectId, String status) {
 
         if ("ALL".equals(status)) {
@@ -36,6 +47,25 @@ public class TestrunService {
 
         return testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
 
+    }
+
+    public Testrun selectProjectTestrunInfo(long testrunId) {
+        return testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+    }
+
+    public void deleteProjectTestrunInfo(long testrunId) {
+        testrunRepository.deleteById(testrunId);
+    }
+
+    public void updateProjectTestrunStatusClosed(long testrunId) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testrun.setOpened(false);
+        testrunRepository.save(testrun);
+    }
+
+    public void updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItems) {
+        testrunTestcaseGroupTestcaseItemRepository.saveAll(testrunTestcaseGroupTestcaseItems);
     }
 
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
@@ -75,7 +105,7 @@ public class TestrunService {
                             int userIndex = random.nextInt(testrunUsers.size());
                             TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
                                     .builder()
-                                    .testcaseItem(testcaseItem)
+                                    .testcaseTemplateItem(testcaseTemplateItem)
                                     .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
                                     .type("value")
                                     .value(testrunUsers.get(userIndex).getUser().getId().toString())
@@ -95,7 +125,7 @@ public class TestrunService {
 
                             TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
                                     .builder()
-                                    .testcaseItem(testcaseItem)
+                                    .testcaseTemplateItem(testcaseTemplateItem)
                                     .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
                                     .type("value")
                                     .value(testrunUsers.get(currentSeq).getUser().getId().toString())

@@ -1,18 +1,13 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, CheckBox, Input, Radio, Selector, SeqId, TextArea, UserSelector } from '@/components';
-import { Editor, Viewer } from '@toast-ui/react-editor';
+import { Button, Input, Selector, SeqId, TestcaseItem, TextArea } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { getUserText } from '@/utils/userUtil';
-import { getBaseURL } from '@/utils/configUtil';
 import './TestcaseManager.scss';
 import useStores from '@/hooks/useStores';
-import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
 import dialogUtil from '@/utils/dialogUtil';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +19,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
 
   const { t } = useTranslation();
   const { testcaseItems } = content;
-  const editors = useRef({});
+
   const caseContentElement = useRef(null);
 
   const testcaseTemplate = useMemo(() => {
@@ -172,220 +167,21 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
             const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
 
             return (
-              <div key={testcaseTemplateItem.id} className={`case-item size-${testcaseTemplateItem?.size}`}>
-                <div>
-                  <div className="label">
-                    <div className="text">{testcaseTemplateItem.label}</div>
-                    {testcaseTemplateItem.description && (
-                      <DescriptionTooltip
-                        type={testcaseTemplateItem.type}
-                        onClose={() => {
-                          setOpenTooltipInfo({
-                            inx: null,
-                            type: null,
-                            category: null,
-                          });
-                        }}
-                        parentElement={caseContentElement}
-                        icon={<i className="fa-solid fa-info" />}
-                        title="설명"
-                        text={testcaseTemplateItem.description}
-                        opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'description' && openTooltipInfo.category === 'CASE'}
-                        onClick={() => {
-                          if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'description' && openTooltipInfo.category === 'CASE') {
-                            setOpenTooltipInfo({
-                              inx: null,
-                              type: null,
-                              category: null,
-                            });
-                          } else {
-                            setOpenTooltipInfo({
-                              inx,
-                              type: 'description',
-                              category: 'CASE',
-                            });
-                          }
-                        }}
-                      />
-                    )}
-                    {testcaseTemplateItem.example && (
-                      <DescriptionTooltip
-                        type={testcaseTemplateItem.type}
-                        onClose={() => {
-                          setOpenTooltipInfo({
-                            inx: null,
-                            type: null,
-                            category: null,
-                          });
-                        }}
-                        parentElement={caseContentElement}
-                        icon={<i className="fa-solid fa-receipt" />}
-                        title="샘플"
-                        clipboard
-                        text={testcaseTemplateItem.example}
-                        opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'example' && openTooltipInfo.category === 'CASE'}
-                        onClick={() => {
-                          if (openTooltipInfo.inx === inx && openTooltipInfo.type === 'example' && openTooltipInfo.category === 'CASE') {
-                            setOpenTooltipInfo({
-                              inx: null,
-                              type: null,
-                              category: null,
-                            });
-                          } else {
-                            setOpenTooltipInfo({
-                              inx,
-                              type: 'example',
-                              category: 'CASE',
-                            });
-                          }
-                        }}
-                      />
-                    )}
-                    <div className="type">{testcaseTemplateItem.type}</div>
-                  </div>
-                  <div className="case-liner" />
-                  <div className={`value ${testcaseTemplateItem.type}`}>
-                    <div>
-                      {testcaseTemplateItem.type === 'RADIO' && (
-                        <div className="radio">
-                          {!isEdit && <div>{testcaseItem.value}</div>}
-                          {isEdit &&
-                            testcaseTemplateItem?.options?.map(d => {
-                              return (
-                                <Radio
-                                  key={d}
-                                  type="inline"
-                                  size="md"
-                                  readOnly={!isEdit}
-                                  value={d}
-                                  checked={d === testcaseItem.value}
-                                  onChange={val => {
-                                    onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
-                                  }}
-                                  label={d}
-                                />
-                              );
-                            })}
-                        </div>
-                      )}
-                      {testcaseTemplateItem.type === 'CHECKBOX' && (
-                        <div className="checkbox">
-                          {!isEdit && <div>{testcaseItem.value === 'Y' ? 'Y' : 'N'}</div>}
-                          {isEdit && (
-                            <CheckBox
-                              size="md"
-                              value={testcaseItem.value === 'Y'}
-                              onChange={() => {
-                                if (testcaseItem.value === 'Y') {
-                                  onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'N');
-                                } else {
-                                  onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'Y');
-                                }
-                              }}
-                            />
-                          )}
-                        </div>
-                      )}
-                      {(testcaseTemplateItem.type === 'URL' || testcaseTemplateItem.type === 'TEXT') && (
-                        <div className="url">
-                          {!isEdit && <div>{testcaseItem.value}</div>}
-                          {isEdit && (
-                            <Input
-                              type={testcaseTemplateItem.type.toLowerCase()}
-                              value={testcaseItem.value}
-                              size="md"
-                              outline
-                              color="black"
-                              onChange={val => {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
-                              }}
-                              required
-                              minLength={1}
-                            />
-                          )}
-                        </div>
-                      )}
-                      {testcaseTemplateItem.type === 'SELECT' && (
-                        <div className="select">
-                          {!isEdit && <div>{testcaseItem.value}</div>}
-                          {isEdit && (
-                            <Selector
-                              color="black"
-                              className="selector"
-                              size="md"
-                              items={testcaseTemplateItem?.options?.map(d => {
-                                return {
-                                  key: d,
-                                  value: d,
-                                };
-                              })}
-                              value={testcaseItem.value}
-                              onChange={val => {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
-                              }}
-                            />
-                          )}
-                        </div>
-                      )}
-                      {testcaseTemplateItem.type === 'USER' && (
-                        <div className="url">
-                          {!isEdit && <div>{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</div>}
-                          {isEdit && (
-                            <UserSelector
-                              users={users}
-                              type={testcaseItem.type}
-                              value={testcaseItem.value}
-                              onChange={(type, val) => {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, type, 'value', val);
-                              }}
-                            />
-                          )}
-                        </div>
-                      )}
-                      {testcaseTemplateItem.type === 'EDITOR' && (
-                        <div className="editor" key={`${content.id}-${theme}`}>
-                          {!isEdit && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
-                          {isEdit && (
-                            <Editor
-                              ref={e => {
-                                editors.current[testcaseTemplateItem.id] = e;
-                              }}
-                              theme={theme === 'DARK' ? 'dark' : 'white'}
-                              placeholder="내용을 입력해주세요."
-                              previewStyle="vertical"
-                              height="400px"
-                              initialEditType="wysiwyg"
-                              plugins={[colorSyntax]}
-                              autofocus={false}
-                              toolbarItems={[
-                                ['heading', 'bold', 'italic', 'strike'],
-                                ['hr', 'quote'],
-                                ['ul', 'ol', 'task', 'indent', 'outdent'],
-                                ['table', 'image', 'link'],
-                                ['code', 'codeblock'],
-                              ]}
-                              hooks={{
-                                addImageBlobHook: async (blob, callback) => {
-                                  const result = await createTestcaseImage(content.id, blob.name, blob.size, blob.type, blob);
-                                  callback(
-                                    `${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/testcases/${result.data.testcaseId}/images/${result.data.id}?uuid=${
-                                      result.data.uuid
-                                    }`,
-                                  );
-                                },
-                              }}
-                              initialValue={testcaseItem?.text || ''}
-                              onChange={() => {
-                                onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editors.current[testcaseTemplateItem.id]?.getInstance()?.getHTML());
-                              }}
-                            />
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TestcaseItem
+                key={inx}
+                isEdit={isEdit}
+                testcaseTemplateItem={testcaseTemplateItem}
+                testcaseItem={testcaseItem}
+                content={content}
+                theme={theme}
+                createImage={createTestcaseImage}
+                users={users}
+                setOpenTooltipInfo={setOpenTooltipInfo}
+                caseContentElement={caseContentElement}
+                openTooltipInfo={openTooltipInfo}
+                inx={inx}
+                onChangeTestcaseItem={onChangeTestcaseItem}
+              />
             );
           })}
       </div>

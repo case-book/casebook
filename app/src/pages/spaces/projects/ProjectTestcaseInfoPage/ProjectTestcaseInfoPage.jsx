@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import { useParams } from 'react-router';
-import { Page, PageContent, PageTitle } from '@/components';
+import { FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
-import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
@@ -19,18 +18,6 @@ function ProjectTestcaseInfoPage() {
   const [project, setProject] = useState(null);
   const [spaceUsers, setSpaceUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
-  const [testcaseGroupWidth, setTestcaseGroupWidth] = useState(() => {
-    return getOption('testcase', 'testcase-group-layout', 'width') || 300;
-  });
-
-  const testcaseGroupElement = useRef(null);
-
-  const resizeInfo = useRef({
-    moving: false,
-    startX: null,
-    endX: null,
-    startWidth: null,
-  }).current;
 
   const [selectedItemInfo, setSelectedItemInfo] = useState({
     id: null,
@@ -325,49 +312,6 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
-  const onGrabMouseMove = e => {
-    if (resizeInfo.moving) {
-      const distanceX = e.clientX - resizeInfo.startX;
-      resizeInfo.endX = e.clientX;
-      if (testcaseGroupElement.current) {
-        testcaseGroupElement.current.style.width = `${resizeInfo.startWidth + distanceX}px`;
-      }
-    }
-  };
-
-  const onGrabMouseUp = () => {
-    if (resizeInfo.moving) {
-      document.removeEventListener('mousemove', onGrabMouseMove);
-      document.removeEventListener('mouseup', onGrabMouseUp);
-      const width = resizeInfo.startWidth + (resizeInfo.endX - resizeInfo.startX);
-      setTestcaseGroupWidth(width);
-      resizeInfo.moving = false;
-      resizeInfo.startX = null;
-      resizeInfo.startWidth = null;
-
-      setOption('testcase', 'testcase-group-layout', 'width', width);
-    }
-  };
-
-  const onGrabMouseDown = e => {
-    if (!testcaseGroupElement.current) {
-      return;
-    }
-
-    const rects = testcaseGroupElement.current.getClientRects();
-
-    if (rects?.length < 1) {
-      return;
-    }
-
-    document.addEventListener('mousemove', onGrabMouseMove);
-    document.addEventListener('mouseup', onGrabMouseUp);
-
-    resizeInfo.moving = true;
-    resizeInfo.startX = e.clientX;
-    resizeInfo.startWidth = rects[0].width;
-  };
-
   const onSaveTestcase = (info, handler) => {
     setContentLoading(true);
 
@@ -430,14 +374,10 @@ function ProjectTestcaseInfoPage() {
     <Page className="project-testcase-info-page-wrapper" list wide>
       <PageTitle>{t('테스트케이스')}</PageTitle>
       <PageContent className="page-content">
-        <div className="page-layout">
-          <div
-            className={`testcase-groups ${min ? 'min' : ''}`}
-            ref={testcaseGroupElement}
-            style={{
-              width: `${testcaseGroupWidth || 300}px`,
-            }}
-          >
+        <FlexibleLayout
+          layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
+          min={min}
+          left={
             <TestcaseNavigator
               testcaseGroups={testcaseGroups}
               addTestcaseGroup={addTestcaseGroup}
@@ -452,9 +392,8 @@ function ProjectTestcaseInfoPage() {
               countSummary={countSummary}
               contentChanged={contentChanged}
             />
-          </div>
-          <div className="border-line" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
-          <div className="testcases">
+          }
+          right={
             <ContentManager
               getPopupContent={getPopupContent}
               popupContent={popupContent}
@@ -471,8 +410,8 @@ function ProjectTestcaseInfoPage() {
               onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
               setPopupContent={setPopupContent}
             />
-          </div>
-        </div>
+          }
+        />
       </PageContent>
     </Page>
   );

@@ -92,7 +92,7 @@ function TestrunListPage() {
 
               return (
                 <li key={testrun.id}>
-                  <Card className="testrun-card" circle>
+                  <Card className="testrun-card" circle={false}>
                     <div className="testrun-name">
                       <div className="seq-id">
                         <Tag>{testrun.seqId}</Tag>

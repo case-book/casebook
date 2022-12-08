@@ -1,0 +1,50 @@
+.flexible-layout-wrapper {
+  display: flex;
+  flex-grow: 1;
+
+  .grabber {
+    width: 10px;
+    cursor: ew-resize;
+    &:hover {
+      background-color: $gray-400;
+    }
+  }
+
+  .left-layout {
+    min-width: 120px;
+    display: flex;
+    background-color: $card-bg-color-light;
+    border-radius: 4px;
+
+    &.min {
+      min-width: auto;
+      width: 56px !important;
+    }
+  }
+
+  .right-layout {
+    flex-grow: 1;
+    position: relative;
+    background-color: $card-bg-color-light;
+    border-radius: 4px;
+  }
+}
+
+
+.theme-DARK {
+  .flexible-layout-wrapper {
+    .grabber {
+      &:hover {
+        background-color: #000;
+      }
+    }
+
+    .left-layout {
+      background-color: $card-bg-color-dark;
+    }
+
+    .right-layout {
+      background-color: $card-bg-color-dark;
+    }
+  }
+}

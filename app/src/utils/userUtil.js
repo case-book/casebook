@@ -1,6 +1,7 @@
 import { USER_ASSIGNED_OPERATIONS } from '@/constants/constants';
 
 function getUserText(users, type, value) {
+  console.log(users, type, value);
   if (type === 'operation' && value === 'SEQ') {
     return USER_ASSIGNED_OPERATIONS.SEQ;
   }

@@ -26,11 +26,11 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "testrun_testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_GROUP__TESTRUN"))
+    @JoinColumn(name = "testrun_testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE__TESTRUN_TESTCASE_GROUP"))
     private TestrunTestcaseGroup testrunTestcaseGroup;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_GROUP__TESTRUN"))
+    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE__TESTCASE"))
     private Testcase testcase;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunTestcaseGroupTestcase", cascade = CascadeType.ALL, orphanRemoval = true)
