@@ -63,17 +63,17 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
         )}
       </div>
       {opened && (
-        <Modal className="project-user-add-popup-wrapper" size="xl" isOpen>
-          <ModalHeader
-            className="modal-header"
-            onClose={() => {
-              if (setOpened) {
-                setOpened(false);
-              }
-            }}
-          >
-            스페이스 사용자
-          </ModalHeader>
+        <Modal
+          className="project-user-add-popup-wrapper"
+          size="xl"
+          isOpen
+          toggle={() => {
+            if (setOpened) {
+              setOpened(false);
+            }
+          }}
+        >
+          <ModalHeader className="modal-header">스페이스 사용자</ModalHeader>
           <ModalBody className="space-user-body">
             <div className="space-user-content">
               <div className="search">

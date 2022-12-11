@@ -59,8 +59,6 @@ function TestrunEditPage() {
 
   const [content, setContent] = useState(null);
 
-  console.log(content, contentLoading);
-
   const [testrun, setTestrun] = useState({
     seqId: '',
     name: '',
@@ -83,7 +81,6 @@ function TestrunEditPage() {
 
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      console.log(info);
       setProject(info);
     });
   }, [projectId]);
@@ -99,8 +96,6 @@ function TestrunEditPage() {
         }, 0),
       });
 
-      console.log(info?.testcaseGroups);
-
       const groups = testcaseUtil.getTestcaseTreeData(info?.testcaseGroups, 'testcaseGroupId');
       setTestcaseGroups(groups);
     });
@@ -109,10 +104,7 @@ function TestrunEditPage() {
   const getTestcase = testrunTestcaseGroupTestcaseId => {
     setContentLoading(true);
 
-    console.log(testcaseGroups);
-
     const testcaseGroup = testrun?.testcaseGroups.find(d => d.testcases?.find(testcase => testcase.id === testrunTestcaseGroupTestcaseId));
-    console.log(testcaseGroup);
 
     TestrunService.selectTestrunTestcaseGroupTestcase(
       spaceCode,
@@ -133,22 +125,8 @@ function TestrunEditPage() {
   };
 
   const getContent = () => {
-    console.log(selectedItemInfo.id);
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE) {
-      if (false) {
-        getTestcase(selectedItemInfo.id);
-      } else {
-        console.log(testrun?.testcaseGroups);
-        const testcaseGroup = testrun?.testcaseGroups.find(d => d.testcases?.find(testcase => testcase.id === selectedItemInfo.id));
-        const testcase = testcaseGroup?.testcases?.find(d => d.id === selectedItemInfo.id);
-
-        const testcaseTemplate = project?.testcaseTemplates.find(d => d.id === testcase.testcaseTemplateId);
-
-        setContent({ ...testcase, testcaseTemplate, testrunTestcaseGroupId: testcaseGroup.id });
-        console.log({ ...testcase, testcaseTemplate });
-      }
-    } else {
-      //
+      getTestcase(selectedItemInfo.id);
     }
   };
 
@@ -197,9 +175,6 @@ function TestrunEditPage() {
     });
   };
 
-  console.log(testcaseGroups);
-  console.log(content);
-
   const createTestrunImage = (testcaseId, name, size, type, file) => {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
@@ -245,26 +220,16 @@ function TestrunEditPage() {
             right={
               selectedItemInfo.id && (
                 <TestRunTestcaseManager
+                  contentLoading={contentLoading}
                   content={content || {}}
                   testcaseTemplates={project?.testcaseTemplates}
                   setContent={d => {
                     setContent(d);
                   }}
                   onSave={() => {
-                    TestrunService.updateTestrunResult(
-                      spaceCode,
-                      projectId,
-                      testrunId,
-                      content.testrunTestcaseGroupId,
-                      content.id,
-                      {
-                        testrunTestcaseGroupTestcaseItemRequests: content.testrunTestcaseItems,
-                      },
-                      e => {
-                        console.log(e);
-                      },
-                    );
-                    console.log(content);
+                    TestrunService.updateTestrunResult(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, {
+                      testrunTestcaseGroupTestcaseItemRequests: content.testrunTestcaseItems,
+                    });
                   }}
                   onCancel={() => {}}
                   users={project?.users}

@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.framework.config;
 
+import com.mindplates.bugcase.framework.handler.StompErrorHandler;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
 import com.mindplates.bugcase.framework.websocket.interceptor.FilterChannelInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final StompErrorHandler stompErrorHandler;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
         brokerRegistry.enableSimpleBroker("/sub");
@@ -29,9 +32,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) {
-        endpointRegistry.addEndpoint("/ws")
+        endpointRegistry.setErrorHandler(stompErrorHandler)
+                .addEndpoint("/ws")
                 .setAllowedOrigins(corsUrls)
                 .withSockJS();
+
     }
 
     @Override

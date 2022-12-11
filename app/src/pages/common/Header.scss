@@ -83,6 +83,7 @@
                 a {
                   color: $black;
                   position: relative;
+                  font-weight: bold;
 
                   &::after {
                     background-color: $color-primary-light;

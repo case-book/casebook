@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import '@/configurations/i18n';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'react-datepicker/dist/react-datepicker.css';

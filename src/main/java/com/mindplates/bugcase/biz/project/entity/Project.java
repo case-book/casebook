@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
@@ -56,6 +57,10 @@ public class Project extends CommonEntity {
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   @Fetch(value = FetchMode.SELECT)
   private List<TestcaseGroup> testcaseGroups;
+
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Fetch(value = FetchMode.SELECT)
+  private List<Testrun> testruns;
 
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   @Fetch(value = FetchMode.SELECT)

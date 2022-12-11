@@ -41,7 +41,7 @@ TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHand
   );
 };
 
-TestrunService.selectTestrunTestcaseGroupTestcase = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, successHandler, failHandler, loading = true) => {
+TestrunService.selectTestrunTestcaseGroupTestcase = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}`,
     null,
@@ -51,7 +51,7 @@ TestrunService.selectTestrunTestcaseGroupTestcase = (spaceCode, projectId, testr
     failHandler,
     null,
     null,
-    loading,
+    false,
   );
 };
 

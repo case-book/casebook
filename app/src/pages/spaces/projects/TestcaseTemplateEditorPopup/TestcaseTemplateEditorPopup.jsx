@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { Button, CheckBox, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Selector, TextArea } from '@/components';
+import { Button, CheckBox, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Selector, Text, TextArea, UserSelector } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { TestcaseTemplateEditPropTypes } from '@/proptypes';
 import './TestcaseTemplateEditorPopup.scss';
 import TestcaseTemplateItem from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateItem';
 import ExampleEditor from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/ExampleEditor';
 
-function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor, createProjectImage }) {
+function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onChange, testcaseItemTypes, testcaseItemCategories, opened, editor, createProjectImage, users }) {
   const { t } = useTranslation();
 
   const element = useRef(null);
@@ -30,10 +30,13 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
   const hasOptionType = value => {
     return value === 'RADIO' || value === 'SELECT';
   };
-  const onChangeTestcaseTemplateItem = (testcaseTemplateItemInx, category, key, val) => {
+  const onChangeTestcaseTemplateItem = (testcaseTemplateItemInx, category, key, val, type) => {
     const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
     const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
     nextTemplateItem[key] = val;
+    if (type) {
+      nextTemplateItem.defaultType = type;
+    }
 
     if (category === 'CASE') {
       setCaseTemplateItems(nextTemplateItems);
@@ -114,6 +117,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
       size: 4,
       options: null,
       category,
+      editable: true,
     });
 
     if (category === 'CASE') {
@@ -202,14 +206,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
         onClose();
       }}
     >
-      <ModalHeader
-        className="modal-header"
-        onClose={() => {
-          onClose();
-        }}
-      >
-        {template?.name}
-      </ModalHeader>
+      <ModalHeader className="modal-header">{template?.name}</ModalHeader>
       <ModalBody className="testcase-template-editor-content">
         <div onClick={e => e.stopPropagation()} ref={element}>
           <div className="editor-content">
@@ -227,9 +224,8 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                   />
                 </div>
               )}
-
               {editor && (
-                <div className="control">
+                <div className="template-content-control">
                   <div>
                     <Input
                       size="md"
@@ -287,7 +283,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             .map((testcaseTemplateItem, inx) => {
                               return (
                                 <TestcaseTemplateItem
-                                  key={testcaseTemplateItem.id}
+                                  key={inx}
                                   inx={inx}
                                   editor={editor}
                                   testcaseTemplateItem={testcaseTemplateItem}
@@ -336,7 +332,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                           {resultTemplateItems?.map((testcaseTemplateItem, inx) => {
                             return (
                               <TestcaseTemplateItem
-                                key={testcaseTemplateItem.id}
+                                key={inx}
                                 inx={inx}
                                 editor={editor}
                                 testcaseTemplateItem={testcaseTemplateItem}
@@ -371,6 +367,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             <Button
                               outline
                               size="xs"
+                              tip={t('왼쪽으로')}
                               rounded
                               onClick={() => {
                                 onChangeTestcaseTemplateItemOrder(selectedItem.inx, selectedItem?.item?.category, 'left');
@@ -381,6 +378,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             <Button
                               outline
                               size="xs"
+                              tip={t('오른쪽으로')}
                               rounded
                               onClick={() => {
                                 onChangeTestcaseTemplateItemOrder(selectedItem.inx, selectedItem?.item?.category, 'right');
@@ -393,6 +391,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               outline
                               size="xs"
                               rounded
+                              tip={t('너비 작게')}
                               onClick={() => {
                                 onChangeTestcaseTemplateItemSize(selectedItem.inx, selectedItem?.item?.category, 'down');
                               }}
@@ -402,6 +401,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             <Button
                               outline
                               size="xs"
+                              tip={t('너비 크게')}
                               rounded
                               onClick={() => {
                                 onChangeTestcaseTemplateItemSize(selectedItem.inx, selectedItem?.item?.category, 'up');
@@ -412,6 +412,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             <Button
                               outline
                               size="xs"
+                              tip={t('최대 너비')}
                               rounded
                               onClick={() => {
                                 onChangeTestcaseTemplateItemSize(selectedItem.inx, selectedItem?.item?.category, 'fill');
@@ -422,7 +423,9 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem 0 0.25rem" />
                             <Button
                               outline
+                              tip={t('아이템 삭제')}
                               size="xs"
+                              disabled={!selectedItem?.item?.editable}
                               rounded
                               color="danger"
                               onClick={() => {
@@ -434,22 +437,31 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                           </div>
                           <div className="type">
                             <div className="title">{t('카테고리')}</div>
-                            <div className="properties-control">
-                              {testcaseItemCategories.map(d => {
-                                return (
-                                  <Radio
-                                    key={d}
-                                    label={d}
-                                    size="sm"
-                                    value={d}
-                                    checked={d === selectedItem?.item?.category}
-                                    onChange={() => {
-                                      onChangeTestcaseTemplateItemCategory(selectedItem.inx, selectedItem?.item?.category, d);
-                                    }}
-                                  />
-                                );
-                              })}
-                            </div>
+                            {selectedItem?.item?.editable && (
+                              <div className="properties-control">
+                                {testcaseItemCategories.map(d => {
+                                  return (
+                                    <Radio
+                                      key={d}
+                                      label={d}
+                                      size="sm"
+                                      value={d}
+                                      checked={d === selectedItem?.item?.category}
+                                      onChange={() => {
+                                        onChangeTestcaseTemplateItemCategory(selectedItem.inx, selectedItem?.item?.category, d);
+                                      }}
+                                    />
+                                  );
+                                })}
+                              </div>
+                            )}
+                            {!selectedItem?.item?.editable && (
+                              <div className="properties-control">
+                                <Text className="readonly-text" size="sm">
+                                  {selectedItem?.item?.category}
+                                </Text>
+                              </div>
+                            )}
                           </div>
                           <div className="label">
                             <div className="title">{t('라벨')}</div>
@@ -514,20 +526,27 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                           <div className="type">
                             <div className="title">{t('타입')}</div>
                             <div className="properties-control">
-                              <Selector
-                                className="selector"
-                                size="sm"
-                                items={testcaseItemTypes.map(d => {
-                                  return {
-                                    key: d,
-                                    value: d,
-                                  };
-                                })}
-                                value={selectedItem?.item?.type}
-                                onChange={val => {
-                                  onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'type', val);
-                                }}
-                              />
+                              {selectedItem?.item?.editable && (
+                                <Selector
+                                  className="selector"
+                                  size="sm"
+                                  items={testcaseItemTypes.map(d => {
+                                    return {
+                                      key: d,
+                                      value: d,
+                                    };
+                                  })}
+                                  value={selectedItem?.item?.type}
+                                  onChange={val => {
+                                    onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'type', val);
+                                  }}
+                                />
+                              )}
+                              {!selectedItem?.item?.editable && (
+                                <Text className="readonly-text" size="sm">
+                                  {selectedItem?.item?.type}
+                                </Text>
+                              )}
                             </div>
                           </div>
                           {!hasOptionType(selectedItem?.item?.type) && selectedItem?.item?.type === 'CHECKBOX' && (
@@ -548,7 +567,25 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               </div>
                             </div>
                           )}
-                          {!hasOptionType(selectedItem?.item?.type) && selectedItem?.item?.type !== 'CHECKBOX' && (
+                          {selectedItem?.item?.type === 'USER' && (
+                            <div className="default-value">
+                              <div className="title">{t('기본 값')}</div>
+                              <div className="properties-control">
+                                <div>
+                                  <UserSelector
+                                    size="sm"
+                                    users={users}
+                                    type={selectedItem?.item?.defaultType || ''}
+                                    value={selectedItem?.item?.defaultValue || ''}
+                                    onChange={(type, val) => {
+                                      onChangeTestcaseTemplateItem(selectedItem.inx, selectedItem?.item?.category, 'defaultValue', val, type);
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {selectedItem?.item?.type !== 'USER' && !hasOptionType(selectedItem?.item?.type) && selectedItem?.item?.type !== 'CHECKBOX' && (
                             <div className="default-value">
                               <div className="title">{t('기본 값')}</div>
                               <div className="properties-control">
@@ -564,7 +601,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               </div>
                             </div>
                           )}
-                          {hasOptionType(selectedItem?.item?.type) && (
+                          {selectedItem?.item?.type !== 'USER' && hasOptionType(selectedItem?.item?.type) && (
                             <div className="options">
                               <div className="title">
                                 <div>옵션</div>
@@ -696,6 +733,7 @@ TestcaseTemplateEditorPopup.defaultProps = {
   opened: false,
   editor: true,
   createProjectImage: null,
+  users: [],
 };
 
 TestcaseTemplateEditorPopup.propTypes = {
@@ -708,6 +746,11 @@ TestcaseTemplateEditorPopup.propTypes = {
   opened: PropTypes.bool,
   editor: PropTypes.bool,
   createProjectImage: PropTypes.func,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+    }),
+  ),
 };
 
 export default TestcaseTemplateEditorPopup;

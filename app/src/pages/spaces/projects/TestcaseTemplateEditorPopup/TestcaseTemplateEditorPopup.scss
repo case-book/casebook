@@ -3,7 +3,7 @@
     .testcase-template-editor-content {
       div.editor-content {
         .template-content {
-          .control {
+          .template-content-control {
             margin-right: 320px;
           }
           .editor {
@@ -42,10 +42,8 @@
           bottom: 0;
           z-index: 21;
           background-color: rgba(0, 0, 0, 0.3);
-
-
         }
-        .control {
+        .template-content-control {
           display: flex;
           margin-bottom: 1rem;
           > div {
@@ -99,7 +97,7 @@
             ul {
               list-style: none;
               padding: 0;
-              margin: 0 -0.5rem -0.5rem 0;
+              margin: 0 -0.5rem 0rem 0;
               text-align: left;
               overflow-y: auto;
             }
@@ -129,6 +127,11 @@
               display: flex;
               flex-direction: column;
               padding-left: 1rem;
+              padding-bottom: 4rem;
+
+              .readonly-text {
+                background-color: $gray-100;
+              }
 
               .empty-message {
                 height: 100%;
@@ -152,7 +155,6 @@
               .example-editor {
                 height: 200px;
               }
-
 
               .label,
               .type,
@@ -216,7 +218,7 @@
                   flex-grow: 1;
                   position: relative;
 
-                  > div {
+                  > __div {
                     height: 100%;
 
                     overflow-y: auto;

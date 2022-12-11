@@ -24,13 +24,14 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
   });
 
   return (
-    <Modal className={`common-dialog-wrapper confirm-dialog-wrapper ${className} ${category}`} isOpen>
-      <ModalHeader
-        className="modal-header"
-        onClose={() => {
-          controlStore.setConfirm(null);
-        }}
-      >
+    <Modal
+      className={`common-dialog-wrapper confirm-dialog-wrapper ${className} ${category}`}
+      isOpen
+      toggle={() => {
+        controlStore.setConfirm(null);
+      }}
+    >
+      <ModalHeader className="modal-header">
         <span className="title">
           <span className={`dialog-icon ${category}`}>
             {category === MESSAGE_CATEGORY.ERROR && <i className="fas fa-exclamation-circle" />}

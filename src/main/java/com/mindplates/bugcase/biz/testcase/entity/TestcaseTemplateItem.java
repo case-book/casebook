@@ -20,46 +20,52 @@ import java.util.List;
 @Setter
 public class TestcaseTemplateItem extends CommonEntity {
 
-  @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
-  @Column(name = "category", nullable = false, length = ColumnsDef.CODE)
-  @Enumerated(EnumType.STRING)
-  private TestcaseItemCategory category;
+    @Column(name = "category", nullable = false, length = ColumnsDef.CODE)
+    @Enumerated(EnumType.STRING)
+    private TestcaseItemCategory category;
 
-  @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
-  @Enumerated(EnumType.STRING)
-  private TestcaseItemType type;
+    @Column(name = "type", nullable = false, length = ColumnsDef.CODE)
+    @Enumerated(EnumType.STRING)
+    private TestcaseItemType type;
 
-  @Column(name = "item_order")
-  private Integer itemOrder;
+    @Column(name = "item_order")
+    private Integer itemOrder;
 
-  @Column(name = "label", nullable = false, length = ColumnsDef.NAME)
-  private String label;
+    @Column(name = "label", nullable = false, length = ColumnsDef.NAME)
+    private String label;
 
-  @Column(name = "options", length = ColumnsDef.TEXT)
-  @Convert(converter = StringListConverter.class)
-  private List<String> options;
+    @Column(name = "options", length = ColumnsDef.TEXT)
+    @Convert(converter = StringListConverter.class)
+    private List<String> options;
 
-  @Column(name = "size")
-  private Integer size;
+    @Column(name = "size")
+    private Integer size;
 
-  @ManyToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_TEMPLATE_ITEM__TESTCASE_TEMPLATE"))
-  private TestcaseTemplate testcaseTemplate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_TEMPLATE_ITEM__TESTCASE_TEMPLATE"))
+    private TestcaseTemplate testcaseTemplate;
 
-  @Column(name = "default_type")
-  private String defaultType;
+    @Column(name = "default_type")
+    private String defaultType;
 
-  @Column(name = "default_value")
-  private String defaultValue;
+    @Column(name = "default_value")
+    private String defaultValue;
 
-  @Column(name = "description", length = ColumnsDef.TEXT)
-  private String description;
+    @Column(name = "description", length = ColumnsDef.TEXT)
+    private String description;
 
-  @Column(name = "example", length = ColumnsDef.TEXT)
-  private String example;
+    @Column(name = "example", length = ColumnsDef.TEXT)
+    private String example;
+
+    @Column(name = "editable")
+    private Boolean editable;
+
+    @Column(name = "system_label", length = ColumnsDef.CODE)
+    private String systemLabel;
 
 }

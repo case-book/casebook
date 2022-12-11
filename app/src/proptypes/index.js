@@ -47,6 +47,7 @@ const TestcaseTemplateEditPropTypes = PropTypes.shape({
           options: PropTypes.arrayOf(PropTypes.string),
           size: PropTypes.number,
           type: PropTypes.string,
+          editable: PropTypes.bool,
         }),
       ),
     }),

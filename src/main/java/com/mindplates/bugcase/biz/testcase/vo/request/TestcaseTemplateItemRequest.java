@@ -27,6 +27,10 @@ public class TestcaseTemplateItemRequest {
 
     private String crud;
 
+    private Boolean editable;
+
+    private String systemLabel;
+
     public TestcaseTemplateItem buildEntity() {
 
         return TestcaseTemplateItem.builder()
@@ -41,6 +45,8 @@ public class TestcaseTemplateItemRequest {
                 .defaultType(defaultType)
                 .description(description)
                 .example(example)
+                .editable(editable)
+                .systemLabel(systemLabel)
                 .build();
     }
 

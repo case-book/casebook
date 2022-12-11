@@ -89,3 +89,11 @@ $logo-color-1: #fe0000;
     }
   }
 }
+
+.__react_component_tooltip {
+  font-size: 12px !important;
+  font-family: NotoSans, sans-serif;
+  &::before {
+    display: none;
+  }
+}

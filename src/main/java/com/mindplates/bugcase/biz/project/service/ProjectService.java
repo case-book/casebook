@@ -23,6 +23,8 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
+    private final ProjectFileService projectFileService;
+
     private final TestcaseItemFileService testcaseItemFileService;
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
@@ -56,6 +58,7 @@ public class ProjectService {
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, Project project) {
         testcaseItemFileService.deleteProjectTestcaseItemFile(project.getId());
+        projectFileService.deleteProjectFile(project.getId());
         projectRepository.delete(project);
     }
 

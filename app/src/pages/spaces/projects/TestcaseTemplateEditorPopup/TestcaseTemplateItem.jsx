@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
 import './TestcaseTemplateItem.scss';
+import { useTranslation } from 'react-i18next';
 
 function TestcaseTemplateEditorPopup({ className, testcaseTemplateItem, inx, selected, onClick, editor, parentElement }) {
+  const { t } = useTranslation();
+
   const [openTooltipInfo, setOpenTooltipInfo] = useState({
     inx: null,
     type: '',
@@ -16,7 +19,9 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplateItem, inx, sel
   return (
     <li
       key={inx}
-      className={`testcase-template-item-wrapper ${className} ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${editor && selected ? 'selected' : ''}`}
+      className={`testcase-template-item-wrapper ${className} ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${testcaseTemplateItem.editable ? 'editable' : 'uneditable'} ${
+        editor && selected ? 'selected' : ''
+      }`}
       style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}%)` }}
       onClick={onClick}
     >
@@ -107,7 +112,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplateItem, inx, sel
             </div>
           )}
         </div>
-        <div className="item-info">{testcaseTemplateItem.label}</div>
+        <div className="item-info">{t(testcaseTemplateItem.label)}</div>
       </div>
     </li>
   );
@@ -136,6 +141,7 @@ TestcaseTemplateEditorPopup.propTypes = {
     crud: PropTypes.string,
     description: PropTypes.string,
     example: PropTypes.string,
+    editable: PropTypes.bool,
   }),
   selected: PropTypes.bool,
   onClick: PropTypes.func,

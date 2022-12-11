@@ -39,6 +39,8 @@ public class TestrunService {
     }
 
 
+
+
     public List<Testrun> selectProjectTestrunList(String spaceCode, long projectId, String status) {
 
         if ("ALL".equals(status)) {
@@ -67,6 +69,9 @@ public class TestrunService {
     public void updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItems) {
         testrunTestcaseGroupTestcaseItemRepository.saveAll(testrunTestcaseGroupTestcaseItems);
     }
+
+
+
 
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
 
