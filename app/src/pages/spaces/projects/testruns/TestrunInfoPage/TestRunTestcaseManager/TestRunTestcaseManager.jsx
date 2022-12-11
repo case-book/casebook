@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, SeqId, TestcaseItem } from '@/components';
+import { Button, Loader, SeqId, TestcaseItem } from '@/components';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -12,7 +12,7 @@ import './TestRunTestcaseManager.scss';
 import useStores from '@/hooks/useStores';
 import { ITEM_TYPE } from '@/constants/constants';
 
-function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave }) {
+function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave, contentLoading }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -59,80 +59,83 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
 
   return (
     <div className="testrun-testcase-manager-wrapper">
-      <div>
-        <div className="testcase-title">
-          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
-          <div className="name">{content.name}</div>
-        </div>
-        <div className="title-liner" />
-        <div className="case-content" ref={caseContentElement}>
-          <div className="case-description">
-            <div className="description-title">설명</div>
-            <div className="description-content">
-              <div>{content.description}</div>
+      {contentLoading && <Loader />}
+      <div className="manager-layout">
+        <div className="manager-content">
+          <div className="testcase-title">
+            <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
+            <div className="name">{content.name}</div>
+          </div>
+          <div className="title-liner" />
+          <div className="case-content" ref={caseContentElement}>
+            <div className="case-description">
+              <div className="description-title">설명</div>
+              <div className="description-content">
+                <div>{content.description}</div>
+              </div>
+            </div>
+            <div className="testcase-item-list">
+              {testcaseTemplate?.testcaseTemplateItems
+                .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
+                .map((testcaseTemplateItem, inx) => {
+                  const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+
+                  return (
+                    <TestcaseItem
+                      key={inx}
+                      isEdit={false}
+                      testcaseTemplateItem={testcaseTemplateItem}
+                      testcaseItem={testcaseItem}
+                      content={content}
+                      theme={theme}
+                      createImage={createTestrunImage}
+                      users={users.map(d => {
+                        return {
+                          ...d,
+                          id: d.userId,
+                        };
+                      })}
+                      setOpenTooltipInfo={setOpenTooltipInfo}
+                      caseContentElement={caseContentElement}
+                      openTooltipInfo={openTooltipInfo}
+                      inx={inx}
+                      onChangeTestcaseItem={onChangeTestcaseItem}
+                    />
+                  );
+                })}
+            </div>
+            <div className="testrun-result-list">
+              {testcaseTemplate?.testcaseTemplateItems
+                .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
+                .map((testcaseTemplateItem, inx) => {
+                  const testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+
+                  return (
+                    <TestcaseItem
+                      key={inx}
+                      isEdit
+                      testcaseTemplateItem={testcaseTemplateItem}
+                      testcaseItem={testcaseItem}
+                      content={content}
+                      theme={theme}
+                      createImage={createTestrunImage}
+                      users={users}
+                      setOpenTooltipInfo={setOpenTooltipInfo}
+                      caseContentElement={caseContentElement}
+                      openTooltipInfo={openTooltipInfo}
+                      inx={inx}
+                      onChangeTestcaseItem={onChangeTestcaseItem}
+                    />
+                  );
+                })}
             </div>
           </div>
-          <div className="testcase-item-list">
-            {testcaseTemplate?.testcaseTemplateItems
-              .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
-              .map((testcaseTemplateItem, inx) => {
-                const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-
-                return (
-                  <TestcaseItem
-                    key={inx}
-                    isEdit={false}
-                    testcaseTemplateItem={testcaseTemplateItem}
-                    testcaseItem={testcaseItem}
-                    content={content}
-                    theme={theme}
-                    createImage={createTestrunImage}
-                    users={users.map(d => {
-                      return {
-                        ...d,
-                        id: d.userId,
-                      };
-                    })}
-                    setOpenTooltipInfo={setOpenTooltipInfo}
-                    caseContentElement={caseContentElement}
-                    openTooltipInfo={openTooltipInfo}
-                    inx={inx}
-                    onChangeTestcaseItem={onChangeTestcaseItem}
-                  />
-                );
-              })}
-          </div>
-          <div className="testrun-result-list">
-            {testcaseTemplate?.testcaseTemplateItems
-              .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
-              .map((testcaseTemplateItem, inx) => {
-                const testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-
-                return (
-                  <TestcaseItem
-                    key={inx}
-                    isEdit
-                    testcaseTemplateItem={testcaseTemplateItem}
-                    testcaseItem={testcaseItem}
-                    content={content}
-                    theme={theme}
-                    createImage={createTestrunImage}
-                    users={users}
-                    setOpenTooltipInfo={setOpenTooltipInfo}
-                    caseContentElement={caseContentElement}
-                    openTooltipInfo={openTooltipInfo}
-                    inx={inx}
-                    onChangeTestcaseItem={onChangeTestcaseItem}
-                  />
-                );
-              })}
-          </div>
         </div>
-      </div>
-      <div>
-        <Button outline onClick={onSave}>
-          저장
-        </Button>
+        <div className="control-button">
+          <Button outline onClick={onSave}>
+            저장
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -143,6 +146,7 @@ TestRunTestcaseManager.defaultProps = {
   testcaseTemplates: [],
   users: [],
   onSave: null,
+  contentLoading: false,
 };
 
 TestRunTestcaseManager.propTypes = {
@@ -190,6 +194,7 @@ TestRunTestcaseManager.propTypes = {
   ),
   createTestrunImage: PropTypes.func.isRequired,
   onSave: PropTypes.func,
+  contentLoading: PropTypes.bool,
 };
 
 export default TestRunTestcaseManager;

@@ -20,6 +20,7 @@ class SocketClient extends React.PureComponent {
         onConnect={onConnect}
         onDisconnect={onDisconnect}
         getRetryInterval={count => {
+          console.log(count, 5000 * count);
           return 5000 * count;
         }}
         // autoReconnect={false}

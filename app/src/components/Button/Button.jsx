@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Button.scss';
 
-function Button({ className, type, size, outline, children, shadow, color, rounded, onClick, disabled }) {
+import ReactTooltip from 'react-tooltip';
+
+function Button(props) {
+  const { className, type, size, outline, children, shadow, color, rounded, onClick, disabled, tip } = props;
+
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, []);
+
   return (
     <button
       type={type}
@@ -12,6 +20,7 @@ function Button({ className, type, size, outline, children, shadow, color, round
       color={color}
       onClick={onClick}
       disabled={disabled}
+      data-tip={tip}
     >
       {children}
     </button>
@@ -29,6 +38,7 @@ Button.defaultProps = {
   onClick: null,
   outline: false,
   disabled: false,
+  tip: null,
 };
 
 Button.propTypes = {
@@ -42,6 +52,7 @@ Button.propTypes = {
   outline: PropTypes.bool,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
+  tip: PropTypes.string,
 };
 
 export default Button;

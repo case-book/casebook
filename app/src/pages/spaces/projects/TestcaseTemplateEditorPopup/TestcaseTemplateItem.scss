@@ -4,7 +4,6 @@
   position: relative;
   text-align: left;
   vertical-align: top;
-
   min-height: 70px;
   display: inline-flex;
   box-sizing: border-box;
@@ -20,7 +19,21 @@
   &.selected {
     > div {
       background-color: $color-sunflower;
+      border: 1px solid rgba(0, 0, 0, 0.2);
       color: $black;
+    }
+  }
+
+  &.uneditable {
+    > div {
+      background-color: lighten($color-tangerine, 30%);
+    }
+
+    &.selected {
+      > div {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        background-color: lighten($color-tangerine, 15%);
+      }
     }
   }
 

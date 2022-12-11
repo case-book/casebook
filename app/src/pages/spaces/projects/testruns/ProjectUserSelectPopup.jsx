@@ -45,15 +45,16 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
   }, [currentSelectedUsers, projectUsers]);
 
   return (
-    <Modal className="project-user-select-popup-wrapper" isOpen>
-      <ModalHeader
-        className="modal-header"
-        onClose={() => {
-          if (setOpened) {
-            setOpened(false);
-          }
-        }}
-      >
+    <Modal
+      className="project-user-select-popup-wrapper"
+      isOpen
+      toggle={() => {
+        if (setOpened) {
+          setOpened(false);
+        }
+      }}
+    >
+      <ModalHeader className="modal-header">
         <span>프로젝트 사용자</span>
         <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
         <Button size="sm" outline onClick={allCheck}>

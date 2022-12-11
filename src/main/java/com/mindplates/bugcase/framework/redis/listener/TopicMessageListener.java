@@ -30,7 +30,6 @@ public class TopicMessageListener implements MessageListener {
         try {
             messageBroker.sendMessage(str);
         } catch (JsonProcessingException e) {
-
             log.error(e.getLocalizedMessage(), e);
         }
     }

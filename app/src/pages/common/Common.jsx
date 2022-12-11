@@ -8,11 +8,12 @@ import MessageDialog from '@/pages/common/MessageDialog';
 import ErrorDialog from '@/pages/common/ErrorDialog';
 import { debounce } from 'lodash';
 import ConfigService from '@/services/ConfigService';
-import './Common.scss';
-
+import ReactTooltip from 'react-tooltip';
 import { getOption, setOption } from '@/utils/storageUtil';
 import { useLocation } from 'react-router-dom';
 import { SocketClient } from '@/components';
+
+import './Common.scss';
 
 function Common() {
   const {
@@ -181,6 +182,7 @@ function Common() {
           <div className="loader" />
         </div>
       )}
+      <ReactTooltip effect="solid" />
     </div>
   );
 }

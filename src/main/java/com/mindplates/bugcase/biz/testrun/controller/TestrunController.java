@@ -78,7 +78,7 @@ public class TestrunController {
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
     }
 
-    @Operation(description = "테스트런 닫기")
+    @Operation(description = "테스트런 결과 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
     public ResponseEntity<?> updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
 
@@ -87,6 +87,7 @@ public class TestrunController {
         testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
 
 }

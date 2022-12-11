@@ -24,13 +24,14 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
   }, []);
 
   return (
-    <Modal className={`common-dialog-wrapper message-dialog-wrapper  ${className} ${category}`} isOpen>
-      <ModalHeader
-        className="modal-header"
-        onClose={() => {
-          controlStore.setMessage(null);
-        }}
-      >
+    <Modal
+      className={`common-dialog-wrapper message-dialog-wrapper  ${className} ${category}`}
+      isOpen
+      toggle={() => {
+        controlStore.setMessage(null);
+      }}
+    >
+      <ModalHeader className="modal-header">
         <span className="title">
           <span className={`dialog-icon ${category}`}>
             {category === MESSAGE_CATEGORY.ERROR && <i className="fas fa-exclamation-circle" />}

@@ -153,6 +153,9 @@
         font-size: 14px;
         border-bottom: 1px solid $color-border-light;
         cursor: pointer;
+        > div {
+          align-self: center;
+        }
 
         &.selected {
           background-color: $color-primary-light;
@@ -187,31 +190,30 @@
 
         > div {
           &.name {
-            padding: 0 0.75rem;
+            padding: 0 0.5rem;
             font-weight: bold;
             align-self: center;
             line-height: 125%;
+            white-space: nowrap;
           }
 
           &.email {
-            padding-top: 4px;
             flex-grow: 1;
-            > span {
-              font-size: 12px;
-              font-family: Cairo, sans-serif;
-              text-transform: uppercase;
-              display: inline-block;
-              padding: 4px 6px;
-              background-color: rgba(0, 0, 0, 0.1);
-              line-height: 100%;
-              border-radius: 4px;
-            }
+            margin-right: 0.5rem;
+            line-height: 125%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            font-family: NotoSans, sans-serif;
+            text-transform: uppercase;
+
           }
 
           &.enter {
             text-transform: uppercase;
             align-self: center;
             margin-right: 0.5rem;
+            white-space: nowrap;
             > span {
               font-size: 12px;
               font-family: Cairo, sans-serif;
@@ -286,7 +288,7 @@
 
             &.enter {
               > span {
-                background-color: rgba(0,0,0,0.2);
+                background-color: rgba(0, 0, 0, 0.2);
               }
             }
           }
