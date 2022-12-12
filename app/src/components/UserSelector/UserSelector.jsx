@@ -75,7 +75,9 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
             setText(e.target.value);
           }}
           onFocus={() => {
-            setText(getUserText(users, type, value) || '');
+            if (type === 'user') {
+              setText(getUserText(users, type, value) || '');
+            }
             setOpened(true);
             setFocus(true);
           }}
@@ -88,6 +90,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
               if (filteredList.length === 1) {
                 handleChange('user', filteredList[0].id);
                 element.current.blur();
+                setText(getUserText(users, 'user', filteredList[0].id) || '');
               } else {
                 setOpened(true);
               }
@@ -95,6 +98,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
 
             if (e.key === 'Escape') {
               setOpened(false);
+              setText(getUserText(users, type, value) || '');
               element.current.blur();
             }
           }}

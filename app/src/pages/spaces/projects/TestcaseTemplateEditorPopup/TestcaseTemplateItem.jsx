@@ -51,7 +51,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplateItem, inx, sel
             <div className="desc-and-example">
               {testcaseTemplateItem.description && (
                 <DescriptionTooltip
-                  type={testcaseTemplateItem.type}
+                  type="description"
                   onClose={() => {
                     setOpenTooltipInfo({
                       inx: null,

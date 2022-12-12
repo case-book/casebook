@@ -177,6 +177,7 @@
         &.empty:hover {
           background-color: transparent;
           cursor: text;
+          color: $gray-700 !important;
         }
 
         &.empty,
@@ -185,6 +186,8 @@
           > .name {
             flex-grow: 1;
             text-align: center;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
           }
         }
 

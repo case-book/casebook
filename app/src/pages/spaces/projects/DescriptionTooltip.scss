@@ -20,13 +20,11 @@
     font-weight: normal;
     font-size: 14px;
     padding: 10px;
-
     z-index: 100;
     top: -8px;
-    white-space: pre;
     border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.12);
-    min-width: 160px;
+    width: 300px;
     box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
     cursor: text;
 
@@ -70,6 +68,10 @@
       span:first-child {
         flex-grow: 1;
       }
+    }
+
+    .description-text {
+      white-space: pre-line;
     }
   }
 
