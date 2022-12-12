@@ -9,7 +9,7 @@ function TestcaseViewerLabel({ testcaseTemplateItem, setOpenTooltipInfo, caseCon
       <div className="text">{testcaseTemplateItem.label}</div>
       {testcaseTemplateItem.description && (
         <DescriptionTooltip
-          type={testcaseTemplateItem.type}
+          type="description"
           onClose={() => {
             setOpenTooltipInfo({
               inx: null,

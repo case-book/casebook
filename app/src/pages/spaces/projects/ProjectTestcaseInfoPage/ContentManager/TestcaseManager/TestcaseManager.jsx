@@ -163,6 +163,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
         </div>
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
+          .sort((a, b) => a.itemOrder - b.itemOrder)
           .map((testcaseTemplateItem, inx) => {
             const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
 

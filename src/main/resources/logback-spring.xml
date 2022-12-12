@@ -30,10 +30,10 @@
         <logger name="org.springframework" level="INFO"/>
         <logger name="com.mindplates.bugcase.Application" level="DEBUG"/>
         <logger name="com.mindplates.bugcase"/>
-        <!--
+
         <logger name="org.hibernate.SQL" level="DEBUG"/>
         <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
-        -->
+
         <root level="error">
             <appender-ref ref="CONSOLE"/>
         </root>

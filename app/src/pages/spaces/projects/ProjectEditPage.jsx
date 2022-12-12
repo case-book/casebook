@@ -198,10 +198,12 @@ function ProjectEditPage({ type }) {
 
   const updateProject = () => {
     const nextProject = { ...project };
+    /*
     nextProject.testcaseTemplates.forEach(testcaseTemplate => {
       const nextTestcaseTemplate = testcaseTemplate;
       nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
     });
+    */
 
     ProjectService.updateProject(spaceCode, nextProject, () => {
       navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);

@@ -24,6 +24,7 @@ function ContentManager({
   popupContent,
   setPopupContent,
 }) {
+  console.log(testcaseTemplates);
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 

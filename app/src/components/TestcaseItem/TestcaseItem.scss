@@ -40,6 +40,10 @@
       .editor {
         white-space: pre-wrap;
 
+        .toastui-editor-contents {
+          font-family: NotoSans, sans-serif !important;
+        }
+
         > div {
           white-space: normal;
         }

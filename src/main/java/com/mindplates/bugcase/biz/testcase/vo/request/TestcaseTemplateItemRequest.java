@@ -47,6 +47,7 @@ public class TestcaseTemplateItemRequest {
                 .example(example)
                 .editable(editable)
                 .systemLabel(systemLabel)
+                .deleted("D".equals(crud))
                 .build();
     }
 

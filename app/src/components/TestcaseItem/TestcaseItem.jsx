@@ -115,7 +115,7 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
             )}
             {testcaseTemplateItem.type === 'EDITOR' && (
               <div className="editor" key={`${content.id}-${theme}`}>
-                {!isEdit && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
+                {!isEdit && <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
                 {isEdit && (
                   <Editor
                     ref={editor}
