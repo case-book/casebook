@@ -6,7 +6,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import './CommonDialog.scss';
 
-function ConfirmDialog({ className, category, title, message, okHandler, noHandler, okText, noText }) {
+function ConfirmDialog({ className, category, title, message, okHandler, noHandler, okText, noText, okColor }) {
   const { t } = useTranslation();
   const { controlStore } = useStores();
 
@@ -60,6 +60,7 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
         </Button>
         <Button
           outline
+          color={okColor}
           onClick={() => {
             if (okHandler) {
               okHandler();
@@ -83,6 +84,7 @@ ConfirmDialog.defaultProps = {
   noHandler: null,
   okText: '',
   noText: '',
+  okColor: 'white',
 };
 
 ConfirmDialog.propTypes = {
@@ -94,6 +96,7 @@ ConfirmDialog.propTypes = {
   noHandler: PropTypes.func,
   okText: PropTypes.string,
   noText: PropTypes.string,
+  okColor: PropTypes.string,
 };
 
 export default ConfirmDialog;

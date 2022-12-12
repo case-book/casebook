@@ -11,8 +11,8 @@ function clearMessage(okHandler) {
   rootStore.controlStore.setMessage(null, null, null, null);
 }
 
-function setConfirm(category, title, message, okHandler, noHandler, okText, noText) {
-  rootStore.controlStore.setConfirm(category, title, message, okHandler, noHandler, okText, noText);
+function setConfirm(category, title, message, okHandler, noHandler, okText, noText, okColor) {
+  rootStore.controlStore.setConfirm(category, title, message, okHandler, noHandler, okText, noText, okColor);
 }
 
 function clearConfirm() {

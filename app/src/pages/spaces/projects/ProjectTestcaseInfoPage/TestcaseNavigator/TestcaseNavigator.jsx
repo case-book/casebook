@@ -320,13 +320,29 @@ function TestcaseNavigator({
         </div>
         {addTestcase && addTestcaseGroup && (
           <div className={`right ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
-            <Button className="add-testcase-button" size="xs" onClick={addTestcase} disabled={!selectedItemInfo.type} color="white" outline>
+            <Button
+              className="add-testcase-button"
+              size="xs"
+              onClick={() => {
+                addTestcase(false);
+              }}
+              disabled={!selectedItemInfo.type}
+              color="white"
+              outline
+            >
               <i className="small-icon fa-solid fa-plus" />
               <i className="fa-solid fa-flask" /> <span className="button-text">테스트케이스</span>
             </Button>
             <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
             {addTestcaseGroup && (
-              <Button size="xs" onClick={addTestcaseGroup} color="white" outline>
+              <Button
+                size="xs"
+                onClick={() => {
+                  addTestcaseGroup(false);
+                }}
+                color="white"
+                outline
+              >
                 <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
               </Button>
             )}
@@ -361,7 +377,13 @@ function TestcaseNavigator({
               <div>테스트케이스 그룹이 없습니다.</div>
               {addTestcaseGroup && (
                 <div className="empty-control">
-                  <Button outline size="sm" onClick={addTestcaseGroup}>
+                  <Button
+                    outline
+                    size="sm"
+                    onClick={() => {
+                      addTestcaseGroup(false);
+                    }}
+                  >
                     {width < 180 && (
                       <>
                         <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>

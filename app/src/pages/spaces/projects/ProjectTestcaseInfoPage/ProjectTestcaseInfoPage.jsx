@@ -32,6 +32,7 @@ function ProjectTestcaseInfoPage() {
 
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+      console.log(info);
       setProject(info);
     });
   };
@@ -134,6 +135,13 @@ function ProjectTestcaseInfoPage() {
 
       const nextGroups = testcaseUtil.getTestcaseTreeData(project?.testcaseGroups);
       setTestcaseGroups(nextGroups);
+    } else {
+      setCountSummary({
+        testcaseGroupCount: 0,
+        testcaseCount: 0,
+      });
+
+      setTestcaseGroups([]);
     }
   }, [project]);
 
@@ -141,7 +149,7 @@ function ProjectTestcaseInfoPage() {
     getContent();
   }, [testcaseGroups]);
 
-  const addTestcaseGroup = (focus = true) => {
+  const addTestcaseGroup = (focus = false) => {
     const name = '그룹';
     let testcaseGroup = {
       parentId: null,
@@ -268,6 +276,8 @@ function ProjectTestcaseInfoPage() {
       },
       null,
       t('삭제'),
+      null,
+      'danger',
     );
   };
 

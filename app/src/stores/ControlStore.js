@@ -17,6 +17,7 @@ export default class ControlStore {
     noHandler: null,
     okText: null,
     noText: null,
+    okColor: null,
   };
 
   requestLoading = false;
@@ -57,7 +58,7 @@ export default class ControlStore {
     };
   };
 
-  setConfirm = (category, title, message, okHandler, noHandler, okText, noText) => {
+  setConfirm = (category, title, message, okHandler, noHandler, okText, noText, okColor) => {
     this.confirm = {
       category,
       title,
@@ -66,6 +67,7 @@ export default class ControlStore {
       noHandler,
       okText,
       noText,
+      okColor,
     };
   };
 
