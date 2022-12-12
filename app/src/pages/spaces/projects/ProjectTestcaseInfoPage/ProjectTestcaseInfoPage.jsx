@@ -32,7 +32,6 @@ function ProjectTestcaseInfoPage() {
 
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      console.log(info);
       setProject(info);
     });
   };

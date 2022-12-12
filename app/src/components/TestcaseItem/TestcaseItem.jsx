@@ -57,7 +57,7 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                 )}
               </div>
             )}
-            {(testcaseTemplateItem.type === 'URL' || testcaseTemplateItem.type === 'TEXT') && (
+            {(testcaseTemplateItem.type === 'URL' || testcaseTemplateItem.type === 'TEXT' || testcaseTemplateItem.type === 'NUMBER') && (
               <div className="url">
                 {!isEdit && <div>{testcaseItem.value}</div>}
                 {isEdit && (
@@ -183,7 +183,7 @@ TestcaseItem.propTypes = {
     options: PropTypes.arrayOf(PropTypes.string),
   }),
   testcaseItem: PropTypes.shape({
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
     type: PropTypes.string,
     text: PropTypes.string,
   }),

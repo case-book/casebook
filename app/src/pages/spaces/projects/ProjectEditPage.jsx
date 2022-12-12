@@ -29,7 +29,7 @@ const defaultProjectConfig = {
           itemOrder: 0,
           label: '자동화',
           options: [],
-          size: 4,
+          size: 6,
           defaultValue: null,
           defaultType: null,
           description: '- 스크립트나 자동화 도구 등을 이용하여 API를 이용하여, 테스트 결과가 입력되는지의 표시 여부를 선택합니다.',
@@ -43,7 +43,7 @@ const defaultProjectConfig = {
           itemOrder: 1,
           label: '테스터',
           options: [],
-          size: 4,
+          size: 6,
           defaultValue: null,
           defaultType: '',
           description: null,
@@ -51,20 +51,7 @@ const defaultProjectConfig = {
           editable: false,
           systemLabel: 'TESTER',
         },
-        {
-          category: 'CASE',
-          type: 'RADIO',
-          itemOrder: 2,
-          label: '적합도',
-          options: ['미흡함', '적절함', '우수함'],
-          size: 4,
-          defaultValue: '',
-          defaultType: null,
-          description: '- 테스트케이스에 대한 점수\n- 테스트 케이스의 설명을 통해 테스트를 올바로 수행할 수 있는지를 점수로 표시',
-          example: null,
-          editable: true,
-          systemLabel: null,
-        },
+
         {
           category: 'CASE',
           type: 'EDITOR',
@@ -113,7 +100,7 @@ const defaultProjectConfig = {
           itemOrder: 0,
           label: '테스트 결과',
           options: ['성공', '실패', '수행 불가능'],
-          size: 4,
+          size: 6,
           defaultValue: null,
           defaultType: '',
           description: null,
@@ -123,8 +110,22 @@ const defaultProjectConfig = {
         },
         {
           category: 'RESULT',
-          type: 'EDITOR',
+          type: 'RADIO',
           itemOrder: 1,
+          label: '테스트케이스 평가',
+          options: ['미흡함', '적절함', '우수함'],
+          size: 6,
+          defaultValue: '',
+          defaultType: null,
+          description: '- 테스트케이스에 대한 점수\n- 테스트 케이스의 설명을 통해 테스트를 올바로 수행할 수 있는지를 점수로 표시',
+          example: null,
+          editable: true,
+          systemLabel: null,
+        },
+        {
+          category: 'RESULT',
+          type: 'EDITOR',
+          itemOrder: 2,
           label: '코멘트',
           options: [],
           size: 12,
@@ -197,15 +198,7 @@ function ProjectEditPage({ type }) {
   }, [spaceCode]);
 
   const updateProject = () => {
-    const nextProject = { ...project };
-    /*
-    nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-      const nextTestcaseTemplate = testcaseTemplate;
-      nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-    });
-    */
-
-    ProjectService.updateProject(spaceCode, nextProject, () => {
+    ProjectService.updateProject(spaceCode, project, () => {
       navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
     });
   };
@@ -300,7 +293,8 @@ function ProjectEditPage({ type }) {
 
     nextProject.testcaseTemplates.push({
       name: `테스트케이스 템플릿 ${nextProject.testcaseTemplates.length + 1}`,
-      testcaseTemplateItems: cloneDeep(defaultProjectConfig.testcaseTemplates),
+      testcaseTemplateItems: cloneDeep(defaultProjectConfig.testcaseTemplates[0].testcaseTemplateItems),
+      isDefault: false,
     });
 
     setProject(nextProject);

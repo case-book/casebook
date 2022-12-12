@@ -131,7 +131,6 @@ function TestcaseNavigator({
         '확인',
       );
     } else {
-      console.log(info);
       onSelect(info);
     }
   };
