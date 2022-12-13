@@ -62,13 +62,11 @@
 
       .static-menu,
       .menu {
-        font-family: NanumGothic, sans-serif;
         > div {
           > ul {
             > li {
               a {
                 color: $gray-600;
-                font-family: NanumGothic, sans-serif;
 
                 &::after {
                   background-color: black;
@@ -285,7 +283,7 @@
     .static-menu,
     .menu {
       display: flex;
-      font-family: NotoSans, sans-serif;
+
       font-size: 16px;
       height: 100%;
 
@@ -353,7 +351,6 @@
                 line-height: 100%;
                 border-radius: 2px;
                 padding: 5px 8px;
-                font-family: NotoSans, sans-serif;
 
                 > div {
                   display: inline-block;

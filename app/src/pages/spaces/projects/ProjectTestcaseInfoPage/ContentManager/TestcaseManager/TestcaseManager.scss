@@ -64,7 +64,7 @@
   .case-content {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1rem 1rem 4rem;
 
     .case-description {
       padding: 0.5rem;
@@ -82,8 +82,9 @@
 
   &.is-edit {
     .case-content {
+      padding: 1rem 0.5rem 4rem;
       .case-description {
-        padding-bottom: 0;
+        padding: 0.5rem 1rem 0;
         background-color: transparent;
       }
 

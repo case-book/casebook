@@ -54,6 +54,7 @@
     max-width: 120px;
     color: $black !important;
     box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+    border: 1px solid $color-border-light-focus;
     max-height: 201px;
     overflow-y: auto;
     border-radius: 2px;
@@ -67,6 +68,7 @@
       li {
         white-space: nowrap;
         cursor: pointer;
+        line-height: 0;
 
         > span {
           padding: 0.5rem;
@@ -74,7 +76,7 @@
           width: 100%;
           overflow-x: hidden;
           text-overflow: ellipsis;
-          line-height: 125%;
+          line-height: 120%;
         }
 
         &:last-child {

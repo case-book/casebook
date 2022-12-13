@@ -102,13 +102,11 @@
     > div {
       .value {
         border: none;
-        padding: 1rem;
         padding: 0 0.5rem;
         background-color: transparent;
 
         &.EDITOR {
-          padding: 0;
-
+          padding: 0 0.5rem;
           border: none;
 
           .toastui-editor-defaultUI .ProseMirror {
