@@ -288,7 +288,6 @@ function SpaceListPage() {
             )}
           </div>
         </div>
-        <div className="bottom">1</div>
         <div className="version">
           <div className="app-version">
             {process.env.REACT_APP_NAME}-{process.env.REACT_APP_VERSION}

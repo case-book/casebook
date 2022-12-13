@@ -38,6 +38,8 @@ function Header({ className }) {
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [projectList, setProjectList] = useState([]);
 
   const [notificationLoading, setNotificationLoading] = useState(false);
@@ -152,12 +154,17 @@ function Header({ className }) {
 
   return (
     <header className={`${className} g-no-select header-wrapper ${hideHeader ? 'hide' : ''} ${isRoot ? 'is-main' : ''} theme-${theme}`}>
-      <div className="header-bg">
-        <span>
-          <i className="fa-solid fa-chess-rook" />
-        </span>
-      </div>
       <div className="header-content">
+        <div
+          className="mobile-menu-button"
+          onClick={() => {
+            setMobileMenuOpen(!mobileMenuOpen);
+          }}
+        >
+          <span>
+            <i className="fa-solid fa-bars" />
+          </span>
+        </div>
         <div className={`back-navigator ${isRoot ? 'is-root' : ''}`}>
           <div
             onClick={() => {
@@ -385,6 +392,141 @@ function Header({ className }) {
           </Button>
         </div>
       </div>
+      {mobileMenuOpen && (
+        <div className="mobile-menu">
+          <ul>
+            {MENUS.filter(d => d.pc)
+              .filter(d => d.project === isProjectSelected)
+              .filter(d => !d.admin)
+              .filter(d => d.login === undefined || d.login === isLogin)
+              .map((d, inx) => {
+                let isSelected = false;
+                if (d.project) {
+                  isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
+                } else if (d.selectedAlias) {
+                  isSelected = d.selectedAlias.reduce((p, c) => {
+                    return p || c.test(location.pathname);
+                  }, false);
+                }
+
+                if (!isSelected) {
+                  isSelected = location.pathname === d.to;
+                }
+
+                return (
+                  <li
+                    key={inx}
+                    className={isSelected ? 'selected' : ''}
+                    style={{
+                      animationDelay: `${inx * 0.1}s`,
+                    }}
+                  >
+                    <Link
+                      to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      <span className="text">
+                        {d.name}
+                        <span />
+                      </span>
+                    </Link>
+                    <div className="cursor">
+                      <div />
+                    </div>
+                  </li>
+                );
+              })}
+
+            {STATIC_MENUS.filter(d => d.pc)
+              .filter(d => !d.admin || (d.admin && user.systemRole === 'ROLE_ADMIN'))
+              .map((d, inx) => {
+                const isSelected = d.selectedAlias.reduce((p, c) => {
+                  return p || c.test(location.pathname);
+                }, false);
+
+                return (
+                  <li
+                    key={inx}
+                    className={isSelected ? 'selected' : ''}
+                    style={{
+                      animationDelay: `${inx * 0.1}s`,
+                    }}
+                  >
+                    <Link
+                      to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+                      onClick={e => {
+                        if (d.prefixSpace) {
+                          e.preventDefault();
+
+                          if (isSpaceSelected) {
+                            navigate(`/spaces/${spaceCode}${d.to}`);
+                            setMobileMenuOpen(false);
+                          } else {
+                            setMenuAlert({
+                              inx,
+                              message: '스페이스를 먼저 선택해주세요.',
+                            });
+
+                            if (timer.current) {
+                              clearTimeout(timer.current);
+                              timer.current = null;
+                            }
+
+                            timer.current = setTimeout(() => {
+                              timer.current = null;
+                              setMenuAlert({
+                                inx: null,
+                                message: '',
+                              });
+                            }, 2000);
+                          }
+                        }
+                      }}
+                    >
+                      <span className="text">{d.name}</span>
+                      {menuAlert.inx === inx && (
+                        <span className="alert-message">
+                          <div />
+                          {menuAlert.message}
+                        </span>
+                      )}
+                    </Link>
+                    {d.key === 'space' && isSpaceSelected && (
+                      <TargetSelector
+                        value={spaceCode}
+                        list={user?.spaces?.map(space => {
+                          return {
+                            key: space.code,
+                            value: space.name,
+                          };
+                        })}
+                        onClick={value => {
+                          navigate(`/spaces/${value}/projects`);
+                        }}
+                      />
+                    )}
+                    {d.key === 'project' && isProjectSelected && (
+                      <TargetSelector
+                        value={Number(projectId)}
+                        list={projectList?.map(project => {
+                          return {
+                            key: project.id,
+                            value: project.name,
+                          };
+                        })}
+                        onClick={value => {
+                          navigate(`/spaces/${spaceCode}/projects/${value}`);
+                        }}
+                      />
+                    )}
+                  </li>
+                );
+              })}
+          </ul>
+        </div>
+      )}
       {notificationOpen && (
         <div
           className="notification-list"

@@ -27,8 +27,6 @@ export default class ControlStore {
     message: null,
   };
 
-  mobileMenuOpened = false;
-
   hideHeader = false;
 
   constructor() {
@@ -38,13 +36,11 @@ export default class ControlStore {
       requestLoading: observable,
       error: observable,
       hideHeader: observable,
-      mobileMenuOpened: observable,
       setMessage: action,
       setConfirm: action,
       setRequestLoading: action,
       setError: action,
       setHideHeader: action,
-      setMobileMenuOpen: action,
     });
   }
 
@@ -85,12 +81,6 @@ export default class ControlStore {
   setHideHeader = hideHeader => {
     if (this.hideHeader !== hideHeader) {
       this.hideHeader = hideHeader;
-    }
-  };
-
-  setMobileMenuOpen = opened => {
-    if (this.mobileMenuOpened !== opened) {
-      this.mobileMenuOpened = opened;
     }
   };
 }

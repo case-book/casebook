@@ -152,23 +152,5 @@
     }
   }
 
-  .menu-button {
-    flex-grow: 1;
-    text-align: right;
-    margin-right: 8px;
-    font-size: 20px;
-    height: 100%;
-    justify-content: right;
-    display: none;
 
-    @media (max-width: 768px) {
-      display: flex;
-    }
-    button {
-      align-self: center;
-      padding-left: 10px;
-      padding-right: 10px;
-      line-height: 18px;
-    }
-  }
 }
