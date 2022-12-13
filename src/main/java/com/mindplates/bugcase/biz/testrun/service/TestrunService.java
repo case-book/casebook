@@ -76,7 +76,7 @@ public class TestrunService {
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
 
         Project project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        int currentTestrunSeq = project.getTestrunSeq() + 1;
+        int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
         project.setTestrunSeq(currentTestrunSeq);
         projectService.updateProjectInfo(spaceCode, project);
 

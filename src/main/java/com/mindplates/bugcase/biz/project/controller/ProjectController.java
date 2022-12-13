@@ -132,7 +132,7 @@ public class ProjectController {
             return testcaseTemplate;
         })).filter(testcaseTemplate -> !testcaseTemplate.isDeleted()).collect(Collectors.toList());
 
-        if (testcaseTemplates.size() > 0 && !hasDefault.get()) {
+        if (!testcaseTemplates.isEmpty() && !hasDefault.get()) {
             testcaseTemplates.get(0).setIsDefault(true);
         }
 
@@ -145,7 +145,6 @@ public class ProjectController {
                         .project(nextProject).build()).collect(Collectors.toList());
 
         nextProject.setUsers(projectUserList);
-
 
         nextProject.setTestcaseTemplates(testcaseTemplates);
 

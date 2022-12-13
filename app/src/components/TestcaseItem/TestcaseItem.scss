@@ -4,27 +4,24 @@
   padding: 0.5rem;
 
   > div {
-    border-radius: 0;
-
-    .case-liner {
-      margin: 0;
-      height: 1px;
-      background-color: transparent;
-    }
-
-    .value {
-      padding: 0 1rem;
-      min-height: 70px;
+    > .value {
+      padding: 1rem;
       display: flex;
       box-sizing: border-box;
       font-family: NotoSans, sans-serif;
-      background-color: #f7f7f7;
+      background-color: #fafafa;
       border-radius: 8px;
       border: 1px solid rgba(0, 0, 0, 0.04);
 
       > div {
         align-self: center;
         width: 100%;
+      }
+
+      .value-text:empty {
+        &:before {
+          content: '\00a0';
+        }
       }
 
       .select {
@@ -39,6 +36,10 @@
 
       .editor {
         white-space: pre-wrap;
+
+        .toastui-editor-contents {
+          font-family: NotoSans, sans-serif !important;
+        }
 
         > div {
           white-space: normal;
@@ -93,5 +94,49 @@
 
   &.size-12 {
     width: calc((100% / 12) * 12);
+  }
+}
+
+.is-edit {
+  .testcase-item-wrapper {
+    > div {
+      .value {
+        border: none;
+        padding: 0 0.5rem;
+        background-color: transparent;
+
+        &.EDITOR {
+          padding: 0 0.5rem;
+          border: none;
+
+          .toastui-editor-defaultUI .ProseMirror {
+            padding: 16px;
+            font-family: NotoSans, sans-serif;
+          }
+
+          .toastui-editor-mode-switch {
+            .tab-item {
+              margin-top: 0;
+              border: none;
+              background-color: transparent;
+              font-family: NotoSans, sans-serif;
+              text-transform: uppercase;
+              border-radius: 0;
+              border-bottom: 2px solid transparent;
+              height: 100%;
+
+              &:hover {
+                color: black;
+                border-bottom: 2px solid lighten($color-primary-light, 10%);
+              }
+
+              &.active {
+                border-bottom: 2px solid $color-primary-light;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

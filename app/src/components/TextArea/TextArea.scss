@@ -8,6 +8,8 @@
   resize: none;
   border: 1px solid $color-border-light;
   color: $black;
+  font-family: NotoSans, sans-serif;
+  line-height: 120%;
 
   &:focus {
     box-shadow: none;

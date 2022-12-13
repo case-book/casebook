@@ -5,9 +5,10 @@ import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import { useTranslation } from 'react-i18next';
+import copyText from 'copy-to-clipboard';
 import './SeqId.scss';
 
-function TestcaseManager({ className, children, type, copy, size }) {
+function TestcaseManager({ className, children, type, size, copy }) {
   const { t } = useTranslation();
 
   const [copied, setCopied] = useState(false);
@@ -22,7 +23,7 @@ function TestcaseManager({ className, children, type, copy, size }) {
             setTimeout(() => {
               setCopied(false);
             }, 1000);
-            copy(children);
+            copyText(children);
           }
         }}
       >

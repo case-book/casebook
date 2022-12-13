@@ -2,17 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Liner from '@/components/Liner/Liner';
 import { useNavigate } from 'react-router-dom';
-import Button from '@/components/Button/Button';
-import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import './PageTitle.scss';
 
 function PageTitle({ className, children, links, control }) {
   const navigate = useNavigate();
-
-  const {
-    controlStore: { mobileMenuOpened, setMobileMenuOpen },
-  } = useStores();
 
   return (
     <div className={`page-title-wrapper g-no-select ${className}`}>
@@ -46,17 +40,6 @@ function PageTitle({ className, children, links, control }) {
           </div>
         )}
         {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
-        <div className="menu-button">
-          <Button
-            size="sm"
-            color="white"
-            onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpened);
-            }}
-          >
-            <i className="fal fa-bars" />
-          </Button>
-        </div>
       </div>
     </div>
   );

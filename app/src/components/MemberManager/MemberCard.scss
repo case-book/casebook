@@ -23,9 +23,13 @@
           display: inline-flex;
           text-align: right;
 
+          .tag {
+            font-family: NotoSans, sans-serif;
+            font-weight: normal;
+          }
+
           &.ADMIN {
             > div {
-              background-color: $color-primary-light;
             }
           }
 

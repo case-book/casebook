@@ -165,6 +165,7 @@ function Common() {
           noHandler={controlStore.confirm?.noHandler}
           okText={controlStore.confirm?.okText || ''}
           noText={controlStore.confirm?.noText || ''}
+          okColor={controlStore.confirm?.okColor}
         />
       )}
       {!loading && controlStore.message?.message && (

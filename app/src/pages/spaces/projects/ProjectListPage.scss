@@ -82,18 +82,20 @@
                 text-overflow: ellipsis;
                 white-space: normal;
                 font-family: NotoSans, sans-serif;
+                margin-bottom: 1rem;
               }
 
               .count {
                 flex-grow: 1;
                 display: flex;
+                margin-bottom: 1rem;
                 > div {
                   flex: 1 1 0;
                   display: flex;
                   justify-content: center;
                   padding: 0;
                   margin-right: 1rem;
-
+                  background-color: $gray-100;
                   &:last-child {
                     margin-right: 0;
                   }
@@ -102,10 +104,10 @@
                     align-self: center;
                     text-align: center;
                     width: 100%;
-                    background-color: $gray-100;
                     padding: 0.5rem 0;
                     border-radius: 4px;
                     cursor: pointer;
+                    line-height: 160%;
 
                     .icon {
                       font-size: 18px;
@@ -154,6 +156,7 @@
                     .number {
                       text-align: center;
                       font-size: 34px;
+                      margin-top: 4px;
                       @include number;
                     }
 
@@ -162,6 +165,7 @@
                       line-height: 100%;
                       font-family: Cairo, sans-serif;
                       font-weight: bold;
+                      margin-top: 12px;
                     }
                   }
                 }
@@ -266,7 +270,6 @@
                 &.info:hover {
                   background-color: #837e7e;
                   transition: all 0.3s;
-
                 }
 
                 > div {

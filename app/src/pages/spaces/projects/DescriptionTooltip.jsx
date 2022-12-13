@@ -33,7 +33,7 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
         if (elementRect.length > 0) {
           const tooltipRect = tooltip.current.getClientRects();
 
-          if (elementRect[0].right > tooltipRect[0].right + 200) {
+          if (elementRect[0].right > tooltipRect[0].right + 400) {
             setLeftList(true);
           } else {
             setLeftList(false);
@@ -82,7 +82,7 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
             )}
           </div>
           {type === 'EDITOR' && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={text} />}
-          {type !== 'EDITOR' && text}
+          {type !== 'EDITOR' && <div className="description-text">{text}</div>}
         </div>
       )}
     </span>

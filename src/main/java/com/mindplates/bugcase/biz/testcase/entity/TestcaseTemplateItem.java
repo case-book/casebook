@@ -68,4 +68,7 @@ public class TestcaseTemplateItem extends CommonEntity {
     @Column(name = "system_label", length = ColumnsDef.CODE)
     private String systemLabel;
 
+    @Transient
+    private boolean deleted;
+
 }

@@ -86,6 +86,20 @@
     }
   }
 
+  &.xs {
+    height: $xs-height;
+    line-height: 0;
+    label {
+      font-size: 14px;
+    }
+
+    .checked-icon {
+      width: $xs-height;
+      height: $xs-height;
+      font-size: 14px;
+    }
+  }
+
   &:hover {
     .checked-icon {
       border-color: $color-border-light-focus;

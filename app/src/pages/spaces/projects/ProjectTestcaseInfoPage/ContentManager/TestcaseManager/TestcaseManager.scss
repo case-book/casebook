@@ -64,52 +64,33 @@
   .case-content {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1rem 1rem 4rem;
 
     .case-description {
-      padding: 0 0.5rem;
-      margin-top: 0.5rem;
-      > div.description-title {
-        margin-bottom: 0.75rem;
-        padding: 0 0.5rem;
-        font-family: NotoSans, sans-serif;
-      }
-      > div.description-content {
-        padding: 1rem;
-        min-height: 58px;
-        display: flex;
-        box-sizing: border-box;
-        font-family: NotoSans, sans-serif;
-        background-color: #f7f7f7;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        border-radius: 8px;
-        white-space: pre-wrap;
+      padding: 0.5rem;
+      font-family: NotoSans, sans-serif;
+      font-size: 14px;
+      border-radius: 2px;
+
+      .case-description-content {
+        &.empty {
+          color: $gray-600;
+        }
       }
     }
-
-
   }
 
   &.is-edit {
     .case-content {
+      padding: 1rem 0.5rem 4rem;
       .case-description {
-        > div.description-title {
-          padding-left: 0;
-          padding-right: 0;
-        }
-        > div.description-content {
-          padding: 0;
-          background-color: transparent;
-          border: none;
-          border-radius: 0;
-        }
+        padding: 0.5rem 1rem 0;
+        background-color: transparent;
       }
 
       .case-item {
         > div {
           background-color: transparent;
-
-
 
           .case-liner {
           }
@@ -195,8 +176,6 @@
           background-color: #161616;
           border-radius: 4px;
           _border: 1px solid rgba(255, 255, 255, 0.05);
-
-
 
           .case-liner {
             margin: 0 2px;
@@ -296,8 +275,6 @@
         .case-item {
           > div {
             background-color: transparent;
-
-
 
             .case-liner {
             }

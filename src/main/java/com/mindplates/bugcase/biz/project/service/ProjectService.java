@@ -3,6 +3,8 @@ package com.mindplates.bugcase.biz.project.service;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.UserRole;
@@ -13,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,8 @@ public class ProjectService {
     private final ProjectFileService projectFileService;
 
     private final TestcaseItemFileService testcaseItemFileService;
+
+    private final TestcaseItemRepository testcaseItemRepository;
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Optional<Project> selectProjectInfo(String spaceCode, Long projectId) {
@@ -50,7 +55,24 @@ public class ProjectService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public Project updateProjectInfo(String spaceCode, Project project) {
+
+        List<Long> deleteTestcaseItemIds = new ArrayList<>();
+        project.getTestcaseTemplates().forEach((testcaseTemplate -> {
+            testcaseTemplate.getTestcaseTemplateItems().forEach((testcaseTemplateItem -> {
+                if (testcaseTemplateItem.isDeleted()) {
+                    deleteTestcaseItemIds.add(testcaseTemplateItem.getId());
+                }
+            }));
+        }));
+
+        project.getTestcaseTemplates().forEach((testcaseTemplate -> {
+            testcaseTemplate.getTestcaseTemplateItems().removeIf((TestcaseTemplateItem::isDeleted));
+        }));
+
         projectRepository.save(project);
+
+        deleteTestcaseItemIds.forEach(testcaseItemRepository::deleteByTestcaseTemplateItemId);
+
         return project;
     }
 

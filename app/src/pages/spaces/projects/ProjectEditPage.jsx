@@ -23,19 +23,121 @@ const defaultProjectConfig = {
     {
       name: '기본 템플릿',
       testcaseTemplateItems: [
-        { category: 'CASE', type: 'USER', itemOrder: 0, label: '테스터', options: [], size: 4, editable: false, defaultType: '', systemLabel: 'TESTER' },
-        { category: 'CASE', type: 'RADIO', itemOrder: 1, label: '중요도', options: ['상', '중', '하'], size: 4, defaultValue: '중', editable: true },
-        { category: 'CASE', type: 'URL', itemOrder: 2, label: 'URL', options: [], size: 4, editable: true, defaultType: '' },
-        { category: 'CASE', type: 'CHECKBOX', itemOrder: 3, label: 'E2E', options: [], size: 4, editable: true, defaultType: '' },
-        { category: 'CASE', type: 'USER', itemOrder: 4, label: '담당자', options: [], size: 4, editable: true, defaultType: '' },
-        { category: 'CASE', type: 'CHECKBOX', itemOrder: 5, label: '회귀 테스트', options: [], size: 4, editable: true, defaultType: '' },
-        { category: 'CASE', type: 'EDITOR', itemOrder: 6, label: '테스트 준비 절차', options: [], size: 12, editable: true, defaultType: '' },
-        { category: 'CASE', type: 'EDITOR', itemOrder: 7, label: '테스트 절차', options: [], size: 12, editable: true, defaultType: '' },
-        { category: 'CASE', type: 'EDITOR', itemOrder: 8, label: '예상 절차', options: [], size: 12, editable: true, defaultType: '' },
-        { category: 'RESULT', type: 'RADIO', itemOrder: 0, label: '테스트 결과', options: ['성공', '실패', '수행 불가능'], size: 6, editable: false, defaultType: '', systemLabel: 'TEST_RESULT' },
-        { category: 'RESULT', type: 'RADIO', itemOrder: 1, label: '테스트케이스 평가', options: ['1', '2', '3', '4', '5'], size: 6, editable: true, defaultType: '' },
-        { category: 'RESULT', type: 'EDITOR', itemOrder: 2, label: '비고', options: [], size: 12, editable: true, defaultType: '' },
+        {
+          category: 'CASE',
+          type: 'CHECKBOX',
+          itemOrder: 0,
+          label: '자동화',
+          options: [],
+          size: 6,
+          defaultValue: null,
+          defaultType: null,
+          description: '- 스크립트나 자동화 도구 등을 이용하여 API를 이용하여, 테스트 결과가 입력되는지의 표시 여부를 선택합니다.',
+          example: null,
+          editable: false,
+          systemLabel: null,
+        },
+        {
+          category: 'CASE',
+          type: 'USER',
+          itemOrder: 1,
+          label: '테스터',
+          options: [],
+          size: 6,
+          defaultValue: null,
+          defaultType: '',
+          description: null,
+          example: null,
+          editable: false,
+          systemLabel: 'TESTER',
+        },
+
+        {
+          category: 'CASE',
+          type: 'EDITOR',
+          itemOrder: 3,
+          label: '전제 조건',
+          options: [],
+          size: 12,
+          defaultValue: null,
+          defaultType: null,
+          description: '- 테스트를 수행하기전에 필요한 전체 조건 혹은 사전 수행 절차',
+          example: null,
+          editable: true,
+          systemLabel: null,
+        },
+        {
+          category: 'CASE',
+          type: 'EDITOR',
+          itemOrder: 4,
+          label: '테스트 절차',
+          options: [],
+          size: 12,
+          defaultValue: null,
+          defaultType: null,
+          description: '- 예상 결과를 얻기 위해 수행해야할 테스트 수행 절차',
+          example: null,
+          editable: true,
+          systemLabel: null,
+        },
+        {
+          category: 'CASE',
+          type: 'EDITOR',
+          itemOrder: 5,
+          label: '예상 결과',
+          options: [],
+          size: 12,
+          defaultValue: null,
+          defaultType: null,
+          description: '- 테스트 절차를 수행했을때 예상되는 결과',
+          example: null,
+          editable: true,
+          systemLabel: null,
+        },
+        {
+          category: 'RESULT',
+          type: 'RADIO',
+          itemOrder: 0,
+          label: '테스트 결과',
+          options: ['성공', '실패', '수행 불가능'],
+          size: 6,
+          defaultValue: null,
+          defaultType: '',
+          description: null,
+          example: null,
+          editable: false,
+          systemLabel: 'TEST_RESULT',
+        },
+        {
+          category: 'RESULT',
+          type: 'RADIO',
+          itemOrder: 1,
+          label: '테스트케이스 평가',
+          options: ['미흡함', '적절함', '우수함'],
+          size: 6,
+          defaultValue: '',
+          defaultType: null,
+          description: '- 테스트케이스에 대한 점수\n- 테스트 케이스의 설명을 통해 테스트를 올바로 수행할 수 있는지를 점수로 표시',
+          example: null,
+          editable: true,
+          systemLabel: null,
+        },
+        {
+          category: 'RESULT',
+          type: 'EDITOR',
+          itemOrder: 2,
+          label: '코멘트',
+          options: [],
+          size: 12,
+          defaultValue: null,
+          defaultType: null,
+          description: '- 테스트 수행 결과에 대한 추가적인 정보가 필요한 경우 입력합니다.',
+          example: null,
+          editable: true,
+          systemLabel: null,
+        },
       ],
+
       isDefault: true,
     },
   ],
@@ -96,13 +198,7 @@ function ProjectEditPage({ type }) {
   }, [spaceCode]);
 
   const updateProject = () => {
-    const nextProject = { ...project };
-    nextProject.testcaseTemplates.forEach(testcaseTemplate => {
-      const nextTestcaseTemplate = testcaseTemplate;
-      nextTestcaseTemplate.testcaseTemplateItems = testcaseTemplate.testcaseTemplateItems.filter(d => d.crud !== 'D');
-    });
-
-    ProjectService.updateProject(spaceCode, nextProject, () => {
+    ProjectService.updateProject(spaceCode, project, () => {
       navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
     });
   };
@@ -197,10 +293,8 @@ function ProjectEditPage({ type }) {
 
     nextProject.testcaseTemplates.push({
       name: `테스트케이스 템플릿 ${nextProject.testcaseTemplates.length + 1}`,
-      testcaseTemplateItems: [
-        { category: 'CASE', type: 'USER', itemOrder: 0, label: '테스터', options: [], size: 4, editable: false, defaultType: '', systemLabel: 'TESTER' },
-        { category: 'RESULT', type: 'RADIO', itemOrder: 0, label: '테스트 결과', options: ['성공', '실패', '수행 불가능'], size: 6, editable: false, defaultType: '', systemLabel: 'TEST_RESULT' },
-      ],
+      testcaseTemplateItems: cloneDeep(defaultProjectConfig.testcaseTemplates[0].testcaseTemplateItems),
+      isDefault: false,
     });
 
     setProject(nextProject);
