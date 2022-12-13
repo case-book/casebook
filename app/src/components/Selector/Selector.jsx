@@ -57,7 +57,7 @@ function Selector({ className, onChange, items, value, addAll, size, separator, 
   return (
     <div
       ref={element}
-      className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''}`}
+      className={`selector-wrapper g-no-select ${className} size-${size} ${radius ? 'radius' : ''} ${disabled ? 'disabled' : ''} ${open ? 'opened' : ''}`}
       style={{
         minWidth: `${minWidth}`,
       }}

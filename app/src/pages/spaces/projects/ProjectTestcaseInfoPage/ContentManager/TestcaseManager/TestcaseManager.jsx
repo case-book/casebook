@@ -155,11 +155,8 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       <div className="title-liner" />
       <div className="case-content" ref={caseContentElement}>
         <div className="case-description">
-          <div className="description-title">설명</div>
-          <div className="description-content">
-            {!isEdit && <div>{content.description}</div>}
-            {isEdit && <TextArea placeholder="테스트케이스에 대한 설명을 입력해주세요." value={content.description || ''} rows={2} onChange={onChangeTestcaseTemplateDescription} autoHeight />}
-          </div>
+          {!isEdit && <div className={`case-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다')}</div>}
+          {isEdit && <TextArea size="sm" placeholder="테스트케이스에 대한 설명을 입력해주세요." value={content.description || ''} rows={4} onChange={onChangeTestcaseTemplateDescription} autoHeight />}
         </div>
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')

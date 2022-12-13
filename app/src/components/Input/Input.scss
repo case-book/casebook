@@ -7,11 +7,12 @@
   z-index: 2;
   border-radius: 2px;
   box-sizing: border-box;
-  transition: border-bottom 0.5s;
+  transition: all 0.5s;
   font-family: NotoSans, sans-serif;
   color: $black;
   border: none;
   background-color: $white;
+
 
   &.underline {
     border-bottom: 1px solid transparent;

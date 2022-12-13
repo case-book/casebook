@@ -14,12 +14,11 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
     <div key={testcaseTemplateItem.id} className={`testcase-item-wrapper size-${testcaseTemplateItem?.size}`}>
       <div>
         <TestcaseViewerLabel testcaseTemplateItem={testcaseTemplateItem} setOpenTooltipInfo={setOpenTooltipInfo} caseContentElement={caseContentElement} openTooltipInfo={openTooltipInfo} inx={inx} />
-        <div className="case-liner" />
         <div className={`value ${testcaseTemplateItem.type}`}>
           <div>
             {testcaseTemplateItem.type === 'RADIO' && (
-              <div className="radio">
-                {!isEdit && <div>{testcaseItem.value}</div>}
+              <div>
+                {!isEdit && <div className="value-text">{testcaseItem.value}</div>}
                 {isEdit &&
                   testcaseTemplateItem?.options?.map(d => {
                     return (
@@ -40,8 +39,8 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
               </div>
             )}
             {testcaseTemplateItem.type === 'CHECKBOX' && (
-              <div className="checkbox">
-                {!isEdit && <div>{testcaseItem.value === 'Y' ? 'Y' : 'N'}</div>}
+              <div>
+                {!isEdit && <div className="value-text">{testcaseItem.value === 'Y' ? 'Y' : 'N'}</div>}
                 {isEdit && (
                   <CheckBox
                     size="md"
@@ -58,8 +57,8 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
               </div>
             )}
             {(testcaseTemplateItem.type === 'URL' || testcaseTemplateItem.type === 'TEXT' || testcaseTemplateItem.type === 'NUMBER') && (
-              <div className="url">
-                {!isEdit && <div>{testcaseItem.value}</div>}
+              <div>
+                {!isEdit && <div className="value-text">{testcaseItem.value}</div>}
                 {isEdit && (
                   <Input
                     type={testcaseTemplateItem.type.toLowerCase()}
@@ -78,7 +77,7 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
             )}
             {testcaseTemplateItem.type === 'SELECT' && (
               <div className="select">
-                {!isEdit && <div>{testcaseItem.value}</div>}
+                {!isEdit && <div className="value-text">{testcaseItem.value}</div>}
                 {isEdit && (
                   <Selector
                     color="black"
@@ -99,8 +98,8 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
               </div>
             )}
             {testcaseTemplateItem.type === 'USER' && (
-              <div className="url">
-                {!isEdit && <div>{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</div>}
+              <div>
+                {!isEdit && <div className="value-text">{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</div>}
                 {isEdit && (
                   <UserSelector
                     users={users}

@@ -58,83 +58,24 @@
     flex-direction: column;
 
     .group-description {
-      padding: 0 1rem;
-      margin-top: 0.5rem;
+      padding: 1rem;
+      background-color: #f7f7f7;
+
+      font-size: 14px;
+      border-radius: 2px;
 
       &.empty {
-        padding: 0;
-      }
-      > div.description-title {
-        margin-bottom: 0.75rem;
-        padding: 0 0.5rem;
-        font-family: NotoSans, sans-serif;
-      }
-      > div.description-content {
-        .text {
-          display: flex;
-          .left,
-          .right {
-            font-size: 12px;
-            position: relative;
-            i {
-              position: absolute;
-              color: $gray-600;
-            }
-          }
-          .left {
-            align-self: flex-start;
-            i {
-              top: -6px;
-              left: -6px;
-            }
-          }
-
-          .right {
-            align-self: flex-end;
-            i {
-              bottom: -6px;
-              right: -6px;
-            }
-          }
-          .description {
-            flex-grow: 1;
-            min-height: 40px;
-            _background-color: #f7f7f7;
-            display: flex;
-            box-sizing: border-box;
-            font-family: NotoSans, sans-serif;
-            padding: 0 0.5rem;
-            font-size: 14px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-
-            &.empty {
-              text-align: center;
-              width: 100%;
-              flex-grow: 1;
-              flex-direction: row;
-              display: flex;
-              justify-content: center;
-              background-color: $gray-100;
-              > div {
-                align-self: center;
-                color: $gray-700;
-              }
-            }
-          }
-        }
+        color: $gray-600;
       }
     }
 
     .list-title {
-      margin-top: 1rem;
       margin-bottom: 0;
       padding: 1rem;
-      font-family: NotoSans, sans-serif;
+
+      font-weight: bold;
       display: flex;
       border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-      _background-color: $gray-100;
-      _border-radius: 4px;
 
       > div {
         align-self: center;
@@ -171,7 +112,6 @@
 
           .name {
             flex-grow: 1;
-            font-family: NotoSans, sans-serif;
           }
 
           .edit-button {
@@ -209,6 +149,8 @@
           -webkit-box-orient: vertical;
           text-overflow: ellipsis;
           white-space: pre;
+          margin-left: 1rem;
+          color: $gray-600;
         }
       }
     }
@@ -223,17 +165,8 @@
   &.is-edit {
     .group-content {
       .group-description {
-        > div.description-title {
-          padding-left: 0;
-          padding-right: 0;
-        }
-
-        > div.description-content {
-          padding: 0;
-          background-color: transparent;
-          border: none;
-          border-radius: 0;
-        }
+        padding: 0;
+        background-color: transparent;
       }
     }
   }

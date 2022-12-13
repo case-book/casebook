@@ -2,8 +2,13 @@
   display: inline-block;
   position: relative;
   border: 1px solid $color-border-light;
+  transition: all 0.5s;
   font-family: NotoSans, sans-serif;
-  font-weight: normal;
+  font-weight: lighter;
+
+  &.opened {
+    border-color: $color-border-light-focus;
+  }
 
   &.size-xs {
     height: $xs-height;
@@ -184,14 +189,16 @@
     position: absolute;
     background-color: $white;
     min-width: 100%;
+    min-width: calc(100% + 2px);
     margin-top: 4px;
     max-height: calc(30px * 6);
     overflow-y: auto;
     z-index: 3;
-    box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.1);
     color: $black;
-    border: 1px solid $color-border-light;
+    border: 1px solid $color-border-light-focus;
     padding: 4px;
+    left: -1px;
 
     &.bottom-top {
       margin-top: 0;

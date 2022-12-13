@@ -69,40 +69,19 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
       <div className="title-liner" />
       <div className="group-content">
         <div className={`group-description ${!isEdit && content.description ? '' : 'empty'}`}>
-          <div className="description-content">
-            {!isEdit && (
-              <div className="text">
-                {content.description && (
-                  <div className="left">
-                    <i className="fa-solid fa-quote-left" />
-                  </div>
-                )}
-                {content.description && <div className="description">{content.description}</div>}
-                {!content.description && (
-                  <div className="description empty">
-                    <div>{t('설명이 없습니다')}</div>
-                  </div>
-                )}
-                {content.description && (
-                  <div className="right">
-                    <i className="fa-solid fa-quote-right" />
-                  </div>
-                )}
-              </div>
-            )}
-            {isEdit && (
-              <TextArea
-                size="sm"
-                placeholder="테스트케이스 그룹에 대한 설명을 입력해주세요."
-                value={content.description || ''}
-                rows={2}
-                onChange={val => {
-                  onChangeContent('description', val);
-                }}
-                autoHeight
-              />
-            )}
-          </div>
+          {!isEdit && <div className={`group-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다')}</div>}
+          {isEdit && (
+            <TextArea
+              size="sm"
+              placeholder="테스트케이스 그룹에 대한 설명을 입력해주세요."
+              value={content.description || ''}
+              rows={4}
+              onChange={val => {
+                onChangeContent('description', val);
+              }}
+              autoHeight
+            />
+          )}
         </div>
         <div className="list-title">
           <div>테스트케이스 리스트</div>

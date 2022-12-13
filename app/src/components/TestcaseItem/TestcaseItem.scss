@@ -4,27 +4,24 @@
   padding: 0.5rem;
 
   > div {
-    border-radius: 0;
-
-    .case-liner {
-      margin: 0;
-      height: 1px;
-      background-color: transparent;
-    }
-
-    .value {
-      padding: 0 1rem;
-      min-height: 70px;
+    > .value {
+      padding: 1rem;
       display: flex;
       box-sizing: border-box;
       font-family: NotoSans, sans-serif;
-      background-color: #f7f7f7;
+      background-color: #fafafa;
       border-radius: 8px;
       border: 1px solid rgba(0, 0, 0, 0.04);
 
       > div {
         align-self: center;
         width: 100%;
+      }
+
+      .value-text:empty {
+        &:before {
+          content: '\00a0';
+        }
       }
 
       .select {
@@ -104,14 +101,14 @@
   .testcase-item-wrapper {
     > div {
       .value {
-        min-height: auto;
-
         border: none;
         padding: 1rem;
+        padding: 0 0.5rem;
+        background-color: transparent;
 
         &.EDITOR {
           padding: 0;
-          background-color: transparent;
+
           border: none;
 
           .toastui-editor-defaultUI .ProseMirror {
