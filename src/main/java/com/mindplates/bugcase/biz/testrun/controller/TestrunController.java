@@ -55,11 +55,11 @@ public class TestrunController {
         return new TestrunResponse(testrun);
     }
 
-    @Operation(description = "테스트런 상세 삭제")
+    @Operation(description = "테스트런 삭제")
     @DeleteMapping("/{testrunId}")
     public ResponseEntity<?> deleteTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
 
-        testrunService.deleteProjectTestrunInfo(testrunId);
+        testrunService.deleteProjectTestrunInfo(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

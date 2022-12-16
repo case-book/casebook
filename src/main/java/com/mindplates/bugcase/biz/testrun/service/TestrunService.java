@@ -10,7 +10,9 @@ import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.entity.*;
 import com.mindplates.bugcase.biz.testrun.repository.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +62,8 @@ public class TestrunService {
     }
 
     @Transactional
-    public void deleteProjectTestrunInfo(long testrunId) {
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteProjectTestrunInfo(String spaceCode, long projectId, long testrunId) {
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunId(testrunId);
         testrunUserRepository.deleteByTestrunId(testrunId);
@@ -94,6 +97,7 @@ public class TestrunService {
     }
 
     @Transactional
+    @CacheEvict(key = "{#spaceCode,#testrun.project.id}", value = CacheConfig.PROJECT)
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
 
         Project project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
