@@ -56,6 +56,7 @@ public class TestrunController {
     @Operation(description = "테스트런 상세 삭제")
     @DeleteMapping("/{testrunId}")
     public ResponseEntity<?> deleteTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+
         testrunService.deleteProjectTestrunInfo(testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

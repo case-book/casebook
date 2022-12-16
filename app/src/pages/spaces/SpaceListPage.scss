@@ -134,7 +134,7 @@
           }
 
           .space-card {
-            height: 376px;
+            height: 380px;
             &:hover {
               .name-and-code {
                 .name {
@@ -142,113 +142,119 @@
                 }
               }
             }
-            .config-button {
-              position: absolute;
-              right: 1rem;
-              top: 1rem;
-            }
 
-            .name-and-code {
-              text-align: center;
-              padding-bottom: 1rem;
-              padding-top: 1rem;
-              font-weight: bold;
-
-              .name {
-                font-size: 20px;
-                margin-bottom: 4px;
-                white-space: nowrap;
-                max-width: 100%;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                padding-right: 2rem;
-                padding-left: 2rem;
-              }
-            }
-
-            .description {
-              padding: 0;
-              text-align: center;
-              flex-grow: 1;
-              color: black;
-
-              max-height: 76px;
-              min-height: 76px;
-              display: flex;
-              justify-content: center;
-              border-radius: 4px;
-              overflow-y: auto;
-              margin-bottom: 1rem;
-              font-size: 15px;
-
-              background-color: $gray-100;
-
-              border: 1px solid rgba(0, 0, 0, 0.02);
+            .space-card-content {
               > div {
-                align-self: center;
-              }
-            }
-
-            .counter-info {
-              height: 163px;
-              display: flex;
-
-              background-color: $gray-100;
-              border: 1px solid rgba(0, 0, 0, 0.02);
-              border-radius: 4px;
-              padding: 0 2rem;
-
-              > div {
-                flex: 1 1 0;
-                text-align: center;
                 display: flex;
-                justify-content: center;
-                > div {
-                  align-self: center;
+                flex-direction: column;
+
+                .config-button {
+                  position: absolute;
+                  right: 1rem;
+                  top: 1rem;
                 }
 
-                .icon {
-                  font-size: 20px;
+                .name-and-code {
+                  text-align: center;
+                  padding-bottom: 1rem;
+                  padding-top: 1rem;
+                  font-weight: bold;
+
+                  .name {
+                    font-size: 20px;
+                    margin-bottom: 4px;
+                    white-space: nowrap;
+                    max-width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    padding-right: 2rem;
+                    padding-left: 2rem;
+                  }
+                }
+
+                .description {
+                  padding: 0;
+                  text-align: center;
+                  flex-grow: 1;
+                  color: black;
+                  max-height: 76px;
+                  min-height: 76px;
+                  display: flex;
+                  justify-content: center;
+                  border-radius: 4px;
+                  overflow-y: auto;
+                  margin-bottom: 1rem;
+                  font-size: 15px;
+
+                  background-color: $gray-100;
+
+                  border: 1px solid rgba(0, 0, 0, 0.02);
+                  > div {
+                    align-self: center;
+                  }
+                }
+
+                .counter-info {
+                  display: flex;
+                  flex-grow: 1;
+                  background-color: $gray-100;
+                  border: 1px solid rgba(0, 0, 0, 0.02);
+                  border-radius: 4px;
+                  padding: 0 2rem;
 
                   > div {
-                    display: inline-flex;
-                    width: 34px;
-                    height: 34px;
+                    flex: 1 1 0;
+                    text-align: center;
+                    display: flex;
                     justify-content: center;
-                    background-color: $white;
-                    border: 1px solid rgba(0, 0, 0, 0.3);
-                    border-radius: 50%;
-                    i {
+                    > div {
                       align-self: center;
                     }
-                  }
 
-                  &.projects {
-                    > div {
-                      border: 1px solid transparent;
-                      color: $black;
+                    .icon {
+                      font-size: 20px;
+
+                      > div {
+                        display: inline-flex;
+                        width: 34px;
+                        height: 34px;
+                        justify-content: center;
+                        background-color: $white;
+                        border: 1px solid rgba(0, 0, 0, 0.3);
+                        border-radius: 50%;
+                        i {
+                          align-self: center;
+                        }
+                      }
+
+                      &.projects {
+                        > div {
+                          border: 1px solid transparent;
+                          color: $black;
+                        }
+                      }
+
+                      &.users {
+                        > div {
+                          border: 1px solid transparent;
+                          color: $black;
+                        }
+                      }
+                    }
+
+                    .label {
+                      font-size: 12px;
+                      margin-top: 0.25rem;
+                      font-weight: bold;
+                      font-family: Rowdies, NotoSans, sans-serif;
+                    }
+
+                    .counter {
+                      margin-top: 0.5rem;
+                      font-size: 40px;
+                      font-family: Rowdies, sans-serif;
                     }
                   }
-
-                  &.users {
-                    > div {
-                      border: 1px solid transparent;
-                      color: $black;
-                    }
-                  }
-                }
-
-                .label {
-                  font-size: 12px;
-                  margin-top: 0.25rem;
-                  font-weight: bold;
-                  font-family: Rowdies, NotoSans, sans-serif;
-                }
-
-                .counter {
-                  margin-top: 0.5rem;
-                  font-size: 40px;
-                  font-family: Rowdies, sans-serif;
                 }
               }
             }

@@ -9,7 +9,6 @@ import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import ConfigsRoutes from '@/pages/configs';
 import { Star } from '@/components';
-import Roulette from './Roulette';
 import './App.scss';
 
 function App() {
@@ -55,13 +54,10 @@ function App() {
     }, 1000);
   }, [location.pathname]);
 
-  const roulette = true;
-
   return (
     <div className={`app-wrapper theme-${theme}`}>
-      {roulette && <Roulette />}
       <Common />
-      {!roulette && tried && (
+      {tried && (
         <div className="app-content">
           <Header />
           <main className="main-content">

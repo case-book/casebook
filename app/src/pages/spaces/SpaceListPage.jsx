@@ -198,7 +198,7 @@ function SpaceListPage() {
                           navigate(`/spaces/${space.code}/projects`);
                         }}
                       >
-                        <CardContent>
+                        <CardContent className="space-card-content">
                           <div className="config-button">
                             <Button
                               rounded

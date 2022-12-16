@@ -8,14 +8,13 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.entity.*;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
+import com.mindplates.bugcase.biz.testrun.repository.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +28,10 @@ public class TestrunService {
     private final TestcaseService testcaseService;
 
     private final ProjectService projectService;
+
+    private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
+
+    private final TestrunUserRepository testrunUserRepository;
 
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
 
@@ -56,16 +59,23 @@ public class TestrunService {
 
     }
 
+    @Transactional
     public void deleteProjectTestrunInfo(long testrunId) {
+        testrunTestcaseGroupTestcaseItemRepository.deleteByTestrunId(testrunId);
+        testrunTestcaseGroupTestcaseRepository.deleteByTestrunId(testrunId);
+        testrunUserRepository.deleteByTestrunId(testrunId);
+        testrunTestcaseGroupRepository.deleteByTestrunId(testrunId);
         testrunRepository.deleteById(testrunId);
     }
 
+    @Transactional
     public void updateProjectTestrunStatusClosed(long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testrun.setOpened(false);
         testrunRepository.save(testrun);
     }
 
+    @Transactional
     public void updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItems) {
         testrunTestcaseGroupTestcaseItemRepository.saveAll(testrunTestcaseGroupTestcaseItems);
     }
@@ -73,6 +83,7 @@ public class TestrunService {
 
 
 
+    @Transactional
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
 
         Project project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
