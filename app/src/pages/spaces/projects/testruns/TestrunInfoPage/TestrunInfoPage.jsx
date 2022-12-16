@@ -117,10 +117,10 @@ function TestrunEditPage() {
           }
 
           const testcaseTemplate = project?.testcaseTemplates.find(template => template.id === testcase.testcaseTemplateId);
-          const testTemplateItem = testcaseTemplate?.testcaseTemplateItems.find(templateItem => templateItem.systemLabel === 'TESTER');
-          const testcaseTestcaseItem = testcase.testrunTestcaseItems.find(testrunTestcaseItem => testrunTestcaseItem.testcaseTemplateItemId === testTemplateItem.id);
+          const testTemplateItem = testcaseTemplate?.testcaseTemplateItems?.find(templateItem => templateItem.systemLabel === 'TESTER');
+          const testcaseTestcaseItem = testcase.testrunTestcaseItems?.find(testrunTestcaseItem => testrunTestcaseItem.testcaseTemplateItemId === testTemplateItem.id);
 
-          return String(testcaseTestcaseItem.value) === String(userFilter);
+          return String(testcaseTestcaseItem?.value) === String(userFilter);
         }),
       };
     });
