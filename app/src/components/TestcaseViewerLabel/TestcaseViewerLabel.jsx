@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './TestcaseViewerLabel.scss';
 import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
 
-function TestcaseViewerLabel({ testcaseTemplateItem, setOpenTooltipInfo, caseContentElement, openTooltipInfo, inx }) {
+function TestcaseViewerLabel({ testcaseTemplateItem, setOpenTooltipInfo, caseContentElement, openTooltipInfo, inx, type }) {
   return (
     <div className="testcase-viewer-label-wrapper">
       <div className="text">{testcaseTemplateItem.label}</div>
@@ -72,7 +72,7 @@ function TestcaseViewerLabel({ testcaseTemplateItem, setOpenTooltipInfo, caseCon
           }}
         />
       )}
-      <div className="type">{testcaseTemplateItem.type}</div>
+      {type && <div className="type">{testcaseTemplateItem.type}</div>}
     </div>
   );
 }
@@ -83,6 +83,7 @@ TestcaseViewerLabel.defaultProps = {
   caseContentElement: null,
   openTooltipInfo: {},
   inx: null,
+  type: true,
 };
 
 TestcaseViewerLabel.propTypes = {
@@ -102,6 +103,7 @@ TestcaseViewerLabel.propTypes = {
     category: PropTypes.string,
   }),
   inx: PropTypes.number,
+  type: PropTypes.bool,
 };
 
 export default TestcaseViewerLabel;

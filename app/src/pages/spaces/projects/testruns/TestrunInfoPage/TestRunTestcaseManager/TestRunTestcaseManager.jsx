@@ -1,25 +1,35 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Loader, SeqId, TestcaseItem } from '@/components';
+import { Button, EmptyContent, FlexibleLayout, Liner, Loader, SeqId, TestcaseItem } from '@/components';
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
-
-import './TestRunTestcaseManager.scss';
+import { debounce } from 'lodash';
 import useStores from '@/hooks/useStores';
 import { ITEM_TYPE } from '@/constants/constants';
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+import { getBaseURL } from '@/utils/configUtil';
+import { Editor, Viewer } from '@toast-ui/react-editor';
+import dateUtil from '@/utils/dateUtil';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import './TestRunTestcaseManager.scss';
 
-function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave, contentLoading }) {
+function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave, contentLoading, onSaveComment, user, onDeleteComment }) {
   const {
     themeStore: { theme },
   } = useStores();
 
+  const { t } = useTranslation();
+
   const { testcaseItems } = content;
 
   const caseContentElement = useRef(null);
+
+  const editor = useRef(null);
 
   const testcaseTemplate = useMemo(() => {
     return testcaseTemplates.find(d => d.id === content?.testcaseTemplateId);
@@ -30,7 +40,19 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
     type: '',
   });
 
-  const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value) => {
+  const [vertical] = useState(true);
+
+  const [comment, setComment] = useState('');
+
+  const onChangeDebounce = React.useMemo(
+    () =>
+      debounce(() => {
+        onSave();
+      }, 1200),
+    [],
+  );
+
+  const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value, templateItemType) => {
     const nextTestrunTestcaseItems = (content?.testrunTestcaseItems || []).slice(0);
 
     const index = nextTestrunTestcaseItems.findIndex(d => d.testcaseTemplateItemId === testcaseTemplateItemId);
@@ -55,88 +77,206 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
       ...content,
       testrunTestcaseItems: nextTestrunTestcaseItems,
     });
+
+    if (templateItemType === 'RADIO' || templateItemType === 'CHECKBOX' || templateItemType === 'SELECT' || templateItemType === 'USER') {
+      onSave();
+    } else {
+      onChangeDebounce();
+    }
   };
 
   return (
     <div className="testrun-testcase-manager-wrapper">
       {contentLoading && <Loader />}
-      <div className="manager-layout">
-        <div className="manager-content">
-          <div className="testcase-title">
-            <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
-            <div className="name">{content.name}</div>
-          </div>
-          <div className="title-liner" />
-          <div className="case-content" ref={caseContentElement}>
-            <div className="case-description">
-              <div className="description-title">설명</div>
-              <div className="description-content">
-                <div>{content.description}</div>
+      <FlexibleLayout
+        vertical={vertical}
+        defaultSize="60%"
+        layoutOptionKey={['testrun', 'testrun-testcase-manager', 'height']}
+        className="manager-layout"
+        left={
+          <div className="manager-content">
+            <div className="testcase-title">
+              <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
+              <div className="name">{content.name}</div>
+            </div>
+            <div className="title-liner" />
+            <div className="case-content" ref={caseContentElement}>
+              {content.description && <div className="case-description">{content.description}</div>}
+              <div className="testcase-item-list">
+                {testcaseTemplate?.testcaseTemplateItems
+                  .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
+                  .map((testcaseTemplateItem, inx) => {
+                    let testcaseItem;
+                    if (testcaseTemplateItem.systemLabel) {
+                      testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+                    } else {
+                      testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+                    }
+
+                    return (
+                      <TestcaseItem
+                        key={inx}
+                        type={false}
+                        isEdit={false}
+                        testcaseTemplateItem={testcaseTemplateItem}
+                        testcaseItem={testcaseItem}
+                        content={content}
+                        theme={theme}
+                        createImage={createTestrunImage}
+                        users={users.map(d => {
+                          return {
+                            ...d,
+                            id: d.userId,
+                          };
+                        })}
+                        setOpenTooltipInfo={setOpenTooltipInfo}
+                        caseContentElement={caseContentElement}
+                        openTooltipInfo={openTooltipInfo}
+                        inx={inx}
+                        onChangeTestcaseItem={onChangeTestcaseItem}
+                      />
+                    );
+                  })}
               </div>
             </div>
-            <div className="testcase-item-list">
-              {testcaseTemplate?.testcaseTemplateItems
-                .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
-                .map((testcaseTemplateItem, inx) => {
-                  const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+          </div>
+        }
+        right={
+          <div className="testurn-result-info">
+            <div className="testrun-result-content">
+              <div className="testrun-result-list is-edit">
+                {testcaseTemplate?.testcaseTemplateItems
+                  .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
+                  .map((testcaseTemplateItem, inx) => {
+                    const testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
 
-                  return (
-                    <TestcaseItem
-                      key={inx}
-                      isEdit={false}
-                      testcaseTemplateItem={testcaseTemplateItem}
-                      testcaseItem={testcaseItem}
-                      content={content}
-                      theme={theme}
-                      createImage={createTestrunImage}
-                      users={users.map(d => {
-                        return {
-                          ...d,
-                          id: d.userId,
-                        };
+                    return (
+                      <TestcaseItem
+                        selectUserOnly
+                        size="sm"
+                        type={false}
+                        key={inx}
+                        isEdit
+                        testcaseTemplateItem={testcaseTemplateItem}
+                        testcaseItem={testcaseItem}
+                        content={content}
+                        theme={theme}
+                        createImage={createTestrunImage}
+                        users={users}
+                        setOpenTooltipInfo={setOpenTooltipInfo}
+                        caseContentElement={caseContentElement}
+                        openTooltipInfo={openTooltipInfo}
+                        inx={inx}
+                        onChangeTestcaseItem={onChangeTestcaseItem}
+                      />
+                    );
+                  })}
+              </div>
+              <div className="testrun-testcase-comments">
+                <div className="text">코멘트</div>
+                <div className="comment-list">
+                  {(!content.comments || content.comments.length < 1) && (
+                    <EmptyContent minHeight="auto" className="empty-comments">
+                      <div>{t('코멘트가 없습니다.')}</div>
+                    </EmptyContent>
+                  )}
+                  {content.comments?.length > 0 && (
+                    <ul>
+                      {content.comments?.map((info, inx) => {
+                        return (
+                          <li key={inx} className="comment">
+                            <div className="comment-content">
+                              <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={info.comment || '<span className="none-text">&nbsp;</span>'} />
+                            </div>
+                            <div className="comment-user-info">
+                              <div>{dateUtil.getDateString(info.lastUpdateDate)}</div>
+                              <div>
+                                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                              </div>
+                              <div>{users.find(u => u.userId === info.userId)?.name || ''}</div>
+                              {user?.id === info.userId && (
+                                <div>
+                                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                                </div>
+                              )}
+                              {user?.id === info.userId && (
+                                <div>
+                                  <Link
+                                    to="#1"
+                                    onClick={e => {
+                                      e.stopPropagation();
+                                      onDeleteComment(info.id);
+                                    }}
+                                  >
+                                    삭제
+                                  </Link>
+                                </div>
+                              )}
+                            </div>
+                          </li>
+                        );
                       })}
-                      setOpenTooltipInfo={setOpenTooltipInfo}
-                      caseContentElement={caseContentElement}
-                      openTooltipInfo={openTooltipInfo}
-                      inx={inx}
-                      onChangeTestcaseItem={onChangeTestcaseItem}
-                    />
-                  );
-                })}
+                    </ul>
+                  )}
+                </div>
+                <div className="comment-editor">
+                  <Editor
+                    ref={editor}
+                    theme={theme === 'DARK' ? 'dark' : 'white'}
+                    placeholder="내용을 입력해주세요."
+                    previewStyle="vertical"
+                    height="160px"
+                    initialEditType="wysiwyg"
+                    plugins={[colorSyntax]}
+                    autofocus={false}
+                    toolbarItems={[
+                      ['heading', 'bold', 'italic', 'strike'],
+                      ['hr', 'quote'],
+                      ['ul', 'ol', 'task', 'indent', 'outdent'],
+                      ['table', 'image', 'link'],
+                      ['code', 'codeblock'],
+                    ]}
+                    hooks={{
+                      addImageBlobHook: async (blob, callback) => {
+                        const result = await createTestrunImage(content.id, blob.name, blob.size, blob.type, blob);
+                        callback(
+                          `${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/testcases/${result.data.testcaseId}/images/${result.data.id}?uuid=${result.data.uuid}`,
+                        );
+                      },
+                    }}
+                    initialValue={comment || ''}
+                    onChange={() => {
+                      setComment(editor.current?.getInstance()?.getHTML());
+                    }}
+                  />
+                  <div className="buttons">
+                    <Button outline onClick={onSave} size="sm">
+                      {t('취소')}
+                    </Button>
+                    <Button
+                      outline
+                      size="sm"
+                      onClick={() => {
+                        onSaveComment(null, comment, () => {
+                          setComment('');
+                          editor.current?.getInstance().setHTML('');
+                        });
+                      }}
+                    >
+                      {t('코멘트 추가')}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="testrun-result-list">
-              {testcaseTemplate?.testcaseTemplateItems
-                .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
-                .map((testcaseTemplateItem, inx) => {
-                  const testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-
-                  return (
-                    <TestcaseItem
-                      key={inx}
-                      isEdit
-                      testcaseTemplateItem={testcaseTemplateItem}
-                      testcaseItem={testcaseItem}
-                      content={content}
-                      theme={theme}
-                      createImage={createTestrunImage}
-                      users={users}
-                      setOpenTooltipInfo={setOpenTooltipInfo}
-                      caseContentElement={caseContentElement}
-                      openTooltipInfo={openTooltipInfo}
-                      inx={inx}
-                      onChangeTestcaseItem={onChangeTestcaseItem}
-                    />
-                  );
-                })}
+            <div className="control-btn">
+              <Button outline onClick={onSave}>
+                {t('저장')}
+              </Button>
             </div>
           </div>
-        </div>
-        <div className="control-button">
-          <Button outline onClick={onSave}>
-            저장
-          </Button>
-        </div>
-      </div>
+        }
+      />
     </div>
   );
 }
@@ -146,7 +286,10 @@ TestRunTestcaseManager.defaultProps = {
   testcaseTemplates: [],
   users: [],
   onSave: null,
+  onSaveComment: null,
   contentLoading: false,
+  user: null,
+  onDeleteComment: null,
 };
 
 TestRunTestcaseManager.propTypes = {
@@ -170,7 +313,6 @@ TestRunTestcaseManager.propTypes = {
         text: PropTypes.string,
       }),
     ),
-
     testrunTestcaseItems: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,
@@ -180,11 +322,16 @@ TestRunTestcaseManager.propTypes = {
         text: PropTypes.string,
       }),
     ),
+    comments: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        testrunTestcaseGroupTestcaseId: PropTypes.number,
+        comment: PropTypes.string,
+      }),
+    ),
   }),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
-
   setContent: PropTypes.func.isRequired,
-
   users: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -194,7 +341,12 @@ TestRunTestcaseManager.propTypes = {
   ),
   createTestrunImage: PropTypes.func.isRequired,
   onSave: PropTypes.func,
+  onSaveComment: PropTypes.func,
   contentLoading: PropTypes.bool,
+  user: PropTypes.shape({
+    id: PropTypes.number,
+  }),
+  onDeleteComment: PropTypes.func,
 };
 
 export default TestRunTestcaseManager;

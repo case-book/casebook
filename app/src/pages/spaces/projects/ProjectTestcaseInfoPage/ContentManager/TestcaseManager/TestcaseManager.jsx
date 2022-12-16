@@ -130,7 +130,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
         <div className="title-button">
           {!isEdit && (
             <Button
-              size="md"
+              size="sm"
               outline
               color="white"
               onClick={() => {

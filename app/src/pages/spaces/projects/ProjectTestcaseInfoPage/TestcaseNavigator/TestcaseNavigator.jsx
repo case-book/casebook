@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, EmptyContent, Liner } from '@/components';
+import { Button, EmptyContent, Liner, Selector } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
 import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
@@ -7,9 +7,9 @@ import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/propty
 import { useResizeDetector } from 'react-resize-detector';
 import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
-import './TestcaseNavigator.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import './TestcaseNavigator.scss';
 
 function TestcaseNavigator({
   testcaseGroups,
@@ -24,6 +24,10 @@ function TestcaseNavigator({
   setMin,
   countSummary,
   contentChanged,
+  user,
+  users,
+  userFilter,
+  setUserFilter,
 }) {
   const scroller = useRef(null);
 
@@ -317,8 +321,37 @@ function TestcaseNavigator({
             </div>
           </div>
         </div>
+        {user && (
+          <div className="navigation-filter">
+            <div className="label">테스터</div>
+            <div>
+              <Selector
+                color="black"
+                className="selector"
+                size="xs"
+                items={[
+                  {
+                    userId: '',
+                    name: '전체',
+                  },
+                ]
+                  .concat(users)
+                  .map(d => {
+                    return {
+                      key: d.userId,
+                      value: d.name,
+                    };
+                  })}
+                value={userFilter}
+                onChange={val => {
+                  setUserFilter(val);
+                }}
+              />
+            </div>
+          </div>
+        )}
         {addTestcase && addTestcaseGroup && (
-          <div className={`right ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
+          <div className={`navigation-controller ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
             <Button
               className="add-testcase-button"
               size="xs"
@@ -478,6 +511,10 @@ TestcaseNavigator.defaultProps = {
   onChangeTestcaseGroupName: null,
   onDelete: null,
   contentChanged: false,
+  user: null,
+  users: [],
+  userFilter: null,
+  setUserFilter: null,
 };
 
 TestcaseNavigator.propTypes = {
@@ -500,6 +537,16 @@ TestcaseNavigator.propTypes = {
     testcaseCount: PropTypes.number,
   }),
   contentChanged: PropTypes.bool,
+  user: PropTypes.shape({
+    id: PropTypes.number,
+  }),
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+    }),
+  ),
+  setUserFilter: PropTypes.func,
+  userFilter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default TestcaseNavigator;

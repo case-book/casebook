@@ -3,13 +3,14 @@ import { getOption, setOption } from '@/utils/storageUtil';
 import './FlexibleLayout.scss';
 import PropTypes from 'prop-types';
 
-function FlexibleLayout({ min, left, right, layoutOptionKey }) {
-  const [testcaseGroupWidth, setTestcaseGroupWidth] = useState(() => {
+function FlexibleLayout({ min, left, right, layoutOptionKey, vertical, className, defaultSize }) {
+  const [testcaseGroupSize, setTestcaseGroupSize] = useState(() => {
     if (layoutOptionKey?.length === 3) {
-      return getOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2]) || 300;
+      const option = getOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2]);
+      return option ? `${option}px` : defaultSize;
     }
 
-    return 300;
+    return defaultSize;
   });
 
   const testcaseGroupElement = useRef(null);
@@ -23,10 +24,18 @@ function FlexibleLayout({ min, left, right, layoutOptionKey }) {
 
   const onGrabMouseMove = e => {
     if (resizeInfo.moving) {
-      const distanceX = e.clientX - resizeInfo.startX;
-      resizeInfo.endX = e.clientX;
-      if (testcaseGroupElement.current) {
-        testcaseGroupElement.current.style.width = `${resizeInfo.startWidth + distanceX}px`;
+      if (vertical) {
+        const distanceY = e.clientY - resizeInfo.startY;
+        resizeInfo.endY = e.clientY;
+        if (testcaseGroupElement.current) {
+          testcaseGroupElement.current.style.height = `${resizeInfo.startHeight + distanceY}px`;
+        }
+      } else {
+        const distanceX = e.clientX - resizeInfo.startX;
+        resizeInfo.endX = e.clientX;
+        if (testcaseGroupElement.current) {
+          testcaseGroupElement.current.style.width = `${resizeInfo.startWidth + distanceX}px`;
+        }
       }
     }
   };
@@ -35,14 +44,27 @@ function FlexibleLayout({ min, left, right, layoutOptionKey }) {
     if (resizeInfo.moving) {
       document.removeEventListener('mousemove', onGrabMouseMove);
       document.removeEventListener('mouseup', onGrabMouseUp);
-      const width = resizeInfo.startWidth + (resizeInfo.endX - resizeInfo.startX);
-      setTestcaseGroupWidth(width);
-      resizeInfo.moving = false;
-      resizeInfo.startX = null;
-      resizeInfo.startWidth = null;
 
-      if (layoutOptionKey?.length === 3) {
-        setOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2], width);
+      if (vertical) {
+        const height = resizeInfo.startHeight + (resizeInfo.endY - resizeInfo.startY);
+        setTestcaseGroupSize(`${height}px`);
+        resizeInfo.moving = false;
+        resizeInfo.startY = null;
+        resizeInfo.startHeight = null;
+
+        if (layoutOptionKey?.length === 3) {
+          setOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2], height);
+        }
+      } else {
+        const width = resizeInfo.startWidth + (resizeInfo.endX - resizeInfo.startX);
+        setTestcaseGroupSize(`${width}px`);
+        resizeInfo.moving = false;
+        resizeInfo.startX = null;
+        resizeInfo.startWidth = null;
+
+        if (layoutOptionKey?.length === 3) {
+          setOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2], width);
+        }
       }
     }
   };
@@ -61,40 +83,60 @@ function FlexibleLayout({ min, left, right, layoutOptionKey }) {
     document.addEventListener('mousemove', onGrabMouseMove);
     document.addEventListener('mouseup', onGrabMouseUp);
 
-    resizeInfo.moving = true;
-    resizeInfo.startX = e.clientX;
-    resizeInfo.startWidth = rects[0].width;
+    if (vertical) {
+      resizeInfo.moving = true;
+      resizeInfo.startY = e.clientY;
+      resizeInfo.startHeight = rects[0].height;
+    } else {
+      resizeInfo.moving = true;
+      resizeInfo.startX = e.clientX;
+      resizeInfo.startWidth = rects[0].width;
+    }
   };
 
   return (
-    <div className="flexible-layout-wrapper">
+    <div className={`flexible-layout-wrapper ${vertical ? 'vertical' : 'horizontal'} ${className}`}>
       <div
         className={`left-layout ${min ? 'min' : ''}`}
         ref={testcaseGroupElement}
-        style={{
-          width: `${testcaseGroupWidth || 300}px`,
-        }}
+        style={
+          vertical
+            ? {
+                height: testcaseGroupSize,
+              }
+            : {
+                width: testcaseGroupSize,
+              }
+        }
       >
         {left}
       </div>
       <div className="grabber" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
-      <div className="right-layout">{right}</div>
+      <div className="right-layout">
+        <div>{right}</div>
+      </div>
     </div>
   );
 }
 
 FlexibleLayout.defaultProps = {
+  className: '',
   min: false,
   left: null,
   right: null,
   layoutOptionKey: [],
+  vertical: false,
+  defaultSize: '300px',
 };
 
 FlexibleLayout.propTypes = {
+  className: PropTypes.string,
   min: PropTypes.bool,
   left: PropTypes.node,
   right: PropTypes.node,
   layoutOptionKey: PropTypes.arrayOf(PropTypes.string),
+  vertical: PropTypes.bool,
+  defaultSize: PropTypes.string,
 };
 
 export default FlexibleLayout;

@@ -9,14 +9,13 @@ import TestcaseService from '@/services/TestcaseService';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
-import SpaceService from '@/services/SpaceService';
 import testcaseUtil from '@/utils/testcaseUtil';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
-  const [spaceUsers, setSpaceUsers] = useState([]);
+  const [projectUsers, setProjectUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [selectedItemInfo, setSelectedItemInfo] = useState({
@@ -33,12 +32,15 @@ function ProjectTestcaseInfoPage() {
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
-    });
-  };
-
-  const getSpaceUserList = () => {
-    SpaceService.selectSpaceUserList(spaceCode, null, users => {
-      setSpaceUsers(users);
+      setProjectUsers(
+        info.users.map(d => {
+          return {
+            id: d.userId,
+            email: d.email,
+            name: d.name,
+          };
+        }),
+      );
     });
   };
 
@@ -78,7 +80,6 @@ function ProjectTestcaseInfoPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     getProject();
-    getSpaceUserList();
   }, [spaceCode, projectId]);
 
   const findGroup = (id, groups) => {
@@ -414,7 +415,7 @@ function ProjectTestcaseInfoPage() {
               setContentChanged={setContentChanged}
               onSaveTestcase={onSaveTestcase}
               onSaveTestcaseGroup={onSaveTestcaseGroup}
-              users={spaceUsers}
+              users={projectUsers}
               createTestcaseImage={createTestcaseImage}
               onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
               setPopupContent={setPopupContent}

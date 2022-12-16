@@ -4,7 +4,7 @@ import { USER_ASSIGNED_OPERATIONS } from '@/constants/constants';
 import { getUserText } from '@/utils/userUtil';
 import './UserSelector.scss';
 
-function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder }) {
+function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder, selectUserOnly }) {
   const [opened, setOpened] = useState(false);
   const [bottomList, setBottomList] = useState(true);
   const [text, setText] = useState('');
@@ -119,22 +119,26 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
       {opened && (
         <div className={`user-list g-no-select ${bottomList ? '' : 'bottom-top'}`} ref={list}>
           <ul>
-            <li
-              className={`special-option ${type === 'operation' && value === 'RND' ? 'selected' : ''}`}
-              onClick={() => {
-                handleChange('operation', 'RND');
-              }}
-            >
-              <div className="name">{USER_ASSIGNED_OPERATIONS.RND}</div>
-            </li>
-            <li
-              className={`special-option ${type === 'operation' && value === 'SEQ' ? 'selected' : ''}`}
-              onClick={() => {
-                handleChange('operation', 'SEQ');
-              }}
-            >
-              <div className="name">{USER_ASSIGNED_OPERATIONS.SEQ}</div>
-            </li>
+            {!selectUserOnly && (
+              <>
+                <li
+                  className={`special-option ${type === 'operation' && value === 'RND' ? 'selected' : ''}`}
+                  onClick={() => {
+                    handleChange('operation', 'RND');
+                  }}
+                >
+                  <div className="name">{USER_ASSIGNED_OPERATIONS.RND}</div>
+                </li>
+                <li
+                  className={`special-option ${type === 'operation' && value === 'SEQ' ? 'selected' : ''}`}
+                  onClick={() => {
+                    handleChange('operation', 'SEQ');
+                  }}
+                >
+                  <div className="name">{USER_ASSIGNED_OPERATIONS.SEQ}</div>
+                </li>
+              </>
+            )}
             {filteredUser?.length < 1 && (
               <li className="empty">
                 <div className="name">&#39;{text}&#39; 일치하는 사용자가 없습니다.</div>
@@ -184,6 +188,7 @@ UserSelector.defaultProps = {
   placeholder: '',
 
   users: [],
+  selectUserOnly: false,
 };
 
 UserSelector.propTypes = {
@@ -205,6 +210,7 @@ UserSelector.propTypes = {
       email: PropTypes.string,
     }),
   ),
+  selectUserOnly: PropTypes.bool,
 };
 
 export default UserSelector;

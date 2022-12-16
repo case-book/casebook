@@ -7,13 +7,36 @@ import { Editor, Viewer } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
 
-function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, createImage, content, theme, onChangeTestcaseItem, setOpenTooltipInfo, caseContentElement, openTooltipInfo, inx }) {
+function TestcaseItem({
+  isEdit,
+  testcaseTemplateItem,
+  testcaseItem,
+  users,
+  createImage,
+  content,
+  theme,
+  onChangeTestcaseItem,
+  setOpenTooltipInfo,
+  caseContentElement,
+  openTooltipInfo,
+  inx,
+  type,
+  size,
+  selectUserOnly,
+}) {
   const editor = useRef(null);
 
   return (
     <div key={testcaseTemplateItem.id} className={`testcase-item-wrapper size-${testcaseTemplateItem?.size}`}>
       <div>
-        <TestcaseViewerLabel testcaseTemplateItem={testcaseTemplateItem} setOpenTooltipInfo={setOpenTooltipInfo} caseContentElement={caseContentElement} openTooltipInfo={openTooltipInfo} inx={inx} />
+        <TestcaseViewerLabel
+          testcaseTemplateItem={testcaseTemplateItem}
+          setOpenTooltipInfo={setOpenTooltipInfo}
+          caseContentElement={caseContentElement}
+          openTooltipInfo={openTooltipInfo}
+          inx={inx}
+          type={type}
+        />
         <div className={`value ${testcaseTemplateItem.type}`}>
           <div>
             {testcaseTemplateItem.type === 'RADIO' && (
@@ -25,12 +48,12 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                       <Radio
                         key={d}
                         type="inline"
-                        size="md"
+                        size={size}
                         readOnly={!isEdit}
                         value={d}
                         checked={d === testcaseItem.value}
                         onChange={val => {
-                          onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
+                          onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val, testcaseTemplateItem.type);
                         }}
                         label={d}
                       />
@@ -43,13 +66,13 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                 {!isEdit && <div className="value-text">{testcaseItem.value === 'Y' ? 'Y' : 'N'}</div>}
                 {isEdit && (
                   <CheckBox
-                    size="md"
+                    size={size}
                     value={testcaseItem.value === 'Y'}
                     onChange={() => {
                       if (testcaseItem.value === 'Y') {
-                        onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'N');
+                        onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'N', testcaseTemplateItem.type);
                       } else {
-                        onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'Y');
+                        onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', 'Y', testcaseTemplateItem.type);
                       }
                     }}
                   />
@@ -63,11 +86,11 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                   <Input
                     type={testcaseTemplateItem.type.toLowerCase()}
                     value={testcaseItem.value}
-                    size="md"
+                    size={size}
                     outline
                     color="black"
                     onChange={val => {
-                      onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
+                      onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val, testcaseTemplateItem.type);
                     }}
                     required
                     minLength={1}
@@ -82,7 +105,7 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                   <Selector
                     color="black"
                     className="selector"
-                    size="md"
+                    size={size}
                     items={testcaseTemplateItem?.options?.map(d => {
                       return {
                         key: d,
@@ -91,7 +114,7 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                     })}
                     value={testcaseItem.value}
                     onChange={val => {
-                      onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val);
+                      onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val, testcaseTemplateItem.type);
                     }}
                   />
                 )}
@@ -102,11 +125,13 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                 {!isEdit && <div className="value-text">{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</div>}
                 {isEdit && (
                   <UserSelector
+                    size={size}
                     users={users}
                     type={testcaseItem.type}
                     value={testcaseItem.value}
-                    onChange={(type, val) => {
-                      onChangeTestcaseItem(testcaseTemplateItem.id, type, 'value', val);
+                    selectUserOnly={selectUserOnly}
+                    onChange={(typeValue, val) => {
+                      onChangeTestcaseItem(testcaseTemplateItem.id, typeValue, 'value', val, testcaseTemplateItem.type);
                     }}
                   />
                 )}
@@ -142,7 +167,7 @@ function TestcaseItem({ isEdit, testcaseTemplateItem, testcaseItem, users, creat
                     }}
                     initialValue={testcaseItem?.text || ''}
                     onChange={() => {
-                      onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML());
+                      onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
                     }}
                   />
                 )}
@@ -168,6 +193,9 @@ TestcaseItem.defaultProps = {
   theme: null,
   createImage: null,
   onChangeTestcaseItem: null,
+  type: true,
+  size: 'md',
+  selectUserOnly: false,
 };
 
 TestcaseItem.propTypes = {
@@ -207,6 +235,9 @@ TestcaseItem.propTypes = {
   }),
   inx: PropTypes.number,
   onChangeTestcaseItem: PropTypes.func,
+  type: PropTypes.bool,
+  size: PropTypes.string,
+  selectUserOnly: PropTypes.bool,
 };
 
 export default TestcaseItem;

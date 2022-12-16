@@ -6,6 +6,8 @@ import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.UserRole;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -31,6 +33,8 @@ public class ProjectService {
     private final TestcaseItemFileService testcaseItemFileService;
 
     private final TestcaseItemRepository testcaseItemRepository;
+
+    private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Optional<Project> selectProjectInfo(String spaceCode, Long projectId) {
@@ -72,6 +76,7 @@ public class ProjectService {
         projectRepository.save(project);
 
         deleteTestcaseItemIds.forEach(testcaseItemRepository::deleteByTestcaseTemplateItemId);
+        deleteTestcaseItemIds.forEach(testrunTestcaseGroupTestcaseItemRepository::deleteByTestcaseTemplateItemId);
 
         return project;
     }

@@ -7,7 +7,6 @@ import dialogUtil from '@/utils/dialogUtil';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
-import './TestrunInfoPage.scss';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
 import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
@@ -15,6 +14,7 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestRunTestcaseManager/TestRunTestcaseManager';
 import TestcaseService from '@/services/TestcaseService';
+import './TestrunInfoPage.scss';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -36,8 +36,6 @@ function TestrunEditPage() {
     userStore: { user },
   } = useStores();
 
-  console.log(user);
-
   const navigate = useNavigate();
 
   const [min, setMin] = useState(false);
@@ -58,6 +56,8 @@ function TestrunEditPage() {
   const [contentLoading, setContentLoading] = useState(false);
 
   const [content, setContent] = useState(null);
+
+  const [userFilter, setUserFilter] = useState('');
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -98,8 +98,43 @@ function TestrunEditPage() {
 
       const groups = testcaseUtil.getTestcaseTreeData(info?.testcaseGroups, 'testcaseGroupId');
       setTestcaseGroups(groups);
+
+      setUserFilter(user.id);
     });
   }, [projectId, testrunId]);
+
+  useEffect(() => {
+    if (!project) {
+      return;
+    }
+
+    const filteredTestcaseGroups = testrun.testcaseGroups.map(d => {
+      return {
+        ...d,
+        testcases: d.testcases.filter(testcase => {
+          if (userFilter === '') {
+            return true;
+          }
+
+          const testcaseTemplate = project?.testcaseTemplates.find(template => template.id === testcase.testcaseTemplateId);
+          const testTemplateItem = testcaseTemplate?.testcaseTemplateItems.find(templateItem => templateItem.systemLabel === 'TESTER');
+          const testcaseTestcaseItem = testcase.testrunTestcaseItems.find(testrunTestcaseItem => testrunTestcaseItem.testcaseTemplateItemId === testTemplateItem.id);
+
+          return String(testcaseTestcaseItem.value) === String(userFilter);
+        }),
+      };
+    });
+
+    setCountSummary({
+      testcaseGroupCount: filteredTestcaseGroups?.length || 0,
+      testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
+        return count + (next?.testcases?.length || 0);
+      }, 0),
+    });
+
+    const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
+    setTestcaseGroups(groups);
+  }, [project, userFilter]);
 
   const getTestcase = testrunTestcaseGroupTestcaseId => {
     setContentLoading(true);
@@ -175,6 +210,50 @@ function TestrunEditPage() {
     });
   };
 
+  const onChangeComment = (id, comment, handler) => {
+    TestrunService.updateTestrunComment(
+      spaceCode,
+      projectId,
+      testrunId,
+      content.testrunTestcaseGroupId,
+      content.id,
+      {
+        id,
+        comment,
+        testrunTestcaseGroupTestcaseId: content.id,
+      },
+      info => {
+        const nextContent = { ...content };
+
+        if (!nextContent.comments) {
+          nextContent.comments = [];
+        }
+
+        nextContent.comments.push(info);
+        if (handler) {
+          handler();
+        }
+
+        setContent(nextContent);
+      },
+    );
+  };
+
+  const onDeleteComment = id => {
+    TestrunService.deleteTestrunComment(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, id, () => {
+      const nextContent = { ...content };
+      const nextComments = nextContent.comments.slice(0);
+
+      if (nextComments) {
+        const index = nextComments.findIndex(comment => comment.id === id);
+        nextComments.splice(index, 1);
+        nextContent.comments = nextComments;
+
+        setContent(nextContent);
+      }
+    });
+  };
+
   const createTestrunImage = (testcaseId, name, size, type, file) => {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
@@ -203,6 +282,8 @@ function TestrunEditPage() {
             setMin={setMin}
             left={
               <TestcaseNavigator
+                user={user}
+                users={project?.users}
                 testcaseGroups={testcaseGroups}
                 // addTestcaseGroup={addTestcaseGroup}
                 // addTestcase={addTestcase}
@@ -215,6 +296,8 @@ function TestrunEditPage() {
                 setMin={setMin}
                 countSummary={countSummary}
                 // contentChanged={contentChanged}
+                userFilter={userFilter}
+                setUserFilter={setUserFilter}
               />
             }
             right={
@@ -231,8 +314,16 @@ function TestrunEditPage() {
                       testrunTestcaseGroupTestcaseItemRequests: content.testrunTestcaseItems,
                     });
                   }}
+                  onSaveComment={onChangeComment}
+                  onDeleteComment={onDeleteComment}
                   onCancel={() => {}}
-                  users={project?.users}
+                  users={project?.users.map(u => {
+                    return {
+                      ...u,
+                      id: u.userId,
+                    };
+                  })}
+                  user={user}
                   createTestrunImage={createTestrunImage}
                 />
               )
