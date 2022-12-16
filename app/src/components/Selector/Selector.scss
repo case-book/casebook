@@ -255,6 +255,19 @@
       }
     }
   }
+
+  &.size-xs {
+    .selector-list {
+      ul {
+        font-size: 0.8rem;
+
+        li {
+          height: $xs-height;
+          padding: 5px;
+        }
+      }
+    }
+  }
 }
 
 .theme-DARK {

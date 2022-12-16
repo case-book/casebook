@@ -88,6 +88,46 @@ TestrunService.updateTestrunResult = (spaceCode, projectId, testrunId, testrunTe
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}`,
     testrunResult,
     res => {
+      if (successHandler) {
+        successHandler(res);
+      }
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.updateTestrunComment = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, comment, successHandler, failHandler, loading = true) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,
+    comment,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.deleteTestrunComment = (
+  spaceCode,
+  projectId,
+  testrunId,
+  testrunTestcaseGroupId,
+  testrunTestcaseGroupTestcaseId,
+  testrunTestcaseGroupTestcaseCommentId,
+  successHandler,
+  failHandler,
+  loading = true,
+) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments/${testrunTestcaseGroupTestcaseCommentId}`,
+    null,
+    res => {
       successHandler(res);
     },
     failHandler,

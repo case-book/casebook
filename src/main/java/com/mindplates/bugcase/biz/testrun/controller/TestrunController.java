@@ -3,13 +3,15 @@ package com.mindplates.bugcase.biz.testrun.controller;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunResultRequest;
-import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTestcaseGroupTestcaseItemRequest;
+import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTestcaseGroupTestcaseCommentRequest;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunListResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunResponse;
+import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseCommentResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -89,6 +91,21 @@ public class TestrunController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "테스트런 코멘트 입력")
+    @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
+    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
+
+        TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment = testrunTestcaseGroupTestcaseCommentRequest.buildEntity();
+        TestrunTestcaseGroupTestcaseComment result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseComment);
+        return new TestrunTestcaseGroupTestcaseCommentResponse(result);
+    }
+
+    @Operation(description = "테스트런 코멘트 입력")
+    @DeleteMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
+    public ResponseEntity<?> updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
+        testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseCommentId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }

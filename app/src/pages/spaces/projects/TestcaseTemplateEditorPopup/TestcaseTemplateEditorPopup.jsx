@@ -158,7 +158,6 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
   const onDeleteTestcaseTemplateItem = (testcaseTemplateItemInx, category) => {
     const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
     const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
-    console.log(nextTemplateItem);
     if (nextTemplateItem.id) {
       nextTemplateItem.crud = 'D';
     } else {

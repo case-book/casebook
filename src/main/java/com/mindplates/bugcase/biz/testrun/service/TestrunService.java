@@ -37,11 +37,11 @@ public class TestrunService {
 
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
+    private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
+
     public TestrunTestcaseGroupTestcase selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         return testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
-
-
 
 
     public List<Testrun> selectProjectTestrunList(String spaceCode, long projectId, String status) {
@@ -65,7 +65,9 @@ public class TestrunService {
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunId(testrunId);
         testrunUserRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupRepository.deleteByTestrunId(testrunId);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
         testrunRepository.deleteById(testrunId);
+
     }
 
     @Transactional
@@ -80,8 +82,16 @@ public class TestrunService {
         testrunTestcaseGroupTestcaseItemRepository.saveAll(testrunTestcaseGroupTestcaseItems);
     }
 
+    @Transactional
+    public TestrunTestcaseGroupTestcaseComment updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment) {
+        testrunTestcaseGroupTestcaseCommentRepository.save(testrunTestcaseGroupTestcaseComment);
+        return testrunTestcaseGroupTestcaseComment;
+    }
 
-
+    @Transactional
+    public void deleteTestrunTestcaseGroupTestcaseComment(Long testrunTestcaseGroupTestcaseCommentId) {
+        testrunTestcaseGroupTestcaseCommentRepository.deleteById(testrunTestcaseGroupTestcaseCommentId);
+    }
 
     @Transactional
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
@@ -112,48 +122,42 @@ public class TestrunService {
 
                 for (TestcaseItem testcaseItem : testcaseItems) {
 
+                    if (testcaseItem.getValue() == null) {
+                        continue;
+                    }
+
                     TestcaseTemplateItem testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
 
                     if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
 
+                        TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
+                                .builder()
+                                .testcaseTemplateItem(testcaseTemplateItem)
+                                .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
+                                .type("value")
+                                .build();
+
                         if ("RND".equals(testcaseItem.getValue())) {
-
                             int userIndex = random.nextInt(testrunUsers.size());
-                            TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
-                                    .builder()
-                                    .testcaseTemplateItem(testcaseTemplateItem)
-                                    .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
-                                    .type("value")
-                                    .value(testrunUsers.get(userIndex).getUser().getId().toString())
-                                    .build();
-
-                            if (testrunTestcaseGroupTestcase.getTestcaseItems() == null) {
-                                testrunTestcaseGroupTestcase.setTestcaseItems(new ArrayList<>());
-                            }
-                            testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
-
-
+                            testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
                         } else if ("SEQ".equals(testcaseItem.getValue())) {
 
                             if (currentSeq > testrunUsers.size() - 1) {
                                 currentSeq = 0;
                             }
 
-                            TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
-                                    .builder()
-                                    .testcaseTemplateItem(testcaseTemplateItem)
-                                    .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
-                                    .type("value")
-                                    .value(testrunUsers.get(currentSeq).getUser().getId().toString())
-                                    .build();
-                            if (testrunTestcaseGroupTestcase.getTestcaseItems() == null) {
-                                testrunTestcaseGroupTestcase.setTestcaseItems(new ArrayList<>());
-                            }
-                            testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
+                            testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
 
                             currentSeq++;
 
+                        } else {
+                            testrunTestcaseGroupTestcaseItem.setValue(testcaseItem.getValue());
                         }
+
+                        if (testrunTestcaseGroupTestcase.getTestcaseItems() == null) {
+                            testrunTestcaseGroupTestcase.setTestcaseItems(new ArrayList<>());
+                        }
+                        testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
                     }
                 }
             }

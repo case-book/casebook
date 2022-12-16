@@ -1,35 +1,89 @@
 .flexible-layout-wrapper {
   display: flex;
   flex-grow: 1;
+  height: 100%;
 
-  .grabber {
+  &.vertical {
+    flex-direction: column;
+    height: 100%;
+  }
+
+  > .grabber {
     width: 10px;
     cursor: ew-resize;
+    z-index: 2;
+    background-color: $gray-200;
     &:hover {
       background-color: $gray-400;
     }
   }
 
-  .left-layout {
-    min-width: 120px;
-    display: flex;
-    background-color: $card-bg-color-light;
-    border-radius: 4px;
-
-    &.min {
-      min-width: auto;
-      width: 56px !important;
+  &.horizontal {
+    > .grabber {
+      width: 10px;
+      height: auto;
+      cursor: ew-resize;
     }
   }
 
-  .right-layout {
-    flex-grow: 1;
-    position: relative;
-    background-color: $card-bg-color-light;
-    border-radius: 4px;
+  &.vertical {
+    > .grabber {
+      height: 10px;
+      cursor: ns-resize;
+      width: auto;
+    }
+  }
+
+  &.horizontal {
+    > .left-layout {
+      min-width: 120px;
+      display: flex;
+      background-color: $card-bg-color-light;
+      border-radius: 4px;
+
+      &.min {
+        min-width: auto;
+        width: 56px !important;
+      }
+    }
+
+    > .right-layout {
+      flex-grow: 1;
+      position: relative;
+      background-color: $card-bg-color-light;
+      border-radius: 4px;
+    }
+  }
+
+  &.vertical {
+    > .left-layout {
+      min-height: 120px;
+      display: flex;
+      background-color: $card-bg-color-light;
+      border-radius: 4px;
+      overflow-y: auto;
+    }
+
+    > .right-layout {
+      flex-grow: 1;
+      position: relative;
+      background-color: $card-bg-color-light;
+      border-radius: 4px;
+      position: relative;
+      > div {
+        position: absolute;
+        top : 0;
+        left : 0;
+        right : 0;
+        bottom : 0;
+        overflow-y: auto;
+      }
+
+
+
+    }
   }
 }
-
 
 .theme-DARK {
   .flexible-layout-wrapper {
