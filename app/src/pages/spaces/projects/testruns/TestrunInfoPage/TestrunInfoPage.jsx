@@ -7,8 +7,6 @@ import dialogUtil from '@/utils/dialogUtil';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
-import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
@@ -45,10 +43,6 @@ function TestrunEditPage() {
     testcaseCount: 0,
   });
 
-  const [projectUserSelectPopupOpened, setProjectUserSelectPopupOpened] = useState(false);
-
-  const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
-
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [project, setProject] = useState(null);
@@ -79,29 +73,58 @@ function TestrunEditPage() {
     time: null,
   });
 
-  useEffect(() => {
+  const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
-  }, [projectId]);
+  };
 
   useEffect(() => {
+    getProject();
+  }, [projectId]);
+
+  const getTestrunInfo = () => {
     TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, info => {
+      if (!project) {
+        return;
+      }
+
       setTestrun(info);
 
+      const filteredTestcaseGroups = info.testcaseGroups.map(d => {
+        return {
+          ...d,
+          testcases: d.testcases.filter(testcase => {
+            if (userFilter === '') {
+              return true;
+            }
+
+            const testcaseTemplate = project?.testcaseTemplates.find(template => template.id === testcase.testcaseTemplateId);
+            const testTemplateItem = testcaseTemplate?.testcaseTemplateItems?.find(templateItem => templateItem.systemLabel === 'TESTER');
+            const testcaseTestcaseItem = testcase.testrunTestcaseItems?.find(testrunTestcaseItem => testrunTestcaseItem.testcaseTemplateItemId === testTemplateItem.id);
+
+            return String(testcaseTestcaseItem?.value) === String(userFilter);
+          }),
+        };
+      });
+
       setCountSummary({
-        testcaseGroupCount: info?.testcaseGroups?.length || 0,
-        testcaseCount: info?.testcaseGroups?.reduce((count, next) => {
+        testcaseGroupCount: filteredTestcaseGroups?.length || 0,
+        testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
           return count + (next?.testcases?.length || 0);
         }, 0),
       });
 
-      const groups = testcaseUtil.getTestcaseTreeData(info?.testcaseGroups, 'testcaseGroupId');
+      const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
       setTestcaseGroups(groups);
 
-      setUserFilter(user.id);
+      setUserFilter(userFilter);
     });
-  }, [projectId, testrunId]);
+  };
+
+  useEffect(() => {
+    getTestrunInfo();
+  }, [project, testrunId]);
 
   useEffect(() => {
     if (!project) {
@@ -203,13 +226,6 @@ function TestrunEditPage() {
     );
   };
 
-  const onChangeTestrun = (key, value) => {
-    setTestrun({
-      ...testrun,
-      [key]: value,
-    });
-  };
-
   const onChangeComment = (id, comment, handler) => {
     TestrunService.updateTestrunComment(
       spaceCode,
@@ -258,102 +274,93 @@ function TestrunEditPage() {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
 
+  const onSaveTestResult = nextContent => {
+    TestrunService.updateTestrunResult(
+      spaceCode,
+      projectId,
+      testrunId,
+      content.testrunTestcaseGroupId,
+      content.id,
+      {
+        testrunTestcaseGroupTestcaseItemRequests: nextContent ? nextContent.testrunTestcaseItems : content.testrunTestcaseItems,
+      },
+      () => {
+        getTestrunInfo();
+      },
+    );
+  };
+
   return (
-    <>
-      <Page className="testrun-info-page-wrapper" list wide>
-        <PageTitle
-          control={
-            <div>
-              <Button size="sm" color="warning" onClick={onClosed}>
-                {t('테스트런 종료')}
-              </Button>
-              <Button size="sm" color="danger" onClick={onDelete}>
-                {t('테스트런 삭제')}
-              </Button>
-            </div>
+    <Page className="testrun-info-page-wrapper" list wide>
+      <PageTitle
+        control={
+          <div>
+            <Button size="sm" color="warning" onClick={onClosed}>
+              {t('테스트런 종료')}
+            </Button>
+            <Button size="sm" color="danger" onClick={onDelete}>
+              {t('테스트런 삭제')}
+            </Button>
+          </div>
+        }
+      >
+        {testrun.name}
+      </PageTitle>
+      <PageContent className="page-content">
+        <FlexibleLayout
+          layoutOptionKey={['testrun', 'testrun-layout', 'width']}
+          min={min}
+          setMin={setMin}
+          left={
+            <TestcaseNavigator
+              user={user}
+              users={project?.users}
+              testcaseGroups={testcaseGroups}
+              showTestResult
+              enableDrag={false}
+              // addTestcaseGroup={addTestcaseGroup}
+              // addTestcase={addTestcase}
+              // onPositionChange={onPositionChange}
+              // onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+              selectedItemInfo={selectedItemInfo}
+              onSelect={setSelectedItemInfo}
+              // onDelete={onDeleteTestcaseGroup}
+              min={min}
+              setMin={setMin}
+              countSummary={countSummary}
+              // contentChanged={contentChanged}
+              userFilter={userFilter}
+              setUserFilter={setUserFilter}
+              testcaseTemplates={project?.testcaseTemplates}
+            />
           }
-        >
-          {testrun.name}
-        </PageTitle>
-        <PageContent className="page-content">
-          <FlexibleLayout
-            layoutOptionKey={['testrun', 'testrun-layout', 'width']}
-            min={min}
-            setMin={setMin}
-            left={
-              <TestcaseNavigator
+          right={
+            selectedItemInfo.id && (
+              <TestRunTestcaseManager
+                contentLoading={contentLoading}
+                content={content || {}}
+                testcaseTemplates={project?.testcaseTemplates}
+                setContent={d => {
+                  setContent(d);
+                }}
+                onSave={onSaveTestResult}
+                onSaveComment={onChangeComment}
+                onDeleteComment={onDeleteComment}
+                onCancel={() => {}}
+                users={project?.users.map(u => {
+                  return {
+                    ...u,
+                    id: u.userId,
+                  };
+                })}
                 user={user}
-                users={project?.users}
-                testcaseGroups={testcaseGroups}
-                // addTestcaseGroup={addTestcaseGroup}
-                // addTestcase={addTestcase}
-                // onPositionChange={onPositionChange}
-                // onChangeTestcaseGroupName={onChangeTestcaseGroupName}
-                selectedItemInfo={selectedItemInfo}
-                onSelect={setSelectedItemInfo}
-                // onDelete={onDeleteTestcaseGroup}
-                min={min}
-                setMin={setMin}
-                countSummary={countSummary}
-                // contentChanged={contentChanged}
-                userFilter={userFilter}
-                setUserFilter={setUserFilter}
+                createTestrunImage={createTestrunImage}
               />
-            }
-            right={
-              selectedItemInfo.id && (
-                <TestRunTestcaseManager
-                  contentLoading={contentLoading}
-                  content={content || {}}
-                  testcaseTemplates={project?.testcaseTemplates}
-                  setContent={d => {
-                    setContent(d);
-                  }}
-                  onSave={() => {
-                    TestrunService.updateTestrunResult(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, {
-                      testrunTestcaseGroupTestcaseItemRequests: content.testrunTestcaseItems,
-                    });
-                  }}
-                  onSaveComment={onChangeComment}
-                  onDeleteComment={onDeleteComment}
-                  onCancel={() => {}}
-                  users={project?.users.map(u => {
-                    return {
-                      ...u,
-                      id: u.userId,
-                    };
-                  })}
-                  user={user}
-                  createTestrunImage={createTestrunImage}
-                />
-              )
-            }
-          />
-        </PageContent>
-      </Page>
-      {projectUserSelectPopupOpened && (
-        <ProjectUserSelectPopup
-          users={project.users}
-          selectedUsers={testrun.testrunUsers}
-          setOpened={setProjectUserSelectPopupOpened}
-          onApply={selectedUsers => {
-            onChangeTestrun('testrunUsers', selectedUsers);
-          }}
+            )
+          }
         />
-      )}
-      {testcaseSelectPopupOpened && (
-        <TestcaseSelectPopup
-          testcaseGroups={project.testcaseGroups}
-          selectedTestcaseGroups={testrun.testcaseGroups}
-          users={project.users}
-          selectedUsers={testrun.testrunUsers}
-          setOpened={setTestcaseSelectPopupOpened}
-          onApply={selectedTestcaseGroups => {
-            onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
-          }}
-        />
-      )}
-    </>
+      </PageContent>
+    </Page>
   );
 }
 

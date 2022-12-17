@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import './CommonDialog.scss';
 
-function ErrorDialog({ className, title, message }) {
+function ErrorDialog({ className, title, message, handler }) {
   const { t } = useTranslation();
   const { controlStore } = useStores();
 
@@ -47,6 +47,9 @@ function ErrorDialog({ className, title, message }) {
           outline
           onClick={() => {
             controlStore.setError(null);
+            if (handler) {
+              handler();
+            }
           }}
         >
           {t('확인')}
@@ -60,12 +63,14 @@ ErrorDialog.defaultProps = {
   className: '',
   title: '',
   message: '',
+  handler: null,
 };
 
 ErrorDialog.propTypes = {
   className: PropTypes.string,
   title: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   message: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  handler: PropTypes.func,
 };
 
 export default ErrorDialog;

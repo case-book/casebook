@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Input, SeqId } from '@/components';
 import PropTypes from 'prop-types';
-import { ITEM_TYPE } from '@/constants/constants';
-import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
+import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import './TestcaseNavigatorGroupItem.scss';
 
 function TestcaseNavigatorGroupItem({
@@ -23,6 +23,9 @@ function TestcaseNavigatorGroupItem({
   allOpen,
   setAllOpen,
   setting,
+  showTestResult,
+  testcaseTemplates,
+  enableDrag,
 }) {
   const [treeOpen, setTreeOpen] = useState(false);
 
@@ -167,25 +170,27 @@ function TestcaseNavigatorGroupItem({
               </div>
             )}
           </div>
-          <div
-            draggable
-            className="grab"
-            onDragStart={() => {
-              setDragInfo({
-                targetType: ITEM_TYPE.TESTCASE_GROUP,
-                targetId: group.id,
-                destinationType: null,
-                destinationId: null,
-              });
-            }}
-            onDragEnd={clearDragInfo}
-            onDragLeave={e => {
-              e.stopPropagation();
-              e.preventDefault();
-            }}
-          >
-            <i className="fa-solid fa-grip-vertical" />
-          </div>
+          {enableDrag && (
+            <div
+              draggable
+              className="grab"
+              onDragStart={() => {
+                setDragInfo({
+                  targetType: ITEM_TYPE.TESTCASE_GROUP,
+                  targetId: group.id,
+                  destinationType: null,
+                  destinationId: null,
+                });
+              }}
+              onDragEnd={clearDragInfo}
+              onDragLeave={e => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <i className="fa-solid fa-grip-vertical" />
+            </div>
+          )}
           <div
             className="bar"
             onDrop={onDrop}
@@ -228,6 +233,20 @@ function TestcaseNavigatorGroupItem({
           >
             <ul>
               {group.testcases.map(testcase => {
+                let result = '';
+                if (showTestResult) {
+                  const { testcaseTemplateId } = testcase;
+                  const template = testcaseTemplates.find(d => d.id === testcaseTemplateId);
+                  if (template) {
+                    const testrunResultTemplateItem = template.testcaseTemplateItems.find(item => item.systemLabel === 'TEST_RESULT');
+                    const testrunResultTemplateItemId = testrunResultTemplateItem.id;
+
+                    const testrunResultTestcaseItem = testcase.testrunTestcaseItems.find(d => d.testcaseTemplateItemId === testrunResultTemplateItemId);
+
+                    result = testrunResultTestcaseItem?.value || '';
+                  }
+                }
+
                 return (
                   <li className="testcase-content" key={testcase.id}>
                     <div
@@ -320,25 +339,32 @@ function TestcaseNavigatorGroupItem({
                           </div>
                         )}
                       </div>
-                      <div
-                        draggable
-                        className="grab"
-                        onDragStart={() => {
-                          setDragInfo({
-                            targetType: ITEM_TYPE.TESTCASE,
-                            targetId: testcase.id,
-                            destinationType: null,
-                            destinationId: null,
-                          });
-                        }}
-                        onDragEnd={clearDragInfo}
-                        onDragLeave={e => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                      >
-                        <i className="fa-solid fa-grip-vertical" />
-                      </div>
+                      {showTestResult && (
+                        <div className={`testrun-result ${TESTRUN_RESULT_CODE[result]}`}>
+                          <div>{result}</div>
+                        </div>
+                      )}
+                      {enableDrag && (
+                        <div
+                          draggable
+                          className="grab"
+                          onDragStart={() => {
+                            setDragInfo({
+                              targetType: ITEM_TYPE.TESTCASE,
+                              targetId: testcase.id,
+                              destinationType: null,
+                              destinationId: null,
+                            });
+                          }}
+                          onDragEnd={clearDragInfo}
+                          onDragLeave={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                        >
+                          <i className="fa-solid fa-grip-vertical" />
+                        </div>
+                      )}
                       <div
                         className="bar"
                         onDrop={onDrop}
@@ -436,6 +462,9 @@ TestcaseNavigatorGroupItem.defaultProps = {
   allOpen: null,
   setting: {},
   onChangeTestcaseGroupName: null,
+  showTestResult: false,
+  testcaseTemplates: [],
+  enableDrag: true,
 };
 
 TestcaseNavigatorGroupItem.propTypes = {
@@ -477,6 +506,9 @@ TestcaseNavigatorGroupItem.propTypes = {
   allOpen: PropTypes.bool,
   setAllOpen: PropTypes.func.isRequired,
   setting: TestcaseGroupSettingPropTypes,
+  showTestResult: PropTypes.bool,
+  testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
+  enableDrag: PropTypes.bool,
 };
 
 export default TestcaseNavigatorGroupItem;

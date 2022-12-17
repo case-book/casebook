@@ -9,10 +9,7 @@ import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunResultRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTestcaseGroupTestcaseCommentRequest;
-import com.mindplates.bugcase.biz.testrun.vo.response.TestrunListResponse;
-import com.mindplates.bugcase.biz.testrun.vo.response.TestrunResponse;
-import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseCommentResponse;
-import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseResponse;
+import com.mindplates.bugcase.biz.testrun.vo.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,12 +80,12 @@ public class TestrunController {
 
     @Operation(description = "테스트런 결과 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public ResponseEntity<?> updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
+    public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
 
         List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItems = testrunResultRequest.buildEntity();
 
-        testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
-        return new ResponseEntity<>(HttpStatus.OK);
+        List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
+        return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "테스트런 코멘트 입력")

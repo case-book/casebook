@@ -25,6 +25,7 @@ export default class ControlStore {
   error = {
     code: null,
     message: null,
+    okHandler: null,
   };
 
   hideHeader = false;
@@ -71,10 +72,11 @@ export default class ControlStore {
     this.requestLoading = loading;
   };
 
-  setError = (code, message) => {
+  setError = (code, message, okHandler) => {
     this.error = {
       code,
       message,
+      okHandler,
     };
   };
 
