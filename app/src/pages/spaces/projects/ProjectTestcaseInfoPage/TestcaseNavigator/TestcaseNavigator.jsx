@@ -3,7 +3,7 @@ import { Button, EmptyContent, Liner, Selector } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
 import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
-import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
+import { NullableNumber, NullableString, TestcaseGroupPropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import { useResizeDetector } from 'react-resize-detector';
 import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
@@ -28,6 +28,9 @@ function TestcaseNavigator({
   users,
   userFilter,
   setUserFilter,
+  showTestResult,
+  testcaseTemplates,
+  enableDrag,
 }) {
   const scroller = useRef(null);
 
@@ -436,6 +439,7 @@ function TestcaseNavigator({
               {testcaseGroups.map(group => {
                 return (
                   <TestcaseNavigatorGroupItem
+                    enableDrag={enableDrag}
                     key={group.id}
                     group={group}
                     dragInfo={dragInfo}
@@ -454,6 +458,8 @@ function TestcaseNavigator({
                     allOpen={allOpen}
                     setAllOpen={setAllOpen}
                     setting={setting}
+                    showTestResult={showTestResult}
+                    testcaseTemplates={testcaseTemplates}
                   />
                 );
               })}
@@ -515,6 +521,9 @@ TestcaseNavigator.defaultProps = {
   users: [],
   userFilter: null,
   setUserFilter: null,
+  showTestResult: false,
+  testcaseTemplates: [],
+  enableDrag: true,
 };
 
 TestcaseNavigator.propTypes = {
@@ -547,6 +556,9 @@ TestcaseNavigator.propTypes = {
   ),
   setUserFilter: PropTypes.func,
   userFilter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  showTestResult: PropTypes.bool,
+  testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
+  enableDrag: PropTypes.bool,
 };
 
 export default TestcaseNavigator;

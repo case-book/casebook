@@ -184,6 +184,44 @@ li.testcase-group-item-wrapper {
         }
       }
 
+      .testrun-result {
+        display: flex;
+        margin-right: 0.5rem;
+
+        > div {
+          white-space: nowrap;
+          align-self: center;
+          padding: 0 0.5rem;
+          display: inline-block;
+          font-size: 11px;
+          font-weight: lighter;
+          border-radius: 10px;
+          background-color: $gray-800;
+          color: $white;
+        }
+
+        &.FAIL {
+          color: $white;
+          > div {
+            background-color: $danger;
+          }
+        }
+
+        &.SUCCESS {
+          color: $white;
+          > div {
+            background-color: $success;
+          }
+        }
+
+        &.UNABLED {
+          color: $white;
+          > div {
+            background-color: $gray-600;
+          }
+        }
+      }
+
       .grab {
         cursor: grab;
         padding: 0.5rem;

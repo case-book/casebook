@@ -49,7 +49,7 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
       debounce(() => {
         onSave();
       }, 1200),
-    [],
+    [content],
   );
 
   const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value, templateItemType) => {
@@ -73,13 +73,15 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
     target.type = type;
     target[field] = value;
 
-    setContent({
+    const nextContent = {
       ...content,
       testrunTestcaseItems: nextTestrunTestcaseItems,
-    });
+    };
+
+    setContent(nextContent);
 
     if (templateItemType === 'RADIO' || templateItemType === 'CHECKBOX' || templateItemType === 'SELECT' || templateItemType === 'USER') {
-      onSave();
+      onSave(nextContent);
     } else {
       onChangeDebounce();
     }
@@ -250,17 +252,26 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
                     }}
                   />
                   <div className="buttons">
-                    <Button outline onClick={onSave} size="sm">
+                    <Button
+                      outline
+                      onClick={() => {
+                        setComment('');
+                        editor.current?.getInstance().setHTML('');
+                      }}
+                      size="sm"
+                    >
                       {t('취소')}
                     </Button>
                     <Button
                       outline
                       size="sm"
                       onClick={() => {
-                        onSaveComment(null, comment, () => {
-                          setComment('');
-                          editor.current?.getInstance().setHTML('');
-                        });
+                        if (comment) {
+                          onSaveComment(null, comment, () => {
+                            setComment('');
+                            editor.current?.getInstance().setHTML('');
+                          });
+                        }
                       }}
                     >
                       {t('코멘트 추가')}

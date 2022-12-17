@@ -31,6 +31,7 @@ export default class UserStore {
       tried: observable,
       notificationCount: observable,
       setUser: action,
+      clearUser: action,
       setTried: action,
       isLogin: computed,
       addSpace: action,
@@ -41,6 +42,20 @@ export default class UserStore {
   setUser = user => {
     this.user = {
       ...user,
+    };
+  };
+
+  clearUser = () => {
+    this.user = {
+      id: null,
+      uuid: null,
+      roleCode: null,
+      token: null,
+      email: null,
+      name: null,
+      spaces: null,
+      country,
+      language,
     };
   };
 

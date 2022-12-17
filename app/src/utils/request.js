@@ -66,7 +66,9 @@ const processError = (handler, error) => {
   if (error && error.response) {
     if (error.response.status === 401) {
       if (!handlerResponse) {
-        rootStore.controlStore.setError(error.response.status, error.response.data.message || '세션이 만료되었거나, 로그인되어 있지 않습니다.');
+        rootStore.controlStore.setError(error.response.status, error.response.data.message || '세션이 만료되었거나, 로그인되어 있지 않습니다.', () => {
+          rootStore.userStore.clearUser();
+        });
       }
     } else if (error.response.status === 403) {
       if (!handlerResponse) rootStore.controlStore.setError(error.response.status, error.response.data.message || '요청하신 리소스에 접근 권한이 없습니다.');
