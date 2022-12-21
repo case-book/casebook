@@ -20,6 +20,10 @@ public class TestcaseResponse {
   private List<TestcaseItemResponse> testcaseItems;
   private String description;
 
+  private String testerType;
+
+  private String testerValue;
+
   public TestcaseResponse(Testcase testcase) {
     this.id = testcase.getId();
     this.projectId = testcase.getProject().getId();
@@ -31,6 +35,8 @@ public class TestcaseResponse {
     this.closed = testcase.getClosed();
     this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemResponse::new).collect(Collectors.toList());
     this.description = testcase.getDescription();
+    this.testerType = testcase.getTesterType();
+    this.testerValue = testcase.getTesterValue();
   }
 
 }

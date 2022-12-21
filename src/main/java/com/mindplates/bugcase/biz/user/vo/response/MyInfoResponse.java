@@ -4,7 +4,7 @@ package com.mindplates.bugcase.biz.user.vo.response;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.vo.response.SimpleSpaceResponse;
 import com.mindplates.bugcase.biz.user.entity.User;
-import com.mindplates.bugcase.common.entity.SystemRole;
+import com.mindplates.bugcase.common.code.SystemRole;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

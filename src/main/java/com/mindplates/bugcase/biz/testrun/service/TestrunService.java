@@ -9,6 +9,8 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.entity.*;
 import com.mindplates.bugcase.biz.testrun.repository.*;
+import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
@@ -86,6 +88,36 @@ public class TestrunService {
     }
 
     @Transactional
+    public void updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
+
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
+            testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() - 1);
+        } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
+            testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() - 1);
+        }
+
+        if (testResultCode.equals(TestResultCode.PASSED)) {
+            testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() + 1);
+        } else if (testResultCode.equals(TestResultCode.FAILED)) {
+            testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() + 1);
+        }
+
+        testrunTestcaseGroupTestcase.setTestResult(testResultCode);
+        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+        testrunRepository.save(testrun);
+    }
+
+    @Transactional
+    public void updateTestrunTestcaseTester(Long testrunTestcaseGroupTestcaseId, Long testerId) {
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
+        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+    }
+
+    @Transactional
     public TestrunTestcaseGroupTestcaseComment updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment) {
         testrunTestcaseGroupTestcaseCommentRepository.save(testrunTestcaseGroupTestcaseComment);
         return testrunTestcaseGroupTestcaseComment;
@@ -115,7 +147,7 @@ public class TestrunService {
         List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
 
         Random random = new Random();
-        int currentSeq = 0;
+        int currentSeq = random.nextInt(testrunUsers.size());
         for (TestrunTestcaseGroup testrunTestcaseGroup : testrun.getTestcaseGroups()) {
             List<TestrunTestcaseGroupTestcase> testcases = testrunTestcaseGroup.getTestcases();
             for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testcases) {
@@ -123,6 +155,23 @@ public class TestrunService {
 
                 Testcase testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
                 List<TestcaseItem> testcaseItems = testcase.getTestcaseItems();
+                testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
+                // 테스터 입력
+                if ("operation".equals(testcase.getTesterType())) {
+                    if ("RND".equals(testcase.getTesterValue())) {
+                        int userIndex = random.nextInt(testrunUsers.size());
+                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
+                    } else if ("SEQ".equals(testcase.getTesterValue())) {
+                        if (currentSeq > testrunUsers.size() - 1) {
+                            currentSeq = 0;
+                        }
+
+                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build());
+                        currentSeq++;
+                    }
+                } else {
+                    testrunTestcaseGroupTestcase.setTester(User.builder().id(Long.parseLong(testcase.getTesterValue())).build());
+                }
 
                 for (TestcaseItem testcaseItem : testcaseItems) {
 

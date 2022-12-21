@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.repository;
 
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
-import com.mindplates.bugcase.common.entity.UserRole;
+import com.mindplates.bugcase.common.code.UserRole;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

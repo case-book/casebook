@@ -2,44 +2,51 @@ package com.mindplates.bugcase.biz.testcase.vo.request;
 
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import lombok.Data;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Data;
 
 @Data
 public class TestcaseTemplateRequest {
 
-  private Long id;
-  private String name;
+    private Long id;
+    private String name;
 
-  private String crud;
+    private String crud;
 
-  private Boolean isDefault;
+    private Boolean isDefault;
 
-  private List<TestcaseTemplateItemRequest> testcaseTemplateItems;
+    private String defaultTesterType;
 
-  public TestcaseTemplate buildEntity() {
+    private String defaultTesterValue;
 
-    TestcaseTemplate testcaseTemplate = TestcaseTemplate.builder()
-        .id(id)
-        .name(name)
-        .isDefault(isDefault)
-        .deleted("D".equals(crud))
-        .build();
+    private List<TestcaseTemplateItemRequest> testcaseTemplateItems;
 
-    testcaseTemplate.setTestcaseTemplateItems(testcaseTemplateItems
-        .stream()
-        .map((testcaseTemplateItemRequest -> {
-          TestcaseTemplateItem testcaseTemplateItem = testcaseTemplateItemRequest.buildEntity();
-          testcaseTemplateItem.setTestcaseTemplate(testcaseTemplate);
-          return testcaseTemplateItem;
-        }))
-        .collect(Collectors.toList()));
+    public TestcaseTemplate buildEntity() {
 
-    return testcaseTemplate;
+        TestcaseTemplate testcaseTemplate = TestcaseTemplate.builder()
+                .id(id)
+                .name(name)
+                .isDefault(isDefault)
+                .defaultTesterType(defaultTesterType)
+                .defaultTesterValue(defaultTesterValue)
+                .deleted("D".equals(crud))
+                .build();
+
+        testcaseTemplate.setTestcaseTemplateItems(testcaseTemplateItems
+                .stream()
+                .map((testcaseTemplateItemRequest -> {
+                    TestcaseTemplateItem testcaseTemplateItem = testcaseTemplateItemRequest.buildEntity();
+                    testcaseTemplateItem.setTestcaseTemplate(testcaseTemplate);
+                    return testcaseTemplateItem;
+                }))
+                .collect(Collectors.toList()));
+
+        return testcaseTemplate;
 
 
-  }
+    }
 
 
 }

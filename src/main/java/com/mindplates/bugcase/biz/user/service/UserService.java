@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.user.service;
 
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
-import com.mindplates.bugcase.common.entity.SystemRole;
+import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.util.EncryptUtil;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;

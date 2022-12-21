@@ -76,6 +76,7 @@ const MENUS = [
     pc: true,
     login: true,
     project: true,
+    selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects\/[\dA-Z]+\/testruns\/*/],
   },
 
   {

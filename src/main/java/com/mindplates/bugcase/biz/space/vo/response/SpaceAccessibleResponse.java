@@ -3,7 +3,7 @@ package com.mindplates.bugcase.biz.space.vo.response;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
-import com.mindplates.bugcase.common.entity.UserRole;
+import com.mindplates.bugcase.common.code.UserRole;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

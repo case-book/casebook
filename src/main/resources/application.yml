@@ -15,12 +15,12 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     generate-ddl: true
-    show-sql: true
+    #show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
-        format_sql: true
+        #format_sql: true
         enable_lazy_load_no_trans: true
         type: trace
   redis:

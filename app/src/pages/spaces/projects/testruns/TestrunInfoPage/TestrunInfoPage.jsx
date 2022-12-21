@@ -99,11 +99,7 @@ function TestrunEditPage() {
               return true;
             }
 
-            const testcaseTemplate = project?.testcaseTemplates.find(template => template.id === testcase.testcaseTemplateId);
-            const testTemplateItem = testcaseTemplate?.testcaseTemplateItems?.find(templateItem => templateItem.systemLabel === 'TESTER');
-            const testcaseTestcaseItem = testcase.testrunTestcaseItems?.find(testrunTestcaseItem => testrunTestcaseItem.testcaseTemplateItemId === testTemplateItem.id);
-
-            return String(testcaseTestcaseItem?.value) === String(userFilter);
+            return String(testcase.testerId) === String(userFilter);
           }),
         };
       });
@@ -139,11 +135,7 @@ function TestrunEditPage() {
             return true;
           }
 
-          const testcaseTemplate = project?.testcaseTemplates.find(template => template.id === testcase.testcaseTemplateId);
-          const testTemplateItem = testcaseTemplate?.testcaseTemplateItems?.find(templateItem => templateItem.systemLabel === 'TESTER');
-          const testcaseTestcaseItem = testcase.testrunTestcaseItems?.find(testrunTestcaseItem => testrunTestcaseItem.testcaseTemplateItemId === testTemplateItem.id);
-
-          return String(testcaseTestcaseItem?.value) === String(userFilter);
+          return String(testcase.testerId) === String(userFilter);
         }),
       };
     });
@@ -274,8 +266,8 @@ function TestrunEditPage() {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
 
-  const onSaveTestResult = nextContent => {
-    TestrunService.updateTestrunResult(
+  const onSaveTestResultItems = nextContent => {
+    TestrunService.updateTestrunResultItems(
       spaceCode,
       projectId,
       testrunId,
@@ -288,6 +280,18 @@ function TestrunEditPage() {
         getTestrunInfo();
       },
     );
+  };
+
+  const onSaveTestResult = testResult => {
+    TestrunService.updateTestrunResult(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, testResult, () => {
+      getTestrunInfo();
+    });
+  };
+
+  const onSaveTester = testerId => {
+    TestrunService.updateTestrunTester(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, testerId, () => {
+      getTestrunInfo();
+    });
   };
 
   return (
@@ -331,7 +335,6 @@ function TestrunEditPage() {
               // contentChanged={contentChanged}
               userFilter={userFilter}
               setUserFilter={setUserFilter}
-              testcaseTemplates={project?.testcaseTemplates}
             />
           }
           right={
@@ -343,7 +346,9 @@ function TestrunEditPage() {
                 setContent={d => {
                   setContent(d);
                 }}
-                onSave={onSaveTestResult}
+                onSave={onSaveTestResultItems}
+                onSaveResult={onSaveTestResult}
+                onSaveTester={onSaveTester}
                 onSaveComment={onChangeComment}
                 onDeleteComment={onDeleteComment}
                 onCancel={() => {}}

@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.space.entity;
 
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
-import com.mindplates.bugcase.common.entity.ApprovalStatusCode;
+import com.mindplates.bugcase.common.code.ApprovalStatusCode;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;

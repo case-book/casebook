@@ -200,21 +200,28 @@ li.testcase-group-item-wrapper {
           color: $white;
         }
 
-        &.FAIL {
+        &.FAILED {
           color: $white;
           > div {
             background-color: $danger;
           }
         }
 
-        &.SUCCESS {
+        &.PASSED {
           color: $white;
           > div {
             background-color: $success;
           }
         }
 
-        &.UNABLED {
+        &.UNTESTABLE {
+          color: $white;
+          > div {
+            background-color: $gray-700;
+          }
+        }
+
+        &.UNTESTED {
           color: $white;
           > div {
             background-color: $gray-600;

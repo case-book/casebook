@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.notification.dto;
 
 import com.mindplates.bugcase.biz.notification.entity.Notification;
-import com.mindplates.bugcase.common.entity.NotificationTargetCode;
+import com.mindplates.bugcase.common.code.NotificationTargetCode;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

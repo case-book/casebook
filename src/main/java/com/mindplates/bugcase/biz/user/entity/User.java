@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.user.entity;
 
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.common.entity.SystemRole;
+import com.mindplates.bugcase.common.code.SystemRole;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;

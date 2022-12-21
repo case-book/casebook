@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Input, SeqId } from '@/components';
 import PropTypes from 'prop-types';
 import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
-import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
+import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
 import './TestcaseNavigatorGroupItem.scss';
 
 function TestcaseNavigatorGroupItem({
@@ -24,7 +24,7 @@ function TestcaseNavigatorGroupItem({
   setAllOpen,
   setting,
   showTestResult,
-  testcaseTemplates,
+
   enableDrag,
 }) {
   const [treeOpen, setTreeOpen] = useState(false);
@@ -233,19 +233,7 @@ function TestcaseNavigatorGroupItem({
           >
             <ul>
               {group.testcases.map(testcase => {
-                let result = '';
-                if (showTestResult) {
-                  const { testcaseTemplateId } = testcase;
-                  const template = testcaseTemplates.find(d => d.id === testcaseTemplateId);
-                  if (template) {
-                    const testrunResultTemplateItem = template.testcaseTemplateItems.find(item => item.systemLabel === 'TEST_RESULT');
-                    const testrunResultTemplateItemId = testrunResultTemplateItem.id;
-
-                    const testrunResultTestcaseItem = testcase.testrunTestcaseItems.find(d => d.testcaseTemplateItemId === testrunResultTemplateItemId);
-
-                    result = testrunResultTestcaseItem?.value || '';
-                  }
-                }
+                const result = testcase.testResult;
 
                 return (
                   <li className="testcase-content" key={testcase.id}>
@@ -340,8 +328,8 @@ function TestcaseNavigatorGroupItem({
                         )}
                       </div>
                       {showTestResult && (
-                        <div className={`testrun-result ${TESTRUN_RESULT_CODE[result]}`}>
-                          <div>{result}</div>
+                        <div className={`testrun-result ${result}`}>
+                          <div>{TESTRUN_RESULT_CODE[result]}</div>
                         </div>
                       )}
                       {enableDrag && (
@@ -463,7 +451,7 @@ TestcaseNavigatorGroupItem.defaultProps = {
   setting: {},
   onChangeTestcaseGroupName: null,
   showTestResult: false,
-  testcaseTemplates: [],
+
   enableDrag: true,
 };
 
@@ -507,7 +495,7 @@ TestcaseNavigatorGroupItem.propTypes = {
   setAllOpen: PropTypes.func.isRequired,
   setting: TestcaseGroupSettingPropTypes,
   showTestResult: PropTypes.bool,
-  testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
+
   enableDrag: PropTypes.bool,
 };
 

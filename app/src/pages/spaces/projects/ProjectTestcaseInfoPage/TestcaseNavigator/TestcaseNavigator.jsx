@@ -3,7 +3,7 @@ import { Button, EmptyContent, Liner, Selector } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
 import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
-import { NullableNumber, NullableString, TestcaseGroupPropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
+import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
 import { useResizeDetector } from 'react-resize-detector';
 import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
@@ -29,7 +29,7 @@ function TestcaseNavigator({
   userFilter,
   setUserFilter,
   showTestResult,
-  testcaseTemplates,
+
   enableDrag,
 }) {
   const scroller = useRef(null);
@@ -459,7 +459,6 @@ function TestcaseNavigator({
                     setAllOpen={setAllOpen}
                     setting={setting}
                     showTestResult={showTestResult}
-                    testcaseTemplates={testcaseTemplates}
                   />
                 );
               })}
@@ -522,7 +521,7 @@ TestcaseNavigator.defaultProps = {
   userFilter: null,
   setUserFilter: null,
   showTestResult: false,
-  testcaseTemplates: [],
+
   enableDrag: true,
 };
 
@@ -557,7 +556,7 @@ TestcaseNavigator.propTypes = {
   setUserFilter: PropTypes.func,
   userFilter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   showTestResult: PropTypes.bool,
-  testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
+
   enableDrag: PropTypes.bool,
 };
 

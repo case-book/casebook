@@ -6,6 +6,7 @@ import { getUserText } from '@/utils/userUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
+import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 
 function TestcaseItem({
   isEdit,
@@ -23,6 +24,7 @@ function TestcaseItem({
   type,
   size,
   selectUserOnly,
+  isTestResult,
 }) {
   const editor = useRef(null);
 
@@ -55,7 +57,7 @@ function TestcaseItem({
                         onChange={val => {
                           onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val, testcaseTemplateItem.type);
                         }}
-                        label={d}
+                        label={isTestResult ? TESTRUN_RESULT_CODE[d] : d}
                       />
                     );
                   })}
@@ -196,6 +198,7 @@ TestcaseItem.defaultProps = {
   type: true,
   size: 'md',
   selectUserOnly: false,
+  isTestResult: false,
 };
 
 TestcaseItem.propTypes = {
@@ -238,6 +241,7 @@ TestcaseItem.propTypes = {
   type: PropTypes.bool,
   size: PropTypes.string,
   selectUserOnly: PropTypes.bool,
+  isTestResult: PropTypes.bool,
 };
 
 export default TestcaseItem;

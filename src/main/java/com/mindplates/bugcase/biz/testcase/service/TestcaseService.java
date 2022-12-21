@@ -230,9 +230,6 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public Testcase createTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
-
-        Long userId = SessionUtil.getUserId();
-
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int testcaseSeq = project.getTestcaseSeq() + 1;
         project.setTestcaseSeq(testcaseSeq);
@@ -242,6 +239,8 @@ public class TestcaseService {
 
         TestcaseTemplate defaultTestcaseTemplate = testcaseTemplateRepository.findAllByProjectIdAndIsDefaultTrue(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "testcase.default.template.notExist"));
         testcase.setTestcaseTemplate(defaultTestcaseTemplate);
+        testcase.setTesterType(defaultTestcaseTemplate.getDefaultTesterType());
+        testcase.setTesterValue(defaultTestcaseTemplate.getDefaultTesterValue());
 
         List<TestcaseTemplateItem> hasDefaultValueTemplateItemList = defaultTestcaseTemplate.getTestcaseTemplateItems().stream().filter(testcaseTemplateItem -> StringUtils.isNotBlank(testcaseTemplateItem.getDefaultValue())).collect(Collectors.toList());
 

@@ -267,12 +267,12 @@
             animation-fill-mode: forwards;
             height: 100%;
 
-            a {
+            > a {
               color: $gray-600;
               position: relative;
               text-decoration: none;
               text-transform: uppercase;
-              letter-spacing: 1px;
+
               align-self: center;
               height: 100%;
               display: flex;

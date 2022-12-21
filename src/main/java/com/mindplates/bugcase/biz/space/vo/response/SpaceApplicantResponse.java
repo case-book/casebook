@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
-import com.mindplates.bugcase.common.entity.ApprovalStatusCode;
+import com.mindplates.bugcase.common.code.ApprovalStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

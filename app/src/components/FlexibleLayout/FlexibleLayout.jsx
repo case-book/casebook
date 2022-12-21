@@ -6,7 +6,10 @@ import PropTypes from 'prop-types';
 function FlexibleLayout({ min, left, right, layoutOptionKey, vertical, className, defaultSize }) {
   const [testcaseGroupSize, setTestcaseGroupSize] = useState(() => {
     if (layoutOptionKey?.length === 3) {
-      const option = getOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2]);
+      let option = getOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2]);
+      if (option && window.innerHeight - 250 < option) {
+        option = window.innerHeight - 250;
+      }
       return option ? `${option}px` : defaultSize;
     }
 

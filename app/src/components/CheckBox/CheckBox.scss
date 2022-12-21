@@ -7,6 +7,10 @@
   cursor: pointer;
   display: inline-flex;
 
+  &.disabled {
+    opacity: 0.6;
+  }
+
   label {
     margin-left: 0.5rem;
     vertical-align: middle;
@@ -100,7 +104,7 @@
     }
   }
 
-  &:hover {
+  &.active:hover {
     .checked-icon {
       border-color: $color-border-light-focus;
       transition: all 0.3s;
