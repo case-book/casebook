@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
+import com.mindplates.bugcase.common.code.TestResultCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +29,10 @@ public class TestrunTestcaseGroupTestcaseResponse {
     private Boolean closed;
     private List<TestcaseItemResponse> testcaseItems;
     private List<TestrunTestcaseGroupTestcaseItemResponse> testrunTestcaseItems;
-
     private List<TestrunTestcaseGroupTestcaseCommentResponse> comments;
+    private TestResultCode testResult;
+
+    private Long testerId;
 
     public TestrunTestcaseGroupTestcaseResponse(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase) {
         this.id = testrunTestcaseGroupTestcase.getId();
@@ -42,6 +45,11 @@ public class TestrunTestcaseGroupTestcaseResponse {
         this.description = testrunTestcaseGroupTestcase.getTestcase().getDescription();
         this.itemOrder = testrunTestcaseGroupTestcase.getTestcase().getItemOrder();
         this.closed = testrunTestcaseGroupTestcase.getTestcase().getClosed();
+        this.testResult = testrunTestcaseGroupTestcase.getTestResult();
+        if (testrunTestcaseGroupTestcase.getTester() != null) {
+            this.testerId = testrunTestcaseGroupTestcase.getTester().getId();
+        }
+
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems() != null && !testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().isEmpty()) {
             this.testcaseItems = testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemResponse::new).collect(Collectors.toList());

@@ -2,8 +2,8 @@ package com.mindplates.bugcase.biz.notification.entity;
 
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.common.entity.NotificationTargetCode;
-import com.mindplates.bugcase.common.entity.UserRole;
+import com.mindplates.bugcase.common.code.NotificationTargetCode;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

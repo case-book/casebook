@@ -83,10 +83,42 @@ TestrunService.updateTestrunStatusClosed = (spaceCode, projectId, testrunId, suc
   );
 };
 
-TestrunService.updateTestrunResult = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testrunResult, successHandler, failHandler, loading = true) => {
+TestrunService.updateTestrunResultItems = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testrunResult, successHandler, failHandler, loading = true) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}`,
     testrunResult,
+    res => {
+      if (successHandler) {
+        successHandler(res);
+      }
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.updateTestrunResult = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testResult, successHandler, failHandler, loading = true) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/result`,
+    { testResult },
+    res => {
+      if (successHandler) {
+        successHandler(res);
+      }
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.updateTestrunTester = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testerId, successHandler, failHandler, loading = true) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/tester`,
+    { testerId },
     res => {
       if (successHandler) {
         successHandler(res);

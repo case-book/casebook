@@ -9,7 +9,7 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 import './TestcaseManager.scss';
 import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
-import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
+import { DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 
 function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage }) {
@@ -60,6 +60,14 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
     setContent({
       ...content,
       testcaseItems: nextTestcaseItems,
+    });
+  };
+
+  const onChangeTestcaseTester = (type, value) => {
+    setContent({
+      ...content,
+      testerType: type,
+      testerValue: String(value),
     });
   };
 
@@ -182,6 +190,25 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
               />
             );
           })}
+        <div>
+          <TestcaseItem
+            isEdit={isEdit}
+            testcaseTemplateItem={{
+              ...DEFAULT_TESTRUN_TESTER_ITEM,
+            }}
+            testcaseItem={{ type: content.testerType, value: content.testerValue }}
+            content={content}
+            theme={theme}
+            createImage={createTestcaseImage}
+            users={users}
+            setOpenTooltipInfo={setOpenTooltipInfo}
+            caseContentElement={caseContentElement}
+            openTooltipInfo={openTooltipInfo}
+            onChangeTestcaseItem={(id, typeValue, temp1, val) => {
+              onChangeTestcaseTester(typeValue, val);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -212,6 +239,8 @@ TestcaseManager.propTypes = {
         text: PropTypes.string,
       }),
     ),
+    testerType: PropTypes.string,
+    testerValue: PropTypes.string,
   }),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   isEdit: PropTypes.bool.isRequired,

@@ -4,7 +4,7 @@ import DescriptionTooltip from '@/pages/spaces/projects/DescriptionTooltip';
 import './TestcaseTemplateItem.scss';
 import { useTranslation } from 'react-i18next';
 
-function TestcaseTemplateEditorPopup({ className, testcaseTemplateItem, inx, selected, onClick, editor, parentElement }) {
+function TestcaseTemplateItem({ className, testcaseTemplateItem, inx, selected, onClick, editor, parentElement }) {
   const { t } = useTranslation();
 
   const [openTooltipInfo, setOpenTooltipInfo] = useState({
@@ -118,7 +118,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplateItem, inx, sel
   );
 }
 
-TestcaseTemplateEditorPopup.defaultProps = {
+TestcaseTemplateItem.defaultProps = {
   className: '',
   editor: true,
   testcaseTemplateItem: {},
@@ -128,7 +128,7 @@ TestcaseTemplateEditorPopup.defaultProps = {
   inx: null,
 };
 
-TestcaseTemplateEditorPopup.propTypes = {
+TestcaseTemplateItem.propTypes = {
   className: PropTypes.string,
   editor: PropTypes.bool,
   testcaseTemplateItem: PropTypes.shape({
@@ -149,4 +149,4 @@ TestcaseTemplateEditorPopup.propTypes = {
   inx: PropTypes.number,
 };
 
-export default TestcaseTemplateEditorPopup;
+export default TestcaseTemplateItem;

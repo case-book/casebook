@@ -1,4 +1,4 @@
-package com.mindplates.bugcase.common.entity;
+package com.mindplates.bugcase.common.code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.mindplates.bugcase.common.entity;
+package com.mindplates.bugcase.common.code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum SystemRole {
+public enum UserRole {
 
-  ROLE_ADMIN("ROLE_ADMIN"),
-  ROLE_USER("ROLE_USER");
+  ADMIN("ADMIN"),
+  USER("USER");
   private String code;
 
 }

@@ -4,16 +4,13 @@ import com.mindplates.bugcase.biz.notification.dto.NotificationDTO;
 import com.mindplates.bugcase.biz.notification.entity.Notification;
 import com.mindplates.bugcase.biz.notification.repository.NotificationRepository;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
-import com.mindplates.bugcase.common.entity.NotificationTargetCode;
-import com.mindplates.bugcase.common.entity.UserRole;
-import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.code.NotificationTargetCode;
+import com.mindplates.bugcase.common.code.UserRole;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.mindplates.bugcase.common.message.MessageSendService;
@@ -23,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.framework.security;
 
 import com.mindplates.bugcase.biz.space.service.SpaceService;
-import com.mindplates.bugcase.common.entity.SystemRole;
+import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import java.util.Arrays;
 import java.util.Collection;

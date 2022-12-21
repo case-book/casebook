@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
@@ -72,5 +73,12 @@ public class Testcase extends CommonEntity {
   @ManyToOne
   @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
   private Project project;
+
+  @Column(name = "tester_type", length = ColumnsDef.CODE)
+  private String testerType;
+
+  @Column(name = "tester_value", length = ColumnsDef.CODE)
+  private String testerValue;
+
 
 }

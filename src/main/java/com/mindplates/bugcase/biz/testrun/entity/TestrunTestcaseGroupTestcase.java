@@ -1,6 +1,9 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.common.code.TestResultCode;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
@@ -38,6 +41,13 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunTestcaseGroupTestcase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunTestcaseGroupTestcaseComment> comments;
+
+    @Column(name = "test_result", length = ColumnsDef.CODE)
+    private TestResultCode testResult;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE__USER"))
+    private User tester;
 
 
 }

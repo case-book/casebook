@@ -9,7 +9,7 @@ import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import { debounce } from 'lodash';
 import useStores from '@/hooks/useStores';
-import { ITEM_TYPE } from '@/constants/constants';
+import { DEFAULT_TESTRUN_RESULT_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE } from '@/constants/constants';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './TestRunTestcaseManager.scss';
 
-function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave, contentLoading, onSaveComment, user, onDeleteComment }) {
+function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave, contentLoading, onSaveComment, user, onDeleteComment, onSaveResult, onSaveTester }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -87,6 +87,24 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
     }
   };
 
+  const onChangeTestResult = (testcaseTemplateItemId, type, field, value) => {
+    const nextContent = {
+      ...content,
+      testResult: value,
+    };
+    setContent(nextContent);
+    onSaveResult(value);
+  };
+
+  const onChangeTester = (testcaseTemplateItemId, type, field, value) => {
+    const nextContent = {
+      ...content,
+      testerId: value,
+    };
+    setContent(nextContent);
+    onSaveTester(value);
+  };
+
   return (
     <div className="testrun-testcase-manager-wrapper">
       {contentLoading && <Loader />}
@@ -146,6 +164,43 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
         right={
           <div className="testurn-result-info">
             <div className="testrun-result-content">
+              <div className="testrun-result-list is-edit">
+                <TestcaseItem
+                  selectUserOnly
+                  size="sm"
+                  isEdit
+                  testcaseTemplateItem={{
+                    ...DEFAULT_TESTRUN_RESULT_ITEM,
+                  }}
+                  testcaseItem={{ value: content.testResult }}
+                  content={content}
+                  theme={theme}
+                  createImage={createTestrunImage}
+                  users={users}
+                  setOpenTooltipInfo={setOpenTooltipInfo}
+                  caseContentElement={caseContentElement}
+                  openTooltipInfo={openTooltipInfo}
+                  onChangeTestcaseItem={onChangeTestResult}
+                  isTestResult
+                />
+                <TestcaseItem
+                  selectUserOnly
+                  size="sm"
+                  isEdit
+                  testcaseTemplateItem={{
+                    ...DEFAULT_TESTRUN_TESTER_ITEM,
+                  }}
+                  testcaseItem={{ value: content.testerId }}
+                  content={content}
+                  theme={theme}
+                  createImage={createTestrunImage}
+                  users={users}
+                  setOpenTooltipInfo={setOpenTooltipInfo}
+                  caseContentElement={caseContentElement}
+                  openTooltipInfo={openTooltipInfo}
+                  onChangeTestcaseItem={onChangeTester}
+                />
+              </div>
               <div className="testrun-result-list is-edit">
                 {testcaseTemplate?.testcaseTemplateItems
                   .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
@@ -301,6 +356,8 @@ TestRunTestcaseManager.defaultProps = {
   contentLoading: false,
   user: null,
   onDeleteComment: null,
+  onSaveResult: null,
+  onSaveTester: null,
 };
 
 TestRunTestcaseManager.propTypes = {
@@ -340,6 +397,8 @@ TestRunTestcaseManager.propTypes = {
         comment: PropTypes.string,
       }),
     ),
+    testResult: PropTypes.string,
+    testerId: PropTypes.number,
   }),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   setContent: PropTypes.func.isRequired,
@@ -358,6 +417,8 @@ TestRunTestcaseManager.propTypes = {
     id: PropTypes.number,
   }),
   onDeleteComment: PropTypes.func,
+  onSaveResult: PropTypes.func,
+  onSaveTester: PropTypes.func,
 };
 
 export default TestRunTestcaseManager;

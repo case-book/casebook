@@ -146,6 +146,8 @@ ContentManager.propTypes = {
         text: PropTypes.string,
       }),
     ),
+    testerType: PropTypes.string,
+    testerValue: PropTypes.string,
   }),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   loading: PropTypes.bool,

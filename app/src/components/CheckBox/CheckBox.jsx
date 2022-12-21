@@ -4,13 +4,15 @@ import './CheckBox.scss';
 
 class CheckBox extends React.PureComponent {
   render() {
-    const { className, label, onChange, value, size } = this.props;
+    const { className, label, onChange, value, size, disabled } = this.props;
 
     return (
       <div
-        className={`check-box-wrapper ${size} ${className} ${value ? 'checked' : ''}`}
+        className={`check-box-wrapper ${size} ${className} ${value ? 'checked' : ''} ${disabled ? 'disabled' : 'active'}`}
         onClick={() => {
-          onChange(!value);
+          if (!disabled) {
+            onChange(!value);
+          }
         }}
       >
         <span className="checked-icon g-no-select">
@@ -28,6 +30,7 @@ CheckBox.defaultProps = {
   onChange: null,
   value: false,
   size: 'md',
+  disabled: false,
 };
 
 CheckBox.propTypes = {
@@ -36,6 +39,7 @@ CheckBox.propTypes = {
   onChange: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   size: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default CheckBox;
