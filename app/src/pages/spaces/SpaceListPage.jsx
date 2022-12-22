@@ -122,6 +122,7 @@ function SpaceListPage() {
           <div className="foreground">
             <div className="intro-button">
               <Button
+                size="sm"
                 outline
                 onClick={() => {
                   navigate('/spaces/new');
@@ -130,6 +131,7 @@ function SpaceListPage() {
                 <i className="fa-solid fa-plus" /> {t('새 스페이스')}
               </Button>
               <Button
+                size="sm"
                 outline
                 onClick={e => {
                   e.preventDefault();
@@ -337,7 +339,7 @@ function SpaceListPage() {
                   {queryList.map(space => {
                     return (
                       <li key={space.id}>
-                        {space.isMember && <span className="member">MEMBER</span>}
+                        <div className="member">{space.isMember && <span>MEMBER</span>}</div>
                         <Link to={`/spaces/${space.code}/info`}>{space.name}</Link>
                       </li>
                     );

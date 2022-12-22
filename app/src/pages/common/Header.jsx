@@ -336,8 +336,9 @@ function Header({ className }) {
             />
           </div>
         </div>
-        {isLogin && (
-          <div className="notification-menu">
+
+        <div className="notification-menu">
+          {isLogin && (
             <Button
               outline
               rounded
@@ -354,8 +355,9 @@ function Header({ className }) {
               )}
               <i className="fa-solid fa-bell" />
             </Button>
-          </div>
-        )}
+          )}
+        </div>
+
         <div className="user-menu">
           {isLogin && (
             <Button
