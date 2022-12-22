@@ -24,6 +24,17 @@
     }
   }
 
+  @media (max-width: 1000px) {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    min-height: calc(100vh - 80px - 10px);
+
+    &.hide-header {
+      min-height: calc(100vh - 30px - 20px);
+    }
+  }
+
 
 
   &.info-page {

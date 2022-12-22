@@ -39,6 +39,7 @@ const TESTRUN_RESULT_CODE = {
   UNTESTABLE: '수행불가능',
   FAILED: '실패',
   PASSED: '성공',
+  OTHERS: '미수행&수행불가',
 };
 
 const DEFAULT_TESTRUN_RESULT_ITEM = {

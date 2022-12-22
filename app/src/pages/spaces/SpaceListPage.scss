@@ -11,6 +11,11 @@
       min-height: 400px;
       position: relative;
 
+      @media (max-width: 1000px) {
+        height: auto;
+        min-height: auto;
+      }
+
       .foreground {
         position: absolute;
         top: 0;
@@ -19,6 +24,9 @@
         bottom: 0;
         display: flex;
         flex-direction: column;
+        @media (max-width: 1000px) {
+          position: static;
+        }
 
         .intro-button {
           text-align: right;
@@ -26,8 +34,23 @@
           position: absolute;
           top: 0;
           right: 0;
+
+          @media (max-width: 1000px) {
+            position: static;
+            text-align: center;
+            left: 0;
+          }
+
+          @media (max-width: 768px) {
+            padding: 1rem 0;
+            text-align: right;
+          }
+
           > button {
             margin-right: 1rem;
+            @media (max-width: 768px) {
+              margin-right: 0.5rem;
+            }
             &:last-child {
               margin-right: 0;
             }
@@ -38,6 +61,10 @@
           flex-grow: 1;
           display: flex;
           justify-content: center;
+
+          @media (max-width: 1000px) {
+            display: none;
+          }
           > div {
             align-self: center;
             font-size: 24px;
@@ -85,6 +112,10 @@
       display: flex;
       align-self: flex-start;
       width: 100%;
+
+      @media (max-width: 1000px) {
+        display: block;
+      }
     }
 
     .arrow {
@@ -92,6 +123,10 @@
       height: 400px;
       display: flex;
       padding-bottom: 1rem;
+
+      @media (max-width: 1000px) {
+        display: none;
+      }
       button {
         background-color: transparent;
         color: $black;
@@ -112,11 +147,22 @@
       scroll-behavior: smooth;
       display: flex;
 
+      @media (max-width: 1000px) {
+        display: block;
+        white-space: normal;
+        overflow-x: auto;
+        scroll-behavior: auto;
+      }
+
       > ul {
         vertical-align: top;
         list-style: none;
         padding: 0 1rem;
         margin: 0;
+
+        @media (max-width: 768px) {
+          padding: 0;
+        }
 
         li {
           display: inline-flex;
@@ -128,6 +174,18 @@
           animation-fill-mode: forwards;
           margin-right: 1rem;
           margin-bottom: 1rem;
+
+          @media (max-width: 1000px) {
+            width: calc((100% - 1rem) / 2);
+            &:nth-child(2n) {
+              margin-right: 0;
+            }
+          }
+
+          @media (max-width: 768px) {
+            width: 100%;
+            margin-right: 0;
+          }
 
           &:last-child {
             margin-right: 0;
@@ -307,6 +365,11 @@
     @media (max-width: 1660px) {
       bottom: -20px;
     }
+
+    @media (max-width: 1000px) {
+      bottom: -10px;
+      position: static;
+    }
     > div {
       display: inline-block;
 
@@ -327,7 +390,6 @@
     overflow: hidden;
     transition: all 0.3s;
     transition-timing-function: ease-in-out;
-
     border-radius: 0 0 4px 4px;
 
     &.on {
@@ -347,10 +409,18 @@
       padding: 2rem 4rem;
       height: 100%;
 
+      @media (max-width: 1000px) {
+        padding: 0 0 1rem;
+      }
+
       .close-icon {
         position: absolute;
         top: 1rem;
         right: 1rem;
+
+        @media (max-width: 1000px) {
+          display: none;
+        }
       }
 
       .search-row {
@@ -359,12 +429,20 @@
         padding: 1rem;
         margin-top: 1rem;
 
+        @media (max-width: 1000px) {
+          margin-top: 0;
+        }
+
         > div {
           align-self: center;
         }
 
         .text {
           margin-right: 1rem;
+
+          @media (max-width: 768px) {
+            display: none;
+          }
         }
 
         .icon {
@@ -387,6 +465,10 @@
         padding: 1rem 1rem 0;
         overflow-y: auto;
 
+        @media (max-width: 1000px) {
+          padding: 0 1rem;
+        }
+
         .empty-content {
           width: 100%;
         }
@@ -404,37 +486,41 @@
             cursor: pointer;
             overflow: visible;
             position: relative;
+            text-align: center;
+            box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            padding: 1rem 1rem;
+            margin-right: 1rem;
+            min-width: 160px;
+            border-radius: 2px;
+            margin-bottom: 1rem;
+
+            &:hover {
+              border: 1px solid rgba(0, 0, 0, 0.3);
+            }
 
             > a {
               display: inline-block;
-              padding: 1rem 1rem 0.75rem;
-              margin-right: 1.5rem;
               border-radius: 0;
               line-height: 100%;
-              margin-bottom: 1rem;
               color: $black;
-              border-bottom: 1px solid $gray-500;
             }
 
             .member {
-              position: absolute;
-              font-size: 10px;
-              top: -8px;
-              right: 12px;
-              display: inline-block;
-              background-color: $color-sunflower;
-              color: $black;
-              font-weight: bold;
-              padding: 4px;
-              line-height: 100%;
-              border-radius: 2px;
-              font-family: Cairo, sans-serif;
-              z-index: 114;
-            }
-
-            &:hover {
-              > a {
-                border-bottom-color: $color-primary-light;
+              text-align: center;
+              line-height: 0;
+              min-height: 18px;
+              margin-bottom: 0.5rem;
+              > span {
+                font-size: 10px;
+                display: inline-block;
+                background-color: $color-sunflower;
+                color: $black;
+                font-weight: bold;
+                padding: 4px;
+                line-height: 100%;
+                border-radius: 2px;
+                font-family: Cairo, sans-serif;
               }
             }
           }
@@ -464,20 +550,29 @@
               &:hover {
                 .name-and-code {
                   .name {
-                    color: $color-primary-light;
+                    color: $color-primary-dark;
                   }
                 }
               }
 
-              .description {
-                color: $white;
-                background-color: #16151a;
-                border: 1px solid rgba(255, 255, 255, 0.04);
+              .space-card-content {
+                > div {
+                  .description {
+                    background-color: $black;
+                    color: $white;
+                  }
+
+                  .counter-info {
+                    background-color: $black;
+                    color: $white;
+                  }
+                }
               }
 
-              .counter-info {
-                background-color: #16151a;
-                border: 1px solid rgba(255, 255, 255, 0.04);
+              .new-space-card-content {
+                &:hover {
+                  color: $color-primary-dark;
+                }
               }
             }
           }
@@ -486,134 +581,28 @@
     }
 
     .version {
-      color: $gray-700;
+      color: $gray-200;
     }
 
     .space-search-content {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background-color: $card-bg-color-dark;
-
-      z-index: 4;
-      height: 0;
-      overflow: hidden;
-      transition: all 0.3s;
-      transition-timing-function: ease-in-out;
-
-      border-radius: 0 0 4px 4px;
-
-      &.on {
-        height: 500px;
-        transition: all 0.3s;
-        transition-timing-function: ease-in-out;
-        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
-      }
+      background-color: $black;
 
       > div {
-        display: flex;
-        flex-direction: column;
-        max-width: $max-width;
-        margin: 0 auto;
-        position: relative;
-        padding: 2rem 4rem;
-        height: 100%;
-
-        .close-icon {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-        }
-
-        .search-row {
-          display: flex;
-          width: 100%;
-          padding: 1rem;
-          margin-top: 1rem;
-
-          > div {
-            align-self: center;
-          }
-
-          .text {
-            margin-right: 1rem;
-          }
-
-          .icon {
-            font-size: 20px;
-            margin-right: 1rem;
-          }
-
-          .query {
-            flex-grow: 1;
-          }
-
-          .control {
-            margin-left: 1rem;
-          }
-        }
-
         .search-list {
-          flex-grow: 1;
-          display: flex;
-          padding: 1rem 1rem 0;
-          overflow-y: auto;
-
           .empty-content {
-            width: 100%;
+            color: $white;
           }
 
           ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            vertical-align: top;
-            overflow: visible;
-
             li {
-              display: inline-block;
-              vertical-align: top;
-              cursor: pointer;
-              overflow: visible;
-              position: relative;
-
-              > a {
-                display: inline-block;
-                padding: 1rem 2rem;
-                background-color: rgba(255, 255, 255, 0.1);
-                margin-right: 1rem;
-                border-radius: 20px;
-                border-radius: 20px 0 20px 20px;
-                border-radius: 14px 0 14px 14px;
-                line-height: 100%;
-                box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.1);
-                margin-bottom: 1rem;
-                color: $white;
-              }
-
-              .member {
-                position: absolute;
-                font-size: 10px;
-                top: -8px;
-                right: 12px;
-                display: inline-block;
-                background-color: $color-sunflower;
-                color: $black;
-                font-weight: bold;
-                padding: 4px;
-                line-height: 100%;
-                border-radius: 2px;
-                font-family: Cairo, sans-serif;
-                z-index: 114;
-              }
+              background-color: $gray-700;
 
               &:hover {
-                > a {
-                  background-color: $color-azure;
-                  color: $color-azure;
-                  color: $white;
-                }
+                border: 1px solid rgba(255, 255, 255, 0.2);
+              }
+
+              > a {
+                color: $white;
               }
             }
           }

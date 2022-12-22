@@ -76,7 +76,8 @@ public class TestrunService {
     }
 
     @Transactional
-    public void updateProjectTestrunStatusClosed(long testrunId) {
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testrun.setOpened(false);
         testrunRepository.save(testrun);
