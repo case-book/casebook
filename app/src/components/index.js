@@ -50,6 +50,7 @@ import DateRange from './DateRange/DateRange';
 import FlexibleLayout from './FlexibleLayout/FlexibleLayout';
 import TestcaseViewerLabel from './TestcaseViewerLabel/TestcaseViewerLabel';
 import TestcaseItem from './TestcaseItem/TestcaseItem';
+import PieChart from './PieChart/PieChart';
 
 export {
   Selector,
@@ -104,4 +105,5 @@ export {
   FlexibleLayout,
   TestcaseViewerLabel,
   TestcaseItem,
+  PieChart,
 };

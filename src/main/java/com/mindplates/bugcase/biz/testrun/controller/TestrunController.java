@@ -61,7 +61,7 @@ public class TestrunController {
     @Operation(description = "테스트런 닫기")
     @PutMapping("/{testrunId}/status/closed")
     public ResponseEntity<?> updateTestrunClosed(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
-        testrunService.updateProjectTestrunStatusClosed(testrunId);
+        testrunService.updateProjectTestrunStatusClosed(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
