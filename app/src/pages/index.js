@@ -9,7 +9,7 @@ import Login from '@/pages/users/Login';
 import Join from '@/pages/users/Join';
 import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
-import ProjectOverviewInfoPage from '@/pages/spaces/projects/ProjectOverviewInfoPage';
+import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
 
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
@@ -24,7 +24,7 @@ import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
 import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestrunInfoPage';
 
 export {
-  ProjectOverviewInfoPage,
+  ProjectDashBoardPage,
   SpaceListPage,
   Message,
   SpaceInfoPage,

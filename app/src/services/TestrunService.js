@@ -16,6 +16,20 @@ TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, success
   );
 };
 
+TestrunService.selectUserAssignedTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/assigned`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 TestrunService.createProjectTestrunInfo = (spaceCode, projectId, testrun, successHandler, failHandler) => {
   return request.post(
     `/api/${spaceCode}/projects/${projectId}/testruns`,
