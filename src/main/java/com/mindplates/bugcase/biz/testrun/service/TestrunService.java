@@ -22,6 +22,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -223,6 +224,28 @@ public class TestrunService {
 
         testrunRepository.save(testrun);
         return testrun;
+    }
+
+    public List<Testrun> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
+
+        List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, true);
+
+
+        return testruns.stream()
+                .filter((testrun -> testrun.getTestcaseGroups()
+                        .stream()
+                        .anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
+            List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream()
+                    .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))
+                    .map((testrunTestcaseGroup -> {
+                        List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
+                        testrunTestcaseGroup.setTestcases(userTestcaseList);
+                        return testrunTestcaseGroup;
+                    })).collect(Collectors.toList());
+            testrun.setTestcaseGroups(userTestcaseGroupList);
+            return testrun;
+        })).collect(Collectors.toList());
+
     }
 
 }

@@ -1,0 +1,240 @@
+.project-overview-info-page-wrapper {
+  .testruning-info,
+  .my-testrun-info {
+    margin-bottom: 2rem;
+    .card-header {
+      padding: 2rem;
+    }
+    .card-content {
+      height: 400px;
+
+      &.my-testrun-content {
+        height: 500px;
+      }
+
+      &.empty {
+        > div {
+          padding: 0 1rem 1rem;
+        }
+      }
+
+      > div {
+        > ul {
+          margin: 0;
+          padding: 0 1rem 1rem;
+          white-space: nowrap;
+          height: 100%;
+
+          > li {
+            display: inline-flex;
+            height: 100%;
+            flex-direction: column;
+            margin-right: 1rem;
+            background-color: $gray-100;
+            padding-top: 1rem;
+            width: calc((100% - 2rem) / 3);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+
+            &.until-3 {
+              &:nth-child(3n) {
+                margin-right: 0;
+              }
+            }
+
+            > .name {
+              text-align: center;
+              flex-grow: 0;
+              font-weight: bold;
+
+              .seq {
+                margin-bottom: 4px;
+                font-size: 14px;
+              }
+
+              .text {
+                font-size: 18px;
+              }
+            }
+
+            > .summary {
+              padding: 0 1rem;
+              margin-top: 1rem;
+              > div {
+                display: flex;
+                height: 30px;
+                > div {
+                  align-self: center;
+                }
+                > .label {
+                  margin-right: 1rem;
+                }
+
+                > .percentage {
+                  margin-right: 1rem;
+                  width: 50px;
+                  text-align: right;
+                }
+
+                > .remain-count {
+                  flex-grow: 1;
+
+                  height: 100%;
+                  > div {
+                    width: 100%;
+                    display: flex;
+                    height: 100%;
+                    > div {
+                      align-self: center;
+                      height: 100%;
+
+                      display: flex;
+                      > div {
+                        align-self: center;
+                        width: 100%;
+                        text-align: center;
+                        color: $white;
+                        font-size: 13px;
+                      }
+
+                      &.done {
+                        background-color: $green;
+                        border-radius: 4px 0 0 4px;
+
+                        &.full {
+                          border-radius: 4px;
+                        }
+                      }
+
+                      &.remain {
+                        background-color: $danger;
+                        border-radius: 0 4px 4px 0;
+                        &.full {
+                          border-radius: 4px;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            > .testcase-list-title {
+              margin-top: 0.5rem;
+              padding: 0.5rem 1rem;
+            }
+
+            > .list {
+              padding: 1rem 1rem;
+              overflow-y: auto;
+              background-color: $white;
+              margin: 0 1rem 1rem;
+              flex-grow: 1;
+              border: 1px solid rgba(0, 0, 0, 0.06);
+
+              > ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+
+                > li {
+                  .testcase-group-name {
+                    margin-bottom: 0.25rem;
+                    font-weight: bold;
+                  }
+
+                  > ul {
+                    list-style: none;
+                    margin: 0 0 0 1rem;
+                    padding: 0;
+                    > li {
+                      line-height: 160%;
+                      > div {
+                        display: flex;
+                        > div.testcase-name {
+                          flex-grow: 1;
+                          overflow-x: hidden;
+                          text-overflow: ellipsis;
+                        }
+
+                        > div.testcase-result {
+                          min-width: 80px;
+                          text-align: right;
+                          display: flex;
+                          justify-content: flex-end;
+                          > span {
+                            display: inline-block;
+                            line-height: 100%;
+                            font-size: 12px;
+                            padding: 4px 8px;
+                            border-radius: 4px;
+                            align-self: center;
+
+                            &.FAILED {
+                              color: $white;
+                              background-color: $danger;
+                            }
+
+                            &.PASSED {
+                              color: $white;
+                              background-color: $success;
+                            }
+
+                            &.UNTESTABLE {
+                              color: $white;
+                              background-color: $gray-700;
+                            }
+
+                            &.UNTESTED {
+                              color: $white;
+                              background-color: $gray-600;
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            > .chart {
+              width: 100%;
+              flex-grow: 1;
+              position: relative;
+
+              .chart-content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .subtitle {
+    margin-top: 2rem;
+  }
+}
+
+.theme-DARK {
+  .project-overview-info-page-wrapper {
+    .box {
+      .card {
+        .card-content {
+          > div {
+            > ul {
+              li {
+                background-color: $black !important;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
