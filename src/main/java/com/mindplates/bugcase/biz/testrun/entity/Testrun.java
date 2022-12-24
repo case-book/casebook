@@ -6,6 +6,7 @@ import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -65,5 +66,8 @@ public class Testrun extends CommonEntity {
 
   @Column(name = "failed_testcase_count")
   private int failedTestcaseCount;
+
+  @Column(name = "closed_date")
+  private LocalDateTime closedDate;
 
 }

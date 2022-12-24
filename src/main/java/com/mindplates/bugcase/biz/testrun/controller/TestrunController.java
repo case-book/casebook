@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,6 +124,13 @@ public class TestrunController {
 
         List<Testrun> testruns = testrunService.selectUserAssignedTestrunList(spaceCode, projectId, SessionUtil.getUserId());
         return testruns.stream().map(TestrunResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "프로젝트 테스트런 히스토리 조회")
+    @GetMapping("/history")
+    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end ) {
+        List<Testrun> testruns = testrunService.selectProjectTestrunHistoryList(spaceCode, projectId, start, end);
+        return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
 
