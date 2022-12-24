@@ -57,6 +57,7 @@
                 height: 100%;
                 display: flex;
                 border-radius: 2px;
+                cursor: pointer;
 
                 > div.passed {
                   background-color: $success;
@@ -96,7 +97,7 @@
 
               .testrun-name.left,
               .testrun-start-date.left {
-                left: 0;
+                left: -2px;
                 > span {
                   position: absolute;
                   right: 0;
@@ -113,10 +114,10 @@
       }
 
       .chart-axis {
-        _background-color: $gray-100;
         padding: 1rem;
         display: flex;
         position: relative;
+        margin-top: 1rem;
 
         .line {
           position: absolute;

@@ -296,9 +296,12 @@ function ProjectDashBoardPage() {
                                 style={{
                                   width: `${(currentCloseSpan / totalSpan) * 100}%`,
                                 }}
-                                data-tip={`${dateUtil.getDateString(d.startDateTime)}-${dateUtil.getDateString(d.closedDate, DATE_FORMATS_TYPES.monthsDaysHoursMinutes)} [${
+                                data-tip={`${dateUtil.getDateString(d.startDateTime)}-${dateUtil.getDateString(d.closedDate, DATE_FORMATS_TYPES.monthsDaysHoursMinutes)} [ ${
                                   d.passedTestcaseCount
-                                } PASSED / ${d.failedTestcaseCount} FAILED]`}
+                                } PASSED / ${d.failedTestcaseCount} FAILED ]`}
+                                onClick={() => {
+                                  navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${d.id}`);
+                                }}
                               >
                                 <div
                                   className="passed"
