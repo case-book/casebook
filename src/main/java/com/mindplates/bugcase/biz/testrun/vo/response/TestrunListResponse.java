@@ -24,7 +24,7 @@ public class TestrunListResponse {
     private int totalTestcaseCount;
     private int passedTestcaseCount;
     private int failedTestcaseCount;
-
+    private LocalDateTime closedDate;
 
     public TestrunListResponse(Testrun testrun) {
         this.id = testrun.getId();
@@ -37,6 +37,7 @@ public class TestrunListResponse {
         this.totalTestcaseCount = testrun.getTotalTestcaseCount();
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
+        this.closedDate = testrun.getClosedDate();
     }
 
 

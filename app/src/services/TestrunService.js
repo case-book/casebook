@@ -29,6 +29,19 @@ TestrunService.selectUserAssignedTestrunList = (spaceCode, projectId, successHan
     loading,
   );
 };
+TestrunService.selectTestrunHistoryList = (spaceCode, projectId, start, end, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/history?start=${start}&end=${end}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
 
 TestrunService.createProjectTestrunInfo = (spaceCode, projectId, testrun, successHandler, failHandler) => {
   return request.post(
