@@ -4,7 +4,7 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
-import com.mindplates.bugcase.common.code.UserRole;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -40,7 +40,7 @@ public class ProjectResponse {
         this.creationDate = project.getCreationDate();
         this.spaceName = project.getSpace().getName();
 
-        if (userId != null && project.getUsers().stream().anyMatch(projectUser -> projectUser.getUser().getId().equals(userId) && UserRole.ADMIN.equals(projectUser.getRole()))) {
+        if (userId != null && project.getUsers().stream().anyMatch(projectUser -> projectUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(projectUser.getRole()))) {
             this.isAdmin = true;
         }
 

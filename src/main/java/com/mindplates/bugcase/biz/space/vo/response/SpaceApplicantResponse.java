@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
+import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class SpaceApplicantResponse {
   private String userEmail;
   private String userName;
 
-  public SpaceApplicantResponse(SpaceApplicant spaceApplicant) {
+  public SpaceApplicantResponse(SpaceApplicantDTO spaceApplicant) {
     this.id = spaceApplicant.getId();
     this.approvalStatusCode = spaceApplicant.getApprovalStatusCode();
     this.userId = spaceApplicant.getUser().getId();

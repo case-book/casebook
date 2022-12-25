@@ -1,33 +1,34 @@
 package com.mindplates.bugcase.biz.space.vo.request;
 
-import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.space.entity.SpaceUser;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @Data
-public class SpaceRequest {
+public class SpaceCreateRequest {
 
-  MultipartFile file;
-  private Long id;
-  @NotNull
-  @Size(min = 1)
-  private String name;
-  private String code;
-  private String description;
-  private Boolean activated;
-  private String token;
-  private List<SpaceUserRequest> users;
+    private Long id;
+    @NotNull
+    @Size(min = 1)
+    private String name;
+    private String code;
+    private String description;
+    private Boolean activated;
+    private String token;
+    private List<SpaceUserRequest> users;
 
-  private Boolean allowSearch;
+    private Boolean allowSearch;
 
-  private Boolean allowAutoJoin;
+    private Boolean allowAutoJoin;
 
-  public Space buildEntity() {
+    /*
+    public SpaceDTO toDTO() {
+        SpaceDTO spaceDTO = new SpaceDTO();
+        BeanUtils.copyProperties(this, spaceDTO);
+        return spaceDTO;
+
 
     Space space = Space.builder()
         .id(id)
@@ -50,10 +51,15 @@ public class SpaceRequest {
               .space(space).build()).collect(Collectors.toList());
 
       space.setUsers(spaceUsers);
+
     }
 
     return space;
-  }
+
+
+    }
+
+     */
 
 
 }

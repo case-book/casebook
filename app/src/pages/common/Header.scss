@@ -447,12 +447,19 @@
       }
     }
 
-    .header-toggle {
+    .header-toggle,
+    .user-menu {
       margin-left: 0.5rem;
     }
-    .user-menu,
-    .header-toggle {
-      display: none;
+
+
+
+
+    @media (max-width: 1000px) {
+      .user-menu,
+      .header-toggle {
+        display: none;
+      }
     }
   }
 

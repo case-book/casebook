@@ -9,6 +9,7 @@ import com.mindplates.bugcase.biz.project.vo.request.ProjectRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
+import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
@@ -63,12 +64,8 @@ public class ProjectController {
         }
 
         Project project = projectRequest.buildEntity();
-        Optional<Space> space = spaceService.selectSpaceInfo(spaceCode);
-        if (space.isPresent()) {
-            project.setSpace(space.get());
-        } else {
-            throw new ServiceException(HttpStatus.NOT_FOUND);
-        }
+        SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceCode);
+        project.setSpace(Space.builder().id(spaceDTO.getId()).build());
 
         AtomicBoolean hasDefault = new AtomicBoolean(false);
         List<TestcaseTemplate> testcaseTemplates = projectRequest.getTestcaseTemplates().stream().map((testcaseTemplateRequest -> {
@@ -162,7 +159,7 @@ public class ProjectController {
     @Operation(description = "프로젝트 조회")
     @GetMapping("/{id}")
     public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
-        spaceService.selectSpaceInfo(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceCode);
         boolean isSpaceMember = spaceService.selectIsSpaceMember(spaceCode, SessionUtil.getUserId());
 
         if (!isSpaceMember) {
