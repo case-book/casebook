@@ -1,8 +1,9 @@
 package com.mindplates.bugcase.biz.user.vo.response;
 
 
+import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.space.vo.response.SimpleSpaceResponse;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.SystemRole;
 import java.util.List;
@@ -26,7 +27,7 @@ public class MyInfoResponse {
   private String email;
   private String name;
 
-  private List<SimpleSpaceResponse> spaces;
+  private List<SpaceListResponse> spaces;
 
   public MyInfoResponse(User user, String token) {
     if (user != null) {
@@ -40,10 +41,10 @@ public class MyInfoResponse {
     this.token = token;
   }
 
-  public MyInfoResponse(User user, List<Space> spaces, String token) {
+  public MyInfoResponse(User user, List<SpaceDTO> spaces, String token) {
     this(user, token);
     if (spaces != null) {
-      this.spaces = spaces.stream().map(SimpleSpaceResponse::new).collect(Collectors.toList());
+      this.spaces = spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());
     }
 
 

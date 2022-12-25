@@ -1,9 +1,11 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
+import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
-import com.mindplates.bugcase.common.code.UserRole;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -31,7 +33,7 @@ public class SpaceAccessibleResponse {
 
   private SpaceApplicantResponse applicant;
 
-  public SpaceAccessibleResponse(Space space, Long userId) {
+  public SpaceAccessibleResponse(SpaceDTO space, Long userId) {
     this.id = space.getId();
     this.name = space.getName();
     this.code = space.getCode();
@@ -43,7 +45,7 @@ public class SpaceAccessibleResponse {
     }
 
     if (space.isAllowSearch() && space.getUsers() != null) {
-      this.admins = space.getUsers().stream().filter((spaceUser -> UserRole.ADMIN.equals(spaceUser.getRole()))).map(
+      this.admins = space.getUsers().stream().filter((spaceUser -> UserRoleCode.ADMIN.equals(spaceUser.getRole()))).map(
           (spaceUser) -> SimpleMemberResponse.builder()
               .id(spaceUser.getId())
               .userId(spaceUser.getUser().getId())
@@ -54,7 +56,7 @@ public class SpaceAccessibleResponse {
     }
 
     if (space.getApplicants() != null) {
-      SpaceApplicant userApplicantInfo = space.getApplicants()
+      SpaceApplicantDTO userApplicantInfo = space.getApplicants()
           .stream()
           .filter(spaceApplicant -> spaceApplicant.getUser().getId().equals(userId))
           .findAny().orElse(null);

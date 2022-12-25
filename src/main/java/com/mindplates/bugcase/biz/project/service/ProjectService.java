@@ -8,7 +8,7 @@ import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.user.entity.User;
-import com.mindplates.bugcase.common.code.UserRole;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -49,7 +49,7 @@ public class ProjectService {
     public Project createProjectInfo(String spaceCode, Project project, Long userId) {
         project.setTestcaseSeq(0);
         project.setTestcaseGroupSeq(0);
-        ProjectUser projectUser = ProjectUser.builder().project(project).user(User.builder().id(userId).build()).role(UserRole.ADMIN).build();
+        ProjectUser projectUser = ProjectUser.builder().project(project).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
         project.setUsers(Arrays.asList(projectUser));
         projectRepository.save(project);
         return project;

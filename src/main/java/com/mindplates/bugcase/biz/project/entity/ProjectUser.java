@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.common.code.UserRole;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 
 import javax.persistence.*;
 
@@ -28,7 +28,7 @@ public class ProjectUser extends CommonEntity {
 
   @Column(name = "role")
   @Enumerated(EnumType.STRING)
-  private UserRole role;
+  private UserRoleCode role;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER__PROJECT"))

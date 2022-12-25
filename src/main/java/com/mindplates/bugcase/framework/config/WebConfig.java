@@ -5,6 +5,7 @@ import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.converter.LongToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateTimeConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -26,6 +28,11 @@ public class WebConfig implements WebMvcConfigurer {
     private String activeProfile;
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 
     public WebConfig(SessionUtil sessionUtil, UserService userService) {
         this.sessionUtil = sessionUtil;

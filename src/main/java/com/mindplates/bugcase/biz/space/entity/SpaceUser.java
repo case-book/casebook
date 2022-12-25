@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.space.entity;
 
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import com.mindplates.bugcase.common.code.UserRole;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,11 +34,11 @@ public class SpaceUser extends CommonEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  private Long id;
 
   @Column(name = "role")
   @Enumerated(EnumType.STRING)
-  private UserRole role;
+  private UserRoleCode role;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER__SPACE"))

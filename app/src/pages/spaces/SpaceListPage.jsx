@@ -246,7 +246,7 @@ function SpaceListPage() {
                                 </div>
                                 <div className="label users">USERS</div>
                                 <div className="counter users">
-                                  <div>{space.users?.length}</div>
+                                  <div>{space.userCount}</div>
                                 </div>
                               </div>
                             </div>
