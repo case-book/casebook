@@ -1,21 +1,11 @@
 .space-info-content {
-  display: flex;
-  height: 100%;
-  padding: 0 1rem;
-
-  .general-info,
-  .project-info {
-    min-width: 500px;
-    max-width: 500px;
+  .project-list-content,
+  .applicant-list-content {
+    _background-color: $gray-100;
   }
 
-  .project-info.is-user {
-    max-width: none;
-    flex-grow: 1;
-  }
-
-  .member-info {
-    flex-grow: 1;
+  .space-project-block {
+    margin-bottom: 1rem;
   }
 
   table.applicant-list {

@@ -1,6 +1,6 @@
 .title-wrapper {
   > .title-content {
-    padding: 1rem 0.5rem calc(2rem - 4px);
+    padding: 1rem 0.5rem 0;
     font-weight: bold;
     display: flex;
     flex-direction: row;
@@ -11,6 +11,12 @@
     }
     .control {
       align-self: center;
+    }
+  }
+
+  &.padding-bottom {
+    > .title-content {
+      padding-bottom : calc(2rem - 4px);
     }
   }
 
