@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,7 @@ public class ProjectListResponse {
         this.description = project.getDescription();
         this.activated = project.isActivated();
         this.testcaseCount = project.getTestcaseGroups().stream().reduce(0, (subtotal, testcaseGroup) -> subtotal + testcaseGroup.getTestcases().size(), Integer::sum);
-        this.testrunCount = (int) project.getTestruns().stream().filter((Testrun::isOpened)).count();
+        this.testrunCount = (int) project.getTestruns().stream().filter((TestrunDTO::isOpened)).count();
         this.bugCount = 0;
     }
 

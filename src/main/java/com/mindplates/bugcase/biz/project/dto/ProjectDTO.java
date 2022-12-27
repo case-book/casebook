@@ -2,8 +2,11 @@ package com.mindplates.bugcase.biz.project.dto;
 
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.dto.CommonDTO;
@@ -26,9 +29,9 @@ public class ProjectDTO extends CommonDTO {
   private String description;
   private boolean activated;
   private String token;
-  private List<TestcaseGroup> testcaseGroups;
-  private List<Testrun> testruns;
-  private List<TestcaseTemplate> testcaseTemplates;
+  private List<TestcaseGroupDTO> testcaseGroups;
+  private List<TestrunDTO> testruns;
+  private List<TestcaseTemplateDTO> testcaseTemplates;
   private List<ProjectUserDTO> users;
   private List<ProjectApplicantDTO> applicants;
   private SpaceDTO space;

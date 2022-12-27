@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @Data
 public class CommonDTO implements Serializable {
 
-    private LocalDateTime creationDate;
+    protected LocalDateTime creationDate;
 
-    private Long createdBy;
+    protected Long createdBy;
 
-    private LocalDateTime lastUpdateDate;
+    protected LocalDateTime lastUpdateDate;
 
-    private Long lastUpdatedBy;
+    protected Long lastUpdatedBy;
 
 
 }

@@ -21,7 +21,7 @@ public class TestrunTestcaseGroup extends CommonEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testrun_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__TESTCASE_GROUP"))

@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ public class TestcaseItemResponse {
 
   private String type;
 
-  public TestcaseItemResponse(TestcaseItem testcaseItem) {
+  public TestcaseItemResponse(TestcaseItemDTO testcaseItem) {
     this.id = testcaseItem.getId();
     this.testcaseId = testcaseItem.getTestcase().getId();
     this.testcaseTemplateItemId = testcaseItem.getTestcaseTemplateItem().getId();

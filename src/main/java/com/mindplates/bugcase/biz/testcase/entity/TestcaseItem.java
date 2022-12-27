@@ -31,7 +31,7 @@ public class TestcaseItem extends CommonEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  private Long id;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "testcase_iemplate_item_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM__TESTCASE_TEMPLATE_ITEM"))

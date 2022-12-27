@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ public class TestrunTestcaseGroupTestcaseItemResponse {
     private String value;
     private String text;
 
-    public TestrunTestcaseGroupTestcaseItemResponse(TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem) {
+    public TestrunTestcaseGroupTestcaseItemResponse(TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
         this.id = testrunTestcaseGroupTestcaseItem.getId();
         this.testcaseTemplateItemId = testrunTestcaseGroupTestcaseItem.getTestcaseTemplateItem().getId();
         this.testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseItem.getTestrunTestcaseGroupTestcase().getId();

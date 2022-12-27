@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class TestrunTestcaseGroupTestcaseCommentResponse {
     private LocalDateTime creationDate;
     private LocalDateTime lastUpdateDate;
 
-    public TestrunTestcaseGroupTestcaseCommentResponse(TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment) {
+    public TestrunTestcaseGroupTestcaseCommentResponse(TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
         this.id = testrunTestcaseGroupTestcaseComment.getId();
         this.testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseComment.getTestrunTestcaseGroupTestcase().getId();
         this.comment = testrunTestcaseGroupTestcaseComment.getComment();

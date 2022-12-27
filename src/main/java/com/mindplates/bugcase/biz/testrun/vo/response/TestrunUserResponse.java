@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
+import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ public class TestrunUserResponse {
     private String name;
     private String email;
 
-    public TestrunUserResponse(TestrunUser testrunUser) {
+    public TestrunUserResponse(TestrunUserDTO testrunUser) {
         this.id = testrunUser.getId();
         this.userId = testrunUser.getUser().getId();
         this.name = testrunUser.getUser().getName();

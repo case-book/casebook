@@ -23,7 +23,7 @@ public class TestcaseTemplateItem extends CommonEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "category", nullable = false, length = ColumnsDef.CODE)
     @Enumerated(EnumType.STRING)

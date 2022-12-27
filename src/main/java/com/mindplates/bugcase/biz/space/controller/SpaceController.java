@@ -1,12 +1,10 @@
 package com.mindplates.bugcase.biz.space.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
-import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceCreateRequest;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceJoinRequest;
@@ -17,7 +15,6 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -38,13 +35,11 @@ public class SpaceController {
 
     private final SpaceService spaceService;
     private final ProjectService projectService;
-    private final MappingUtil mappingUtil;
 
     @Operation(description = "새 스페이스 추가")
     @PostMapping("")
     public SpaceListResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
-        SpaceDTO createSpaceInfo = mappingUtil.convert(spaceCreateRequest, SpaceDTO.class);
-        SpaceDTO spaceInfo = spaceService.createSpaceInfo(createSpaceInfo, SessionUtil.getUserId());
+        SpaceDTO spaceInfo = spaceService.createSpaceInfo(spaceCreateRequest.toDTO(), SessionUtil.getUserId());
         return new SpaceListResponse(spaceInfo, null);
     }
 
@@ -54,8 +49,8 @@ public class SpaceController {
         if (!spaceId.equals(spaceUpdateRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
-        SpaceDTO updateSpaceInfo = mappingUtil.convert(spaceUpdateRequest, SpaceDTO.class);
-        SpaceDTO spaceInfo = spaceService.updateSpaceInfo(updateSpaceInfo);
+        SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
+        SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(space.getCode()));
         return new SpaceResponse(spaceInfo);
     }
 
@@ -70,10 +65,7 @@ public class SpaceController {
     @GetMapping("/my")
     public List<SpaceListResponse> selectMySpaceList() {
         List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId());
-        return spaceList.stream().map((space -> {
-            Long spaceProjectCount = projectService.selectSpaceProjectCount(space.getId());
-            return new SpaceListResponse(space, SessionUtil.getUserId(), spaceProjectCount, space.getUsers().size());
-        })).collect(Collectors.toList());
+        return spaceList.stream().map((space -> new SpaceListResponse(space, SessionUtil.getUserId()))).collect(Collectors.toList());
     }
 
     @Operation(description = "스페이스 정보 조회")
@@ -90,7 +82,6 @@ public class SpaceController {
         List<SpaceUserDTO> spaceUsers = spaceService.selectSpaceUserList(spaceCode, query);
         return spaceUsers.stream().map(spaceUser -> new SimpleUserResponse(spaceUser.getUser())).collect(Collectors.toList());
     }
-
 
     @Operation(description = "스페이스 정보 삭제")
     @DeleteMapping("/{spaceId}")
@@ -110,8 +101,7 @@ public class SpaceController {
     @Operation(description = "스페이스 참여")
     @PostMapping("/{spaceCode}/applicants")
     public ResponseEntity<?> createSpaceJoinInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceJoinRequest spaceJoinRequest) {
-        SpaceApplicantDTO applicant = SpaceApplicantDTO.builder().user(UserDTO.builder().id(SessionUtil.getUserId()).build()).space(SpaceDTO.builder().code(spaceCode).build()).build();
-        applicant.setMessage(spaceJoinRequest.getMessage());
+        SpaceApplicantDTO applicant = spaceJoinRequest.toDTO(spaceCode,SessionUtil.getUserId());
         spaceService.createOrUpdateSpaceApplicantInfo(spaceCode, applicant);
         return new ResponseEntity<>(HttpStatus.OK);
     }

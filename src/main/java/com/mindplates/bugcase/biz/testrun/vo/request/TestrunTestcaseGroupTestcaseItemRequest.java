@@ -1,8 +1,8 @@
 package com.mindplates.bugcase.biz.testrun.vo.request;
 
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import lombok.Data;
 
 @Data
@@ -16,12 +16,12 @@ public class TestrunTestcaseGroupTestcaseItemRequest {
     private String text;
 
 
-    public TestrunTestcaseGroupTestcaseItem buildEntity() {
+    public TestrunTestcaseGroupTestcaseItemDTO toDTO() {
 
-        return TestrunTestcaseGroupTestcaseItem.builder()
+        return TestrunTestcaseGroupTestcaseItemDTO.builder()
                 .id(id)
-                .testcaseTemplateItem(TestcaseTemplateItem.builder().id(testcaseTemplateItemId).build())
-                .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcase.builder().id(testrunTestcaseGroupTestcaseId).build())
+                .testcaseTemplateItem(TestcaseTemplateItemDTO.builder().id(testcaseTemplateItemId).build())
+                .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseId).build())
                 .type(type)
                 .value(value)
                 .text(text)

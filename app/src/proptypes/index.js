@@ -66,7 +66,7 @@ const TestcaseTemplateEditPropTypes = PropTypes.shape({
 
 const TestcaseTemplatePropTypes = PropTypes.shape({
   id: PropTypes.number,
-  isDefault: PropTypes.bool,
+  defaultTemplate: PropTypes.bool,
   name: PropTypes.string,
   testcaseTemplateItems: PropTypes.arrayOf(
     PropTypes.shape({

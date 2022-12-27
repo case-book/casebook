@@ -3,16 +3,14 @@ package com.mindplates.bugcase.biz.project.controller;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
-import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
@@ -49,14 +47,6 @@ public class ProjectController {
 
     private final MappingUtil mappingUtil;
 
-
-    @Operation(description = "스페이스 프로젝트 목록 조회")
-    @GetMapping("")
-    public List<ProjectListResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode) {
-        List<ProjectDTO> projectList = projectService.selectSpaceProjectList(spaceCode);
-        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
-    }
-
     @Operation(description = "프로젝트 생성")
     @PostMapping("")
     public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectCreateRequest projectCreateRequest) {
@@ -65,59 +55,33 @@ public class ProjectController {
             throw new ServiceException("project.duplicated");
         }
 
-        ProjectDTO project = mappingUtil.convert(projectCreateRequest, ProjectDTO.class);
-        ProjectDTO result = projectService.createProjectInfo(spaceCode, project, SessionUtil.getUserId());
-        return new ProjectResponse(result, SessionUtil.getUserId());
+        ProjectDTO project = projectCreateRequest.toDTO();
+        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project, SessionUtil.getUserId()), SessionUtil.getUserId());
     }
 
     @Operation(description = "프로젝트 수정")
     @PutMapping("/{id}")
-    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectCreateRequest projectCreateRequest) {
+    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectCreateRequest projectUpdateRequest) {
 
-        if (!id.equals(projectCreateRequest.getId())) {
+        if (!id.equals(projectUpdateRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        ProjectDTO projectInfo = projectService.selectProjectInfo(spaceCode, id);
-        projectInfo.setName(projectCreateRequest.getName());
-        projectInfo.setActivated(projectCreateRequest.getActivated());
-        projectInfo.setDescription(projectCreateRequest.getDescription());
-        projectInfo.setToken(projectCreateRequest.getToken());
-
-        AtomicBoolean hasDefault = new AtomicBoolean(false);
-        List<TestcaseTemplate> testcaseTemplates = projectCreateRequest.getTestcaseTemplates().stream().map((testcaseTemplateRequest -> {
-
-            if (!"D".equals(testcaseTemplateRequest.getCrud()) && hasDefault.get() && testcaseTemplateRequest.getIsDefault() != null && testcaseTemplateRequest.getIsDefault()) {
-                testcaseTemplateRequest.setIsDefault(false);
-            }
-
-            if (!"D".equals(testcaseTemplateRequest.getCrud()) && !hasDefault.get() && testcaseTemplateRequest.getIsDefault() != null && testcaseTemplateRequest.getIsDefault()) {
-                hasDefault.set(true);
-            }
-
-            TestcaseTemplate testcaseTemplate = testcaseTemplateRequest.buildEntity();
-            testcaseTemplate.setProject(mappingUtil.convert(projectInfo, Project.class));
-            return testcaseTemplate;
-        })).filter(testcaseTemplate -> !testcaseTemplate.isDeleted()).collect(Collectors.toList());
-
-        if (!testcaseTemplates.isEmpty() && !hasDefault.get()) {
-            testcaseTemplates.get(0).setIsDefault(true);
-        }
-
-        List<ProjectUserDTO> projectUserList = projectCreateRequest.getUsers().stream().filter((spaceUser) -> spaceUser.getCrud() == null || !spaceUser.getCrud().equals("D")).map(
-                (spaceUser) -> ProjectUserDTO.builder()
-                        .id(spaceUser.getId())
-                        .user(UserDTO.builder().id(spaceUser.getUserId()).build())
-                        .role(spaceUser.getRole())
-                        .crud(spaceUser.getCrud())
-                        .project(projectInfo).build()).collect(Collectors.toList());
-
-        projectInfo.setUsers(projectUserList);
-
-        projectInfo.setTestcaseTemplates(testcaseTemplates);
-
-        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, projectInfo), SessionUtil.getUserId());
+        ProjectDTO project = projectUpdateRequest.toDTO();
+        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, project), SessionUtil.getUserId());
     }
+
+
+    @Operation(description = "스페이스 프로젝트 목록 조회")
+    @GetMapping("")
+    public List<ProjectListResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode) {
+        List<ProjectDTO> projectList = projectService.selectSpaceProjectList(spaceCode);
+        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
+    }
+
+
+
+
 
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{id}")
