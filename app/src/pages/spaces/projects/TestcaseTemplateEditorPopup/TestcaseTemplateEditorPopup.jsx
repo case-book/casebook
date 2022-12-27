@@ -253,12 +253,12 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                   <div>
                     <CheckBox
                       type="checkbox"
-                      value={template?.isDefault}
+                      value={template?.defaultTemplate}
                       label={t('기본 템플릿')}
                       onChange={val => {
                         setTemplate({
                           ...template,
-                          isDefault: val,
+                          defaultTemplate: val,
                         });
                       }}
                     />

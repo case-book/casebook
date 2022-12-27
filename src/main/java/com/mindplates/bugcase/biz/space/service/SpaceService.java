@@ -1,14 +1,13 @@
 package com.mindplates.bugcase.biz.space.service;
 
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
-import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
-import com.mindplates.bugcase.biz.space.repository.SpaceApplicantRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
@@ -39,14 +38,10 @@ import java.util.List;
 public class SpaceService {
 
     private final SpaceRepository spaceRepository;
-
     private final SpaceUserRepository spaceUserRepository;
-
     private final ProjectService projectService;
-
     private final NotificationService notificationService;
 
-    private final SpaceApplicantRepository spaceApplicantRepository;
 
     private final MappingUtil mappingUtil;
 
@@ -66,22 +61,22 @@ public class SpaceService {
     @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     @Transactional
     public void deleteSpaceInfo(SpaceDTO space) {
-        List<Project> projects = projectService.selectSpaceProjectList(space.getId());
-        for (Project project : projects) {
+        List<ProjectDTO> projects = projectService.selectSpaceProjectList(space.getId());
+        for (ProjectDTO project : projects) {
             projectService.deleteProjectInfo(space.getCode(), project);
         }
         spaceRepository.deleteById(space.getId());
     }
 
 
-    @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
+    @CacheEvict(key = "#createSpaceInfo.code", value = CacheConfig.SPACE)
     @Transactional
-    public SpaceDTO createSpaceInfo(SpaceDTO spaceDTO, Long userId) {
-        Space space = mappingUtil.convert(spaceDTO, Space.class);
-        SpaceUser spaceUser = SpaceUser.builder().space(space).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
-        space.setUsers(Arrays.asList(spaceUser));
-        spaceRepository.save(space);
-        return mappingUtil.convert(space, SpaceDTO.class);
+    public SpaceDTO createSpaceInfo(SpaceDTO createSpaceInfo, Long userId) {
+        Space spaceInfo = mappingUtil.convert(createSpaceInfo, Space.class);
+        SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
+        spaceInfo.setUsers(Arrays.asList(spaceUser));
+        spaceRepository.save(spaceInfo);
+        return mappingUtil.convert(spaceInfo, SpaceDTO.class);
     }
 
 
@@ -93,6 +88,7 @@ public class SpaceService {
         spaceInfo.setDescription(updateSpaceInfo.getDescription());
         spaceInfo.setActivated(updateSpaceInfo.isActivated());
         spaceInfo.setToken(updateSpaceInfo.getToken());
+        spaceInfo.setAllowAutoJoin(updateSpaceInfo.isAllowAutoJoin());
 
         updateSpaceInfo.getUsers().forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {
@@ -116,14 +112,11 @@ public class SpaceService {
             throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
         }
 
-        Space space = mappingUtil.convert(spaceInfo, Space.class);
-        spaceRepository.save(space);
+        Space updateSpaceResult = spaceRepository.save(mappingUtil.convert(spaceInfo, Space.class));
 
-        return mappingUtil.convert(space, SpaceDTO.class);
+        return mappingUtil.convert(updateSpaceResult, SpaceDTO.class);
     }
 
-
-    // @Cacheable(key = "'all-space-list'", value = CacheConfig.SPACE)
     public List<SpaceDTO> selectSearchAllowedSpaceList(String query) {
         List<Space> spaceList = spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%");
         return mappingUtil.convert(spaceList, SpaceDTO.class);
@@ -131,7 +124,13 @@ public class SpaceService {
 
     public List<SpaceDTO> selectUserSpaceList(Long userId) {
         List<Space> spaceList = spaceRepository.findAllByUsersUserId(userId);
-        return mappingUtil.convert(spaceList, SpaceDTO.class);
+        List<SpaceDTO> result = mappingUtil.convert(spaceList, SpaceDTO.class);
+        result.forEach((space -> {
+            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
+            space.setProjectCount(projectCount);
+        }));
+
+        return mappingUtil.convert(result, SpaceDTO.class);
     }
 
     public List<SpaceUserDTO> selectSpaceUserList(String spaceCode, String query) {
@@ -161,7 +160,6 @@ public class SpaceService {
         return spaceUserRepository.existsBySpaceCodeAndUserIdAndRole(spaceCode, userId, UserRoleCode.ADMIN);
     }
 
-
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
     public SpaceDTO createOrUpdateSpaceApplicantInfo(String spaceCode, SpaceApplicantDTO spaceApplicant) {
@@ -184,12 +182,7 @@ public class SpaceService {
 
                 if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(spaceApplicant.getUser().getId()))) {
                     notificationService.createSpaceSelfJoinNotificationInfo(space, user.getUsername());
-                    space.getUsers()
-                            .add(SpaceUserDTO.builder()
-                                    .space(space)
-                                    .user(UserDTO.builder().id(targetApplicant.getUser().getId()).build())
-                                    .role(UserRoleCode.USER)
-                                    .build());
+                    space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
                 }
             }
 
@@ -236,12 +229,7 @@ public class SpaceService {
 
             if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(targetApplicant.getUser().getId()))) {
                 notificationService.createSpaceJoinResultNotificationInfo(space, user.getUsername(), targetApplicant.getUser().getId(), true);
-                space.getUsers()
-                        .add(SpaceUserDTO.builder()
-                                .space(space)
-                                .user(UserDTO.builder().id(targetApplicant.getUser().getId()).build())
-                                .role(UserRoleCode.USER)
-                                .build());
+                space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
             }
 
 

@@ -37,7 +37,7 @@ function SpaceInfoPage() {
   }, [id]);
 
   return (
-    <Page className="space-info-page-wrapper" pure>
+    <Page className="space-info-page-wrapper">
       {accessible === false && <InaccessibleContent space={space} onRefresh={getSpaceInfo} />}
       {accessible && <SpaceContent space={space} onRefresh={getSpaceInfo} />}
     </Page>

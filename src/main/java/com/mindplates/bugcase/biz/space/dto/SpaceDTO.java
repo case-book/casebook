@@ -35,5 +35,7 @@ public class SpaceDTO extends CommonDTO {
 
     private List<SpaceApplicantDTO> applicants;
 
+    private Long projectCount;
+
 
 }

@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.notification.dto;
 
 import com.mindplates.bugcase.biz.notification.entity.Notification;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
-import java.time.LocalDateTime;
+import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +12,15 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class NotificationDTO {
+public class NotificationDTO extends CommonDTO {
 
   private Long id;
   private NotificationTargetCode target;
   private Long targetId;
+  private Long userId;
   private String message;
   private String url;
 
-  private LocalDateTime creationDate;
 
   public NotificationDTO(Notification notification) {
     this.id = notification.getId();

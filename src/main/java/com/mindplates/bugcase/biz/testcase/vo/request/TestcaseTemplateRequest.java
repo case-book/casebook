@@ -1,7 +1,8 @@
 package com.mindplates.bugcase.biz.testcase.vo.request;
 
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -12,32 +13,28 @@ public class TestcaseTemplateRequest {
 
     private Long id;
     private String name;
-
     private String crud;
-
-    private Boolean isDefault;
-
+    private boolean defaultTemplate;
     private String defaultTesterType;
-
     private String defaultTesterValue;
-
     private List<TestcaseTemplateItemRequest> testcaseTemplateItems;
 
-    public TestcaseTemplate buildEntity() {
+    public TestcaseTemplateDTO toDTO(ProjectDTO project) {
 
-        TestcaseTemplate testcaseTemplate = TestcaseTemplate.builder()
+        TestcaseTemplateDTO testcaseTemplate = TestcaseTemplateDTO.builder()
                 .id(id)
                 .name(name)
-                .isDefault(isDefault)
+                .defaultTemplate(defaultTemplate)
                 .defaultTesterType(defaultTesterType)
                 .defaultTesterValue(defaultTesterValue)
-                .deleted("D".equals(crud))
+                .crud(crud)
+                .project(project)
                 .build();
 
         testcaseTemplate.setTestcaseTemplateItems(testcaseTemplateItems
                 .stream()
                 .map((testcaseTemplateItemRequest -> {
-                    TestcaseTemplateItem testcaseTemplateItem = testcaseTemplateItemRequest.buildEntity();
+                    TestcaseTemplateItemDTO testcaseTemplateItem = testcaseTemplateItemRequest.toDTO();
                     testcaseTemplateItem.setTestcaseTemplate(testcaseTemplate);
                     return testcaseTemplateItem;
                 }))
@@ -47,6 +44,4 @@ public class TestcaseTemplateRequest {
 
 
     }
-
-
 }

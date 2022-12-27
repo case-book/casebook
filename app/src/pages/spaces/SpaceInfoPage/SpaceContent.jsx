@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Button, Card, CardContent, CardHeader, Col, Dd, Dl, Dt, EmptyContent, PageContent, PageTitle, Radio, Row, Table, Tag, Tbody, Td, Tr } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Label, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -117,220 +117,208 @@ function SpaceContent({ space, onRefresh }) {
         {t('스페이스')}
       </PageTitle>
       <PageContent className="space-info-content">
-        <Row minHeight="400px" flexGrow="auto">
-          <Col className="general-info">
-            <Card>
-              <CardHeader>스페이스 정보</CardHeader>
-              <CardContent scroll>
-                <Dl>
-                  <Dt>{t('이름')}</Dt>
-                  <Dd>{space?.name}</Dd>
-                </Dl>
-                <Dl>
-                  <Dt>{t('코드')}</Dt>
-                  <Dd>{space?.code}</Dd>
-                </Dl>
-                <Dl>
-                  <Dt>{t('설명')}</Dt>
-                  <Dd>{space?.description}</Dd>
-                </Dl>
-                <Dl>
-                  <Dt>{t('사용 여부')}</Dt>
-                  <Dd>{space?.activated ? 'Y' : 'N'}</Dd>
-                </Dl>
-                <Dl>
-                  <Dt>{t('검색 허용')}</Dt>
-                  <Dd>{space?.allowSearch ? 'Y' : 'N'}</Dd>
-                </Dl>
-                <Dl>
-                  <Dt>{t('자동 가입')}</Dt>
-                  <Dd>{space?.allowAutoJoin ? 'Y' : 'N'}</Dd>
-                </Dl>
-                <Dl>
-                  <Dt>{t('토큰')}</Dt>
-                  <Dd>{space?.token}</Dd>
-                </Dl>
-              </CardContent>
-            </Card>
-          </Col>
-          <Col className="member-info">
-            <Card>
-              <CardHeader
-                control={userRoles.map(option => {
-                  return (
-                    <Radio
-                      key={option.key}
-                      type="line"
-                      size="sm"
-                      value={option.key}
-                      checked={userRole === option.key}
-                      label={option.value}
-                      onChange={val => {
-                        setUserRole(val);
-                      }}
-                    />
-                  );
-                })}
-              >
-                {t('스페이스 사용자')}
-              </CardHeader>
-              <CardContent scroll>
-                <MemberManager users={users} />
-              </CardContent>
-            </Card>
-          </Col>
-        </Row>
-        <Row minHeight="400px" flexGrow="1">
-          <Col className={`project-info ${space.admin ? 'is-admin' : 'is-user'}`}>
-            <Card className="card">
-              <CardHeader>{t('프로젝트')}</CardHeader>
-              <CardContent scroll>
-                {space?.projects?.length < 1 && (
-                  <EmptyContent className="empty-content">
-                    <div>{t('프로젝트가 없습니다.')}</div>
-                  </EmptyContent>
-                )}
-                {space?.projects.length > 0 && (
-                  <Table className="project-list" cols={['100%', '1px', '1px']}>
-                    <Tbody>
-                      {space?.projects?.map(project => {
-                        return (
-                          <Tr key={project.id}>
-                            <Td className="project-name">
-                              <Link to={`/spaces/${space.code}/projects/${project.id}`}>{project.name}</Link>
-                            </Td>
-                            <Td className="activated">
-                              <Tag uppercase>{project.activated ? 'activated' : 'disabled'}</Tag>
-                            </Td>
-                            <Td className="testcase-count">
-                              <div>
-                                <span>{project.testcaseCount}</span>
-                              </div>
-                            </Td>
-                            <Td className="bug-count">
-                              <div>
-                                <span>{project.bugCount}</span>
-                              </div>
-                            </Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </Col>
-          {space.admin && (
-            <Col className="member-info">
-              <Card className="card">
-                <CardHeader
-                  control={statusOptions.map(option => {
+        <Title>{t('스페이스 정보')}</Title>
+        <Block>
+          <BlockRow>
+            <Label>{t('이름')}</Label>
+            <Text>{space?.name}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('코드')}</Label>
+            <Text>{space?.code}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('설명')}</Label>
+            <Text>{space?.description}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('사용 여부')}</Label>
+            <Text>{space?.activated ? 'Y' : 'N'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('검색 허용')}</Label>
+            <Text>{space?.allowSearch ? 'Y' : 'N'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('자동 가입')}</Label>
+            <Text>{space?.allowAutoJoin ? 'Y' : 'N'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('토큰')}</Label>
+            <Text>{space?.token}</Text>
+          </BlockRow>
+        </Block>
+        <Title
+          control={userRoles.map(option => {
+            return (
+              <Radio
+                key={option.key}
+                type="line"
+                size="sm"
+                value={option.key}
+                checked={userRole === option.key}
+                label={option.value}
+                onChange={val => {
+                  setUserRole(val);
+                }}
+              />
+            );
+          })}
+          paddingBottom={false}
+          border={false}
+        >
+          {t('스페이스 사용자')}
+        </Title>
+        <Block>
+          <MemberManager users={users} />
+        </Block>
+        <Title
+          control={statusOptions.map(option => {
+            return (
+              <Radio
+                key={option.key}
+                type="line"
+                size="sm"
+                value={option.key}
+                checked={status === option.key}
+                label={option.value}
+                onChange={val => {
+                  setStatus(val);
+                }}
+              />
+            );
+          })}
+          paddingBottom={false}
+          border={false}
+        >
+          {t('스페이스 참여 요청')}
+        </Title>
+        <Block>
+          {applicants?.length < 1 && (
+            <EmptyContent className="empty-content">
+              <div>{t('참여 요청이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          {applicants?.length > 0 && (
+            <div className="applicant-list-content">
+              <Table className="applicant-list" cols={['1px', '1px', '100%', '1px', '1px']}>
+                <Tbody>
+                  {applicants?.map(applicant => {
                     return (
-                      <Radio
-                        key={option.key}
-                        type="line"
-                        size="sm"
-                        value={option.key}
-                        checked={status === option.key}
-                        label={option.value}
-                        onChange={val => {
-                          setStatus(val);
-                        }}
-                      />
+                      <Tr key={applicant.id}>
+                        <Td className={`request-status ${applicant.approvalStatusCode}`}>
+                          <Tag rounded={false}>{getApprovalStatusName(applicant.approvalStatusCode)}</Tag>
+                        </Td>
+                        <Td className="user-info">{applicant.userName}</Td>
+                        <Td className="user-email">
+                          <Tag className="tag" border={false} uppercase>
+                            {applicant.userEmail}
+                          </Tag>
+                        </Td>
+                        <Td className="message">
+                          {tooltipId === applicant.id && (
+                            <>
+                              <div
+                                className="message-tooltip-overlay"
+                                onClick={() => {
+                                  setTooltipId(null);
+                                }}
+                              />
+                              <div className="message-tooltip">
+                                <div className="arrow">
+                                  <div />
+                                </div>
+                                <div className="message-content">{applicant.message}</div>
+                              </div>
+                            </>
+                          )}
+                          {applicant.message && (
+                            <Button
+                              size="xs"
+                              onClick={() => {
+                                if (applicant.id !== tooltipId) {
+                                  setTooltipId(applicant.id);
+                                } else {
+                                  setTooltipId(null);
+                                }
+                              }}
+                            >
+                              <i className="fa-regular fa-envelope" /> {t('메세지')}
+                            </Button>
+                          )}
+                        </Td>
+                        <Td className="role">
+                          {(applicant.approvalStatusCode === 'REQUEST' || applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
+                            <>
+                              <Button
+                                size="xs"
+                                color="primary"
+                                onClick={() => {
+                                  approve(applicant.id);
+                                }}
+                              >
+                                {t('승인')}
+                              </Button>
+                              <Button
+                                size="xs"
+                                color="danger"
+                                onClick={() => {
+                                  reject(applicant.id);
+                                }}
+                              >
+                                {t('거절')}
+                              </Button>
+                            </>
+                          )}
+                        </Td>
+                      </Tr>
                     );
                   })}
-                >
-                  {t('스페이스 참여 요청')}
-                </CardHeader>
-                <CardContent scroll>
-                  {applicants?.length < 1 && (
-                    <EmptyContent className="empty-content">
-                      <div>{t('참여 요청이 없습니다.')}</div>
-                    </EmptyContent>
-                  )}
-                  {applicants?.length > 0 && (
-                    <Table className="applicant-list" cols={['1px', '1px', '100%', '1px', '1px']}>
-                      <Tbody>
-                        {applicants?.map(applicant => {
-                          return (
-                            <Tr key={applicant.id}>
-                              <Td className={`request-status ${applicant.approvalStatusCode}`}>
-                                <Tag rounded={false}>{getApprovalStatusName(applicant.approvalStatusCode)}</Tag>
-                              </Td>
-                              <Td className="user-info">{applicant.userName}</Td>
-                              <Td className="user-email">
-                                <Tag className="tag" border={false} uppercase>
-                                  {applicant.userEmail}
-                                </Tag>
-                              </Td>
-                              <Td className="message">
-                                {tooltipId === applicant.id && (
-                                  <>
-                                    <div
-                                      className="message-tooltip-overlay"
-                                      onClick={() => {
-                                        setTooltipId(null);
-                                      }}
-                                    />
-                                    <div className="message-tooltip">
-                                      <div className="arrow">
-                                        <div />
-                                      </div>
-                                      <div className="message-content">{applicant.message}</div>
-                                    </div>
-                                  </>
-                                )}
-                                {applicant.message && (
-                                  <Button
-                                    size="xs"
-                                    onClick={() => {
-                                      if (applicant.id !== tooltipId) {
-                                        setTooltipId(applicant.id);
-                                      } else {
-                                        setTooltipId(null);
-                                      }
-                                    }}
-                                  >
-                                    <i className="fa-regular fa-envelope" /> {t('메세지')}
-                                  </Button>
-                                )}
-                              </Td>
-                              <Td className="role">
-                                {(applicant.approvalStatusCode === 'REQUEST' || applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
-                                  <>
-                                    <Button
-                                      size="xs"
-                                      color="primary"
-                                      onClick={() => {
-                                        approve(applicant.id);
-                                      }}
-                                    >
-                                      {t('승인')}
-                                    </Button>
-                                    <Button
-                                      size="xs"
-                                      color="danger"
-                                      onClick={() => {
-                                        reject(applicant.id);
-                                      }}
-                                    >
-                                      {t('거절')}
-                                    </Button>
-                                  </>
-                                )}
-                              </Td>
-                            </Tr>
-                          );
-                        })}
-                      </Tbody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </Col>
+                </Tbody>
+              </Table>
+            </div>
           )}
-        </Row>
+        </Block>
+        <Title paddingBottom={false} border={false}>
+          {t('프로젝트')}
+        </Title>
+        <Block className="space-project-block">
+          {space?.projects?.length < 1 && (
+            <EmptyContent className="empty-content">
+              <div>{t('프로젝트가 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          {space?.projects.length > 0 && (
+            <div className="project-list-content">
+              <Table className="project-list" cols={['100%', '1px', '1px']}>
+                <Tbody>
+                  {space?.projects?.map(project => {
+                    return (
+                      <Tr key={project.id}>
+                        <Td className="project-name">
+                          <Link to={`/spaces/${space.code}/projects/${project.id}`}>{project.name}</Link>
+                        </Td>
+                        <Td className="activated">
+                          <Tag uppercase>{project.activated ? 'activated' : 'disabled'}</Tag>
+                        </Td>
+                        <Td className="testcase-count">
+                          <div>
+                            <span>{project.testcaseCount}</span>
+                          </div>
+                        </Td>
+                        <Td className="bug-count">
+                          <div>
+                            <span>{project.bugCount}</span>
+                          </div>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </div>
+          )}
+        </Block>
       </PageContent>
     </>
   );

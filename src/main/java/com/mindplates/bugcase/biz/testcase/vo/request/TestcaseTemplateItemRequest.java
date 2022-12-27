@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.testcase.vo.request;
 
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import lombok.Data;
 
@@ -31,9 +32,9 @@ public class TestcaseTemplateItemRequest {
 
     private String systemLabel;
 
-    public TestcaseTemplateItem buildEntity() {
+    public TestcaseTemplateItemDTO toDTO() {
 
-        return TestcaseTemplateItem.builder()
+        return TestcaseTemplateItemDTO.builder()
                 .id(id)
                 .category(category)
                 .type(type)

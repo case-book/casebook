@@ -1,17 +1,24 @@
 package com.mindplates.bugcase.biz.testrun.service;
 
-import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
+import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.entity.*;
 import com.mindplates.bugcase.biz.testrun.repository.*;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -39,33 +46,43 @@ public class TestrunService {
 
     private final TestrunUserRepository testrunUserRepository;
 
+    private final TestcaseRepository testcaseRepository;
+
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
 
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
 
-    public TestrunTestcaseGroupTestcase selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
-        return testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    private final MappingUtil mappingUtil;
+
+    public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return mappingUtil.convert(testrunTestcaseGroupTestcase, TestrunTestcaseGroupTestcaseDTO.class);
     }
 
 
-    public List<Testrun> selectProjectTestrunList(String spaceCode, long projectId, String status) {
+    public List<TestrunDTO> selectProjectTestrunList(String spaceCode, long projectId, String status) {
 
+        List<Testrun> list;
         if ("ALL".equals(status)) {
-            return testrunRepository.findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(spaceCode, projectId);
+            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(spaceCode, projectId);
+        } else {
+            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
         }
 
-        return testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
+        return mappingUtil.convert(list, TestrunDTO.class);
 
     }
 
-    public List<Testrun> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
-        return testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, start, end);
+    public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
+        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, start, end);
+        return mappingUtil.convert(list, TestrunDTO.class);
     }
 
-    public Testrun selectProjectTestrunInfo(long testrunId) {
-        return testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    public TestrunDTO selectProjectTestrunInfo(long testrunId) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return mappingUtil.convert(testrun, TestrunDTO.class);
 
     }
 
@@ -91,8 +108,10 @@ public class TestrunService {
     }
 
     @Transactional
-    public List<TestrunTestcaseGroupTestcaseItem> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItems) {
-        return testrunTestcaseGroupTestcaseItemRepository.saveAll(testrunTestcaseGroupTestcaseItems);
+    public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
+        List<TestrunTestcaseGroupTestcaseItem> result = testrunTestcaseGroupTestcaseItemRepository.saveAll(mappingUtil.convert(testrunTestcaseGroupTestcaseItems, TestrunTestcaseGroupTestcaseItem.class));
+        return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
+
     }
 
     @Transactional
@@ -126,9 +145,9 @@ public class TestrunService {
     }
 
     @Transactional
-    public TestrunTestcaseGroupTestcaseComment updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment) {
-        testrunTestcaseGroupTestcaseCommentRepository.save(testrunTestcaseGroupTestcaseComment);
-        return testrunTestcaseGroupTestcaseComment;
+    public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
+        TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseComment, TestrunTestcaseGroupTestcaseComment.class));
+        return mappingUtil.convert(comment, TestrunTestcaseGroupTestcaseCommentDTO.class);
     }
 
     @Transactional
@@ -138,9 +157,9 @@ public class TestrunService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrun.project.id}", value = CacheConfig.PROJECT)
-    public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
+    public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrun) {
 
-        Project project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId());
         int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
         project.setTestrunSeq(currentTestrunSeq);
         projectService.updateProjectInfo(spaceCode, project);
@@ -152,46 +171,47 @@ public class TestrunService {
                 .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
                 .reduce(0, Integer::sum);
 
-        List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
+        List<TestrunUserDTO> testrunUsers = testrun.getTestrunUsers();
 
         Random random = new Random();
         int currentSeq = random.nextInt(testrunUsers.size());
-        for (TestrunTestcaseGroup testrunTestcaseGroup : testrun.getTestcaseGroups()) {
-            List<TestrunTestcaseGroupTestcase> testcases = testrunTestcaseGroup.getTestcases();
-            for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testcases) {
+        for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrun.getTestcaseGroups()) {
+            List<TestrunTestcaseGroupTestcaseDTO> testcases = testrunTestcaseGroup.getTestcases();
+            for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testcases) {
                 // Testcase testcase = testrunTestcaseGroupTestcase.getTestcase();
 
-                Testcase testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-                List<TestcaseItem> testcaseItems = testcase.getTestcaseItems();
+                TestcaseDTO testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
+
+                List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
                 testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
                 // 테스터 입력
                 if ("operation".equals(testcase.getTesterType())) {
                     if ("RND".equals(testcase.getTesterValue())) {
                         int userIndex = random.nextInt(testrunUsers.size());
-                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
+                        testrunTestcaseGroupTestcase.setTester(UserDTO.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
                     } else if ("SEQ".equals(testcase.getTesterValue())) {
                         if (currentSeq > testrunUsers.size() - 1) {
                             currentSeq = 0;
                         }
 
-                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build());
+                        testrunTestcaseGroupTestcase.setTester(UserDTO.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build());
                         currentSeq++;
                     }
                 } else {
-                    testrunTestcaseGroupTestcase.setTester(User.builder().id(Long.parseLong(testcase.getTesterValue())).build());
+                    testrunTestcaseGroupTestcase.setTester(UserDTO.builder().id(Long.parseLong(testcase.getTesterValue())).build());
                 }
 
-                for (TestcaseItem testcaseItem : testcaseItems) {
+                for (TestcaseItemDTO testcaseItem : testcaseItems) {
 
                     if (testcaseItem.getValue() == null) {
                         continue;
                     }
 
-                    TestcaseTemplateItem testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
+                    TestcaseTemplateItemDTO testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
 
                     if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
 
-                        TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
+                        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItemDTO
                                 .builder()
                                 .testcaseTemplateItem(testcaseTemplateItem)
                                 .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
@@ -228,29 +248,30 @@ public class TestrunService {
         testrun.setPassedTestcaseCount(0);
         testrun.setFailedTestcaseCount(0);
 
-        testrunRepository.save(testrun);
-        return testrun;
+        Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
+        return mappingUtil.convert(result, TestrunDTO.class);
     }
 
-    public List<Testrun> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
+    public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
 
         List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, true);
 
-
-        return testruns.stream()
+        List<Testrun> list = testruns.stream()
                 .filter((testrun -> testrun.getTestcaseGroups()
                         .stream()
                         .anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
-            List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream()
-                    .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))
-                    .map((testrunTestcaseGroup -> {
-                        List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
-                        testrunTestcaseGroup.setTestcases(userTestcaseList);
-                        return testrunTestcaseGroup;
-                    })).collect(Collectors.toList());
-            testrun.setTestcaseGroups(userTestcaseGroupList);
-            return testrun;
-        })).collect(Collectors.toList());
+                    List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream()
+                            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))
+                            .map((testrunTestcaseGroup -> {
+                                List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
+                                testrunTestcaseGroup.setTestcases(userTestcaseList);
+                                return testrunTestcaseGroup;
+                            })).collect(Collectors.toList());
+                    testrun.setTestcaseGroups(userTestcaseGroupList);
+                    return testrun;
+                })).collect(Collectors.toList());
+
+        return mappingUtil.convert(list, TestrunDTO.class);
 
     }
 

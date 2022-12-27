@@ -24,7 +24,7 @@ public class ProjectUser extends CommonEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  private Long id;
 
   @Column(name = "role")
   @Enumerated(EnumType.STRING)

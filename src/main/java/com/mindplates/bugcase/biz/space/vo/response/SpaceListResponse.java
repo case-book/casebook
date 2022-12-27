@@ -17,31 +17,26 @@ public class SpaceListResponse {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean isMember;
-
     private Long projectCount;
-
     private Integer userCount;
 
-    public SpaceListResponse(SpaceDTO space) {
-        this(space, null);
-    }
-
-    public SpaceListResponse(SpaceDTO space, Long userId, Long projectCount, Integer userCount) {
+    public SpaceListResponse(SpaceDTO space, Long userId) {
         this.id = space.getId();
         this.name = space.getName();
         this.code = space.getCode();
         this.activated = space.isActivated();
         this.allowSearch = space.isAllowSearch();
         this.allowAutoJoin = space.isAllowAutoJoin();
-        this.projectCount = projectCount;
-        this.userCount = userCount;
+        this.projectCount = space.getProjectCount();
+        this.userCount = space.getUsers() != null ? space.getUsers().size() : 0;
         if (userId != null && space.getUsers() != null) {
             this.isMember = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId)));
         }
-
     }
 
-    public SpaceListResponse(SpaceDTO space, Long userId) {
-        this(space, userId, null, null);
+    public SpaceListResponse(SpaceDTO space) {
+        this(space, null);
     }
+
+
 }

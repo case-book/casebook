@@ -126,7 +126,7 @@ const defaultProjectConfig = {
       ],
       defaultTesterType: 'operation',
       defaultTesterValue: 'RND',
-      isDefault: true,
+      defaultTemplate: true,
     },
   ],
 };
@@ -262,11 +262,11 @@ function ProjectEditPage({ type }) {
     const nextProject = { ...project };
     nextProject.testcaseTemplates[inx] = template;
 
-    if (template.isDefault) {
+    if (template.defaultTemplate) {
       nextProject.testcaseTemplates.forEach((item, i) => {
         const nextItem = item;
-        if (i !== inx && nextItem.isDefault) {
-          nextItem.isDefault = false;
+        if (i !== inx && nextItem.defaultTemplate) {
+          nextItem.defaultTemplate = false;
         }
       });
     }
@@ -279,12 +279,7 @@ function ProjectEditPage({ type }) {
       nextProject.testcaseTemplates = [];
     }
 
-    nextProject.testcaseTemplates.push({
-      name: `테스트케이스 템플릿 ${nextProject.testcaseTemplates.length + 1}`,
-      testcaseTemplateItems: cloneDeep(defaultProjectConfig.testcaseTemplates[0].testcaseTemplateItems),
-      isDefault: false,
-    });
-
+    nextProject.testcaseTemplates.push({ ...cloneDeep(defaultProjectConfig.testcaseTemplates[0]), name: `테스트케이스 템플릿 ${nextProject.testcaseTemplates.length + 1}` });
     setProject(nextProject);
   };
 
@@ -467,7 +462,7 @@ function ProjectEditPage({ type }) {
                               </span>
                             </span>
                           </div>
-                          {testcaseTemplate.isDefault && (
+                          {testcaseTemplate.defaultTemplate && (
                             <div className="default">
                               <span>DEFAULT</span>
                             </div>

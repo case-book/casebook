@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.vo.request;
 
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -11,9 +11,10 @@ public class TestrunResultItemsRequest {
 
     private List<TestrunTestcaseGroupTestcaseItemRequest> testrunTestcaseGroupTestcaseItemRequests;
 
-    public List<TestrunTestcaseGroupTestcaseItem> buildEntity() {
+    public List<TestrunTestcaseGroupTestcaseItemDTO> toDTO() {
 
-        return testrunTestcaseGroupTestcaseItemRequests.stream().map((testrunTestcaseGroupTestcaseItemRequest -> testrunTestcaseGroupTestcaseItemRequest.buildEntity())).collect(Collectors.toList());
+        return testrunTestcaseGroupTestcaseItemRequests.stream()
+                .map((testrunTestcaseGroupTestcaseItemRequest -> testrunTestcaseGroupTestcaseItemRequest.toDTO())).collect(Collectors.toList());
 
 
     }

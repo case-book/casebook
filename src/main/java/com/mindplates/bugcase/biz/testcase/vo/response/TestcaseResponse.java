@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class TestcaseResponse {
 
   private String testerValue;
 
-  public TestcaseResponse(Testcase testcase) {
+  public TestcaseResponse(TestcaseDTO testcase) {
     this.id = testcase.getId();
     this.projectId = testcase.getProject().getId();
     this.seqId = testcase.getSeqId();

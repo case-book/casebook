@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class TestcaseSimpleResponse {
   private Integer itemOrder;
   private Boolean closed;
 
-  public TestcaseSimpleResponse(Testcase testcase) {
+  public TestcaseSimpleResponse(TestcaseDTO testcase) {
     this.id = testcase.getId();
     this.seqId = testcase.getSeqId();
     this.testcaseGroupId = testcase.getTestcaseGroup().getId();

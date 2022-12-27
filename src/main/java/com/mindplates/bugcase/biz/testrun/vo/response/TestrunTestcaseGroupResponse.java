@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class TestrunTestcaseGroupResponse {
     private Integer itemOrder;
     private List<TestrunTestcaseGroupTestcaseResponse> testcases;
 
-    public TestrunTestcaseGroupResponse(TestrunTestcaseGroup testrunTestcaseGroup) {
+    public TestrunTestcaseGroupResponse(TestrunTestcaseGroupDTO testrunTestcaseGroup) {
         this.id = testrunTestcaseGroup.getId();
         this.testcaseGroupId = testrunTestcaseGroup.getTestcaseGroup().getId();
         this.seqId = testrunTestcaseGroup.getTestcaseGroup().getSeqId();

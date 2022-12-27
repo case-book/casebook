@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class TestcaseTemplateItemResponse {
     private Boolean editable;
     private String systemLabel;
 
-    public TestcaseTemplateItemResponse(TestcaseTemplateItem testcaseTemplateItem) {
+    public TestcaseTemplateItemResponse(TestcaseTemplateItemDTO testcaseTemplateItem) {
         this.id = testcaseTemplateItem.getId();
         this.category = testcaseTemplateItem.getCategory();
         this.type = testcaseTemplateItem.getType();

@@ -22,9 +22,7 @@ public class TestcaseUpdateRequest {
     private Integer itemOrder;
     private Boolean closed;
     private List<TestcaseItemRequest> testcaseItems;
-    @NotBlank
     private String testerType;
-    @NotBlank
     private String testerValue;
 
     public Testcase buildEntity() {

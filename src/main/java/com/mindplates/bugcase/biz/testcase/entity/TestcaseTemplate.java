@@ -24,13 +24,13 @@ public class TestcaseTemplate extends CommonEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  private Long id;
 
   @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
   private String name;
 
-  @Column(name = "is_default")
-  private Boolean isDefault;
+  @Column(name = "default_template")
+  private boolean defaultTemplate;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM_TYPE__PROJECT"))
@@ -47,6 +47,6 @@ public class TestcaseTemplate extends CommonEntity {
   private String defaultTesterValue;
 
   @Transient
-  private boolean deleted;
+  private String crud;
 
 }

@@ -1,13 +1,14 @@
 package com.mindplates.bugcase.biz.testrun.controller;
 
 import com.mindplates.bugcase.biz.project.service.ProjectService;
-import com.mindplates.bugcase.biz.testrun.entity.Testrun;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.*;
 import com.mindplates.bugcase.biz.testrun.vo.response.*;
+import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -31,24 +32,26 @@ public class TestrunController {
 
     private final ProjectService projectService;
 
+    private final MappingUtil mappingUtil;
+
     @Operation(description = "프로젝트 테스트런 목록 조회")
     @GetMapping("")
     public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "status") String status) {
-        List<Testrun> testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status);
+        List<TestrunDTO> testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
     public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunRequest testrunRequest) {
-        Testrun testrun = testrunRequest.buildEntity();
+        TestrunDTO testrun = mappingUtil.convert(testrunRequest, TestrunDTO.class);
         return new TestrunListResponse(testrunService.createTestrunInfo(spaceCode, testrun));
     }
 
     @Operation(description = "테스트런 상세 조회")
     @GetMapping("/{testrunId}")
     public TestrunResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
-        Testrun testrun = testrunService.selectProjectTestrunInfo(testrunId);
+        TestrunDTO testrun = testrunService.selectProjectTestrunInfo(testrunId);
         return new TestrunResponse(testrun);
     }
 
@@ -74,17 +77,15 @@ public class TestrunController {
                                                                   @PathVariable long testrunId,
                                                                   @PathVariable long testrunTestcaseGroupId,
                                                                   @PathVariable long testrunTestcaseGroupTestcaseId) {
-        TestrunTestcaseGroupTestcase testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);
+        TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
     }
 
     @Operation(description = "테스트런 결과 아이템 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
     public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
-
-        List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.buildEntity();
-
-        List<TestrunTestcaseGroupTestcaseItem> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
+        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.toDTO();
+        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
         return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
     }
 
@@ -106,8 +107,8 @@ public class TestrunController {
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
     public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
 
-        TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment = testrunTestcaseGroupTestcaseCommentRequest.buildEntity();
-        TestrunTestcaseGroupTestcaseComment result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseComment);
+        TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment = mappingUtil.convert(testrunTestcaseGroupTestcaseCommentRequest, TestrunTestcaseGroupTestcaseCommentDTO.class);
+        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseComment);
         return new TestrunTestcaseGroupTestcaseCommentResponse(result);
     }
 
@@ -122,14 +123,14 @@ public class TestrunController {
     @GetMapping("/assigned")
     public List<TestrunResponse> selectUserAssignedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
 
-        List<Testrun> testruns = testrunService.selectUserAssignedTestrunList(spaceCode, projectId, SessionUtil.getUserId());
+        List<TestrunDTO> testruns = testrunService.selectUserAssignedTestrunList(spaceCode, projectId, SessionUtil.getUserId());
         return testruns.stream().map(TestrunResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "프로젝트 테스트런 히스토리 조회")
     @GetMapping("/history")
     public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end ) {
-        List<Testrun> testruns = testrunService.selectProjectTestrunHistoryList(spaceCode, projectId, start, end);
+        List<TestrunDTO> testruns = testrunService.selectProjectTestrunHistoryList(spaceCode, projectId, start, end);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 

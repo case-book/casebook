@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import lombok.*;
 
@@ -15,15 +16,15 @@ public class TestcaseTemplateResponse {
 
     private Long id;
     private String name;
-    private Boolean isDefault;
+    private boolean defaultTemplate;
     private String defaultTesterType;
     private String defaultTesterValue;
     private List<TestcaseTemplateItemResponse> testcaseTemplateItems;
 
-    public TestcaseTemplateResponse(TestcaseTemplate testcaseTemplate) {
+    public TestcaseTemplateResponse(TestcaseTemplateDTO testcaseTemplate) {
         this.id = testcaseTemplate.getId();
         this.name = testcaseTemplate.getName();
-        this.isDefault = testcaseTemplate.getIsDefault();
+        this.defaultTemplate = testcaseTemplate.isDefaultTemplate();
         this.testcaseTemplateItems = testcaseTemplate.getTestcaseTemplateItems().stream().map(TestcaseTemplateItemResponse::new).collect(Collectors.toList());
         this.defaultTesterValue = testcaseTemplate.getDefaultTesterValue();
         this.defaultTesterType = testcaseTemplate.getDefaultTesterType();

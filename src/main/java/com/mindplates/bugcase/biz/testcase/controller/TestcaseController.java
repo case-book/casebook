@@ -1,6 +1,11 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemFileDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
@@ -11,6 +16,7 @@ import com.mindplates.bugcase.biz.testcase.vo.request.*;
 import com.mindplates.bugcase.biz.testcase.vo.response.*;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
+import com.mindplates.bugcase.common.util.MappingUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,16 +38,16 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TestcaseController {
 
-
     private final TestcaseService testcaseService;
     private final TestcaseItemFileService testcaseItemFileService;
-
     private final FileUtil fileUtil;
+
+    private final MappingUtil mappingUtil;
 
     @Operation(description = "프로젝트 테스트케이스 설정 조회")
     @GetMapping("/templates")
     public List<TestcaseTemplateResponse> selectSpaceProjectSpaceList(@PathVariable String spaceCode, @PathVariable Long projectId) {
-        List<TestcaseTemplate> testcaseTemplates = testcaseService.selectTestcaseTemplateItemList(projectId);
+        List<TestcaseTemplateDTO> testcaseTemplates = testcaseService.selectTestcaseTemplateItemList(projectId);
         return testcaseTemplates.stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
     }
 
@@ -49,8 +55,10 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
     public TestcaseGroupResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
+        TestcaseGroupDTO testcaseGroupDTO = mappingUtil.convert(testcaseGroupRequest, TestcaseGroupDTO.class);
+        testcaseGroupDTO.setProject(ProjectDTO.builder().id(projectId).build());
 
-        TestcaseGroup testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.buildEntity(projectId));
+        TestcaseGroupDTO testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupDTO);
         return new TestcaseGroupResponse(testcaseGroup);
     }
 
@@ -71,14 +79,14 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 그룹 이름 변경")
     @PutMapping("/groups/{groupId}/name")
     public TestcaseGroupResponse updateTestcaseGroupName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupNameChangeRequest testcaseGroupNameChangeRequest) {
-        TestcaseGroup testcaseGroup = testcaseService.updateTestcaseGroupName(spaceCode, projectId, groupId, testcaseGroupNameChangeRequest.getName());
+        TestcaseGroupDTO testcaseGroup = testcaseService.updateTestcaseGroupName(spaceCode, projectId, groupId, testcaseGroupNameChangeRequest.getName());
         return new TestcaseGroupResponse(testcaseGroup);
     }
 
     @Operation(description = "테스트케이스 그룹 정보 변경")
     @PutMapping("/groups/{groupId}")
     public TestcaseGroupResponse updateTestcaseGroupInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupUpdateRequest testcaseGroupUpdateRequest) {
-        TestcaseGroup testcaseGroup = testcaseService.selectTestcaseGroupInfo(projectId, groupId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseGroupDTO testcaseGroup = testcaseService.selectTestcaseGroupInfo(projectId, groupId);
         testcaseService.updateTestcaseGroupInfo(spaceCode, projectId, groupId, testcaseGroupUpdateRequest.getName(), testcaseGroupUpdateRequest.getDescription());
         return new TestcaseGroupResponse(testcaseGroup);
     }
@@ -86,9 +94,9 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 생성")
     @PostMapping("/groups/{groupId}/cases")
     public TestcaseSimpleResponse createTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseCreateRequest testcaseCreateRequest) {
-        Testcase testcase = testcaseCreateRequest.buildEntity();
-        testcase.setTestcaseGroup(TestcaseGroup.builder().id(groupId).build()); // 보안 구멍
-        Testcase result = testcaseService.createTestcaseInfo(spaceCode, projectId, testcase);
+        TestcaseDTO testcaseDTO = mappingUtil.convert(testcaseCreateRequest, TestcaseDTO.class);
+        testcaseDTO.setTestcaseGroup(TestcaseGroupDTO.builder().id(groupId).build()); // 보안 구멍
+        TestcaseDTO result = testcaseService.createTestcaseInfo(spaceCode, projectId, testcaseDTO);
         return new TestcaseSimpleResponse(result);
     }
 
@@ -118,21 +126,21 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 이름 변경")
     @PutMapping("/{testcaseId}/name")
     public TestcaseSimpleResponse updateTestcaseName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameChangeRequest testcaseNameChangeRequest) {
-        Testcase testcase = testcaseService.updateTestcaseName(spaceCode, projectId, testcaseId, testcaseNameChangeRequest.getName());
+        TestcaseDTO testcase = testcaseService.updateTestcaseName(spaceCode, projectId, testcaseId, testcaseNameChangeRequest.getName());
         return new TestcaseSimpleResponse(testcase);
     }
 
     @Operation(description = "테스트케이스 이름 및 설명 변경")
     @PutMapping("/{testcaseId}/info")
     public TestcaseSimpleResponse updateTestcaseNameAndDescription(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameDescriptionChangeRequest testcaseNameDescriptionChangeRequest) {
-        Testcase testcase = testcaseService.updateTestcaseNameAndDescription(spaceCode, projectId, testcaseId, testcaseNameDescriptionChangeRequest.getName(), testcaseNameDescriptionChangeRequest.getDescription());
+        TestcaseDTO testcase = testcaseService.updateTestcaseNameAndDescription(spaceCode, projectId, testcaseId, testcaseNameDescriptionChangeRequest.getName(), testcaseNameDescriptionChangeRequest.getDescription());
         return new TestcaseSimpleResponse(testcase);
     }
 
     @Operation(description = "테스트케이스 상세 조회")
     @GetMapping("/{testcaseId}")
     public TestcaseResponse selectTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId) {
-        Testcase testcase = testcaseService.selectTestcaseInfo(projectId, testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseDTO testcase = testcaseService.selectTestcaseInfo(projectId, testcaseId);
         return new TestcaseResponse(testcase);
     }
 
@@ -154,9 +162,9 @@ public class TestcaseController {
 
         String path = testcaseItemFileService.createImage(projectId, file);
 
-        TestcaseItemFile testcaseItemFile = TestcaseItemFile.builder()
+        TestcaseItemFileDTO testcaseItemFile = TestcaseItemFileDTO.builder()
                 .project(Project.builder().id(projectId).build())
-                .testcase(Testcase.builder().id(testcaseId).build())
+                .testcase(TestcaseDTO.builder().id(testcaseId).build())
                 .name(name)
                 .size(size)
                 .type(type)
@@ -164,7 +172,7 @@ public class TestcaseController {
                 .uuid(UUID.randomUUID().toString())
                 .build();
 
-        TestcaseItemFile projectFile = testcaseItemFileService.createTestcaseItemFile(testcaseItemFile);
+        TestcaseItemFileDTO projectFile = testcaseItemFileService.createTestcaseItemFile(testcaseItemFile);
         return new TestcaseItemFileResponse(projectFile, spaceCode, projectId, testcaseId);
     }
 
@@ -172,7 +180,7 @@ public class TestcaseController {
     @GetMapping("/{testcaseId}/images/{imageId}")
     public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
 
-        TestcaseItemFile testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId, uuid);
+        TestcaseItemFileDTO testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId, uuid);
         Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
 
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseItemFile.getName(), StandardCharsets.UTF_8).build();

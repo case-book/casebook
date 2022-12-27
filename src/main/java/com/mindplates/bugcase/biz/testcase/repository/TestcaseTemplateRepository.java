@@ -9,7 +9,7 @@ public interface TestcaseTemplateRepository extends JpaRepository<TestcaseTempla
 
   List<TestcaseTemplate> findAllByProjectId(Long projectId);
 
-  Optional<TestcaseTemplate> findAllByProjectIdAndIsDefaultTrue(Long projectId);
+  Optional<TestcaseTemplate> findAllByProjectIdAndDefaultTemplateTrue(Long projectId);
 
 }
 

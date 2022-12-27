@@ -74,7 +74,7 @@ function ProjectInfoPage() {
                             {testcaseTemplate.name}
                           </span>
                         </div>
-                        {testcaseTemplate.isDefault && (
+                        {testcaseTemplate.defaultTemplate && (
                           <div className="default">
                             <span>DEFAULT</span>
                           </div>

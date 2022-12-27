@@ -22,7 +22,7 @@ public class TestrunTestcaseGroupTestcaseItem extends CommonEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  private Long id;
 
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "testcase_template_item_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE_ITEM__TESTCASE_TEMPLATE_ITEM"))

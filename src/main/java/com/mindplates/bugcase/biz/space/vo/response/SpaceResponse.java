@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
-import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
@@ -42,20 +42,11 @@ public class SpaceResponse {
         this.allowAutoJoin = space.isAllowAutoJoin();
         this.token = space.getToken();
         if (space.getUsers() != null) {
-            this.users = space.getUsers().stream().map(
-                    (spaceUser) -> SimpleMemberResponse.builder()
-                            .id(spaceUser.getId())
-                            .userId(spaceUser.getUser().getId())
-                            .role(spaceUser.getRole())
-                            .email(spaceUser.getUser().getEmail())
-                            .name(spaceUser.getUser().getName())
-                            .build()).collect(Collectors.toList());
+            this.users = space.getUsers().stream().map(SimpleMemberResponse::new).collect(Collectors.toList());
         }
-
-
     }
 
-    public SpaceResponse(SpaceDTO space, Long userId, List<Project> projects) {
+    public SpaceResponse(SpaceDTO space, Long userId, List<ProjectDTO> projects) {
         this(space);
         if (userId != null && space.getUsers().stream().anyMatch(spaceUser -> spaceUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(spaceUser.getRole()))) {
             this.isAdmin = true;
