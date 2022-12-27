@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.space.service;
 
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
@@ -66,8 +67,8 @@ public class SpaceService {
     @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     @Transactional
     public void deleteSpaceInfo(SpaceDTO space) {
-        List<Project> projects = projectService.selectSpaceProjectList(space.getId());
-        for (Project project : projects) {
+        List<ProjectDTO> projects = projectService.selectSpaceProjectList(space.getId());
+        for (ProjectDTO project : projects) {
             projectService.deleteProjectInfo(space.getCode(), project);
         }
         spaceRepository.deleteById(space.getId());

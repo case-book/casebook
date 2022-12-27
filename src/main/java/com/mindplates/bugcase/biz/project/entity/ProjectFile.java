@@ -18,7 +18,7 @@ public class ProjectFile extends CommonEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT_FILE__PROJECT"))

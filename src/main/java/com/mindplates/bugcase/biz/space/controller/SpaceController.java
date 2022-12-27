@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.controller;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
@@ -37,7 +38,6 @@ public class SpaceController {
 
     private final SpaceService spaceService;
     private final ProjectService projectService;
-
     private final MappingUtil mappingUtil;
 
     @Operation(description = "새 스페이스 추가")
@@ -80,7 +80,7 @@ public class SpaceController {
     @GetMapping("/{spaceCode}")
     public SpaceResponse selectSpaceInfo(@PathVariable String spaceCode) {
         SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
-        List<Project> spaceProjectList = projectService.selectSpaceProjectList(spaceInfo.getId());
+        List<ProjectDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceInfo.getId());
         return new SpaceResponse(spaceInfo, SessionUtil.getUserId(), spaceProjectList);
     }
 

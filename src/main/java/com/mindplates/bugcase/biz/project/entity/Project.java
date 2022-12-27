@@ -40,7 +40,7 @@ public class Project extends CommonEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
+  private Long id;
 
   @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
   private String name;

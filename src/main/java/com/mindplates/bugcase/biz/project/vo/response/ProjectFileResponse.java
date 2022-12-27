@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
 import lombok.*;
@@ -22,7 +23,7 @@ public class ProjectFileResponse {
 
     private String uuid;
 
-    public ProjectFileResponse(ProjectFile projectFile, String spaceCode, Long projectId) {
+    public ProjectFileResponse(ProjectFileDTO projectFile, String spaceCode, Long projectId) {
         this.id = projectFile.getId();
         this.name = projectFile.getName();
         this.type = projectFile.getType();

@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
@@ -31,7 +32,7 @@ public class ProjectResponse {
 
     private boolean isAdmin = false;
 
-    public ProjectResponse(Project project, Long userId) {
+    public ProjectResponse(ProjectDTO project, Long userId) {
         this.id = project.getId();
         this.name = project.getName();
         this.description = project.getDescription();

@@ -1,10 +1,13 @@
 package com.mindplates.bugcase.biz.project.service;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
+import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.FileConfig;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,18 +25,20 @@ import java.util.List;
 public class ProjectFileService {
 
     private final ProjectFileRepository projectFileRepository;
-
     private final List<String> allowedExtensions;
     private final Path fileStorageLocation;
     private final FileUtil fileUtil;
+    private final MappingUtil mappingUtil;
 
-    public ProjectFileService(FileConfig fileConfig, ProjectFileRepository projectFileRepository, FileUtil fileUtil) {
+    public ProjectFileService(FileConfig fileConfig, ProjectFileRepository projectFileRepository, FileUtil fileUtil, MappingUtil mappingUtil) {
 
         this.fileUtil = fileUtil;
         this.projectFileRepository = projectFileRepository;
 
         this.fileStorageLocation = Paths.get(fileConfig.getUploadDir()).toAbsolutePath().normalize();
         this.allowedExtensions = Arrays.asList(fileConfig.getAllowedExtension().split(","));
+
+        this.mappingUtil = mappingUtil;
 
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -42,13 +47,14 @@ public class ProjectFileService {
         }
     }
 
-    public ProjectFile createProjectFile(ProjectFile projectFile) {
-        projectFileRepository.save(projectFile);
-        return projectFile;
+    public ProjectFileDTO createProjectFile(ProjectFileDTO createProjectFileInfo) {
+        ProjectFile projectFileInfo = projectFileRepository.save(mappingUtil.convert(createProjectFileInfo, ProjectFile.class));
+        return mappingUtil.convert(projectFileInfo, ProjectFileDTO.class);
     }
 
-    public ProjectFile selectProjectFile(Long projectId, Long imageId, String uuid) {
-        return projectFileRepository.findByIdAndProjectIdAndUuid(imageId, projectId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    public ProjectFileDTO selectProjectFile(Long projectId, Long imageId, String uuid) {
+        ProjectFile projectFile = projectFileRepository.findByIdAndProjectIdAndUuid(imageId, projectId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return mappingUtil.convert(projectFile, ProjectFileDTO.class);
     }
 
     public void deleteProjectFile(Long projectId) {

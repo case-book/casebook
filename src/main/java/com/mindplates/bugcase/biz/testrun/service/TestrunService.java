@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.service;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
@@ -140,7 +141,7 @@ public class TestrunService {
     @CacheEvict(key = "{#spaceCode,#testrun.project.id}", value = CacheConfig.PROJECT)
     public Testrun createTestrunInfo(String spaceCode, Testrun testrun) {
 
-        Project project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId());
         int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
         project.setTestrunSeq(currentTestrunSeq);
         projectService.updateProjectInfo(spaceCode, project);

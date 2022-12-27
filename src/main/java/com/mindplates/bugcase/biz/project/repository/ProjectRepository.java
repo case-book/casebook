@@ -9,6 +9,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
   Optional<Project> findBySpaceCodeAndName(String spaceCode, String name);
 
+  Long countBySpaceCodeAndName(String spaceCode, String name);
+
   Optional<Project> findBySpaceCodeAndId(String spaceCode, Long id);
 
   List<Project> findAllBySpaceCode(String spaceCode);
