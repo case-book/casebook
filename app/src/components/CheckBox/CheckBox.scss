@@ -58,6 +58,7 @@
     .checked-icon {
       font-size: 20px;
       width: $lg-height;
+      min-width: $lg-height;
       height: $lg-height;
     }
   }
@@ -72,6 +73,7 @@
     .checked-icon {
       font-size: 18px;
       width: $md-height;
+      min-width: $md-height;
       height: $md-height;
     }
   }
@@ -85,6 +87,7 @@
 
     .checked-icon {
       width: $sm-height;
+      min-width: $sm-height;
       height: $sm-height;
       font-size: 16px;
     }
@@ -99,6 +102,7 @@
 
     .checked-icon {
       width: $xs-height;
+      min-width: $xs-height;
       height: $xs-height;
       font-size: 14px;
     }

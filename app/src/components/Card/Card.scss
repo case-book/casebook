@@ -70,7 +70,9 @@
   }
 
   &:hover {
-    @include shadow;
+    &.shadow {
+      @include shadow;
+    }
   }
 
   .card-content {

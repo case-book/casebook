@@ -63,8 +63,8 @@
       min-width: 60px;
       font-weight: bold;
       @media (max-width: 768px) {
-        border: none;
-        color: $link-color;
+        font-size: 16px;
+        height: 36px;
       }
 
       > div {

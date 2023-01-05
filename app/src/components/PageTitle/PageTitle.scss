@@ -8,6 +8,10 @@
   .page-title-wrapper {
     height: 80px;
 
+    @media (max-width: 768px) {
+      height: 60px;
+    }
+
     > div {
       max-width: $max-width;
       margin: 0 auto;
@@ -28,6 +32,10 @@
           line-height: 100%;
           font-weight: bold;
           font-size: 24px;
+
+          @media (max-width: 768px) {
+            font-size: 20px;
+          }
         }
       }
     }
@@ -87,6 +95,10 @@
         display: inline-flex;
         padding: 0 16px;
 
+        @media (max-width: 768px) {
+          padding: 0 8px;
+        }
+
         cursor: pointer;
         > span {
           align-self: center;
@@ -130,6 +142,13 @@
     margin-right: 1rem;
     flex-grow: 1;
 
+    @media (max-width: 768px) {
+      justify-content: flex-end;
+      .liner-wrapper {
+        display: none !important;
+      }
+    }
+
     > div {
       align-self: center;
       display: flex;
@@ -151,6 +170,4 @@
       }
     }
   }
-
-
 }
