@@ -1,18 +1,26 @@
 import React, { useMemo, useState } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Label, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Title, Tr } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Label, Liner, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import SpaceService from '@/services/SpaceService';
 import { SpacePropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
-import './SpaceContent.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
-import MemberManager from '@/components/MemberManager/MemberManager';
+import MemberCardManager from '@/components/MemberManager/MemberCardManager';
+import useStores from '@/hooks/useStores';
+import './SpaceContent.scss';
 
 function SpaceContent({ space, onRefresh }) {
   const { t } = useTranslation();
+
+  const {
+    userStore: { removeSpace },
+  } = useStores();
+
+  const navigate = useNavigate();
+
   const { id } = useParams();
   const [status, setStatus] = useState('REQUEST');
   const [userRole, setUserRole] = useState('ALL');
@@ -102,20 +110,25 @@ function SpaceContent({ space, onRefresh }) {
     }
   };
 
+  const onDelete = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('스페이스 삭제'),
+      <div>{t(`${space.name} 스페이스 및 스페이스에 포함된 프로젝트를 비롯한 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
+      () => {
+        SpaceService.deleteSpace(space.id, () => {
+          removeSpace(space.id);
+          navigate('/spaces');
+        });
+      },
+      null,
+      t('삭제'),
+    );
+  };
+
   return (
     <>
-      <PageTitle
-        links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('스페이스 변경')}</Link>] : null}
-        control={
-          <div>
-            <Button size="sm" color="danger" onClick={withdraw}>
-              {t('스페이스 탈퇴')}
-            </Button>
-          </div>
-        }
-      >
-        {t('스페이스')}
-      </PageTitle>
+      <PageTitle links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('스페이스 변경')}</Link>] : null}>{t('스페이스')}</PageTitle>
       <PageContent className="space-info-content">
         <Title>{t('스페이스 정보')}</Title>
         <Block>
@@ -164,13 +177,11 @@ function SpaceContent({ space, onRefresh }) {
               />
             );
           })}
-          paddingBottom={false}
-          border={false}
         >
           {t('스페이스 사용자')}
         </Title>
         <Block>
-          <MemberManager users={users} />
+          <MemberCardManager users={users} />
         </Block>
         <Title
           control={statusOptions.map(option => {
@@ -201,20 +212,27 @@ function SpaceContent({ space, onRefresh }) {
           )}
           {applicants?.length > 0 && (
             <div className="applicant-list-content">
-              <Table className="applicant-list" cols={['1px', '1px', '100%', '1px', '1px']}>
+              <Table className="applicant-list" cols={['1px', '1px', '1px', '100%', '1px']} border>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('이름')}</Th>
+                    <Th align="center">{t('상태')}</Th>
+                    <Th align="left">{t('이메일')}</Th>
+                    <Th align="left">{t('메세지')}</Th>
+                    <Th />
+                  </Tr>
+                </THead>
                 <Tbody>
                   {applicants?.map(applicant => {
                     return (
                       <Tr key={applicant.id}>
-                        <Td className={`request-status ${applicant.approvalStatusCode}`}>
-                          <Tag rounded={false}>{getApprovalStatusName(applicant.approvalStatusCode)}</Tag>
-                        </Td>
                         <Td className="user-info">{applicant.userName}</Td>
-                        <Td className="user-email">
-                          <Tag className="tag" border={false} uppercase>
-                            {applicant.userEmail}
+                        <Td className={`request-status ${applicant.approvalStatusCode}`}>
+                          <Tag border rounded={false}>
+                            {getApprovalStatusName(applicant.approvalStatusCode)}
                           </Tag>
                         </Td>
+                        <Td className="user-email">{applicant.userEmail}</Td>
                         <Td className="message">
                           {tooltipId === applicant.id && (
                             <>
@@ -251,7 +269,7 @@ function SpaceContent({ space, onRefresh }) {
                           {(applicant.approvalStatusCode === 'REQUEST' || applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
                             <>
                               <Button
-                                size="xs"
+                                size="sm"
                                 color="primary"
                                 onClick={() => {
                                   approve(applicant.id);
@@ -260,7 +278,7 @@ function SpaceContent({ space, onRefresh }) {
                                 {t('승인')}
                               </Button>
                               <Button
-                                size="xs"
+                                size="sm"
                                 color="danger"
                                 onClick={() => {
                                   reject(applicant.id);
@@ -290,7 +308,15 @@ function SpaceContent({ space, onRefresh }) {
           )}
           {space?.projects.length > 0 && (
             <div className="project-list-content">
-              <Table className="project-list" cols={['100%', '1px', '1px']}>
+              <Table className="project-list" cols={['100%', '1px', '1px']} border>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('프로젝트 명')}</Th>
+                    <Th align="center">{t('상태')}</Th>
+                    <Th align="center">{t('테스트케이스')}</Th>
+                    <Th align="center">{t('버그')}</Th>
+                  </Tr>
+                </THead>
                 <Tbody>
                   {space?.projects?.map(project => {
                     return (
@@ -298,15 +324,15 @@ function SpaceContent({ space, onRefresh }) {
                         <Td className="project-name">
                           <Link to={`/spaces/${space.code}/projects/${project.id}`}>{project.name}</Link>
                         </Td>
-                        <Td className="activated">
+                        <Td align="center" className="activated">
                           <Tag uppercase>{project.activated ? 'activated' : 'disabled'}</Tag>
                         </Td>
-                        <Td className="testcase-count">
+                        <Td align="center" className="testcase-count">
                           <div>
                             <span>{project.testcaseCount}</span>
                           </div>
                         </Td>
-                        <Td className="bug-count">
+                        <Td align="center" className="bug-count">
                           <div>
                             <span>{project.bugCount}</span>
                           </div>
@@ -318,6 +344,16 @@ function SpaceContent({ space, onRefresh }) {
               </Table>
             </div>
           )}
+        </Block>
+        <Title>{t('프로젝트 관리')}</Title>
+        <Block className="space-control">
+          <Button color="warning" onClick={withdraw}>
+            {t('스페이스 탈퇴')}
+          </Button>
+          <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
+          <Button color="danger" onClick={onDelete}>
+            {t('스페이스 삭제')}
+          </Button>
         </Block>
       </PageContent>
     </>

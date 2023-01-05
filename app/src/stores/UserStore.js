@@ -35,6 +35,7 @@ export default class UserStore {
       setTried: action,
       isLogin: computed,
       addSpace: action,
+      removeSpace: action,
       setNotificationCount: action,
     });
   }
@@ -69,6 +70,19 @@ export default class UserStore {
       next.spaces = [];
     }
     next.spaces.push(space);
+    this.user = {
+      ...next,
+    };
+  };
+
+  removeSpace = spaceId => {
+    const next = { ...this.user };
+    if (!next.spaces) {
+      next.spaces = [];
+    }
+
+    const index = next.spaces.findIndex(d => d.id === spaceId);
+    next.spaces.splice(index, 1);
     this.user = {
       ...next,
     };

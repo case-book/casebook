@@ -3,9 +3,13 @@
   font-size: 12px;
   line-height: 100%;
   padding: 4px;
-  font-family: Cairo, sans-serif;
+  font-family: Cairo, NotoSans, sans-serif;
   font-weight: bold;
-  background-color: #242424;
+  background-color: #EEE;
+
+  &.border {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+  }
 
   &.uppercase {
     text-transform: uppercase;
@@ -17,28 +21,20 @@
 
   &.color-black {
     color: $white;
+  }
 
-    &.border {
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      padding: 6px 8px;
-    }
+  &.color-black {
+    background-color: #242424;
+    color: $white;
   }
 
   &.color-white {
     color: $black;
-    &.border {
-      border: 2px solid $border-color;
-      padding: 6px 8px;
-    }
   }
 
   &.color-primary {
     color: $white;
     background-color: $color-primary-light;
-    &.border {
-      border: 2px solid $border-color;
-      padding: 6px 8px;
-    }
   }
 
   &.color-transparent {

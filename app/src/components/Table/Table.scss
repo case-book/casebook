@@ -1,6 +1,10 @@
 .table-wrapper {
   width: 100%;
   border-collapse: collapse;
+
+  &.table-border {
+    border: 1px solid $border-color;
+  }
 }
 
 .block-wrapper {

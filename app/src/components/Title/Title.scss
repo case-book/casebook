@@ -6,11 +6,12 @@
     flex-direction: row;
 
     .title-text {
-      flex-grow: 1;
+      flex-grow: 0;
       align-self: center;
     }
     .control {
       align-self: center;
+      margin-left: 1rem;
     }
   }
 

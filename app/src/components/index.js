@@ -51,6 +51,8 @@ import FlexibleLayout from './FlexibleLayout/FlexibleLayout';
 import TestcaseViewerLabel from './TestcaseViewerLabel/TestcaseViewerLabel';
 import TestcaseItem from './TestcaseItem/TestcaseItem';
 import PieChart from './PieChart/PieChart';
+import THead from './Table/THead';
+import Th from './Table/Th';
 
 export {
   Selector,
@@ -106,4 +108,6 @@ export {
   TestcaseViewerLabel,
   TestcaseItem,
   PieChart,
+  THead,
+  Th,
 };

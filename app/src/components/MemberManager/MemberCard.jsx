@@ -11,6 +11,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
     <Card
       border
       point
+      shadow={false}
       key={spaceUser.id}
       className={`member-card-wrapper ${className} ${spaceUser.crud === 'D' ? 'deleted' : ''} ${selected ? 'selected' : ''}`}
       onClick={() => {
