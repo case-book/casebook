@@ -1,8 +1,6 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
-import com.mindplates.bugcase.biz.project.entity.ProjectFile;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
 import lombok.*;
 
 @Builder

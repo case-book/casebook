@@ -15,18 +15,18 @@ import java.util.List;
 @Data
 public class TestcaseDTO extends CommonDTO {
 
-  private Long id;
-  private String seqId;
-  private TestcaseGroupDTO testcaseGroup;
-  private String name;
-  private String description;
-  private Integer itemOrder;
-  private Boolean closed;
-  private TestcaseTemplateDTO testcaseTemplate;
-  private List<TestcaseItemDTO> testcaseItems;
-  private ProjectDTO project;
-  private String testerType;
-  private String testerValue;
+    private Long id;
+    private String seqId;
+    private TestcaseGroupDTO testcaseGroup;
+    private String name;
+    private String description;
+    private Integer itemOrder;
+    private Boolean closed;
+    private TestcaseTemplateDTO testcaseTemplate;
+    private List<TestcaseItemDTO> testcaseItems;
+    private ProjectDTO project;
+    private String testerType;
+    private String testerValue;
 
 
 }

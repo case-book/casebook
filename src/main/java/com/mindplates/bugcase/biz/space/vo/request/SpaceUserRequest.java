@@ -14,6 +14,7 @@ public class SpaceUserRequest implements IRequestVO<SpaceUserDTO> {
     private UserRoleCode role;
     private Long userId;
     private String crud;
+
     @Override
     public SpaceUserDTO toDTO() {
         return toDTO(null);

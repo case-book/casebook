@@ -1,9 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;

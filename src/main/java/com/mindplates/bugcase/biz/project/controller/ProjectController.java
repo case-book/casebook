@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.project.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
@@ -10,8 +9,6 @@ import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
-import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -28,7 +25,6 @@ import javax.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -78,9 +74,6 @@ public class ProjectController {
         List<ProjectDTO> projectList = projectService.selectSpaceProjectList(spaceCode);
         return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
-
-
-
 
 
     @Operation(description = "프로젝트 삭제")

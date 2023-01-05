@@ -6,7 +6,6 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.stream.Collectors;
 

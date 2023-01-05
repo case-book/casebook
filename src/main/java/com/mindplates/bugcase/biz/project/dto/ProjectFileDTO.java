@@ -1,11 +1,10 @@
 package com.mindplates.bugcase.biz.project.dto;
 
-import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
-
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor

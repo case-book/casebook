@@ -8,22 +8,22 @@ import lombok.Data;
 @Data
 public class TestcaseItemRequest {
 
-  private Long id;
-  private Long testcaseTemplateItemId;
-  private Long testcaseId;
-  private String value;
-  private String text;
+    private Long id;
+    private Long testcaseTemplateItemId;
+    private Long testcaseId;
+    private String value;
+    private String text;
 
-  private String type;
+    private String type;
 
-  public TestcaseItem buildEntity() {
-    return TestcaseItem.builder()
-        .id(id)
-        .testcaseTemplateItem(TestcaseTemplateItem.builder().id(testcaseTemplateItemId).build())
-        .testcase(Testcase.builder().id(testcaseId).build())
-        .value(value)
-        .text(text)
-        .type(type)
-        .build();
-  }
+    public TestcaseItem buildEntity() {
+        return TestcaseItem.builder()
+                .id(id)
+                .testcaseTemplateItem(TestcaseTemplateItem.builder().id(testcaseTemplateItemId).build())
+                .testcase(Testcase.builder().id(testcaseId).build())
+                .value(value)
+                .text(text)
+                .type(type)
+                .build();
+    }
 }

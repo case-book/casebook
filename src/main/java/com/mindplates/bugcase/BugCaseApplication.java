@@ -17,13 +17,13 @@ import java.util.TimeZone;
 @EnableJpaAuditing
 public class BugCaseApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(BugCaseApplication.class, args);
+    }
+
     @PostConstruct
     public void started() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(BugCaseApplication.class, args);
     }
 
 }

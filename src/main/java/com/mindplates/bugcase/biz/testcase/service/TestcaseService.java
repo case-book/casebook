@@ -331,7 +331,35 @@ public class TestcaseService {
 
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(testcase, TestcaseDTO.class);
+        TestcaseDTO testcaseDTO = TestcaseDTO.builder()
+                .id(testcase.getId())
+                .seqId(testcase.getSeqId())
+                .name(testcase.getName())
+                .description(testcase.getDescription())
+                .itemOrder(testcase.getItemOrder())
+                .closed(testcase.getClosed())
+                .testcaseGroup(TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).build())
+                .testcaseTemplate(TestcaseTemplateDTO.builder().id(testcase.getTestcaseTemplate().getId()).build())
+                .project(ProjectDTO.builder().id(testcase.getProject().getId()).build())
+                .testerType(testcase.getTesterType())
+                .testerValue(testcase.getTesterValue())
+                .testcaseItems(testcase.getTestcaseItems().stream()
+                        .map((testcaseItem -> TestcaseItemDTO.builder().
+                                id(testcaseItem.getId())
+                                .testcase(TestcaseDTO.builder().id(testcaseItem.getTestcase().getId()).build())
+                                .value(testcaseItem.getValue())
+                                .text(testcaseItem.getText())
+                                .type(testcaseItem.getType())
+                                .testcaseTemplateItem(TestcaseTemplateItemDTO.builder()
+                                        .id(testcaseItem.getTestcaseTemplateItem().getId())
+                                        .type(testcaseItem.getTestcaseTemplateItem().getType())
+                                        .build())
+                                .build()))
+                        .collect(Collectors.toList()))
+                .build();
+
+        return testcaseDTO;
+        //return mappingUtil.convert(testcase, TestcaseDTO.class);
     }
 
     public TestcaseGroupDTO selectTestcaseGroupInfo(Long projectId, Long testcaseId) {

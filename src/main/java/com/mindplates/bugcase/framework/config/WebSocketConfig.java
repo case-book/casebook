@@ -17,12 +17,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private final JwtTokenProvider jwtTokenProvider;
+    private final StompErrorHandler stompErrorHandler;
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
-
-    private final JwtTokenProvider jwtTokenProvider;
-
-    private final StompErrorHandler stompErrorHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {

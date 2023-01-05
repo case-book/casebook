@@ -10,32 +10,32 @@ import org.springframework.stereotype.Component;
 public class SessionUtil {
 
 
-  public SessionUtil() {
+    public SessionUtil() {
 
-  }
-
-  public static Long getUserId() {
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null) {
-      return null;
     }
 
-    SecurityUser user = (SecurityUser) authentication.getPrincipal();
+    public static Long getUserId() {
 
-    Long id = null;
-    if (user != null) {
-      id = user.getId();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+
+        SecurityUser user = (SecurityUser) authentication.getPrincipal();
+
+        Long id = null;
+        if (user != null) {
+            id = user.getId();
+        }
+
+        return id;
     }
 
-    return id;
-  }
+    public static SecurityUser getSecurityUser() {
 
-  public static SecurityUser getSecurityUser() {
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return (SecurityUser) authentication.getPrincipal();
-  }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (SecurityUser) authentication.getPrincipal();
+    }
 
 
     /*

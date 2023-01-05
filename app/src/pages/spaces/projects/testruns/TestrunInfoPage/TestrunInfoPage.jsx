@@ -91,7 +91,7 @@ function TestrunEditPage() {
 
       setTestrun(info);
 
-      const filteredTestcaseGroups = info.testcaseGroups.map(d => {
+      const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
         return {
           ...d,
           testcases: d.testcases.filter(testcase => {
@@ -127,7 +127,7 @@ function TestrunEditPage() {
       return;
     }
 
-    const filteredTestcaseGroups = testrun.testcaseGroups.map(d => {
+    const filteredTestcaseGroups = testrun.testcaseGroups?.map(d => {
       return {
         ...d,
         testcases: d.testcases.filter(testcase => {

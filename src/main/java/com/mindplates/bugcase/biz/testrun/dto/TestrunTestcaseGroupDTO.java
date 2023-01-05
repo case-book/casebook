@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class TestrunTestcaseGroupDTO extends CommonDTO {
 
     private Long id;
     private TestrunDTO testrun;
-    private TestcaseGroup testcaseGroup;
+    private TestcaseGroupDTO testcaseGroup;
     private List<TestrunTestcaseGroupTestcaseDTO> testcases;
 
 }

@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @Data
 public class TestcaseItemDTO extends CommonDTO {
 
-  private Long id;
-  private TestcaseTemplateItemDTO testcaseTemplateItem;
-  private TestcaseDTO testcase;
-  private String type;
-  private String value;
-  private String text;
+    private Long id;
+    private TestcaseTemplateItemDTO testcaseTemplateItem;
+    private TestcaseDTO testcase;
+    private String type;
+    private String value;
+    private String text;
 
 }

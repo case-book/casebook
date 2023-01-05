@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum NotificationTargetCode {
 
-  USER("USER"),
-  SPACE("SPACE"),
-  PROJECT("PROJECT");
-  private String code;
+    USER("USER"),
+    SPACE("SPACE"),
+    PROJECT("PROJECT");
+    private String code;
 
 }

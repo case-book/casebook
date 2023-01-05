@@ -6,7 +6,6 @@ import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +14,7 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "testrun", indexes = {
-    @Index(name = "IDX_TESTCASE_PROJECT_ID_AND_SEQ_ID", columnList = "project_id, seq_id", unique = true)
+        @Index(name = "IDX_TESTCASE_PROJECT_ID_AND_SEQ_ID", columnList = "project_id, seq_id", unique = true)
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,51 +22,51 @@ import java.util.List;
 @Setter
 public class Testrun extends CommonEntity {
 
-  @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
-  private String seqId;
+    @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
+    private String seqId;
 
-  @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
-  private String name;
+    @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
+    private String name;
 
-  @Column(name = "description", length = ColumnsDef.TEXT)
-  private String description;
+    @Column(name = "description", length = ColumnsDef.TEXT)
+    private String description;
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-  @Fetch(value = FetchMode.SELECT)
-  private List<TestrunUser> testrunUsers;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<TestrunUser> testrunUsers;
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-  @Fetch(value = FetchMode.SELECT)
-  private List<TestrunTestcaseGroup> testcaseGroups;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<TestrunTestcaseGroup> testcaseGroups;
 
-  @ManyToOne
-  @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
-  private Project project;
+    @ManyToOne
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
+    private Project project;
 
-  @Column(name = "start_date_time")
-  private LocalDateTime startDateTime;
+    @Column(name = "start_date_time")
+    private LocalDateTime startDateTime;
 
-  @Column(name = "end_date_time")
-  private LocalDateTime endDateTime;
+    @Column(name = "end_date_time")
+    private LocalDateTime endDateTime;
 
-  @Column(name = "opened")
-  private boolean opened;
+    @Column(name = "opened")
+    private boolean opened;
 
-  @Column(name = "total_testcase_count")
-  private int totalTestcaseCount;
+    @Column(name = "total_testcase_count")
+    private int totalTestcaseCount;
 
-  @Column(name = "passed_testcase_count")
-  private int passedTestcaseCount;
+    @Column(name = "passed_testcase_count")
+    private int passedTestcaseCount;
 
-  @Column(name = "failed_testcase_count")
-  private int failedTestcaseCount;
+    @Column(name = "failed_testcase_count")
+    private int failedTestcaseCount;
 
-  @Column(name = "closed_date")
-  private LocalDateTime closedDate;
+    @Column(name = "closed_date")
+    private LocalDateTime closedDate;
 
 }

@@ -3,7 +3,10 @@ package com.mindplates.bugcase.biz.space.dto;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Builder

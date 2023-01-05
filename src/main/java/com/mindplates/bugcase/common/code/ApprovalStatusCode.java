@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum ApprovalStatusCode {
 
-  REQUEST("REQUEST"),
-  REQUEST_AGAIN("REQUEST_AGAIN"),
-  APPROVAL("APPROVAL"),
-  REJECTED("REJECTED");
-  private String code;
+    REQUEST("REQUEST"),
+    REQUEST_AGAIN("REQUEST_AGAIN"),
+    APPROVAL("APPROVAL"),
+    REJECTED("REJECTED");
+    private String code;
 
 }

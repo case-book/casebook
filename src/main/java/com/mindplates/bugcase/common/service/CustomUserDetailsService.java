@@ -15,20 +15,20 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-  UserRepository userRepository;
+    UserRepository userRepository;
 
-  @Override
-  public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
-    User user = userRepository.findById(Long.parseLong(id)).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(Long.parseLong(id)).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-    return SecurityUser.builder()
-        .id(user.getId())
-        .roles(user.getSystemRole().toString())
-        .name(user.getName())
-        .email(user.getEmail())
-        .build();
+        return SecurityUser.builder()
+                .id(user.getId())
+                .roles(user.getSystemRole().toString())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
 
-  }
+    }
 
 }

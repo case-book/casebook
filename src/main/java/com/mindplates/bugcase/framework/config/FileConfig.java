@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "file")
 public class FileConfig {
 
-  private String uploadDir;
-  private String allowedExtension;
+    private String uploadDir;
+    private String allowedExtension;
 
 }

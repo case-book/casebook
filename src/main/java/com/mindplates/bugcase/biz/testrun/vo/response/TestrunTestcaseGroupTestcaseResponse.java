@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

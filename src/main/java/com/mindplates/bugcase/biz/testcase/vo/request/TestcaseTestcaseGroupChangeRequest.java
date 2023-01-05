@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class TestcaseTestcaseGroupChangeRequest {
 
-  private Long targetId;
-  private Long destinationId;
+    private Long targetId;
+    private Long destinationId;
 }
