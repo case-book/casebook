@@ -25,10 +25,9 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 @Slf4j
 public class FilterChannelInterceptor implements ChannelInterceptor {
+    public static final Pattern USER_SUB_PATTERN = Pattern.compile("^/sub/users/(.*)?$");
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    public static final Pattern USER_SUB_PATTERN = Pattern.compile("^/sub/users/(.*)?$");
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {

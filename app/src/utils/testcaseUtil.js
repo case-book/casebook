@@ -18,7 +18,7 @@ function sort(list) {
 
 function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
   let nextGroups = [];
-  if (targetGroups.length > 0) {
+  if (targetGroups?.length > 0) {
     const groups = cloneDeep(targetGroups);
     const depths = groups.map(d => d.depth) || [];
     const maxDepth = Math.max(...depths);

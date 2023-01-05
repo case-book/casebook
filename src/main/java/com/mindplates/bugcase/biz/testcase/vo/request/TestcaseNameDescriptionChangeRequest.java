@@ -8,10 +8,10 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class TestcaseNameDescriptionChangeRequest {
 
-  @NotBlank
-  @Length(min = 1, max = 100)
-  private String name;
+    @NotBlank
+    @Length(min = 1, max = 100)
+    private String name;
 
-  private String description;
+    private String description;
 
 }

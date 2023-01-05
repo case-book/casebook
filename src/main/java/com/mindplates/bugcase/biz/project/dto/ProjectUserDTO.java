@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class ProjectUserDTO extends CommonDTO {
 
-  private Long id;
-  private UserRoleCode role;
-  private UserDTO user;
-  private ProjectDTO project;
-  private String crud;
+    private Long id;
+    private UserRoleCode role;
+    private UserDTO user;
+    private ProjectDTO project;
+    private String crud;
 }

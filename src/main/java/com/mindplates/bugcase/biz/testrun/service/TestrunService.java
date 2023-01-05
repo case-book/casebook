@@ -6,9 +6,6 @@ import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.*;
@@ -176,10 +173,13 @@ public class TestrunService {
         Random random = new Random();
         int currentSeq = random.nextInt(testrunUsers.size());
         for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrun.getTestcaseGroups()) {
-            List<TestrunTestcaseGroupTestcaseDTO> testcases = testrunTestcaseGroup.getTestcases();
-            for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testcases) {
+            testrunTestcaseGroup.setTestrun(testrun);
+            for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
                 // Testcase testcase = testrunTestcaseGroupTestcase.getTestcase();
 
+                testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+
+                // 여기서 부터 문제
                 TestcaseDTO testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
 
                 List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();

@@ -11,14 +11,15 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
+import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +30,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+
 public class ProjectService {
 
     private final SpaceRepository spaceRepository;
     private final ProjectRepository projectRepository;
 
     private final ProjectFileService projectFileService;
+
+    private final TestrunService testrunService;
 
     private final TestcaseItemFileService testcaseItemFileService;
 
@@ -44,6 +47,27 @@ public class ProjectService {
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
     private final MappingUtil mappingUtil;
+
+    public ProjectService(SpaceRepository spaceRepository,
+                          ProjectRepository projectRepository,
+                          ProjectFileService projectFileService,
+                          @Lazy TestrunService testrunService,
+                          TestcaseItemFileService testcaseItemFileService,
+                          TestcaseItemRepository testcaseItemRepository,
+                          TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository,
+                          MappingUtil mappingUtil) {
+
+        this.spaceRepository = spaceRepository;
+        this.projectRepository = projectRepository;
+        this.projectFileService = projectFileService;
+        this.testrunService = testrunService;
+        this.testcaseItemFileService = testcaseItemFileService;
+        this.testcaseItemRepository = testcaseItemRepository;
+        this.testrunTestcaseGroupTestcaseItemRepository = testrunTestcaseGroupTestcaseItemRepository;
+        this.mappingUtil = mappingUtil;
+
+
+    }
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public ProjectDTO selectProjectInfo(String spaceCode, Long projectId) {
@@ -106,6 +130,17 @@ public class ProjectService {
         projectInfo.setDescription(updateProjectInfo.getDescription());
         projectInfo.setToken(updateProjectInfo.getToken());
         projectInfo.setActivated(updateProjectInfo.isActivated());
+        if (updateProjectInfo.getTestcaseGroupSeq() != null) {
+            projectInfo.setTestcaseGroupSeq(updateProjectInfo.getTestcaseGroupSeq());
+        }
+
+        if (updateProjectInfo.getTestrunSeq() != null) {
+            projectInfo.setTestrunSeq(updateProjectInfo.getTestrunSeq());
+        }
+
+        if (updateProjectInfo.getTestcaseSeq() != null) {
+            projectInfo.setTestcaseSeq(updateProjectInfo.getTestcaseSeq());
+        }
 
         projectInfo.setTestcaseTemplates(updateProjectInfo.getTestcaseTemplates()
                 .stream()
@@ -184,6 +219,13 @@ public class ProjectService {
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
         testcaseItemFileService.deleteProjectTestcaseItemFile(project.getId());
         projectFileService.deleteProjectFile(project.getId());
+
+        project.getTestruns().forEach((testrunDTO -> {
+            testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId());
+        }));
+
+        project.setTestruns(null);
+
         projectRepository.delete(mappingUtil.convert(project, Project.class));
     }
 

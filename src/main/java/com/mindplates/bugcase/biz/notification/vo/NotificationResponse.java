@@ -3,11 +3,12 @@ package com.mindplates.bugcase.biz.notification.vo;
 
 import com.mindplates.bugcase.biz.notification.dto.NotificationDTO;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 
 @Builder
@@ -16,21 +17,21 @@ import lombok.NoArgsConstructor;
 @Getter
 public class NotificationResponse {
 
-  private Long id;
-  private NotificationTargetCode target;
-  private Long targetId;
-  private String message;
-  private String url;
+    private Long id;
+    private NotificationTargetCode target;
+    private Long targetId;
+    private String message;
+    private String url;
 
-  private LocalDateTime creationDate;
+    private LocalDateTime creationDate;
 
-  public NotificationResponse(NotificationDTO notification) {
-    this.id = notification.getId();
-    this.target = notification.getTarget();
-    this.targetId = notification.getTargetId();
-    this.message = notification.getMessage();
-    this.url = notification.getUrl();
-    this.creationDate = notification.getCreationDate();
-  }
+    public NotificationResponse(NotificationDTO notification) {
+        this.id = notification.getId();
+        this.target = notification.getTarget();
+        this.targetId = notification.getTargetId();
+        this.message = notification.getMessage();
+        this.url = notification.getUrl();
+        this.creationDate = notification.getCreationDate();
+    }
 
 }

@@ -7,7 +7,6 @@ import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.FileConfig;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;

@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
-import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,19 +16,19 @@ import java.util.List;
 @Data
 public class TestrunDTO extends CommonDTO {
 
-  private Long id;
-  private String seqId;
-  private String name;
-  private String description;
-  private List<TestrunUserDTO> testrunUsers;
-  private List<TestrunTestcaseGroupDTO> testcaseGroups;
-  private Project project;
-  private LocalDateTime startDateTime;
-  private LocalDateTime endDateTime;
-  private boolean opened;
-  private int totalTestcaseCount;
-  private int passedTestcaseCount;
-  private int failedTestcaseCount;
-  private LocalDateTime closedDate;
+    private Long id;
+    private String seqId;
+    private String name;
+    private String description;
+    private List<TestrunUserDTO> testrunUsers;
+    private List<TestrunTestcaseGroupDTO> testcaseGroups;
+    private ProjectDTO project;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+    private boolean opened;
+    private int totalTestcaseCount;
+    private int passedTestcaseCount;
+    private int failedTestcaseCount;
+    private LocalDateTime closedDate;
 
 }

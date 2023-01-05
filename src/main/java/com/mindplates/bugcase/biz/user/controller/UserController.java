@@ -37,16 +37,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserController {
 
+    private static final int NOTIFICATION_PAGE_SIZE = 10;
     private final UserService userService;
-
     private final SpaceService spaceService;
-
     private final NotificationService notificationService;
-
     private final JwtTokenProvider jwtTokenProvider;
-
-    private static int NOTIFICATION_PAGE_SIZE = 10;
-
 
     @Operation(description = "회원 가입")
     @PostMapping("/join")

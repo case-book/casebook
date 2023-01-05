@@ -1,20 +1,15 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemFileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.*;
 import com.mindplates.bugcase.biz.testcase.vo.response.*;
-import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -163,7 +158,7 @@ public class TestcaseController {
         String path = testcaseItemFileService.createImage(projectId, file);
 
         TestcaseItemFileDTO testcaseItemFile = TestcaseItemFileDTO.builder()
-                .project(Project.builder().id(projectId).build())
+                .project(ProjectDTO.builder().id(projectId).build())
                 .testcase(TestcaseDTO.builder().id(testcaseId).build())
                 .name(name)
                 .size(size)

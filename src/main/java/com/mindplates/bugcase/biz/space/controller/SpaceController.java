@@ -12,7 +12,6 @@ import com.mindplates.bugcase.biz.space.vo.request.SpaceUpdateRequest;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceAccessibleResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
-import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
@@ -101,7 +100,7 @@ public class SpaceController {
     @Operation(description = "스페이스 참여")
     @PostMapping("/{spaceCode}/applicants")
     public ResponseEntity<?> createSpaceJoinInfo(@PathVariable String spaceCode, @Valid @RequestBody SpaceJoinRequest spaceJoinRequest) {
-        SpaceApplicantDTO applicant = spaceJoinRequest.toDTO(spaceCode,SessionUtil.getUserId());
+        SpaceApplicantDTO applicant = spaceJoinRequest.toDTO(spaceCode, SessionUtil.getUserId());
         spaceService.createOrUpdateSpaceApplicantInfo(spaceCode, applicant);
         return new ResponseEntity<>(HttpStatus.OK);
     }

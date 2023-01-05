@@ -44,7 +44,7 @@ public class TestrunController {
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
     public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunRequest testrunRequest) {
-        TestrunDTO testrun = mappingUtil.convert(testrunRequest, TestrunDTO.class);
+        TestrunDTO testrun = testrunRequest.buildEntity();
         return new TestrunListResponse(testrunService.createTestrunInfo(spaceCode, testrun));
     }
 
@@ -129,7 +129,7 @@ public class TestrunController {
 
     @Operation(description = "프로젝트 테스트런 히스토리 조회")
     @GetMapping("/history")
-    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end ) {
+    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end) {
         List<TestrunDTO> testruns = testrunService.selectProjectTestrunHistoryList(spaceCode, projectId, start, end);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }

@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import lombok.*;
 
 import java.util.List;
