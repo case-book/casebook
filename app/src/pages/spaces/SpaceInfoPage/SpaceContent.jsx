@@ -126,6 +126,8 @@ function SpaceContent({ space, onRefresh }) {
     );
   };
 
+  console.log(space);
+
   return (
     <>
       <PageTitle links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('스페이스 변경')}</Link>] : null}>{t('스페이스')}</PageTitle>
@@ -347,13 +349,33 @@ function SpaceContent({ space, onRefresh }) {
         </Block>
         <Title>{t('프로젝트 관리')}</Title>
         <Block className="space-control">
-          <Button color="warning" onClick={withdraw}>
-            {t('스페이스 탈퇴')}
-          </Button>
-          <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
-          <Button color="danger" onClick={onDelete}>
-            {t('스페이스 삭제')}
-          </Button>
+          <div className="control-button">
+            <div>
+              <Button color="warning" onClick={withdraw}>
+                {t('스페이스 탈퇴')}
+              </Button>
+              {space?.admin && (
+                <>
+                  <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
+                  <Button color="danger" onClick={onDelete}>
+                    {t('스페이스 삭제')}
+                  </Button>
+                </>
+              )}
+            </div>
+            {space?.admin && (
+              <div>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    navigate(`/spaces/${id}/edit`);
+                  }}
+                >
+                  {t('스페이스 변경')}
+                </Button>
+              </div>
+            )}
+          </div>
         </Block>
       </PageContent>
     </>

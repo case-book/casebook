@@ -8,9 +8,6 @@
   @media (max-width: 768px) {
     display: flex;
     margin-right: 0;
-    > span {
-      align-self: center;
-    }
   }
 
   &.required {
@@ -64,6 +61,10 @@
     position: relative;
     align-self: center;
     padding-left: 1rem;
+
+    @media (max-width: 768px) {
+      padding-left: 0;
+    }
 
     &.liner {
       flex-grow: 1;

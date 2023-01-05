@@ -11,7 +11,7 @@ import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './SpaceEditPage.scss';
-import MemberManager from '@/components/MemberManager/MemberManager';
+import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
@@ -51,6 +51,7 @@ function SpaceEditPage({ type }) {
 
     if (type === 'new') {
       SpaceService.createSpace(space, result => {
+        console.log(result);
         addSpace(result);
         navigate('/spaces');
       });
@@ -71,57 +72,31 @@ function SpaceEditPage({ type }) {
     }
   };
 
-  const changeSpaceUserRole = (spaceUserId, field, value) => {
+  const changeSpaceUserRole = (userId, field, value) => {
     const next = { ...space };
-    const spaceUser = next.users.find(d => d.id === spaceUserId);
+    const spaceUser = next.users.find(d => d.userId === userId);
     spaceUser.crud = 'U';
     spaceUser[field] = value;
     setSpace(next);
   };
 
-  const removeSpaceUser = spaceUserId => {
+  const removeSpaceUser = userId => {
     const next = { ...space };
-    const spaceUser = next.users.find(d => d.id === spaceUserId);
+    const spaceUser = next.users.find(d => d.userId === userId);
     spaceUser.crud = 'D';
     setSpace(next);
   };
 
-  const undoRemovalSpaceUser = spaceUserId => {
+  const undoRemovalSpaceUser = userId => {
     const next = { ...space };
-    const spaceUser = next.users.find(d => d.id === spaceUserId);
+    const spaceUser = next.users.find(d => d.userId === userId);
     spaceUser.crud = 'U';
     setSpace(next);
   };
 
-  const onDelete = () => {
-    dialogUtil.setConfirm(
-      MESSAGE_CATEGORY.WARNING,
-      t('스페이스 삭제'),
-      <div>{t(`${space.name} 스페이스 및 스페이스에 포함된 프로젝트를 비롯한 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
-      () => {
-        SpaceService.deleteSpace(space.id, result => {
-          addSpace(result);
-          navigate('/spaces');
-        });
-      },
-      null,
-      t('삭제'),
-    );
-  };
-
   return (
     <Page className="space-edit-page-wrapper">
-      <PageTitle
-        control={
-          <div>
-            <Button size="sm" color="danger" onClick={onDelete}>
-              {t('스페이스 삭제')}
-            </Button>
-          </div>
-        }
-      >
-        {isEdit ? t('스페이스') : t('새 스페이스')}
-      </PageTitle>
+      <PageTitle>{isEdit ? t('스페이스') : t('새 스페이스')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Title>기본 정보</Title>
@@ -147,8 +122,8 @@ function SpaceEditPage({ type }) {
                 <Input
                   className="code"
                   value={space.code}
-                  placeholder="영문자 및 숫자, -, _ 기호로 코드를 입력할 수 있습니다."
-                  pattern="^[A-Z\d_-]+$"
+                  placeholder="대문자 및 숫자, -, _ 기호로 코드를 입력할 수 있습니다. (최소 3자, 대문자로 시작 필수)"
+                  pattern="^([A-Z]+)([A-Z0-9_-]){2,}$"
                   disabled={isEdit}
                   onChange={val =>
                     setSpace({
@@ -224,6 +199,7 @@ function SpaceEditPage({ type }) {
               <Button
                 rounded
                 size="sm"
+                outline
                 onClick={() => {
                   setSpace({
                     ...space,
@@ -239,7 +215,7 @@ function SpaceEditPage({ type }) {
             <>
               <Title>스페이스 사용자</Title>
               <Block>
-                <MemberManager className="member-manager" edit users={space?.users} onChangeUserRole={changeSpaceUserRole} onUndoRemovalUSer={undoRemovalSpaceUser} onRemoveUSer={removeSpaceUser} />
+                <MemberCardManager users={space?.users} edit onChangeUserRole={changeSpaceUserRole} onUndoRemovalUser={undoRemovalSpaceUser} onRemoveUser={removeSpaceUser} />
               </Block>
             </>
           )}

@@ -14,6 +14,10 @@
   background-color: $card-bg-color-dark;
   border-radius: 4px;
 
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+
   &.flex {
     display: flex;
     flex-direction: column;

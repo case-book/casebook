@@ -51,7 +51,7 @@ function App() {
     document.querySelector('body').classList.add('page-moving');
     setTimeout(() => {
       document.querySelector('body').classList.remove('page-moving');
-    }, 1000);
+    }, 100);
   }, [location.pathname]);
 
   return (

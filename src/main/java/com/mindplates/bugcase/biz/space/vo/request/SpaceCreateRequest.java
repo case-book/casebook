@@ -6,6 +6,7 @@ import com.mindplates.bugcase.common.vo.IRequestVO;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
     @NotNull
     @Size(min = 1)
     private String name;
+    @Pattern(message="SPACE_NAME_REGEX" , regexp="^([A-Z]+)([A-Z0-9_-]){2,}$")
     private String code;
     private String description;
     private Boolean activated;

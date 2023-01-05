@@ -2,6 +2,10 @@
   > .block-row-content {
     display: flex;
     padding: 0.5rem 0;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
   }
 
   > .block-row-liner {
@@ -13,9 +17,7 @@
     width: 100%;
   }
 
-  @media (max-width: 768px) {
-    display: block;
-  }
+
 
   > * {
     align-self: center;
