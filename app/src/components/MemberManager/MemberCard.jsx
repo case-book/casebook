@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Button, Card, CardContent, CardHeader, Input, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -11,10 +11,13 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
   const [tagOpened, setTagOpened] = useState(false);
   const element = useRef({});
 
+  const tagList = useMemo(() => {
+    return spaceUser.tags?.split(';').filter(d => !!d) || [];
+  }, [spaceUser]);
+
   const addTag = () => {
-    const currentTags = spaceUser.tags?.split(';') || [];
     const newTag = tag.replaceAll(';', '');
-    if (!currentTags.includes(newTag)) {
+    if (!tagList.includes(newTag)) {
       onChangeUserRole(spaceUser.userId, 'tags', `${spaceUser.tags || ''};${newTag}`);
     }
     setTag('');
@@ -22,11 +25,13 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
   };
 
   const removeTag = inx => {
-    const currentTags = spaceUser.tags?.split(';').filter(d => !!d);
-
+    const currentTags = tagList.slice(0);
     currentTags.splice(inx, 1);
-    console.log(currentTags.join(';'));
-    onChangeUserRole(spaceUser.userId, 'tags', `;${currentTags.join(';')}`);
+    if (currentTags.length > 0) {
+      onChangeUserRole(spaceUser.userId, 'tags', `;${currentTags.join(';')}`);
+    } else {
+      onChangeUserRole(spaceUser.userId, 'tags', '');
+    }
   };
 
   return (
@@ -109,10 +114,9 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
         {tags && (
           <div className="tag-info">
             <div className="tags scrollbar-sm">
-              {spaceUser.tags
-                ?.split(';')
-                .filter(d => !!d)
-                .map((val, inx) => {
+              {tagList.length < 1 && <div className="no-tags">NO TAGS</div>}
+              {tagList.length > 0 &&
+                tagList.map((val, inx) => {
                   return (
                     <Tag key={inx} className="tag" color="white" border>
                       {val}
