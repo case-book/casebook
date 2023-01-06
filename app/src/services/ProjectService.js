@@ -60,6 +60,17 @@ ProjectService.deleteProject = (spaceCode, project, successHandler, failHandler)
   );
 };
 
+ProjectService.withdrawProject = (spaceCode, project, successHandler, failHandler) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${project.id}/users/my`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 ProjectService.createImage = (spaceCode, projectId, name, size, type, file) => {
   const formData = new FormData();
   formData.append('file', file);

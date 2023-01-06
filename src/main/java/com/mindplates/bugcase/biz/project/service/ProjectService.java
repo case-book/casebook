@@ -48,14 +48,7 @@ public class ProjectService {
 
     private final MappingUtil mappingUtil;
 
-    public ProjectService(SpaceRepository spaceRepository,
-                          ProjectRepository projectRepository,
-                          ProjectFileService projectFileService,
-                          @Lazy TestrunService testrunService,
-                          TestcaseItemFileService testcaseItemFileService,
-                          TestcaseItemRepository testcaseItemRepository,
-                          TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository,
-                          MappingUtil mappingUtil) {
+    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemFileService testcaseItemFileService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, MappingUtil mappingUtil) {
 
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
@@ -142,23 +135,15 @@ public class ProjectService {
             projectInfo.setTestcaseSeq(updateProjectInfo.getTestcaseSeq());
         }
 
-        projectInfo.setTestcaseTemplates(updateProjectInfo.getTestcaseTemplates()
-                .stream()
-                .filter((testcaseTemplate -> !"D".equals(testcaseTemplate.getCrud())))
-                .map(testcaseTemplate -> {
-                    testcaseTemplate.getTestcaseTemplateItems()
-                            .stream()
-                            .filter(TestcaseTemplateItemDTO::isDeleted).forEach(testcaseTemplateItem -> {
-                                testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
-                                testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
-                            });
+        projectInfo.setTestcaseTemplates(updateProjectInfo.getTestcaseTemplates().stream().filter((testcaseTemplate -> !"D".equals(testcaseTemplate.getCrud()))).map(testcaseTemplate -> {
+            testcaseTemplate.getTestcaseTemplateItems().stream().filter(TestcaseTemplateItemDTO::isDeleted).forEach(testcaseTemplateItem -> {
+                testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
+                testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
+            });
 
-                    testcaseTemplate.setTestcaseTemplateItems(testcaseTemplate.getTestcaseTemplateItems()
-                            .stream()
-                            .filter(testcaseTemplateItem -> !testcaseTemplateItem.isDeleted()).collect(Collectors.toList()));
-                    return testcaseTemplate;
-                })
-                .collect(Collectors.toList()));
+            testcaseTemplate.setTestcaseTemplateItems(testcaseTemplate.getTestcaseTemplateItems().stream().filter(testcaseTemplateItem -> !testcaseTemplateItem.isDeleted()).collect(Collectors.toList()));
+            return testcaseTemplate;
+        }).collect(Collectors.toList()));
 
         /*
         updateProjectInfo.getTestcaseTemplates().forEach((testcaseTemplate -> {
@@ -244,5 +229,18 @@ public class ProjectService {
         return projectRepository.countBySpaceId(spaceId);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteProjectUser(String spaceCode, Long projectId, Long userId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        // ProjectUser user = project.getUsers().stream().filter(projectUser -> projectUser.getUser().getId().equals(userId)).findFirst().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        project.getUsers().removeIf((projectUser -> projectUser.getUser().getId().equals(userId)));
+        long adminCount = project.getUsers().stream().filter((projectUser -> projectUser.getRole().equals(UserRoleCode.ADMIN))).count();
+        if (adminCount < 1L) {
+            throw new ServiceException("no.project.admin.exist");
+        }
+
+        projectRepository.save(project);
+    }
 
 }

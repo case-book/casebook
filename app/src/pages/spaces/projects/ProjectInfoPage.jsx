@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Card, CardContent, CardHeader, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import { Block, Button, Card, CardContent, CardHeader, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -8,6 +8,8 @@ import './ProjectInfoPage.scss';
 import ProjectService from '@/services/ProjectService';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -25,6 +27,36 @@ function ProjectInfoPage() {
       setProject(info);
     });
   }, [projectId]);
+
+  const onDelete = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('프로젝트 삭제'),
+      <div>{t(`"${project.name}" 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
+      () => {
+        ProjectService.deleteProject(spaceCode, project, () => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        });
+      },
+      null,
+      t('삭제'),
+    );
+  };
+
+  const onWithdraw = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('프로젝트 탈퇴'),
+      <div>{t(`프로젝트를 탈퇴하면, "${project.name}" 프로젝트에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?`)}</div>,
+      () => {
+        ProjectService.withdrawProject(spaceCode, project, () => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        });
+      },
+      null,
+      t('탈퇴'),
+    );
+  };
 
   return (
     <>
@@ -98,14 +130,32 @@ function ProjectInfoPage() {
           <Block>
             <MemberCardManager className="member-manager" users={project?.users} />
           </Block>
+          <Title>{t('프로젝트 관리')}</Title>
+          <Block className="space-control">
+            <Button color="warning" onClick={onWithdraw}>
+              {t('프로젝트 탈퇴')}
+            </Button>
+            {project?.admin && (
+              <>
+                <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
+                <Button color="danger" onClick={onDelete}>
+                  {t('프로젝트 삭제')}
+                </Button>
+              </>
+            )}
+          </Block>
           <PageButtons
             outline
             onBack={() => {
               navigate(-1);
             }}
-            onEdit={() => {
-              navigate(`/spaces/${spaceCode}/projects/${project.id}/edit`);
-            }}
+            onEdit={
+              project?.admin
+                ? () => {
+                    navigate(`/spaces/${spaceCode}/projects/${project.id}/edit`);
+                  }
+                : null
+            }
             onCancelIcon=""
           />
         </PageContent>

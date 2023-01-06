@@ -136,5 +136,12 @@ public class ProjectController {
                 .body(resource);
     }
 
+    @Operation(description = "프로젝트 탈퇴")
+    @DeleteMapping("/{id}/users/my")
+    public ResponseEntity<?> deleteProjectUserInfo(@PathVariable String spaceCode, @PathVariable Long id) {
+        projectService.deleteProjectUser(spaceCode, id, SessionUtil.getUserId());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }

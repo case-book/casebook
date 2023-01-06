@@ -47,46 +47,49 @@ $logo-color-1: #fe0000;
   flex-direction: column;
 
   .loader {
-    align-self: center;
+    display: inline-block;
     position: relative;
-    width: 128px;
-    height: 128px;
-    background: #fff;
-    border-radius: 50%;
-    overflow: hidden;
+    width: 80px;
+    height: 80px;
     margin: 0 auto;
   }
-  .loader:after {
-    content: '';
+  .loader div {
+    display: inline-block;
     position: absolute;
-    inset: 24px;
-    margin: auto;
-    background: #111;
-    border-radius: 50%;
+    left: 8px;
+    width: 16px;
+    background: $primary-color;
+    animation: loader 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
   }
-  .loader:before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    background: $color-primary-dark;
-    animation: LoaderAnimation 1s ease-in-out infinite alternate;
+  .loader div:nth-child(1) {
+    left: 8px;
+    animation-delay: -0.24s;
+  }
+  .loader div:nth-child(2) {
+    left: 32px;
+    animation-delay: -0.12s;
+  }
+  .loader div:nth-child(3) {
+    left: 56px;
+    animation-delay: 0;
+  }
+
+  @keyframes loader {
+    0% {
+      top: 8px;
+      height: 64px;
+    }
+    50%,
+    100% {
+      top: 24px;
+      height: 32px;
+    }
   }
 }
 
-.theme-LIGHT {
+.theme-DARK {
   .request-loading {
-    .loader:after {
-      background: #eee;
-    }
-    .loader:before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      background: $color-primary-light;
-      animation: LoaderAnimation 1s ease-in-out infinite alternate;
-    }
+
   }
 }
 
