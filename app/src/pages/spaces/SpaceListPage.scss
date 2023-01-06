@@ -11,7 +11,7 @@
       min-height: 400px;
       position: relative;
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1024px) {
         height: auto;
         min-height: auto;
       }
@@ -24,7 +24,7 @@
         bottom: 0;
         display: flex;
         flex-direction: column;
-        @media (max-width: 1000px) {
+        @media (max-width: 1024px) {
           position: static;
         }
 
@@ -35,7 +35,7 @@
           top: 0;
           right: 0;
 
-          @media (max-width: 1000px) {
+          @media (max-width: 1024px) {
             position: static;
             text-align: center;
             left: 0;
@@ -62,7 +62,7 @@
           display: flex;
           justify-content: center;
 
-          @media (max-width: 1000px) {
+          @media (max-width: 1024px) {
             display: none;
           }
           > div {
@@ -113,7 +113,7 @@
       align-self: flex-start;
       width: 100%;
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1024px) {
         display: block;
       }
     }
@@ -124,7 +124,7 @@
       display: flex;
       padding-bottom: 1rem;
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1024px) {
         display: none;
       }
       button {
@@ -147,7 +147,7 @@
       scroll-behavior: smooth;
       display: flex;
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1024px) {
         display: block;
         white-space: normal;
         overflow-x: auto;
@@ -175,7 +175,7 @@
           margin-right: 1rem;
           margin-bottom: 1rem;
 
-          @media (max-width: 1000px) {
+          @media (max-width: 1024px) {
             width: calc((100% - 1rem) / 2);
             &:nth-child(2n) {
               margin-right: 0;
@@ -366,7 +366,7 @@
       bottom: -20px;
     }
 
-    @media (max-width: 1000px) {
+    @media (max-width: 1024px) {
       bottom: -10px;
       position: static;
     }
@@ -409,7 +409,7 @@
       padding: 2rem 4rem;
       height: 100%;
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1024px) {
         padding: 0 0 1rem;
       }
 
@@ -418,7 +418,7 @@
         top: 1rem;
         right: 1rem;
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1024px) {
           display: none;
         }
       }
@@ -429,7 +429,7 @@
         padding: 1rem;
         margin-top: 1rem;
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1024px) {
           margin-top: 0;
         }
 
@@ -465,7 +465,7 @@
         padding: 1rem 1rem 0;
         overflow-y: auto;
 
-        @media (max-width: 1000px) {
+        @media (max-width: 1024px) {
           padding: 0 1rem;
         }
 

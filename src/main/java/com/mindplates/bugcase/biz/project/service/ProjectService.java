@@ -219,6 +219,13 @@ public class ProjectService {
         return mappingUtil.convert(projectList, ProjectDTO.class);
     }
 
+    public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
+        List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
+        return mappingUtil.convert(projectList, ProjectDTO.class);
+    }
+
+
+
     public List<ProjectDTO> selectSpaceProjectList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
         return mappingUtil.convert(projectList, ProjectDTO.class);

@@ -16,6 +16,20 @@ ProjectService.selectProjectList = (spaceCode, successHandler, failHandler, load
   );
 };
 
+ProjectService.selectMyProjectList = (spaceCode, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/my`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}`,

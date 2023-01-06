@@ -14,7 +14,7 @@ function ProjectListPage() {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    ProjectService.selectProjectList(spaceCode, list => {
+    ProjectService.selectMyProjectList(spaceCode, list => {
       setProjects(list);
     });
   }, [spaceCode]);

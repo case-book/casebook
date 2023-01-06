@@ -14,11 +14,13 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
       shadow={false}
       key={spaceUser.id}
       className={`member-card-wrapper ${className} ${spaceUser.crud === 'D' ? 'deleted' : ''} ${selected ? 'selected' : ''}`}
-      onClick={() => {
-        if (onSelect) {
-          onSelect(spaceUser);
-        }
-      }}
+      onClick={
+        onSelect
+          ? () => {
+              onSelect(spaceUser);
+            }
+          : null
+      }
     >
       <CardHeader className="user-name">
         <div>

@@ -1,4 +1,5 @@
 .member-card-wrapper {
+  cursor: text;
   &.selected {
     background-color: $color-primary-light;
     color: $white;
