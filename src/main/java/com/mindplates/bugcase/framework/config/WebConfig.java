@@ -1,12 +1,16 @@
 package com.mindplates.bugcase.framework.config;
 
 import com.mindplates.bugcase.biz.user.service.UserService;
+import com.mindplates.bugcase.common.bean.InitService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.converter.LongToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateTimeConverter;
+import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +33,9 @@ public class WebConfig implements WebMvcConfigurer {
     private String activeProfile;
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
+
+    @Autowired
+    private JsonRedisTemplate jsonRedisTemplate;
 
     public WebConfig(SessionUtil sessionUtil, UserService userService) {
         this.sessionUtil = sessionUtil;
@@ -81,6 +88,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new LongToLocalDateTimeConverter());
         registry.addConverter(new StringToLocalDateConverter());
         registry.addConverter(new StringToLocalDateTimeConverter());
+    }
+
+    @Bean
+    public InitService initService() {
+        InitService initService = new InitService(jsonRedisTemplate);
+        initService.init();
+        return initService;
     }
 
 

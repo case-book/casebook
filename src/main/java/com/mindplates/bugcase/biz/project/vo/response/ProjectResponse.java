@@ -52,6 +52,7 @@ public class ProjectResponse {
                             .role(projectUser.getRole())
                             .email(projectUser.getUser().getEmail())
                             .name(projectUser.getUser().getName())
+                            .tags(projectUser.getTags())
                             .build()).collect(Collectors.toList());
         }
 

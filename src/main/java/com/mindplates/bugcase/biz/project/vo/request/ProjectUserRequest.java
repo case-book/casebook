@@ -15,6 +15,8 @@ public class ProjectUserRequest implements IRequestVO<ProjectUserDTO> {
     private Long userId;
     private UserRoleCode role;
 
+    private String tags;
+
     public ProjectUserDTO toDTO() {
         return toDTO(null);
     }
@@ -25,6 +27,7 @@ public class ProjectUserRequest implements IRequestVO<ProjectUserDTO> {
                 .user(UserDTO.builder().id(userId).build())
                 .role(role)
                 .crud(crud)
+                .tags(tags)
                 .project(project).build();
     }
 }

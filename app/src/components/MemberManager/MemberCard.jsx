@@ -1,11 +1,33 @@
-import React from 'react';
-import { Button, Card, CardContent, CardHeader, Tag } from '@/components';
+import React, { useRef, useState } from 'react';
+import { Button, Card, CardContent, CardHeader, Input, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './MemberCard.scss';
 
-function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUndoRemovalUser, onRemoveUser, showRole, selected, onSelect }) {
+function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUndoRemovalUser, onRemoveUser, showRole, selected, onSelect, tags }) {
   const { t } = useTranslation();
+
+  const [tag, setTag] = useState('');
+  const [tagOpened, setTagOpened] = useState(false);
+  const element = useRef({});
+
+  const addTag = () => {
+    const currentTags = spaceUser.tags?.split(';') || [];
+    const newTag = tag.replaceAll(';', '');
+    if (!currentTags.includes(newTag)) {
+      onChangeUserRole(spaceUser.userId, 'tags', `${spaceUser.tags || ''};${newTag}`);
+    }
+    setTag('');
+    setTagOpened(false);
+  };
+
+  const removeTag = inx => {
+    const currentTags = spaceUser.tags?.split(';').filter(d => !!d);
+
+    currentTags.splice(inx, 1);
+    console.log(currentTags.join(';'));
+    onChangeUserRole(spaceUser.userId, 'tags', `;${currentTags.join(';')}`);
+  };
 
   return (
     <Card
@@ -83,8 +105,94 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
         </div>
       </CardHeader>
       <CardContent className="user-info">
-        <div>{spaceUser.email}</div>
+        <div className="email">{spaceUser.email}</div>
+        {tags && (
+          <div className="tag-info">
+            <div className="tags scrollbar-sm">
+              {spaceUser.tags
+                ?.split(';')
+                .filter(d => !!d)
+                .map((val, inx) => {
+                  return (
+                    <Tag key={inx} className="tag" color="white" border>
+                      {val}
+                      {edit && (
+                        <span
+                          className="remove"
+                          onClick={() => {
+                            removeTag(inx);
+                          }}
+                        >
+                          <i className="fa-solid fa-xmark" />
+                        </span>
+                      )}
+                    </Tag>
+                  );
+                })}
+            </div>
+            {edit && (
+              <div className="tag-button">
+                <Button
+                  size="xs"
+                  color="primary"
+                  onClick={() => {
+                    setTagOpened(true);
+                    setTimeout(() => {
+                      if (element.current) {
+                        element.current.focus();
+                      }
+                    }, 100);
+                  }}
+                >
+                  태그 추가
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
+      {tags && tagOpened && (
+        <div className="tag-change-popup">
+          <div>
+            <div className="message">태그 추가</div>
+            <div className="tag-input">
+              <Input
+                onRef={e => {
+                  element.current = e;
+                }}
+                placeholder="태그를 입력해주세요."
+                size="sm"
+                value={tag}
+                onChange={val => setTag(val)}
+                required
+                minLength={1}
+                onKeyDown={e => {
+                  e.stopPropagation();
+                  if (e.keyCode === 13) {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+              />
+            </div>
+            <div className="tag-buttons">
+              <Button
+                size="xs"
+                outline
+                onClick={() => {
+                  setTag('');
+                  setTagOpened(false);
+                }}
+              >
+                취소
+              </Button>
+              <Button size="xs" color="primary" outline onClick={addTag}>
+                추가
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
@@ -99,6 +207,7 @@ MemberCardManager.defaultProps = {
   showRole: true,
   selected: false,
   onSelect: null,
+  tags: false,
 };
 
 MemberCardManager.propTypes = {
@@ -111,13 +220,16 @@ MemberCardManager.propTypes = {
     name: PropTypes.string,
     crud: PropTypes.string,
     role: PropTypes.string,
+    tags: PropTypes.string,
   }),
   onChangeUserRole: PropTypes.func,
   onUndoRemovalUser: PropTypes.func,
   onRemoveUser: PropTypes.func,
+
   showRole: PropTypes.bool,
   selected: PropTypes.bool,
   onSelect: PropTypes.func,
+  tags: PropTypes.bool,
 };
 
 export default MemberCardManager;

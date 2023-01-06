@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Card, CardContent, CardHeader, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import { Block, Button, Card, CardContent, CardHeader, Label, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -16,6 +16,7 @@ function ProjectInfoPage() {
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [tagUserMap, setTagUserMap] = useState({});
   const [templateViewerPopupInfo, setTemplateViewerPopupInfo] = useState({
     opened: false,
     testcaseTemplate: null,
@@ -25,6 +26,22 @@ function ProjectInfoPage() {
     window.scrollTo(0, 0);
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
+
+      console.log(info);
+      const nextTagUserMap = {};
+      info.users.forEach(user => {
+        const currentTags = user.tags?.split(';').filter(d => !!d);
+        currentTags.forEach(tag => {
+          if (!nextTagUserMap[tag]) {
+            nextTagUserMap[tag] = [];
+          }
+
+          nextTagUserMap[tag].push(user);
+        });
+      });
+
+      console.log(nextTagUserMap);
+      setTagUserMap(nextTagUserMap);
     });
   }, [projectId]);
 
@@ -128,8 +145,46 @@ function ProjectInfoPage() {
           </Block>
           <Title>프로젝트 사용자</Title>
           <Block>
-            <MemberCardManager className="member-manager" users={project?.users} />
+            <MemberCardManager className="member-manager" users={project?.users} tags />
           </Block>
+          <Title>태그별 사용자</Title>
+          <Block>
+            <Table cols={['1px', '100%']} border>
+              <THead>
+                <Tr>
+                  <Th align="left">{t('태그')}</Th>
+                  <Th align="left">{t('사용자')}</Th>
+                </Tr>
+              </THead>
+              <Tbody>
+                {Object.keys(tagUserMap).map((tag, inx) => {
+                  return (
+                    <Tr key={inx}>
+                      <Td className="tag-name">
+                        <Tag size="sm" color="white" border>
+                          {tag}
+                        </Tag>
+                      </Td>
+                      <Td className="tag-users">
+                        <ul>
+                          {tagUserMap[tag].map(user => {
+                            return (
+                              <li key={user.id}>
+                                <Tag size="sm" color="white" border>
+                                  {user.name}
+                                </Tag>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </Block>
+
           <Title>{t('프로젝트 관리')}</Title>
           <Block className="space-control">
             <Button color="warning" onClick={onWithdraw}>

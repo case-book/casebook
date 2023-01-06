@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.UserRoleCode;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 
@@ -32,6 +33,9 @@ public class ProjectUser extends CommonEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT__USER"))
     private Project project;
+
+    @Column(name = "tags", length = ColumnsDef.TEXT)
+    private String tags;
 
     @Transient
     private String crud;

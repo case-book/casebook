@@ -2,10 +2,20 @@
   display: inline-block;
   font-size: 12px;
   line-height: 100%;
-  padding: 4px;
+  padding: 6px;
   font-family: Cairo, NotoSans, sans-serif;
   font-weight: bold;
   background-color: #EEE;
+
+  &.size-xs {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  &.size-sm {
+    padding: 8px;
+    font-size: 14px;
+  }
 
   &.border {
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -30,6 +40,7 @@
 
   &.color-white {
     color: $black;
+    background-color: $white;
   }
 
   &.color-primary {

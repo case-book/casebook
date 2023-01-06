@@ -18,5 +18,6 @@ public class ProjectUserDTO extends CommonDTO {
     private UserRoleCode role;
     private UserDTO user;
     private ProjectDTO project;
+    private String tags;
     private String crud;
 }

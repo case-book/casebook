@@ -310,7 +310,6 @@ function ProjectEditPage({ type }) {
     return ProjectService.createImage(spaceCode, projectId, name, size, typeText, file);
   };
 
-  console.log(project?.admin);
   return (
     <>
       <Page className="project-edit-page-wrapper">
@@ -477,6 +476,7 @@ function ProjectEditPage({ type }) {
                 </Title>
                 <Block>
                   <MemberCardManager
+                    tags
                     className="member-manager"
                     edit
                     users={project?.users}

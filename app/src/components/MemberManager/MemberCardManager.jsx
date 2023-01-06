@@ -7,7 +7,7 @@ import MemberCard from '@/components/MemberManager/MemberCard';
 import './MemberCardManager.scss';
 import { cloneDeep } from 'lodash';
 
-function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRemovalUser, onRemoveUser, opened, setOpened, onApply, spaceCode }) {
+function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRemovalUser, onRemoveUser, onChangeTags, opened, setOpened, onApply, spaceCode, tags }) {
   const { t } = useTranslation();
 
   const [spaceUsers, setSpaceUsers] = useState([]);
@@ -55,7 +55,15 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
             {users?.map(spaceUser => {
               return (
                 <li key={spaceUser.userId}>
-                  <MemberCard spaceUser={spaceUser} edit={edit} onChangeUserRole={onChangeUserRole} onUndoRemovalUser={onUndoRemovalUser} onRemoveUser={onRemoveUser} />
+                  <MemberCard
+                    spaceUser={spaceUser}
+                    edit={edit}
+                    onChangeUserRole={onChangeUserRole}
+                    onUndoRemovalUser={onUndoRemovalUser}
+                    onRemoveUser={onRemoveUser}
+                    onChangeTags={onChangeTags}
+                    tags={tags}
+                  />
                 </li>
               );
             })}
@@ -202,6 +210,8 @@ MemberCardManager.defaultProps = {
   setOpened: null,
   spaceCode: null,
   onApply: null,
+  tags: false,
+  onChangeTags: null,
 };
 
 MemberCardManager.propTypes = {
@@ -221,6 +231,8 @@ MemberCardManager.propTypes = {
   opened: PropTypes.bool,
   setOpened: PropTypes.func,
   onApply: PropTypes.func,
+  tags: PropTypes.bool,
+  onChangeTags: PropTypes.func,
 };
 
 export default MemberCardManager;
