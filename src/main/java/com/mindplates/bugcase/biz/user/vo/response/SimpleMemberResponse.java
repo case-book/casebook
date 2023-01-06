@@ -19,6 +19,8 @@ public class SimpleMemberResponse {
     private String email;
     private String name;
 
+    private String tags;
+
     public SimpleMemberResponse(SpaceUserDTO spaceUser) {
         this.id = spaceUser.getId();
         this.userId = spaceUser.getUser().getId();

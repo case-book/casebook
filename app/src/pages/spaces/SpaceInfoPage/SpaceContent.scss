@@ -156,12 +156,5 @@
 
   .space-control {
     margin-bottom: 2rem;
-    .control-button {
-      display: flex;
-      > div:last-child {
-        flex-grow: 1;
-        text-align: right;
-      }
-    }
   }
 }

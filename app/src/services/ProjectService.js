@@ -16,6 +16,20 @@ ProjectService.selectProjectList = (spaceCode, successHandler, failHandler, load
   );
 };
 
+ProjectService.selectMyProjectList = (spaceCode, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/my`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}`,
@@ -52,6 +66,17 @@ ProjectService.updateProject = (spaceCode, project, successHandler, failHandler)
 ProjectService.deleteProject = (spaceCode, project, successHandler, failHandler) => {
   return request.del(
     `/api/${spaceCode}/projects/${project.id}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ProjectService.withdrawProject = (spaceCode, project, successHandler, failHandler) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${project.id}/users/my`,
     null,
     res => {
       successHandler(res);

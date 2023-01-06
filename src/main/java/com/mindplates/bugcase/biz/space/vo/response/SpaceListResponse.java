@@ -19,6 +19,7 @@ public class SpaceListResponse {
     private Boolean isMember;
     private Long projectCount;
     private Integer userCount;
+    private String description;
 
     public SpaceListResponse(SpaceDTO space, Long userId) {
         this.id = space.getId();
@@ -32,6 +33,7 @@ public class SpaceListResponse {
         if (userId != null && space.getUsers() != null) {
             this.isMember = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId)));
         }
+        this.description = space.getDescription();
     }
 
     public SpaceListResponse(SpaceDTO space) {

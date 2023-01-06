@@ -20,6 +20,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Long countBySpaceId(Long spaceId);
 
+    List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
+
 
 }
 

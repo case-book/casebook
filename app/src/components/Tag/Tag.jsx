@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Tag.scss';
 
-function Tag({ className, children, color, border, rounded, uppercase }) {
-  return <div className={`tag-wrapper ${className} color-${color} ${border ? 'border' : ''} ${rounded ? 'rounded' : ''} ${uppercase ? 'uppercase' : ''}`}>{children}</div>;
+function Tag({ className, children, color, border, rounded, uppercase, size }) {
+  return <div className={`tag-wrapper ${className} color-${color} ${border ? 'border' : ''} ${rounded ? 'rounded' : ''} ${uppercase ? 'uppercase' : ''} size-${size}`}>{children}</div>;
 }
 
 Tag.defaultProps = {
@@ -13,6 +13,7 @@ Tag.defaultProps = {
   border: false,
   rounded: true,
   uppercase: false,
+  size: 'xs',
 };
 
 Tag.propTypes = {
@@ -22,6 +23,7 @@ Tag.propTypes = {
   border: PropTypes.bool,
   rounded: PropTypes.bool,
   uppercase: PropTypes.bool,
+  size: PropTypes.string,
 };
 
 export default Tag;

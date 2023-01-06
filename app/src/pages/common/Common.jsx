@@ -182,7 +182,11 @@ function Common() {
       )}
       {loading && (
         <div className="request-loading">
-          <div className="loader" />
+          <div className="loader">
+            <div />
+            <div />
+            <div />
+          </div>
         </div>
       )}
       <ReactTooltip effect="solid" />

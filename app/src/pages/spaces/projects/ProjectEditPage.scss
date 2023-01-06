@@ -18,6 +18,39 @@
         margin-right: 0;
       }
 
+      @media (max-width: 1400px) {
+        width: calc((100% - 2rem) / 3);
+
+        &:nth-child(4n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(3n) {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 1100px) {
+        width: calc((100% - 1rem) / 2);
+
+        &:nth-child(4n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(3n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(2n) {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        margin-right: 0;
+      }
+
       .testcase-template {
         text-align: center;
       }
@@ -64,7 +97,7 @@
           text-align: center;
           font-size: 10px;
           font-family: Rowdies, NotoSans, sans-serif;
-          padding: 4px;
+          padding: 0;
           > span {
             color: $color-salmon;
           }

@@ -243,21 +243,6 @@ function ProjectEditPage({ type }) {
     }
   };
 
-  const onDelete = () => {
-    dialogUtil.setConfirm(
-      MESSAGE_CATEGORY.WARNING,
-      t('프로젝트 삭제'),
-      <div>{t(`"${project.name}" 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
-      () => {
-        ProjectService.deleteProject(spaceCode, project, () => {
-          navigate(`/spaces/${spaceCode}/projects`);
-        });
-      },
-      null,
-      t('삭제'),
-    );
-  };
-
   const onChangeTestcaseTemplate = (inx, template) => {
     const nextProject = { ...project };
     nextProject.testcaseTemplates[inx] = template;
@@ -328,17 +313,7 @@ function ProjectEditPage({ type }) {
   return (
     <>
       <Page className="project-edit-page-wrapper">
-        <PageTitle
-          control={
-            <div>
-              <Button size="sm" color="danger" onClick={onDelete}>
-                {t('프로젝트 삭제')}
-              </Button>
-            </div>
-          }
-        >
-          {type === 'edit' ? t('프로젝트') : t('새 프로젝트')}
-        </PageTitle>
+        <PageTitle>{type === 'edit' ? t('프로젝트') : t('새 프로젝트')}</PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
             <Title>{t('프로젝트 정보')}</Title>
@@ -501,6 +476,7 @@ function ProjectEditPage({ type }) {
                 </Title>
                 <Block>
                   <MemberCardManager
+                    tags
                     className="member-manager"
                     edit
                     users={project?.users}

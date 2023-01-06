@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Label, Liner, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Label, Liner, PageButtons, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -125,8 +125,6 @@ function SpaceContent({ space, onRefresh }) {
       t('삭제'),
     );
   };
-
-  console.log(space);
 
   return (
     <>
@@ -300,7 +298,7 @@ function SpaceContent({ space, onRefresh }) {
           )}
         </Block>
         <Title paddingBottom={false} border={false}>
-          {t('프로젝트')}
+          {t('프로젝트 목록')}
         </Title>
         <Block className="space-project-block">
           {space?.projects?.length < 1 && (
@@ -347,36 +345,34 @@ function SpaceContent({ space, onRefresh }) {
             </div>
           )}
         </Block>
-        <Title>{t('프로젝트 관리')}</Title>
+        <Title>{t('스페이스 관리')}</Title>
         <Block className="space-control">
-          <div className="control-button">
-            <div>
-              <Button color="warning" onClick={withdraw}>
-                {t('스페이스 탈퇴')}
+          <Button color="warning" onClick={withdraw}>
+            {t('스페이스 탈퇴')}
+          </Button>
+          {space?.admin && (
+            <>
+              <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
+              <Button color="danger" onClick={onDelete}>
+                {t('스페이스 삭제')}
               </Button>
-              {space?.admin && (
-                <>
-                  <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
-                  <Button color="danger" onClick={onDelete}>
-                    {t('스페이스 삭제')}
-                  </Button>
-                </>
-              )}
-            </div>
-            {space?.admin && (
-              <div>
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    navigate(`/spaces/${id}/edit`);
-                  }}
-                >
-                  {t('스페이스 변경')}
-                </Button>
-              </div>
-            )}
-          </div>
+            </>
+          )}
         </Block>
+        <PageButtons
+          outline
+          onBack={() => {
+            navigate(-1);
+          }}
+          onEdit={
+            space?.admin
+              ? () => {
+                  navigate(`/spaces/${id}/edit`);
+                }
+              : null
+          }
+          onCancelIcon=""
+        />
       </PageContent>
     </>
   );
