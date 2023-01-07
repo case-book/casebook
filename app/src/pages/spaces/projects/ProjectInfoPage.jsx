@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Card, CardContent, CardHeader, Label, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, Card, CardContent, CardHeader, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
-import './ProjectInfoPage.scss';
 import ProjectService from '@/services/ProjectService';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import './ProjectInfoPage.scss';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -27,10 +27,9 @@ function ProjectInfoPage() {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
 
-      console.log(info);
       const nextTagUserMap = {};
       info.users.forEach(user => {
-        const currentTags = user.tags?.split(';').filter(d => !!d);
+        const currentTags = user.tags?.split(';').filter(d => !!d) || [];
         currentTags.forEach(tag => {
           if (!nextTagUserMap[tag]) {
             nextTagUserMap[tag] = [];
@@ -40,7 +39,6 @@ function ProjectInfoPage() {
         });
       });
 
-      console.log(nextTagUserMap);
       setTagUserMap(nextTagUserMap);
     });
   }, [projectId]);
@@ -149,42 +147,48 @@ function ProjectInfoPage() {
           </Block>
           <Title>태그별 사용자</Title>
           <Block>
-            <Table cols={['1px', '100%']} border>
-              <THead>
-                <Tr>
-                  <Th align="left">{t('태그')}</Th>
-                  <Th align="left">{t('사용자')}</Th>
-                </Tr>
-              </THead>
-              <Tbody>
-                {Object.keys(tagUserMap).map((tag, inx) => {
-                  return (
-                    <Tr key={inx}>
-                      <Td className="tag-name">
-                        <Tag size="sm" color="white" border>
-                          {tag}
-                        </Tag>
-                      </Td>
-                      <Td className="tag-users">
-                        <ul>
-                          {tagUserMap[tag].map(user => {
-                            return (
-                              <li key={user.id}>
-                                <Tag size="sm" color="white" border>
-                                  {user.name}
-                                </Tag>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
+            {Object.keys(tagUserMap).length < 1 && (
+              <EmptyContent className="empty-content">
+                <div>{t('태그가 설정된 사용자가 없습니다.')}</div>
+              </EmptyContent>
+            )}
+            {Object.keys(tagUserMap).length > 0 && (
+              <Table cols={['1px', '100%']} border>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('태그')}</Th>
+                    <Th align="left">{t('사용자')}</Th>
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {Object.keys(tagUserMap).map((tag, inx) => {
+                    return (
+                      <Tr key={inx}>
+                        <Td className="tag-name">
+                          <Tag size="sm" color="white" border>
+                            {tag}
+                          </Tag>
+                        </Td>
+                        <Td className="tag-users">
+                          <ul>
+                            {tagUserMap[tag].map(user => {
+                              return (
+                                <li key={user.id}>
+                                  <Tag size="sm" color="white" border>
+                                    {user.name}
+                                  </Tag>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            )}
           </Block>
-
           <Title>{t('프로젝트 관리')}</Title>
           <Block className="space-control">
             <Button color="warning" onClick={onWithdraw}>

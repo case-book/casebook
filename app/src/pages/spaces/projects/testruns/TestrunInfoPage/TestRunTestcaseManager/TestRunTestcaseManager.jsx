@@ -239,9 +239,9 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
                   )}
                   {content.comments?.length > 0 && (
                     <ul>
-                      {content.comments?.map((info, inx) => {
+                      {content.comments?.map(info => {
                         return (
-                          <li key={inx} className="comment">
+                          <li key={info.id} className="comment">
                             <div className="comment-content">
                               <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={info.comment || '<span className="none-text">&nbsp;</span>'} />
                             </div>
@@ -296,9 +296,7 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
                     hooks={{
                       addImageBlobHook: async (blob, callback) => {
                         const result = await createTestrunImage(content.id, blob.name, blob.size, blob.type, blob);
-                        callback(
-                          `${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/testcases/${result.data.testcaseId}/images/${result.data.id}?uuid=${result.data.uuid}`,
-                        );
+                        callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
                       },
                     }}
                     initialValue={comment || ''}

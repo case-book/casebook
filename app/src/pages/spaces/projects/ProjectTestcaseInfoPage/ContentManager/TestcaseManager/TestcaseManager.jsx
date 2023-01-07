@@ -12,7 +12,7 @@ import dialogUtil from '@/utils/dialogUtil';
 import { DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 
-function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage }) {
+function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -182,6 +182,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                 theme={theme}
                 createImage={createTestcaseImage}
                 users={users}
+                tags={tags}
                 setOpenTooltipInfo={setOpenTooltipInfo}
                 caseContentElement={caseContentElement}
                 openTooltipInfo={openTooltipInfo}
@@ -201,6 +202,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
             theme={theme}
             createImage={createTestcaseImage}
             users={users}
+            tags={tags}
             setOpenTooltipInfo={setOpenTooltipInfo}
             caseContentElement={caseContentElement}
             openTooltipInfo={openTooltipInfo}
@@ -218,6 +220,7 @@ TestcaseManager.defaultProps = {
   content: null,
   testcaseTemplates: [],
   users: [],
+  tags: [],
 };
 
 TestcaseManager.propTypes = {
@@ -256,6 +259,7 @@ TestcaseManager.propTypes = {
     }),
   ),
   createTestcaseImage: PropTypes.func.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default TestcaseManager;

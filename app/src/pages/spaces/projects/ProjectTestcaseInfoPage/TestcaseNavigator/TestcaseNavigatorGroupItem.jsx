@@ -62,7 +62,6 @@ function TestcaseNavigatorGroupItem({
 
   return (
     <li key={group.id} className="testcase-group-item-wrapper" onClick={e => e.stopPropagation()}>
-      <div className="border-top-liner" />
       <div className="group-content">
         <div
           className={`group-info
@@ -139,7 +138,7 @@ function TestcaseNavigatorGroupItem({
             }}
           >
             {editInfo.type === ITEM_TYPE.TESTCASE_GROUP && editInfo.id === group.id && (
-              <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="xs" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
+              <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="sm" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
             )}
             {setting.testcaseGroupColumns.id?.show && (
               <SeqId size="sm" className="seq-id" type={ITEM_TYPE.TESTCASE_GROUP}>
@@ -292,15 +291,13 @@ function TestcaseNavigatorGroupItem({
                         }}
                       >
                         {editInfo.type === ITEM_TYPE.TESTCASE && editInfo.id === testcase.id && (
-                          <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="xs" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
+                          <Input className="name-editor" underline={false} value={editInfo.name} onChange={onChangeEditName} size="sm" required minLength={1} maxLength={100} onKeyDown={onKeyDown} />
                         )}
-
                         {setting.testcaseColumns.id?.show && (
                           <SeqId size="sm" className="seq-id" type={ITEM_TYPE.TESTCASE}>
                             {testcase?.seqId}
                           </SeqId>
                         )}
-
                         {setting.testcaseColumns.itemOrder?.show && (
                           <div className="case-col col-itemOrder">
                             <div>
@@ -309,13 +306,11 @@ function TestcaseNavigatorGroupItem({
                             <div>{testcase?.itemOrder}</div>
                           </div>
                         )}
-
                         {setting.testcaseColumns.closed?.show && testcase.closed && (
                           <div className="case-col col-closed">
                             <div>{testcase?.closed ? 'CLOSED' : ''}</div>
                           </div>
                         )}
-
                         {!(editInfo.type === ITEM_TYPE.TESTCASE && editInfo.id === testcase.id) && (
                           <div
                             className="col-name"
@@ -495,7 +490,6 @@ TestcaseNavigatorGroupItem.propTypes = {
   setAllOpen: PropTypes.func.isRequired,
   setting: TestcaseGroupSettingPropTypes,
   showTestResult: PropTypes.bool,
-
   enableDrag: PropTypes.bool,
 };
 

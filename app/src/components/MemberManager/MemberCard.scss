@@ -62,9 +62,13 @@
         padding: 0 0 4px;
         margin-bottom: -4px;
         overflow-x: auto;
-        min-height: 24px;
         margin-top: 0.5rem;
         min-height: 32px;
+
+        .no-tags {
+          color: $gray-500;
+          font-size: 14px;
+        }
 
         .tag {
           margin-right: 4px;

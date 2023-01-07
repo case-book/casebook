@@ -37,20 +37,26 @@ public class FileUtil {
     }
 
     public String storeFile(Long projectId, MultipartFile file) {
-        Path path = this.fileStorageLocation.resolve(File.separator + file.getOriginalFilename());
+
+        Path projectUploadDir = this.fileStorageLocation.resolve(Long.toString(projectId));
+        if (!Files.exists(projectUploadDir)) {
+            try {
+                Files.createDirectories(projectUploadDir.normalize());
+            } catch (Exception ex) {
+                throw new ServiceException("image.upload.failed");
+            }
+        }
+
+        Path path = projectUploadDir.resolve(file.getOriginalFilename());
         while (Files.exists(path)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            path = this.fileStorageLocation.resolve(File.separator + file.getOriginalFilename() + "." + timestamp.getTime());
+            path = projectUploadDir.resolve(File.separator + file.getOriginalFilename() + "." + timestamp.getTime());
         }
 
         Path targetLocation = null;
         String savePath = StringUtils.cleanPath(path.getFileName().toString());
 
         try {
-            Path projectUploadDir = this.fileStorageLocation.resolve(Long.toString(projectId));
-            if (!Files.exists(projectUploadDir)) {
-                Files.createDirectories(projectUploadDir.normalize());
-            }
             targetLocation = projectUploadDir.resolve(savePath);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return projectId + File.separator + savePath;
@@ -79,6 +85,20 @@ public class FileUtil {
             }
         } catch (MalformedURLException ex) {
             throw new ServiceException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public Resource loadFileIfExist(String path) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(path).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                return null;
+            }
+        } catch (MalformedURLException ex) {
+            return null;
         }
     }
 

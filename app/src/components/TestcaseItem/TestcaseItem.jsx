@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import './TestcaseItem.scss';
-import { CheckBox, Input, Radio, Selector, TestcaseViewerLabel, UserSelector } from '@/components';
+import { CheckBox, Input, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector } from '@/components';
 import { getUserText } from '@/utils/userUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
@@ -25,6 +25,7 @@ function TestcaseItem({
   size,
   selectUserOnly,
   isTestResult,
+  tags,
 }) {
   const editor = useRef(null);
 
@@ -124,11 +125,21 @@ function TestcaseItem({
             )}
             {testcaseTemplateItem.type === 'USER' && (
               <div>
-                {!isEdit && <div className="value-text">{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</div>}
+                {!isEdit && (
+                  <div className="value-text user-text">
+                    {testcaseItem.type === 'tag' && (
+                      <span className="tag-info">
+                        <Tag className="tag">TAG</Tag>
+                      </span>
+                    )}
+                    <span>{getUserText(users, testcaseItem.type, testcaseItem.value) || ''}</span>
+                  </div>
+                )}
                 {isEdit && (
                   <UserSelector
                     size={size}
                     users={users}
+                    tags={tags}
                     type={testcaseItem.type}
                     value={testcaseItem.value}
                     selectUserOnly={selectUserOnly}
@@ -162,9 +173,7 @@ function TestcaseItem({
                     hooks={{
                       addImageBlobHook: async (blob, callback) => {
                         const result = await createImage(content.id, blob.name, blob.size, blob.type, blob);
-                        callback(
-                          `${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/testcases/${result.data.testcaseId}/images/${result.data.id}?uuid=${result.data.uuid}`,
-                        );
+                        callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
                       },
                     }}
                     initialValue={testcaseItem?.text || ''}
@@ -199,6 +208,7 @@ TestcaseItem.defaultProps = {
   size: 'md',
   selectUserOnly: false,
   isTestResult: false,
+  tags: [],
 };
 
 TestcaseItem.propTypes = {
@@ -242,6 +252,7 @@ TestcaseItem.propTypes = {
   size: PropTypes.string,
   selectUserOnly: PropTypes.bool,
   isTestResult: PropTypes.bool,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default TestcaseItem;

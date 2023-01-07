@@ -172,6 +172,16 @@ TestrunService.updateTestrunComment = (spaceCode, projectId, testrunId, testrunT
   );
 };
 
+TestrunService.createImage = (spaceCode, projectId, testrunId, name, size, type, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('name', name);
+  formData.append('size', size);
+  formData.append('type', type);
+
+  return request.post(`/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/images`, formData, null, null, null, null, null, true);
+};
+
 TestrunService.deleteTestrunComment = (
   spaceCode,
   projectId,

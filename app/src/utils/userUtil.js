@@ -1,6 +1,10 @@
 import { USER_ASSIGNED_OPERATIONS } from '@/constants/constants';
 
 function getUserText(users, type, value) {
+  if (type === 'tag') {
+    return value;
+  }
+
   if (type === 'operation' && value === 'SEQ') {
     return USER_ASSIGNED_OPERATIONS.SEQ;
   }

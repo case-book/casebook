@@ -18,6 +18,18 @@
         width: 100%;
       }
 
+      .user-text {
+        display: flex;
+
+        > span {
+          align-self: center;
+        }
+
+        .tag-info {
+          margin-right: 0.5rem;
+        }
+      }
+
       .value-text:empty {
         &:before {
           content: '\00a0';

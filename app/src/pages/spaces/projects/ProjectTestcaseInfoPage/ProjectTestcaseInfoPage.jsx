@@ -15,6 +15,7 @@ function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
+  const [tags, setTags] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
@@ -32,8 +33,16 @@ function ProjectTestcaseInfoPage() {
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
+
+      const tagMap = {};
+
       setProjectUsers(
         info.users.map(d => {
+          const currentTags = d.tags?.split(';').filter(i => !!i) || [];
+          currentTags.forEach(word => {
+            tagMap[word] = true;
+          });
+
           return {
             id: d.userId,
             email: d.email,
@@ -41,6 +50,8 @@ function ProjectTestcaseInfoPage() {
           };
         }),
       );
+
+      setTags(Object.keys(tagMap));
     });
   };
 
@@ -419,6 +430,7 @@ function ProjectTestcaseInfoPage() {
               createTestcaseImage={createTestcaseImage}
               onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
               setPopupContent={setPopupContent}
+              tags={tags}
             />
           }
         />

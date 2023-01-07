@@ -23,6 +23,7 @@ function ContentManager({
   getPopupContent,
   popupContent,
   setPopupContent,
+  tags,
 }) {
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
@@ -75,6 +76,7 @@ function ContentManager({
                 onCancel={onCancel}
                 users={users}
                 createTestcaseImage={createTestcaseImage}
+                tags={tags}
               />
             </div>
           </div>
@@ -94,6 +96,7 @@ function ContentManager({
             onCancel={onCancel}
             users={users}
             createTestcaseImage={createTestcaseImage}
+            tags={tags}
           />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && (
@@ -125,6 +128,7 @@ ContentManager.defaultProps = {
   loading: false,
   users: [],
   popupContent: null,
+  tags: [],
 };
 
 ContentManager.propTypes = {
@@ -184,6 +188,7 @@ ContentManager.propTypes = {
     ),
   }),
   setPopupContent: PropTypes.func.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default ContentManager;

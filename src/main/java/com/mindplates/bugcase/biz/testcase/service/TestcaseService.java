@@ -2,10 +2,19 @@ package com.mindplates.bugcase.biz.testcase.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectFile;
+import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.dto.*;
-import com.mindplates.bugcase.biz.testcase.entity.*;
-import com.mindplates.bugcase.biz.testcase.repository.*;
+import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
+import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -36,9 +45,7 @@ public class TestcaseService {
 
     private final TestcaseItemRepository testcaseItemRepository;
 
-    private final TestcaseTemplateItemRepository testcaseTemplateItemRepository;
-
-    private final TestcaseItemFileRepository testcaseItemFileRepository;
+    private final ProjectFileRepository projectFileRepository;
     private final ProjectRepository projectRepository;
 
     private final FileUtil fileUtil;
@@ -162,21 +169,25 @@ public class TestcaseService {
         }
 
         List<Long> deleteGroupIds = new ArrayList<>();
+        List<Long> deleteTestcaseIds = new ArrayList<>();
 
         for (long depth : deletedTargets.keySet()) {
             List<TestcaseGroup> list = deletedTargets.get(depth);
             list.stream().forEach((testcaseGroup -> deleteGroupIds.add(testcaseGroup.getId())));
+            list.stream().forEach((testcaseGroup -> {
+                testcaseGroup.getTestcases().forEach(testcase -> deleteTestcaseIds.add(testcase.getId()));
+            }));
         }
 
-        List<TestcaseItemFile> files = testcaseItemFileRepository.findAllByTestcaseTestcaseGroupIdIn(deleteGroupIds);
+        List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceIdIn(projectId, FileSourceTypeCode.TESTCASE, deleteTestcaseIds);
 
-        testcaseItemFileRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        projectFileRepository.deleteByProjectFileSourceIds(projectId, FileSourceTypeCode.TESTCASE, deleteTestcaseIds);
         testcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
 
-        files.forEach((testcaseItemFile -> {
-            Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
+        files.forEach((projectFile -> {
+            Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
             try {
                 Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
             } catch (Exception e) {
@@ -190,14 +201,16 @@ public class TestcaseService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteTestcaseInfo(String spaceCode, Long projectId, Long testcaseId) {
 
-        List<TestcaseItemFile> files = testcaseItemFileRepository.findAllByTestcaseId(testcaseId);
-        testcaseItemFileRepository.deleteByTestcaseId(testcaseId);
+        List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTCASE, testcaseId);
+        projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTCASE, testcaseId);
         testcaseItemRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
-        files.forEach((testcaseItemFile -> {
-            Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
+        files.forEach((testcaseFile -> {
+            Resource resource = fileUtil.loadFileIfExist(testcaseFile.getPath());
             try {
-                Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
+                if (resource != null) {
+                    Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
+                }
             } catch (Exception e) {
                 // ignore
             }

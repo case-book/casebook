@@ -11,7 +11,6 @@ import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestRunTestcaseManager/TestRunTestcaseManager';
-import TestcaseService from '@/services/TestcaseService';
 import './TestrunInfoPage.scss';
 
 const start = new Date();
@@ -26,7 +25,7 @@ end.setMinutes(0);
 end.setSeconds(0);
 end.setMilliseconds(0);
 
-function TestrunEditPage() {
+function TestrunInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
 
@@ -94,13 +93,14 @@ function TestrunEditPage() {
       const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
         return {
           ...d,
-          testcases: d.testcases.filter(testcase => {
-            if (userFilter === '') {
-              return true;
-            }
+          testcases:
+            d.testcases?.filter(testcase => {
+              if (userFilter === '') {
+                return true;
+              }
 
-            return String(testcase.testerId) === String(userFilter);
-          }),
+              return String(testcase.testerId) === String(userFilter);
+            }) || [],
         };
       });
 
@@ -262,8 +262,8 @@ function TestrunEditPage() {
     });
   };
 
-  const createTestrunImage = (testcaseId, name, size, type, file) => {
-    return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
+  const createTestrunImage = (id, name, size, type, file) => {
+    return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, type, file);
   };
 
   const onSaveTestResultItems = nextContent => {
@@ -369,8 +369,8 @@ function TestrunEditPage() {
   );
 }
 
-TestrunEditPage.defaultProps = {};
+TestrunInfoPage.defaultProps = {};
 
-TestrunEditPage.propTypes = {};
+TestrunInfoPage.propTypes = {};
 
-export default TestrunEditPage;
+export default TestrunInfoPage;

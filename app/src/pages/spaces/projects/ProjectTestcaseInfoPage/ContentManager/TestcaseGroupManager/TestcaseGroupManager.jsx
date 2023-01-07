@@ -44,7 +44,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
         <div className="title-button">
           {!isEdit && (
             <Button
-              size="md"
+              size="sm"
               outline
               color="white"
               onClick={() => {
