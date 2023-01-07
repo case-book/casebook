@@ -11,7 +11,6 @@ import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestRunTestcaseManager/TestRunTestcaseManager';
-import TestcaseService from '@/services/TestcaseService';
 import './TestrunInfoPage.scss';
 
 const start = new Date();
@@ -88,8 +87,6 @@ function TestrunInfoPage() {
       if (!project) {
         return;
       }
-
-      console.log(info);
 
       setTestrun(info);
 
@@ -265,8 +262,8 @@ function TestrunInfoPage() {
     });
   };
 
-  const createTestrunImage = (testcaseId, name, size, type, file) => {
-    return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
+  const createTestrunImage = (id, name, size, type, file) => {
+    return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, type, file);
   };
 
   const onSaveTestResultItems = nextContent => {

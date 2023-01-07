@@ -173,9 +173,7 @@ function TestcaseItem({
                     hooks={{
                       addImageBlobHook: async (blob, callback) => {
                         const result = await createImage(content.id, blob.name, blob.size, blob.type, blob);
-                        callback(
-                          `${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/testcases/${result.data.testcaseId}/images/${result.data.id}?uuid=${result.data.uuid}`,
-                        );
+                        callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
                       },
                     }}
                     initialValue={testcaseItem?.text || ''}

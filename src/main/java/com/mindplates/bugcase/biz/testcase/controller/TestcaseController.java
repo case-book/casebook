@@ -1,28 +1,30 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
+import com.mindplates.bugcase.biz.project.service.ProjectFileService;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseFileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.service.TestcaseFileService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.*;
-import com.mindplates.bugcase.biz.testcase.vo.response.*;
-import com.mindplates.bugcase.common.util.FileUtil;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
+import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,10 +36,8 @@ import java.util.stream.Collectors;
 public class TestcaseController {
 
     private final TestcaseService testcaseService;
-    private final TestcaseFileService testcaseFileService;
-    private final FileUtil fileUtil;
-
     private final MappingUtil mappingUtil;
+    private final ProjectFileService projectFileService;
 
     @Operation(description = "프로젝트 테스트케이스 설정 조회")
     @GetMapping("/templates")
@@ -140,10 +140,7 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 변경")
     @PutMapping("/{testcaseId}")
-    public TestcaseResponse updateTestcase(@PathVariable String spaceCode,
-                                           @PathVariable Long projectId,
-                                           @PathVariable Long testcaseId,
-                                           @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
+    public TestcaseResponse updateTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
 
         Testcase testcase = testcaseUpdateRequest.buildEntity();
         return new TestcaseResponse(testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase));
@@ -151,30 +148,21 @@ public class TestcaseController {
     }
 
     @PostMapping("/{testcaseId}/images")
-    public TestcaseFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type,
-                                                        HttpServletRequest req) {
+    public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
 
-        String path = testcaseFileService.createImage(projectId, file);
+        String path = projectFileService.createImage(projectId, file);
 
-        TestcaseFileDTO testcaseFile = TestcaseFileDTO.builder()
-                .project(ProjectDTO.builder().id(projectId).build())
-                .testcase(TestcaseDTO.builder().id(testcaseId).build())
-                .name(name)
-                .size(size)
-                .type(type)
-                .path(path)
-                .uuid(UUID.randomUUID().toString())
-                .build();
+        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.TESTCASE).fileSourceId(testcaseId).build();
 
-        TestcaseFileDTO projectFile = testcaseFileService.createTestcaseFile(testcaseFile);
-        return new TestcaseFileResponse(projectFile, spaceCode, projectId, testcaseId);
+        ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
+        return new ProjectFileResponse(projectFile, spaceCode, projectId);
     }
 
-
+/*
     @GetMapping("/{testcaseId}/images/{imageId}")
     public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
 
-        TestcaseFileDTO testcaseFile = testcaseFileService.selectTestcaseFile(projectId, testcaseId, imageId, uuid);
+        ProjectFileDTO testcaseFile = projectFileService.selectProjectFile(projectId, testcaseId, imageId, uuid);
         Resource resource = fileUtil.loadFileAsResource(testcaseFile.getPath());
 
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseFile.getName(), StandardCharsets.UTF_8).build();
@@ -184,6 +172,8 @@ public class TestcaseController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .body(resource);
     }
+
+ */
 
 
 }

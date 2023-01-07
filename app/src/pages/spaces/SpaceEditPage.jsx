@@ -51,7 +51,6 @@ function SpaceEditPage({ type }) {
 
     if (type === 'new') {
       SpaceService.createSpace(space, result => {
-        console.log(result);
         addSpace(result);
         navigate('/spaces');
       });

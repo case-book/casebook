@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.project.entity;
 
+import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
@@ -38,6 +39,12 @@ public class ProjectFile extends CommonEntity {
 
     @Column(name = "uuid", nullable = false, length = ColumnsDef.CODE)
     private String uuid;
+
+    @Column(name = "file_source_type", length = ColumnsDef.CODE)
+    private FileSourceTypeCode fileSourceType;
+
+    @Column(name = "file_source_id")
+    private Long fileSourceId;
 
 
 }

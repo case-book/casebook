@@ -9,6 +9,7 @@ import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -123,6 +124,7 @@ public class ProjectController {
                 .type(type)
                 .path(path)
                 .uuid(UUID.randomUUID().toString())
+                .fileSourceType(FileSourceTypeCode.PROJECT)
                 .build();
 
         ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
