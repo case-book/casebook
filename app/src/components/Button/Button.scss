@@ -68,6 +68,7 @@
   &.btn-white {
     background-color: $white;
     color: $black;
+    border: 1px solid $input-border-color;
 
     &:hover {
       background-color: $primary-color;

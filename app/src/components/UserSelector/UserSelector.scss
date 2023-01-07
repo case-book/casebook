@@ -193,6 +193,26 @@
           }
         }
 
+        &.tag-option {
+          > .name {
+            display: flex;
+            > div {
+              align-self: center;
+
+              &.tag-value {
+                margin-left: 0.5rem;
+              }
+            }
+          }
+
+          &:hover,
+          &.selected {
+            .tag {
+              color: $black !important;
+            }
+          }
+        }
+
         > div {
           &.name {
             padding: 0 0.5rem;
@@ -211,7 +231,6 @@
             white-space: nowrap;
             font-family: NotoSans, sans-serif;
             text-transform: uppercase;
-
           }
 
           &.enter {

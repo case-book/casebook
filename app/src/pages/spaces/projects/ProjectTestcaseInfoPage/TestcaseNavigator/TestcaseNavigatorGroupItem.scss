@@ -64,7 +64,7 @@ li.testcase-group-item-wrapper {
 
         &.has-child {
           > span:hover {
-            color: $color-primary-light;
+            color: $secondary;
           }
         }
       }
@@ -176,6 +176,7 @@ li.testcase-group-item-wrapper {
           text-overflow: ellipsis;
           white-space: nowrap;
           align-self: center;
+          line-height: 150%;
         }
 
         .name-editor {
@@ -232,7 +233,7 @@ li.testcase-group-item-wrapper {
       .grab {
         cursor: grab;
         padding: 0.5rem;
-        height: 100%;
+        line-height: inherit;
         display: none;
 
         &:hover {
@@ -260,7 +261,6 @@ li.testcase-group-item-wrapper {
 
       &.name-editing {
         margin-left: 0 !important;
-        padding-left: 0.25rem;
 
         width: 100%;
 
@@ -274,9 +274,7 @@ li.testcase-group-item-wrapper {
         }
 
         .name {
-          padding-top: 0.25rem;
-          padding-bottom: 0.25rem;
-          padding-right: 0.25rem;
+          padding: 1px;
 
           .group-col {
             display: none;
@@ -318,26 +316,6 @@ li.testcase-group-item-wrapper {
         background-color: $color-primary-light;
         font-weight: bold;
         color: $white;
-      }
-    }
-  }
-
-  .group-children {
-    .border-top-liner {
-      display: none;
-    }
-    > ul {
-      > li:first-child {
-        > .border-top-liner {
-          height: 1px;
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          background-color: rgba(0, 0, 0, 0.3);
-          display: block;
-          z-index: 2;
-        }
       }
     }
   }
@@ -384,22 +362,6 @@ li.testcase-group-item-wrapper {
         &.selected {
           background-color: $color-primary-dark;
           color: $black;
-        }
-      }
-    }
-
-    .group-children {
-      > ul {
-        > li:first-child {
-          > .border-top-liner {
-            height: 1px;
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            background-color: rgba(255, 255, 255, 0.2);
-            display: block;
-          }
         }
       }
     }

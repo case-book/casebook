@@ -59,7 +59,6 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
           {noText || t('취소')}
         </Button>
         <Button
-          outline
           color={okColor}
           onClick={() => {
             if (okHandler) {

@@ -81,9 +81,8 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 그룹 정보 변경")
     @PutMapping("/groups/{groupId}")
     public TestcaseGroupResponse updateTestcaseGroupInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupUpdateRequest testcaseGroupUpdateRequest) {
-        TestcaseGroupDTO testcaseGroup = testcaseService.selectTestcaseGroupInfo(projectId, groupId);
-        testcaseService.updateTestcaseGroupInfo(spaceCode, projectId, groupId, testcaseGroupUpdateRequest.getName(), testcaseGroupUpdateRequest.getDescription());
-        return new TestcaseGroupResponse(testcaseGroup);
+        TestcaseGroupDTO result = testcaseService.updateTestcaseGroupInfo(spaceCode, projectId, groupId, testcaseGroupUpdateRequest.getName(), testcaseGroupUpdateRequest.getDescription());
+        return new TestcaseGroupResponse(result);
     }
 
     @Operation(description = "테스트케이스 생성")

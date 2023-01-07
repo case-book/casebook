@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { USER_ASSIGNED_OPERATIONS } from '@/constants/constants';
 import { getUserText } from '@/utils/userUtil';
 import './UserSelector.scss';
+import { Tag } from '@/components';
 
-function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder, selectUserOnly }) {
+function UserSelector({ className, users, type, value, size, disabled, onChange, placeholder, selectUserOnly, tags }) {
   const [opened, setOpened] = useState(false);
   const [bottomList, setBottomList] = useState(true);
   const [text, setText] = useState('');
@@ -64,6 +65,8 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
     };
   }, [opened]);
 
+  console.log(tags);
+
   return (
     <div className={`user-selector-wrapper g-no-select ${className} size-${size} ${opened ? 'opened' : ''}`} ref={element}>
       <div className="control">
@@ -76,7 +79,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
           }}
           onFocus={() => {
             if (type === 'user') {
-              setText(getUserText(users, type, value) || '');
+              setText(getUserText(users, type, value, tags) || '');
             }
             setOpened(true);
             setFocus(true);
@@ -90,7 +93,7 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
               if (filteredList.length === 1) {
                 handleChange('user', filteredList[0].id);
                 element.current.blur();
-                setText(getUserText(users, 'user', filteredList[0].id) || '');
+                setText(getUserText(users, 'user', filteredList[0].id, tags) || '');
               } else {
                 setOpened(true);
               }
@@ -98,11 +101,11 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
 
             if (e.key === 'Escape') {
               setOpened(false);
-              setText(getUserText(users, type, value) || '');
+              setText(getUserText(users, type, value, tags) || '');
               element.current.blur();
             }
           }}
-          value={focus ? text : getUserText(users, type, value) || ''}
+          value={focus ? text : getUserText(users, type, value, tags) || ''}
         />
       </div>
       <div
@@ -139,12 +142,30 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
                 </li>
               </>
             )}
+            {tags?.length > 0 && (
+              <>
+                {tags.map(tag => {
+                  return (
+                    <li
+                      className={`tag-option ${type === 'tag' && value === tag ? 'selected' : ''}`}
+                      onClick={() => {
+                        handleChange('tag', tag);
+                      }}
+                    >
+                      <div className="name">
+                        <Tag className="tag">TAG</Tag>
+                        <div className="tag-value">{tag}</div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </>
+            )}
             {filteredUser?.length < 1 && (
               <li className="empty">
                 <div className="name">&#39;{text}&#39; 일치하는 사용자가 없습니다.</div>
               </li>
             )}
-
             {filteredUser?.map(user => {
               return (
                 <li
@@ -177,18 +198,15 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
 
 UserSelector.defaultProps = {
   className: '',
-
   size: 'md',
   type: '',
   value: '',
-
   disabled: false,
-
   onChange: null,
   placeholder: '',
-
   users: [],
   selectUserOnly: false,
+  tags: [],
 };
 
 UserSelector.propTypes = {
@@ -197,12 +215,9 @@ UserSelector.propTypes = {
   size: PropTypes.oneOf(['xxl', 'xl', 'lg', 'md', 'sm', 'xs']),
   type: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-
   disabled: PropTypes.bool,
-
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
-
   users: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
@@ -211,6 +226,7 @@ UserSelector.propTypes = {
     }),
   ),
   selectUserOnly: PropTypes.bool,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default UserSelector;

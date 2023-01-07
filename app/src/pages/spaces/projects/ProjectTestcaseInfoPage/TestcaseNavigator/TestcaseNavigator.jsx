@@ -556,7 +556,6 @@ TestcaseNavigator.propTypes = {
   setUserFilter: PropTypes.func,
   userFilter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   showTestResult: PropTypes.bool,
-
   enableDrag: PropTypes.bool,
 };
 
