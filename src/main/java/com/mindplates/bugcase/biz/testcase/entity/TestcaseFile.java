@@ -9,12 +9,12 @@ import javax.persistence.*;
 
 @Entity
 @Builder
-@Table(name = "testcase_item_file")
+@Table(name = "testcase_file")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class TestcaseItemFile extends CommonEntity {
+public class TestcaseFile extends CommonEntity {
 
     @Id
     @Column(name = "id")
@@ -22,11 +22,11 @@ public class TestcaseItemFile extends CommonEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM_FILE__PROJECT"))
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_FILE__PROJECT"))
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM_FILE__TESTCASE"))
+    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_FILE__TESTCASE"))
     private Testcase testcase;
 
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)

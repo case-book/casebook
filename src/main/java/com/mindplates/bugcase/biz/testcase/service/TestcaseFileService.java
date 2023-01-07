@@ -1,8 +1,8 @@
 package com.mindplates.bugcase.biz.testcase.service;
 
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemFileDTO;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseItemFile;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemFileRepository;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseFileDTO;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseFile;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseFileRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -21,9 +21,9 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TestcaseItemFileService {
+public class TestcaseFileService {
 
-    private final TestcaseItemFileRepository testcaseItemFileRepository;
+    private final TestcaseFileRepository testcaseFileRepository;
 
     private final List<String> allowedExtensions;
     private final Path fileStorageLocation;
@@ -32,9 +32,9 @@ public class TestcaseItemFileService {
 
     private final MappingUtil mappingUtil;
 
-    public TestcaseItemFileService(FileConfig fileConfig, TestcaseItemFileRepository testcaseItemFileRepository, FileUtil fileUtil, MappingUtil mappingUtil) {
+    public TestcaseFileService(FileConfig fileConfig, TestcaseFileRepository testcaseFileRepository, FileUtil fileUtil, MappingUtil mappingUtil) {
         this.fileUtil = fileUtil;
-        this.testcaseItemFileRepository = testcaseItemFileRepository;
+        this.testcaseFileRepository = testcaseFileRepository;
 
         this.mappingUtil = mappingUtil;
         this.fileStorageLocation = Paths.get(fileConfig.getUploadDir()).toAbsolutePath().normalize();
@@ -47,23 +47,23 @@ public class TestcaseItemFileService {
         }
     }
 
-    public TestcaseItemFileDTO createTestcaseItemFile(TestcaseItemFileDTO projectFile) {
-        TestcaseItemFile file = mappingUtil.convert(projectFile, TestcaseItemFile.class);
-        TestcaseItemFile result = testcaseItemFileRepository.save(file);
-        return mappingUtil.convert(result, TestcaseItemFileDTO.class);
+    public TestcaseFileDTO createTestcaseFile(TestcaseFileDTO projectFile) {
+        TestcaseFile file = mappingUtil.convert(projectFile, TestcaseFile.class);
+        TestcaseFile result = testcaseFileRepository.save(file);
+        return mappingUtil.convert(result, TestcaseFileDTO.class);
     }
 
-    public TestcaseItemFileDTO selectTestcaseItemFile(Long projectId, Long testcaseId, Long imageId, String uuid) {
-        TestcaseItemFile testcaseItemFile = testcaseItemFileRepository.findByIdAndProjectIdAndTestcaseIdAndUuid(imageId, projectId, testcaseId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(testcaseItemFile, TestcaseItemFileDTO.class);
+    public TestcaseFileDTO selectTestcaseFile(Long projectId, Long testcaseId, Long imageId, String uuid) {
+        TestcaseFile testcaseFile = testcaseFileRepository.findByIdAndProjectIdAndTestcaseIdAndUuid(imageId, projectId, testcaseId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return mappingUtil.convert(testcaseFile, TestcaseFileDTO.class);
     }
 
-    public void deleteProjectTestcaseItemFile(Long projectId) {
+    public void deleteProjectTestcaseFile(Long projectId) {
 
-        List<TestcaseItemFile> projectTestcaseItemFiles = testcaseItemFileRepository.findAllByProjectId(projectId);
+        List<TestcaseFile> projectTestcaseFiles = testcaseFileRepository.findAllByProjectId(projectId);
 
-        projectTestcaseItemFiles.forEach((testcaseItemFile -> {
-            Path filePath = this.fileStorageLocation.resolve(testcaseItemFile.getPath()).normalize();
+        projectTestcaseFiles.forEach((testcaseFile -> {
+            Path filePath = this.fileStorageLocation.resolve(testcaseFile.getPath()).normalize();
             if (Files.exists(filePath)) {
                 try {
                     Files.deleteIfExists(filePath);
@@ -71,7 +71,7 @@ public class TestcaseItemFileService {
                     // ignore
                 }
             }
-            testcaseItemFileRepository.delete(testcaseItemFile);
+            testcaseFileRepository.delete(testcaseFile);
         }));
     }
 

@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
@@ -24,9 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -164,11 +163,31 @@ public class TestrunService {
         testrun.setSeqId("R" + currentTestrunSeq);
         testrun.setOpened(true);
 
-        int totalTestCount = testrun.getTestcaseGroups().stream()
-                .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
-                .reduce(0, Integer::sum);
+        int totalTestCount = testrun.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
 
         List<TestrunUserDTO> testrunUsers = testrun.getTestrunUsers();
+
+        Map<String, List<ProjectUserDTO>> tagUserMap = new HashMap<>();
+        project.getUsers().forEach((projectUserDTO -> {
+            String tagString = projectUserDTO.getTags();
+            String[] tags = tagString.split(";");
+            if (tags.length > 0) {
+                Arrays.stream(tags).forEach((tag) -> {
+                    if (tag.length() > 0) {
+                        if (!tagUserMap.containsKey(tag)) {
+                            tagUserMap.put(tag, new ArrayList<>());
+                        }
+
+                        List<ProjectUserDTO> users = tagUserMap.get(tag);
+                        if (testrunUsers.stream().anyMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(projectUserDTO.getUser().getId()))) {
+                            users.add(projectUserDTO);
+                        }
+                    }
+                });
+            }
+        }));
+
+        tagUserMap.keySet().removeIf(key -> tagUserMap.get(key).size() < 1);
 
         Random random = new Random();
         int currentSeq = random.nextInt(testrunUsers.size());
@@ -185,7 +204,16 @@ public class TestrunService {
                 List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
                 testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
                 // 테스터 입력
-                if ("operation".equals(testcase.getTesterType())) {
+                if ("tag".equals(testcase.getTesterType())) {
+                    if (tagUserMap.containsKey(testcase.getTesterValue())) {
+                        List<ProjectUserDTO> tagUsers = tagUserMap.get(testcase.getTesterValue());
+                        int userIndex = random.nextInt(tagUsers.size());
+                        testrunTestcaseGroupTestcase.setTester(UserDTO.builder().id(tagUsers.get(userIndex).getUser().getId()).build());
+                    } else {
+                        int userIndex = random.nextInt(testrunUsers.size());
+                        testrunTestcaseGroupTestcase.setTester(UserDTO.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
+                    }
+                } else if ("operation".equals(testcase.getTesterType())) {
                     if ("RND".equals(testcase.getTesterValue())) {
                         int userIndex = random.nextInt(testrunUsers.size());
                         testrunTestcaseGroupTestcase.setTester(UserDTO.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
@@ -211,12 +239,7 @@ public class TestrunService {
 
                     if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
 
-                        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItemDTO
-                                .builder()
-                                .testcaseTemplateItem(testcaseTemplateItem)
-                                .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
-                                .type("value")
-                                .build();
+                        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItemDTO.builder().testcaseTemplateItem(testcaseTemplateItem).testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase).type("value").build();
 
                         if ("RND".equals(testcaseItem.getValue())) {
                             int userIndex = random.nextInt(testrunUsers.size());
@@ -256,20 +279,15 @@ public class TestrunService {
 
         List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, true);
 
-        List<Testrun> list = testruns.stream()
-                .filter((testrun -> testrun.getTestcaseGroups()
-                        .stream()
-                        .anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
-                    List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream()
-                            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))
-                            .map((testrunTestcaseGroup -> {
-                                List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
-                                testrunTestcaseGroup.setTestcases(userTestcaseList);
-                                return testrunTestcaseGroup;
-                            })).collect(Collectors.toList());
-                    testrun.setTestcaseGroups(userTestcaseGroupList);
-                    return testrun;
-                })).collect(Collectors.toList());
+        List<Testrun> list = testruns.stream().filter((testrun -> testrun.getTestcaseGroups().stream().anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
+            List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {
+                List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
+                testrunTestcaseGroup.setTestcases(userTestcaseList);
+                return testrunTestcaseGroup;
+            })).collect(Collectors.toList());
+            testrun.setTestcaseGroups(userTestcaseGroupList);
+            return testrun;
+        })).collect(Collectors.toList());
 
         return mappingUtil.convert(list, TestrunDTO.class);
 

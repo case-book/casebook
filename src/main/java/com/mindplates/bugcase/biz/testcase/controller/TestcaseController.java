@@ -3,10 +3,10 @@ package com.mindplates.bugcase.biz.testcase.controller;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemFileDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseFileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseFileService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.*;
 import com.mindplates.bugcase.biz.testcase.vo.response.*;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class TestcaseController {
 
     private final TestcaseService testcaseService;
-    private final TestcaseItemFileService testcaseItemFileService;
+    private final TestcaseFileService testcaseFileService;
     private final FileUtil fileUtil;
 
     private final MappingUtil mappingUtil;
@@ -151,12 +151,12 @@ public class TestcaseController {
     }
 
     @PostMapping("/{testcaseId}/images")
-    public TestcaseItemFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type,
-                                                            HttpServletRequest req) {
+    public TestcaseFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type,
+                                                        HttpServletRequest req) {
 
-        String path = testcaseItemFileService.createImage(projectId, file);
+        String path = testcaseFileService.createImage(projectId, file);
 
-        TestcaseItemFileDTO testcaseItemFile = TestcaseItemFileDTO.builder()
+        TestcaseFileDTO testcaseFile = TestcaseFileDTO.builder()
                 .project(ProjectDTO.builder().id(projectId).build())
                 .testcase(TestcaseDTO.builder().id(testcaseId).build())
                 .name(name)
@@ -166,18 +166,18 @@ public class TestcaseController {
                 .uuid(UUID.randomUUID().toString())
                 .build();
 
-        TestcaseItemFileDTO projectFile = testcaseItemFileService.createTestcaseItemFile(testcaseItemFile);
-        return new TestcaseItemFileResponse(projectFile, spaceCode, projectId, testcaseId);
+        TestcaseFileDTO projectFile = testcaseFileService.createTestcaseFile(testcaseFile);
+        return new TestcaseFileResponse(projectFile, spaceCode, projectId, testcaseId);
     }
 
 
     @GetMapping("/{testcaseId}/images/{imageId}")
     public ResponseEntity<Resource> selectTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
 
-        TestcaseItemFileDTO testcaseItemFile = testcaseItemFileService.selectTestcaseItemFile(projectId, testcaseId, imageId, uuid);
-        Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
+        TestcaseFileDTO testcaseFile = testcaseFileService.selectTestcaseFile(projectId, testcaseId, imageId, uuid);
+        Resource resource = fileUtil.loadFileAsResource(testcaseFile.getPath());
 
-        ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseItemFile.getName(), StandardCharsets.UTF_8).build();
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(testcaseFile.getName(), StandardCharsets.UTF_8).build();
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/octet-stream"))

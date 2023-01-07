@@ -106,9 +106,7 @@ public class TestrunController {
     @Operation(description = "테스트런 코멘트 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
     public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
-
-        TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment = mappingUtil.convert(testrunTestcaseGroupTestcaseCommentRequest, TestrunTestcaseGroupTestcaseCommentDTO.class);
-        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseComment);
+        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseCommentRequest.toDTO());
         return new TestrunTestcaseGroupTestcaseCommentResponse(result);
     }
 

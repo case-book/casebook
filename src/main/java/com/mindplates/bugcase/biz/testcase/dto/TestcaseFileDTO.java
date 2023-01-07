@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestcaseItemFileDTO extends CommonDTO {
+public class TestcaseFileDTO extends CommonDTO {
 
     private Long id;
     private ProjectDTO project;

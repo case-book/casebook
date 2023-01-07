@@ -26,7 +26,7 @@ end.setMinutes(0);
 end.setSeconds(0);
 end.setMilliseconds(0);
 
-function TestrunEditPage() {
+function TestrunInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
 
@@ -89,18 +89,21 @@ function TestrunEditPage() {
         return;
       }
 
+      console.log(info);
+
       setTestrun(info);
 
       const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
         return {
           ...d,
-          testcases: d.testcases.filter(testcase => {
-            if (userFilter === '') {
-              return true;
-            }
+          testcases:
+            d.testcases?.filter(testcase => {
+              if (userFilter === '') {
+                return true;
+              }
 
-            return String(testcase.testerId) === String(userFilter);
-          }),
+              return String(testcase.testerId) === String(userFilter);
+            }) || [],
         };
       });
 
@@ -369,8 +372,8 @@ function TestrunEditPage() {
   );
 }
 
-TestrunEditPage.defaultProps = {};
+TestrunInfoPage.defaultProps = {};
 
-TestrunEditPage.propTypes = {};
+TestrunInfoPage.propTypes = {};
 
-export default TestrunEditPage;
+export default TestrunInfoPage;

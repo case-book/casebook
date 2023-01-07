@@ -116,7 +116,7 @@ public class ProjectController {
 
         String path = projectFileService.createImage(id, file);
 
-        ProjectFileDTO testcaseItemFile = ProjectFileDTO.builder()
+        ProjectFileDTO testcaseFile = ProjectFileDTO.builder()
                 .project(ProjectDTO.builder().id(id).build())
                 .name(name)
                 .size(size)
@@ -125,7 +125,7 @@ public class ProjectController {
                 .uuid(UUID.randomUUID().toString())
                 .build();
 
-        ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseItemFile);
+        ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
         return new ProjectFileResponse(projectFile, spaceCode, id);
     }
 

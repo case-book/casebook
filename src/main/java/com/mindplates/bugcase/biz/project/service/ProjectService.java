@@ -9,7 +9,7 @@ import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
-import com.mindplates.bugcase.biz.testcase.service.TestcaseItemFileService;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseFileService;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
@@ -40,7 +40,7 @@ public class ProjectService {
 
     private final TestrunService testrunService;
 
-    private final TestcaseItemFileService testcaseItemFileService;
+    private final TestcaseFileService testcaseFileService;
 
     private final TestcaseItemRepository testcaseItemRepository;
 
@@ -48,13 +48,13 @@ public class ProjectService {
 
     private final MappingUtil mappingUtil;
 
-    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemFileService testcaseItemFileService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, MappingUtil mappingUtil) {
+    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseFileService testcaseFileService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, MappingUtil mappingUtil) {
 
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
         this.testrunService = testrunService;
-        this.testcaseItemFileService = testcaseItemFileService;
+        this.testcaseFileService = testcaseFileService;
         this.testcaseItemRepository = testcaseItemRepository;
         this.testrunTestcaseGroupTestcaseItemRepository = testrunTestcaseGroupTestcaseItemRepository;
         this.mappingUtil = mappingUtil;
@@ -202,7 +202,7 @@ public class ProjectService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
-        testcaseItemFileService.deleteProjectTestcaseItemFile(project.getId());
+        testcaseFileService.deleteProjectTestcaseFile(project.getId());
         projectFileService.deleteProjectFile(project.getId());
 
         project.getTestruns().forEach((testrunDTO -> {

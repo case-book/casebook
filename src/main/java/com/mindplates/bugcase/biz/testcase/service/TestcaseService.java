@@ -38,7 +38,7 @@ public class TestcaseService {
 
     private final TestcaseTemplateItemRepository testcaseTemplateItemRepository;
 
-    private final TestcaseItemFileRepository testcaseItemFileRepository;
+    private final TestcaseFileRepository testcaseFileRepository;
     private final ProjectRepository projectRepository;
 
     private final FileUtil fileUtil;
@@ -168,15 +168,15 @@ public class TestcaseService {
             list.stream().forEach((testcaseGroup -> deleteGroupIds.add(testcaseGroup.getId())));
         }
 
-        List<TestcaseItemFile> files = testcaseItemFileRepository.findAllByTestcaseTestcaseGroupIdIn(deleteGroupIds);
+        List<TestcaseFile> files = testcaseFileRepository.findAllByTestcaseTestcaseGroupIdIn(deleteGroupIds);
 
-        testcaseItemFileRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testcaseFileRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
 
-        files.forEach((testcaseItemFile -> {
-            Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
+        files.forEach((testcaseFile -> {
+            Resource resource = fileUtil.loadFileAsResource(testcaseFile.getPath());
             try {
                 Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
             } catch (Exception e) {
@@ -190,12 +190,12 @@ public class TestcaseService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteTestcaseInfo(String spaceCode, Long projectId, Long testcaseId) {
 
-        List<TestcaseItemFile> files = testcaseItemFileRepository.findAllByTestcaseId(testcaseId);
-        testcaseItemFileRepository.deleteByTestcaseId(testcaseId);
+        List<TestcaseFile> files = testcaseFileRepository.findAllByTestcaseId(testcaseId);
+        testcaseFileRepository.deleteByTestcaseId(testcaseId);
         testcaseItemRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
-        files.forEach((testcaseItemFile -> {
-            Resource resource = fileUtil.loadFileAsResource(testcaseItemFile.getPath());
+        files.forEach((testcaseFile -> {
+            Resource resource = fileUtil.loadFileAsResource(testcaseFile.getPath());
             try {
                 Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
             } catch (Exception e) {
