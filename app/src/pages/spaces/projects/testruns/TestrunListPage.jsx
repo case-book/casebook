@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Page, PageContent, PageTitle, Radio, Tag } from '@/components';
+import { Button, Card, Liner, Page, PageContent, PageTitle, Radio, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -67,7 +67,7 @@ function TestrunListPage() {
       >
         {t('테스트 런')}
       </PageTitle>
-      <PageContent className="content">
+      <PageContent className="page-content">
         {testruns?.length <= 0 && (
           <div className="no-project">
             <div>
@@ -93,76 +93,127 @@ function TestrunListPage() {
               return (
                 <li key={testrun.id}>
                   <Card className="testrun-card" circle={false}>
-                    <div className="testrun-name">
-                      <div className="seq-id">
-                        <Tag>{testrun.seqId}</Tag>
+                    <div className="testrun-info">
+                      <div className="testrun-name">
+                        <div className="seq-id">
+                          <Tag size="xs" border>
+                            {testrun.seqId}
+                          </Tag>
+                        </div>
+                        <div className="name">
+                          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
+                        </div>
                       </div>
-                      <div className="name">
-                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
-                      </div>
-                      <div className="status">
-                        <Tag className={`tag ${testrun.opened ? 'OPENED' : 'CLOSED'}`}>{testrun.opened ? 'OPENED' : 'CLOSED'}</Tag>
+                      <div className="testrun-status-and-date">
+                        <div className="status">
+                          <Tag className={`tag ${testrun.opened ? 'OPENED' : 'CLOSED'}`}>{testrun.opened ? 'OPENED' : 'CLOSED'}</Tag>
+                        </div>
+                        <Liner className="status-liner" display="inline-block" width="1px" height="12px" margin="0 0.5rem" />
+                        {testrun.startDateTime && <div className="start-date">{dateUtil.getDateString(testrun.startDateTime)}</div>}
+                        {(testrun.startDateTime || testrun.endDateTime) && (
+                          <div className="dash">
+                            <div />
+                          </div>
+                        )}
+                        {testrun.startDateTime && testrun.endDateTime && <div className="end-date">{dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}</div>}
+                        {!testrun.startDateTime && testrun.endDateTime && <div className="end-date">{dateUtil.getDateString(testrun.endDateTime)}</div>}
+                        {!testrun.startDateTime && !testrun.endDateTime && <div className="no-date">{t('설정된 테스트런 기간이 없습니다.')}</div>}
+                        <Liner className="range-liner" display="inline-block" width="1px" height="12px" margin="0 0.5rem" />
+                        {testrun.opened && span.days > 0 && (
+                          <div className="span-info">
+                            {span.days}
+                            {t('일 남음')}
+                          </div>
+                        )}
+                        {testrun.opened && span.days <= 0 && span.hours > 0 && (
+                          <div className="span-info">
+                            {span.hours}
+                            {t('시간 남음')}
+                          </div>
+                        )}
+                        {testrun.opened && span.days <= 0 && span.hours <= 0 && <div className="span-info time-passed">{t('기간 지남')}</div>}
                       </div>
                     </div>
-                    <div className="date-range">
-                      {testrun.startDateTime && <div className="start-date">{dateUtil.getDateString(testrun.startDateTime)}</div>}
-                      {(testrun.startDateTime || testrun.endDateTime) && (
-                        <div className="dash">
-                          <div />
+                    <div className="testrun-summary">
+                      <div className="summary-box">
+                        <div className="percentage passed">
+                          <div
+                            className={`passed-bar ${testrun.failedTestcaseCount > 0 ? 'has-failed' : ''}`}
+                            style={{
+                              height: `${(testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
+                            }}
+                          />
+                          <div className="count-info">
+                            <div className="number">{Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10}%</div>
+                            <div>
+                              <Tag border color="white">
+                                PASSED
+                              </Tag>
+                            </div>
+                          </div>
                         </div>
-                      )}
-                      {testrun.startDateTime && testrun.endDateTime && <div className="end-date">{dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}</div>}
-                      {!testrun.startDateTime && testrun.endDateTime && <div className="end-date">{dateUtil.getDateString(testrun.endDateTime)}</div>}
-                      {!testrun.startDateTime && !testrun.endDateTime && <div className="no-date">{t('설정된 테스트런 기간이 없습니다.')}</div>}
-                      {testrun.opened && span.days > 0 && (
-                        <div className="span-info">
-                          {span.days}
-                          {t('일 남음')}
+                      </div>
+                      <div className="summary-box">
+                        <div className="percentage failed">
+                          <div
+                            className={`failed-bar ${testrun.passedTestcaseCount > 0 ? 'has-passed' : ''}`}
+                            style={{
+                              height: `${(testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
+                            }}
+                          />
+                          <div className="count-info">
+                            <div className="number">{Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10}%</div>
+                            <div>
+                              <Tag border color="white">
+                                FAILED
+                              </Tag>
+                            </div>
+                          </div>
                         </div>
-                      )}
-                      {testrun.opened && span.days <= 0 && span.hours > 0 && (
-                        <div className="span-info">
-                          {span.hours}
-                          {t('시간 남음')}
-                        </div>
-                      )}
-                      {testrun.opened && span.days <= 0 && span.hours <= 0 && <div className="span-info time-passed">{t('기간 지남')}</div>}
-                    </div>
-                    <div className="count-info">
-                      <div className="bar">
+                      </div>
+                      <div className="summary-box">
                         <div
-                          className={`passed ${testrun.failedTestcaseCount > 0 ? 'has-failed' : ''}`}
+                          className={`passed-bar ${testrun.failedTestcaseCount > 0 ? 'has-failed' : ''}`}
                           style={{
-                            width: `${(testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
+                            height: `${(testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
                           }}
                         />
                         <div
-                          className={`failed ${testrun.passedTestcaseCount > 0 ? 'has-passed' : ''}`}
+                          className={`failed-bar ${testrun.passedTestcaseCount > 0 ? 'has-passed' : ''}`}
                           style={{
-                            width: `${(testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
+                            top: `${(testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
+                            height: `${(testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
                           }}
                         />
-                      </div>
-                      <div className="total-count passed">
-                        <span>
-                          <span>{testrun.passedTestcaseCount}</span>
-                        </span>
-                      </div>
-                      <div className="slash">
-                        <div />
-                      </div>
-                      <div className="total-count failed">
-                        <span>
-                          <span>{testrun.failedTestcaseCount}</span>
-                        </span>
-                      </div>
-                      <div className="slash">
-                        <div />
-                      </div>
-                      <div className="total-count total">
-                        <span>
-                          <span>{testrun.totalTestcaseCount}</span>
-                        </span>
+                        <div className="pass-fail-count">
+                          <div>
+                            <div className="pass-failed">
+                              <div className="total-count passed">
+                                <span>
+                                  <span>{testrun.passedTestcaseCount}</span>
+                                </span>
+                              </div>
+                              <div className="slash">
+                                <div />
+                              </div>
+                              <div className="total-count failed">
+                                <span>
+                                  <span>{testrun.failedTestcaseCount}</span>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="h-bar">
+                              <div />
+                            </div>
+                            <div className="total">
+                              <div className="total-count total">
+                                <span>
+                                  <span>{testrun.totalTestcaseCount}</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </Card>

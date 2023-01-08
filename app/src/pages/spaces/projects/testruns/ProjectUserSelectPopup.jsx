@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Button, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
@@ -48,6 +48,7 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
     <Modal
       className="project-user-select-popup-wrapper"
       isOpen
+      size="lg"
       toggle={() => {
         if (setOpened) {
           setOpened(false);
@@ -80,11 +81,23 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
                       onClick(user);
                     }}
                   >
-                    <div>
+                    <div className="checked">
                       {selected && <i className="fa-solid fa-circle-check" />}
                       {!selected && <i className="fa-regular fa-circle-check" />}
                     </div>
-                    <div>{user.name}</div>
+                    <div className="name">{user.name}</div>
+                    <div className="tags">
+                      {user.tags
+                        .split(';')
+                        .filter(tag => !!tag)
+                        .map(tag => {
+                          return (
+                            <Tag border className="tag">
+                              {tag}
+                            </Tag>
+                          );
+                        })}
+                    </div>
                   </li>
                 );
               })}

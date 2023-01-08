@@ -10,6 +10,8 @@
     }
 
     .testcase-select-list {
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      padding: 0.5rem;
       > ul {
         list-style: none;
         padding: 0;
