@@ -16,18 +16,6 @@ import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelect
 import TestrunService from '@/services/TestrunService';
 import moment from 'moment';
 
-const start = new Date();
-start.setHours(start.getHours() + 1);
-start.setMinutes(0);
-start.setSeconds(0);
-start.setMilliseconds(0);
-
-const end = new Date();
-end.setHours(end.getHours() + 2);
-end.setMinutes(0);
-end.setSeconds(0);
-end.setMilliseconds(0);
-
 const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
@@ -52,8 +40,25 @@ function TestrunEditPage({ type }) {
     description: '',
     testrunUsers: [],
     testcaseGroups: [],
-    startDateTime: start.getTime(),
-    endDateTime: end.getTime(),
+    startDateTime: (() => {
+      const start = new Date();
+      start.setHours(10);
+      start.setMinutes(0);
+      start.setSeconds(0);
+      start.setMilliseconds(0);
+
+      return start.getTime();
+    })(),
+    endDateTime: (() => {
+      const end = new Date();
+      end.setDate(end.getDate() + 2);
+      end.setHours(19);
+      end.setMinutes(0);
+      end.setSeconds(0);
+      end.setMilliseconds(0);
+
+      return end.getTime();
+    })(),
     opened: false,
     totalTestcaseCount: true,
     passedTestcaseCount: true,
@@ -353,14 +358,6 @@ function TestrunEditPage({ type }) {
                                 <span>{d.testcases?.length}</span>
                               </span>
                             )}
-                          </div>
-                          <div>
-                            <CloseIcon
-                              onClick={() => {
-                                removeTestrunUser(d.userId);
-                              }}
-                              size="xs"
-                            />
                           </div>
                         </li>
                       );

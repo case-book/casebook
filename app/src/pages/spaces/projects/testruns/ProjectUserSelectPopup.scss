@@ -6,18 +6,52 @@
       margin: 0;
       > li {
         padding: 1rem;
-
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-bottom: none;
         display: flex;
         cursor: pointer;
+
+        > div {
+          align-self: center;
+        }
+
+        .name,
+        .checked {
+          color: $gray-600;
+        }
+
+        .name {
+          white-space: nowrap;
+          min-width: 70px;
+        }
+
+        .tags {
+          margin-left: 0.5rem;
+          white-space: nowrap;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+
+          .tag {
+            margin-right: 0.5rem;
+            align-self: center;
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
 
         &:last-child {
           border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         }
 
         &.selected {
-          background-color: $color-selected-light;
+          _background-color: $color-selected-light;
+
+          .checked,
+          .name {
+            color: $black;
+            font-weight: bold;
+          }
         }
         > div {
           &:first-child {

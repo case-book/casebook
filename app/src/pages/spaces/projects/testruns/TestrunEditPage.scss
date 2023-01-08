@@ -81,15 +81,6 @@
             }
           }
         }
-        &:last-child {
-          padding: 0 1rem 0 0;
-
-          svg {
-            &:hover {
-              fill: $danger;
-            }
-          }
-        }
       }
     }
   }
