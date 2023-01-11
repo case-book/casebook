@@ -18,7 +18,21 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './TestRunTestcaseManager.scss';
 
-function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users, createTestrunImage, onSave, contentLoading, onSaveComment, user, onDeleteComment, onSaveResult, onSaveTester }) {
+function TestRunTestcaseManager({
+  content,
+  testcaseTemplates,
+  setContent,
+  users,
+  createTestrunImage,
+  onSave,
+  onSaveTestResultItem,
+  contentLoading,
+  onSaveComment,
+  user,
+  onDeleteComment,
+  onSaveResult,
+  onSaveTester,
+}) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -46,10 +60,10 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
 
   const onChangeDebounce = React.useMemo(
     () =>
-      debounce(() => {
-        onSave();
+      debounce(target => {
+        onSaveTestResultItem(target);
       }, 1200),
-    [content],
+    [],
   );
 
   const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value, templateItemType) => {
@@ -81,13 +95,13 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
     setContent(nextContent);
 
     if (templateItemType === 'RADIO' || templateItemType === 'CHECKBOX' || templateItemType === 'SELECT' || templateItemType === 'USER') {
-      onSave(nextContent);
+      onSaveTestResultItem(target);
     } else {
-      onChangeDebounce();
+      onChangeDebounce(target);
     }
   };
 
-  const onChangeTestResult = (testcaseTemplateItemId, type, field, value) => {
+  const onChangeTestResult = (_testcaseTemplateItemId, _type, _field, value) => {
     const nextContent = {
       ...content,
       testResult: value,
@@ -96,7 +110,7 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
     onSaveResult(value);
   };
 
-  const onChangeTester = (testcaseTemplateItemId, type, field, value) => {
+  const onChangeTester = (_testcaseTemplateItemId, _type, _field, value) => {
     const nextContent = {
       ...content,
       testerId: value,
@@ -225,6 +239,7 @@ function TestRunTestcaseManager({ content, testcaseTemplates, setContent, users,
                         openTooltipInfo={openTooltipInfo}
                         inx={inx}
                         onChangeTestcaseItem={onChangeTestcaseItem}
+                        isTestResultItem
                       />
                     );
                   })}
@@ -356,6 +371,7 @@ TestRunTestcaseManager.defaultProps = {
   onDeleteComment: null,
   onSaveResult: null,
   onSaveTester: null,
+  onSaveTestResultItem: null,
 };
 
 TestRunTestcaseManager.propTypes = {
@@ -417,6 +433,7 @@ TestRunTestcaseManager.propTypes = {
   onDeleteComment: PropTypes.func,
   onSaveResult: PropTypes.func,
   onSaveTester: PropTypes.func,
+  onSaveTestResultItem: PropTypes.func,
 };
 
 export default TestRunTestcaseManager;

@@ -439,12 +439,12 @@ function TestcaseNavigator({
               {testcaseGroups.map(group => {
                 return (
                   <TestcaseNavigatorGroupItem
-                    enableDrag={enableDrag}
                     key={group.id}
                     group={group}
                     dragInfo={dragInfo}
                     setDragInfo={setDragInfo}
                     onDrop={onDrop}
+                    enableDrag={enableDrag}
                     editInfo={editInfo}
                     contextMenuInfo={contextMenuInfo}
                     onContextMenu={onContextMenu}

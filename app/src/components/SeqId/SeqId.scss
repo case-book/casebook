@@ -1,9 +1,11 @@
 .seq-id-wrapper {
   line-height: 0;
   margin-right: 0.5rem;
+  align-self: center;
 
   &.size-sm {
     font-size: 12px;
+
     > div {
       padding: 2px 4px;
     }

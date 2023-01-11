@@ -126,6 +126,33 @@ TestrunService.updateTestrunResultItems = (spaceCode, projectId, testrunId, test
   );
 };
 
+TestrunService.updateTestrunResultItem = (
+  spaceCode,
+  projectId,
+  testrunId,
+  testrunTestcaseGroupId,
+  testrunTestcaseGroupTestcaseId,
+  testcaseTemplateItemId,
+  testrunItem,
+  successHandler,
+  failHandler,
+  loading = true,
+) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/items/${testcaseTemplateItemId}`,
+    testrunItem,
+    res => {
+      if (successHandler) {
+        successHandler(res);
+      }
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 TestrunService.updateTestrunResult = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testResult, successHandler, failHandler, loading = true) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/result`,
