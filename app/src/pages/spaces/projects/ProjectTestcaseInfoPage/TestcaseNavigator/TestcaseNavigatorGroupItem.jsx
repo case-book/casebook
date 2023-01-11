@@ -401,6 +401,7 @@ function TestcaseNavigatorGroupItem({
                   dragInfo={dragInfo}
                   setDragInfo={setDragInfo}
                   onDrop={onDrop}
+                  enableDrag={enableDrag}
                   editInfo={editInfo}
                   contextMenuInfo={contextMenuInfo}
                   onContextMenu={onContextMenu}
@@ -414,6 +415,7 @@ function TestcaseNavigatorGroupItem({
                   allOpen={allOpen}
                   setAllOpen={setAllOpen}
                   setting={setting}
+                  showTestResult={showTestResult}
                 />
               );
             })}

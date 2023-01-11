@@ -62,7 +62,7 @@ public class TestrunService {
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(testrunTestcaseGroupTestcase, TestrunTestcaseGroupTestcaseDTO.class);
+        return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase);
     }
 
 
@@ -75,19 +75,18 @@ public class TestrunService {
             list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
         }
 
-        return mappingUtil.convert(list, TestrunDTO.class);
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
 
     }
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
         List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, start, end);
-        return mappingUtil.convert(list, TestrunDTO.class);
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
     }
 
     public TestrunDTO selectProjectTestrunInfo(long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(testrun, TestrunDTO.class);
-
+        return new TestrunDTO(testrun, true);
     }
 
     @Transactional
@@ -128,8 +127,15 @@ public class TestrunService {
     @Transactional
     public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
         List<TestrunTestcaseGroupTestcaseItem> result = testrunTestcaseGroupTestcaseItemRepository.saveAll(mappingUtil.convert(testrunTestcaseGroupTestcaseItems, TestrunTestcaseGroupTestcaseItem.class));
-        return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
+        return result.stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
+        // return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
+    }
 
+    @Transactional
+    public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
+        TestrunTestcaseGroupTestcaseItem result = testrunTestcaseGroupTestcaseItemRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseItem, TestrunTestcaseGroupTestcaseItem.class));
+        return new TestrunTestcaseGroupTestcaseItemDTO(result);
+        //return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
     }
 
     @Transactional
@@ -165,7 +171,8 @@ public class TestrunService {
     @Transactional
     public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
         TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseComment, TestrunTestcaseGroupTestcaseComment.class));
-        return mappingUtil.convert(comment, TestrunTestcaseGroupTestcaseCommentDTO.class);
+        return new TestrunTestcaseGroupTestcaseCommentDTO(comment);
+        // return mappingUtil.convert(comment, TestrunTestcaseGroupTestcaseCommentDTO.class);
     }
 
     @Transactional
@@ -294,7 +301,8 @@ public class TestrunService {
         testrun.setFailedTestcaseCount(0);
 
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
-        return mappingUtil.convert(result, TestrunDTO.class);
+        return new TestrunDTO(result, true);
+        // return mappingUtil.convert(result, TestrunDTO.class);
     }
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
@@ -311,7 +319,8 @@ public class TestrunService {
             return testrun;
         })).collect(Collectors.toList());
 
-        return mappingUtil.convert(list, TestrunDTO.class);
+        return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
+        // return mappingUtil.convert(list, TestrunDTO.class);
 
     }
 

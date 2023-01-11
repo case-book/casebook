@@ -25,6 +25,7 @@ function TestcaseItem({
   size,
   selectUserOnly,
   isTestResult,
+  isTestResultItem,
   tags,
 }) {
   const editor = useRef(null);
@@ -163,6 +164,11 @@ function TestcaseItem({
                     initialEditType="wysiwyg"
                     plugins={[colorSyntax]}
                     autofocus={false}
+                    onBlur={() => {
+                      if (isTestResultItem) {
+                        onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
+                      }
+                    }}
                     toolbarItems={[
                       ['heading', 'bold', 'italic', 'strike'],
                       ['hr', 'quote'],
@@ -178,7 +184,9 @@ function TestcaseItem({
                     }}
                     initialValue={testcaseItem?.text || ''}
                     onChange={() => {
-                      onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
+                      if (!isTestResultItem) {
+                        onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
+                      }
                     }}
                   />
                 )}
@@ -208,6 +216,7 @@ TestcaseItem.defaultProps = {
   size: 'md',
   selectUserOnly: false,
   isTestResult: false,
+  isTestResultItem: false,
   tags: [],
 };
 
@@ -252,6 +261,7 @@ TestcaseItem.propTypes = {
   size: PropTypes.string,
   selectUserOnly: PropTypes.bool,
   isTestResult: PropTypes.bool,
+  isTestResultItem: PropTypes.bool,
   tags: PropTypes.arrayOf(PropTypes.string),
 };
 

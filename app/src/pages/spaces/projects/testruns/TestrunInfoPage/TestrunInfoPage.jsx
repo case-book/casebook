@@ -267,19 +267,30 @@ function TestrunInfoPage() {
   };
 
   const onSaveTestResultItems = nextContent => {
+    console.log(1, nextContent);
     TestrunService.updateTestrunResultItems(
       spaceCode,
       projectId,
       testrunId,
-      content.testrunTestcaseGroupId,
-      content.id,
+      nextContent?.testrunTestcaseGroupId || content.testrunTestcaseGroupId,
+      nextContent.id || content.id,
       {
         testrunTestcaseGroupTestcaseItemRequests: nextContent ? nextContent.testrunTestcaseItems : content.testrunTestcaseItems,
       },
-      () => {
+      result => {
+        console.log(testrun);
+        console.log(result);
         getTestrunInfo();
       },
     );
+  };
+
+  const onSaveTestResultItem = target => {
+    console.log(target);
+    TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, result => {
+      console.log(result);
+      getTestrunInfo();
+    });
   };
 
   const onSaveTestResult = testResult => {
@@ -322,17 +333,11 @@ function TestrunInfoPage() {
               testcaseGroups={testcaseGroups}
               showTestResult
               enableDrag={false}
-              // addTestcaseGroup={addTestcaseGroup}
-              // addTestcase={addTestcase}
-              // onPositionChange={onPositionChange}
-              // onChangeTestcaseGroupName={onChangeTestcaseGroupName}
               selectedItemInfo={selectedItemInfo}
               onSelect={setSelectedItemInfo}
-              // onDelete={onDeleteTestcaseGroup}
               min={min}
               setMin={setMin}
               countSummary={countSummary}
-              // contentChanged={contentChanged}
               userFilter={userFilter}
               setUserFilter={setUserFilter}
             />
@@ -347,11 +352,11 @@ function TestrunInfoPage() {
                   setContent(d);
                 }}
                 onSave={onSaveTestResultItems}
+                onSaveTestResultItem={onSaveTestResultItem}
                 onSaveResult={onSaveTestResult}
                 onSaveTester={onSaveTester}
                 onSaveComment={onChangeComment}
                 onDeleteComment={onDeleteComment}
-                onCancel={() => {}}
                 users={project?.users.map(u => {
                   return {
                     ...u,
