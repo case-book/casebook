@@ -6,7 +6,9 @@ import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
-import com.mindplates.bugcase.biz.testcase.dto.*;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.entity.*;
@@ -60,44 +62,7 @@ public class TestrunService {
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        // return mappingUtil.convert(testrunTestcaseGroupTestcase, TestrunTestcaseGroupTestcaseDTO.class);
-
-                return TestrunTestcaseGroupTestcaseDTO.builder()
-                        .id(testrunTestcaseGroupTestcase.getId())
-                        .testrunTestcaseGroup(TestrunTestcaseGroupDTO.builder().
-                                id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId())
-                                .build())
-                        .testcase(TestcaseDTO.builder()
-                                .id(testrunTestcaseGroupTestcase.getTestcase().getId())
-                                .testcaseTemplate(TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build())
-                                .seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId())
-                                .name(testrunTestcaseGroupTestcase.getTestcase().getName())
-                                .description(testrunTestcaseGroupTestcase.getTestcase().getDescription())
-                                .itemOrder(testrunTestcaseGroupTestcase.getTestcase().getItemOrder())
-                                .closed(testrunTestcaseGroupTestcase.getTestcase().getClosed())
-                                .build())
-                        .testcaseItems(testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(testrunTestcaseGroupTestcaseItem ->
-                                TestrunTestcaseGroupTestcaseItemDTO.builder()
-                                        .id(testrunTestcaseGroupTestcaseItem.getId())
-                                        .testcaseTemplateItem(TestcaseTemplateItemDTO.builder().id(testrunTestcaseGroupTestcaseItem.getTestcaseTemplateItem().getId()).build())
-                                        .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseItem.getTestrunTestcaseGroupTestcase().getId()).build())
-                                        .type(testrunTestcaseGroupTestcaseItem.getType())
-                                        .value(testrunTestcaseGroupTestcaseItem.getValue())
-                                        .text(testrunTestcaseGroupTestcaseItem.getText())
-                                        .build()
-                        ).collect(Collectors.toList()))
-                        .comments(testrunTestcaseGroupTestcase.getComments().stream().map((comment) -> TestrunTestcaseGroupTestcaseCommentDTO.builder()
-                                .id(comment.getId())
-                                .comment(comment.getComment())
-                                .build()).collect(Collectors.toList()))
-                        .testResult(testrunTestcaseGroupTestcase.getTestResult())
-                        .tester(UserDTO.builder().
-                                id(testrunTestcaseGroupTestcase.getTester().getId())
-                                .email(testrunTestcaseGroupTestcase.getTester().getEmail())
-                                .name(testrunTestcaseGroupTestcase.getTester().getName())
-                                .build()).build();
-
-
+        return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase);
     }
 
 
@@ -110,137 +75,18 @@ public class TestrunService {
             list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
         }
 
-        return list.stream().map((testrun -> TestrunDTO.builder().id(testrun.getId()).seqId(testrun.getSeqId()).name(testrun.getName()).description(testrun.getDescription()).startDateTime(testrun.getStartDateTime()).endDateTime(testrun.getEndDateTime()).opened(testrun.isOpened()).totalTestcaseCount(testrun.getTotalTestcaseCount()).passedTestcaseCount(testrun.getPassedTestcaseCount()).failedTestcaseCount(testrun.getPassedTestcaseCount()).closedDate(testrun.getClosedDate()).build())).collect(Collectors.toList());
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
 
     }
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
         List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, start, end);
-        return mappingUtil.convert(list, TestrunDTO.class);
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
     }
 
     public TestrunDTO selectProjectTestrunInfo(long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        return TestrunDTO.builder()
-                .id(testrun.getId())
-                .seqId(testrun.getSeqId())
-                .name(testrun.getName())
-                .description(testrun.getDescription())
-                .startDateTime(testrun.getStartDateTime())
-                .endDateTime(testrun.getEndDateTime())
-                .opened(testrun.isOpened())
-                .totalTestcaseCount(testrun.getTotalTestcaseCount())
-                .passedTestcaseCount(testrun.getPassedTestcaseCount())
-                .failedTestcaseCount(testrun.getPassedTestcaseCount())
-                .closedDate(testrun.getClosedDate())
-                .project(ProjectDTO.builder()
-                        .name(testrun.getProject().getName())
-                        .build())
-                .testrunUsers(testrun.getTestrunUsers().stream().map((testrunUser -> TestrunUserDTO.builder()
-                        .id(testrunUser.getId())
-                        .user(UserDTO.builder().
-                                id(testrunUser.getUser().getId())
-                                .email(testrunUser.getUser().getEmail())
-                                .name(testrunUser.getUser().getName())
-                                .build())
-                        .build()))
-                        .collect(Collectors.toList()))
-                .testcaseGroups(testrun.getTestcaseGroups().stream().map(testrunTestcaseGroup -> TestrunTestcaseGroupDTO.builder()
-                                .id(testrunTestcaseGroup.getId())
-                                .testcaseGroup(TestcaseGroupDTO.builder()
-                                        .id(testrunTestcaseGroup.getTestcaseGroup().getId())
-                                        .seqId(testrunTestcaseGroup.getTestcaseGroup().getSeqId())
-                                        .parentId(testrunTestcaseGroup.getTestcaseGroup().getParentId())
-                                        .depth(testrunTestcaseGroup.getTestcaseGroup().getDepth())
-                                        .name(testrunTestcaseGroup.getTestcaseGroup().getName())
-                                        .description(testrunTestcaseGroup.getTestcaseGroup().getDescription())
-                                        .itemOrder(testrunTestcaseGroup.getTestcaseGroup().getItemOrder())
-
-                                        .testcases(testrunTestcaseGroup.getTestcaseGroup().getTestcases().stream().map((testcase -> TestcaseDTO.builder()
-                                                .id(testcase.getId())
-                                                .seqId(testcase.getSeqId())
-                                                .name(testcase.getName())
-                                                .description(testcase.getDescription())
-                                                .itemOrder(testcase.getItemOrder())
-                                                .closed(testcase.getClosed())
-                                                .testcaseTemplate(TestcaseTemplateDTO.builder()
-                                                        .id(testcase.getTestcaseTemplate().getId())
-                                                        .name(testcase.getTestcaseTemplate().getName())
-                                                        .defaultTesterType(testcase.getTestcaseTemplate().getDefaultTesterType())
-                                                        .defaultTesterValue(testcase.getTestcaseTemplate().getDefaultTesterValue())
-                                                        .testcaseTemplateItems(testcase.getTestcaseTemplate().getTestcaseTemplateItems().stream().map((testcaseTemplateItem -> TestcaseTemplateItemDTO.builder()
-                                                                .id(testcaseTemplateItem.getId())
-                                                                .category(testcaseTemplateItem.getCategory())
-                                                                .type(testcaseTemplateItem.getType())
-                                                                .itemOrder(testcaseTemplateItem.getItemOrder())
-                                                                .label(testcaseTemplateItem.getLabel())
-                                                                .options(testcaseTemplateItem.getOptions())
-                                                                .size(testcaseTemplateItem.getSize())
-                                                                .defaultType(testcaseTemplateItem.getDefaultType())
-                                                                .defaultValue(testcaseTemplateItem.getDefaultValue())
-                                                                .description(testcaseTemplateItem.getDescription())
-                                                                .example(testcaseTemplateItem.getExample())
-                                                                .editable(testcaseTemplateItem.getEditable())
-                                                                .systemLabel(testcaseTemplateItem.getSystemLabel())
-                                                                .deleted(testcaseTemplateItem.isDeleted())
-                                                                .build())).collect(Collectors.toList()))
-                                                        .build())
-                                                .testcaseItems(testcase.getTestcaseItems().stream().map((testcaseItem -> TestcaseItemDTO.builder()
-                                                        .id(testcaseItem.getId())
-                                                        .type(testcaseItem.getType())
-                                                        .value(testcaseItem.getValue())
-                                                        .text(testcaseItem.getText())
-                                                        .build())).collect(Collectors.toList()))
-                                                .testerType(testcase.getTesterType())
-                                                .testerValue(testcase.getTesterValue())
-                                                .build())).collect(Collectors.toList()))
-                                        .build())
-                                .testcases(testrunTestcaseGroup.getTestcases().stream().map((testrunTestcaseGroupTestcase ->
-                                        TestrunTestcaseGroupTestcaseDTO.builder()
-                                        .id(testrunTestcaseGroupTestcase.getId())
-                                        .testrunTestcaseGroup(TestrunTestcaseGroupDTO.builder().
-                                                id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId())
-                                                .build())
-                                        .testcase(TestcaseDTO.builder()
-                                                .id(testrunTestcaseGroupTestcase.getTestcase().getId())
-                                                .testcaseTemplate(TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build())
-                                                .seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId())
-                                                .name(testrunTestcaseGroupTestcase.getTestcase().getName())
-                                                .description(testrunTestcaseGroupTestcase.getTestcase().getDescription())
-                                                .itemOrder(testrunTestcaseGroupTestcase.getTestcase().getItemOrder())
-                                                .closed(testrunTestcaseGroupTestcase.getTestcase().getClosed())
-                                                .build())
-                                        .testcaseItems(testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(testrunTestcaseGroupTestcaseItem ->
-                                                TestrunTestcaseGroupTestcaseItemDTO.builder()
-                                                        .id(testrunTestcaseGroupTestcaseItem.getId())
-                                                        .testcaseTemplateItem(TestcaseTemplateItemDTO.builder().id(testrunTestcaseGroupTestcaseItem.getTestcaseTemplateItem().getId()).build())
-                                                        .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseItem.getTestrunTestcaseGroupTestcase().getId()).build())
-                                                        .type(testrunTestcaseGroupTestcaseItem.getType())
-                                                        .value(testrunTestcaseGroupTestcaseItem.getValue())
-                                                        .text(testrunTestcaseGroupTestcaseItem.getText())
-                                                        .build()
-                                        ).collect(Collectors.toList()))
-                                        .comments(testrunTestcaseGroupTestcase.getComments().stream().map((comment) -> TestrunTestcaseGroupTestcaseCommentDTO.builder()
-                                                .id(comment.getId())
-                                                .comment(comment.getComment())
-                                                .build()).collect(Collectors.toList()))
-                                        .testResult(testrunTestcaseGroupTestcase.getTestResult())
-                                        .tester(UserDTO.builder().
-                                                id(testrunTestcaseGroupTestcase.getTester().getId())
-                                                .email(testrunTestcaseGroupTestcase.getTester().getEmail())
-                                                .name(testrunTestcaseGroupTestcase.getTester().getName())
-                                                .build())
-
-                                        .build())).collect(Collectors.toList()))
-
-                                .build())
-                        .collect(Collectors.toList()))
-
-                .build();
-
-        // return mappingUtil.convert(testrun, TestrunDTO.class);
-
+        return new TestrunDTO(testrun, true);
     }
 
     @Transactional
@@ -281,14 +127,15 @@ public class TestrunService {
     @Transactional
     public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
         List<TestrunTestcaseGroupTestcaseItem> result = testrunTestcaseGroupTestcaseItemRepository.saveAll(mappingUtil.convert(testrunTestcaseGroupTestcaseItems, TestrunTestcaseGroupTestcaseItem.class));
-        return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
-
+        return result.stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
+        // return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
     }
 
     @Transactional
     public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
         TestrunTestcaseGroupTestcaseItem result = testrunTestcaseGroupTestcaseItemRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseItem, TestrunTestcaseGroupTestcaseItem.class));
-        return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
+        return new TestrunTestcaseGroupTestcaseItemDTO(result);
+        //return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
     }
 
     @Transactional
@@ -324,7 +171,8 @@ public class TestrunService {
     @Transactional
     public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
         TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseComment, TestrunTestcaseGroupTestcaseComment.class));
-        return mappingUtil.convert(comment, TestrunTestcaseGroupTestcaseCommentDTO.class);
+        return new TestrunTestcaseGroupTestcaseCommentDTO(comment);
+        // return mappingUtil.convert(comment, TestrunTestcaseGroupTestcaseCommentDTO.class);
     }
 
     @Transactional
@@ -453,7 +301,8 @@ public class TestrunService {
         testrun.setFailedTestcaseCount(0);
 
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
-        return mappingUtil.convert(result, TestrunDTO.class);
+        return new TestrunDTO(result, true);
+        // return mappingUtil.convert(result, TestrunDTO.class);
     }
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
@@ -470,7 +319,8 @@ public class TestrunService {
             return testrun;
         })).collect(Collectors.toList());
 
-        return mappingUtil.convert(list, TestrunDTO.class);
+        return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
+        // return mappingUtil.convert(list, TestrunDTO.class);
 
     }
 

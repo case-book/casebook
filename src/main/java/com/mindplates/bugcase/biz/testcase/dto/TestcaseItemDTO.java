@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.dto;
 
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,5 +20,14 @@ public class TestcaseItemDTO extends CommonDTO {
     private String type;
     private String value;
     private String text;
+
+    public TestcaseItemDTO(TestcaseItem testcaseItem) {
+        this.id = testcaseItem.getId();
+        this.testcaseTemplateItem = TestcaseTemplateItemDTO.builder().id(testcaseItem.getTestcaseTemplateItem().getId()).build();
+        this.testcase = TestcaseDTO.builder().id(testcaseItem.getTestcase().getId()).build();
+        this.type = testcaseItem.getType();
+        this.value = testcaseItem.getValue();
+        this.text = testcaseItem.getText();
+    }
 
 }
