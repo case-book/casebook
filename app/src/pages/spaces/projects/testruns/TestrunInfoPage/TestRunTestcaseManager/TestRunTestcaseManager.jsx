@@ -24,7 +24,6 @@ function TestRunTestcaseManager({
   setContent,
   users,
   createTestrunImage,
-  onSave,
   onSaveTestResultItem,
   contentLoading,
   onSaveComment,
@@ -62,7 +61,7 @@ function TestRunTestcaseManager({
     () =>
       debounce(target => {
         onSaveTestResultItem(target);
-      }, 1200),
+      }, 500),
     [],
   );
 
@@ -348,11 +347,6 @@ function TestRunTestcaseManager({
                 </div>
               </div>
             </div>
-            <div className="control-btn">
-              <Button outline onClick={onSave}>
-                {t('저장')}
-              </Button>
-            </div>
           </div>
         }
       />
@@ -364,7 +358,6 @@ TestRunTestcaseManager.defaultProps = {
   content: null,
   testcaseTemplates: [],
   users: [],
-  onSave: null,
   onSaveComment: null,
   contentLoading: false,
   user: null,
@@ -424,7 +417,6 @@ TestRunTestcaseManager.propTypes = {
     }),
   ),
   createTestrunImage: PropTypes.func.isRequired,
-  onSave: PropTypes.func,
   onSaveComment: PropTypes.func,
   contentLoading: PropTypes.bool,
   user: PropTypes.shape({

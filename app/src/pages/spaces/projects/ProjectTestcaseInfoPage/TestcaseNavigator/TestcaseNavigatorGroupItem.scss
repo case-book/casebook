@@ -96,7 +96,7 @@ li.testcase-group-item-wrapper {
       .name {
         flex-grow: 1;
         padding: 0.5rem 0.5rem 0.5rem 0;
-        width: calc(100% - 46px);
+        width: calc(100% - 90px);
         display: flex;
 
         .seq-id {
@@ -187,7 +187,7 @@ li.testcase-group-item-wrapper {
 
       .testrun-result {
         display: flex;
-        margin-right: 0.5rem;
+
 
         > div {
           white-space: nowrap;

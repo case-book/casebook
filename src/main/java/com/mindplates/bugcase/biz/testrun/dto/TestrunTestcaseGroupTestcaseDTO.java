@@ -33,12 +33,28 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
 
         this.id = testrunTestcaseGroupTestcase.getId();
         this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId()).build();
-        this.testcase = TestcaseDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getId()).testcaseTemplate(TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build()).seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId()).name(testrunTestcaseGroupTestcase.getTestcase().getName()).description(testrunTestcaseGroupTestcase.getTestcase().getDescription()).itemOrder(testrunTestcaseGroupTestcase.getTestcase().getItemOrder()).closed(testrunTestcaseGroupTestcase.getTestcase().getClosed()).testcaseItems(testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList())).build();
+        this.testcase = TestcaseDTO.builder()
+                .id(testrunTestcaseGroupTestcase.getTestcase().getId())
+                .seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId())
+                .name(testrunTestcaseGroupTestcase.getTestcase().getName())
+                .description(testrunTestcaseGroupTestcase.getTestcase().getDescription())
+                .itemOrder(testrunTestcaseGroupTestcase.getTestcase().getItemOrder())
+                .closed(testrunTestcaseGroupTestcase.getTestcase().getClosed())
+                .build();
+
+        if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate() != null) {
+            this.testcase.setTestcaseTemplate(TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build());
+        }
+
+        if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems() != null) {
+            this.testcase.setTestcaseItems(testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()));
+            this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
+        }
         this.testResult = testrunTestcaseGroupTestcase.getTestResult();
         this.tester = UserDTO.builder().id(testrunTestcaseGroupTestcase.getTester().getId()).build();
-        this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
-        this.comments = testrunTestcaseGroupTestcase.getComments().stream().map(TestrunTestcaseGroupTestcaseCommentDTO::new).collect(Collectors.toList());
-
+        if (testrunTestcaseGroupTestcase.getComments() != null) {
+            this.comments = testrunTestcaseGroupTestcase.getComments().stream().map(TestrunTestcaseGroupTestcaseCommentDTO::new).collect(Collectors.toList());
+        }
     }
 
 

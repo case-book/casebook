@@ -130,7 +130,7 @@ function TestrunInfoPage() {
     const filteredTestcaseGroups = testrun.testcaseGroups?.map(d => {
       return {
         ...d,
-        testcases: d.testcases.filter(testcase => {
+        testcases: d.testcases?.filter(testcase => {
           if (userFilter === '') {
             return true;
           }
@@ -151,8 +151,10 @@ function TestrunInfoPage() {
     setTestcaseGroups(groups);
   }, [project, userFilter]);
 
-  const getTestcase = testrunTestcaseGroupTestcaseId => {
-    setContentLoading(true);
+  const getTestcase = (testrunTestcaseGroupTestcaseId, loading) => {
+    if (loading) {
+      setContentLoading(true);
+    }
 
     const testcaseGroup = testrun?.testcaseGroups.find(d => d.testcases?.find(testcase => testcase.id === testrunTestcaseGroupTestcaseId));
 
@@ -163,20 +165,32 @@ function TestrunInfoPage() {
       testcaseGroup.id,
       testrunTestcaseGroupTestcaseId,
       info => {
-        setTimeout(() => {
-          setContentLoading(false);
-        }, 200);
+        if (loading) {
+          setTimeout(() => {
+            setContentLoading(false);
+          }, 200);
+        }
+
         setContent(info);
       },
       () => {
-        setContentLoading(false);
+        if (loading) {
+          setContentLoading(false);
+        }
       },
     );
   };
 
-  const getContent = () => {
+  const getContent = (loading = true) => {
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE) {
-      getTestcase(selectedItemInfo.id);
+      getTestcase(selectedItemInfo.id, loading);
+    } else {
+      setContent(null);
+      setSelectedItemInfo({
+        id: null,
+        type: null,
+        time: null,
+      });
     }
   };
 
@@ -266,8 +280,8 @@ function TestrunInfoPage() {
     return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, type, file);
   };
 
+  /*
   const onSaveTestResultItems = nextContent => {
-    console.log(1, nextContent);
     TestrunService.updateTestrunResultItems(
       spaceCode,
       projectId,
@@ -277,19 +291,17 @@ function TestrunInfoPage() {
       {
         testrunTestcaseGroupTestcaseItemRequests: nextContent ? nextContent.testrunTestcaseItems : content.testrunTestcaseItems,
       },
-      result => {
-        console.log(testrun);
-        console.log(result);
+      () => {
         getTestrunInfo();
       },
     );
   };
+   */
 
   const onSaveTestResultItem = target => {
-    console.log(target);
-    TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, result => {
-      console.log(result);
-      getTestrunInfo();
+    TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, () => {
+      // getTestrunInfo();
+      getContent(false);
     });
   };
 
@@ -351,7 +363,6 @@ function TestrunInfoPage() {
                 setContent={d => {
                   setContent(d);
                 }}
-                onSave={onSaveTestResultItems}
                 onSaveTestResultItem={onSaveTestResultItem}
                 onSaveResult={onSaveTestResult}
                 onSaveTester={onSaveTester}

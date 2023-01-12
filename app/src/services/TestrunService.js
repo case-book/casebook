@@ -136,7 +136,7 @@ TestrunService.updateTestrunResultItem = (
   testrunItem,
   successHandler,
   failHandler,
-  loading = true,
+  loading = false,
 ) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/items/${testcaseTemplateItemId}`,
