@@ -199,20 +199,22 @@ public class TestrunService {
         Map<String, List<ProjectUserDTO>> tagUserMap = new HashMap<>();
         project.getUsers().forEach((projectUserDTO -> {
             String tagString = projectUserDTO.getTags();
-            String[] tags = tagString.split(";");
-            if (tags.length > 0) {
-                Arrays.stream(tags).forEach((tag) -> {
-                    if (tag.length() > 0) {
-                        if (!tagUserMap.containsKey(tag)) {
-                            tagUserMap.put(tag, new ArrayList<>());
-                        }
+            if (tagString != null) {
+                String[] tags = tagString.split(";");
+                if (tags.length > 0) {
+                    Arrays.stream(tags).forEach((tag) -> {
+                        if (tag.length() > 0) {
+                            if (!tagUserMap.containsKey(tag)) {
+                                tagUserMap.put(tag, new ArrayList<>());
+                            }
 
-                        List<ProjectUserDTO> users = tagUserMap.get(tag);
-                        if (testrunUsers.stream().anyMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(projectUserDTO.getUser().getId()))) {
-                            users.add(projectUserDTO);
+                            List<ProjectUserDTO> users = tagUserMap.get(tag);
+                            if (testrunUsers.stream().anyMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(projectUserDTO.getUser().getId()))) {
+                                users.add(projectUserDTO);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }));
 

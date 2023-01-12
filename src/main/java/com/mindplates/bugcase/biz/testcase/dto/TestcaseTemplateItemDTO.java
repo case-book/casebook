@@ -42,7 +42,9 @@ public class TestcaseTemplateItemDTO extends CommonEntity {
         this.label = testcaseTemplateItem.getLabel();
         this.options = testcaseTemplateItem.getOptions();
         this.size = testcaseTemplateItem.getSize();
-        this.testcaseTemplate = TestcaseTemplateDTO.builder().id(testcaseTemplateItem.getTestcaseTemplate().getId()).build();
+        if (testcaseTemplateItem.getTestcaseTemplate() != null) {
+            this.testcaseTemplate = TestcaseTemplateDTO.builder().id(testcaseTemplateItem.getTestcaseTemplate().getId()).build();
+        }
         this.defaultType = testcaseTemplateItem.getDefaultType();
         this.defaultValue = testcaseTemplateItem.getDefaultValue();
         this.description = testcaseTemplateItem.getDescription();
