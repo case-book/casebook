@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -41,20 +42,18 @@ public class SpaceService {
     private final SpaceUserRepository spaceUserRepository;
     private final ProjectService projectService;
     private final NotificationService notificationService;
-
-
     private final MappingUtil mappingUtil;
 
     public SpaceDTO selectSpaceInfo(Long id) {
         Space space = spaceRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(space, SpaceDTO.class);
+        return new SpaceDTO(space);
     }
 
 
     @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE)
     public SpaceDTO selectSpaceInfo(String spaceCode) {
         Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(space, SpaceDTO.class);
+        return new SpaceDTO(space);
     }
 
 
@@ -76,7 +75,7 @@ public class SpaceService {
         SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
         spaceInfo.setUsers(Arrays.asList(spaceUser));
         spaceRepository.save(spaceInfo);
-        return mappingUtil.convert(spaceInfo, SpaceDTO.class);
+        return new SpaceDTO(spaceInfo);
     }
 
 
@@ -114,34 +113,35 @@ public class SpaceService {
 
         Space updateSpaceResult = spaceRepository.save(mappingUtil.convert(spaceInfo, Space.class));
 
-        return mappingUtil.convert(updateSpaceResult, SpaceDTO.class);
+        return new SpaceDTO(updateSpaceResult);
     }
 
     public List<SpaceDTO> selectSearchAllowedSpaceList(String query) {
         List<Space> spaceList = spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%");
-        return mappingUtil.convert(spaceList, SpaceDTO.class);
+        return spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
     public List<SpaceDTO> selectUserSpaceList(Long userId) {
         List<Space> spaceList = spaceRepository.findAllByUsersUserId(userId);
-        List<SpaceDTO> result = mappingUtil.convert(spaceList, SpaceDTO.class);
+        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
+
         result.forEach((space -> {
             Long projectCount = projectService.selectSpaceProjectCount(space.getId());
             space.setProjectCount(projectCount);
         }));
 
-        return mappingUtil.convert(result, SpaceDTO.class);
+        return result;
+
     }
 
     public List<SpaceUserDTO> selectSpaceUserList(String spaceCode, String query) {
         if (StringUtils.isNotBlank(query)) {
             List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);
-            return mappingUtil.convert(spaceUserList, SpaceUserDTO.class);
+            return spaceUserList.stream().map(SpaceUserDTO::new).collect(Collectors.toList());
         }
 
         List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCode(spaceCode);
-        return mappingUtil.convert(spaceUserList, SpaceUserDTO.class);
-
+        return spaceUserList.stream().map(SpaceUserDTO::new).collect(Collectors.toList());
     }
 
     public boolean selectIsSpaceMember(Long spaceId, Long userId) {
@@ -201,7 +201,7 @@ public class SpaceService {
         }
 
         Space result = spaceRepository.save(mappingUtil.convert(space, Space.class));
-        return mappingUtil.convert(result, SpaceDTO.class);
+        return new SpaceDTO(result);
     }
 
 
@@ -240,7 +240,7 @@ public class SpaceService {
 
         Space result = spaceRepository.save(mappingUtil.convert(space, Space.class));
 
-        return mappingUtil.convert(result, SpaceDTO.class);
+        return new SpaceDTO(result);
     }
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)

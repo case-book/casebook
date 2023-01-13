@@ -35,6 +35,20 @@ public class SpaceController {
     private final SpaceService spaceService;
     private final ProjectService projectService;
 
+    @Operation(description = "스페이스 검색")
+    @GetMapping("")
+    public List<SpaceListResponse> selectSpaceList(@RequestParam(value = "query") String query) {
+        List<SpaceDTO> spaceList = spaceService.selectSearchAllowedSpaceList(query);
+        return spaceList.stream().map(space -> new SpaceListResponse(space, SessionUtil.getUserId())).collect(Collectors.toList());
+    }
+
+    @Operation(description = "내 스페이스 목록 조회")
+    @GetMapping("/my")
+    public List<SpaceListResponse> selectMySpaceList() {
+        List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId());
+        return spaceList.stream().map((space -> new SpaceListResponse(space, SessionUtil.getUserId()))).collect(Collectors.toList());
+    }
+
     @Operation(description = "새 스페이스 추가")
     @PostMapping("")
     public SpaceListResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
@@ -53,19 +67,7 @@ public class SpaceController {
         return new SpaceResponse(spaceInfo);
     }
 
-    @Operation(description = "스페이스 검색")
-    @GetMapping("")
-    public List<SpaceListResponse> selectSpaceList(@RequestParam(value = "query") String query) {
-        List<SpaceDTO> spaceList = spaceService.selectSearchAllowedSpaceList(query);
-        return spaceList.stream().map(space -> new SpaceListResponse(space, SessionUtil.getUserId())).collect(Collectors.toList());
-    }
 
-    @Operation(description = "내 스페이스 목록 조회")
-    @GetMapping("/my")
-    public List<SpaceListResponse> selectMySpaceList() {
-        List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId());
-        return spaceList.stream().map((space -> new SpaceListResponse(space, SessionUtil.getUserId()))).collect(Collectors.toList());
-    }
 
     @Operation(description = "스페이스 정보 조회")
     @GetMapping("/{spaceCode}")
