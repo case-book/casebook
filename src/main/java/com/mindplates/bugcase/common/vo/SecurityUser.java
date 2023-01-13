@@ -13,7 +13,7 @@ import java.util.Collection;
 
 @Builder
 @Data
-public class SecurityUser implements UserDetails, Serializable {
+public class SecurityUser implements UserDetails {
 
     private Long id;
     private String name;

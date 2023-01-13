@@ -79,6 +79,14 @@ public class TestrunService {
 
     }
 
+    public Long selectProjectTestrunCount(String spaceCode, long projectId) {
+        return testrunRepository.countByProjectSpaceCodeAndProjectId(spaceCode, projectId);
+    }
+
+    public Long selectProjectTestrunCount(Long spaceId, long projectId) {
+        return testrunRepository.countByProjectSpaceIdAndProjectId(spaceId, projectId);
+    }
+
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
         List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, start, end);
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());

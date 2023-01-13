@@ -37,7 +37,6 @@ public class SpaceResponse {
         this.code = space.getCode();
         this.activated = space.isActivated();
         this.description = space.getDescription();
-        this.activated = space.isActivated();
         this.allowSearch = space.isAllowSearch();
         this.allowAutoJoin = space.isAllowAutoJoin();
         this.token = space.getToken();

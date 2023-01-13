@@ -42,7 +42,19 @@ public class ProjectController {
 
     private final FileUtil fileUtil;
 
-    private final MappingUtil mappingUtil;
+    @Operation(description = "스페이스 프로젝트 목록 조회")
+    @GetMapping("")
+    public List<ProjectListResponse> selectSpaceProjectList(@PathVariable String spaceCode) {
+        List<ProjectDTO> projectList = projectService.selectSpaceProjectList(spaceCode);
+        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "스페이스 프로젝트 목록 조회")
+    @GetMapping("/my")
+    public List<ProjectListResponse> selectSpaceMyProjectList(@PathVariable String spaceCode) {
+        List<ProjectDTO> projectList = projectService.selectSpaceMyProjectList(spaceCode, SessionUtil.getUserId());
+        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
+    }
 
     @Operation(description = "프로젝트 생성")
     @PostMapping("")
@@ -66,21 +78,6 @@ public class ProjectController {
 
         ProjectDTO project = projectUpdateRequest.toDTO();
         return new ProjectResponse(projectService.updateProjectInfo(spaceCode, project), SessionUtil.getUserId());
-    }
-
-
-    @Operation(description = "스페이스 프로젝트 목록 조회")
-    @GetMapping("")
-    public List<ProjectListResponse> selectSpaceProjectList(@PathVariable String spaceCode) {
-        List<ProjectDTO> projectList = projectService.selectSpaceProjectList(spaceCode);
-        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
-    }
-
-    @Operation(description = "스페이스 프로젝트 목록 조회")
-    @GetMapping("/my")
-    public List<ProjectListResponse> selectSpaceMyProjectList(@PathVariable String spaceCode) {
-        List<ProjectDTO> projectList = projectService.selectSpaceMyProjectList(spaceCode, SessionUtil.getUserId());
-        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
 
 
@@ -117,15 +114,7 @@ public class ProjectController {
 
         String path = projectFileService.createImage(id, file);
 
-        ProjectFileDTO testcaseFile = ProjectFileDTO.builder()
-                .project(ProjectDTO.builder().id(id).build())
-                .name(name)
-                .size(size)
-                .type(type)
-                .path(path)
-                .uuid(UUID.randomUUID().toString())
-                .fileSourceType(FileSourceTypeCode.PROJECT)
-                .build();
+        ProjectFileDTO testcaseFile = ProjectFileDTO.builder().project(ProjectDTO.builder().id(id).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.PROJECT).build();
 
         ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
         return new ProjectFileResponse(projectFile, spaceCode, id);
@@ -139,10 +128,7 @@ public class ProjectController {
 
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(projectFile.getName(), StandardCharsets.UTF_8).build();
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-                .body(resource);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream")).header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()).body(resource);
     }
 
     @Operation(description = "프로젝트 탈퇴")

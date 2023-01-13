@@ -17,6 +17,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
 
   const addTag = () => {
     const newTag = tag.replaceAll(';', '');
+
     if (!tagList.includes(newTag)) {
       onChangeUserRole(spaceUser.userId, 'tags', `${spaceUser.tags || ''};${newTag}`);
     }
