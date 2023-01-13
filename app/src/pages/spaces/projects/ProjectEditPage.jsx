@@ -281,9 +281,11 @@ function ProjectEditPage({ type }) {
 
   const changeProjectUserRole = (userId, field, value) => {
     const next = { ...project };
-    const projectUser = next.users.find(d => d.userId === userId);
-    projectUser.crud = 'U';
-    projectUser[field] = value;
+    const inx = next.users.findIndex(d => d.userId === userId);
+    const nextProjectUser = { ...next.users[inx] };
+    nextProjectUser.crud = 'U';
+    nextProjectUser[field] = value;
+    next.users[inx] = nextProjectUser;
     setProject(next);
   };
 

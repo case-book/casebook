@@ -19,7 +19,7 @@ public class ProjectListResponse {
     private Boolean activated;
     private int testcaseCount;
     private int bugCount;
-    private int testrunCount;
+    private long testrunCount;
 
     public ProjectListResponse(ProjectDTO project) {
         this.id = project.getId();
@@ -27,7 +27,7 @@ public class ProjectListResponse {
         this.description = project.getDescription();
         this.activated = project.isActivated();
         this.testcaseCount = project.getTestcaseGroups().stream().reduce(0, (subtotal, testcaseGroup) -> subtotal + testcaseGroup.getTestcases().size(), Integer::sum);
-        this.testrunCount = (int) project.getTestruns().stream().filter((TestrunDTO::isOpened)).count();
+        this.testrunCount = project.getTestrunCount();
         this.bugCount = 0;
     }
 
