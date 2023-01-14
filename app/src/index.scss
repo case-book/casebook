@@ -119,12 +119,20 @@ html {
     background-color: $body-bg-color-light;
     color: $black;
     transition: background-color 0.3s, color 0.3s;
+
+    @media (max-width: 640px) {
+      background-color: $white;
+    }
   }
 
   &.theme-DARK {
     background-color: $body-bg-color-dark;
     color: $white;
     transition: background-color 0.3s, color 0.3s;
+
+    @media (max-width: 640px) {
+      background-color: var(--background-color);
+    }
   }
 }
 

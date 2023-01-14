@@ -104,8 +104,9 @@ html {
   --disable-opacity: 0.6;
 }
 
+
 html {
-  --backgroud-color : #FFF;
+  --background-color : #eaeef3;
   --text-color: #222;
   --primary-color: #3e8ef1;
   --primary-text-color: #fff;
@@ -115,10 +116,11 @@ html {
   --hover-brightness: 1.06;
   --border-color: rgba(0, 0, 0, 0.3);
   --border-color-hover: rgba(0, 0, 0, 0.5);
+  --input-background : #FFF;
 }
 
 html.theme-DARK {
-  --backgroud-color : #09080d;
+  --background-color : #09080d;
   --text-color: #fff;
   --primary-color: #ffbc4b;
   --primary-text-color: #222;
@@ -127,6 +129,7 @@ html.theme-DARK {
   --hover-brightness: 1.05;
   --border-color: rgba(0, 0, 0, 0.3);
   --border-color-hover: rgba(0, 0, 0, 0.5);
+  --input-background : #09080d;
 }
 
 @mixin title() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input } from '@/components';
+import { Button, Form, Input, LogoIcon } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -38,7 +38,7 @@ function Join() {
     const next = { ...userInfo };
 
     if (next.password !== next.passwordConfirm) {
-      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '비밀번호 불일치', '입력하신 비밀번호가 일치하지 않습니다.');
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('비밀번호 불일치'), t('입력하신 비밀번호가 일치하지 않습니다.'));
       return;
     }
 
@@ -52,6 +52,9 @@ function Join() {
   return (
     <div className="join-wrapper">
       <div className="join-box">
+        <div className="logo">
+          <LogoIcon />
+        </div>
         <div className="join-title">JOIN</div>
         <Form onSubmit={onSubmit}>
           <div className="label">{t('이메일')}</div>
@@ -127,12 +130,12 @@ function Join() {
             />
           </div>
           <div className="button">
-            <Button type="submit" color="primary" size="xl">
-              회원 가입
+            <Button type="submit" color="yellow" size="md">
+              {t('회원 가입')}
             </Button>
           </div>
           <div className="login">
-            <Link to="/users/login">로그인</Link>
+            <Link to="/users/login">{t('로그인')}</Link>
           </div>
         </Form>
       </div>

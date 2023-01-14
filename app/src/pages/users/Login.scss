@@ -4,7 +4,7 @@
   position: relative;
   flex-direction: row;
   margin: 0 auto;
-  min-height: calc(100vh - 80px);
+  min-height: calc(var(--vh, 1vh) * 100 - 80px);
   justify-content: center;
 
   > div {
@@ -75,10 +75,6 @@
 
       .input {
         margin-bottom: 0.5rem;
-
-        input {
-
-        }
       }
 
       .auto-login {

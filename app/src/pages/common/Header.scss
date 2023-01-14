@@ -18,7 +18,7 @@
 
 .header-wrapper {
   box-shadow: #060606 0 0 4px 1px;
-  border-bottom: 1px solid #000;
+
   background-color: $header-bg-color-dark;
   padding: 0 20px;
   position: relative;
@@ -687,8 +687,13 @@
 .theme-LIGHT {
   .header-wrapper {
     background-color: $header-bg-color-light;
-    border-bottom: none;
     box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+
+    @media (max-width: 640px) {
+      border-bottom: 1px solid var(--border-color);
+
+    }
+
 
     > div.header-content {
       > div {

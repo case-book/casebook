@@ -65,6 +65,10 @@
     > div {
       max-width: 500px;
       min-width: 500px;
+
+      @media (max-width: 640px) {
+        min-width: auto;
+      }
     }
   }
 
@@ -72,6 +76,10 @@
     > div {
       max-width: 800px;
       min-width: 800px;
+
+      @media (max-width: 640px) {
+        min-width: auto;
+      }
     }
   }
 
@@ -79,6 +87,10 @@
     > div {
       max-width: 1024px;
       min-width: 1024px;
+
+      @media (max-width: 640px) {
+        min-width: auto;
+      }
     }
   }
 
@@ -89,6 +101,10 @@
       @media (max-width: 1480px) {
         margin: 0 40px;
         min-width: calc(100% - 80px);
+      }
+
+      @media (max-width: 640px) {
+        min-width: auto;
       }
     }
   }
