@@ -9,7 +9,7 @@ export default class ControlStore {
       return theme;
     }
 
-    return THEMES.DARK;
+    return THEMES.LIGHT;
   })();
 
   constructor() {

@@ -376,7 +376,7 @@ function Header({ className }) {
           {!isLogin && <Link to="/users/login">{t('로그인')}</Link>}
           {!isLogin && (
             <Link className="join-link" to="/users/join">
-              {t('회원가입')}
+              {t('회원 가입')}
             </Link>
           )}
         </div>

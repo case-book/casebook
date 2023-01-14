@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import './Login.scss';
-import { Button, CheckBox, Form, Input } from '@/components';
+import { Button, CheckBox, Form, Input, LogoIcon } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { setToken } from '@/utils/request';
+import './Login.scss';
 
 function Login() {
   const { t } = useTranslation();
@@ -42,6 +42,9 @@ function Login() {
     <div className="login-wrapper">
       <div>
         <div className="login-box">
+          <div className="logo">
+            <LogoIcon />
+          </div>
           <div className="login-title">LOGIN</div>
           <Form onSubmit={onSubmit}>
             <div className="label">{t('이메일')}</div>
@@ -50,8 +53,8 @@ function Login() {
                 type="email"
                 value={info.email}
                 placeholder={t('이메일')}
-                color="white"
                 size="lg"
+                underline
                 onChange={val =>
                   setInfo({
                     ...info,
@@ -66,10 +69,11 @@ function Login() {
             <div className="input">
               <Input
                 type="password"
-                color="white"
                 size="lg"
+                underline
                 value={info.password}
                 placeholder={t('비밀번호')}
+                autoComplete="current-password"
                 onChange={val =>
                   setInfo({
                     ...info,
@@ -83,6 +87,7 @@ function Login() {
             <div className="auto-login">
               <div>
                 <CheckBox
+                  disabled
                   size="xs"
                   type="checkbox"
                   value={info.activated}
@@ -97,19 +102,19 @@ function Login() {
               </div>
             </div>
             <div className="button">
-              <Button type="submit" color="primary" size="md">
-                로그인
+              <Button type="submit" color="yellow" size="md">
+                {t('로그인')}
               </Button>
             </div>
           </Form>
-          {location.pathname !== '/users/login' && (
+          {location.pathname !== '/users/login' && location.pathname !== '/users/join' && (
             <div className="message">
               <span>{t('로그인이 필요합니다.')}</span>
             </div>
           )}
         </div>
         <div className="join">
-          <Link to="/users/join">회원 가입</Link>
+          <Link to="/users/join">{t('새로운 사용자 등록')}</Link>
         </div>
       </div>
     </div>

@@ -145,6 +145,15 @@
     > div {
       align-self: center;
 
+      &.user-menu {
+        a {
+          margin-right: 0.5rem;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+
       &.mobile-menu-button {
         height: 100%;
         padding: 1rem;
@@ -451,9 +460,6 @@
     .user-menu {
       margin-left: 0.5rem;
     }
-
-
-
 
     @media (max-width: 1024px) {
       .user-menu,

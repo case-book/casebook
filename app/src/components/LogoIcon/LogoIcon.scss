@@ -1,0 +1,18 @@
+.logo-icon-wrapper {
+  text-align: center;
+  display: inline-block;
+
+  > div {
+    width: 60px;
+    height: 60px;
+    display: inline-flex;
+    background-color: var(--point-backgroup-color);
+    color: var(--point-color);
+    justify-content: center;
+    border-radius: 50%;
+    i {
+      align-self: center;
+      font-size: 28px;
+    }
+  }
+}

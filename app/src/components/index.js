@@ -23,6 +23,7 @@ import CheckBox from './CheckBox/CheckBox';
 import Selector from './Selector/Selector';
 import Title from './Title/Title';
 import Logo from './Logo/Logo';
+import LogoIcon from './LogoIcon/LogoIcon';
 import WordSplitter from './WordSplitter/WordSplitter';
 import TextArea from './TextArea/TextArea';
 import Text from './Text/Text';
@@ -76,6 +77,7 @@ export {
   CheckBox,
   Title,
   Logo,
+  LogoIcon,
   WordSplitter,
   TextArea,
   Text,

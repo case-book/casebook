@@ -47,11 +47,14 @@ $logo-color-1: #fe0000;
   flex-direction: column;
 
   .loader {
-    display: inline-block;
+    display: inline-flex;
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     margin: 0 auto;
+    background-color: $white;
+    border-radius: 50%;
+    justify-content: center;
   }
   .loader div {
     display: inline-block;
@@ -60,36 +63,56 @@ $logo-color-1: #fe0000;
     width: 16px;
     background: $primary-color;
     animation: loader 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    border-radius: 10px;
   }
   .loader div:nth-child(1) {
-    left: 8px;
+    left: 18px;
     animation-delay: -0.24s;
   }
   .loader div:nth-child(2) {
-    left: 32px;
+    left: 42px;
     animation-delay: -0.12s;
   }
   .loader div:nth-child(3) {
-    left: 56px;
+    left: 66px;
     animation-delay: 0;
   }
 
   @keyframes loader {
     0% {
-      top: 8px;
-      height: 64px;
+      top: 40px;
+      height: 20px;
     }
     50%,
     100% {
-      top: 24px;
-      height: 32px;
+      top: 30px;
+      height: 40px;
+    }
+  }
+  .request-messages {
+    text-align: center;
+    > div {
+      margin-top: 0.5rem;
+
+      > span {
+        background-color: $white;
+        display: inline-block;
+        padding: 0.75rem 1rem;
+        border-radius: 5px;
+        font-size: 14px;
+        line-height: 100%;
+        font-weight: bold;
+
+        i {
+          margin-right: 0.5rem;
+        }
+      }
     }
   }
 }
 
 .theme-DARK {
   .request-loading {
-
   }
 }
 

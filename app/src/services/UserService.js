@@ -76,6 +76,11 @@ UserService.login = (info, successHandler, failHandler) => {
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    true,
+    null,
+    '사용자 정보를 확인하고 있습니다.',
   );
 };
 

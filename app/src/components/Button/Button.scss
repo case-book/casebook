@@ -12,7 +12,7 @@
   }
 
   &.disabled {
-    opacity: 0.4;
+    opacity: var(--disable-opacity);
   }
 
   &.btn-xs {
@@ -48,99 +48,89 @@
     padding: 0 24px;
   }
 
+  &:hover {
+    filter: brightness(var(--hover-brightness));
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+
+    &:hover {
+      filter: none;
+    }
+  }
+
   &:focus {
     box-shadow: none;
   }
 
+  &.btn-outline {
+    border: 1px solid var(--border-color);
+    &:hover {
+      border: 1px solid var(--border-color-hover);
+      &.disabled {
+        border: 1px solid var(--border-color);
+      }
+    }
+  }
+
+  &.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+  }
+
   &.btn-transparent {
     background-color: transparent;
-    color: $white;
-
-    &:hover {
-      background-color: transparent;
-    }
-
-    &.disabled:hover {
-      background-color: transparent;
-    }
+    color: var(--text-color);
+    box-shadow: none;
   }
 
   &.btn-white {
     background-color: $white;
     color: $black;
-    border: 1px solid $input-border-color;
+    border: 1px solid var(--border-color);
 
     &:hover {
-      background-color: $primary-color;
+      background-color: var(--primary-color);
+      color: var(--primary-text-color);
+      border: 1px solid var(--border-color-hover);
     }
 
     &.disabled:hover {
-      background-color: $primary-color;
-    }
-  }
-
-  &.btn-outline-white {
-    background-color: $white;
-    color: $black;
-    border: 1px solid $input-border-color;
-    &:hover {
-      border: 1px solid $input-border-focus-color;
-      &.disabled {
-        border: 1px solid $border-color;
-      }
+      background-color: $white;
+      color: $black;
+      border: 1px solid var(--border-color);
     }
   }
 
   &.btn-danger {
-    background-color: $danger;
-    color: $white !important;
-
-    &:hover {
-      background-color: darken($danger, 10%);
-    }
-
-    &.disabled:hover {
-      background-color: $danger;
-    }
-  }
-
-  &.btn-outline-danger {
-    background-color: $white;
-    color: $danger;
-    border: 1px solid $danger;
-    &:hover {
-      border: 1px solid darken($danger, 10%);
-      color: darken($danger, 10%);
-      &.disabled {
-        opacity: 0.4;
-      }
-    }
+    background-color: var(--danger-color);
+    color: $white;
   }
 
   &.btn-warning {
     background-color: $warning;
-    color: $white !important;
-
-    &:hover {
-      background-color: darken($warning, 10%);
-    }
-
-    &.disabled:hover {
-      background-color: $warning;
-    }
+    color: $white;
   }
 
-  &.btn-outline-warning {
-    background-color: $white;
-    color: $warning;
-    border: 1px solid $warning;
-    &:hover {
-      border: 1px solid darken($warning, 10%);
-      color: darken($warning, 10%);
-      &.disabled {
-        opacity: 0.4;
-      }
-    }
+  &.btn-blue {
+    background-color: $blue;
+    color: $white;
+  }
+
+  &.btn-yellow {
+    background-color: $yellow;
+    color: $black;
+  }
+
+  &.btn-light {
+    background-color: var(--light-color);
+    color: $black;
+  }
+
+  &.btn-black {
+    background-color: $black;
+    color: $white;
   }
 
   &.rounded {
@@ -176,159 +166,6 @@
     &.btn-lg {
       width: $lg-height;
       height: $lg-height;
-    }
-  }
-
-  &.btn-primary {
-    background-color: $color-primary-dark;
-    color: $black;
-    &:hover {
-      background-color: darken($color-primary-dark, 8%);
-    }
-
-    &.disabled:hover {
-      background-color: $color-primary-dark;
-    }
-  }
-
-  &.btn-outline-primary {
-    background-color: $color-primary-dark;
-    color: $black;
-    border: 1px solid $input-border-color;
-    &:hover {
-      border: 1px solid $input-border-focus-color;
-      &.disabled {
-        border: 1px solid $border-color;
-      }
-    }
-  }
-
-  &.btn-blue {
-    background-color: $blue;
-    color: $white;
-
-    &:hover {
-      background-color: darken($blue, 5%);
-    }
-
-    &.disabled:hover {
-      background-color: $blue;
-    }
-  }
-
-  &.btn-outline-blue {
-    background-color: $blue;
-    color: $white;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    &:hover {
-      border: 1px solid rgba(0, 0, 0, 0.7);
-      &.disabled {
-        border: 1px solid rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
-
-  &.btn-yellow {
-    background-color: $yellow;
-    color: $black;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-
-    &:hover {
-      background-color: darken($yellow, 5%);
-    }
-
-    &.disabled:hover {
-      background-color: $yellow;
-    }
-  }
-
-  &.btn-outline-yellow {
-    background-color: $yellow;
-    color: $black;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    &:hover {
-      border: 1px solid rgba(0, 0, 0, 0.7);
-      &.disabled {
-        border: 1px solid rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
-
-  &.btn-gray {
-    background-color: $gray-400;
-    color: $black;
-
-    &:hover {
-      background-color: darken($gray-400, 5%);
-    }
-
-    &.disabled:hover {
-      background-color: $gray-400;
-    }
-  }
-
-  &.btn-outline-gray {
-    background-color: $gray-400;
-    color: $black;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    &:hover {
-      border: 1px solid rgba(0, 0, 0, 0.7);
-      &.disabled {
-        border: 1px solid rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
-
-  &.btn-black {
-    background-color: $black;
-    color: $white;
-
-    &:hover {
-      background-color: darken($black, 5%);
-    }
-
-    &.disabled:hover {
-      background-color: $black;
-    }
-  }
-
-  &.btn-outline-black {
-    background-color: $black;
-    color: $white;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    &:hover {
-      border: 1px solid rgba(0, 0, 0, 0.7);
-      &.disabled {
-        border: 1px solid rgba(0, 0, 0, 0.4);
-      }
-    }
-  }
-}
-
-.theme-LIGHT {
-  .btn-wrapper {
-    &.btn-primary {
-      color: $white;
-      background-color: $color-primary-light;
-      &:hover {
-        background-color: darken($color-primary-light, 8%);
-      }
-
-      &.disabled:hover {
-        background-color: $color-primary-light;
-      }
-    }
-
-    &.btn-outline-primary {
-      background-color: $color-primary-light;
-      color: $white;
-      border: 1px solid $input-border-color;
-      &:hover {
-        border: 1px solid $input-border-focus-color;
-        &.disabled {
-          border: 1px solid $border-color;
-        }
-      }
     }
   }
 }

@@ -125,7 +125,7 @@ const getAuthHeaders = (noAuth, multipart) => {
 };
 
 // METHOD: GET
-export function get(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, axiosInstance) {
+export function get(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
@@ -134,7 +134,7 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
 
   const [uri, unmatchedParams] = stringCompiler(url, data, true);
 
-  const promise = (axiosInstance || axios).get(uri, { params: unmatchedParams, ...getAuthHeaders(noAuth) });
+  const promise = axios.get(uri, { params: unmatchedParams, ...getAuthHeaders(noAuth) });
 
   promise
     .then(response => {
@@ -153,20 +153,25 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
 }
 
 // METHOD: POST
-export function post(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart, axiosInstance) {
+export function post(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart, message) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
   }
 
+  const messageId = Date.now();
+  if (message) {
+    rootStore.controlStore.addRequestMessage(messageId, message);
+  }
+
   let promise;
   if (multipart) {
-    promise = (axiosInstance || axios).post(url, data, getAuthHeaders(noAuth, true));
-  } else if (Array.isArray(data)) promise = (axiosInstance || axios).post(url, data, getAuthHeaders(noAuth));
+    promise = axios.post(url, data, getAuthHeaders(noAuth, true));
+  } else if (Array.isArray(data)) promise = axios.post(url, data, getAuthHeaders(noAuth));
   else {
     const [uri, unmatchedParams] = stringCompiler(url, data, true);
-    promise = (axiosInstance || axios).post(uri, unmatchedParams, getAuthHeaders(noAuth));
+    promise = axios.post(uri, unmatchedParams, getAuthHeaders(noAuth));
   }
 
   promise
@@ -177,6 +182,9 @@ export function post(url, data, successHandler, errorHandler, ref, noAuth, showL
       processError(errorHandler, error);
     })
     .finally(() => {
+      if (message) {
+        rootStore.controlStore.removeRequestMessage(messageId);
+      }
       if (showLoading !== false) processFinally();
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
@@ -186,7 +194,7 @@ export function post(url, data, successHandler, errorHandler, ref, noAuth, showL
 }
 
 // METHOD: PUT
-export function put(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart, axiosInstance) {
+export function put(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
@@ -197,9 +205,9 @@ export function put(url, data, successHandler, errorHandler, ref, noAuth, showLo
 
   let promise;
   if (multipart) {
-    promise = (axiosInstance || axios).put(url, data, getAuthHeaders(noAuth, true));
+    promise = axios.put(url, data, getAuthHeaders(noAuth, true));
   } else {
-    promise = (axiosInstance || axios).put(uri, unmatchedParams, getAuthHeaders(noAuth));
+    promise = axios.put(uri, unmatchedParams, getAuthHeaders(noAuth));
   }
 
   promise
@@ -219,14 +227,14 @@ export function put(url, data, successHandler, errorHandler, ref, noAuth, showLo
 }
 
 // METHOD: DELETE
-export function del(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, axiosInstance) {
+export function del(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
   }
 
-  const promise = (axiosInstance || axios)
+  const promise = axios
     .delete(stringCompiler(url, data), Object.assign(getAuthHeaders(noAuth), { data }))
     .then(response => {
       processSuccess(successHandler, response, ref);
