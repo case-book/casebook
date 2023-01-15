@@ -118,7 +118,7 @@ function SideControl({ className }) {
   };
 
   return (
-    <div className={`side-control-wrapper ${className} ${hideHeader ? 'collapsed' : ''}`}>
+    <div className={`side-control-wrapper ${className} ${hideHeader ? 'collapsed' : ''} ${isLogin ? 'is-login' : 'is-not-login'}`}>
       <div className="theme-selector side-menu-item">
         <div>
           <Switch

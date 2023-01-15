@@ -10,11 +10,11 @@ import ProjectService from '@/services/ProjectService';
 import { THEMES } from '@/constants/constants';
 import './Menu.scss';
 
-function MainMenu({ className }) {
+function MainMenu({ className, closeMobileMenu }) {
   const {
     userStore: { user },
     themeStore: { theme },
-    contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected },
+    contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected, refreshProjectTime },
     controlStore: { hideHeader },
   } = useStores();
 
@@ -43,7 +43,7 @@ function MainMenu({ className }) {
         false,
       );
     }
-  }, [spaceCode]);
+  }, [spaceCode, refreshProjectTime]);
 
   const [menuAlert, setMenuAlert] = useState({
     inx: null,
@@ -51,7 +51,7 @@ function MainMenu({ className }) {
   });
 
   return (
-    <ul className={`main-menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : ''}`}>
+    <ul className={`main-menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : 'no-collapsed'}`}>
       {STATIC_MENUS.filter(d => d.pc)
         .filter(d => !d.admin || (d.admin && user.systemRole === 'ROLE_ADMIN'))
         .map((d, inx) => {
@@ -74,6 +74,9 @@ function MainMenu({ className }) {
                     e.preventDefault();
 
                     if (isSpaceSelected) {
+                      if (closeMobileMenu) {
+                        closeMobileMenu();
+                      }
                       navigate(`/spaces/${spaceCode}${d.to}`);
                     } else {
                       setMenuAlert({
@@ -94,6 +97,8 @@ function MainMenu({ className }) {
                         });
                       }, 2000);
                     }
+                  } else if (closeMobileMenu) {
+                    closeMobileMenu();
                   }
                 }}
               >
@@ -107,6 +112,7 @@ function MainMenu({ className }) {
               </Link>
               {d.key === 'space' && isSpaceSelected && (
                 <TargetSelector
+                  className="target-select"
                   value={spaceCode}
                   list={user?.spaces?.map(space => {
                     return {
@@ -121,6 +127,7 @@ function MainMenu({ className }) {
               )}
               {d.key === 'project' && isProjectSelected && (
                 <TargetSelector
+                  className="target-select"
                   value={Number(projectId)}
                   list={projectList?.map(project => {
                     return {
@@ -143,10 +150,12 @@ function MainMenu({ className }) {
 
 MainMenu.defaultProps = {
   className: '',
+  closeMobileMenu: null,
 };
 
 MainMenu.propTypes = {
   className: PropTypes.string,
+  closeMobileMenu: PropTypes.func,
 };
 
 export default observer(MainMenu);

@@ -8,7 +8,7 @@ import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 import './Menu.scss';
 
-function ProjectMenu({ className }) {
+function ProjectMenu({ className, closeMobileMenu }) {
   const {
     userStore: { isLogin },
     themeStore: { theme },
@@ -20,59 +20,69 @@ function ProjectMenu({ className }) {
 
   const { t } = useTranslation();
 
+  const list = MENUS.filter(d => d.pc)
+    .filter(d => d.project === isProjectSelected)
+    .filter(d => !d.admin)
+    .filter(d => d.login === undefined || d.login === isLogin);
+
   return (
-    <ul className={`menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : ''}`}>
-      {MENUS.filter(d => d.pc)
-        .filter(d => d.project === isProjectSelected)
-        .filter(d => !d.admin)
-        .filter(d => d.login === undefined || d.login === isLogin)
-        .map((d, inx) => {
-          let isSelected = false;
-          if (d.project) {
-            isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
-          }
+    <ul className={`project-menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : ''} ${isProjectSelected ? 'project-selected' : ''} ${list?.length > 0 ? '' : 'no-menu'}`}>
+      {list.map((d, inx) => {
+        let isSelected = false;
+        if (d.project) {
+          isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
+        }
 
-          if (!isSelected && d.selectedAlias) {
-            isSelected = d.selectedAlias.reduce((p, c) => {
-              return p || c.test(location.pathname);
-            }, false);
-          }
+        if (!isSelected && d.selectedAlias) {
+          isSelected = d.selectedAlias.reduce((p, c) => {
+            return p || c.test(location.pathname);
+          }, false);
+        }
 
-          if (!isSelected) {
-            isSelected = location.pathname === d.to;
-          }
+        if (!isSelected) {
+          isSelected = location.pathname === d.to;
+        }
 
-          return (
-            <li
-              key={inx}
-              className={isSelected ? 'selected' : ''}
-              style={{
-                animationDelay: `${inx * 0.1}s`,
+        return (
+          <li
+            key={inx}
+            className={isSelected ? 'selected' : ''}
+            style={{
+              animationDelay: `${inx * 0.1}s`,
+            }}
+          >
+            <Link
+              to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+              onClick={() => {
+                if (closeMobileMenu) {
+                  closeMobileMenu();
+                }
               }}
             >
-              <Link to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}>
-                <span className="text">
-                  {t(`메뉴.${d.name}`)}
-                  <span />
-                </span>
-              </Link>
-              <div className="cursor">
-                <div />
-              </div>
-              <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px" />
-            </li>
-          );
-        })}
+              <span className="text">
+                {t(`메뉴.${d.name}`)}
+                <span />
+              </span>
+            </Link>
+            <div className="cursor">
+              <div />
+            </div>
+            <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px" />
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
 ProjectMenu.defaultProps = {
   className: '',
+  closeMobileMenu: null,
 };
 
 ProjectMenu.propTypes = {
   className: PropTypes.string,
+  closeMobileMenu: PropTypes.func,
 };
 
 export default observer(ProjectMenu);

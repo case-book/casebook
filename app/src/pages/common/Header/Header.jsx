@@ -39,10 +39,12 @@ function Header({ className }) {
       () => {
         setUser(null);
         navigate('/');
+        setMobileMenuOpen(false);
       },
       () => {
         setUser(null);
         navigate('/');
+        setMobileMenuOpen(false);
       },
     );
   };
@@ -90,25 +92,61 @@ function Header({ className }) {
       </div>
       {mobileMenuOpen && (
         <div className="mobile-menu">
-          <ProjectMenu />
-          <MainMenu />
-          <ul className="user-menu-list">
-            <li>
-              <Link
-                to="/users/my"
-                onClick={e => {
-                  e.stopPropagation();
-                }}
-              >
-                {t('내 정보')}
-              </Link>
-            </li>
-            <li>
-              <Link to="/" onClick={logout}>
-                {t('로그아웃')}
-              </Link>
-            </li>
-          </ul>
+          <ProjectMenu
+            closeMobileMenu={() => {
+              setMobileMenuOpen(false);
+            }}
+          />
+          <MainMenu
+            closeMobileMenu={() => {
+              setMobileMenuOpen(false);
+            }}
+          />
+          {isLogin && (
+            <ul className="user-menu-list">
+              <li>
+                <Link
+                  to="/users/my"
+                  onClick={e => {
+                    e.stopPropagation();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  {t('내 정보')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/" onClick={logout}>
+                  {t('로그아웃')}
+                </Link>
+              </li>
+            </ul>
+          )}
+          {!isLogin && (
+            <ul className="user-menu-list">
+              <li>
+                <Link
+                  to="/users/login"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  {t('로그인')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="join-link"
+                  to="/users/join"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  {t('회원 가입')}
+                </Link>
+              </li>
+            </ul>
+          )}
           <div className="mobile-other-menu">
             <SideControl />
           </div>

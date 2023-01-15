@@ -19,11 +19,29 @@
 .side-control-wrapper {
   display: inline-flex;
 
+  &.is-not-login {
+    flex-grow: 1;
+    justify-content: flex-end;
+
+    @media (max-width: 1024px) {
+      flex-grow: 0;
+    }
+  }
+
   .side-menu-item {
     margin-left: 0.25rem;
   }
 
+  .user-menu {
+    align-self: center;
+    > a {
+      margin-right: 0.5rem;
+    }
+  }
+
   @media (max-width: 1024px) {
+    position: absolute;
+    right : 0;
     .theme-selector,
     .user-menu,
     .header-toggle {
@@ -39,28 +57,31 @@
       display: none;
     }
 
-    .header-toggle {
-      flex-grow: 1;
-      justify-content: right;
-      height: 100%;
-
-      > button {
+    @media (min-width: 1024px) {
+      .header-toggle {
+        flex-grow: 1;
+        justify-content: right;
         height: 100%;
-        background-color: var(--primary-color);
-        color: var(--primary-text-color);
-        width: 40px;
-        border-radius: 0 !important;
-        border: none;
-        .icon {
-          font-size: 14px;
-          padding: 0;
-        }
 
-        &:hover {
-          filter: brightness(var(--hover-brightness));
+        > button {
+          height: 100%;
+          background-color: var(--primary-color);
+          color: var(--primary-text-color);
+          width: 40px;
+          border-radius: 0 !important;
+          border: none;
+          .icon {
+            font-size: 14px;
+            padding: 0;
+          }
+
+          &:hover {
+            filter: brightness(var(--hover-brightness));
+          }
         }
       }
     }
+
   }
 
   .notification-list {
@@ -88,6 +109,12 @@
           right: 0;
         }
 
+        @media (max-width: 640px) {
+          width: calc(100% - 1rem);
+          margin-left: 0.5rem;
+          margin-right: 0.5rem;
+        }
+
         .arrow {
           position: absolute;
           top: 0;
@@ -98,6 +125,14 @@
 
           @media (max-width: 1660px) {
             padding-right: 113px;
+          }
+
+          @media (max-width: 1024px) {
+            padding-right: 23px;
+          }
+
+          @media (max-width: 640px) {
+            padding-right: 15px;
           }
 
           > div {

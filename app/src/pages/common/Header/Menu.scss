@@ -4,6 +4,10 @@ ul.common-menu-wrapper {
   list-style: none;
   height: 100%;
 
+  &.no-menu {
+    display: none;
+  }
+
   &.collapsed {
     > li {
       font-size: 13px;
@@ -55,6 +59,11 @@ ul.common-menu-wrapper {
         border-radius: 2px;
         padding: 5px 8px;
 
+        @media (max-width: 1024px) {
+          left: calc(100% + 10px);
+          top: 2px;
+        }
+
         > div {
           display: inline-block;
           width: 6px;
@@ -64,6 +73,10 @@ ul.common-menu-wrapper {
           bottom: -3px;
           left: calc(50% - 2px);
           transform: rotate(45deg);
+
+          @media (max-width: 1024px) {
+            display: none;
+          }
         }
       }
     }
@@ -84,6 +97,63 @@ ul.common-menu-wrapper {
     &:last-child {
       .liner {
         display: none !important;
+      }
+    }
+  }
+
+  &.project-menu-wrapper {
+    @media (max-width: 1400px) {
+      margin-left: 0.5rem;
+      > li {
+        margin-left: 0.5rem;
+        .liner {
+          display: none !important;
+        }
+      }
+    }
+  }
+  &.main-menu-wrapper {
+    @media (max-width: 1400px) {
+      margin-left: 1rem;
+    }
+
+  }
+
+  &.main-menu-wrapper.project-selected.no-collapsed {
+    margin-left: 0;
+    @media (max-width: 1400px) {
+      > li {
+        display: inline-block !important;
+        padding-top: 16px;
+        margin-right: 1rem;
+        white-space: nowrap;
+        &:last-child {
+          margin-right: 0;
+        }
+
+        > a {
+          display: block;
+          height: auto;
+          width: 100%;
+          text-align: center;
+          margin-bottom: 4px;
+
+          > span {
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+            line-height: 100%;
+            padding: 0 0.5rem;
+            border-radius: 8px;
+          }
+        }
+
+        .target-select {
+          height: auto;
+        }
+
+        .liner {
+          display: none !important;
+        }
       }
     }
   }
