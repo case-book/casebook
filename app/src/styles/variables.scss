@@ -70,7 +70,7 @@ $font-family-menu: NotoSans, sans-serif;
 $font-family-count: Rowdies, NotoSans, sans-serif;
 $font-family-date: AzeretMono, monospace;
 
-$gray-200 : #eaeef3;
+$gray-200: #eaeef3;
 
 $body-bg-color-dark: #09080d;
 $body-bg-color-light: #eaeef3;
@@ -88,13 +88,53 @@ $color-primary-dark: #ffbc4b;
 $color-primary-light: #3e8ef1;
 
 $color-selected-dark: #ffbc4b;
-$color-selected-light: #F6F6F6;
+$color-selected-light: #f6f6f6;
 
 $color-border-light: #dadde6;
 $color-border-light-focus: #babdc6;
 $color-form-control-light: $white;
 $color-border-dark: #494c56;
 $color-form-control-dark: #121212;
+
+html {
+  --point-backgroup-color: #ffbc4b;
+  --point-color: #222;
+  --danger-color: #f21646;
+  --warning-color: #ff4935;
+  --disable-opacity: 0.6;
+}
+
+
+html {
+  --header-background-color: #FFF;
+  --theme-color : #FFF;
+  --background-color : #eaeef3;
+  --text-color: #222;
+  --primary-color: #3e8ef1;
+  --primary-text-color: #fff;
+  --box-color: #fff;
+  --light-color: #e9ecef;
+  --gray-color: #6c757d;
+  --hover-brightness: 1.06;
+  --border-color: rgba(0, 0, 0, 0.3);
+  --border-color-hover: rgba(0, 0, 0, 0.5);
+  --input-background : #FFF;
+}
+
+html.theme-DARK {
+  --header-background-color: #121117;
+  --theme-color : #09080d;
+  --background-color : #09080d;
+  --text-color: #fff;
+  --primary-color: #ffbc4b;
+  --primary-text-color: #222;
+  --box-color: #000;
+  --gray-color: #adb5bd;
+  --hover-brightness: 1.05;
+  --border-color: rgba(0, 0, 0, 0.3);
+  --border-color-hover: rgba(0, 0, 0, 0.5);
+  --input-background : #09080d;
+}
 
 @mixin title() {
   font-weight: bold;

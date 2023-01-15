@@ -135,7 +135,10 @@ function ProjectEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode } = useParams();
 
-  const { userStore } = useStores();
+  const {
+    userStore,
+    contextStore: { setRefreshProjectList },
+  } = useStores();
 
   const navigate = useNavigate();
 
@@ -187,6 +190,7 @@ function ProjectEditPage({ type }) {
 
   const updateProject = () => {
     ProjectService.updateProject(spaceCode, project, () => {
+      setRefreshProjectList();
       navigate(`/spaces/${spaceCode}/projects/${project.id}/info`);
     });
   };
@@ -196,6 +200,7 @@ function ProjectEditPage({ type }) {
 
     if (type === 'new') {
       ProjectService.createProject(spaceCode, project, info => {
+        setRefreshProjectList();
         navigate(`/spaces/${spaceCode}/projects/${info.id}/info`);
       });
     } else if (type === 'edit') {

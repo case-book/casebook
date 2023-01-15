@@ -1,3 +1,11 @@
+.collapsed {
+  .target-selector-wrapper {
+
+    .target-selector-list {
+      top: 30px;
+    }
+  }
+}
 .target-selector-wrapper {
   height: 100%;
   display: flex;
@@ -23,22 +31,6 @@
     }
   }
 
-  &.theme-LIGHT {
-    > div {
-      color: $gray-600;
-
-      &:hover {
-        color: $black;
-      }
-    }
-
-    &.opened {
-      > div {
-        color: $black;
-      }
-    }
-  }
-
   &.opened {
     > div {
       color: $white;
@@ -59,6 +51,10 @@
     overflow-y: auto;
     border-radius: 2px;
     font-size: 13px;
+
+    @media (max-width: 1400px) {
+      top: calc(100% + 5px);
+    }
 
     > ul {
       margin: 0;

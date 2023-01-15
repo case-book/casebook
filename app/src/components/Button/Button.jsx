@@ -14,7 +14,7 @@ function Button(props) {
   return (
     <button
       type={type}
-      className={`g-no-select btn-wrapper btn${outline ? '-outline' : ''}${color ? `-${color}` : ''} btn-${size} ${className} ${disabled ? 'disabled' : ''} ${shadow ? '' : 'shadow-none'} ${
+      className={`g-no-select btn-wrapper btn${outline ? '-outline' : ''} btn-${color ? `${color}` : ''} btn-${size} ${className} ${disabled ? 'disabled' : ''} ${shadow ? '' : 'shadow-none'} ${
         rounded ? 'rounded' : ''
       }`}
       color={color}

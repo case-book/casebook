@@ -90,8 +90,9 @@
     .case-content {
       padding: 1rem 0.5rem 4rem;
       .case-description {
-        padding: 0.5rem 1rem 0;
+        padding: 0 0.5rem;
         background-color: transparent;
+        border: none;
       }
 
       .case-item {
@@ -102,7 +103,6 @@
           }
 
           .value {
-            padding: 1rem;
             background-color: transparent;
             border: none;
             padding: 0;

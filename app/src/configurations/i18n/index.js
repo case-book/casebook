@@ -6,7 +6,7 @@ import en from '@/configurations/i18n/locales/en/translation.json';
 i18n.use(initReactI18next).init({
   fallbackLng: 'ko',
   lng: 'ko',
-  debug: false && process.env.NODE_ENV !== 'production',
+  debug: process.env.NODE_ENV !== 'production',
   resources: {
     ko: {
       translation: ko,

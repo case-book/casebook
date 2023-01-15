@@ -5,6 +5,8 @@ export default class ContextStore {
 
   projectId = null;
 
+  refreshProjectTime = null;
+
   constructor() {
     makeObservable(this, {
       spaceCode: observable,
@@ -13,6 +15,8 @@ export default class ContextStore {
       setProjectId: action,
       isProjectSelected: computed,
       isSpaceSelected: computed,
+      refreshProjectTime: observable,
+      setRefreshProjectList: action,
     });
   }
 
@@ -22,6 +26,10 @@ export default class ContextStore {
 
   setProjectId = projectId => {
     this.projectId = Number(projectId);
+  };
+
+  setRefreshProjectList = () => {
+    this.refreshProjectTime = Date.now();
   };
 
   get isProjectSelected() {

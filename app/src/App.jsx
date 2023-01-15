@@ -9,6 +9,7 @@ import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import ConfigsRoutes from '@/pages/configs';
 import { Star } from '@/components';
+import { debounce } from 'lodash';
 import './App.scss';
 
 function App() {
@@ -30,6 +31,15 @@ function App() {
     },
   });
 
+  const setScreenSize = () => {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  };
+
+  const setScreenSizeDebounce = debounce(() => {
+    setScreenSize();
+  }, 200);
+
   useEffect(() => {
     setStarInfo({
       star1: {
@@ -41,6 +51,14 @@ function App() {
         right: `${-20 + Math.round(Math.random() * 20)}%`,
       },
     });
+
+    setScreenSize();
+    window.addEventListener('resize', setScreenSizeDebounce);
+
+    return () => {
+      setScreenSizeDebounce?.cancel();
+      window.removeEventListener('resize', setScreenSizeDebounce);
+    };
   }, []);
 
   useEffect(() => {

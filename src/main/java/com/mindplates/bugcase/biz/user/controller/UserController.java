@@ -72,7 +72,7 @@ public class UserController {
     private void checkUserValidation(User user, Long currentUserId) {
         boolean existEmailUser = userService.existUserByEmail(user.getEmail(), currentUserId);
         if (existEmailUser) {
-            throw new ServiceException("error.existEmail");
+            throw new ServiceException("error.exist.email");
         }
     }
 

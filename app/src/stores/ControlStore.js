@@ -22,6 +22,8 @@ export default class ControlStore {
 
   requestLoading = false;
 
+  requestMessages = [];
+
   error = {
     code: null,
     message: null,
@@ -37,13 +39,30 @@ export default class ControlStore {
       requestLoading: observable,
       error: observable,
       hideHeader: observable,
+      requestMessages: observable,
       setMessage: action,
       setConfirm: action,
       setRequestLoading: action,
       setError: action,
       setHideHeader: action,
+      addRequestMessage: action,
+      removeRequestMessage: action,
     });
   }
+
+  addRequestMessage = (id, message) => {
+    this.requestMessages.push({
+      id,
+      message,
+    });
+  };
+
+  removeRequestMessage = id => {
+    const inx = this.requestMessages.findIndex(d => d.id === id);
+    if (inx > -1) {
+      this.requestMessages.splice(inx);
+    }
+  };
 
   setMessage = (category, title, message, okHandler, okText) => {
     this.message = {

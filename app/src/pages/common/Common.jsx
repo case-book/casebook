@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
-import { observer } from 'mobx-react';
 import ConfirmDialog from '@/pages/common/ConfirmDialog';
 import MessageDialog from '@/pages/common/MessageDialog';
 import ErrorDialog from '@/pages/common/ErrorDialog';
@@ -14,13 +13,14 @@ import { useLocation } from 'react-router-dom';
 import { SocketClient } from '@/components';
 
 import './Common.scss';
+import { observer } from 'mobx-react';
 
 function Common() {
   const {
     userStore,
     userStore: { user },
     configStore: { setVersion },
-    controlStore,
+    controlStore: { requestLoading, confirm, message, error, requestMessages },
     contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
   } = useStores();
 
@@ -108,12 +108,12 @@ function Common() {
   );
 
   useEffect(() => {
-    if (controlStore.requestLoading) {
+    if (requestLoading) {
       setLoading(true);
     } else {
       setLoadingDebounce(false);
     }
-  }, [controlStore.requestLoading]);
+  }, [requestLoading]);
 
   const onMessage = useCallback(info => {
     const {
@@ -156,30 +156,22 @@ function Common() {
           }}
         />
       )}
-      {!loading && controlStore.confirm?.message && (
+      {!loading && confirm?.message && (
         <ConfirmDialog
-          category={controlStore.confirm?.category || ''}
-          title={controlStore.confirm?.title || ''}
-          message={controlStore.confirm?.message || ''}
-          okHandler={controlStore.confirm?.okHandler}
-          noHandler={controlStore.confirm?.noHandler}
-          okText={controlStore.confirm?.okText || ''}
-          noText={controlStore.confirm?.noText || ''}
-          okColor={controlStore.confirm?.okColor}
+          category={confirm?.category || ''}
+          title={confirm?.title || ''}
+          message={confirm?.message || ''}
+          okHandler={confirm?.okHandler}
+          noHandler={confirm?.noHandler}
+          okText={confirm?.okText || ''}
+          noText={confirm?.noText || ''}
+          okColor={confirm?.okColor}
         />
       )}
-      {!loading && controlStore.message?.message && (
-        <MessageDialog
-          category={controlStore.message?.category || ''}
-          title={controlStore.message?.title || ''}
-          message={controlStore.message?.message || ''}
-          okHandler={controlStore.message?.okHandler}
-          okText={controlStore.message?.okText || ''}
-        />
+      {!loading && message?.message && (
+        <MessageDialog category={message?.category || ''} title={message?.title || ''} message={message?.message || ''} okHandler={message?.okHandler} okText={message?.okText || ''} />
       )}
-      {!loading && controlStore.error?.message && (
-        <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={controlStore.error?.code || '요청 실패'} message={controlStore.error?.message || ''} handler={controlStore.error?.okHandler} />
-      )}
+      {!loading && error?.message && <ErrorDialog category={MESSAGE_CATEGORY.ERROR} title={error?.code || '요청 실패'} message={error?.message || ''} handler={error?.okHandler} />}
       {loading && (
         <div className="request-loading">
           <div className="loader">
@@ -187,6 +179,20 @@ function Common() {
             <div />
             <div />
           </div>
+          {requestMessages?.length > 0 && (
+            <div className="request-messages">
+              {requestMessages.map(info => {
+                return (
+                  <div key={info.id}>
+                    <span>
+                      <i className="fa-solid fa-volume-high" />
+                      {info.message}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
       <ReactTooltip effect="solid" />
