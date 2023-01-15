@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './LogoIcon.scss';
 
-function LogoIcon({ className }) {
+function LogoIcon({ className, size }) {
   return (
-    <div className={`logo-icon-wrapper ${className}`}>
+    <div className={`logo-icon-wrapper ${className} size-${size}`}>
       <div>
         <i className="fa-solid fa-book" />
       </div>
@@ -14,10 +14,12 @@ function LogoIcon({ className }) {
 
 LogoIcon.defaultProps = {
   className: '',
+  size: 'xxl',
 };
 
 LogoIcon.propTypes = {
   className: PropTypes.string,
+  size: PropTypes.string,
 };
 
 export default LogoIcon;

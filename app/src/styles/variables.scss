@@ -106,6 +106,8 @@ html {
 
 
 html {
+  --header-background-color: #FFF;
+  --theme-color : #FFF;
   --background-color : #eaeef3;
   --text-color: #222;
   --primary-color: #3e8ef1;
@@ -120,6 +122,8 @@ html {
 }
 
 html.theme-DARK {
+  --header-background-color: #121117;
+  --theme-color : #09080d;
   --background-color : #09080d;
   --text-color: #fff;
   --primary-color: #ffbc4b;
