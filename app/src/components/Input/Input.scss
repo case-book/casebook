@@ -14,12 +14,12 @@
   background-color: $white;
 
   &.outline {
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--input-border-color);
   }
 
   &.underline {
     border: none;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--input-border-color);
     border-radius: 0;
   }
 

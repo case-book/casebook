@@ -129,13 +129,13 @@
       }
       button {
         background-color: transparent;
-        color: $black;
+        color: var(--text-color);
         width: 50px;
         height: 100%;
         font-size: 30px;
 
         &:hover {
-          color: $color-primary-light;
+          color: var(--primary-color);
         }
       }
     }
@@ -196,7 +196,7 @@
             &:hover {
               .name-and-code {
                 .name {
-                  color: $color-primary-light;
+                  color: var(--primary-color);
                 }
               }
             }
@@ -220,7 +220,7 @@
 
                   .name {
                     font-size: 20px;
-                    margin-bottom: 4px;
+                    margin-bottom: 8px;
                     white-space: nowrap;
                     max-width: 100%;
                     overflow: hidden;
@@ -234,7 +234,6 @@
                   padding: 0;
                   text-align: center;
                   flex-grow: 1;
-                  color: black;
                   max-height: 76px;
                   min-height: 76px;
                   display: flex;
@@ -243,10 +242,9 @@
                   overflow-y: auto;
                   margin-bottom: 1rem;
                   font-size: 15px;
-
-                  background-color: $gray-100;
-
-                  border: 1px solid rgba(0, 0, 0, 0.02);
+                  background-color: var(--light-color);
+                  color: var(--text-color);
+                  border: 1px solid var(--border-light-color);
                   > div {
                     align-self: center;
                   }
@@ -255,8 +253,9 @@
                 .counter-info {
                   display: flex;
                   flex-grow: 1;
-                  background-color: $gray-100;
-                  border: 1px solid rgba(0, 0, 0, 0.02);
+                  background-color: var(--light-color);
+                  color: var(--text-color);
+                  border: 1px solid var(--border-light-color);
                   border-radius: 4px;
                   padding: 0 2rem;
 
@@ -340,7 +339,7 @@
               }
 
               &:hover {
-                color: $link-color;
+                color: var(--primary-color);
               }
             }
           }
@@ -375,238 +374,6 @@
 
       &.slash {
         margin: 0 0.5rem;
-      }
-    }
-  }
-
-  .space-search-content {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: $white;
-    z-index: 4;
-    height: 0;
-    overflow: hidden;
-    transition: all 0.3s;
-    transition-timing-function: ease-in-out;
-    border-radius: 0 0 4px 4px;
-
-    &.on {
-      height: 500px;
-      transition: all 0.3s;
-      transition-timing-function: ease-in-out;
-      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    }
-
-    > div {
-      display: flex;
-      flex-direction: column;
-      max-width: $max-width;
-      margin: 0 auto;
-      position: relative;
-      padding: 2rem 4rem;
-      height: 100%;
-
-      @media (max-width: 1024px) {
-        padding: 0 0 1rem;
-      }
-
-      .close-icon {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-
-        @media (max-width: 1024px) {
-          display: none;
-        }
-      }
-
-      .search-row {
-        display: flex;
-        width: 100%;
-        padding: 1rem;
-        margin-top: 1rem;
-
-        @media (max-width: 1024px) {
-          margin-top: 0;
-        }
-
-        > div {
-          align-self: center;
-        }
-
-        .text {
-          margin-right: 1rem;
-
-          @media (max-width: 768px) {
-            display: none;
-          }
-        }
-
-        .icon {
-          font-size: 20px;
-          margin-right: 1rem;
-        }
-
-        .query {
-          flex-grow: 1;
-        }
-
-        .control {
-          margin-left: 1rem;
-        }
-      }
-
-      .search-list {
-        flex-grow: 1;
-        display: flex;
-        padding: 1rem 1rem 0;
-        overflow-y: auto;
-
-        @media (max-width: 1024px) {
-          padding: 0 1rem;
-        }
-
-        .empty-content {
-          width: 100%;
-        }
-
-        ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          vertical-align: top;
-          overflow: visible;
-
-          li {
-            display: inline-block;
-            vertical-align: top;
-            cursor: pointer;
-            overflow: visible;
-            position: relative;
-            text-align: center;
-            box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
-            border: 1px solid rgba(0, 0, 0, 0.12);
-            padding: 1rem 1rem;
-            margin-right: 1rem;
-            min-width: 160px;
-            border-radius: 2px;
-            margin-bottom: 1rem;
-
-            &:hover {
-              border: 1px solid rgba(0, 0, 0, 0.3);
-            }
-
-            > a {
-              display: inline-block;
-              border-radius: 0;
-              line-height: 100%;
-              color: $black;
-            }
-
-            .member {
-              text-align: center;
-              line-height: 0;
-              min-height: 18px;
-              margin-bottom: 0.5rem;
-              > span {
-                font-size: 10px;
-                display: inline-block;
-                background-color: $color-sunflower;
-                color: $black;
-                font-weight: bold;
-                padding: 4px;
-                line-height: 100%;
-                border-radius: 2px;
-                font-family: Cairo, sans-serif;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.theme-DARK {
-  .space-list-page-wrapper {
-    .space-list-content {
-      .arrow {
-        button {
-          color: $white;
-
-          &:hover {
-            color: $color-primary-dark;
-          }
-        }
-      }
-
-      .space-card-list {
-        > ul {
-          li {
-            .space-card {
-              &:hover {
-                .name-and-code {
-                  .name {
-                    color: $color-primary-dark;
-                  }
-                }
-              }
-
-              .space-card-content {
-                > div {
-                  .description {
-                    background-color: $black;
-                    color: $white;
-                  }
-
-                  .counter-info {
-                    background-color: $black;
-                    color: $white;
-                  }
-                }
-              }
-
-              .new-space-card-content {
-                &:hover {
-                  color: $color-primary-dark;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .version {
-      color: $gray-200;
-    }
-
-    .space-search-content {
-      background-color: $black;
-
-      > div {
-        .search-list {
-          .empty-content {
-            color: $white;
-          }
-
-          ul {
-            li {
-              background-color: $gray-700;
-
-              &:hover {
-                border: 1px solid rgba(255, 255, 255, 0.2);
-              }
-
-              > a {
-                color: $white;
-              }
-            }
-          }
-        }
       }
     }
   }

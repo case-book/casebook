@@ -22,6 +22,10 @@
   padding: 0 20px;
   position: relative;
   z-index: 4;
+  @media (max-width: 640px) {
+    border-bottom: 1px solid var(--border-light-color);
+    box-shadow: none;
+  }
 
   @media (max-width: 1024px) {
     padding: 0 10px 0 0;

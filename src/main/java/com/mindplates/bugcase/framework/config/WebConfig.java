@@ -1,13 +1,11 @@
 package com.mindplates.bugcase.framework.config;
 
-import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.bean.InitService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.converter.LongToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +25,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 public class WebConfig implements WebMvcConfigurer {
 
 
-    private final SessionUtil sessionUtil;
-    private final UserService userService;
     @Value("${spring.profiles.active}")
     private String activeProfile;
     @Value("${bug-case.corsUrls}")
@@ -37,9 +33,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private JsonRedisTemplate jsonRedisTemplate;
 
-    public WebConfig(SessionUtil sessionUtil, UserService userService) {
-        this.sessionUtil = sessionUtil;
-        this.userService = userService;
+    public WebConfig(SessionUtil sessionUtil) {
+
     }
 
     @Bean
@@ -56,8 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins(this.corsUrls)
-                .allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
+        registry.addMapping("/**").allowedOrigins(this.corsUrls).allowedMethods("GET", "PUT", "POST", "DELETE", "OPTIONS").allowCredentials(true);
     }
 
     @Bean

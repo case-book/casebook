@@ -11,9 +11,8 @@ import ReactTooltip from 'react-tooltip';
 import { getOption, setOption } from '@/utils/storageUtil';
 import { useLocation } from 'react-router-dom';
 import { SocketClient } from '@/components';
-
-import './Common.scss';
 import { observer } from 'mobx-react';
+import './Common.scss';
 
 function Common() {
   const {

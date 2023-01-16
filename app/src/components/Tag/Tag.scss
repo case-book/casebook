@@ -5,7 +5,8 @@
   padding: 6px;
   font-family: Cairo, NotoSans, sans-serif;
   font-weight: bold;
-  background-color: #EEE;
+  background-color: var(--light-color);
+  color: var(--text-color);
 
   &.size-xs {
     padding: 6px;
@@ -23,7 +24,7 @@
   }
 
   &.border {
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
   }
 
   &.uppercase {

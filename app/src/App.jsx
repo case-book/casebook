@@ -100,14 +100,18 @@ function App() {
               </div>
             </div>
             {isLogin && (
-              <Routes location={location}>
-                <Route path="/" element={<SpaceListPage />} />
-                <Route path="/users/*" element={<UsersRoutes />} />
-                <Route path="/spaces/*" element={<SpacesRoutes />} />
-                <Route path="/projects/*" element={<ProjectsRoutes />} />
-                <Route path="/configs/*" element={<ConfigsRoutes />} />
-                <Route path="*" element={<Message code="404" />} />
-              </Routes>
+              <TransitionGroup className="transition-group">
+                <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
+                  <Routes location={location}>
+                    <Route path="/" element={<SpaceListPage />} />
+                    <Route path="/users/*" element={<UsersRoutes />} />
+                    <Route path="/spaces/*" element={<SpacesRoutes />} />
+                    <Route path="/projects/*" element={<ProjectsRoutes />} />
+                    <Route path="/configs/*" element={<ConfigsRoutes />} />
+                    <Route path="*" element={<Message code="404" />} />
+                  </Routes>
+                </CSSTransition>
+              </TransitionGroup>
             )}
             {!isLogin && (
               <TransitionGroup className="transition-group">

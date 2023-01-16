@@ -101,6 +101,7 @@ html {
   --point-color: #222;
   --danger-color: #f21646;
   --warning-color: #ff4935;
+  --yellow-color : #ffbc4b;
   --disable-opacity: 0.6;
 }
 
@@ -113,12 +114,16 @@ html {
   --primary-color: #3e8ef1;
   --primary-text-color: #fff;
   --box-color: #fff;
-  --light-color: #e9ecef;
+  --light-color: #f8f9fa;
   --gray-color: #6c757d;
   --hover-brightness: 1.06;
-  --border-color: rgba(0, 0, 0, 0.3);
+  --input-border-color: #dadde6;
+  --border-color: rgba(0, 0, 0, 0.25);
+  --border-light-color: rgba(0, 0, 0, 0.05);
   --border-color-hover: rgba(0, 0, 0, 0.5);
   --input-background : #FFF;
+  --start-background-color : #adb5bd;
+  --start-opacity : 0.1;
 }
 
 html.theme-DARK {
@@ -129,11 +134,16 @@ html.theme-DARK {
   --primary-color: #ffbc4b;
   --primary-text-color: #222;
   --box-color: #000;
+  --light-color: #222;
   --gray-color: #adb5bd;
   --hover-brightness: 1.05;
-  --border-color: rgba(0, 0, 0, 0.3);
+  --input-border-color: #494c56;
+  --border-color: rgba(255, 255, 255, 0.3);
+  --border-light-color: rgba(255, 255, 255, 0.05);
   --border-color-hover: rgba(0, 0, 0, 0.5);
   --input-background : #09080d;
+  --start-background-color : #000;
+  --start-opacity : 0.3;
 }
 
 @mixin title() {

@@ -23,14 +23,7 @@ public class JoinRequest {
     private String password;
 
 
-    public User buildEntity() {
-        return User.builder()
-                .id(id)
-                .email(email)
-                .name(name)
-                .country(country)
-                .language(language)
-                .password(password)
-                .build();
+    public User toDTO() {
+        return User.builder().id(id).email(email).name(name).country(country).language(language).password(password).build();
     }
 }

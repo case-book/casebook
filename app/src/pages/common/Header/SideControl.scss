@@ -41,11 +41,34 @@
 
   @media (max-width: 1024px) {
     position: absolute;
-    right : 0;
+    right: 0;
     .theme-selector,
     .user-menu,
     .header-toggle {
       display: none;
+    }
+  }
+
+  .notification-menu {
+    position: relative;
+
+    .notification-count {
+      font-family: $font-family-count;
+      font-size: 13px;
+      position: absolute;
+      right: -7px;
+      top: -7px;
+      background-color: $third-color;
+      color: $white;
+      display: inline-flex;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      justify-content: center;
+
+      > span {
+        align-self: center;
+      }
     }
   }
 
@@ -81,7 +104,6 @@
         }
       }
     }
-
   }
 
   .notification-list {

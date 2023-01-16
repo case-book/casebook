@@ -58,10 +58,12 @@ export default class ControlStore {
   };
 
   removeRequestMessage = id => {
-    const inx = this.requestMessages.findIndex(d => d.id === id);
-    if (inx > -1) {
-      this.requestMessages.splice(inx);
-    }
+    setTimeout(() => {
+      const inx = this.requestMessages.findIndex(d => d.id === id);
+      if (inx > -1) {
+        this.requestMessages.splice(inx);
+      }
+    }, 500);
   };
 
   setMessage = (category, title, message, okHandler, okText) => {

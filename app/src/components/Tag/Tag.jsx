@@ -9,7 +9,7 @@ function Tag({ className, children, color, border, rounded, uppercase, size }) {
 Tag.defaultProps = {
   className: '',
   children: '',
-  color: '',
+  color: 'light',
   border: false,
   rounded: true,
   uppercase: false,

@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, CardContent, CloseIcon, EmptyContent, Input, Page, PageContent, Tag } from '@/components';
+import { Button, Card, CardContent, Page, PageContent, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
 import { useResizeDetector } from 'react-resize-detector';
 import useStores from '@/hooks/useStores';
 import './SpaceListPage.scss';
+import SpaceSearchPopup from '@/pages/spaces/SpaceListPage/SpaceSearchPopup';
 
 const scrollUnit = 360 + 16;
 
@@ -17,9 +18,6 @@ function SpaceListPage() {
   } = useStores();
 
   const [isSearch, setIsSearch] = useState(false);
-  const [query, setQuery] = useState('');
-  const [queryList, setQueryList] = useState(null);
-  const searchElement = useRef(null);
 
   const navigate = useNavigate();
   const [spaces, setSpaces] = useState([]);
@@ -52,45 +50,12 @@ function SpaceListPage() {
     SpaceService.selectMySpaceList(list => {
       setSpaces(list);
       onChangeWidth();
-    });
+    }, null);
   }, []);
 
   useEffect(() => {
     onChangeWidth();
   }, [width, spaces]);
-
-  const search = () => {
-    SpaceService.selectSpaceList(query, list => {
-      setQueryList(list);
-    });
-  };
-
-  const closeSearch = () => {
-    setIsSearch(false);
-
-    setTimeout(() => {
-      setQueryList(null);
-      setQuery('');
-    }, 500);
-  };
-
-  const handleOutsideClick = event => {
-    if (searchElement.current && !searchElement.current.contains(event.target)) {
-      closeSearch();
-    }
-  };
-
-  useEffect(() => {
-    if (isSearch) {
-      document.addEventListener('mousedown', handleOutsideClick);
-    } else {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, [isSearch]);
 
   const scrollLeft = () => {
     if (listContentElement.current) {
@@ -166,7 +131,7 @@ function SpaceListPage() {
           <div>
             {navigator && (
               <div className="arrow">
-                <Button shadow={false} onClick={scrollLeft}>
+                <Button onClick={scrollLeft} color="transparent" outline={false}>
                   <i className="fa-solid fa-chevron-left" />
                 </Button>
               </div>
@@ -196,6 +161,7 @@ function SpaceListPage() {
                         circle
                         color="gray"
                         point
+                        border
                         onClick={() => {
                           navigate(`/spaces/${space.code}/projects`);
                         }}
@@ -217,7 +183,7 @@ function SpaceListPage() {
                           <div className="name-and-code">
                             <div className="name">{space.name}</div>
                             <div className="code">
-                              <Tag>{space.code}</Tag>
+                              <Tag border>{space.code}</Tag>
                             </div>
                           </div>
                           <div className="description">
@@ -262,6 +228,7 @@ function SpaceListPage() {
                   }}
                 >
                   <Card
+                    border
                     className="space-card"
                     color="gray"
                     point
@@ -283,7 +250,7 @@ function SpaceListPage() {
             </div>
             {navigator && (
               <div className="arrow">
-                <Button shadow={false} onClick={scrollRight}>
+                <Button onClick={scrollRight} color="transparent" outline={false}>
                   <i className="fa-solid fa-chevron-right" />
                 </Button>
               </div>
@@ -299,58 +266,7 @@ function SpaceListPage() {
             {version?.name}-{version?.version}
           </div>
         </div>
-        <div className={`space-search-content ${isSearch ? 'on' : 'off'}`} ref={searchElement}>
-          <div>
-            <CloseIcon className="close-icon" onClick={closeSearch} />
-            <div className="search-row">
-              <div className="text">스페이스 검색</div>
-              <div className="icon">
-                <i className="fa-solid fa-magnifying-glass" />
-              </div>
-              <div className="query">
-                <Input
-                  value={query}
-                  color="white"
-                  size="lg"
-                  onKeyDown={e => {
-                    if (e.keyCode === 13) {
-                      search();
-                    }
-                  }}
-                  onChange={setQuery}
-                  placeholder="스페이스 명이나 스페이스 코드"
-                />
-              </div>
-              <div className="control">
-                <Button
-                  size="lg"
-                  color="primary"
-                  onClick={() => {
-                    search();
-                  }}
-                >
-                  검색
-                </Button>
-              </div>
-            </div>
-            <div className="search-list">
-              {queryList?.length > 0 && (
-                <ul>
-                  {queryList.map(space => {
-                    return (
-                      <li key={space.id}>
-                        <div className="member">{space.isMember && <span>MEMBER</span>}</div>
-                        <Link to={`/spaces/${space.code}/info`}>{space.name}</Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-              {queryList?.length < 1 && <EmptyContent className="empty-content">검색 결과가 없습니다.</EmptyContent>}
-              {queryList === null && <EmptyContent className="empty-content">스페이스를 검색할 수 있습니다.</EmptyContent>}
-            </div>
-          </div>
-        </div>
+        <SpaceSearchPopup isSearch={isSearch} setIsSearch={setIsSearch} />
       </PageContent>
     </Page>
   );
