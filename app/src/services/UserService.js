@@ -2,7 +2,7 @@ import * as request from '@/utils/request';
 
 const UserService = {};
 
-UserService.getMyInfo = (successHandler, failHandler) => {
+UserService.getMyInfo = (successHandler, failHandler, message) => {
   return request.get(
     '/api/users/my',
     {},
@@ -10,6 +10,10 @@ UserService.getMyInfo = (successHandler, failHandler) => {
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    true,
+    message,
   );
 };
 

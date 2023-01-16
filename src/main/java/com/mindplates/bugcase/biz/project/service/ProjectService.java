@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
-
 public class ProjectService {
 
     private final SpaceRepository spaceRepository;

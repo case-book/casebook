@@ -1,14 +1,18 @@
 package com.mindplates.bugcase.biz.user.service;
 
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.SystemRole;
+import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.EncryptUtil;
+import com.mindplates.bugcase.common.util.MappingUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,18 +20,14 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-
-
     private final EncryptUtil encryptUtil;
+    private final MappingUtil mappingUtil;
 
 
-    public List<User> selectUserList() {
-        return userRepository.findAll();
-    }
 
-
-    public User selectUserInfo(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDTO selectUserInfo(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new UserDTO(user);
     }
 
 
@@ -39,12 +39,8 @@ public class UserService {
     }
 
 
-    public User selectUserByUuid(String uuid) {
-        return userRepository.findByUuid(uuid).orElse(null);
-    }
-
     @Transactional
-    public User createUser(User user) {
+    public UserDTO createUser(User user) {
         String plainText = user.getPassword();
         byte[] saltBytes = encryptUtil.getSaltByteArray();
         String salt = encryptUtil.getSaltString(saltBytes);
@@ -58,28 +54,36 @@ public class UserService {
         user.setRecoveryToken("");
         user.setRecoveryMailSendResult(false);
         user.setUseYn(true);
-        return userRepository.save(user);
+        return new UserDTO(userRepository.save(user));
     }
 
     @Transactional
-    public User updateUser(User user) {
-        return userRepository.save(user);
+    public UserDTO updateUser(UserDTO user) {
+        return new UserDTO(userRepository.save(mappingUtil.convert(user, User.class)));
     }
 
+    @Transactional
+    public void updateUserLastSeen(Long userId, LocalDateTime lastSeen) {
+        userRepository.updateUserLastSeen(userId, lastSeen);
+    }
+
+
+    public UserDTO login(String email, String password) {
+        User userInfo = userRepository.findByEmail(email).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        String salt = userInfo.getSalt();
+        byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
+        String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
+
+        if (userInfo.getPassword().equals(encryptedText)) {
+            return new UserDTO(userInfo);
+        }
+
+        return null;
+    }
 
     @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
-    }
-
-    public User login(String email, String password) throws NoSuchAlgorithmException {
-        return userRepository.findByEmail(email).filter(user -> {
-            String salt = user.getSalt();
-            byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
-            String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
-
-            return user.getPassword().equals(encryptedText);
-        }).orElse(null);
     }
 
     public boolean auth(Long userId, String password) {
@@ -93,6 +97,14 @@ public class UserService {
         String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
 
         return user.getPassword().equals(encryptedText);
+    }
+
+    public User selectUserByUuid(String uuid) {
+        return userRepository.findByUuid(uuid).orElse(null);
+    }
+
+    public List<User> selectUserList() {
+        return userRepository.findAll();
     }
 
 }

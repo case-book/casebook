@@ -125,11 +125,16 @@ const getAuthHeaders = (noAuth, multipart) => {
 };
 
 // METHOD: GET
-export function get(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true) {
+export function get(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, message) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
+  }
+
+  const messageId = Date.now();
+  if (message) {
+    rootStore.controlStore.addRequestMessage(messageId, message);
   }
 
   const [uri, unmatchedParams] = stringCompiler(url, data, true);
@@ -144,6 +149,9 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
       processError(errorHandler, error);
     })
     .finally(() => {
+      if (message) {
+        rootStore.controlStore.removeRequestMessage(messageId);
+      }
       if (showLoading !== false) processFinally();
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
@@ -194,11 +202,16 @@ export function post(url, data, successHandler, errorHandler, ref, noAuth, showL
 }
 
 // METHOD: PUT
-export function put(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart) {
+export function put(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart, message) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
+  }
+
+  const messageId = Date.now();
+  if (message) {
+    rootStore.controlStore.addRequestMessage(messageId, message);
   }
 
   const [uri, unmatchedParams] = stringCompiler(url, data, true);
@@ -218,6 +231,9 @@ export function put(url, data, successHandler, errorHandler, ref, noAuth, showLo
       processError(errorHandler, error);
     })
     .finally(() => {
+      if (message) {
+        rootStore.controlStore.removeRequestMessage(messageId);
+      }
       if (showLoading !== false) processFinally();
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
@@ -227,11 +243,16 @@ export function put(url, data, successHandler, errorHandler, ref, noAuth, showLo
 }
 
 // METHOD: DELETE
-export function del(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true) {
+export function del(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, message) {
   if (showLoading !== false) processStart();
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
+  }
+
+  const messageId = Date.now();
+  if (message) {
+    rootStore.controlStore.addRequestMessage(messageId, message);
   }
 
   const promise = axios
@@ -243,6 +264,9 @@ export function del(url, data, successHandler, errorHandler, ref, noAuth, showLo
       processError(errorHandler, error);
     })
     .finally(() => {
+      if (message) {
+        rootStore.controlStore.removeRequestMessage(messageId);
+      }
       if (showLoading !== false) processFinally();
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);

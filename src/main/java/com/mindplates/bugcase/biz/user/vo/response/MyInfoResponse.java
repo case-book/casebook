@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.user.vo.response;
 
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.SystemRole;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class MyInfoResponse {
 
     private List<SpaceListResponse> spaces;
 
-    public MyInfoResponse(User user, String token) {
+    public MyInfoResponse(UserDTO user, String token) {
         if (user != null) {
             this.id = user.getId();
             this.uuid = user.getUuid();
@@ -41,7 +42,7 @@ public class MyInfoResponse {
         this.token = token;
     }
 
-    public MyInfoResponse(User user, List<SpaceDTO> spaces, String token) {
+    public MyInfoResponse(UserDTO user, String token, List<SpaceDTO> spaces) {
         this(user, token);
         if (spaces != null) {
             this.spaces = spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());

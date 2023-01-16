@@ -119,6 +119,8 @@ html {
   --border-color: rgba(0, 0, 0, 0.3);
   --border-color-hover: rgba(0, 0, 0, 0.5);
   --input-background : #FFF;
+  --start-background-color : #adb5bd;
+  --start-opacity : 0.1;
 }
 
 html.theme-DARK {
@@ -134,6 +136,8 @@ html.theme-DARK {
   --border-color: rgba(0, 0, 0, 0.3);
   --border-color-hover: rgba(0, 0, 0, 0.5);
   --input-background : #09080d;
+  --start-background-color : #000;
+  --start-opacity : 0.3;
 }
 
 @mixin title() {
