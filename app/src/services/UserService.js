@@ -1,8 +1,9 @@
 import * as request from '@/utils/request';
+import i18n from 'i18next';
 
 const UserService = {};
 
-UserService.getMyInfo = (successHandler, failHandler, message) => {
+UserService.getMyInfo = (successHandler, failHandler) => {
   return request.get(
     '/api/users/my',
     {},
@@ -13,7 +14,7 @@ UserService.getMyInfo = (successHandler, failHandler, message) => {
     null,
     null,
     true,
-    message,
+    i18n.t('사용자 정보를 조회하고 있습니다.'),
   );
 };
 
@@ -84,7 +85,7 @@ UserService.login = (info, successHandler, failHandler) => {
     null,
     true,
     null,
-    '사용자 정보를 확인하고 있습니다.',
+    i18n.t('사용자 정보를 확인하고 있습니다.'),
   );
 };
 

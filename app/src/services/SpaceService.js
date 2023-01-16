@@ -1,4 +1,5 @@
 import * as request from '@/utils/request';
+import i18n from 'i18next';
 
 const SpaceService = {};
 
@@ -35,6 +36,10 @@ SpaceService.selectMySpaceList = (successHandler, failHandler) => {
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    true,
+    i18n.t('사용자의 참여 중인 스페이스 목록을 불러오고 있습니다.'),
   );
 };
 

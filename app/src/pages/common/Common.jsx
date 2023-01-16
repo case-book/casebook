@@ -11,10 +11,8 @@ import ReactTooltip from 'react-tooltip';
 import { getOption, setOption } from '@/utils/storageUtil';
 import { useLocation } from 'react-router-dom';
 import { SocketClient } from '@/components';
-
-import './Common.scss';
 import { observer } from 'mobx-react';
-import { useTranslation } from 'react-i18next';
+import './Common.scss';
 
 function Common() {
   const {
@@ -24,8 +22,6 @@ function Common() {
     controlStore: { requestLoading, confirm, message, error, requestMessages },
     contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
   } = useStores();
-
-  const { t } = useTranslation();
 
   const location = useLocation();
 
@@ -77,7 +73,6 @@ function Common() {
         userStore.setTried(true);
         return true;
       },
-      t('사용자 정보를 조회하고 있습니다.'),
     );
   };
 
