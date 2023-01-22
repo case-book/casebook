@@ -1,4 +1,5 @@
 import * as request from '@/utils/request';
+import i18n from 'i18next';
 
 const ProjectService = {};
 
@@ -27,6 +28,7 @@ ProjectService.selectMyProjectList = (spaceCode, successHandler, failHandler, lo
     null,
     null,
     loading,
+    i18n.t('사용자가 참여중인 프로젝트 목록을 가져오고 있습니다.'),
   );
 };
 

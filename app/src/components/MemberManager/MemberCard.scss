@@ -1,8 +1,8 @@
 .member-card-wrapper {
   position: relative;
   &.selected {
-    background-color: $color-primary-light;
-    color: $white;
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
   }
 
   .user-name {

@@ -47,7 +47,7 @@ function ProjectInfoPage() {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('프로젝트 삭제'),
-      <div>{t(`"${project.name}" 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
+      <div>{t('@ 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { projectName: project.name })}</div>,
       () => {
         ProjectService.deleteProject(spaceCode, project, () => {
           navigate(`/spaces/${spaceCode}/projects`);
@@ -62,7 +62,7 @@ function ProjectInfoPage() {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('프로젝트 탈퇴'),
-      <div>{t(`프로젝트를 탈퇴하면, "${project.name}" 프로젝트에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?`)}</div>,
+      <div>{t('프로젝트를 탈퇴하면, @ 프로젝트에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?', { projectName: project.name })}</div>,
       () => {
         ProjectService.withdrawProject(spaceCode, project, () => {
           navigate(`/spaces/${spaceCode}/projects`);
@@ -101,7 +101,7 @@ function ProjectInfoPage() {
               <Text>{project?.token}</Text>
             </BlockRow>
           </Block>
-          <Title>테스트케이스 템플릿</Title>
+          <Title>{t('테스트케이스 템플릿')}</Title>
           <Block>
             <ul className="template-list">
               {project?.testcaseTemplates?.map(testcaseTemplate => {
@@ -132,7 +132,7 @@ function ProjectInfoPage() {
                           <span className="count">
                             <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
                           </span>
-                          <span className="count-label">아이템</span>
+                          <span className="count-label">{t('아이템')}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -141,11 +141,11 @@ function ProjectInfoPage() {
               })}
             </ul>
           </Block>
-          <Title>프로젝트 사용자</Title>
+          <Title>{t('프로젝트 사용자')}</Title>
           <Block>
             <MemberCardManager className="member-manager" users={project?.users} tags />
           </Block>
-          <Title>태그별 사용자</Title>
+          <Title>{t('태그별 사용자')}</Title>
           <Block>
             {Object.keys(tagUserMap).length < 1 && (
               <EmptyContent className="empty-content">

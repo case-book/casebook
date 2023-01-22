@@ -36,7 +36,7 @@ const MENUS = [
   {
     key: 'dashboard',
     to: '',
-    icon: <i className="fas fa-home-alt" />,
+    icon: <i className="fa-solid fa-gauge" />,
     color: '#ffbc4b',
     name: '대시보드',
     admin: false,

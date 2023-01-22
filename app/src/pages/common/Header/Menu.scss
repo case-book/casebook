@@ -29,7 +29,7 @@ ul.common-menu-wrapper {
     }
 
     > a {
-      color: $gray-600;
+      color: var(--gray-color);
       position: relative;
       text-decoration: none;
       text-transform: uppercase;
@@ -44,7 +44,7 @@ ul.common-menu-wrapper {
       }
 
       &:hover {
-        color: $gray-700;
+        color: var(--text-color);
       }
 
       .alert-message {

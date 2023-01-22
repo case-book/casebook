@@ -11,11 +11,15 @@
   max-width: $max-width;
   _padding: 32px 64px;
   padding: 1rem 1.5rem;
-  background-color: $card-bg-color-dark;
+  background-color: var(--page-background-color);
   border-radius: 4px;
 
   @media (max-width: 768px) {
     padding: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    background-color: var(--theme-color);
   }
 
   &.flex {

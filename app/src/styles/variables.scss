@@ -105,12 +105,14 @@ html {
   --warning-color: #ff4935;
   --yellow-color : #ffbc4b;
   --disable-opacity: 0.6;
+  --link-color : #386bd8;
 }
 
 
 html {
   --header-background-color: #FFF;
   --theme-color : #FFF;
+  --page-background-color : #FFF;
   --background-color : #eaeef3;
   --card-background-color : #FFF;
   --text-color: #222;
@@ -128,11 +130,13 @@ html {
   --input-background : #FFF;
   --start-background-color : #adb5bd;
   --start-opacity : 0.1;
+  --modal-background-color : #FFF;
 }
 
 html.theme-DARK {
   --header-background-color: #121117;
   --theme-color : #09080d;
+  --page-background-color : #101010;
   --background-color : #09080d;
   --card-background-color : #16151a;
   --text-color: #fff;
@@ -150,6 +154,7 @@ html.theme-DARK {
   --input-background : #09080d;
   --start-background-color : #000;
   --start-opacity : 0.3;
+  --modal-background-color : #16151a;
 }
 
 @mixin title() {

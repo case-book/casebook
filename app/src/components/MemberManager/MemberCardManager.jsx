@@ -81,11 +81,11 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
             }
           }}
         >
-          <ModalHeader className="modal-header">스페이스 사용자</ModalHeader>
+          <ModalHeader className="modal-header">{t('스페이스 사용자')}</ModalHeader>
           <ModalBody className="space-user-body">
             <div className="space-user-content">
               <div className="search">
-                <div>검색</div>
+                <div>{t('검색')}</div>
                 <div>
                   <Input
                     type="query"

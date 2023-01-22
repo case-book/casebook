@@ -18,7 +18,7 @@
 
   &.selected {
     > div {
-      background-color: $color-sunflower;
+      background-color: var(--yellow-color);
       border: 1px solid rgba(0, 0, 0, 0.2);
       color: $black;
     }
@@ -26,13 +26,16 @@
 
   &.uneditable {
     > div {
-      background-color: lighten($color-tangerine, 30%);
+      background-color: var(--lighter-color);
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, var(--light-color) 35px, var(--light-color) 70px);
     }
 
     &.selected {
       > div {
         border: 1px solid rgba(0, 0, 0, 0.2);
-        background-color: lighten($color-tangerine, 15%);
+        color: var(--black-color);
+        background-color: #f7e600;
+        background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, var(--yellow-color) 35px, var(--yellow-color) 70px);
       }
     }
   }
@@ -41,9 +44,9 @@
     width: 100%;
     position: relative;
     padding: 0.75rem;
-    background-color: #f7f7f7;
+    background-color: var(--lighter-color);
     border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-light-color);
 
     > .type {
       line-height: 100%;

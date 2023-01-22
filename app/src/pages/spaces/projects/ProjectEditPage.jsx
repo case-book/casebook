@@ -269,7 +269,7 @@ function ProjectEditPage({ type }) {
       nextProject.testcaseTemplates = [];
     }
 
-    nextProject.testcaseTemplates.push({ ...cloneDeep(defaultProjectConfig.testcaseTemplates[0]), name: `테스트케이스 템플릿 ${nextProject.testcaseTemplates.length + 1}` });
+    nextProject.testcaseTemplates.push({ ...cloneDeep(defaultProjectConfig.testcaseTemplates[0]), name: `테스트케이스 템플릿 ${nextProject.testcaseTemplates.length + 1}`, defaultTemplate: false });
     setProject(nextProject);
   };
 

@@ -57,6 +57,7 @@
 
       .name {
         position: relative;
+        padding: 1.5rem;
 
         .new-mark {
           position: absolute;
@@ -70,7 +71,7 @@
         }
 
         span.name-info {
-          color: $link-color;
+          color: var(--primary-color);
           cursor: pointer;
           display: flex;
           width: 100%;
@@ -91,7 +92,7 @@
 
         .default {
           position: absolute;
-          top: 0;
+          top: 4px;
           left: 0;
           right: 0;
           text-align: center;
@@ -115,9 +116,9 @@
               height: 22px;
               width: 22px;
               font-size: 12px;
-              background-color: $gray-600;
+              background-color: var(--light-color);
+              color : var(--text-color);
               justify-content: center;
-              color: $white;
               border-radius: 50%;
               @include number;
               > span {

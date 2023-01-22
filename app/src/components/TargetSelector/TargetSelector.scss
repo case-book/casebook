@@ -1,6 +1,5 @@
 .collapsed {
   .target-selector-wrapper {
-
     .target-selector-list {
       top: 30px;
     }
@@ -17,7 +16,7 @@
   > div {
     align-self: center;
     font-size: 14px;
-    color: $gray-600;
+    color: var(--gray-color);
 
     .selected-name {
       display: inline-block;
@@ -27,13 +26,13 @@
       margin-left: 0.25rem;
     }
     &:hover {
-      color: $white;
+      color: var(--text-color);
     }
   }
 
   &.opened {
     > div {
-      color: $white;
+      color: var(--text-color);
     }
   }
 
@@ -81,15 +80,21 @@
 
         &.selected {
           > span {
-            background-color: $color-sunflower;
-            color: $black;
+            background-color: var(--primary-color);
+            color: var(--primary-text-color);
             font-weight: bold;
+          }
+
+          &:hover {
+            > span {
+              color: var(--primary-text-color);
+            }
           }
         }
 
         &:hover {
           > span {
-            color: $color-azure;
+            color: var(--link-color);
           }
         }
       }
