@@ -31,42 +31,26 @@
       margin-bottom: 1rem;
       display: inline-block;
       margin-right: 1rem;
-      width: calc((100% - 4rem) / 5);
+      width: calc((100% - 3rem) / 4);
       height: 290px;
 
-      &:nth-child(5n) {
+      &:nth-child(4n) {
         margin-right: 0;
       }
 
-      @media (max-width: 1560px) {
-        width: calc((100% - 3rem) / 4);
-
-        &:nth-child(5n) {
-          margin-right: 1rem;
-        }
-
-        &:nth-child(4n) {
-          margin-right: 0;
-        }
-      }
-
-      @media (max-width: 1360px) {
+      @media (max-width: 1500px) {
         width: calc((100% - 2rem) / 3);
-
-        &:nth-child(5n) {
-          margin-right: 1rem;
-        }
 
         &:nth-child(4n) {
           margin-right: 1rem;
         }
 
         &:nth-child(3n) {
-          margin-right: 0rem;
+          margin-right: 0;
         }
       }
 
-      @media (max-width: 1024px) {
+      @media (max-width: 1200px) {
         width: calc((100% - 1rem) / 2);
 
         &:nth-child(4n) {
@@ -101,7 +85,7 @@
             text-align: center;
             @include title;
             &:hover {
-              color: $color-primary-light;
+              color: var(--primary-color);
               cursor: pointer;
             }
           }
@@ -121,7 +105,8 @@
                 padding: 8px 12px;
                 line-height: 160%;
                 height: 58px;
-                background-color: $gray-100;
+                background-color: var(--lighter-color);
+                border: 1px solid var(--border-light-color);
                 border-radius: 4px;
                 overflow: hidden;
                 display: block;
@@ -162,44 +147,44 @@
 
                     .icon {
                       font-size: 18px;
-                      color: $gray-500;
+                      color: var(--gray-color);
                       line-height: 100%;
                     }
 
                     &.bug-count {
-                      color: $red-color;
+                      color: var(--danger-color);
                       &:hover {
-                        color: $white;
-                        background-color: $red-color;
+                        color: var(--white-color);
+                        background-color: var(--danger-color);
                         transition: 0.3s all;
                         .icon {
-                          color: $white;
+                          color: var(--white-color);
                           transition: 0.3s all;
                         }
                       }
                     }
 
                     &.tc-count {
-                      color: #3e8ef1;
+                      color: var(--primary-color);
                       &:hover {
-                        color: $white;
-                        background-color: #3e8ef1;
+                        color: var(--primary-text-color);
+                        background-color: var(--primary-color);
                         transition: 0.3s all;
                         .icon {
-                          color: $white;
+                          color: var(--primary-text-color);
                           transition: 0.3s all;
                         }
                       }
                     }
 
                     &.tr-count {
-                      color: $color-tangerine;
+                      color: var(--warning-color);
                       &:hover {
-                        color: $white;
-                        background-color: $color-tangerine;
+                        color: var(--white-color);
+                        background-color: var(--warning-color);
                         transition: 0.3s all;
                         .icon {
-                          color: $white;
+                          color: var(--white-color);
                           transition: 0.3s all;
                         }
                       }
@@ -238,8 +223,8 @@
                 margin-right: 8px;
                 justify-content: center;
                 border-radius: 12px;
-                background-color: $white;
-                border: 1px solid rgba(0, 0, 0, 0.12);
+                background-color: var(--box-color);
+                border: 1px solid var(--border-color);
                 position: relative;
                 cursor: pointer;
                 .tooltip {
@@ -248,7 +233,7 @@
                   font-size: 12px;
                   width: 100px;
                   top: -36px;
-                  color: $white;
+                  color: var(--white-color);
                   font-family: NotoSans, sans-serif;
                   height: 24px;
                   left: -34px;
@@ -276,7 +261,7 @@
 
                 &:hover {
                   > div {
-                    color: $white;
+                    color: var(--white-color);
                     transition: all 0.3s;
                   }
 
@@ -326,54 +311,11 @@
 
                 > div {
                   align-self: center;
-                  color: $gray-800;
+                  color: var(--text-color);
                 }
 
                 &:last-child {
                   margin-right: 0;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.theme-DARK {
-  .project-list-page-wrapper {
-    ul.project-list {
-      > li {
-        .project-card {
-          .project-info {
-            .name {
-              &:hover {
-                color: $color-primary-dark;
-              }
-            }
-
-            .summary {
-              > div {
-                .description {
-                  background-color: #16151a;
-                }
-
-                .count {
-                  > div {
-                    > div {
-                      background-color: $card-bg-color-dark;
-                    }
-                  }
-                }
-              }
-            }
-
-            .side-menu {
-              ul {
-                > li {
-                  background-color: #111;
-                  border: 1px solid rgba(255, 255, 255, 0.09);
                 }
               }
             }

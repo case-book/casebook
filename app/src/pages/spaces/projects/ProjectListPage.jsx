@@ -35,7 +35,7 @@ function ProjectListPage() {
         {projects?.length <= 0 && (
           <div className="no-project">
             <div>
-              <div>아직 생성된 프로젝트가 없습니다.</div>
+              <div>{t('아직 생성된 프로젝트가 없습니다.')}</div>
               <div>
                 <Button
                   size="lg"
@@ -44,7 +44,7 @@ function ProjectListPage() {
                     navigate(`/spaces/${spaceCode}/projects/new`);
                   }}
                 >
-                  <i className="fa-solid fa-plus" /> 프로젝트 생성
+                  <i className="fa-solid fa-plus" /> {t('프로젝트 생성')}
                 </Button>
               </div>
             </div>
@@ -55,7 +55,7 @@ function ProjectListPage() {
             {projects?.map(project => {
               return (
                 <li key={project.id}>
-                  <Card className="project-card" circle>
+                  <Card className="project-card" border>
                     <div className="project-info">
                       <div
                         className="name"
@@ -127,7 +127,7 @@ function ProjectListPage() {
                               >
                                 <div>
                                   <div className="tooltip">
-                                    <span>{menu.name}</span>
+                                    <span>{t(`메뉴.${menu.name}`)}</span>
                                     <div className="arrow" />
                                   </div>
                                   {menu.icon}

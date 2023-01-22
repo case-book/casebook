@@ -52,7 +52,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
     >
       <CardHeader className="user-name">
         <div>
-          {spaceUser.crud === 'D' && <span className="deleted-text">{t('DELETED')}</span>}
+          {spaceUser.crud === 'D' && <span className="deleted-text">DELETED</span>}
           <div className="name-text">{spaceUser.name}</div>
           {showRole && !edit && (
             <div className={`role ${spaceUser.role}`}>
@@ -149,7 +149,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
                     }, 100);
                   }}
                 >
-                  태그 추가
+                  {t('태그 추가')}
                 </Button>
               </div>
             )}
@@ -159,13 +159,13 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
       {tags && tagOpened && (
         <div className="tag-change-popup">
           <div>
-            <div className="message">태그 추가</div>
+            <div className="message">{t('태그 추가')}</div>
             <div className="tag-input">
               <Input
                 onRef={e => {
                   element.current = e;
                 }}
-                placeholder="태그를 입력해주세요."
+                placeholder={t('태그를 입력해주세요.')}
                 size="sm"
                 value={tag}
                 onChange={val => setTag(val)}
@@ -189,10 +189,10 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
                   setTagOpened(false);
                 }}
               >
-                취소
+                {t('취소')}
               </Button>
               <Button size="xs" color="primary" outline onClick={addTag}>
-                추가
+                {t('추가')}
               </Button>
             </div>
           </div>

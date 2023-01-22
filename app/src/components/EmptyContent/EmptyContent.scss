@@ -3,10 +3,10 @@
   display: flex;
   justify-content: center;
   font-family: NotoSans, sans-serif;
-  color: $gray-700;
+  background-color: var(--gray-color);
   border-radius: 4px;
   &.color-gray {
-    background-color: $gray-100;
+    background-color: var(--lighter-color);
   }
 
   &.color-transparent {
@@ -15,11 +15,5 @@
   > div {
     align-self: center;
     text-align: center;
-  }
-}
-
-.theme-DARK {
-  .empty-content-wrapper {
-    background-color: rgba(255, 255, 255, 0.1);
   }
 }

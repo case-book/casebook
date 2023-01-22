@@ -1,23 +1,6 @@
 .tr-wrapper {
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
   border-left: none;
   border-right: none;
-  &:nth-child(2n-1) {
-
-  }
-
-
 }
 
-.theme-DARK {
-  .tr-wrapper {
-    border: 1px solid #080808;
-    &:nth-child(2n-1) {
-      background-color: rgba(0, 0, 0, 0.08);
-    }
-
-    &:nth-child(2n) {
-      background-color: rgba(255, 255, 255, 0.02);
-    }
-  }
-}

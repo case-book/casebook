@@ -14,17 +14,17 @@
       align-self: center;
 
       .home {
-        margin-top: 4rem;
+        margin-top: 2rem;
 
         > a {
           display: inline-flex;
           width: 50px;
           height: 50px;
           font-size: 30px;
-          background-color: $color-azure;
+          background-color: var(--primary-color);
           justify-content: center;
           border-radius: 50%;
-          color: $white;
+          color: var(--primary-text-color);
           transition: 0.3s all;
 
           &:hover {
@@ -47,22 +47,9 @@
     .space-info {
       margin-bottom: 1rem;
 
-      .space {
-        margin-bottom: 0.25rem;
-
-        > span {
-          background-color: $color-sunflower;
-          color: $black;
-          font-weight: bold;
-          display: inline-block;
-          padding: 4px 6px;
-          font-size: 11px;
-          border-radius: 2px;
-        }
-      }
-
       .name {
         font-size: 30px;
+        line-height: 140%;
       }
 
       .code {
@@ -85,7 +72,7 @@
 
       .join-info {
         margin-top: 1rem;
-        margin-bottom: 4rem;
+
 
         .message-content {
           max-width: 600px;

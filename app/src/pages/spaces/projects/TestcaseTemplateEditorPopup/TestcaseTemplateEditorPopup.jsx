@@ -425,7 +425,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                 {editor && (
                   <div className="properties">
                     <div className="sub-title">{t('속성')}</div>
-                    <div className="properties-content">
+                    <div className={`properties-content ${!selectedItem?.type ? 'empty' : ''}`}>
                       {!selectedItem?.type && <EmptyContent>{t('아이템을 선택해주세요.')}</EmptyContent>}
                       {selectedItem?.type && (
                         <>
@@ -554,7 +554,6 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               <div className="properties-control">
                                 <Input
                                   size="sm"
-                                  color="white"
                                   value={selectedItem?.item?.label}
                                   onChange={val => {
                                     if (selectedItem.type === 'item') {
@@ -580,7 +579,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               <div className="properties-control">
                                 <TextArea
                                   value={selectedItem?.item?.description || ''}
-                                  placeholder={`"${selectedItem?.item?.label}" 항목에 대한 설명`}
+                                  placeholder={t('@ 항목에 대한 설명', { label: selectedItem?.item?.label })}
                                   size="sm"
                                   rows={3}
                                   onChange={val => {
@@ -605,7 +604,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               <div className="properties-control">
                                 <TextArea
                                   value={selectedItem?.item?.example || ''}
-                                  placeholder={`"${selectedItem?.item?.label}"에 입력에 참고할 샘플 데이터`}
+                                  placeholder={t('@에 입력에 참고할 샘플 데이터', { label: selectedItem?.item?.label })}
                                   size="sm"
                                   rows={3}
                                   onChange={val => {
@@ -629,7 +628,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                 max={exampleMax}
                                 setMax={setExampleMax}
                                 itemId={selectedItem.id}
-                                buttonText="확대"
+                                buttonText={t('확대')}
                                 createProjectImage={createProjectImage}
                               />
                             </div>
@@ -710,8 +709,7 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                               <div className="properties-control">
                                 <Input
                                   size="sm"
-                                  color="white"
-                                  placeholder={`"${selectedItem?.item?.label}" 생성시 입력될 기본 값`}
+                                  placeholder={t('@ 생성시 입력될 기본 값', { label: selectedItem?.item?.label })}
                                   value={selectedItem?.item?.defaultValue || ''}
                                   onChange={val => {
                                     if (selectedItem.type === 'item') {
@@ -769,7 +767,6 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                                             <div className="input">
                                               <Input
                                                 size="sm"
-                                                color="white"
                                                 value={d}
                                                 disabled={selectedItem?.item?.locked}
                                                 onChange={val => {

@@ -98,7 +98,7 @@
           padding: 0.25rem 0;
 
           &:hover {
-            color: $link-color !important;
+            color: var(--primary-color) !important;
           }
         }
 

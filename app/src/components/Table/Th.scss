@@ -4,7 +4,7 @@
   border-bottom: none;
   vertical-align: middle;
   white-space: nowrap;
-  background-color: #F7F7F7;
+  background-color: var(--lighter-color);
 
   &.align-left {
     text-align: left;

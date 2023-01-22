@@ -1,52 +1,3 @@
-.theme-LIGHT {
-  .modal-wrapper {
-    > div {
-      background-color: $white;
-      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
-
-      > .exit-button {
-        > span {
-          width: 100%;
-          height: 100%;
-          svg {
-            width: 100%;
-            height: 100%;
-          }
-        }
-      }
-
-      .modal-header-wrapper {
-        background-color: $white;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-
-        .close-button {
-          span {
-            svg {
-              fill: $black;
-            }
-
-            &:hover {
-              svg {
-                fill: $color-primary-light;
-              }
-            }
-          }
-        }
-      }
-
-      .modal-footer-wrapper {
-        text-align: center;
-        padding: 2rem;
-        .bottom-liner {
-          height: 1px;
-          background-color: $gray-500;
-          border: none;
-        }
-      }
-    }
-  }
-}
-
 .modal-wrapper {
   position: fixed;
   top: 0;
@@ -112,17 +63,16 @@
   > div {
     position: relative;
     align-self: center;
-    background-color: #181818;
+    background-color: var(--modal-background-color);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
     margin: 0 auto;
+    border-radius: 4px;
 
     @media (max-width: 536px) {
       margin: 0 0.5rem;
       width: calc(100% - 1rem);
       min-width: auto;
     }
-
-    border-radius: 4px;
-    box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.05);
 
     > .exit-button {
       position: absolute;
@@ -152,8 +102,9 @@
       font-size: 18px;
       padding: 1.25rem 1.5rem;
       display: flex;
-      background-color: rgba(0, 0, 0, 0.2);
       border-radius: 4px 4px 0 0;
+      background-color: var(--modal-background-color);
+      border-bottom: 1px solid var(--border-light-color);
 
       > div {
         align-self: center;
@@ -232,7 +183,7 @@
 
     .modal-footer-wrapper {
       text-align: center;
-      padding: 0 2rem;
+      padding: 2rem;
       .bottom-liner {
         height: 3px;
         background-color: #000;
