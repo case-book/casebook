@@ -75,7 +75,7 @@ function PageButtons(props) {
           )}
           {onList && (
             <>
-              {(onBack || onCancel) && <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />}
+              {(onBack || onCancel) && <Liner display="inline-block" width="1px" height="10px" margin="0 0.5rem" />}
               <Button type="button" size={size} color="white" outline={outline} onClick={onList}>
                 <div>
                   {onListIcon && (
@@ -90,7 +90,7 @@ function PageButtons(props) {
           )}
           {onInfo && (
             <>
-              {(onBack || onCancel || onList) && <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />}
+              {(onBack || onCancel || onList) && <Liner display="inline-block" width="1px" height="10px" margin="0 0.5rem" />}
               <Button type="button" size={size} color="white" outline={outline} onClick={onInfo}>
                 <div>
                   {onInfoIcon && (
@@ -105,7 +105,7 @@ function PageButtons(props) {
           )}
           {onEdit && (
             <>
-              {(onBack || onCancel || onList || onInfo) && <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />}
+              {(onBack || onCancel || onList || onInfo) && <Liner display="inline-block" width="1px" height="10px" margin="0 0.5rem" />}
               <Button type="button" size={size} color="white" outline={outline} onClick={onEdit}>
                 <div>
                   {onEditIcon && (
@@ -120,7 +120,7 @@ function PageButtons(props) {
           )}
           {onSubmit && (
             <>
-              {(onBack || onCancel || onList || onInfo || onEdit) && <Liner display="inline-block" width="1px" height="10px" color="white" margin="0 0.5rem" />}
+              {(onBack || onCancel || onList || onInfo || onEdit) && <Liner display="inline-block" width="1px" height="10px" margin="0 0.5rem" />}
               <Button type="submit" size={size} color="white" outline={outline}>
                 <div>
                   {onSubmitIcon && (

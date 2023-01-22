@@ -24,7 +24,8 @@ SpaceService.selectSpaceList = (query, successHandler, failHandler) => {
     failHandler,
     null,
     null,
-    false,
+    true,
+    i18n.t('스페이스를 검색합니다.'),
   );
 };
 

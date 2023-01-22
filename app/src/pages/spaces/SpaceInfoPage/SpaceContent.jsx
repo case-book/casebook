@@ -114,7 +114,7 @@ function SpaceContent({ space, onRefresh }) {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('스페이스 삭제'),
-      <div>{t(`${space.name} 스페이스 및 스페이스에 포함된 프로젝트를 비롯한 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
+      <div>{t('@ 스페이스 및 스페이스에 포함된 프로젝트를 비롯한 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { spaceName: space.name })}</div>,
       () => {
         SpaceService.deleteSpace(space.id, () => {
           removeSpace(space.id);
@@ -170,7 +170,7 @@ function SpaceContent({ space, onRefresh }) {
                 size="sm"
                 value={option.key}
                 checked={userRole === option.key}
-                label={option.value}
+                label={t(option.value)}
                 onChange={val => {
                   setUserRole(val);
                 }}
@@ -229,7 +229,7 @@ function SpaceContent({ space, onRefresh }) {
                         <Td className="user-info">{applicant.userName}</Td>
                         <Td className={`request-status ${applicant.approvalStatusCode}`}>
                           <Tag border rounded={false}>
-                            {getApprovalStatusName(applicant.approvalStatusCode)}
+                            {t(getApprovalStatusName(applicant.approvalStatusCode))}
                           </Tag>
                         </Td>
                         <Td className="user-email">{applicant.userEmail}</Td>

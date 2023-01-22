@@ -2,6 +2,8 @@
   .project-list-content,
   .applicant-list-content {
     _background-color: $gray-100;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .space-project-block {
@@ -124,7 +126,7 @@
 
       &.testcase-count,
       &.bug-count {
-        padding: 0 8px 0 0;
+        padding: 0;
         > div {
           display: inline-flex;
           width: 26px;
@@ -141,14 +143,15 @@
 
       &.bug-count {
         > div {
-          background-color: $color-tangerine;
+          background-color: var(--danger-color);
+          color: var(--white-color);
         }
       }
 
       &.testcase-count {
         > div {
-          background-color: $color-sunflower;
-          color: black;
+          background-color: var(--yellow-color);
+          color: var(--black-color);
         }
       }
     }

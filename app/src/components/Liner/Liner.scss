@@ -1,7 +1,7 @@
 .liner-wrapper {
   align-self: center;
   > div {
-    background-color: $gray-400;
+    background-color: var(--gray-color);
   }
 
   &.color-white {
@@ -32,16 +32,6 @@
     > div {
       background: linear-gradient(90deg, #7a7a7c 0%, #ff4400 20%, #6fcd11 40%, #2a3cbc 60%, #e21550 80%, #eefb0a 100%);
       opacity: 0.4;
-    }
-  }
-}
-
-.theme-DARK {
-  .liner-wrapper {
-    align-self: center;
-
-    > div {
-      background-color: $gray-600;
     }
   }
 }

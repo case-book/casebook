@@ -74,7 +74,7 @@
             .icons {
               > div {
                 font-size: 24px;
-                color: $gray-600;
+                color: var(--gray-color);
                 position: absolute;
               }
               .snow {
@@ -242,7 +242,7 @@
                   overflow-y: auto;
                   margin-bottom: 1rem;
                   font-size: 15px;
-                  background-color: var(--light-color);
+                  background-color: var(--lighter-color);
                   color: var(--text-color);
                   border: 1px solid var(--border-light-color);
                   > div {
@@ -253,7 +253,7 @@
                 .counter-info {
                   display: flex;
                   flex-grow: 1;
-                  background-color: var(--light-color);
+                  background-color: var(--lighter-color);
                   color: var(--text-color);
                   border: 1px solid var(--border-light-color);
                   border-radius: 4px;
@@ -276,7 +276,7 @@
                         width: 34px;
                         height: 34px;
                         justify-content: center;
-                        background-color: $white;
+                        background-color: var(--white-color);
                         border: 1px solid rgba(0, 0, 0, 0.3);
                         border-radius: 50%;
                         i {
@@ -287,14 +287,14 @@
                       &.projects {
                         > div {
                           border: 1px solid transparent;
-                          color: $black;
+                          color: var(--black-color);
                         }
                       }
 
                       &.users {
                         > div {
                           border: 1px solid transparent;
-                          color: $black;
+                          color: var(--black-color);
                         }
                       }
                     }
@@ -350,7 +350,7 @@
 
   .version {
     position: absolute;
-    bottom: -40px;
+    bottom: -20px;
     left: 0;
     right: 0;
     font-family: Rowdies, sans-serif;
@@ -359,11 +359,7 @@
     font-size: 11px;
     text-align: center;
     padding: 1rem;
-    color: $gray-500;
-
-    @media (max-width: 1660px) {
-      bottom: -20px;
-    }
+    color: var(--gray-color);
 
     @media (max-width: 1024px) {
       bottom: -10px;
