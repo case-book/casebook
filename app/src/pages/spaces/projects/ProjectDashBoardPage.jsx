@@ -15,10 +15,10 @@ function ProjectDashBoardPage() {
   const { t } = useTranslation();
   const { spaceCode, projectId } = useParams();
   const [periods] = useState([
-    { key: '1', value: t('1개월') },
-    { key: '3', value: t('3개월') },
-    { key: '6', value: t('6개월') },
-    { key: '12', value: t('12개월') },
+    { key: '1', value: t('@개월', { month: 1 }) },
+    { key: '3', value: t('@개월', { month: 3 }) },
+    { key: '6', value: t('@개월', { month: 6 }) },
+    { key: '12', value: t('@개월', { month: 12 }) },
   ]);
   const [period, setPeriod] = useState('1');
   const [periodRange, setPeriodRange] = useState({});
@@ -85,9 +85,9 @@ function ProjectDashBoardPage() {
       <PageTitle>{t('대시보드')}</PageTitle>
       <PageContent flex>
         <Card className="testruning-info">
-          <CardHeader className="card-header">{t('진행중인 테스트런')}</CardHeader>
+          <CardHeader className="card-header">{t('진행 중인 테스트런')}</CardHeader>
           <CardContent scroll horizontal className={`card-content ${testruns?.length < 1 ? 'empty' : ''}`}>
-            {testruns.length < 1 && <EmptyContent className="empty-content">진행중인 테스트런이 없습니다.</EmptyContent>}
+            {testruns.length < 1 && <EmptyContent className="empty-content">{t('진행 중인 테스트런이 없습니다.')}</EmptyContent>}
             {testruns.length > 0 && (
               <ul>
                 {testruns.map(testrun => {
@@ -152,7 +152,7 @@ function ProjectDashBoardPage() {
         <Card className="my-testrun-info">
           <CardHeader className="card-header">{t('내가 진행해야할 테스트')}</CardHeader>
           <CardContent scroll horizontal className={`card-content my-testrun-content  ${userAssignedTestruns?.length < 1 ? 'empty' : ''}`}>
-            {userAssignedTestruns.length < 1 && <EmptyContent className="empty-content">할당된 테스트 케이스가 없습니다.</EmptyContent>}
+            {userAssignedTestruns.length < 1 && <EmptyContent className="empty-content">{t('할당된 테스트 케이스가 없습니다.')}</EmptyContent>}
             {userAssignedTestruns.length > 0 && (
               <ul>
                 {userAssignedTestruns.map(testrun => {
@@ -184,8 +184,7 @@ function ProjectDashBoardPage() {
                       </div>
                       <div className="summary">
                         <div>
-                          <div className="label">수행율</div>
-                          <div className="percentage">{Math.round((doneCount / totalCount) * 100)}%</div>
+                          <div className="percentage">{t('@ 진행', { percentage: `${Math.round((doneCount / totalCount) * 100)}%` })}</div>
                           <div className="remain-count">
                             <div>
                               {doneCount > 0 && (
@@ -195,7 +194,7 @@ function ProjectDashBoardPage() {
                                     width: `${(doneCount / totalCount) * 100}%`,
                                   }}
                                 >
-                                  <div>{doneCount}개 테스트 수행</div>
+                                  <div>{t('@개 테스트 수행', { count: doneCount })}</div>
                                 </div>
                               )}
                               {remainCount > 0 && (
@@ -205,14 +204,14 @@ function ProjectDashBoardPage() {
                                     width: `${(remainCount / totalCount) * 100}%`,
                                   }}
                                 >
-                                  <div>{remainCount}개 테스트 남음</div>
+                                  <div>{t('@개 테스트 남음', { count: remainCount })}</div>
                                 </div>
                               )}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="testcase-list-title">테스트케이스 목록</div>
+                      <div className="testcase-list-title">{t('테스트케이스 목록')}</div>
                       <div className="list">
                         <ul>
                           {testrun.testcaseGroups.map(testcaseGroup => {
@@ -224,7 +223,14 @@ function ProjectDashBoardPage() {
                                     return (
                                       <li key={testcase.id}>
                                         <div>
-                                          <div className="testcase-name">{testcase.name}</div>
+                                          <div className="testcase-name">
+                                            <Link
+                                              className={testcase.testResult}
+                                              to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}?tester=ALL&testrunTestcaseGroupId=${testcase.testrunTestcaseGroupId}&testrunTestcaseGroupTestcaseId=${testcase.testrunTestcaseGroupTestcaseId}`}
+                                            >
+                                              {testcase.name}
+                                            </Link>
+                                          </div>
                                           <div className="testcase-result">
                                             <span className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</span>
                                           </div>
@@ -271,7 +277,7 @@ function ProjectDashBoardPage() {
           <CardContent className="testrun-history-content">
             <div className="testrun-history-chart">
               <div className="chart-content">
-                {testrunHistories.length < 1 && <EmptyContent className="empty-content">테스트런 히스토리가 없습니다.</EmptyContent>}
+                {testrunHistories.length < 1 && <EmptyContent className="empty-content">{t('테스트런 히스토리가 없습니다.')}</EmptyContent>}
                 {testrunHistories.length > 0 && (
                   <ul>
                     {testrunHistories
@@ -296,9 +302,10 @@ function ProjectDashBoardPage() {
                                 style={{
                                   width: `${(currentCloseSpan / totalSpan) * 100}%`,
                                 }}
-                                data-tip={`${dateUtil.getDateString(d.startDateTime)}-${dateUtil.getDateString(d.closedDate, DATE_FORMATS_TYPES.monthsDaysHoursMinutes)} [ ${
-                                  d.passedTestcaseCount
-                                } PASSED / ${d.failedTestcaseCount} FAILED ]`}
+                                data-tip={`${dateUtil.getDateString(d.startDateTime)}-${dateUtil.getDateString(
+                                  moment(d.closedDate || d.endDateTime).valueOf(),
+                                  DATE_FORMATS_TYPES.monthsDaysHoursMinutes,
+                                )} [ ${d.passedTestcaseCount} PASSED / ${d.failedTestcaseCount} FAILED ]`}
                                 onClick={() => {
                                   navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${d.id}`);
                                 }}

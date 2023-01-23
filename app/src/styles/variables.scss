@@ -102,6 +102,8 @@ html {
   --white-color: #FFF;
   --black-color: #222;
   --danger-color: #f21646;
+  --green-color: #397d02;
+  --success-color: #397d02;
   --warning-color: #ff4935;
   --yellow-color : #ffbc4b;
   --disable-opacity: 0.6;
@@ -150,7 +152,7 @@ html.theme-DARK {
   --input-border-color: #494c56;
   --border-color: rgba(255, 255, 255, 0.3);
   --border-light-color: rgba(255, 255, 255, 0.05);
-  --border-color-hover: rgba(0, 0, 0, 0.5);
+  --border-color-hover: rgba(255, 255, 255, 0.4);
   --input-background : #09080d;
   --start-background-color : #000;
   --start-opacity : 0.3;

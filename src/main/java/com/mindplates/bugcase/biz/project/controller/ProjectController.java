@@ -61,7 +61,7 @@ public class ProjectController {
     public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectCreateRequest projectCreateRequest) {
 
         if (projectService.existByName(spaceCode, projectCreateRequest.getName())) {
-            throw new ServiceException("project.duplicated");
+            throw new ServiceException("error.project.duplicated");
         }
 
         ProjectDTO project = projectCreateRequest.toDTO();

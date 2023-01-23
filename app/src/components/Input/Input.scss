@@ -9,9 +9,9 @@
   box-sizing: border-box;
   transition: all 0.5s;
   font-family: NotoSans, sans-serif;
-  color: $black;
   border: none;
-  background-color: $white;
+  color: var(--text-color);
+  background-color: var(--input-background-color);
 
   &.outline {
     border: 1px solid var(--input-border-color);
