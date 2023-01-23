@@ -6,7 +6,7 @@
       margin: 0;
       > li {
         padding: 1rem;
-        border: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid var(--border-color);
         border-bottom: none;
         display: flex;
         cursor: pointer;
@@ -17,12 +17,13 @@
 
         .name,
         .checked {
-          color: $gray-600;
+          color: var(--text-color);
         }
 
         .name {
           white-space: nowrap;
           min-width: 70px;
+          opacity: var(--disable-opacity);
         }
 
         .tags {
@@ -41,7 +42,7 @@
         }
 
         &:last-child {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+          border-bottom: 1px solid var(--border-color);
         }
 
         &.selected {
@@ -49,8 +50,8 @@
 
           .checked,
           .name {
-            color: $black;
             font-weight: bold;
+            opacity: 1;
           }
         }
         > div {

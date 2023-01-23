@@ -1,4 +1,5 @@
 import * as request from '@/utils/request';
+import i18n from 'i18next';
 
 const TestrunService = {};
 
@@ -13,6 +14,7 @@ TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, success
     null,
     null,
     loading,
+    i18n.t('프로젝트의 테스트런 목록을 불러오고 있습니다.'),
   );
 };
 
@@ -27,6 +29,7 @@ TestrunService.selectUserAssignedTestrunList = (spaceCode, projectId, successHan
     null,
     null,
     loading,
+    i18n.t('사용자에게 할당된 테스트케이스 목록을 가져오고 있습니다.'),
   );
 };
 TestrunService.selectTestrunHistoryList = (spaceCode, projectId, start, end, successHandler, failHandler, loading = true) => {

@@ -71,7 +71,7 @@ function TestrunListPage() {
         {testruns?.length <= 0 && (
           <div className="no-project">
             <div>
-              <div>{t('아직 실행된 테스트런이 없습니다.')}</div>
+              <div>{t('조회된 테스트런이 없습니다.')}</div>
               <div>
                 <Button
                   outline
@@ -119,18 +119,8 @@ function TestrunListPage() {
                         {!testrun.startDateTime && testrun.endDateTime && <div className="end-date">{dateUtil.getDateString(testrun.endDateTime)}</div>}
                         {!testrun.startDateTime && !testrun.endDateTime && <div className="no-date">{t('설정된 테스트런 기간이 없습니다.')}</div>}
                         <Liner className="range-liner" display="inline-block" width="1px" height="12px" margin="0 0.5rem" />
-                        {testrun.opened && span.days > 0 && (
-                          <div className="span-info">
-                            {span.days}
-                            {t('일 남음')}
-                          </div>
-                        )}
-                        {testrun.opened && span.days <= 0 && span.hours > 0 && (
-                          <div className="span-info">
-                            {span.hours}
-                            {t('시간 남음')}
-                          </div>
-                        )}
+                        {testrun.opened && span.days > 0 && <div className="span-info">{t('@ 일 남음', { days: span.days })}</div>}
+                        {testrun.opened && span.days <= 0 && span.hours > 0 && <div className="span-info">{t('@ 시간 남음', { hours: span.hours })}</div>}
                         {testrun.opened && span.days <= 0 && span.hours <= 0 && <div className="span-info time-passed">{t('기간 지남')}</div>}
                       </div>
                     </div>

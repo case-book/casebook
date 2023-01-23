@@ -48,35 +48,6 @@
           opacity: var(--start-opacity);
         }
       }
-      .transition-group {
-        position: relative;
-
-        .fade-enter {
-          opacity: 0;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          _transform: translateX(100%);
-        }
-
-        .fade-enter-active {
-          opacity: 1;
-          _transform: translateX(0%);
-          transition: all 0.5s ease-in-out;
-        }
-
-        .fade-exit {
-          opacity: 1;
-          _transform: translateX(0%);
-        }
-
-        .fade-exit-active {
-          opacity: 0;
-          _transform: translateX(-100%);
-          transition: all 0.5s ease-in-out;
-        }
-      }
     }
   }
 }

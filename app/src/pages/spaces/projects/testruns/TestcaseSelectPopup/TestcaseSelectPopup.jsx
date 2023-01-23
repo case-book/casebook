@@ -182,28 +182,26 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
         </Button>
       </ModalHeader>
       <ModalBody className="modal-body">
-        <div className="testcase-select-list g-no-select">
-          {projectTestcaseGroupTree && projectTestcaseGroupTree?.length < 1 && (
-            <EmptyContent className="empty-content">
-              <div>{t('테스트케이스 정보가 없습니다.')}</div>
-            </EmptyContent>
-          )}
-          {projectTestcaseGroupTree?.length > 0 && (
-            <>
-              <div className="condition">
-                <Button size="sm" outline onClick={allCheck}>
-                  <i className="fa-solid fa-circle-check" /> {t('전체')}
-                </Button>
-              </div>
-              <ul>
-                {projectTestcaseGroupTree?.map(testcaseGroup => {
-                  const selected = currentSelectedTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-                  return <TestcaseSelectorGroup key={testcaseGroup.id} testcaseGroup={testcaseGroup} selected={selected} selectedTestcaseGroups={currentSelectedTestcaseGroups} onClick={onClick} />;
-                })}
-              </ul>
-            </>
-          )}
-        </div>
+        {projectTestcaseGroupTree && projectTestcaseGroupTree?.length < 1 && (
+          <EmptyContent className="empty-content">
+            <div>{t('테스트케이스 정보가 없습니다.')}</div>
+          </EmptyContent>
+        )}
+        {projectTestcaseGroupTree?.length > 0 && (
+          <div className="testcase-select-list g-no-select">
+            <div className="condition">
+              <Button size="sm" outline onClick={allCheck}>
+                <i className="fa-solid fa-circle-check" /> {t('전체')}
+              </Button>
+            </div>
+            <ul>
+              {projectTestcaseGroupTree?.map(testcaseGroup => {
+                const selected = currentSelectedTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+                return <TestcaseSelectorGroup key={testcaseGroup.id} testcaseGroup={testcaseGroup} selected={selected} selectedTestcaseGroups={currentSelectedTestcaseGroups} onClick={onClick} />;
+              })}
+            </ul>
+          </div>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button outline onClick={() => setOpened(false)}>

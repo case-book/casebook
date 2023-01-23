@@ -6,19 +6,32 @@
   z-index: 2;
   border-radius: 2px;
   resize: none;
-  border: 1px solid $color-border-light;
-  color: $black;
   font-family: NotoSans, sans-serif;
   line-height: 120%;
+  color: var(--text-color);
+  border : none;
+  background-color: var(--input-background-color);
+
+  &.outline {
+    border: 1px solid var(--input-border-color);
+  }
 
   &:focus {
     box-shadow: none;
     outline: none;
-    border-color: $color-border-light-focus;
+    border-color: var(--border-color-hover);
   }
 
   &:invalid {
-    border: 1px solid $danger;
+    &.underline {
+      border-bottom: 1px solid var(--danger-color);
+      transition: border-bottom 0.5s;
+    }
+
+    &.outline {
+      border-color: var(--danger-color);
+      transition: border-color 0.5s;
+    }
   }
 
   &.size-xxl {
@@ -59,13 +72,5 @@
     _border-bottom: 1px solid $white !important;
     color: $white;
     background-color: rgba(255, 255, 255, 0.1) !important;
-  }
-}
-
-.theme-DARK {
-  .text-area-wrapper {
-    color: $white;
-    background-color: #121212;
-    border: 1px solid #494c56;
   }
 }

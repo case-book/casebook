@@ -6,8 +6,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
-import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import './TestrunEditPage.scss';
@@ -15,6 +13,8 @@ import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUser
 import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import moment from 'moment';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 const labelMinWidth = '120px';
 
@@ -123,6 +123,11 @@ function TestrunEditPage({ type }) {
   const onSubmit = e => {
     e.preventDefault();
 
+    if (testrun.startDateTime && testrun.endDateTime && testrun.startDateTime > testrun.endDateTime) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트 기간 오류', '테스트 종료 일시가 테스트 시작 일시보다 빠릅니다.');
+      return;
+    }
+
     TestrunService.createProjectTestrunInfo(
       spaceCode,
       projectId,
@@ -135,21 +140,6 @@ function TestrunEditPage({ type }) {
       () => {
         navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
       },
-    );
-  };
-
-  const onDelete = () => {
-    dialogUtil.setConfirm(
-      MESSAGE_CATEGORY.WARNING,
-      t('프로젝트 삭제'),
-      <div>{t(`"${testrun.name}" 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
-      () => {
-        ProjectService.deleteProject(spaceCode, testrun, () => {
-          navigate(`/spaces/${spaceCode}/projects`);
-        });
-      },
-      null,
-      t('삭제'),
     );
   };
 
@@ -180,22 +170,10 @@ function TestrunEditPage({ type }) {
   return (
     <>
       <Page className="testrun-edit-page-wrapper">
-        <PageTitle
-          control={
-            isEdit ? (
-              <div>
-                <Button size="sm" color="danger" onClick={onDelete}>
-                  {t('테스트런 삭제')}
-                </Button>
-              </div>
-            ) : null
-          }
-        >
-          {type === 'edit' ? t('테스트런') : t('새 테스트런')}
-        </PageTitle>
+        <PageTitle>{type === 'edit' ? t('테스트 런') : t('새 테스트런')}</PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('테스트런 정보')}</Title>
+            <Title>{t('테스트 런 정보')}</Title>
             <Block>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -328,19 +306,6 @@ function TestrunEditPage({ type }) {
                   >
                     {t('모든 테스트케이스 추가')}
                   </Button>
-                </Text>
-              </BlockRow>
-              <BlockRow className="testcase-summary-row">
-                <Label minWidth={labelMinWidth} />
-                <Text className="testcase-summary">
-                  <span>{testrun.testcaseGroups?.length}</span>
-                  <span>{t('그룹')}</span>
-                  <span>
-                    {testrun.testcaseGroups?.reduce((b, n) => {
-                      return b + (n.testcases?.length || 0);
-                    }, 0)}
-                  </span>
-                  <span>케이스</span>
                 </Text>
               </BlockRow>
               <BlockRow>

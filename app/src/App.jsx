@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Common, Header, Join, Login, Message, SpaceListPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
@@ -100,28 +99,20 @@ function App() {
               </div>
             </div>
             {isLogin && (
-              <TransitionGroup className="transition-group">
-                <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
-                  <Routes location={location}>
-                    <Route path="/" element={<SpaceListPage />} />
-                    <Route path="/users/*" element={<UsersRoutes />} />
-                    <Route path="/spaces/*" element={<SpacesRoutes />} />
-                    <Route path="/projects/*" element={<ProjectsRoutes />} />
-                    <Route path="/configs/*" element={<ConfigsRoutes />} />
-                    <Route path="*" element={<Message code="404" />} />
-                  </Routes>
-                </CSSTransition>
-              </TransitionGroup>
+              <Routes location={location}>
+                <Route path="/" element={<SpaceListPage />} />
+                <Route path="/users/*" element={<UsersRoutes />} />
+                <Route path="/spaces/*" element={<SpacesRoutes />} />
+                <Route path="/projects/*" element={<ProjectsRoutes />} />
+                <Route path="/configs/*" element={<ConfigsRoutes />} />
+                <Route path="*" element={<Message code="404" />} />
+              </Routes>
             )}
             {!isLogin && (
-              <TransitionGroup className="transition-group">
-                <CSSTransition key={location.pathname} classNames="fade" timeout={500}>
-                  <Routes location={location}>
-                    <Route path="/users/join" element={<Join />} />
-                    <Route path="*" element={<Login />} />
-                  </Routes>
-                </CSSTransition>
-              </TransitionGroup>
+              <Routes location={location}>
+                <Route path="/users/join" element={<Join />} />
+                <Route path="*" element={<Login />} />
+              </Routes>
             )}
           </main>
         </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './TextArea.scss';
 
-function TextArea({ className, value, maxLength, size, disabled, border, required, onChange, placeholder, rows, autoHeight }) {
+function TextArea({ className, value, maxLength, size, outline, disabled, border, required, onChange, underline, placeholder, rows, autoHeight }) {
   const element = useRef({});
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function TextArea({ className, value, maxLength, size, disabled, border, require
   return (
     <textarea
       ref={element}
-      className={`text-area-wrapper ${className} size-${size} ${border ? 'border' : ''}`}
+      className={`text-area-wrapper ${className} ${outline ? 'outline' : ''} ${underline ? 'underline' : ''} size-${size} ${border ? 'border' : ''}`}
       onInput={e => {
         if (autoHeight) {
           e.target.style.height = '5px';
@@ -50,6 +50,8 @@ TextArea.defaultProps = {
   maxLength: null,
   rows: 4,
   autoHeight: false,
+  outline: true,
+  underline: false,
 };
 
 TextArea.propTypes = {
@@ -57,6 +59,7 @@ TextArea.propTypes = {
   size: PropTypes.oneOf(['xxl', 'xl', 'lg', 'md', 'sm', 'xs']),
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   required: PropTypes.bool,
+  outline: PropTypes.bool,
   disabled: PropTypes.bool,
   border: PropTypes.bool,
   onChange: PropTypes.func,
@@ -64,6 +67,7 @@ TextArea.propTypes = {
   maxLength: PropTypes.number,
   rows: PropTypes.number,
   autoHeight: PropTypes.bool,
+  underline: PropTypes.bool,
 };
 
 export default TextArea;

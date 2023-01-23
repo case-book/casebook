@@ -13,9 +13,9 @@ import './DateRange.scss';
 registerLocale('ko', ko);
 registerLocale('en', en);
 
-function DateRange({ className, language, startDate, endDate, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey }) {
+function DateRange({ className, language, startDate, endDate, outline, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey }) {
   return (
-    <div className={`date-range-wrapper ${className} size-${size}`}>
+    <div className={`date-range-wrapper ${className} size-${size} ${outline ? 'outline' : ''}`}>
       <div>
         <DatePicker
           className="date-picker start-date-picker"
@@ -62,6 +62,7 @@ DateRange.defaultProps = {
   startDate: null,
   endDate: null,
   onChange: null,
+  outline: true,
 };
 
 DateRange.propTypes = {
@@ -75,4 +76,5 @@ DateRange.propTypes = {
   showTimeSelectOnly: PropTypes.bool,
   startDateKey: PropTypes.string,
   endDateKey: PropTypes.string,
+  outline: PropTypes.bool,
 };

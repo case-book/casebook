@@ -1,10 +1,14 @@
 .date-range-wrapper {
   display: flex;
-  border: 1px solid $color-border-light;
   padding: 0 12px;
-  background-color: $white;
+  background-color: var(--input-background-color);
+  color: var(--text-color);
   border-radius: 2px;
   font-weight: lighter;
+
+  &.outline {
+    border: 1px solid var(--input-border-color);
+  }
 
   .react-datepicker-popper {
     z-index: 3;
