@@ -33,7 +33,7 @@
       line-height: 120%;
 
       .testrun-card {
-        padding: 1rem;
+        padding: 1rem 1rem 1rem 1.25rem;
         display: flex;
         flex-direction: row;
 
@@ -90,12 +90,13 @@
               }
 
               .OPENED {
-                background-color: $color-primary-light;
+                background-color: var(--green-color);
                 color: $white;
               }
 
               .CLOSED {
-                background-color: $gray-600;
+                background-color: var(--gray-color);
+                color: $white;
               }
             }
 
@@ -132,7 +133,7 @@
             > div.no-date {
               display: inline-flex;
               padding: 0.5rem 0.75rem;
-              background-color: $gray-200;
+              background-color: var(--light-color);
               border-radius: 20px;
               line-height: 100%;
 
@@ -175,7 +176,7 @@
           }
 
           .summary-box {
-            background-color: $gray-200;
+            background-color: var(--light-color);
             width: 100px;
             position: relative;
             padding: 0.5rem 0;

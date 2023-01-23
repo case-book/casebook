@@ -20,9 +20,9 @@
     > li {
       display: inline-flex;
       margin-right: 1rem;
-      border: 1px solid $color-border-light;
       border-radius: 20px;
-      background-color: $gray-100;
+      border: 1px solid var(--border-color);
+      background-color: var(--lighter-color);
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
       margin-bottom: 1rem;
       font-size: 14px;
@@ -36,7 +36,7 @@
 
           svg {
             &:hover {
-              fill: $danger;
+              fill: var(--danger-color);
             }
           }
         }
@@ -52,9 +52,9 @@
     > li {
       display: inline-flex;
       margin-right: 1rem;
-      border: 1px solid $color-border-light;
+      border: 1px solid var(--border-color);
+      background-color: var(--lighter-color);
       border-radius: 20px;
-      background-color: $gray-100;
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
       margin-bottom: 1rem;
       font-size: 14px;
@@ -69,8 +69,8 @@
             position: absolute;
             left: -5px;
             top: -8px;
-            background-color: #333;
-            color: #ffffff;
+            background-color: var(--green-color);
+            color: var(--white-color);
             display: inline-flex;
             width: 22px;
             height: 22px;
@@ -86,17 +86,8 @@
   }
 
   .no-user {
-    background-color: $gray-100;
+    background-color: var(--lighter-color);
     border-radius: 8px;
     padding: 0.75rem;
-  }
-
-  .testcase-summary-row {
-    display: none;
-    .testcase-summary {
-      span {
-        margin-right: 0.5rem;
-      }
-    }
   }
 }

@@ -165,11 +165,11 @@ button {
 }
 
 a {
-  color: $color-azure;
+  color: var(--primary-color);
   text-decoration: none;
 
   &:hover {
-    color: darken($color-azure, 10%);
+    color: var(--primary-hover-color);
   }
 }
 

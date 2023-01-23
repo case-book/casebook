@@ -3,16 +3,17 @@
   .testcase-list ul > li {
     color: $gray-600;
     cursor: pointer;
+    opacity: var(--disable-opacity);
 
     &:hover {
-      background-color: $gray-100;
+      background-color: var(--lighter-color);
     }
   }
 
   .testcase-list ul > li.selected,
   .group-info.selected {
-    color: $black;
-    font-weight: bold;
+    color: var(--text-color);
+    opacity: 1;
   }
 
   .group-info {

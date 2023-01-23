@@ -83,12 +83,12 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
                   >
                     <div className="checked">
                       {selected && <i className="fa-solid fa-circle-check" />}
-                      {!selected && <i className="fa-regular fa-circle-check" />}
+                      {!selected && <i className="fa-regular fa-circle" />}
                     </div>
                     <div className="name">{user.name}</div>
                     <div className="tags">
-                      {user.tags
-                        .split(';')
+                      {user?.tags
+                        ?.split(';')
                         .filter(tag => !!tag)
                         .map(tag => {
                           return (

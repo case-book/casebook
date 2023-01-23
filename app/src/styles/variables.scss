@@ -119,6 +119,7 @@ html {
   --card-background-color : #FFF;
   --text-color: #222;
   --primary-color: #3e8ef1;
+  --primary-hover-color: #2e7ed1;
   --primary-text-color: #fff;
   --box-color: #fff;
   --lighter-color: #f8f9fa;
@@ -133,6 +134,8 @@ html {
   --start-background-color : #adb5bd;
   --start-opacity : 0.1;
   --modal-background-color : #FFF;
+  --modal-overlay-color : rgba(0, 0, 0, 0.6);
+  --modal-header-border-color : rgba(0, 0, 0, 0.2);
 }
 
 html.theme-DARK {
@@ -143,6 +146,7 @@ html.theme-DARK {
   --card-background-color : #16151a;
   --text-color: #fff;
   --primary-color: #ffbc4b;
+  --primary-hover-color: #dfac3b;
   --primary-text-color: #222;
   --box-color: #000;
   --lighter-color: #1D1D1D;
@@ -157,6 +161,8 @@ html.theme-DARK {
   --start-background-color : #000;
   --start-opacity : 0.3;
   --modal-background-color : #16151a;
+  --modal-overlay-color : rgba(0, 0, 0, 0.7);
+  --modal-header-border-color : rgba(255, 255, 255, 0.2);
 }
 
 @mixin title() {

@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   z-index: 9999;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--modal-overlay-color);
   display: none;
 
   &.show {
@@ -104,7 +104,7 @@
       display: flex;
       border-radius: 4px 4px 0 0;
       background-color: var(--modal-background-color);
-      border-bottom: 1px solid var(--border-light-color);
+      border-bottom: 1px solid var(--modal-header-border-color);
 
       > div {
         align-self: center;
