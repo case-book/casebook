@@ -30,7 +30,6 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
               <Input
                 value={content.name}
                 size="md"
-                color="black"
                 onChange={val => {
                   onChangeContent('name', val);
                 }}

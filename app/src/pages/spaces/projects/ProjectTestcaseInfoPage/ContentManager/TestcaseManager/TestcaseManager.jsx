@@ -106,7 +106,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
             <div className="title-input">
               <div className="type-input">
                 <Selector
-                  color="black"
                   className="selector"
                   size="md"
                   items={testcaseTemplates?.map(d => {
@@ -123,7 +122,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                 <Input
                   value={content.name}
                   size="md"
-                  color="black"
                   onChange={val => {
                     onChangeContent('name', val);
                   }}

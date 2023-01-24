@@ -108,6 +108,7 @@ html {
   --yellow-color : #ffbc4b;
   --disable-opacity: 0.6;
   --link-color : #386bd8;
+  --secondary-color : #7bde89;
 }
 
 
@@ -126,8 +127,11 @@ html {
   --light-color: #e9ecef;
   --light-hover-color: #ced4da;
   --gray-color: #6c757d;
+  --gray-hover-color: #5c656d;
+  --dark-gray-color: #495057;
   --hover-brightness: 1.06;
   --input-border-color: #dadde6;
+  --input-background-color : #FFF;
   --border-color: rgba(0, 0, 0, 0.25);
   --border-lighter-color: rgba(0, 0, 0, 0.05);
   --border-light-color: rgba(0, 0, 0, 0.12);
@@ -138,6 +142,7 @@ html {
   --modal-background-color : #FFF;
   --modal-overlay-color : rgba(0, 0, 0, 0.6);
   --modal-header-border-color : rgba(0, 0, 0, 0.2);
+  --hover-background-color : rgba(0, 0, 0, 0.05);
 }
 
 html.theme-DARK {
@@ -155,8 +160,11 @@ html.theme-DARK {
   --light-color: #222;
   --light-hover-color: #444;
   --gray-color: #adb5bd;
+  --gray-hover-color: #bdc5ed;
+  --dark-gray-color: #4d555d;
   --hover-brightness: 1.05;
   --input-border-color: #494c56;
+  --input-background-color : #101010;
   --border-color: rgba(255, 255, 255, 0.3);
   --border-lighter-color: rgba(255, 255, 255, 0.05);
   --border-light-color: rgba(255, 255, 255, 0.12);
@@ -167,6 +175,7 @@ html.theme-DARK {
   --modal-background-color : #16151a;
   --modal-overlay-color : rgba(0, 0, 0, 0.7);
   --modal-header-border-color : rgba(255, 255, 255, 0.2);
+  --hover-background-color : rgba(255, 255, 255, 0.05);
 }
 
 @mixin title() {

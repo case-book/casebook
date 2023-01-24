@@ -7,25 +7,19 @@
     text {
       font-family: NotoSans, sans-serif !important;
     }
-  }
-}
 
-.theme-DARK {
-  .pie-chart-wrapper {
-    svg {
-      > g {
-        text {
-          fill: $white !important;
-        }
+    > g {
+      text {
+        fill: var(--text-color) !important;
       }
     }
+  }
 
+  > div {
     > div {
       > div {
         > div {
-          > div {
-            color: $black !important;
-          }
+          color: var(--text-color) !important;
         }
       }
     }

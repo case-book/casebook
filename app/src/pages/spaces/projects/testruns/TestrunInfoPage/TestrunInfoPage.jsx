@@ -362,7 +362,8 @@ function TestrunInfoPage() {
             />
           }
           right={
-            id && (
+            id &&
+            type === ITEM_TYPE.TESTCASE && (
               <TestRunTestcaseManager
                 contentLoading={contentLoading}
                 content={content || {}}

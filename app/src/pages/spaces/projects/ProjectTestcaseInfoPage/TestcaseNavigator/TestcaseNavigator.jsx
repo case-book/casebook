@@ -329,7 +329,6 @@ function TestcaseNavigator({
             <div className="label">테스터</div>
             <div>
               <Selector
-                color="black"
                 className="selector"
                 size="xs"
                 items={[

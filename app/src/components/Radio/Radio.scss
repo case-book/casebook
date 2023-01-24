@@ -27,23 +27,9 @@
 
   &.active {
     cursor: pointer;
-
-    label {
+    label,
+    input {
       cursor: pointer;
-    }
-
-    input[type='radio'] {
-      cursor: pointer;
-    }
-
-    &:hover {
-      input[type='radio'] {
-        border: 4px solid $gray-500;
-      }
-
-      input[type='radio']:checked {
-        border: 4px solid $color-primary-light;
-      }
     }
   }
 
@@ -106,11 +92,11 @@
     padding-left: 1rem;
     padding-right: 1rem;
     border: none;
-    background-color: $white;
-    color: $black;
+    background-color: var(--input-background-color);
+    color: var(--text-color);
 
     > div.border {
-      border : 1px solid $color-border-light;
+      border: 1px solid var(--input-border-color);
     }
 
     &:nth-child(1) {
@@ -157,12 +143,11 @@
 
     &.active {
       &:hover {
-        color: $white;
+        color: var(--primary-text-color);
         font-weight: bold;
         .border {
-          background-color: darken($color-primary-light, 4%);
-          border-color: rgba(0, 0, 0, 0.3);
-
+          background-color: var(--primary-hover-color);
+          border-color: var(--border-color-hover);
           z-index: 4;
         }
 
@@ -173,11 +158,11 @@
     }
 
     &.checked {
-      color: $white;
+      color: var(--primary-text-color);
       font-weight: bold;
       .border {
-        background-color: $color-primary-light;
-        border-color: rgba(0, 0, 0, 0.3);
+        background-color: var(--primary-color);
+        border-color: var(--border-color-hover);
         z-index: 3;
       }
 
@@ -195,7 +180,7 @@
     border: none;
     padding: 0 1rem;
     background-color: transparent;
-    color: $gray-600;
+    color: var(--gray-color);
     position: relative;
 
     &::after {
@@ -205,7 +190,7 @@
       width: 100%;
       bottom: -2px;
       left: 0;
-      background-color: $gray-500;
+      background-color: var(--gray-color);
       right: 0;
       -webkit-transition: all 0.3s ease 0s;
       transition: all 0.3s ease 0s;
@@ -230,10 +215,10 @@
     &.active {
       &:hover {
         label {
-          color: $gray-800;
+          color: var(--text-color);
         }
         &::after {
-          background-color: $gray-800;
+          background-color: var(--text-color);
         }
       }
     }
@@ -241,20 +226,20 @@
     &.checked {
       font-weight: bold;
       label {
-        color: $color-primary-light;
+        color: var(--primary-color);
       }
 
       &::after {
-        background-color: $color-primary-light;
+        background-color: var(--primary-color);
       }
 
       &:hover {
-        color: $color-primary-light;
+        color: var(--primary-hover-color);
         label {
-          color: $color-primary-light;
+          color: var(--primary-hover-color);
         }
         &::after {
-          background-color: $color-primary-light;
+          background-color: var(--primary-hover-color);
         }
       }
     }
@@ -268,7 +253,7 @@
     input[type='radio'] {
       align-self: center;
       appearance: none;
-      border: 4px solid $gray-600;
+      border: 4px solid var(--gray-color);
       border-radius: 50%;
       width: 1.25em;
       height: 1.25em;
@@ -276,130 +261,17 @@
     }
 
     input[type='radio']:checked {
-      border: 4px solid $color-primary-light;
+      border: 4px solid var(--primary-color);
     }
 
     &.active {
       &:hover {
         input[type='radio'] {
-          border: 4px solid $gray-700;
+          border: 4px solid var(--gray-hover-color);
         }
 
         input[type='radio']:checked {
-          border: 4px solid $color-primary-light;
-        }
-      }
-    }
-  }
-}
-
-.theme-DARK {
-  .radio-wrapper {
-    &.active {
-      cursor: pointer;
-
-      label {
-        cursor: pointer;
-      }
-
-      input[type='radio'] {
-        cursor: pointer;
-      }
-
-      &:hover {
-        input[type='radio'] {
-          border: 4px solid $gray-500;
-        }
-
-        input[type='radio']:checked {
-          border: 4px solid $color-primary-light;
-        }
-      }
-    }
-
-    &.type-inline {
-      background-color: #121212;
-      color: $white;
-
-      > div.border {
-        border: 1px solid #494c56;
-      }
-
-      &.active {
-        &:hover {
-          color: $black;
-          .border {
-            background-color: darken($color-primary-dark, 4%);
-          }
-        }
-      }
-
-      &.checked {
-        color: $black;
-        .border {
-          background-color: $color-primary-dark;
-          border: 1px solid #494c56;
-        }
-      }
-    }
-
-    &.type-line {
-      color: $gray-400;
-
-      &::after {
-        background-color: $gray-400;
-      }
-
-      &.active {
-        &:hover {
-          label {
-            color: $gray-200;
-          }
-          &::after {
-            background-color: $gray-200;
-          }
-        }
-      }
-
-      &.checked {
-        label {
-          color: $color-primary-dark;
-        }
-
-        &::after {
-          background-color: $color-primary-dark;
-        }
-
-        &:hover {
-          color: $color-primary-dark;
-          label {
-            color: $color-primary-dark;
-          }
-          &::after {
-            background-color: $color-primary-dark;
-          }
-        }
-      }
-    }
-
-    &.type-default {
-      input[type='radio'] {
-        border: 4px solid $gray-300;
-      }
-
-      input[type='radio']:checked {
-        border: 4px solid $color-primary-dark;
-      }
-
-      &.active {
-        &:hover {
-          input[type='radio'] {
-            border: 4px solid $white;
-          }
-
-          input[type='radio']:checked {
-            border: 4px solid $color-primary-dark;
-          }
+          border: 4px solid var(--primary-hover-color);
         }
       }
     }

@@ -30,12 +30,12 @@
 
   .checked-icon {
     align-self: center;
-    color: $gray-400;
-    border: 1px solid $color-border-light;
+    color: var(--gray-color);
+    border: 1px solid var(--input-border-color);
     padding: 3px;
     line-height: 100%;
     border-radius: 2px;
-    background-color: $white;
+    background-color: var(--input-background-color);
     height: 100%;
     display: inline-flex;
     > span {
@@ -48,9 +48,7 @@
       display: inline-flex;
       justify-content: center;
       border-radius: 2px;
-      color: $color-primary-light;
-      border: 1px solid $color-border-light-focus;
-      background-color: $white;
+      color: var(--primary-color);
     }
   }
 
@@ -115,23 +113,8 @@
 
   &.active:hover {
     .checked-icon {
-      border-color: $color-border-light-focus;
+      border-color: var(--border-color-hover);
       transition: all 0.3s;
-    }
-  }
-}
-
-.theme-DARK {
-  .check-box-wrapper {
-    .checked-icon {
-      background-color: #121212;
-      border: 1px solid #494c56;
-    }
-
-    &.checked {
-      .checked-icon {
-        color: $color-primary-dark;
-      }
     }
   }
 }

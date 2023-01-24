@@ -34,16 +34,9 @@
   }
 }
 
-.theme-LIGHT {
-  .switch-wrapper {
-    background-color: $gray-200;
-  }
-}
-
 .switch-wrapper {
   display: inline-flex;
-  background-color: rgba(0, 0, 0, 0.4);
-  background-color: #000;
+  background-color: var(--light-color);
   padding: 0 8px;
   line-height: 100%;
   border-radius: 20px;
@@ -59,18 +52,18 @@
       width: 20px;
       height: 20px;
       border-radius: 8px;
-      background-color: $gray-700;
+      background-color: var(--gray-color);
       transition: all 0.3s;
       animation: switch-bounce-inverse 0.3s linear;
     }
   }
 
   &.outline {
-    border: 1px solid $input-border-color;
+    border: 1px solid var(--input-border-color);
     &:hover {
-      border: 1px solid $input-border-focus-color;
+      border: 1px solid var(--border-color-hover);
       &.disabled {
-        border: 1px solid $border-color;
+        border: 1px solid var(--input-border-color);
       }
     }
   }
@@ -78,7 +71,7 @@
   &.checked {
     .ball {
       display: inline-block;
-      background-color: $primary-color;
+      background-color: var(--primary-color);
       margin-left: 20px;
       transition: all 0.3s;
       animation: switch-bounce 0.3s linear;

@@ -230,7 +230,7 @@ function ProjectDashBoardPage() {
                                           <div className="testcase-name">
                                             <Link
                                               className={testcase.testResult}
-                                              to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}?tester=&type=case&testrunTestcaseGroupId=${testcase.testrunTestcaseGroupId}&id=${testcase.testrunTestcaseGroupTestcaseId}`}
+                                              to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}?tester=&type=${ITEM_TYPE.TESTCASE}&id=${testcase.testrunTestcaseGroupTestcaseId}`}
                                             >
                                               {testcase.name}
                                             </Link>
@@ -266,7 +266,7 @@ function ProjectDashBoardPage() {
                       key={d.key}
                       size="sm"
                       value={d.key}
-                      type="inline"
+                      type="default"
                       checked={period === d.key}
                       onChange={val => {
                         setPeriod(val);

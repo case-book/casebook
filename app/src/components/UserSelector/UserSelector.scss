@@ -4,19 +4,24 @@
   border-radius: 2px;
   position: relative;
   z-index: 3;
-  color: $black;
-  background-color: $white;
-  border: 1px solid $color-border-light;
+  background-color: var(--input-background-color);
+  color: var(--text-color);
+  border: 1px solid var(--input-border-color);
+
+  &:hover {
+    border-color: var(--border-color-hover);
+  }
 
   &.opened {
     z-index: 21;
-    border-color: $color-border-light-focus;
+    border-color: var(--border-color-hover);
   }
 
   > div {
     align-self: center;
     &.control {
       flex-grow: 1;
+      height: 100%;
     }
 
     &.icon {
@@ -24,12 +29,12 @@
       height: 100%;
       cursor: pointer;
       font-size: 14px;
-      color: $gray-700;
+      color: var(--gray-color);
       line-height: 100%;
 
       > div {
         align-self: center;
-        border-left: 1px solid $color-border-light;
+        border-left: 1px solid var(--input-border-color);
         padding-left: 0.5rem;
         padding-right: 0.5rem;
       }
@@ -47,17 +52,17 @@
     border: none;
     transition: border-bottom 0.5s;
     font-family: NotoSans, sans-serif;
-    background-color: transparent;
+    background-color: var(--input-background-color);
+    color: var(--text-color);
 
     &:focus {
       box-shadow: none;
       outline: none;
-      border-color: $input-border-focus-color;
+      border-color: var(--border-color-hover);
     }
 
     &.disabled {
-      background-color: $gray-100;
-      opacity: 0.6;
+      opacity: var(--disable-opacity);
     }
   }
 
@@ -98,7 +103,7 @@
     input {
       font-size: 16px;
       padding: 8px 12px;
-      height: $md-height;
+      height: 100%;
     }
   }
 
@@ -125,13 +130,13 @@
   .user-list {
     position: absolute;
     top: calc(100% + 4px);
-    background-color: $white;
+    background-color: var(--input-background-color);
     border-radius: 2px;
     max-height: 212px;
     overflow-y: auto;
     box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid $color-border-light-focus;
-    padding: 4px;
+    border: 1px solid var(--border-color-hover);
+
     left: -1px;
     min-width: 100%;
     min-width: calc(100% + 2px);
@@ -153,20 +158,19 @@
         height: 32px;
         display: flex;
         font-size: 14px;
-        border-bottom: 1px solid $color-border-light;
+        border-bottom: 1px solid var(--input-border-color);
         cursor: pointer;
         > div {
           align-self: center;
         }
 
         &.selected {
-          background-color: $color-primary-light;
-          color: $white !important;
+          background-color: var(--primary-color);
+          color: var(--primary-text-color) !important;
         }
 
         &:hover {
-          background-color: lighten($color-primary-light, 8%);
-          color: $white !important;
+          background-color: var(--hover-background-color);
         }
 
         &:first-child {
@@ -179,12 +183,12 @@
         &.empty:hover {
           background-color: transparent;
           cursor: text;
-          color: $gray-700 !important;
+          color: var(--gray-color) !important;
         }
 
         &.empty,
         &.special-option {
-          color: $gray-700;
+          color: var(--gray-color);
           > .name {
             flex-grow: 1;
             text-align: center;
@@ -204,13 +208,6 @@
               }
             }
           }
-
-          &:hover,
-          &.selected {
-            .tag {
-              color: $black !important;
-            }
-          }
         }
 
         > div {
@@ -218,14 +215,14 @@
             padding: 0 0.5rem;
             font-weight: bold;
             align-self: center;
-            line-height: 125%;
+
             white-space: nowrap;
           }
 
           &.email {
             flex-grow: 1;
             margin-right: 0.5rem;
-            line-height: 125%;
+
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
@@ -243,77 +240,10 @@
               font-family: Cairo, sans-serif;
               text-transform: uppercase;
               display: inline-block;
-              padding: 4px 6px;
-              background-color: $gray-200;
-              line-height: 100%;
+              padding: 2px 4px;
+              background-color: var(--primary-color);
+              color: var(--primary-text-color);
               border-radius: 4px;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.theme-DARK {
-  .user-selector-wrapper {
-    color: $white;
-    background-color: $color-form-control-dark;
-    border: 1px solid $color-border-dark;
-
-    > div {
-      &.icon {
-        color: $gray-500;
-
-        > div {
-          border-left: 1px solid $color-border-dark;
-        }
-      }
-    }
-
-    input {
-      color: $white;
-    }
-
-    .user-list {
-      background-color: $color-form-control-dark;
-      border: 1px solid $color-border-dark;
-
-      ul {
-        > li {
-          border-bottom: 1px solid $color-border-dark;
-
-          &.selected {
-            background-color: $color-primary-dark;
-            color: $black !important;
-            .email {
-              > span {
-                background-color: rgba(0, 0, 0, 0.1);
-              }
-            }
-          }
-
-          &:hover {
-            background-color: $color-primary-dark;
-            color: $black !important;
-          }
-
-          &.empty,
-          &.special-option {
-            color: $gray-400;
-          }
-
-          > div {
-            &.email {
-              > span {
-                background-color: rgba(255, 255, 255, 0.1);
-              }
-            }
-
-            &.enter {
-              > span {
-                background-color: rgba(0, 0, 0, 0.2);
-              }
             }
           }
         }
