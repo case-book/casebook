@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import { Button, EmptyContent, FlexibleLayout, Liner, Loader, SeqId, TestcaseItem } from '@/components';
-
+import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -292,6 +292,7 @@ function TestRunTestcaseManager({
                 </div>
                 <div className="comment-editor">
                   <Editor
+                    key={theme}
                     ref={editor}
                     theme={theme === 'DARK' ? 'dark' : 'white'}
                     placeholder="내용을 입력해주세요."
@@ -428,4 +429,4 @@ TestRunTestcaseManager.propTypes = {
   onSaveTestResultItem: PropTypes.func,
 };
 
-export default TestRunTestcaseManager;
+export default observer(TestRunTestcaseManager);

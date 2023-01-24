@@ -68,6 +68,7 @@ TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHand
     null,
     null,
     loading,
+    i18n.t('테스트런 상세 정보를 불러오고 있습니다.'),
   );
 };
 

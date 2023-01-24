@@ -6,7 +6,7 @@
   .text {
     flex-grow: 1;
     font-family: NotoSans, sans-serif;
-    color: $gray-700;
+    color: var(--gray-color);
     line-height: 125%;
   }
 
@@ -14,28 +14,6 @@
     font-size: 10px;
     align-self: center;
     font-family: Rowdies, sans-serif;
-    color: $gray-500;
-  }
-}
-
-.theme-DARK {
-  .testcase-viewer-label-wrapper {
-    display: flex;
-    padding: 1rem;
-    background-color: #141414;
-    border-radius: 4px 4px 0 0;
-
-    .text {
-      flex-grow: 1;
-      font-family: Rowdies, NotoSans, sans-serif;
-      line-height: 125%;
-    }
-
-    .type {
-      font-size: 10px;
-      align-self: center;
-      font-family: Rowdies, sans-serif;
-      color: $gray-500;
-    }
+    color: var(--gray-color);
   }
 }
