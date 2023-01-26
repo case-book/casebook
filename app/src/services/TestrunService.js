@@ -57,6 +57,17 @@ TestrunService.createProjectTestrunInfo = (spaceCode, projectId, testrun, succes
   );
 };
 
+TestrunService.updateProjectTestrunInfo = (spaceCode, projectId, testrun, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns`,
+    testrun,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}`,

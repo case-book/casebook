@@ -12,12 +12,11 @@ import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class TestrunRequest {
+public class TestrunUpdateRequest {
     private Long id;
     private String name;
     private String description;

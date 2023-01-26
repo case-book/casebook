@@ -48,10 +48,14 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems() != null) {
             this.testcase.setTestcaseItems(testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()));
-            this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
+            if (testrunTestcaseGroupTestcase.getTestcaseItems() != null) {
+                this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
+            }
         }
         this.testResult = testrunTestcaseGroupTestcase.getTestResult();
-        this.tester = UserDTO.builder().id(testrunTestcaseGroupTestcase.getTester().getId()).build();
+        if (testrunTestcaseGroupTestcase.getTester() != null) {
+            this.tester = UserDTO.builder().id(testrunTestcaseGroupTestcase.getTester().getId()).build();
+        }
         if (testrunTestcaseGroupTestcase.getComments() != null) {
             this.comments = testrunTestcaseGroupTestcase.getComments().stream().map(TestrunTestcaseGroupTestcaseCommentDTO::new).collect(Collectors.toList());
         }

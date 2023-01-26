@@ -98,7 +98,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   const onClick = (testcaseGroupId, testcaseId) => {
     const isGroup = !testcaseId;
 
-    const nextCurrentSelectedTestcaseGroups = currentSelectedTestcaseGroups.slice(0);
+    const nextCurrentSelectedTestcaseGroups = (currentSelectedTestcaseGroups || []).slice(0);
 
     const selectedGroupIndex = nextCurrentSelectedTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroupId);
 
@@ -196,8 +196,10 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
             </div>
             <ul>
               {projectTestcaseGroupTree?.map(testcaseGroup => {
-                const selected = currentSelectedTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-                return <TestcaseSelectorGroup key={testcaseGroup.id} testcaseGroup={testcaseGroup} selected={selected} selectedTestcaseGroups={currentSelectedTestcaseGroups} onClick={onClick} />;
+                const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+                return (
+                  <TestcaseSelectorGroup key={testcaseGroup.id} testcaseGroup={testcaseGroup} selected={selected} selectedTestcaseGroups={currentSelectedTestcaseGroups || []} onClick={onClick} />
+                );
               })}
             </ul>
           </div>

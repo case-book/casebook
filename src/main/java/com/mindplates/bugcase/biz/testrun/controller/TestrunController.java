@@ -55,9 +55,16 @@ public class TestrunController {
 
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
-    public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunRequest testrunRequest) {
+    public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
         return new TestrunListResponse(testrunService.createTestrunInfo(spaceCode, testrun));
+    }
+
+    @Operation(description = "프로젝트 테스트런 변경")
+    @PutMapping("")
+    public TestrunListResponse updateTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunUpdateRequest testrunRequest) {
+        TestrunDTO testrun = testrunRequest.buildEntity();
+        return new TestrunListResponse(testrunService.updateTestrunInfo(spaceCode, testrun));
     }
 
     @Operation(description = "테스트런 상세 조회")

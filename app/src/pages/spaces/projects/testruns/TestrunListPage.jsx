@@ -143,7 +143,7 @@ function TestrunListPage() {
           <>
             <Title border={false}>{t('예약 테스트런 리스트')}</Title>
             <div className="table-content">
-              <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px', '1px', '1px']}>
+              <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
                 <THead>
                   <Tr>
                     <Th align="left">{t('타입')}</Th>
@@ -162,7 +162,7 @@ function TestrunListPage() {
                           <Tag uppercase>{t(testrun.creationType)}</Tag>
                         </Td>
                         <Td className="name">
-                          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
+                          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/edit`}>{testrun.name}</Link>
                         </Td>
                         <Td align="center">
                           <Tag className="tag" uppercase>
@@ -180,12 +180,12 @@ function TestrunListPage() {
                         <Td align="center">
                           {testrun.creationType === 'RESERVE' && (
                             <Tag className="tag" uppercase>
-                              {testrun.reserveExpired ? '생성완료' : '미처리'}
+                              {testrun.reserveExpired ? t('생성 완료') : t('미처리')}
                             </Tag>
                           )}
                           {testrun.creationType === 'ITERATION' && (
                             <Tag className="tag" uppercase>
-                              {testrun.reserveExpired ? '만료' : '반복중'}
+                              {testrun.reserveExpired ? t('만료') : t('반복중')}
                             </Tag>
                           )}
                         </Td>
@@ -201,7 +201,7 @@ function TestrunListPage() {
           <>
             <Title border={false}>{t('반복 테스트런 리스트')}</Title>
             <div className="table-content">
-              <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px', '1px', '1px']}>
+              <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px', '1px', '1px', '1px']}>
                 <THead>
                   <Tr>
                     <Th align="center">{t('타입')}</Th>
@@ -223,7 +223,7 @@ function TestrunListPage() {
                           <Tag uppercase>{t(testrun.creationType)}</Tag>
                         </Td>
                         <Td className="name">
-                          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
+                          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/edit`}>{testrun.name}</Link>
                         </Td>
                         <Td align="center">
                           <Tag className="tag" uppercase>

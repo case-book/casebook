@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CloseIcon, DatePicker, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Radio, Selector, Text, TextArea, Title } from '@/components';
+import { Block, Button, CloseIcon, DatePicker, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Radio, Selector, Tag, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
-  const { projectId, spaceCode } = useParams();
+  const { projectId, spaceCode, testrunId } = useParams();
 
   const {
     userStore: { user },
@@ -127,9 +127,13 @@ function TestrunEditPage({ type }) {
             };
           }),
         });
+      } else {
+        TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
+          setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+        });
       }
     });
-  }, [type, projectId]);
+  }, [type, projectId, testrunId]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -139,26 +143,47 @@ function TestrunEditPage({ type }) {
       return;
     }
 
-    TestrunService.createProjectTestrunInfo(
-      spaceCode,
-      projectId,
-      {
-        ...testrun,
+    if (isEdit) {
+      TestrunService.updateProjectTestrunInfo(
+        spaceCode,
         projectId,
-        // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-        // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-        startDateTime: new Date(testrun.startDateTime)?.toISOString(),
-        endDateTime: new Date(testrun.endDateTime)?.toISOString(),
-        startTime: new Date(testrun.startTime)?.toISOString(),
-      },
-      () => {
-        if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
-        } else {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-        }
-      },
-    );
+        {
+          ...testrun,
+          projectId,
+          startDateTime: new Date(testrun.startDateTime)?.toISOString(),
+          endDateTime: new Date(testrun.endDateTime)?.toISOString(),
+          startTime: new Date(testrun.startTime)?.toISOString(),
+        },
+        () => {
+          if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
+          } else {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+          }
+        },
+      );
+    } else {
+      TestrunService.createProjectTestrunInfo(
+        spaceCode,
+        projectId,
+        {
+          ...testrun,
+          projectId,
+          // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+          // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+          startDateTime: new Date(testrun.startDateTime)?.toISOString(),
+          endDateTime: new Date(testrun.endDateTime)?.toISOString(),
+          startTime: new Date(testrun.startTime)?.toISOString(),
+        },
+        () => {
+          if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
+          } else {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+          }
+        },
+      );
+    }
   };
 
   const onChangeTestrun = (key, value) => {
@@ -230,47 +255,50 @@ function TestrunEditPage({ type }) {
                 <Label minWidth={labelMinWidth} required>
                   {t('생성 타입')}
                 </Label>
-                <div>
-                  {TESTRUN_CREATION_TYPES.map(info => {
-                    return (
-                      <Radio
-                        key={info.key}
-                        value={info.key}
-                        type="default"
-                        checked={testrun.creationType === info.key}
-                        onChange={val => {
-                          if (val === 'RESERVE') {
-                            const start = new Date();
-                            start.setHours(10);
-                            start.setMinutes(0);
-                            start.setSeconds(0);
-                            start.setMilliseconds(0);
+                {isEdit && <Text>{t(testrun.creationType)}</Text>}
+                {!isEdit && (
+                  <div>
+                    {TESTRUN_CREATION_TYPES.map(info => {
+                      return (
+                        <Radio
+                          key={info.key}
+                          value={info.key}
+                          type="default"
+                          checked={testrun.creationType === info.key}
+                          onChange={val => {
+                            if (val === 'RESERVE') {
+                              const start = new Date();
+                              start.setHours(10);
+                              start.setMinutes(0);
+                              start.setSeconds(0);
+                              start.setMilliseconds(0);
 
-                            const end = new Date();
-                            end.setDate(end.getDate() + 2);
-                            end.setHours(19);
-                            end.setMinutes(0);
-                            end.setSeconds(0);
-                            end.setMilliseconds(0);
+                              const end = new Date();
+                              end.setDate(end.getDate() + 2);
+                              end.setHours(19);
+                              end.setMinutes(0);
+                              end.setSeconds(0);
+                              end.setMilliseconds(0);
 
-                            setTestrun({
-                              ...testrun,
-                              creationType: val,
-                              startDateTime: start.getTime(),
-                              endDateTime: end.getTime(),
-                            });
-                          } else {
-                            setTestrun({
-                              ...testrun,
-                              creationType: val,
-                            });
-                          }
-                        }}
-                        label={t(info.value)}
-                      />
-                    );
-                  })}
-                </div>
+                              setTestrun({
+                                ...testrun,
+                                creationType: val,
+                                startDateTime: start.getTime(),
+                                endDateTime: end.getTime(),
+                              });
+                            } else {
+                              setTestrun({
+                                ...testrun,
+                                creationType: val,
+                              });
+                            }
+                          }}
+                          label={t(info.value)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </BlockRow>
               {(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
                 <BlockRow className="testrun-range-type-row">
@@ -511,6 +539,23 @@ function TestrunEditPage({ type }) {
                   </ul>
                 )}
               </BlockRow>
+              {isEdit && (
+                <BlockRow>
+                  <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
+                  <Text>
+                    {testrun.creationType === 'RESERVE' && (
+                      <Tag className="tag" size="md" uppercase>
+                        {testrun.reserveExpired ? t('생성 완료') : t('미처리')}
+                      </Tag>
+                    )}
+                    {testrun.creationType === 'ITERATION' && (
+                      <Tag className="tag" size="md" uppercase>
+                        {testrun.reserveExpired ? t('만료') : t('반복중')}
+                      </Tag>
+                    )}
+                  </Text>
+                </BlockRow>
+              )}
             </Block>
             <PageButtons
               outline
