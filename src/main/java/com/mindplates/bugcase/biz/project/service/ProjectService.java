@@ -220,7 +220,7 @@ public class ProjectService {
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
 
         projectFileService.deleteProjectFile(project.getId());
-        List<TestrunDTO> testruns = testrunService.selectProjectTestrunList(spaceCode, project.getId(), "ALL");
+        List<TestrunDTO> testruns = testrunService.selectProjectAllTestrunList(spaceCode, project.getId());
 
         testruns.forEach((testrunDTO -> {
             testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId());

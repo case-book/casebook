@@ -1,7 +1,9 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
+import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +35,15 @@ public class TestrunDTO extends CommonDTO {
     private int passedTestcaseCount;
     private int failedTestcaseCount;
     private LocalDateTime closedDate;
+    private TestrunCreationTypeCode creationType;
+    private String days;
+    private Boolean onHoliday;
+    private LocalTime startTime;
+    private Integer durationHours;
 
-    public TestrunDTO (Testrun testrun) {
+    private Boolean reserveExpired;
+
+    public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
         this.seqId = testrun.getSeqId();
         this.name = testrun.getName();
@@ -45,10 +55,23 @@ public class TestrunDTO extends CommonDTO {
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
         this.closedDate = testrun.getClosedDate();
-        this.project = ProjectDTO.builder().id(testrun.getProject().getId()).build();
+        if (testrun.getProject() != null && testrun.getProject().getSpace() != null) {
+            this.project = ProjectDTO.builder().id(testrun.getProject().getId()).space(SpaceDTO.builder().id(testrun.getProject().getId()).code(testrun.getProject().getSpace().getCode()).build()).build();
+        }
+
+        if (testrun.getProject() != null && testrun.getProject().getSpace() == null) {
+            this.project = ProjectDTO.builder().id(testrun.getProject().getId()).build();
+        }
+
+        this.creationType = testrun.getCreationType();
+        this.days = testrun.getDays();
+        this.onHoliday = testrun.getOnHoliday();
+        this.startTime = testrun.getStartTime();
+        this.durationHours = testrun.getDurationHours();
+        this.reserveExpired = testrun.getReserveExpired();
     }
 
-    public TestrunDTO (Testrun testrun, boolean detail) {
+    public TestrunDTO(Testrun testrun, boolean detail) {
         this(testrun);
         if (detail) {
             testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());

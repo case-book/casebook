@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
+import { Block, Button, CloseIcon, DatePicker, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Radio, Selector, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -12,9 +12,10 @@ import './TestrunEditPage.scss';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
 import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
-import moment from 'moment';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { DATE_FORMATS, DURATIONS, MESSAGE_CATEGORY, TESTRUN_CREATION_TYPES } from '@/constants/constants';
+import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
+import dateUtil from '@/utils/dateUtil';
 
 const labelMinWidth = '120px';
 
@@ -63,6 +64,16 @@ function TestrunEditPage({ type }) {
     totalTestcaseCount: true,
     passedTestcaseCount: true,
     failedTestcaseCount: true,
+    creationType: 'CREATE',
+    days: '1111100',
+    onHoliday: false,
+    startTime: (() => {
+      const startTime = new Date();
+      startTime.setHours(9);
+      startTime.setMinutes(0);
+      return startTime.getTime();
+    })(),
+    durationHours: 24,
   });
 
   const isEdit = useMemo(() => {
@@ -134,11 +145,18 @@ function TestrunEditPage({ type }) {
       {
         ...testrun,
         projectId,
-        startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-        endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+        // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+        // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+        startDateTime: new Date(testrun.startDateTime)?.toISOString(),
+        endDateTime: new Date(testrun.endDateTime)?.toISOString(),
+        startTime: new Date(testrun.startTime)?.toISOString(),
       },
       () => {
-        navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
+        } else {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        }
       },
     );
   };
@@ -208,35 +226,198 @@ function TestrunEditPage({ type }) {
                   }}
                 />
               </BlockRow>
-              <BlockRow className="testrun-range-type-row">
+              <BlockRow>
                 <Label minWidth={labelMinWidth} required>
-                  {t('테스트 기간')}
+                  {t('생성 타입')}
                 </Label>
-                <DateRange
-                  country={user.country}
-                  language={user.language}
-                  startDate={testrun.startDateTime}
-                  endDate={testrun.endDateTime}
-                  startDateKey="startDateTime"
-                  endDateKey="endDateTime"
-                  onChange={(key, value) => {
-                    setTestrun({
-                      ...testrun,
-                      [key]: value,
-                    });
-                  }}
-                />
-                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
-                <Link
-                  to="/"
-                  onClick={e => {
-                    e.preventDefault();
-                    resetRange();
-                  }}
-                >
-                  {t('기간 없음')}
-                </Link>
+                <div>
+                  {TESTRUN_CREATION_TYPES.map(info => {
+                    return (
+                      <Radio
+                        key={info.key}
+                        value={info.key}
+                        type="default"
+                        checked={testrun.creationType === info.key}
+                        onChange={val => {
+                          if (val === 'RESERVE') {
+                            const start = new Date();
+                            start.setHours(10);
+                            start.setMinutes(0);
+                            start.setSeconds(0);
+                            start.setMilliseconds(0);
+
+                            const end = new Date();
+                            end.setDate(end.getDate() + 2);
+                            end.setHours(19);
+                            end.setMinutes(0);
+                            end.setSeconds(0);
+                            end.setMilliseconds(0);
+
+                            setTestrun({
+                              ...testrun,
+                              creationType: val,
+                              startDateTime: start.getTime(),
+                              endDateTime: end.getTime(),
+                            });
+                          } else {
+                            setTestrun({
+                              ...testrun,
+                              creationType: val,
+                            });
+                          }
+                        }}
+                        label={t(info.value)}
+                      />
+                    );
+                  })}
+                </div>
               </BlockRow>
+              {(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
+                <BlockRow className="testrun-range-type-row">
+                  <Label minWidth={labelMinWidth} required>
+                    {t('테스트 기간')}
+                  </Label>
+                  <DateRange
+                    country={user.country}
+                    language={user.language}
+                    startDate={testrun.startDateTime}
+                    endDate={testrun.endDateTime}
+                    startDateKey="startDateTime"
+                    endDateKey="endDateTime"
+                    onChange={(key, value) => {
+                      setTestrun({
+                        ...testrun,
+                        [key]: value,
+                      });
+                    }}
+                  />
+                  {testrun.creationType === 'CREATE' && (
+                    <>
+                      <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+                      <Link
+                        to="/"
+                        onClick={e => {
+                          e.preventDefault();
+                          resetRange();
+                        }}
+                      >
+                        {t('기간 없음')}
+                      </Link>
+                    </>
+                  )}
+                </BlockRow>
+              )}
+              {!(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
+                <>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth} required>
+                      {t('반복 기간')}
+                    </Label>
+                    <div className="iteration-period">
+                      <DatePicker
+                        className="date-picker start-date-picker"
+                        date={testrun.startDateTime}
+                        showTimeSelect
+                        onChange={date => {
+                          setTestrun({
+                            ...testrun,
+                            startDateTime: date,
+                          });
+                        }}
+                        customInput={<DateCustomInput />}
+                      />
+                      <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
+                      <DatePicker
+                        className="date-picker start-date-picker"
+                        date={testrun.endDateTime}
+                        showTimeSelect
+                        onChange={date => {
+                          setTestrun({
+                            ...testrun,
+                            endDateTime: date,
+                          });
+                        }}
+                        customInput={<DateCustomInput />}
+                      />
+                    </div>
+                  </BlockRow>
+                  <BlockRow>
+                    <Label minWidth={labelMinWidth} />
+                    <div className="day-of-weeks">
+                      {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')].map((day, jnx) => {
+                        return (
+                          <Button
+                            key={jnx}
+                            className={testrun.days[jnx] === '1' ? 'selected' : ''}
+                            size="md"
+                            outline
+                            rounded
+                            onClick={() => {
+                              const list = testrun.days.split('');
+                              list[jnx] = testrun.days[jnx] === '1' ? '0' : '1';
+                              const nextDays = list.join('');
+                              setTestrun({
+                                ...testrun,
+                                days: nextDays,
+                              });
+                            }}
+                          >
+                            {day}
+                          </Button>
+                        );
+                      })}
+                      <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                      <Button
+                        size="md"
+                        className={`holiday-button ${testrun.onHoliday ? 'selected' : ''}`}
+                        outline
+                        onClick={() => {
+                          setTestrun({
+                            ...testrun,
+                            onHoliday: !testrun.onHoliday,
+                          });
+                        }}
+                      >
+                        {t('휴일 제외')}
+                      </Button>
+                      <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                      <div className="label">{t('시작 시간')}</div>
+                      <div>
+                        <DatePicker
+                          clear={false}
+                          className="date-picker start-date-picker"
+                          date={testrun.startTime}
+                          showTimeSelect
+                          showTimeSelectOnly
+                          onChange={date => {
+                            setTestrun({
+                              ...testrun,
+                              startTime: date,
+                            });
+                          }}
+                          customInput={<DateCustomInput />}
+                          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].hoursMinutes.picker}
+                        />
+                      </div>
+                      <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
+                      <div className="label">{t('테스트 기간')}</div>
+                      <Selector
+                        className="selector"
+                        size="md"
+                        items={DURATIONS}
+                        value={testrun.durationHours}
+                        onChange={value => {
+                          setTestrun({
+                            ...testrun,
+                            durationHours: value,
+                          });
+                        }}
+                      />
+                    </div>
+                  </BlockRow>
+                </>
+              )}
+
               <BlockRow className="testrun-users-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
                 <Text>

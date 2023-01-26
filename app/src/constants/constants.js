@@ -1,3 +1,5 @@
+import i18n from 'i18next';
+
 const THEMES = {
   DARK: 'DARK',
   LIGHT: 'LIGHT',
@@ -159,6 +161,68 @@ const TIMEZONES = {
   },
 };
 
+const TESTRUN_CREATION_TYPES = [
+  {
+    key: 'CREATE',
+    value: '지금 생성',
+  },
+  {
+    key: 'RESERVE',
+    value: '예약',
+  },
+  {
+    key: 'ITERATION',
+    value: '반복',
+  },
+];
+
+const DURATIONS = (() => {
+  const list = [];
+  for (let i = 1; i <= 23; i += 1) {
+    list.push({
+      key: i,
+      value: `${i18n.t('@ 시간', { hours: i })}`,
+    });
+  }
+
+  list.push({
+    key: 24,
+    value: `${i18n.t('@ 일', { days: 1 })}`,
+  });
+
+  list.push({
+    key: 48,
+    value: `${i18n.t('@ 일', { days: 2 })}`,
+  });
+
+  list.push({
+    key: 72,
+    value: `${i18n.t('@ 일', { days: 3 })}`,
+  });
+
+  list.push({
+    key: 96,
+    value: `${i18n.t('@ 일', { days: 4 })}`,
+  });
+
+  list.push({
+    key: 120,
+    value: `${i18n.t('@ 일', { days: 5 })}`,
+  });
+
+  list.push({
+    key: 148,
+    value: `${i18n.t('@ 일', { days: 6 })}`,
+  });
+
+  list.push({
+    key: 172,
+    value: `${i18n.t('@ 일', { days: 7 })}`,
+  });
+
+  return list;
+})();
+
 export {
   LANGUAGES,
   USER_ROLE,
@@ -173,4 +237,6 @@ export {
   TESTRUN_RESULT_CODE,
   DEFAULT_TESTRUN_RESULT_ITEM,
   DEFAULT_TESTRUN_TESTER_ITEM,
+  TESTRUN_CREATION_TYPES,
+  DURATIONS,
 };

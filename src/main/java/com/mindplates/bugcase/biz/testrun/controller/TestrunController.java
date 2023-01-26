@@ -3,7 +3,6 @@ package com.mindplates.bugcase.biz.testrun.controller;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
-import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
@@ -13,7 +12,7 @@ import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.*;
 import com.mindplates.bugcase.biz.testrun.vo.response.*;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
-import com.mindplates.bugcase.common.util.MappingUtil;
+import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -37,16 +36,20 @@ public class TestrunController {
 
     private final TestrunService testrunService;
 
-    private final ProjectService projectService;
-
-    private final MappingUtil mappingUtil;
-
     private final ProjectFileService projectFileService;
 
     @Operation(description = "프로젝트 테스트런 목록 조회")
     @GetMapping("")
-    public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "status") String status) {
-        List<TestrunDTO> testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status);
+    public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "status") String status, @RequestParam(value = "testrunCreationType") TestrunCreationTypeCode testrunCreationType) {
+        List<TestrunDTO> testruns;
+
+        if (TestrunCreationTypeCode.CREATE.equals(testrunCreationType)) {
+            testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status, TestrunCreationTypeCode.CREATE);
+        } else {
+            testruns = testrunService.selectProjectReserveTestrunList(spaceCode, projectId, testrunCreationType);
+        }
+
+
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
@@ -81,11 +84,7 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트 케이스 상세 조회")
     @GetMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode,
-                                                                  @PathVariable long projectId,
-                                                                  @PathVariable long testrunId,
-                                                                  @PathVariable long testrunTestcaseGroupId,
-                                                                  @PathVariable long testrunTestcaseGroupTestcaseId) {
+    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId, @PathVariable long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
     }
@@ -154,16 +153,7 @@ public class TestrunController {
 
         String path = projectFileService.createImage(projectId, file);
 
-        ProjectFileDTO fileInfo = ProjectFileDTO.builder()
-                .project(ProjectDTO.builder().id(projectId).build())
-                .name(name)
-                .size(size)
-                .type(type)
-                .path(path)
-                .uuid(UUID.randomUUID().toString())
-                .fileSourceType(FileSourceTypeCode.TESTRUN)
-                .fileSourceId(testrunId)
-                .build();
+        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.TESTRUN).fileSourceId(testrunId).build();
 
         ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
         return new ProjectFileResponse(projectFile, spaceCode, projectId);

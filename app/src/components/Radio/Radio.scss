@@ -144,7 +144,7 @@
     &.active {
       &:hover {
         color: var(--primary-text-color);
-        font-weight: bold;
+
         .border {
           background-color: var(--primary-hover-color);
           border-color: var(--border-color-hover);

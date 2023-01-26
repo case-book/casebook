@@ -17,6 +17,7 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
+import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -66,15 +67,31 @@ public class TestrunService {
     }
 
 
-    public List<TestrunDTO> selectProjectTestrunList(String spaceCode, long projectId, String status) {
+    public List<TestrunDTO> selectProjectTestrunList(String spaceCode, long projectId, String status, TestrunCreationTypeCode creationTypeCode) {
 
         List<Testrun> list;
         if ("ALL".equals(status)) {
-            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(spaceCode, projectId);
+            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, creationTypeCode);
         } else {
-            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status));
+            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status), creationTypeCode);
         }
 
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+
+    }
+
+    public List<TestrunDTO> selectProjectReserveTestrunList(String spaceCode, long projectId, TestrunCreationTypeCode creationTypeCode) {
+        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, creationTypeCode);
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+    }
+
+    public List<TestrunDTO> selectReserveTestrunList() {
+        List<Testrun> list = testrunRepository.findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode.CREATE, TestrunCreationTypeCode.CREATE);
+        return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
+    }
+
+    public List<TestrunDTO> selectProjectAllTestrunList(String spaceCode, long projectId) {
+        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(spaceCode, projectId);
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
 
     }
@@ -189,15 +206,22 @@ public class TestrunService {
     }
 
     @Transactional
+    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired) {
+        testrunRepository.updateTestrunReserveExpired(testrunId, reserveExpired);
+    }
+
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#testrun.project.id}", value = CacheConfig.PROJECT)
     public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrun) {
 
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId());
-        int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
-        project.setTestrunSeq(currentTestrunSeq);
-        projectService.updateProjectInfo(spaceCode, project);
+        if (TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+            int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
+            project.setTestrunSeq(currentTestrunSeq);
+            projectService.updateProjectInfo(spaceCode, project);
+            testrun.setSeqId("R" + currentTestrunSeq);
+        }
 
-        testrun.setSeqId("R" + currentTestrunSeq);
         testrun.setOpened(true);
 
         int totalTestCount = testrun.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
@@ -316,8 +340,7 @@ public class TestrunService {
     }
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
-
-        List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDescIdDesc(spaceCode, projectId, true);
+        List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByEndDateTimeDescIdDesc(spaceCode, projectId, true, TestrunCreationTypeCode.CREATE);
 
         List<Testrun> list = testruns.stream().filter((testrun -> testrun.getTestcaseGroups().stream().anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
             List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {
