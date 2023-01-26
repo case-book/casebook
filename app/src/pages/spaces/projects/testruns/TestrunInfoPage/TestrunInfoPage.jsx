@@ -12,6 +12,7 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestRunTestcaseManager/TestRunTestcaseManager';
 import './TestrunInfoPage.scss';
+import useQueryString from '@/hooks/useQueryString';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -28,6 +29,8 @@ end.setMilliseconds(0);
 function TestrunInfoPage() {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
+  const { query, setQuery } = useQueryString();
+  const { tester = '', id = null, type } = query;
 
   const {
     userStore: { user },
@@ -50,8 +53,6 @@ function TestrunInfoPage() {
 
   const [content, setContent] = useState(null);
 
-  const [userFilter, setUserFilter] = useState('');
-
   const [testrun, setTestrun] = useState({
     seqId: '',
     name: '',
@@ -66,11 +67,13 @@ function TestrunInfoPage() {
     failedTestcaseCount: true,
   });
 
-  const [selectedItemInfo, setSelectedItemInfo] = useState({
-    id: null,
-    type: null,
-    time: null,
-  });
+  const onSelect = info => {
+    setQuery(info);
+  };
+
+  const onChangeTester = info => {
+    setQuery({ tester: info });
+  };
 
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
@@ -95,11 +98,11 @@ function TestrunInfoPage() {
           ...d,
           testcases:
             d.testcases?.filter(testcase => {
-              if (userFilter === '') {
+              if (tester === '') {
                 return true;
               }
 
-              return String(testcase.testerId) === String(userFilter);
+              return String(testcase.testerId) === String(tester);
             }) || [],
         };
       });
@@ -113,12 +116,13 @@ function TestrunInfoPage() {
 
       const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
       setTestcaseGroups(groups);
-
-      setUserFilter(userFilter);
     });
   };
 
   useEffect(() => {
+    if (!project) {
+      return;
+    }
     getTestrunInfo();
   }, [project, testrunId]);
 
@@ -131,11 +135,11 @@ function TestrunInfoPage() {
       return {
         ...d,
         testcases: d.testcases?.filter(testcase => {
-          if (userFilter === '') {
+          if (tester === '') {
             return true;
           }
 
-          return String(testcase.testerId) === String(userFilter);
+          return String(testcase.testerId) === String(tester);
         }),
       };
     });
@@ -149,7 +153,7 @@ function TestrunInfoPage() {
 
     const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
     setTestcaseGroups(groups);
-  }, [project, userFilter]);
+  }, [project, tester]);
 
   const getTestcase = (testrunTestcaseGroupTestcaseId, loading) => {
     if (loading) {
@@ -182,31 +186,34 @@ function TestrunInfoPage() {
   };
 
   const getContent = (loading = true) => {
-    if (selectedItemInfo.type === ITEM_TYPE.TESTCASE) {
-      getTestcase(selectedItemInfo.id, loading);
+    if (type === ITEM_TYPE.TESTCASE) {
+      getTestcase(Number(id), loading);
     } else {
       setContent(null);
+      setQuery({});
+      /*
       setSelectedItemInfo({
         id: null,
         type: null,
         time: null,
       });
+       */
     }
   };
 
   useEffect(() => {
-    if (selectedItemInfo.id) {
+    if (testrun?.id && id) {
       getContent();
     } else {
       setContent(null);
     }
-  }, [selectedItemInfo.id]);
+  }, [testrun, id]);
 
   const onDelete = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('테스트런 삭제'),
-      <div>{t(`"${testrun.name}" 테스트런 및 테스트런에 입력된 모든 정보가 삭제됩니다. 삭제하시겠습니까?`)}</div>,
+      <div>{t('@ 테스트런 및 테스트런에 입력된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { name: testrun.name })}</div>,
       () => {
         TestrunService.deleteTestrunInfo(spaceCode, projectId, testrunId, () => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
@@ -221,7 +228,7 @@ function TestrunInfoPage() {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
       t('테스트런 종료'),
-      <div>{t(`"${testrun.name}" 테스트런을 종료합니다. 계속하시겠습니까?`)}</div>,
+      <div>{t('@ 테스트런을 종료합니다. 계속하시겠습니까?', { name: testrun.name })}</div>,
       () => {
         TestrunService.updateTestrunStatusClosed(spaceCode, projectId, testrunId, () => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
@@ -232,7 +239,7 @@ function TestrunInfoPage() {
     );
   };
 
-  const onChangeComment = (id, comment, handler) => {
+  const onChangeComment = (pId, comment, handler) => {
     TestrunService.updateTestrunComment(
       spaceCode,
       projectId,
@@ -240,7 +247,7 @@ function TestrunInfoPage() {
       content.testrunTestcaseGroupId,
       content.id,
       {
-        id,
+        pId,
         comment,
         testrunTestcaseGroupTestcaseId: content.id,
       },
@@ -261,13 +268,13 @@ function TestrunInfoPage() {
     );
   };
 
-  const onDeleteComment = id => {
-    TestrunService.deleteTestrunComment(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, id, () => {
+  const onDeleteComment = pId => {
+    TestrunService.deleteTestrunComment(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, pId, () => {
       const nextContent = { ...content };
       const nextComments = nextContent.comments.slice(0);
 
       if (nextComments) {
-        const index = nextComments.findIndex(comment => comment.id === id);
+        const index = nextComments.findIndex(comment => comment.id === pId);
         nextComments.splice(index, 1);
         nextContent.comments = nextComments;
 
@@ -276,8 +283,8 @@ function TestrunInfoPage() {
     });
   };
 
-  const createTestrunImage = (id, name, size, type, file) => {
-    return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, type, file);
+  const createTestrunImage = (pId, name, size, pType, file) => {
+    return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, pType, file);
   };
 
   /*
@@ -345,17 +352,18 @@ function TestrunInfoPage() {
               testcaseGroups={testcaseGroups}
               showTestResult
               enableDrag={false}
-              selectedItemInfo={selectedItemInfo}
-              onSelect={setSelectedItemInfo}
+              selectedItemInfo={{ id: Number(id), type }}
+              onSelect={onSelect}
               min={min}
               setMin={setMin}
               countSummary={countSummary}
-              userFilter={userFilter}
-              setUserFilter={setUserFilter}
+              userFilter={tester}
+              setUserFilter={onChangeTester}
             />
           }
           right={
-            selectedItemInfo.id && (
+            id &&
+            type === ITEM_TYPE.TESTCASE && (
               <TestRunTestcaseManager
                 contentLoading={contentLoading}
                 content={content || {}}

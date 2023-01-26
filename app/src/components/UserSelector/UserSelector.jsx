@@ -145,13 +145,16 @@ function UserSelector({ className, users, type, value, size, disabled, onChange,
                 {tags.map(tag => {
                   return (
                     <li
+                      key={tag}
                       className={`tag-option ${type === 'tag' && value === tag ? 'selected' : ''}`}
                       onClick={() => {
                         handleChange('tag', tag);
                       }}
                     >
                       <div className="name">
-                        <Tag className="tag">TAG</Tag>
+                        <Tag className="tag" color="secondary">
+                          TAG
+                        </Tag>
                         <div className="tag-value">{tag}</div>
                       </div>
                     </li>

@@ -3,9 +3,9 @@ import i18n from 'i18next';
 
 const TestrunService = {};
 
-TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, successHandler, failHandler, loading = true) => {
+TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, testrunCreationType, successHandler, failHandler, loading = true) => {
   return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns?status=${option}`,
+    `/api/${spaceCode}/projects/${projectId}/testruns?status=${option}&&testrunCreationType=${testrunCreationType}`,
     null,
     res => {
       successHandler(res);
@@ -57,6 +57,17 @@ TestrunService.createProjectTestrunInfo = (spaceCode, projectId, testrun, succes
   );
 };
 
+TestrunService.updateProjectTestrunInfo = (spaceCode, projectId, testrun, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns`,
+    testrun,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}`,
@@ -68,6 +79,7 @@ TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHand
     null,
     null,
     loading,
+    i18n.t('테스트런 상세 정보를 불러오고 있습니다.'),
   );
 };
 

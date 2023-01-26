@@ -1,82 +1,15 @@
-.theme-LIGHT {
-  .page-title-liner {
-    > div {
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-  }
-
-  .page-title-wrapper {
-    height: 80px;
-
-    @media (max-width: 768px) {
-      height: 60px;
-    }
-
-    > div {
-      max-width: $max-width;
-      margin: 0 auto;
-      display: flex;
-      width: 100%;
-      height: 100%;
-      > div {
-        align-self: center;
-
-        &.icon {
-          &:hover {
-            color: $color-primary-light;
-          }
-        }
-
-        &.title-text {
-          flex-grow: 0;
-          line-height: 100%;
-          font-weight: bold;
-          font-size: 24px;
-
-          @media (max-width: 768px) {
-            font-size: 20px;
-          }
-        }
-      }
-    }
-
-    .control {
-      margin-left: 0.5rem;
-      flex-grow: 1;
-      text-align: right;
-
-      &.has-link {
-        flex-grow: 0;
-      }
-      > div {
-        button {
-          margin-right: 0.5rem;
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-    }
-
-    .links {
-      > div {
-        > a {
-          color: $gray-600;
-
-          &:visited {
-            color: $gray-600;
-          }
-          &:hover {
-            color: $black;
-          }
-        }
-      }
-    }
-  }
-}
-
 .page-title-wrapper {
   height: 80px;
+
+  @media (max-width: 768px) {
+    height: 60px;
+  }
+
+  .page-title-liner {
+    > div {
+      background-color: var(--border-color);
+    }
+  }
 
   > div {
     max-width: $max-width;
@@ -105,7 +38,7 @@
         }
 
         &:hover {
-          color: $color-sunflower;
+          color: var(--primary-color);
         }
       }
 
@@ -114,6 +47,10 @@
         line-height: 100%;
         font-weight: bold;
         font-size: 24px;
+
+        @media (max-width: 768px) {
+          font-size: 20px;
+        }
       }
     }
   }
@@ -154,7 +91,7 @@
       display: flex;
 
       > a {
-        color: $gray-500;
+        color: var(--gray-color);
         text-decoration: none;
         margin-right: 8px;
 
@@ -162,10 +99,7 @@
           margin-right: 0;
         }
         &:visited {
-          color: $gray-500;
-        }
-        &:hover {
-          color: $white;
+          color: var(--gray-color);
         }
       }
     }

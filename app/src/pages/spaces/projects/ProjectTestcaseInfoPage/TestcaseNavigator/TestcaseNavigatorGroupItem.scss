@@ -27,7 +27,7 @@ li.testcase-group-item-wrapper {
             &.line-1 {
               height: calc(50% - 11px);
               width: 1px;
-              border-left: 1px dotted $gray-700;
+              border-left: 1px dotted var(--gray-color);
               left: 7px;
               top: 10px;
             }
@@ -37,8 +37,7 @@ li.testcase-group-item-wrapper {
               width: calc(100% - 2px);
               top: 50%;
               left: 7px;
-              _background-color: $white;
-              border-bottom: 1px dotted $gray-700;
+              border-bottom: 1px dotted var(--gray-color);
             }
           }
         }
@@ -64,7 +63,7 @@ li.testcase-group-item-wrapper {
 
         &.has-child {
           > span:hover {
-            color: $secondary;
+            color: var(--secondary-color);
           }
         }
       }
@@ -83,8 +82,8 @@ li.testcase-group-item-wrapper {
           width: 18px;
           text-align: center;
           justify-content: center;
-          background-color: $gray-700;
-          color: $white;
+          background-color: var(--dark-gray-color);
+          color: var(--white-color);
           border-radius: 5px;
 
           > i {
@@ -118,13 +117,13 @@ li.testcase-group-item-wrapper {
             &:first-child {
               padding-left: 2px;
               padding-right: 2px;
-              background-color: $color-tag;
+              background-color: var(--secondary-color);
               border-radius: 2px 0 0 2px;
             }
 
             &:last-child {
               font-family: Rowdies, sans-serif;
-              background-color: $color-tag;
+              background-color: var(--secondary-color);
               border-radius: 0 2px 2px 0;
               padding-left: 3px;
               padding-right: 3px;
@@ -143,8 +142,8 @@ li.testcase-group-item-wrapper {
 
           &.col-closed {
             > div {
-              background-color: $color-tangerine;
-              color: $white;
+              background-color: var(--warning-color);
+              color: var(--white-color);
               font-weight: normal;
               letter-spacing: -0.5px;
             }
@@ -157,8 +156,8 @@ li.testcase-group-item-wrapper {
           left: -4px;
           width: 16px;
           height: 16px;
-          background-color: $color-point;
-          color: #333;
+          background-color: var(--secondary-color);
+          color: var(--black-color);
           display: inline-flex;
           justify-content: center;
           border-radius: 50%;
@@ -180,14 +179,13 @@ li.testcase-group-item-wrapper {
         }
 
         .name-editor {
-          background-color: $white;
-          color: #333;
+          background-color: var(--white-color);
+          color: var(--black-color);
         }
       }
 
       .testrun-result {
         display: flex;
-
 
         > div {
           white-space: nowrap;
@@ -197,35 +195,31 @@ li.testcase-group-item-wrapper {
           font-size: 11px;
           font-weight: lighter;
           border-radius: 10px;
-          background-color: $gray-800;
-          color: $white;
+          background-color: var(--dark-gray-color);
+          color: var(--white-color);
         }
 
         &.FAILED {
-          color: $white;
           > div {
-            background-color: $danger;
+            background-color: var(--danger-color);
           }
         }
 
         &.PASSED {
-          color: $white;
           > div {
-            background-color: $success;
+            background-color: var(--success-color);
           }
         }
 
         &.UNTESTABLE {
-          color: $white;
           > div {
-            background-color: $gray-700;
+            background-color: var(--gray-color);
           }
         }
 
         &.UNTESTED {
-          color: $white;
           > div {
-            background-color: $gray-600;
+            background-color: var(--dark-gray-color);
           }
         }
       }
@@ -237,14 +231,14 @@ li.testcase-group-item-wrapper {
         display: none;
 
         &:hover {
-          background-color: $color-point;
-          color: $black;
+          background-color: var(--secondary-color);
+          color: var(--black-color);
         }
       }
 
       &.drag-target {
-        background-color: #121212 !important;
-        color: #999 !important;
+        background-color: var(--yellow-color) !important;
+        color: var(--gray-color) !important;
       }
 
       &.drag-destination {
@@ -299,13 +293,13 @@ li.testcase-group-item-wrapper {
         left: 0;
         right: 0;
         height: 5px;
-        background-color: $color-point;
+        background-color: var(--secondary-color);
         border-radius: 1px;
         opacity: 0;
       }
 
       &:hover {
-        background-color: $gray-200;
+        background-color: var(--hover-background-color);
 
         .grab {
           display: inline-block;
@@ -313,56 +307,9 @@ li.testcase-group-item-wrapper {
       }
 
       &.selected {
-        background-color: $color-primary-light;
+        background-color: var(--primary-color);
         font-weight: bold;
-        color: $white;
-      }
-    }
-  }
-}
-
-.theme-DARK {
-  li.testcase-group-item-wrapper {
-    .group-content,
-    .testcase-content {
-      > div.group-info,
-      > div.testcase-info {
-        .child-tree-mark {
-          > div {
-            .line {
-              &.line-1 {
-                border-left: 1px dotted $gray-500;
-              }
-
-              &.line-2 {
-                border-bottom: 1px dotted $gray-500;
-              }
-            }
-          }
-        }
-
-        .tree-toggle {
-          &.has-child {
-            > span:hover {
-              color: $color-primary-dark;
-            }
-          }
-        }
-
-        .case-icon {
-          > span {
-            background-color: #333;
-          }
-        }
-
-        &:hover {
-          background-color: #111;
-        }
-
-        &.selected {
-          background-color: $color-primary-dark;
-          color: $black;
-        }
+        color: var(--primary-text-color);
       }
     }
   }

@@ -10,14 +10,12 @@
 
   > .block-row-liner {
     height: 1px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-light-color);
     display: none;
     border-left: none;
     border-right: none;
     width: 100%;
   }
-
-
 
   > * {
     align-self: center;
@@ -33,14 +31,5 @@
 
   button {
     margin-left: 8px;
-  }
-}
-
-.theme-DARK {
-  .block-row-wrapper {
-    > .block-row-liner {
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      display: none;
-    }
   }
 }

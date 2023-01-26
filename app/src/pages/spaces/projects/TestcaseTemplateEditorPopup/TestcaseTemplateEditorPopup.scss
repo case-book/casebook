@@ -223,17 +223,6 @@
                 .properties-control {
                   flex-grow: 1;
                   position: relative;
-
-                  > __div {
-                    height: 100%;
-
-                    overflow-y: auto;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                  }
                 }
               }
             }
@@ -253,7 +242,4 @@
       }
     }
   }
-}
-
-.theme-DARK {
 }

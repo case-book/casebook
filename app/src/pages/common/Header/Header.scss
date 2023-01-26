@@ -23,7 +23,7 @@
   position: relative;
   z-index: 4;
   @media (max-width: 640px) {
-    border-bottom: 1px solid var(--border-light-color);
+    border-bottom: 1px solid var(--border-lighter-color);
     box-shadow: none;
   }
 

@@ -12,13 +12,12 @@
   bottom: 100%;
   right: -98px;
   text-align: left;
-  background-color: $gray-100;
+  background-color: var(--lighter-color);
   padding: 1rem;
   z-index: 6;
   border-radius: 4px;
   box-shadow: 4px 4px 4px 0 rgb(0 0 0 / 6%);
-
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-light-color);
 
   .arrow {
     position: absolute;
@@ -29,9 +28,9 @@
     > div {
       width: 14px;
       height: 14px;
-      background-color: $gray-100;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-      border-right: 1px solid rgba(0, 0, 0, 0.15);
+      background-color: var(--lighter-color);
+      border-bottom: 1px solid var(--border-light-color);
+      border-right: 1px solid var(--border-light-color);
       transform: rotate(45deg);
       display: inline-block;
     }
@@ -39,8 +38,8 @@
 
   .setting-title {
     font-size: 14px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-light-color);
+    margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
     @include title;
   }
@@ -59,37 +58,22 @@
 
     ul {
       list-style: none;
-      padding: 0.75rem;
+      padding: 0.75rem 0.75rem 0;
       margin: 0;
+
+      &.last-list {
+        padding-bottom: 0;
+      }
 
       li {
         display: flex;
         margin-bottom: 0.5rem;
         white-space: nowrap;
-        &:last-child {
-          margin-bottom: 0;
-        }
 
         .label {
           width: 120px;
         }
       }
-    }
-  }
-}
-
-.theme-DARK {
-  .testcase-group-setting-wrapper {
-    background-color: #060606;
-
-    .arrow {
-      > div {
-        background-color: #060606;
-      }
-    }
-
-    .setting-title {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
   }
 }

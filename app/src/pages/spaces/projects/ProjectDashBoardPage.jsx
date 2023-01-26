@@ -32,7 +32,7 @@ function ProjectDashBoardPage() {
   }, [testrunHistories]);
 
   useEffect(() => {
-    TestrunService.selectProjectTestrunList(spaceCode, projectId, 'OPENED', list => {
+    TestrunService.selectProjectTestrunList(spaceCode, projectId, 'OPENED', 'CREATE', list => {
       setTestruns(
         list.map(testrun => {
           const data = [];
@@ -69,6 +69,10 @@ function ProjectDashBoardPage() {
 
   useEffect(() => {
     const end = moment();
+    end.hour(23);
+    end.minute(59);
+    end.second(59);
+    end.millisecond(59);
     const start = moment().subtract(period, 'months');
 
     setPeriodRange({
@@ -226,7 +230,7 @@ function ProjectDashBoardPage() {
                                           <div className="testcase-name">
                                             <Link
                                               className={testcase.testResult}
-                                              to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}?tester=ALL&testrunTestcaseGroupId=${testcase.testrunTestcaseGroupId}&testrunTestcaseGroupTestcaseId=${testcase.testrunTestcaseGroupTestcaseId}`}
+                                              to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}?tester=&type=${ITEM_TYPE.TESTCASE}&id=${testcase.testrunTestcaseGroupTestcaseId}`}
                                             >
                                               {testcase.name}
                                             </Link>
@@ -262,7 +266,7 @@ function ProjectDashBoardPage() {
                       key={d.key}
                       size="sm"
                       value={d.key}
-                      type="inline"
+                      type="default"
                       checked={period === d.key}
                       onChange={val => {
                         setPeriod(val);

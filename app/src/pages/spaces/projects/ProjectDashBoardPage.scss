@@ -57,6 +57,7 @@
                 display: flex;
                 border-radius: 2px;
                 cursor: pointer;
+                min-width: 50px;
 
                 > div.passed {
                   background-color: var(--success-color);

@@ -54,6 +54,11 @@
     background-color: $color-primary-light;
   }
 
+  &.color-secondary {
+    color: var(--black-color);
+    background-color: var(--secondary-color);
+  }
+
   &.color-transparent {
     background-color: transparent;
   }

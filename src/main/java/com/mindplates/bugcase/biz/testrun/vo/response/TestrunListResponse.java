@@ -1,12 +1,14 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder
 @Getter
@@ -25,6 +27,12 @@ public class TestrunListResponse {
     private int passedTestcaseCount;
     private int failedTestcaseCount;
     private LocalDateTime closedDate;
+    private TestrunCreationTypeCode creationType;
+    private String days;
+    private Boolean onHoliday;
+    private LocalTime startTime;
+    private Integer durationHours;
+    private Boolean reserveExpired;
 
     public TestrunListResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -38,6 +46,12 @@ public class TestrunListResponse {
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
         this.closedDate = testrun.getClosedDate();
+        this.creationType = testrun.getCreationType();
+        this.days = testrun.getDays();
+        this.onHoliday = testrun.getOnHoliday();
+        this.startTime = testrun.getStartTime();
+        this.durationHours = testrun.getDurationHours();
+        this.reserveExpired = testrun.getReserveExpired();
     }
 
 

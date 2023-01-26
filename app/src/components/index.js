@@ -1,4 +1,3 @@
-import DatePicker from 'react-datepicker';
 import Tabs from './Tabs/Tabs';
 import Page from './Page/Page';
 import PageTitle from './PageTitle/PageTitle';
@@ -48,6 +47,7 @@ import Switch from './Switch/Switch';
 import Star from './Star/Star';
 import SeqId from './SeqId/SeqId';
 import DateRange from './DateRange/DateRange';
+import DatePicker from './DateRange/DatePicker';
 import FlexibleLayout from './FlexibleLayout/FlexibleLayout';
 import TestcaseViewerLabel from './TestcaseViewerLabel/TestcaseViewerLabel';
 import TestcaseItem from './TestcaseItem/TestcaseItem';

@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -27,7 +29,7 @@ public class Testrun extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
+    @Column(name = "seq_id", length = ColumnsDef.CODE)
     private String seqId;
 
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
@@ -68,5 +70,23 @@ public class Testrun extends CommonEntity {
 
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
+
+    @Column(name = "creation_type", length = ColumnsDef.CODE)
+    private TestrunCreationTypeCode creationType;
+
+    @Column(name = "days", length = ColumnsDef.CODE)
+    private String days;
+
+    @Column(name = "on_holiday")
+    private Boolean onHoliday;
+
+    @Column(name = "start_time")
+    private LocalTime startTime;
+
+    @Column(name = "duration_hours")
+    private Integer durationHours;
+
+    @Column(name = "reserve_expired")
+    private Boolean reserveExpired;
 
 }

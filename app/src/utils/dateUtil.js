@@ -167,6 +167,14 @@ function getDurationMinutes(val, format) {
     .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.minutes].moment);
 }
 
+function getHourMinute(val) {
+  return moment(val, 'HH:mm:ss').utc(val).local().format(DATE_FORMATS[getUserLocale()][DATE_FORMATS_TYPES.hoursMinutes].moment);
+}
+
+function getHourMinuteTime(val) {
+  return moment(val, 'HH:mm:ss').utc(val).local().valueOf();
+}
+
 const dateUtil = {
   getDateString,
   getEndDateString,
@@ -188,6 +196,8 @@ const dateUtil = {
   getDurationMinutes,
   getLocalDate,
   isSameYear,
+  getHourMinute,
+  getHourMinuteTime,
 };
 
 export default dateUtil;

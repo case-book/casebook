@@ -83,7 +83,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       dialogUtil.setConfirm(
         MESSAGE_CATEGORY.WARNING,
         t('템플릿 변경 알림'),
-        <div>{t('테스크케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
+        <div>{t('테스트케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
         () => {
           setContent({
             ...content,
@@ -106,7 +106,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
             <div className="title-input">
               <div className="type-input">
                 <Selector
-                  color="black"
                   className="selector"
                   size="md"
                   items={testcaseTemplates?.map(d => {
@@ -123,7 +122,6 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                 <Input
                   value={content.name}
                   size="md"
-                  color="black"
                   onChange={val => {
                     onChangeContent('name', val);
                   }}
@@ -145,16 +143,16 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                 setIsEdit(true);
               }}
             >
-              변경
+              {t('변경')}
             </Button>
           )}
           {isEdit && (
             <>
               <Button outline size="md" color="white" onClick={onCancel}>
-                취소
+                {t('취소')}
               </Button>
               <Button size="md" color="primary" outline onClick={onSave}>
-                저장
+                {t('저장')}
               </Button>
             </>
           )}
@@ -163,8 +161,10 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
       <div className="title-liner" />
       <div className="case-content" ref={caseContentElement}>
         <div className="case-description">
-          {!isEdit && <div className={`case-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다')}</div>}
-          {isEdit && <TextArea size="sm" placeholder="테스트케이스에 대한 설명을 입력해주세요." value={content.description || ''} rows={4} onChange={onChangeTestcaseTemplateDescription} autoHeight />}
+          {!isEdit && <div className={`case-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다.')}</div>}
+          {isEdit && (
+            <TextArea size="sm" placeholder={t('테스트케이스에 대한 설명을 입력해주세요.')} value={content.description || ''} rows={4} onChange={onChangeTestcaseTemplateDescription} autoHeight />
+          )}
         </div>
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')

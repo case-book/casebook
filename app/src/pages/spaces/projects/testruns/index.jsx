@@ -5,6 +5,7 @@ import { Message, TestrunEditPage, TestrunInfoPage, TestrunListPage } from '@/pa
 function TestrunsRoutes() {
   return (
     <Routes>
+      <Route path="/:testrunId/edit" element={<TestrunEditPage type="edit" />} />
       <Route path="/:testrunId" element={<TestrunInfoPage />} />
       <Route path="/new" element={<TestrunEditPage />} />
       <Route path="/" element={<TestrunListPage />} />

@@ -68,7 +68,7 @@ $color-muted-black: #837e7e;
 
 $font-family-menu: NotoSans, sans-serif;
 $font-family-count: Rowdies, NotoSans, sans-serif;
-$font-family-date: AzeretMono, monospace;
+$font-family-date: AzeretMono, NotoSans, monospace;
 
 $gray-200: #eaeef3;
 
@@ -99,24 +99,24 @@ $color-form-control-dark: #121212;
 html {
   --point-backgroup-color: #ffbc4b;
   --point-color: #222;
-  --white-color: #FFF;
+  --white-color: #fff;
   --black-color: #222;
   --danger-color: #f21646;
   --green-color: #397d02;
   --success-color: #397d02;
   --warning-color: #ff4935;
-  --yellow-color : #ffbc4b;
+  --yellow-color: #ffbc4b;
   --disable-opacity: 0.6;
-  --link-color : #386bd8;
+  --link-color: #386bd8;
+  --secondary-color: #7bde89;
 }
 
-
 html {
-  --header-background-color: #FFF;
-  --theme-color : #FFF;
-  --page-background-color : #FFF;
-  --background-color : #eaeef3;
-  --card-background-color : #FFF;
+  --header-background-color: #fff;
+  --theme-color: #fff;
+  --page-background-color: #fff;
+  --background-color: #eaeef3;
+  --card-background-color: #fff;
   --text-color: #222;
   --primary-color: #3e8ef1;
   --primary-hover-color: #2e7ed1;
@@ -124,45 +124,57 @@ html {
   --box-color: #fff;
   --lighter-color: #f8f9fa;
   --light-color: #e9ecef;
+  --light-hover-color: #ced4da;
   --gray-color: #6c757d;
+  --gray-hover-color: #5c656d;
+  --dark-gray-color: #495057;
   --hover-brightness: 1.06;
   --input-border-color: #dadde6;
+  --input-background-color: #fff;
   --border-color: rgba(0, 0, 0, 0.25);
-  --border-light-color: rgba(0, 0, 0, 0.05);
+  --border-lighter-color: rgba(0, 0, 0, 0.05);
+  --border-light-color: rgba(0, 0, 0, 0.12);
   --border-color-hover: rgba(0, 0, 0, 0.5);
-  --input-background : #FFF;
-  --start-background-color : #adb5bd;
-  --start-opacity : 0.1;
-  --modal-background-color : #FFF;
-  --modal-overlay-color : rgba(0, 0, 0, 0.6);
-  --modal-header-border-color : rgba(0, 0, 0, 0.2);
+  --input-background: #fff;
+  --start-background-color: #adb5bd;
+  --start-opacity: 0.1;
+  --modal-background-color: #fff;
+  --modal-overlay-color: rgba(0, 0, 0, 0.6);
+  --modal-header-border-color: rgba(0, 0, 0, 0.2);
+  --hover-background-color: rgba(0, 0, 0, 0.05);
 }
 
 html.theme-DARK {
   --header-background-color: #121117;
-  --theme-color : #09080d;
-  --page-background-color : #101010;
-  --background-color : #09080d;
-  --card-background-color : #16151a;
+  --theme-color: #09080d;
+  --page-background-color: #101010;
+  --background-color: #09080d;
+  --card-background-color: #16151a;
   --text-color: #fff;
   --primary-color: #ffbc4b;
   --primary-hover-color: #dfac3b;
   --primary-text-color: #222;
   --box-color: #000;
-  --lighter-color: #1D1D1D;
+  --lighter-color: #1d1d1d;
   --light-color: #222;
+  --light-hover-color: #444;
   --gray-color: #adb5bd;
+  --gray-hover-color: #bdc5ed;
+  --dark-gray-color: #4d555d;
   --hover-brightness: 1.05;
   --input-border-color: #494c56;
+  --input-background-color: #101010;
   --border-color: rgba(255, 255, 255, 0.3);
-  --border-light-color: rgba(255, 255, 255, 0.05);
+  --border-lighter-color: rgba(255, 255, 255, 0.05);
+  --border-light-color: rgba(255, 255, 255, 0.12);
   --border-color-hover: rgba(255, 255, 255, 0.4);
-  --input-background : #09080d;
-  --start-background-color : #000;
-  --start-opacity : 0.3;
-  --modal-background-color : #16151a;
-  --modal-overlay-color : rgba(0, 0, 0, 0.7);
-  --modal-header-border-color : rgba(255, 255, 255, 0.2);
+  --input-background: #09080d;
+  --start-background-color: #000;
+  --start-opacity: 0.3;
+  --modal-background-color: #16151a;
+  --modal-overlay-color: rgba(0, 0, 0, 0.7);
+  --modal-header-border-color: rgba(255, 255, 255, 0.2);
+  --hover-background-color: rgba(255, 255, 255, 0.05);
 }
 
 @mixin title() {
@@ -173,7 +185,6 @@ html.theme-DARK {
 @mixin date() {
   font-weight: bold;
   font-family: $font-family-date;
-  color: $gray-800;
 }
 
 @mixin number() {

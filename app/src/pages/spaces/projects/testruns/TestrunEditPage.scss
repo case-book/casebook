@@ -12,6 +12,45 @@
     }
   }
 
+  .iteration-period {
+    display: flex;
+    > div {
+      align-self: center;
+    }
+  }
+
+  .day-of-weeks {
+    display: flex;
+    > div {
+      align-self: center;
+
+      &.label {
+        margin-right: 1rem;
+      }
+    }
+    button:first-child {
+      margin-left: 0;
+    }
+
+    button {
+      background-color: var(--input-background);
+      color: var(--text-color);
+      &:hover {
+        background-color: var(--hover-background-color);
+        color: var(--text-color);
+      }
+    }
+
+    button.selected {
+      background-color: var(--primary-color);
+      color: var(--primary-text-color);
+    }
+
+    .holiday-button {
+      margin-left: 0;
+    }
+  }
+
   ul.testrun-users {
     list-style: none;
     padding: 0;

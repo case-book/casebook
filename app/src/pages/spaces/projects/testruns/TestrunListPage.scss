@@ -1,6 +1,38 @@
 .testrun-list-page-wrapper {
   display: flex;
 
+  .page-title {
+    .options {
+      display: flex;
+    }
+  }
+
+  .table-content {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .testrun-table {
+    .name {
+      font-weight: bold;
+    }
+    .day {
+      margin-left: 0.25rem;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+
+    .start-time {
+      @include date;
+    }
+
+    .duration,
+    .testcase-count {
+      @include number;
+    }
+  }
+
   .page-content {
     flex-grow: 1;
     display: flex;

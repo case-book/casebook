@@ -115,21 +115,17 @@
 }
 
 html {
-  &.theme-LIGHT {
-    background-color: $body-bg-color-light;
-    color: $black;
-    transition: background-color 0.3s, color 0.3s;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
 
+  &.theme-LIGHT {
     @media (max-width: 640px) {
       background-color: $white;
     }
   }
 
   &.theme-DARK {
-    background-color: $body-bg-color-dark;
-    color: $white;
-    transition: background-color 0.3s, color 0.3s;
-
     @media (max-width: 640px) {
       background-color: var(--background-color);
     }
@@ -140,7 +136,6 @@ body {
   margin: 0;
   font-size: 16px;
   font-family: 'NotoSans', 'NanumGothic', sans-serif;
-  _font-family: 'NanumGothic', 'NotoSans', sans-serif;
   line-height: 120%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -156,7 +151,7 @@ code {
 
 input,
 textarea {
-  font-family: 'NanumGothic', 'NotoSans', sans-serif;
+  font-family: 'NotoSans', 'NanumGothic', sans-serif;
   font-weight: lighter;
 }
 
@@ -242,17 +237,17 @@ a {
   }
 
   10% {
-    transform: translate(0,0);
+    transform: translate(0, 0);
     opacity: 1;
   }
 
   80% {
-    transform: translate(0,0);
+    transform: translate(0, 0);
     opacity: 1;
   }
 
   100% {
-    transform: translate(0,10px);
+    transform: translate(0, 10px);
     opacity: 0;
   }
 }
@@ -333,5 +328,4 @@ hr {
 
 .toastui-editor-defaultUI-toolbar {
   padding: 0;
-
 }

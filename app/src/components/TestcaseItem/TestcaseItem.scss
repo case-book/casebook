@@ -9,9 +9,9 @@
       display: flex;
       box-sizing: border-box;
       font-family: NotoSans, sans-serif;
-      background-color: #fafafa;
+      background-color: var(--lighter-color);
       border-radius: 8px;
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border-lighter-color);
 
       > div {
         align-self: center;

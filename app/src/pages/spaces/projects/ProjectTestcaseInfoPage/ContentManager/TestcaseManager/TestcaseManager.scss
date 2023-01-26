@@ -58,7 +58,7 @@
 
   .title-liner {
     height: 1px;
-    background-color: rgba(0, 0, 0, 0.12);
+    background-color: var(--border-light-color);
   }
 
   .case-content {
@@ -72,8 +72,8 @@
       font-family: NotoSans, sans-serif;
       font-size: 14px;
       border-radius: 8px;
-      background-color: #fafafa;
-      border: 1px solid rgba(0, 0, 0, 0.04);
+      background-color: var(--lighter-color);
+      border: 1px solid var(--border-lighter-color);
 
       .case-description-content {
         white-space: pre-wrap;
@@ -109,185 +109,6 @@
             min-height: auto;
 
             &.EDITOR {
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.theme-DARK {
-  .testcase-manager-wrapper {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    .testcase-title {
-      padding: 1.5rem 2rem 1.5rem;
-      display: flex;
-      background-color: #222;
-      border-radius: 4px 4px 0 0;
-
-      > div {
-        align-self: center;
-      }
-
-      .text {
-        font-weight: bold;
-        flex-grow: 1;
-        display: flex;
-
-        .title-input {
-          flex-grow: 1;
-        }
-
-        > div {
-          align-self: center;
-
-          &.name {
-            flex-grow: 1;
-          }
-        }
-      }
-
-      .title-button {
-        margin-left: 1rem;
-
-        button {
-          margin-right: 0.5rem;
-
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-      }
-    }
-
-    .title-liner {
-      background-color: transparent;
-    }
-
-    .case-content {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 1rem;
-
-      .case-item {
-        vertical-align: top;
-        display: inline-block;
-        padding: 0.5rem;
-
-        > div {
-          background-color: #161616;
-          border-radius: 4px;
-          _border: 1px solid rgba(255, 255, 255, 0.05);
-
-          .case-liner {
-            margin: 0 2px;
-            height: 3px;
-            background-color: #000;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-left: none;
-            border-right: none;
-          }
-
-          .value {
-            padding: 1rem 1rem;
-            min-height: 51px;
-            display: flex;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 0 0 4px 4px;
-            box-sizing: border-box;
-
-            > div {
-              align-self: center;
-              width: 100%;
-            }
-
-            .select {
-              .selector {
-                width: 100%;
-              }
-            }
-
-            .none-text {
-              color: $gray-600;
-            }
-
-            .editor {
-              min-height: 120px;
-              white-space: pre-wrap;
-
-              > div {
-                white-space: normal;
-              }
-            }
-          }
-        }
-
-        &.size-1 {
-          width: calc(100% / 12);
-        }
-
-        &.size-2 {
-          width: calc((100% / 12) * 2);
-        }
-
-        &.size-3 {
-          width: calc((100% / 12) * 3);
-        }
-
-        &.size-4 {
-          width: calc((100% / 12) * 4);
-        }
-
-        &.size-5 {
-          width: calc((100% / 12) * 5);
-        }
-
-        &.size-6 {
-          width: calc((100% / 12) * 6);
-        }
-
-        &.size-7 {
-          width: calc((100% / 12) * 7);
-        }
-
-        &.size-8 {
-          width: calc((100% / 12) * 8);
-        }
-
-        &.size-9 {
-          width: calc((100% / 12) * 9);
-        }
-
-        &.size-10 {
-          width: calc((100% / 12) * 10);
-        }
-
-        &.size-11 {
-          width: calc((100% / 12) * 11);
-        }
-
-        &.size-12 {
-          width: calc((100% / 12) * 12);
-        }
-      }
-    }
-
-    &.is-edit {
-      .case-content {
-        .case-item {
-          > div {
-            background-color: transparent;
-
-            .case-liner {
-            }
-
-            .value {
-              padding: 1rem 1rem 0;
-              background-color: transparent;
             }
           }
         }

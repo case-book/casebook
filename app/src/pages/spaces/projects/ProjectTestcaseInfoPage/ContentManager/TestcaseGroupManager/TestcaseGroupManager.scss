@@ -47,7 +47,7 @@
 
   .title-liner {
     height: 1px;
-    background-color: rgba(0, 0, 0, 0.12);
+    background-color: var(--border-light-color);
   }
 
   .group-content {
@@ -59,23 +59,21 @@
 
     .group-description {
       padding: 1rem;
-      background-color: #f7f7f7;
-
+      background-color: var(--lighter-color);
       font-size: 14px;
       border-radius: 2px;
 
       &.empty {
-        color: $gray-600;
+        color: var(--gray-color);
       }
     }
 
     .list-title {
       margin-bottom: 0;
       padding: 1rem;
-
       font-weight: bold;
       display: flex;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      border-bottom: 1px solid var(--border-light-color);
 
       > div {
         align-self: center;
@@ -94,9 +92,9 @@
       padding: 0 1rem;
       margin: 0;
       > li {
-        _border: 1px solid rgba(0, 0, 0, 0.12);
+
         border-bottom: none;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border-bottom: 1px solid var(--border-light-color);
         padding: 0.75rem 0.75rem;
 
         &:first-child {
@@ -126,7 +124,7 @@
         }
 
         &:hover {
-          background-color: lighten($color-primary-light, 37%);
+          background-color: var(--hover-background-color);
           .edit-button {
             display: inline-block;
           }

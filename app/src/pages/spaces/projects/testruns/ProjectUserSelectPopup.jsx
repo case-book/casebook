@@ -92,7 +92,7 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
                         .filter(tag => !!tag)
                         .map(tag => {
                           return (
-                            <Tag border className="tag">
+                            <Tag key={tag} border className="tag">
                               {tag}
                             </Tag>
                           );

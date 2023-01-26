@@ -107,7 +107,6 @@ function TestcaseItem({
                 {!isEdit && <div className="value-text">{testcaseItem.value}</div>}
                 {isEdit && (
                   <Selector
-                    color="black"
                     className="selector"
                     size={size}
                     items={testcaseTemplateItem?.options?.map(d => {
