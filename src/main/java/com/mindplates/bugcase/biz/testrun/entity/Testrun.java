@@ -68,6 +68,9 @@ public class Testrun extends CommonEntity {
     @Column(name = "failed_testcase_count")
     private int failedTestcaseCount;
 
+    @Column(name = "untestable_testcase_count")
+    private int untestableTestcaseCount;
+
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 

@@ -143,6 +143,26 @@ function ProjectDashBoardPage() {
                                 spacing: 10,
                               },
                             ]}
+                            fill={[
+                              {
+                                match: {
+                                  id: 'PASSED',
+                                },
+                                id: 'PASSED',
+                              },
+                              {
+                                match: {
+                                  id: 'FAILED',
+                                },
+                                id: 'FAILED',
+                              },
+                              {
+                                match: {
+                                  id: 'UNTESTED',
+                                },
+                                id: 'UNTESTED',
+                              },
+                            ]}
                           />
                         </div>
                       </div>

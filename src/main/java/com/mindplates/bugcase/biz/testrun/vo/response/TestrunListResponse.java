@@ -26,6 +26,7 @@ public class TestrunListResponse {
     private int totalTestcaseCount;
     private int passedTestcaseCount;
     private int failedTestcaseCount;
+    private int untestableTestcaseCount;
     private LocalDateTime closedDate;
     private TestrunCreationTypeCode creationType;
     private String days;
@@ -45,6 +46,7 @@ public class TestrunListResponse {
         this.totalTestcaseCount = testrun.getTotalTestcaseCount();
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
+        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
         this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();

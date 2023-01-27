@@ -150,9 +150,9 @@ function TestrunEditPage({ type }) {
         {
           ...testrun,
           projectId,
-          startDateTime: new Date(testrun.startDateTime)?.toISOString(),
-          endDateTime: new Date(testrun.endDateTime)?.toISOString(),
-          startTime: new Date(testrun.startTime)?.toISOString(),
+          startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
+          endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
+          startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
         },
         () => {
           if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
@@ -171,9 +171,9 @@ function TestrunEditPage({ type }) {
           projectId,
           // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
           // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-          startDateTime: new Date(testrun.startDateTime)?.toISOString(),
-          endDateTime: new Date(testrun.endDateTime)?.toISOString(),
-          startTime: new Date(testrun.startTime)?.toISOString(),
+          startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
+          endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
+          startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
         },
         () => {
           if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {

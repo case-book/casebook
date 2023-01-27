@@ -28,6 +28,7 @@ public class TestrunResponse {
     private int totalTestcaseCount;
     private int passedTestcaseCount;
     private int failedTestcaseCount;
+    private int untestableTestcaseCount;
     private String projectName;
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
@@ -49,6 +50,7 @@ public class TestrunResponse {
         this.totalTestcaseCount = testrun.getTotalTestcaseCount();
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
+        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.projectName = testrun.getProject().getName();
         this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();

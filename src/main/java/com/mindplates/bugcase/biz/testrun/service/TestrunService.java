@@ -174,12 +174,16 @@ public class TestrunService {
             testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() - 1);
         } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
             testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() - 1);
+        } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.UNTESTABLE)) {
+            testrun.setUntestableTestcaseCount(testrun.getUntestableTestcaseCount() - 1);
         }
 
         if (testResultCode.equals(TestResultCode.PASSED)) {
             testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() + 1);
         } else if (testResultCode.equals(TestResultCode.FAILED)) {
             testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() + 1);
+        } else if (testResultCode.equals(TestResultCode.UNTESTABLE)) {
+            testrun.setUntestableTestcaseCount(testrun.getUntestableTestcaseCount() + 1);
         }
 
         testrunTestcaseGroupTestcase.setTestResult(testResultCode);
@@ -336,6 +340,7 @@ public class TestrunService {
         testrun.setTotalTestcaseCount(totalTestCount);
         testrun.setPassedTestcaseCount(0);
         testrun.setFailedTestcaseCount(0);
+        testrun.setUntestableTestcaseCount(0);
 
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
         return new TestrunDTO(result, true);
