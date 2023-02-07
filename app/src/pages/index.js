@@ -22,6 +22,7 @@ import SystemInfoPage from '@/pages/configs/SystemInfoPage';
 import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/TestrunListPage';
 import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
+import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage';
 
 export {
   ProjectDashBoardPage,
@@ -43,4 +44,5 @@ export {
   TestrunListPage,
   TestrunEditPage,
   TestrunExecutePage,
+  TestrunInfoPage,
 };

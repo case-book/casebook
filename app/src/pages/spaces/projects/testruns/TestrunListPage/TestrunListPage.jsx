@@ -195,7 +195,7 @@ function TestrunListPage() {
                         size="sm"
                         onClick={e => {
                           e.stopPropagation();
-                          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/edit`);
+                          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`);
                         }}
                       >
                         <i className="fa-solid fa-gear" />

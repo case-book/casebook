@@ -35,7 +35,7 @@ function IterationTestrunList({ spaceCode, projectId, testruns }) {
                   <Tag uppercase>{t(testrun.creationType)}</Tag>
                 </Td>
                 <Td className="name">
-                  <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/edit`}>{testrun.name}</Link>
+                  <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`}>{testrun.name}</Link>
                 </Td>
                 <Td align="center">
                   <Tag className="tag" uppercase>
