@@ -23,9 +23,9 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
 
-    Long countByProjectSpaceCodeAndProjectId(String spaceCode, Long projectId);
+    Long countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
-    Long countByProjectSpaceIdAndProjectId(Long spaceId, Long projectId);
+    Long countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(Long spaceId, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")

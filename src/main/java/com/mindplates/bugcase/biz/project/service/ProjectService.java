@@ -13,6 +13,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -59,7 +60,7 @@ public class ProjectService {
     public List<ProjectDTO> selectSpaceProjectList(String spaceCode) {
         List<Project> projectList = projectRepository.findAllBySpaceCode(spaceCode);
         return projectList.stream().map((project -> {
-            Long testrunCount = testrunService.selectProjectTestrunCount(spaceCode, project.getId());
+            Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId(), TestrunCreationTypeCode.CREATE);
             return new ProjectDTO(project, testrunCount);
         })).collect(Collectors.toList());
     }
@@ -67,7 +68,7 @@ public class ProjectService {
     public List<ProjectDTO> selectSpaceProjectList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
         return projectList.stream().map((project -> {
-            Long testrunCount = testrunService.selectProjectTestrunCount(spaceId, project.getId());
+            Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceId, project.getId(), TestrunCreationTypeCode.CREATE);
             return new ProjectDTO(project, testrunCount);
         })).collect(Collectors.toList());
     }
@@ -75,7 +76,7 @@ public class ProjectService {
     public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
         return projectList.stream().map((project -> {
-            Long testrunCount = testrunService.selectProjectTestrunCount(spaceCode, project.getId());
+            Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId(), TestrunCreationTypeCode.CREATE);
             return new ProjectDTO(project, testrunCount);
         })).collect(Collectors.toList());
     }

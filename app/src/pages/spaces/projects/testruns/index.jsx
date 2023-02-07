@@ -1,12 +1,12 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Message, TestrunEditPage, TestrunInfoPage, TestrunListPage } from '@/pages';
+import { Message, TestrunEditPage, TestrunExecutePage, TestrunListPage } from '@/pages';
 
 function TestrunsRoutes() {
   return (
     <Routes>
       <Route path="/:testrunId/edit" element={<TestrunEditPage type="edit" />} />
-      <Route path="/:testrunId" element={<TestrunInfoPage />} />
+      <Route path="/:testrunId" element={<TestrunExecutePage />} />
       <Route path="/new" element={<TestrunEditPage />} />
       <Route path="/" element={<TestrunListPage />} />
       <Route path="*" element={<Message code="404" />} />

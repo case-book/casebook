@@ -10,8 +10,8 @@ import useStores from '@/hooks/useStores';
 import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
-import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestRunTestcaseManager/TestRunTestcaseManager';
-import './TestrunInfoPage.scss';
+import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunTestcaseManager';
+import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
 
 const start = new Date();
@@ -26,7 +26,7 @@ end.setMinutes(0);
 end.setSeconds(0);
 end.setMilliseconds(0);
 
-function TestrunInfoPage() {
+function TestrunExecutePage() {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
   const { query, setQuery } = useQueryString();
@@ -325,7 +325,7 @@ function TestrunInfoPage() {
   };
 
   return (
-    <Page className="testrun-info-page-wrapper" list wide>
+    <Page className="testrun-execute-page-wrapper" list wide>
       <PageTitle
         control={
           <div>
@@ -393,8 +393,8 @@ function TestrunInfoPage() {
   );
 }
 
-TestrunInfoPage.defaultProps = {};
+TestrunExecutePage.defaultProps = {};
 
-TestrunInfoPage.propTypes = {};
+TestrunExecutePage.propTypes = {};
 
-export default TestrunInfoPage;
+export default TestrunExecutePage;

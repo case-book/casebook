@@ -97,12 +97,12 @@ public class TestrunService {
 
     }
 
-    public Long selectProjectTestrunCount(String spaceCode, long projectId) {
-        return testrunRepository.countByProjectSpaceCodeAndProjectId(spaceCode, projectId);
+    public Long selectProjectOpenedTestrunCount(String spaceCode, long projectId, TestrunCreationTypeCode creationTypeCode) {
+        return testrunRepository.countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(spaceCode, projectId, creationTypeCode);
     }
 
-    public Long selectProjectTestrunCount(Long spaceId, long projectId) {
-        return testrunRepository.countByProjectSpaceIdAndProjectId(spaceId, projectId);
+    public Long selectProjectOpenedTestrunCount(Long spaceId, long projectId, TestrunCreationTypeCode creationTypeCode) {
+        return testrunRepository.countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(spaceId, projectId, creationTypeCode);
     }
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {

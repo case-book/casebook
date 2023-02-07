@@ -74,7 +74,7 @@ public class Testrun extends CommonEntity {
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 
-    @Column(name = "creation_type", length = ColumnsDef.CODE)
+    @Column(name = "creation_type", length = ColumnsDef.CODE, nullable = false)
     private TestrunCreationTypeCode creationType;
 
     @Column(name = "days", length = ColumnsDef.CODE)
