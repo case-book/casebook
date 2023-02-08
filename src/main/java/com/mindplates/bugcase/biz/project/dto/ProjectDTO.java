@@ -32,8 +32,9 @@ public class ProjectDTO extends CommonDTO {
     private Integer testcaseGroupSeq = 0;
     private Integer testcaseSeq = 0;
     private Integer testrunSeq = 0;
-
     private Long testrunCount = 0L;
+    private String slackUrl;
+    private boolean enableTestrunAlarm;
 
     public ProjectDTO(Project project) {
         this.id = project.getId();
@@ -46,6 +47,8 @@ public class ProjectDTO extends CommonDTO {
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
         this.testcaseSeq = project.getTestcaseSeq();
         this.testrunSeq = project.getTestrunSeq();
+        this.slackUrl = project.getSlackUrl();
+        this.enableTestrunAlarm = project.isEnableTestrunAlarm();
         this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
         if (project.getTestcaseTemplates() != null) {
             this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateDTO::new).collect(Collectors.toList());

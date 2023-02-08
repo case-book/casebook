@@ -20,11 +20,14 @@ import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.service.SlackService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,30 +40,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TestrunService {
 
     private final TestrunRepository testrunRepository;
-
     private final TestcaseService testcaseService;
-
     private final ProjectService projectService;
-
     private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
-
     private final TestrunUserRepository testrunUserRepository;
-
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
-
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
-
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
-
     private final ProjectFileRepository projectFileRepository;
-
     private final MappingUtil mappingUtil;
-
     private final FileUtil fileUtil;
+    private final SlackService slackService;
+
+    private final MessageSourceAccessor messageSourceAccessor;
+    @Value("${bug-case.web-url}")
+    private String webUrl;
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -352,6 +350,13 @@ public class TestrunService {
         testrun.setUntestableTestcaseCount(0);
 
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
+
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+            StringBuilder message = new StringBuilder();
+            message.append(messageSourceAccessor.getMessage("testrun.created", new Object[] {result.getName(), webUrl + "/spaces/A1AAA/projects/29/testruns/" + result.getId()}));
+            slackService.sendText(project.getSlackUrl(), message.toString());
+        }
+
         return new TestrunDTO(result, true);
         // return mappingUtil.convert(result, TestrunDTO.class);
     }

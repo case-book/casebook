@@ -70,4 +70,10 @@ public class Project extends CommonEntity {
     @Column(name = "testrun_seq", columnDefinition = "integer default 0")
     private Integer testrunSeq = 0;
 
+    @Column(name = "slack_url", length = ColumnsDef.URL)
+    private String slackUrl;
+
+    @Column(name = "enable_testrun_alarm")
+    private boolean enableTestrunAlarm;
+
 }

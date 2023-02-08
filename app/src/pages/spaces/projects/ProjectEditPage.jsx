@@ -388,80 +388,34 @@ function ProjectEditPage({ type }) {
                 </Text>
               </BlockRow>
             </Block>
-            <Title
-              control={
-                <Button
-                  size="sm"
-                  outline
-                  onClick={() => {
-                    addTestcaseTemplate();
-                  }}
-                >
-                  <i className="fa-solid fa-plus" /> 템플릿 추가
-                </Button>
-              }
-            >
-              테스트케이스 템플릿
-            </Title>
+            <Title>{t('알림 설정')}</Title>
             <Block>
-              <ul className="template-list">
-                {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
-                  return (
-                    <li key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
-                      <Card border className="testcase-template" point>
-                        <CardHeader className="name">
-                          {!testcaseTemplate.id && (
-                            <div className="new-mark">
-                              <Tag className="tag">NEW</Tag>
-                            </div>
-                          )}
-
-                          <div>
-                            <span
-                              className="name-info"
-                              onClick={() => {
-                                setTemplateEditorPopupInfo({
-                                  opened: true,
-                                  inx,
-                                  testcaseTemplate,
-                                });
-                              }}
-                            >
-                              <span className="name-text">{testcaseTemplate.name}</span>
-                              <span className="control-button">
-                                <Button
-                                  rounded
-                                  size="xs"
-                                  color="danger"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    removeTestcaseTemplateItem(inx);
-                                  }}
-                                >
-                                  <i className="fa-solid fa-trash" />
-                                </Button>
-                              </span>
-                            </span>
-                          </div>
-                          {testcaseTemplate.defaultTemplate && (
-                            <div className="default">
-                              <span>DEFAULT</span>
-                            </div>
-                          )}
-                        </CardHeader>
-                        <CardContent className="testcase-template-content">
-                          <div className="item-count">
-                            <span className="count">
-                              <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
-                            </span>
-                            <span className="count-label">아이템</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </li>
-                  );
-                })}
-              </ul>
+              <BlockRow>
+                <Label>{t('슬랙 URL')}</Label>
+                <Input
+                  value={project.slackUrl}
+                  onChange={val =>
+                    setProject({
+                      ...project,
+                      slackUrl: val,
+                    })
+                  }
+                  minLength={1}
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label>{t('테스트런 알림')}</Label>
+                <CheckBox
+                  type="checkbox"
+                  value={project.enableTestrunAlarm}
+                  onChange={val =>
+                    setProject({
+                      ...project,
+                      enableTestrunAlarm: val,
+                    })
+                  }
+                />
+              </BlockRow>
             </Block>
             {isEdit && (
               <>
@@ -471,10 +425,85 @@ function ProjectEditPage({ type }) {
                       size="sm"
                       outline
                       onClick={() => {
+                        addTestcaseTemplate();
+                      }}
+                    >
+                      <i className="fa-solid fa-plus" /> {t('템플릿 추가')}
+                    </Button>
+                  }
+                >
+                  {t('테스트케이스 템플릿')}
+                </Title>
+                <Block>
+                  <ul className="template-list">
+                    {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
+                      return (
+                        <li key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
+                          <Card border className="testcase-template" point>
+                            <CardHeader className="name">
+                              {!testcaseTemplate.id && (
+                                <div className="new-mark">
+                                  <Tag className="tag">NEW</Tag>
+                                </div>
+                              )}
+
+                              <div>
+                                <span
+                                  className="name-info"
+                                  onClick={() => {
+                                    setTemplateEditorPopupInfo({
+                                      opened: true,
+                                      inx,
+                                      testcaseTemplate,
+                                    });
+                                  }}
+                                >
+                                  <span className="name-text">{testcaseTemplate.name}</span>
+                                  <span className="control-button">
+                                    <Button
+                                      rounded
+                                      size="xs"
+                                      color="danger"
+                                      onClick={e => {
+                                        e.stopPropagation();
+                                        removeTestcaseTemplateItem(inx);
+                                      }}
+                                    >
+                                      <i className="fa-solid fa-trash" />
+                                    </Button>
+                                  </span>
+                                </span>
+                              </div>
+                              {testcaseTemplate.defaultTemplate && (
+                                <div className="default">
+                                  <span>DEFAULT</span>
+                                </div>
+                              )}
+                            </CardHeader>
+                            <CardContent className="testcase-template-content">
+                              <div className="item-count">
+                                <span className="count">
+                                  <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
+                                </span>
+                                <span className="count-label">{t('아이템')}</span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </Block>
+                <Title
+                  control={
+                    <Button
+                      size="sm"
+                      outline
+                      onClick={() => {
                         setOpened(true);
                       }}
                     >
-                      사용자 추가
+                      {t('사용자 추가')}
                     </Button>
                   }
                 >
@@ -507,7 +536,7 @@ function ProjectEditPage({ type }) {
                 navigate(-1);
               }}
               onSubmit={() => {}}
-              onSubmitText="저장"
+              onSubmitText={t('저장')}
               onCancelIcon=""
             />
           </Form>

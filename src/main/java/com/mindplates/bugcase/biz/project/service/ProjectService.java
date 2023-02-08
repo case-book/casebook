@@ -140,6 +140,8 @@ public class ProjectService {
         projectInfo.setDescription(updateProjectInfo.getDescription());
         projectInfo.setToken(updateProjectInfo.getToken());
         projectInfo.setActivated(updateProjectInfo.isActivated());
+        projectInfo.setSlackUrl(updateProjectInfo.getSlackUrl());
+        projectInfo.setEnableTestrunAlarm(updateProjectInfo.isEnableTestrunAlarm());
         if (updateProjectInfo.getTestcaseGroupSeq() != null) {
             projectInfo.setTestcaseGroupSeq(updateProjectInfo.getTestcaseGroupSeq());
         }

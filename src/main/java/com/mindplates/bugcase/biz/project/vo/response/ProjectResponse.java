@@ -28,6 +28,8 @@ public class ProjectResponse {
     private List<TestcaseTemplateResponse> testcaseTemplates;
     private List<TestcaseGroupResponse> testcaseGroups;
     private List<SimpleMemberResponse> users;
+    private String slackUrl;
+    private boolean enableTestrunAlarm;
 
     private boolean isAdmin = false;
 
@@ -39,6 +41,8 @@ public class ProjectResponse {
         this.activated = project.isActivated();
         this.creationDate = project.getCreationDate();
         this.spaceName = project.getSpace().getName();
+        this.slackUrl = project.getSlackUrl();
+        this.enableTestrunAlarm = project.isEnableTestrunAlarm();
 
         if (userId != null && project.getUsers().stream().anyMatch(projectUser -> projectUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(projectUser.getRole()))) {
             this.isAdmin = true;
