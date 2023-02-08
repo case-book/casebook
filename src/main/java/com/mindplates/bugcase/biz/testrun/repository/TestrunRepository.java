@@ -32,8 +32,8 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     void deleteById(@Param("testrunId") Long testrunId);
 
     @Modifying
-    @Query("UPDATE Testrun tr SET tr.reserveExpired = :reserveExpired WHERE tr.id = :testrunId")
-    void updateTestrunReserveExpired(@Param("testrunId") Long testrunId, @Param("reserveExpired") Boolean reserveExpired);
+    @Query("UPDATE Testrun tr SET tr.reserveExpired = :reserveExpired, tr.reserveResultId = :reserveResultId WHERE tr.id = :testrunId")
+    void updateTestrunReserveExpired(@Param("testrunId") Long testrunId, @Param("reserveExpired") Boolean reserveExpired, @Param("reserveResultId") Long reserveResultId);
 
 }
 

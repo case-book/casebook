@@ -40,18 +40,6 @@
     }
   }
 
-  .testrun-users-type-row,
-  .testrun-range-type-row {
-    > div {
-      padding-bottom: 0;
-      a {
-        font-weight: bold;
-        display: inline-block;
-        align-self: center;
-      }
-    }
-  }
-
   .iteration-period {
     display: flex;
     > div {
@@ -59,26 +47,13 @@
     }
   }
 
-  ul.testrun-users {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 -1rem 0;
+  .tester {
+    margin-right: 0.5rem;
+    border-radius: 8px;
+  }
 
-    > li {
-      display: inline-flex;
-      margin-right: 1rem;
-      border-radius: 20px;
-      border: 1px solid var(--border-color);
-      background-color: var(--lighter-color);
-      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
-      margin-bottom: 1rem;
-      font-size: 14px;
-      > div {
-        align-self: center;
-        padding: 0.75rem 1rem;
-        display: inline-block;
-      }
-    }
+  .group-info {
+    border-right: 1px solid var(--border-color);
   }
 
   .testrun-testcases-content {

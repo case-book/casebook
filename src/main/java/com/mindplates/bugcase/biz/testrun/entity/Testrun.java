@@ -92,4 +92,7 @@ public class Testrun extends CommonEntity {
     @Column(name = "reserve_expired")
     private Boolean reserveExpired;
 
+    @Column(name = "reserve_result_id")
+    private Long reserveResultId;
+
 }

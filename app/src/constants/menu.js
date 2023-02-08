@@ -71,7 +71,7 @@ const MENUS = [
     to: '/testruns',
     icon: <i className="fa-solid fa-scale-balanced" />,
     color: '#7bde89',
-    name: '테스트 런',
+    name: '테스트런',
     admin: false,
     pc: true,
     login: true,

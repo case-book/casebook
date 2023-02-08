@@ -17,3 +17,10 @@
     text-align: right;
   }
 }
+
+.table-wrapper.size-sm {
+  .td-wrapper {
+    padding: 0.5rem;
+    font-size: 14px;
+  }
+}

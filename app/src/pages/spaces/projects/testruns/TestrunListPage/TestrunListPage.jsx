@@ -73,7 +73,7 @@ function TestrunListPage() {
         className="page-title"
         links={[
           <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/new`}>
-            <i className="fa-solid fa-plus" /> {t('테스트 런')}
+            <i className="fa-solid fa-plus" /> {t('테스트런')}
           </Link>,
         ]}
         control={
@@ -147,21 +147,23 @@ function TestrunListPage() {
           </div>
         }
       >
-        {t('테스트 런')}
+        {t('테스트런')}
       </PageTitle>
       <PageContent className="page-content">
         {testruns?.length <= 0 && (
           <div className="no-project">
             <div>
-              <div>{t('조회된 테스트런이 없습니다.')}</div>
+              {type === 'RESERVE' && <div>{t('예약된 테스트런이 없습니다.')}</div>}
+              {type === 'ITERATION' && <div>{t('반복 설정된 테스트런이 없습니다.')}</div>}
+              {!(type === 'RESERVE' || type === 'ITERATION') && <div>{t('조회된 테스트런이 없습니다.')}</div>}
               <div>
                 <Button
                   outline
                   onClick={() => {
-                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
+                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new?creationType=${type}`);
                   }}
                 >
-                  <i className="fa-solid fa-plus" /> {t('테스트 런')}
+                  <i className="fa-solid fa-plus" /> {t('테스트런')}
                 </Button>
               </div>
             </div>
@@ -186,7 +188,7 @@ function TestrunListPage() {
               const span = dateUtil.getSpan(moment.utc(), moment.utc(testrun.endDateTime));
 
               return (
-                <li>
+                <li key={testrun.id}>
                   <Card className="testrun-card" border>
                     <div className="config-button">
                       <Button

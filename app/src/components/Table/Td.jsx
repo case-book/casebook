@@ -15,11 +15,12 @@ Td.defaultProps = {
   align: 'left',
   rowSpan: undefined,
   colSpan: undefined,
+  children: undefined,
 };
 
 Td.propTypes = {
   className: PropTypes.string,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
   align: PropTypes.oneOf(['left', 'center', 'right']),
   rowSpan: PropTypes.number,
   colSpan: PropTypes.number,

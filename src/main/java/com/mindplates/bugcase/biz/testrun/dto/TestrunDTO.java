@@ -41,8 +41,8 @@ public class TestrunDTO extends CommonDTO {
     private Boolean onHoliday;
     private LocalTime startTime;
     private Integer durationHours;
-
     private Boolean reserveExpired;
+    private Long reserveResultId;
 
     public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
@@ -71,6 +71,7 @@ public class TestrunDTO extends CommonDTO {
         this.startTime = testrun.getStartTime();
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
+        this.reserveResultId = testrun.getReserveResultId();
     }
 
     public TestrunDTO(Testrun testrun, boolean detail) {

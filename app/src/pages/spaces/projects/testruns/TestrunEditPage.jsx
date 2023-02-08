@@ -16,12 +16,17 @@ import dialogUtil from '@/utils/dialogUtil';
 import { DATE_FORMATS, DURATIONS, MESSAGE_CATEGORY, TESTRUN_CREATION_TYPES } from '@/constants/constants';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import dateUtil from '@/utils/dateUtil';
+import useQueryString from '@/hooks/useQueryString';
 
 const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
+  const {
+    query: { creationType },
+  } = useQueryString();
+  console.log(creationType);
 
   const {
     userStore: { user },
@@ -126,6 +131,7 @@ function TestrunEditPage({ type }) {
               }),
             };
           }),
+          creationType: creationType || 'CREATE',
         });
       } else {
         TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
@@ -213,10 +219,10 @@ function TestrunEditPage({ type }) {
   return (
     <>
       <Page className="testrun-edit-page-wrapper">
-        <PageTitle>{type === 'edit' ? t('테스트 런') : t('새 테스트런')}</PageTitle>
+        <PageTitle>{type === 'edit' ? t('테스트런') : t('새 테스트런')}</PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('테스트 런 정보')}</Title>
+            <Title>{t('테스트런 정보')}</Title>
             <Block>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>

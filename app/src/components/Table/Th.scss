@@ -18,3 +18,10 @@
     text-align: right;
   }
 }
+
+.table-wrapper.size-sm {
+  .th-wrapper {
+    padding: 0.75rem;
+    font-size: 14px;
+  }
+}

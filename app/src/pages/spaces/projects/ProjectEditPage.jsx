@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import SpaceService from '@/services/SpaceService';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
-
 import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';

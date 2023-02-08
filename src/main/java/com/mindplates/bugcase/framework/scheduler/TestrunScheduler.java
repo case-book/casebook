@@ -27,15 +27,15 @@ public class TestrunScheduler {
     public void printDate() {
 
 
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+        LocalDateTime now = LocalDateTime.now();
         List<TestrunDTO> testrunList = testrunService.selectReserveTestrunList();
         testrunList.forEach((testrunDTO -> {
             if (TestrunCreationTypeCode.RESERVE.equals(testrunDTO.getCreationType())) {
 
                 Long testrunId = testrunDTO.getId();
-                String startDateTime = testrunDTO.getStartDateTime().format(DateTimeFormatter.ofPattern("yyyyMMddHHmm"));
+                LocalDateTime startDateTime = testrunDTO.getStartDateTime();
 
-                if (now.equals(startDateTime)) {
+                if (now.isAfter(startDateTime)) {
                     // condition
                     testrunDTO.setId(null);
                     testrunDTO.setCreationType(TestrunCreationTypeCode.CREATE);
@@ -62,9 +62,9 @@ public class TestrunScheduler {
                     }
 
 
-                    testrunService.createTestrunInfo(testrunDTO.getProject().getSpace().getCode(), testrunDTO);
+                    TestrunDTO result = testrunService.createTestrunInfo(testrunDTO.getProject().getSpace().getCode(), testrunDTO);
 
-                    testrunService.updateTestrunReserveExpired(testrunId, true);
+                    testrunService.updateTestrunReserveExpired(testrunId,  true, result.getId());
                 }
 
 

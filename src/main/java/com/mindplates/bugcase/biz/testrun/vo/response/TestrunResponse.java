@@ -38,6 +38,7 @@ public class TestrunResponse {
     private LocalTime startTime;
     private Integer durationHours;
     private Boolean reserveExpired;
+    private Long reserveResultId;
 
     public TestrunResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -58,6 +59,7 @@ public class TestrunResponse {
         this.startTime = testrun.getStartTime();
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
+        this.reserveResultId = testrun.getReserveResultId();
 
         if (testrun.getTestrunUsers() != null && !testrun.getTestrunUsers().isEmpty()) {
             this.testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserResponse::new).collect(Collectors.toList());

@@ -209,21 +209,6 @@ function TestrunExecutePage() {
     }
   }, [testrun, id]);
 
-  const onDelete = () => {
-    dialogUtil.setConfirm(
-      MESSAGE_CATEGORY.WARNING,
-      t('테스트런 삭제'),
-      <div>{t('@ 테스트런 및 테스트런에 입력된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { name: testrun.name })}</div>,
-      () => {
-        TestrunService.deleteTestrunInfo(spaceCode, projectId, testrunId, () => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-        });
-      },
-      null,
-      t('삭제'),
-    );
-  };
-
   const onClosed = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
@@ -331,9 +316,6 @@ function TestrunExecutePage() {
           <div>
             <Button size="sm" color="warning" onClick={onClosed}>
               {t('테스트런 종료')}
-            </Button>
-            <Button size="sm" color="danger" onClick={onDelete}>
-              {t('테스트런 삭제')}
             </Button>
           </div>
         }

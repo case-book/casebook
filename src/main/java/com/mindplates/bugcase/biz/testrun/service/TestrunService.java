@@ -151,6 +151,15 @@ public class TestrunService {
     }
 
     @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void updateProjectTestrunStatusOpened(String spaceCode, long projectId, long testrunId) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testrun.setOpened(true);
+        testrun.setClosedDate(LocalDateTime.now());
+        testrunRepository.save(testrun);
+    }
+
+    @Transactional
     public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
         List<TestrunTestcaseGroupTestcaseItem> result = testrunTestcaseGroupTestcaseItemRepository.saveAll(mappingUtil.convert(testrunTestcaseGroupTestcaseItems, TestrunTestcaseGroupTestcaseItem.class));
         return result.stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
@@ -211,8 +220,8 @@ public class TestrunService {
     }
 
     @Transactional
-    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired) {
-        testrunRepository.updateTestrunReserveExpired(testrunId, reserveExpired);
+    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired, Long reserveResultId) {
+        testrunRepository.updateTestrunReserveExpired(testrunId, reserveExpired, reserveResultId);
     }
 
     @Transactional
