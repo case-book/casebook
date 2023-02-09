@@ -353,7 +353,29 @@ public class TestrunService {
 
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
             StringBuilder message = new StringBuilder();
-            message.append(messageSourceAccessor.getMessage("testrun.created", new Object[] {result.getName(), webUrl + "/spaces/A1AAA/projects/29/testruns/" + result.getId()}));
+
+            String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + result.getProject().getId() + "/testruns/" + result.getId();
+
+            message.append(messageSourceAccessor.getMessage("testrun.created", new Object[]{result.getName(), testrunUrl}));
+
+            List<ProjectUserDTO> testers = result.getTestcaseGroups().stream()
+                    .flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
+                    .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
+                    .distinct()
+                    .map(userId -> {
+                        return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+                    })
+                    .collect(Collectors.toList());
+
+            if (!testers.isEmpty()) {
+                for (ProjectUserDTO projectUserDTO : testers) {
+                    message.append(messageSourceAccessor.getMessage("testrun.user.link",
+                            new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
+                }
+
+            }
+
+
             slackService.sendText(project.getSlackUrl(), message.toString());
         }
 
