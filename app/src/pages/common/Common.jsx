@@ -107,10 +107,15 @@ function Common() {
   );
 
   useEffect(() => {
+    if (requestLoading === null) {
+      return;
+    }
+
     if (requestLoading) {
       setLoading(true);
     } else {
       setLoadingDebounce(false);
+      setLoading(false);
     }
   }, [requestLoading]);
 

@@ -7,7 +7,7 @@ import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import ConfigsRoutes from '@/pages/configs';
-import { Star } from '@/components';
+import { LogoIcon, Star } from '@/components';
 import { debounce } from 'lodash';
 import './App.scss';
 
@@ -74,6 +74,18 @@ function App() {
   return (
     <div className={`app-wrapper theme-${theme}`}>
       <Common />
+      {!tried && (
+        <div className="tried-content">
+          <div>
+            <div className="logo">
+              <div>
+                <LogoIcon className="logo-icon" size="md" />
+                <div>CASEBOOK</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {tried && (
         <div className="app-content">
           <Header />
