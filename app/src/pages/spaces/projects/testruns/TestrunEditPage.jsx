@@ -26,7 +26,6 @@ function TestrunEditPage({ type }) {
   const {
     query: { creationType },
   } = useQueryString();
-  console.log(creationType);
 
   const {
     userStore: { user },

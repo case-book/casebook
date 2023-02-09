@@ -8,11 +8,12 @@ function Tbody({ className, children }) {
 
 Tbody.defaultProps = {
   className: '',
+  children: undefined,
 };
 
 Tbody.propTypes = {
   className: PropTypes.string,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 export default Tbody;

@@ -23,13 +23,10 @@ public class UserService {
     private final EncryptUtil encryptUtil;
     private final MappingUtil mappingUtil;
 
-
-
     public UserDTO selectUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new UserDTO(user);
     }
-
 
     public boolean existUserByEmail(String email, Long exceptUserId) {
         if (exceptUserId != null) {
@@ -58,8 +55,34 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO updateUser(UserDTO user) {
-        return new UserDTO(userRepository.save(mappingUtil.convert(user, User.class)));
+    public UserDTO updateUser(Long userId, UserDTO user) {
+        User targetUser = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        targetUser.setName(user.getName());
+        targetUser.setLanguage(user.getLanguage());
+        targetUser.setCountry(user.getCountry());
+        targetUser.setTimezone(user.getTimezone());
+        return new UserDTO(userRepository.save(targetUser));
+    }
+
+    @Transactional
+    public UserDTO updateUserPassword(Long userId, String currentPassword, String newPassword) {
+        User userInfo = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        String currentSalt = userInfo.getSalt();
+        byte[] currentSaltBytes = new java.math.BigInteger(currentSalt, 16).toByteArray();
+        String currentEncryptedText = encryptUtil.getEncrypt(currentPassword, currentSaltBytes);
+
+        if (!userInfo.getPassword().equals(currentEncryptedText)) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "user.current.password.not.matched");
+        }
+
+        byte[] saltBytes = encryptUtil.getSaltByteArray();
+        String salt = encryptUtil.getSaltString(saltBytes);
+        userInfo.setSalt(salt);
+        String encryptedText = encryptUtil.getEncrypt(newPassword, saltBytes);
+        userInfo.setPassword(encryptedText);
+
+        return new UserDTO(userRepository.save(userInfo));
     }
 
     @Transactional

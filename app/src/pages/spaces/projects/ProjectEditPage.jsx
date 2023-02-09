@@ -531,13 +531,11 @@ function ProjectEditPage({ type }) {
               </>
             )}
             <PageButtons
-              outline
               onCancel={() => {
                 navigate(-1);
               }}
               onSubmit={() => {}}
               onSubmitText={t('저장')}
-              onCancelIcon=""
             />
           </Form>
         </PageContent>

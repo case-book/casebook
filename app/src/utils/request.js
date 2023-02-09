@@ -130,7 +130,6 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
 
   const messageId = Date.now();
   if (message) {
-    console.log('add', url);
     rootStore.controlStore.addRequestMessage(messageId, message);
   }
 
@@ -147,7 +146,6 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
     })
     .finally(() => {
       if (message) {
-        console.log('remove');
         rootStore.controlStore.removeRequestMessage(messageId);
       }
       if (showLoading !== false) processFinally();

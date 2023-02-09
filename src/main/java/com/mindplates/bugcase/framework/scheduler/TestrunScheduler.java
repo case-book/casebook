@@ -83,7 +83,9 @@ public class TestrunScheduler {
 
                 if ((startDateTime == null || now.isAfter(startDateTime)) && (endDateTime == null || now.isBefore(endDateTime)) && nowStartTime.equals(startTime)) {
                     clearTestrun(testrunDTO);
-                    testrunDTO.setEndDateTime(startDateTime.plusHours(testrunDTO.getDurationHours()));
+
+                    testrunDTO.setStartDateTime(now);
+                    testrunDTO.setEndDateTime(now.plusHours(testrunDTO.getDurationHours()));
                     testrunService.createTestrunInfo(testrunDTO.getProject().getSpace().getCode(), testrunDTO);
                 }
 

@@ -12,6 +12,7 @@ import { getOption, setOption } from '@/utils/storageUtil';
 import { useLocation } from 'react-router-dom';
 import { SocketClient } from '@/components';
 import { observer } from 'mobx-react';
+import i18n from 'i18next';
 import './Common.scss';
 
 function Common() {
@@ -67,6 +68,8 @@ function Common() {
       info => {
         userStore.setUser(info);
         userStore.setTried(true);
+        console.log(info, info.language);
+        i18n.changeLanguage(info.language);
         getUserNotificationCount();
       },
       () => {

@@ -29,10 +29,32 @@ UserService.setAutoLogin = (successHandler, failHandler) => {
   );
 };
 
-UserService.getUserInfo = (userId, successHandler, failHandler) => {
+UserService.getMyDetailInfo = (successHandler, failHandler) => {
   return request.get(
-    `/api/users/${userId}`,
+    '/api/users/my/detail',
     {},
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+UserService.updateMyInfo = (info, successHandler, failHandler) => {
+  return request.put(
+    '/api/users/my',
+    info,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+UserService.updateUserPassword = (info, successHandler, failHandler) => {
+  return request.put(
+    '/api/users/my/changePassword',
+    info,
     res => {
       successHandler(res);
     },
@@ -100,17 +122,6 @@ UserService.join = (info, successHandler, failHandler) => {
   );
 };
 
-UserService.updateMyInfo = (info, successHandler, failHandler) => {
-  return request.put(
-    '/api/users/my',
-    info,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-  );
-};
-
 UserService.getUserList = (type, successHandler, failHandler) => {
   return request.get(
     '/api/configs/users',
@@ -159,17 +170,6 @@ UserService.LeaveUserInfo = (successHandler, failHandler) => {
   return request.del(
     '/api/users/leave',
     null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-  );
-};
-
-UserService.changePassword = (info, successHandler, failHandler) => {
-  return request.put(
-    '/api/users/my/changePassword',
-    info,
     res => {
       successHandler(res);
     },

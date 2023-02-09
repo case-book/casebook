@@ -7,6 +7,9 @@ import Common from '@/pages/common/Common';
 import Header from '@/pages/common/Header/Header';
 import Login from '@/pages/users/Login';
 import Join from '@/pages/users/Join';
+import MyInfoPage from '@/pages/users/MyInfoPage';
+import MyEditPage from '@/pages/users/MyEditPage';
+import PasswordChangePage from '@/pages/users/PasswordChangePage';
 import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
 import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
@@ -34,6 +37,9 @@ export {
   Header,
   Login,
   Join,
+  MyInfoPage,
+  MyEditPage,
+  PasswordChangePage,
   SpaceProjectListPage,
   ProjectEditPage,
   ProjectInfoPage,
