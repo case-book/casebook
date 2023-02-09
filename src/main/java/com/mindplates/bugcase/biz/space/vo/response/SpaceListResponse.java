@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import lombok.*;
 
 @Builder
@@ -17,6 +18,8 @@ public class SpaceListResponse {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean isMember;
+
+    private Boolean isAdmin;
     private Long projectCount;
     private Integer userCount;
     private String description;
@@ -32,6 +35,9 @@ public class SpaceListResponse {
         this.userCount = space.getUsers() != null ? space.getUsers().size() : 0;
         if (userId != null && space.getUsers() != null) {
             this.isMember = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId)));
+        }
+        if (userId != null && space.getUsers() != null) {
+            this.isAdmin = space.getUsers().stream().anyMatch((spaceUser -> UserRoleCode.ADMIN.equals(spaceUser.getRole()) && spaceUser.getUser().getId().equals(userId)));
         }
         this.description = space.getDescription();
     }

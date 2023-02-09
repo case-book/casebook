@@ -142,7 +142,7 @@ function PageButtons(props) {
 PageButtons.defaultProps = {
   className: '',
   size: 'lg',
-  outline: false,
+  outline: true,
   onListText: '목록',
   onListIcon: '', // <i className="far fa-file-alt" />,
   onInfoText: '정보',

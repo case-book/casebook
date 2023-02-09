@@ -143,6 +143,26 @@ function ProjectDashBoardPage() {
                                 spacing: 10,
                               },
                             ]}
+                            fill={[
+                              {
+                                match: {
+                                  id: 'PASSED',
+                                },
+                                id: 'PASSED',
+                              },
+                              {
+                                match: {
+                                  id: 'FAILED',
+                                },
+                                id: 'FAILED',
+                              },
+                              {
+                                match: {
+                                  id: 'UNTESTED',
+                                },
+                                id: 'UNTESTED',
+                              },
+                            ]}
                           />
                         </div>
                       </div>
@@ -156,7 +176,7 @@ function ProjectDashBoardPage() {
         <Card className="my-testrun-info">
           <CardHeader className="card-header">{t('내가 진행해야할 테스트')}</CardHeader>
           <CardContent scroll horizontal className={`card-content my-testrun-content  ${userAssignedTestruns?.length < 1 ? 'empty' : ''}`}>
-            {userAssignedTestruns.length < 1 && <EmptyContent className="empty-content">{t('할당된 테스트 케이스가 없습니다.')}</EmptyContent>}
+            {userAssignedTestruns.length < 1 && <EmptyContent className="empty-content">{t('할당된 테스트케이스가 없습니다.')}</EmptyContent>}
             {userAssignedTestruns.length > 0 && (
               <ul>
                 {userAssignedTestruns.map(testrun => {

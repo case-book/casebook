@@ -8,6 +8,11 @@
   background-color: var(--light-color);
   color: var(--text-color);
 
+  &.size-xxs {
+    padding: 4px;
+    font-size: 10px;
+  }
+
   &.size-xs {
     padding: 6px;
     font-size: 12px;

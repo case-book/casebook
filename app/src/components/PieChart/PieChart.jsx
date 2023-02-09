@@ -6,7 +6,7 @@ import './PieChart.scss';
 import { useTranslation } from 'react-i18next';
 import { EmptyContent } from '@/components';
 
-function PieChart({ data, showTopArcLabelCount, defs, onClick }) {
+function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, activeOuterRadiusOffset, margin, fill, isInteractive }) {
   const { t } = useTranslation();
 
   const dataRankInfo = useMemo(() => {
@@ -29,75 +29,22 @@ function PieChart({ data, showTopArcLabelCount, defs, onClick }) {
       {data?.length > 0 && (
         <ResponsivePie
           data={data}
-          margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+          margin={margin}
           innerRadius={0.5}
           padAngle={2}
           cornerRadius={10}
-          activeOuterRadiusOffset={8}
+          activeOuterRadiusOffset={activeOuterRadiusOffset}
           borderWidth={1}
           borderColor={{
             from: 'color',
             modifiers: [['darker', 0.7]],
           }}
+          isInteractive={isInteractive}
+          enableArcLabels={false}
           arcLinkLabelsSkipAngle={10}
           arcLinkLabelsTextColor="#000"
           arcLinkLabelsThickness={2}
           arcLinkLabelsColor={{ from: 'color' }}
-          defs={defs}
-          colors={d => {
-            return d.data?.color;
-          }}
-          onClick={d => {
-            if (onClick) {
-              onClick(d);
-            }
-          }}
-          fill={[
-            {
-              match: {
-                id: 'PASSED',
-              },
-              id: 'PASSED',
-            },
-            {
-              match: {
-                id: 'FAILED',
-              },
-              id: 'FAILED',
-            },
-            {
-              match: {
-                id: 'UNTESTED',
-              },
-              id: 'UNTESTED',
-            },
-          ]}
-          legends={[
-            {
-              anchor: 'bottom',
-              direction: 'row',
-              justify: false,
-              translateX: 0,
-              translateY: 56,
-              itemsSpacing: 0,
-              itemWidth: 100,
-              itemHeight: 18,
-              itemTextColor: '#111',
-              itemDirection: 'left-to-right',
-              itemOpacity: 1,
-              symbolSize: 18,
-              symbolShape: 'square',
-              effects: [
-                {
-                  on: 'hover',
-                  style: {
-                    itemTextColor: '#000',
-                  },
-                },
-              ],
-            },
-          ]}
-          enableArcLabels={false}
           arcLinkLabel={e => {
             if (showTopArcLabelCount === Infinity) {
               return `${e.id} (${e.value})`;
@@ -109,6 +56,46 @@ function PieChart({ data, showTopArcLabelCount, defs, onClick }) {
 
             return '';
           }}
+          enableArcLinkLabels={tooltip}
+          defs={defs}
+          colors={d => {
+            return d.data?.color;
+          }}
+          onClick={d => {
+            if (onClick) {
+              onClick(d);
+            }
+          }}
+          fill={fill}
+          legends={
+            legend
+              ? [
+                  {
+                    anchor: 'bottom',
+                    direction: 'row',
+                    justify: false,
+                    translateX: 0,
+                    translateY: 56,
+                    itemsSpacing: 0,
+                    itemWidth: 100,
+                    itemHeight: 18,
+                    itemTextColor: '#111',
+                    itemDirection: 'left-to-right',
+                    itemOpacity: 1,
+                    symbolSize: 18,
+                    symbolShape: 'square',
+                    effects: [
+                      {
+                        on: 'hover',
+                        style: {
+                          itemTextColor: '#000',
+                        },
+                      },
+                    ],
+                  },
+                ]
+              : undefined
+          }
         />
       )}
     </div>
@@ -116,9 +103,16 @@ function PieChart({ data, showTopArcLabelCount, defs, onClick }) {
 }
 
 PieChart.defaultProps = {
+  data: [],
   showTopArcLabelCount: Infinity,
   defs: [],
   onClick: null,
+  legend: true,
+  tooltip: true,
+  activeOuterRadiusOffset: 8,
+  margin: { top: 40, right: 80, bottom: 80, left: 80 },
+  fill: [],
+  isInteractive: true,
 };
 
 PieChart.propTypes = {
@@ -128,7 +122,7 @@ PieChart.propTypes = {
       color: PropTypes.string,
       value: PropTypes.number,
     }),
-  ).isRequired,
+  ),
   showTopArcLabelCount: PropTypes.number,
   defs: PropTypes.arrayOf(
     PropTypes.shape({
@@ -136,6 +130,24 @@ PieChart.propTypes = {
     }),
   ),
   onClick: PropTypes.func,
+  legend: PropTypes.bool,
+  tooltip: PropTypes.bool,
+  activeOuterRadiusOffset: PropTypes.number,
+  margin: PropTypes.shape({
+    top: PropTypes.number,
+    right: PropTypes.number,
+    bottom: PropTypes.number,
+    left: PropTypes.number,
+  }),
+  fill: PropTypes.arrayOf(
+    PropTypes.shape({
+      match: PropTypes.shape({
+        id: PropTypes.string,
+      }),
+      id: PropTypes.string,
+    }),
+  ),
+  isInteractive: PropTypes.bool,
 };
 
 export default React.memo(PieChart);

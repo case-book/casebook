@@ -65,8 +65,8 @@ bug-case:
   locale:
     default: en
   corsUrls: http://localhost:3000,https://localhost:3000
-  url: https://localhost:3000
-  web-url: https://localhost:3000
+  url: http://localhost:3000
+  web-url: http://localhost:3000
   # web-url: https://localhost:3000/
   # oauth-err-web-url: https://localhost:3000/users/oauth/fail
   # oauth-register-web-url: https://localhost:3000/users/oauth/register

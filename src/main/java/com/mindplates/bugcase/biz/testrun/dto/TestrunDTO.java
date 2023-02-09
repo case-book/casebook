@@ -34,14 +34,15 @@ public class TestrunDTO extends CommonDTO {
     private int totalTestcaseCount;
     private int passedTestcaseCount;
     private int failedTestcaseCount;
+    private int untestableTestcaseCount;
     private LocalDateTime closedDate;
     private TestrunCreationTypeCode creationType;
     private String days;
     private Boolean onHoliday;
     private LocalTime startTime;
     private Integer durationHours;
-
     private Boolean reserveExpired;
+    private Long reserveResultId;
 
     public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
@@ -54,6 +55,7 @@ public class TestrunDTO extends CommonDTO {
         this.totalTestcaseCount = testrun.getTotalTestcaseCount();
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
+        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
         if (testrun.getProject() != null && testrun.getProject().getSpace() != null) {
             this.project = ProjectDTO.builder().id(testrun.getProject().getId()).space(SpaceDTO.builder().id(testrun.getProject().getId()).code(testrun.getProject().getSpace().getCode()).build()).build();
@@ -69,6 +71,7 @@ public class TestrunDTO extends CommonDTO {
         this.startTime = testrun.getStartTime();
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
+        this.reserveResultId = testrun.getReserveResultId();
     }
 
     public TestrunDTO(Testrun testrun, boolean detail) {

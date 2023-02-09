@@ -11,6 +11,9 @@ import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.biz.user.vo.request.JoinRequest;
 import com.mindplates.bugcase.biz.user.vo.request.LoginRequest;
+import com.mindplates.bugcase.biz.user.vo.request.UpdateMyInfoRequest;
+import com.mindplates.bugcase.biz.user.vo.request.UpdatePasswordRequest;
+import com.mindplates.bugcase.biz.user.vo.response.MyDetailInfoResponse;
 import com.mindplates.bugcase.biz.user.vo.response.MyInfoResponse;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
@@ -20,6 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,6 +71,31 @@ public class UserController {
         UserDTO user = userService.selectUserInfo(securityUser.getId());
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(securityUser.getId());
         return new MyInfoResponse(user, null, spaces);
+    }
+
+    @Operation(description = "내 정보 조회")
+    @GetMapping("/my/detail")
+    public MyDetailInfoResponse selectMyDetailInfo(@AuthenticationPrincipal SecurityUser securityUser) {
+        UserDTO user = userService.selectUserInfo(securityUser.getId());
+        List<SpaceDTO> spaces = spaceService.selectUserSpaceList(securityUser.getId());
+        return new MyDetailInfoResponse(user, spaces);
+    }
+
+    @Operation(description = "내 정보 변경")
+    @PutMapping("/my")
+    public ResponseEntity<?> updateMyInfo(@Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest, @AuthenticationPrincipal SecurityUser securityUser) {
+        userService.updateUser(securityUser.getId(), updateMyInfoRequest.toDTO());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "비밀번호 변경")
+    @PutMapping("/my/changePassword")
+    public ResponseEntity<?> updateMyPasswordInfo(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest, @AuthenticationPrincipal SecurityUser securityUser) {
+        if (!updatePasswordRequest.getNextPassword().equals(updatePasswordRequest.getNextPasswordConfirm())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "user.password.confirm.not.matched");
+        }
+        userService.updateUserPassword(securityUser.getId(), updatePasswordRequest.getCurrentPassword(), updatePasswordRequest.getNextPassword());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "내 알림 정보 조회")

@@ -27,7 +27,9 @@ public class MyInfoResponse {
     private String token;
     private String email;
     private String name;
-
+    private String language;
+    private String country;
+    private String timezone;
     private List<SpaceListResponse> spaces;
 
     public MyInfoResponse(UserDTO user, String token) {
@@ -37,6 +39,9 @@ public class MyInfoResponse {
             this.email = user.getEmail();
             this.name = user.getName();
             this.systemRole = user.getSystemRole();
+            this.language = user.getLanguage();
+            this.country = user.getCountry();
+            this.timezone = user.getTimezone();
         }
 
         this.token = token;

@@ -20,7 +20,7 @@ export default class ControlStore {
     okColor: null,
   };
 
-  requestLoading = false;
+  requestLoading = null;
 
   requestMessages = [];
 

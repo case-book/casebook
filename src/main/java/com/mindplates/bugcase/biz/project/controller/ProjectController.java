@@ -12,7 +12,6 @@ import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -111,11 +110,16 @@ public class ProjectController {
 
     @PostMapping("/{id}/images")
     public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
-
         String path = projectFileService.createImage(id, file);
-
-        ProjectFileDTO testcaseFile = ProjectFileDTO.builder().project(ProjectDTO.builder().id(id).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.PROJECT).build();
-
+        ProjectFileDTO testcaseFile = ProjectFileDTO.builder()
+                .project(ProjectDTO.builder().id(id).build())
+                .name(name)
+                .size(size)
+                .type(type)
+                .path(path)
+                .uuid(UUID.randomUUID().toString())
+                .fileSourceType(FileSourceTypeCode.PROJECT)
+                .build();
         ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
         return new ProjectFileResponse(projectFile, spaceCode, id);
     }

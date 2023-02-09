@@ -151,4 +151,31 @@ const SpacePropTypes = PropTypes.shape({
   applicant: PropTypes.shape({}),
 });
 
-export { NullableNumber, NullableString, KeyValuePropTypes, TestcaseTemplateEditPropTypes, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes, TestcaseTemplatePropTypes, SpacePropTypes };
+const TestrunPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  creationType: PropTypes.string,
+  startDateTime: PropTypes.string,
+  endDateTime: PropTypes.string,
+  reserveExpired: PropTypes.bool,
+  days: PropTypes.string,
+  onHoliday: PropTypes.bool,
+  startTime: PropTypes.string,
+  durationHours: PropTypes.number,
+  opened: PropTypes.bool,
+  totalTestcaseCount: PropTypes.number,
+  passedTestcaseCount: PropTypes.number,
+  failedTestcaseCount: PropTypes.number,
+});
+
+export {
+  NullableNumber,
+  NullableString,
+  KeyValuePropTypes,
+  TestcaseTemplateEditPropTypes,
+  TestcaseGroupPropTypes,
+  TestcaseGroupSettingPropTypes,
+  TestcaseTemplatePropTypes,
+  SpacePropTypes,
+  TestrunPropTypes,
+};

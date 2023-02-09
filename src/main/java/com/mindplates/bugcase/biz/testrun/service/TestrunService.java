@@ -20,11 +20,14 @@ import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.service.SlackService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,30 +40,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TestrunService {
 
     private final TestrunRepository testrunRepository;
-
     private final TestcaseService testcaseService;
-
     private final ProjectService projectService;
-
     private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
-
     private final TestrunUserRepository testrunUserRepository;
-
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
-
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
-
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
-
     private final ProjectFileRepository projectFileRepository;
-
     private final MappingUtil mappingUtil;
-
     private final FileUtil fileUtil;
+    private final SlackService slackService;
+
+    private final MessageSourceAccessor messageSourceAccessor;
+    @Value("${bug-case.web-url}")
+    private String webUrl;
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -97,12 +95,12 @@ public class TestrunService {
 
     }
 
-    public Long selectProjectTestrunCount(String spaceCode, long projectId) {
-        return testrunRepository.countByProjectSpaceCodeAndProjectId(spaceCode, projectId);
+    public Long selectProjectOpenedTestrunCount(String spaceCode, long projectId, TestrunCreationTypeCode creationTypeCode) {
+        return testrunRepository.countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(spaceCode, projectId, creationTypeCode);
     }
 
-    public Long selectProjectTestrunCount(Long spaceId, long projectId) {
-        return testrunRepository.countByProjectSpaceIdAndProjectId(spaceId, projectId);
+    public Long selectProjectOpenedTestrunCount(Long spaceId, long projectId, TestrunCreationTypeCode creationTypeCode) {
+        return testrunRepository.countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(spaceId, projectId, creationTypeCode);
     }
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
@@ -151,6 +149,15 @@ public class TestrunService {
     }
 
     @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void updateProjectTestrunStatusOpened(String spaceCode, long projectId, long testrunId) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testrun.setOpened(true);
+        testrun.setClosedDate(LocalDateTime.now());
+        testrunRepository.save(testrun);
+    }
+
+    @Transactional
     public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
         List<TestrunTestcaseGroupTestcaseItem> result = testrunTestcaseGroupTestcaseItemRepository.saveAll(mappingUtil.convert(testrunTestcaseGroupTestcaseItems, TestrunTestcaseGroupTestcaseItem.class));
         return result.stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
@@ -174,12 +181,16 @@ public class TestrunService {
             testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() - 1);
         } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
             testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() - 1);
+        } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.UNTESTABLE)) {
+            testrun.setUntestableTestcaseCount(testrun.getUntestableTestcaseCount() - 1);
         }
 
         if (testResultCode.equals(TestResultCode.PASSED)) {
             testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() + 1);
         } else if (testResultCode.equals(TestResultCode.FAILED)) {
             testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() + 1);
+        } else if (testResultCode.equals(TestResultCode.UNTESTABLE)) {
+            testrun.setUntestableTestcaseCount(testrun.getUntestableTestcaseCount() + 1);
         }
 
         testrunTestcaseGroupTestcase.setTestResult(testResultCode);
@@ -207,8 +218,8 @@ public class TestrunService {
     }
 
     @Transactional
-    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired) {
-        testrunRepository.updateTestrunReserveExpired(testrunId, reserveExpired);
+    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired, Long reserveResultId) {
+        testrunRepository.updateTestrunReserveExpired(testrunId, reserveExpired, reserveResultId);
     }
 
     @Transactional
@@ -336,8 +347,38 @@ public class TestrunService {
         testrun.setTotalTestcaseCount(totalTestCount);
         testrun.setPassedTestcaseCount(0);
         testrun.setFailedTestcaseCount(0);
+        testrun.setUntestableTestcaseCount(0);
 
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
+
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+            StringBuilder message = new StringBuilder();
+
+            String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + result.getProject().getId() + "/testruns/" + result.getId();
+
+            message.append(messageSourceAccessor.getMessage("testrun.created", new Object[]{result.getName(), testrunUrl}));
+
+            List<ProjectUserDTO> testers = result.getTestcaseGroups().stream()
+                    .flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
+                    .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
+                    .distinct()
+                    .map(userId -> {
+                        return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+                    })
+                    .collect(Collectors.toList());
+
+            if (!testers.isEmpty()) {
+                for (ProjectUserDTO projectUserDTO : testers) {
+                    message.append(messageSourceAccessor.getMessage("testrun.user.link",
+                            new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
+                }
+
+            }
+
+
+            slackService.sendText(project.getSlackUrl(), message.toString());
+        }
+
         return new TestrunDTO(result, true);
         // return mappingUtil.convert(result, TestrunDTO.class);
     }

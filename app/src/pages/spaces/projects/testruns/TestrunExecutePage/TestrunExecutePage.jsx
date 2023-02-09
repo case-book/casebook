@@ -10,8 +10,8 @@ import useStores from '@/hooks/useStores';
 import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
-import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestRunTestcaseManager/TestRunTestcaseManager';
-import './TestrunInfoPage.scss';
+import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunTestcaseManager';
+import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
 
 const start = new Date();
@@ -26,7 +26,7 @@ end.setMinutes(0);
 end.setSeconds(0);
 end.setMilliseconds(0);
 
-function TestrunInfoPage() {
+function TestrunExecutePage() {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
   const { query, setQuery } = useQueryString();
@@ -209,21 +209,6 @@ function TestrunInfoPage() {
     }
   }, [testrun, id]);
 
-  const onDelete = () => {
-    dialogUtil.setConfirm(
-      MESSAGE_CATEGORY.WARNING,
-      t('테스트런 삭제'),
-      <div>{t('@ 테스트런 및 테스트런에 입력된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { name: testrun.name })}</div>,
-      () => {
-        TestrunService.deleteTestrunInfo(spaceCode, projectId, testrunId, () => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-        });
-      },
-      null,
-      t('삭제'),
-    );
-  };
-
   const onClosed = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
@@ -325,15 +310,12 @@ function TestrunInfoPage() {
   };
 
   return (
-    <Page className="testrun-info-page-wrapper" list wide>
+    <Page className="testrun-execute-page-wrapper" list wide>
       <PageTitle
         control={
           <div>
             <Button size="sm" color="warning" onClick={onClosed}>
               {t('테스트런 종료')}
-            </Button>
-            <Button size="sm" color="danger" onClick={onDelete}>
-              {t('테스트런 삭제')}
             </Button>
           </div>
         }
@@ -393,8 +375,8 @@ function TestrunInfoPage() {
   );
 }
 
-TestrunInfoPage.defaultProps = {};
+TestrunExecutePage.defaultProps = {};
 
-TestrunInfoPage.propTypes = {};
+TestrunExecutePage.propTypes = {};
 
-export default TestrunInfoPage;
+export default TestrunExecutePage;

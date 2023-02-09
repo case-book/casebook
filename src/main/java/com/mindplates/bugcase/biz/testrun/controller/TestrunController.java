@@ -89,7 +89,14 @@ public class TestrunController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(description = "테스트런 테스트 케이스 상세 조회")
+    @Operation(description = "테스트런 열기")
+    @PutMapping("/{testrunId}/status/opened")
+    public ResponseEntity<?> updateTestrunOpened(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+        testrunService.updateProjectTestrunStatusOpened(spaceCode, projectId, testrunId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "테스트런 테스트케이스 상세 조회")
     @GetMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
     public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId, @PathVariable long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);

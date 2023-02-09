@@ -4,6 +4,7 @@ import './NotificationList.scss';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components';
+import dateUtil from '@/utils/dateUtil';
 
 function NotificationList({ className, elementRef, notificationList, lastSeen, onMoreClick, onLinkClick, hasNext }) {
   return (
@@ -27,7 +28,7 @@ function NotificationList({ className, elementRef, notificationList, lastSeen, o
               )}
               {!d.url && <span>{d.message}</span>}
             </div>
-            <div className="time">{moment(d.creationDate).format('YYYY-MM-DD HH:mm:ss')}</div>
+            <div className="time">{dateUtil.getDateString(d.creationDate)}</div>
           </li>
         );
       })}

@@ -26,6 +26,7 @@ public class TestrunListResponse {
     private int totalTestcaseCount;
     private int passedTestcaseCount;
     private int failedTestcaseCount;
+    private int untestableTestcaseCount;
     private LocalDateTime closedDate;
     private TestrunCreationTypeCode creationType;
     private String days;
@@ -33,6 +34,8 @@ public class TestrunListResponse {
     private LocalTime startTime;
     private Integer durationHours;
     private Boolean reserveExpired;
+
+    private Long reserveResultId;
 
     public TestrunListResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -45,6 +48,7 @@ public class TestrunListResponse {
         this.totalTestcaseCount = testrun.getTotalTestcaseCount();
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
+        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
         this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();
@@ -52,6 +56,7 @@ public class TestrunListResponse {
         this.startTime = testrun.getStartTime();
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
+        this.reserveResultId = testrun.getReserveResultId();
     }
 
 

@@ -68,10 +68,13 @@ public class Testrun extends CommonEntity {
     @Column(name = "failed_testcase_count")
     private int failedTestcaseCount;
 
+    @Column(name = "untestable_testcase_count")
+    private int untestableTestcaseCount;
+
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 
-    @Column(name = "creation_type", length = ColumnsDef.CODE)
+    @Column(name = "creation_type", length = ColumnsDef.CODE, nullable = false)
     private TestrunCreationTypeCode creationType;
 
     @Column(name = "days", length = ColumnsDef.CODE)
@@ -88,5 +91,8 @@ public class Testrun extends CommonEntity {
 
     @Column(name = "reserve_expired")
     private Boolean reserveExpired;
+
+    @Column(name = "reserve_result_id")
+    private Long reserveResultId;
 
 }

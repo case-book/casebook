@@ -17,7 +17,7 @@ function Text({ className, children, size, bold, verticalAlign, whiteSpace, whit
           whiteSpace,
         }}
       >
-        <span>{children}</span>
+        {children}
       </div>
     </div>
   );

@@ -7,6 +7,9 @@ import Common from '@/pages/common/Common';
 import Header from '@/pages/common/Header/Header';
 import Login from '@/pages/users/Login';
 import Join from '@/pages/users/Join';
+import MyInfoPage from '@/pages/users/MyInfoPage';
+import MyEditPage from '@/pages/users/MyEditPage';
+import PasswordChangePage from '@/pages/users/PasswordChangePage';
 import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
 import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
@@ -19,9 +22,10 @@ import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfo
 
 import SystemInfoPage from '@/pages/configs/SystemInfoPage';
 
-import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage';
+import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/TestrunListPage';
 import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
-import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestrunInfoPage';
+import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
+import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage';
 
 export {
   ProjectDashBoardPage,
@@ -33,6 +37,9 @@ export {
   Header,
   Login,
   Join,
+  MyInfoPage,
+  MyEditPage,
+  PasswordChangePage,
   SpaceProjectListPage,
   ProjectEditPage,
   ProjectInfoPage,
@@ -42,5 +49,6 @@ export {
   SystemInfoPage,
   TestrunListPage,
   TestrunEditPage,
+  TestrunExecutePage,
   TestrunInfoPage,
 };

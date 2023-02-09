@@ -23,17 +23,17 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
 
-    Long countByProjectSpaceCodeAndProjectId(String spaceCode, Long projectId);
+    Long countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
-    Long countByProjectSpaceIdAndProjectId(Long spaceId, Long projectId);
+    Long countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(Long spaceId, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")
     void deleteById(@Param("testrunId") Long testrunId);
 
     @Modifying
-    @Query("UPDATE Testrun tr SET tr.reserveExpired = :reserveExpired WHERE tr.id = :testrunId")
-    void updateTestrunReserveExpired(@Param("testrunId") Long testrunId, @Param("reserveExpired") Boolean reserveExpired);
+    @Query("UPDATE Testrun tr SET tr.reserveExpired = :reserveExpired, tr.reserveResultId = :reserveResultId WHERE tr.id = :testrunId")
+    void updateTestrunReserveExpired(@Param("testrunId") Long testrunId, @Param("reserveExpired") Boolean reserveExpired, @Param("reserveResultId") Long reserveResultId);
 
 }
 

@@ -1,4 +1,49 @@
 .app-wrapper {
+  .tried-content {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    > div {
+      background-color: var(--theme-color);
+      width: 400px;
+      height: 300px;
+      align-self: center;
+      border-radius: 10px;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+
+      @media (max-width: 640px) {
+        width: 100%;
+      }
+
+      .logo {
+        font-size: 28px;
+        font-family: Rowdies, sans-serif;
+        height: 100%;
+
+        .logo-icon {
+          margin-right: 0.5rem;
+        }
+
+        > div {
+          display: flex;
+          height: 100%;
+
+          &:hover {
+            color: var(--primary-color);
+            cursor: pointer;
+          }
+
+          > div {
+            align-self: center;
+          }
+        }
+      }
+    }
+  }
   .app-content {
     position: relative;
     z-index: 1;

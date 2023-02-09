@@ -2,6 +2,7 @@ import axios from 'axios';
 import { rootStore } from '@/stores';
 import { getBaseURL } from '@/utils/configUtil';
 import { getOption } from '@/utils/storageUtil';
+import i18n from 'i18next';
 
 const stringCompiler = (str, params, returnUnmatches = false) => {
   const pattern = /{([\w:]+)}/g;
@@ -63,33 +64,28 @@ const processError = (handler, error) => {
     handlerResponse = handler(error && error.response && error.response.status, error && error.response && error.response.data);
   }
 
-  if (error && error.response) {
-    if (error.response.status === 401) {
-      if (!handlerResponse) {
-        rootStore.controlStore.setError(error.response.status, error.response.data.message || '세션이 만료되었거나, 로그인되어 있지 않습니다.', () => {
-          rootStore.userStore.clearUser();
-        });
-      }
+  if (error && error.response && !handlerResponse) {
+    if (error.code === 'ERR_NETWORK') {
+      rootStore.controlStore.setError(error.response.status, i18n.t('네트워크에 연결되어 있지 않거나, 서버가 동작 중이지 않습니다.'));
+    } else if (error.response.status === 401) {
+      rootStore.controlStore.setError(error.response.status, error.response.data.message || i18n.t('세션이 만료되었거나, 로그인되어 있지 않습니다.'), () => {
+        rootStore.userStore.clearUser();
+      });
     } else if (error.response.status === 403) {
-      if (!handlerResponse) rootStore.controlStore.setError(error.response.status, error.response.data.message || '요청하신 리소스에 접근 권한이 없습니다.');
+      rootStore.controlStore.setError(error.response.status, error.response.data.message || i18n.t('요청하신 리소스에 접근 권한이 없습니다.'));
     } else if (error.response.status === 404) {
-      if (!handlerResponse) rootStore.controlStore.setError(error.response.status, error.response.data.message || '요청하신 정보를 찾을 수 없습니다.');
+      rootStore.controlStore.setError(error.response.status, error.response.data.message || i18n.t('요청하신 정보를 찾을 수 없습니다.'));
     } else if (handler && typeof handler === 'function') {
       try {
-        if (!handlerResponse) rootStore.controlStore.setError(error.response.status, `${error.response.data.message}`);
+        rootStore.controlStore.setError(error.response.status, `${error.response.data.message}`);
       } catch (data) {
         rootStore.controlStore.setError(error.response.status, error.response.data.message);
       }
     } else if (error.response.data && error.response.data.message) {
-      if (!handlerResponse) {
-        rootStore.controlStore.setError('오류', error.response.data.message);
-      }
-    } else if (!handlerResponse) {
-      rootStore.controlStore.setError(error.response.status, '알 수 없는 오류가 발생하였습니다.');
+      rootStore.controlStore.setError(i18n.t('오류'), error.response.data.message);
+    } else {
+      rootStore.controlStore.setError(error.response.status, i18n.t('알 수 없는 오류가 발생하였습니다.'));
     }
-  } else {
-    // eslint-disable-next-line no-console
-    console.error(error);
   }
 };
 

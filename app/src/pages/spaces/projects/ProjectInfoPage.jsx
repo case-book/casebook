@@ -101,6 +101,17 @@ function ProjectInfoPage() {
               <Text>{project?.token}</Text>
             </BlockRow>
           </Block>
+          <Title>{t('알림 설정')}</Title>
+          <Block>
+            <BlockRow>
+              <Label>{t('슬랙 URL')}</Label>
+              <Text>{project?.slackUrl}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('테스트런 알림')}</Label>
+              <Text>{project?.enableTestrunAlarm ? 'Y' : 'N'}</Text>
+            </BlockRow>
+          </Block>
           <Title>{t('테스트케이스 템플릿')}</Title>
           <Block>
             <ul className="template-list">

@@ -16,9 +16,13 @@ function Message({ code }) {
         <div className="message">{code === '404' && <p>{t('경로가 잘못되었거나, 페이지를 찾을 수 없습니다.')}</p>}</div>
         <PageButtons
           onList={() => {
+            navigate('/');
+          }}
+          onListText={t('처음으로')}
+          onBack={() => {
             navigate(-1);
           }}
-          onListText={t('뒤로')}
+          onBackText={t('뒤로')}
         />
       </PageContent>
     </Page>

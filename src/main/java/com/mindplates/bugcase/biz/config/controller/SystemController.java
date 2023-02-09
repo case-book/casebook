@@ -32,7 +32,7 @@ public class SystemController {
 
 
     @GetMapping("/testcase/configs")
-    @Operation(summary = "테스트 케이스 마스터 데이터 조회")
+    @Operation(summary = "테스트케이스 마스터 데이터 조회")
     public TestcaseTemplateDataResponse selectTestcaseDataInfo() {
         return new TestcaseTemplateDataResponse(Arrays.stream(TestcaseItemType.values()).map((testcaseItemType -> testcaseItemType.toString())).collect(Collectors.toList()),
                 Arrays.stream(TestcaseItemCategory.values()).map((testcaseItemCategory -> testcaseItemCategory.toString())).collect(Collectors.toList()));

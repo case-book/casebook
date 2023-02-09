@@ -5,8 +5,8 @@ const locales = (window.navigator.language || '').split('-');
 const defaultLanguage = locales[0];
 const defaultCountry = locales[1];
 
-const language = Object.keys(LANGUAGES).includes(defaultLanguage) ? defaultLanguage : 'en';
-const country = Object.keys(COUNTRIES).includes(defaultCountry) ? defaultCountry : 'US';
+const initLanguage = Object.keys(LANGUAGES).includes(defaultLanguage) ? defaultLanguage : 'en';
+const initCountry = Object.keys(COUNTRIES).includes(defaultCountry) ? defaultCountry : 'US';
 
 export default class UserStore {
   user = {
@@ -17,8 +17,8 @@ export default class UserStore {
     email: null,
     name: null,
     spaces: null,
-    country,
-    language,
+    country: initCountry,
+    language: initLanguage,
   };
 
   notificationCount = 0;
@@ -37,12 +37,21 @@ export default class UserStore {
       addSpace: action,
       removeSpace: action,
       setNotificationCount: action,
+      setLocale: action,
     });
   }
 
   setUser = user => {
     this.user = {
       ...user,
+    };
+  };
+
+  setLocale = (language, country) => {
+    this.user = {
+      ...this.user,
+      language,
+      country,
     };
   };
 
@@ -55,8 +64,8 @@ export default class UserStore {
       email: null,
       name: null,
       spaces: null,
-      country,
-      language,
+      country: initCountry,
+      language: initLanguage,
     };
   };
 
