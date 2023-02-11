@@ -20,7 +20,7 @@ public class TestrunTestcaseGroupTestcaseComment extends CommonEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "testrun_testcase_group_testcase_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE_COMMENT__TESTRUN_TESTCASE_GROUP_TESTCASE"))
+    @JoinColumn(name = "testrun_testcase_group_testcase_id", foreignKey = @ForeignKey(name = "FK_TTGTC__TESTRUN_TESTCASE_GROUP_TESTCASE"))
     private TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase;
 
     @Column(columnDefinition = "text", name = "comment")

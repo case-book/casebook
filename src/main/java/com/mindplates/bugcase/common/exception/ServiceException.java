@@ -11,6 +11,7 @@ public class ServiceException extends CommonException {
     private String[] messageParameters;
 
     public ServiceException(HttpStatus code) {
+
         this.code = code;
     }
 

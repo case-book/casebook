@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.framework.config;
 
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.framework.handler.ExceptionHandlerFilter;
 import com.mindplates.bugcase.framework.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,8 +82,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable();
 
 
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
     }
 
