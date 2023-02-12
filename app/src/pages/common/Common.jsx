@@ -68,7 +68,6 @@ function Common() {
       info => {
         userStore.setUser(info);
         userStore.setTried(true);
-        console.log(info, info.language);
         i18n.changeLanguage(info.language);
         getUserNotificationCount();
       },
@@ -79,8 +78,8 @@ function Common() {
     );
   };
 
-  const getSystemVersion = () => {
-    ConfigService.selectSystemVersion(version => {
+  const getSystemInfo = () => {
+    ConfigService.selectSystemInfo(version => {
       setVersion(version);
     });
   };
@@ -97,7 +96,7 @@ function Common() {
 
   useEffect(() => {
     getUserProfile();
-    getSystemVersion();
+    getSystemInfo();
     setAutoLogin();
   }, []);
 

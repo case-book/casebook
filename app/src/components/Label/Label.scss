@@ -81,4 +81,8 @@
       }
     }
   }
+
+  &.disabled {
+    opacity: var(--disable-opacity);
+  }
 }

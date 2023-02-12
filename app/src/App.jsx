@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Common, Header, Join, Login, Message, SpaceListPage } from '@/pages';
+import { Common, Header, Join, Login, Message, SetUpPage, SpaceListPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
 import ProjectsRoutes from '@/pages/spaces/projects';
 import UsersRoutes from '@/pages/users';
@@ -15,6 +15,7 @@ function App() {
   const {
     themeStore: { theme },
     userStore: { isLogin, tried },
+    configStore: { setUp },
   } = useStores();
 
   const location = useLocation();
@@ -86,7 +87,8 @@ function App() {
           </div>
         </div>
       )}
-      {tried && (
+      {tried && setUp != null && !setUp && <SetUpPage />}
+      {tried && setUp != null && setUp && (
         <div className="app-content">
           <Header />
           <main className="main-content">

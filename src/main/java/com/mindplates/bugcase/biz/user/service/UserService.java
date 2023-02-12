@@ -35,23 +35,37 @@ public class UserService {
         return userRepository.countByEmail(email) > 0L;
     }
 
+    private void checkUserValidation(UserDTO user) {
+        boolean existEmailUser = existUserByEmail(user.getEmail(), null);
+        if (existEmailUser) {
+            throw new ServiceException("error.exist.email");
+        }
+    }
 
     @Transactional
-    public UserDTO createUser(User user) {
+    public UserDTO createUser(UserDTO user, SystemRole role) {
+        checkUserValidation(user);
+
         String plainText = user.getPassword();
         byte[] saltBytes = encryptUtil.getSaltByteArray();
         String salt = encryptUtil.getSaltString(saltBytes);
         user.setSalt(salt);
         String encryptedText = encryptUtil.getEncrypt(plainText, saltBytes);
         user.setPassword(encryptedText);
-        user.setSystemRole(SystemRole.ROLE_USER);
-        user.setActiveSystemRole(SystemRole.ROLE_USER);
+        if (role == null) {
+            user.setSystemRole(SystemRole.ROLE_USER);
+            user.setActiveSystemRole(SystemRole.ROLE_USER);
+        } else {
+            user.setSystemRole(role);
+            user.setActiveSystemRole(role);
+        }
+
         user.setActivateYn(true);
         user.setActivateMailSendResult(false);
         user.setRecoveryToken("");
         user.setRecoveryMailSendResult(false);
         user.setUseYn(true);
-        return new UserDTO(userRepository.save(user));
+        return new UserDTO(userRepository.save(mappingUtil.convert(user, User.class)));
     }
 
     @Transactional

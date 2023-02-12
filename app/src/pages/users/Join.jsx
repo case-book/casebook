@@ -7,7 +7,6 @@ import UserService from '@/services/UserService';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import useStores from '@/hooks/useStores';
-import { getOption } from '@/utils/storageUtil';
 import { setToken } from '@/utils/request';
 import './Join.scss';
 
@@ -28,9 +27,6 @@ function Join() {
     language: 'ko',
     password: '',
     passwordConfirm: '',
-    privacy: false,
-    terms: false,
-    recommendationInfo: getOption('user', 'info', 'recommendation') || '',
   });
 
   const onSubmit = e => {
@@ -111,7 +107,7 @@ function Join() {
               minLength={1}
             />
           </div>
-          <div className="label">{t('비밀번호 확인')}</div>
+          <div className="label">{t('비밀번호 ')}</div>
           <div className="input">
             <Input
               type="password"

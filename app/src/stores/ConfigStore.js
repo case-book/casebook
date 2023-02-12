@@ -5,10 +5,13 @@ export default class ConfigStore {
 
   version = {};
 
+  setUp = null;
+
   constructor() {
     makeObservable(this, {
       holidays: observable,
       version: observable,
+      setUp: observable,
       setHolidays: action,
       setVersion: action,
     });
@@ -19,6 +22,11 @@ export default class ConfigStore {
   };
 
   setVersion = version => {
-    this.version = version;
+    this.version = {
+      name: version.name,
+      version: version.name,
+    };
+
+    this.setUp = version.setUp;
   };
 }
