@@ -15,6 +15,7 @@ import com.mindplates.bugcase.biz.user.vo.request.UpdateMyInfoRequest;
 import com.mindplates.bugcase.biz.user.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.user.vo.response.MyDetailInfoResponse;
 import com.mindplates.bugcase.biz.user.vo.response.MyInfoResponse;
+import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
@@ -47,19 +48,13 @@ public class UserController {
     private final NotificationService notificationService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    private void checkUserValidation(User user) {
-        boolean existEmailUser = userService.existUserByEmail(user.getEmail(), null);
-        if (existEmailUser) {
-            throw new ServiceException("error.exist.email");
-        }
-    }
+
 
     @Operation(description = "회원 가입 및 로그인 처리")
     @PostMapping("/join")
     public MyInfoResponse createUser(@Valid @RequestBody JoinRequest joinRequest) {
-        User userJoinInfo = joinRequest.toDTO();
-        checkUserValidation(userJoinInfo);
-        UserDTO userInfo = userService.createUser(userJoinInfo);
+        UserDTO userJoinInfo = joinRequest.toDTO();
+        UserDTO userInfo = userService.createUser(userJoinInfo, SystemRole.ROLE_USER);
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(userInfo.getId());
         List<String> roleList = Arrays.asList(userInfo.getSystemRole().toString().split(","));
         return new MyInfoResponse(userInfo, jwtTokenProvider.createToken(Long.toString(userInfo.getId()), roleList), spaces);

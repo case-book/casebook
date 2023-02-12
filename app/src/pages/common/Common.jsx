@@ -78,8 +78,8 @@ function Common() {
     );
   };
 
-  const getSystemVersion = () => {
-    ConfigService.selectSystemVersion(version => {
+  const getSystemInfo = () => {
+    ConfigService.selectSystemInfo(version => {
       setVersion(version);
     });
   };
@@ -96,7 +96,7 @@ function Common() {
 
   useEffect(() => {
     getUserProfile();
-    getSystemVersion();
+    getSystemInfo();
     setAutoLogin();
   }, []);
 

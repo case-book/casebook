@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.user.vo.request;
 
 
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import lombok.Data;
 
@@ -23,7 +24,7 @@ public class JoinRequest {
     private String password;
 
 
-    public User toDTO() {
-        return User.builder().id(id).email(email).name(name).country(country).language(language).password(password).build();
+    public UserDTO toDTO() {
+        return UserDTO.builder().id(id).email(email).name(name).country(country).language(language).password(password).build();
     }
 }

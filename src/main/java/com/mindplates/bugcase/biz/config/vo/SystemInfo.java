@@ -9,4 +9,5 @@ public class SystemInfo {
 
     private String name;
     private String version;
+    private boolean setUp;
 }

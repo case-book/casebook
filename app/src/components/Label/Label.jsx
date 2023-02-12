@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Label.scss';
 
-function Label({ className, children, minWidth, required, separator, size, verticalAlign }) {
+function Label({ className, children, minWidth, required, separator, size, verticalAlign, disabled }) {
   return (
     <div
-      className={`label-wrapper size-${size} ${className} ${required ? 'required' : ''}`}
+      className={`label-wrapper size-${size} ${className} ${required ? 'required' : ''} ${disabled ? 'disabled' : ''}`}
       style={{
         minWidth,
         alignSelf: verticalAlign,
@@ -45,6 +45,7 @@ Label.defaultProps = {
   size: 'md',
   verticalAlign: 'center',
   children: null,
+  disabled: false,
 };
 
 Label.propTypes = {
@@ -55,6 +56,7 @@ Label.propTypes = {
   separator: PropTypes.bool,
   size: PropTypes.string,
   verticalAlign: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default Label;

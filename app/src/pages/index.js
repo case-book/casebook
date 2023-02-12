@@ -21,6 +21,7 @@ import ProjectReportInfoPage from '@/pages/spaces/projects/ProjectReportInfoPage
 import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
 
 import SystemInfoPage from '@/pages/configs/SystemInfoPage';
+import SetUpPage from '@/pages/configs/SetUpPage';
 
 import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/TestrunListPage';
 import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
@@ -47,6 +48,7 @@ export {
   ProjectReportInfoPage,
   ProjectTestcaseInfoPage,
   SystemInfoPage,
+  SetUpPage,
   TestrunListPage,
   TestrunEditPage,
   TestrunExecutePage,
