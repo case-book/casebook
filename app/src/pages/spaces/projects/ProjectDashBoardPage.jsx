@@ -85,7 +85,7 @@ function ProjectDashBoardPage() {
   }, [spaceCode, projectId, period]);
 
   return (
-    <Page className="project-overview-info-page-wrapper" list wide>
+    <Page className="project-overview-info-page-wrapper" list>
       <PageTitle
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);

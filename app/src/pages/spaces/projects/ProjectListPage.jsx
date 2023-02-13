@@ -20,7 +20,7 @@ function ProjectListPage() {
   }, [spaceCode]);
 
   return (
-    <Page className="project-list-page-wrapper" list wide>
+    <Page className="project-list-page-wrapper" list>
       <PageTitle
         className="page-title"
         links={[

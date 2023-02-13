@@ -394,7 +394,7 @@ function ProjectTestcaseInfoPage() {
   };
 
   return (
-    <Page className="project-testcase-info-page-wrapper" list wide>
+    <Page className="project-testcase-info-page-wrapper" list>
       <PageTitle
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
