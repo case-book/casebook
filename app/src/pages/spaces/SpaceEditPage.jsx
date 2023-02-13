@@ -95,7 +95,13 @@ function SpaceEditPage({ type }) {
 
   return (
     <Page className="space-edit-page-wrapper">
-      <PageTitle>{isEdit ? t('스페이스') : t('새 스페이스')}</PageTitle>
+      <PageTitle
+        onListClick={() => {
+          navigate('/spaces');
+        }}
+      >
+        {isEdit ? t('스페이스') : t('새 스페이스')}
+      </PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Title>기본 정보</Title>
@@ -212,7 +218,7 @@ function SpaceEditPage({ type }) {
           </Block>
           {isEdit && (
             <>
-              <Title>스페이스 사용자</Title>
+              <Title>{t('스페이스 사용자')}</Title>
               <Block>
                 <MemberCardManager users={space?.users} edit onChangeUserRole={changeSpaceUserRole} onUndoRemovalUser={undoRemovalSpaceUser} onRemoveUser={removeSpaceUser} />
               </Block>
@@ -228,7 +234,6 @@ function SpaceEditPage({ type }) {
               }
             }}
             onSubmit={() => {}}
-            onSubmitText="저장"
             onCancelIcon=""
           />
         </Form>

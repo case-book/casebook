@@ -219,7 +219,7 @@ function ProjectEditPage({ type }) {
         dialogUtil.setConfirm(
           MESSAGE_CATEGORY.WARNING,
           t('프로젝트 권한 경고'),
-          <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 편집할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 변경할 수 없습니다. 계속 하시겠습니까?')}</div>,
           () => {
             updateProject();
           },
@@ -319,7 +319,13 @@ function ProjectEditPage({ type }) {
   return (
     <>
       <Page className="project-edit-page-wrapper">
-        <PageTitle>{type === 'edit' ? t('프로젝트') : t('새 프로젝트')}</PageTitle>
+        <PageTitle
+          onListClick={() => {
+            navigate(`/spaces/${spaceCode}/projects`);
+          }}
+        >
+          {type === 'edit' ? t('프로젝트') : t('새 프로젝트')}
+        </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
             <Title>{t('프로젝트 정보')}</Title>
@@ -402,6 +408,16 @@ function ProjectEditPage({ type }) {
                   }
                   minLength={1}
                 />
+                <Button
+                  outline
+                  onClick={() => {
+                    ConfigService.sendTestMessageToSlack(project.slackUrl, () => {
+                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, '메세지 발송 완료', '입력하신 URL로 슬랙 메세지가 발송되었습니다.');
+                    });
+                  }}
+                >
+                  {t('발송 테스트')}
+                </Button>
               </BlockRow>
               <BlockRow>
                 <Label>{t('테스트런 알림')}</Label>
@@ -414,6 +430,7 @@ function ProjectEditPage({ type }) {
                       enableTestrunAlarm: val,
                     })
                   }
+                  label="테스트런이 생성되거나, 종료되면 슬랙을 통해 알립니다."
                 />
               </BlockRow>
             </Block>

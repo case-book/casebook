@@ -319,6 +319,9 @@ function TestrunExecutePage() {
             </Button>
           </div>
         }
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        }}
       >
         {testrun.name}
       </PageTitle>

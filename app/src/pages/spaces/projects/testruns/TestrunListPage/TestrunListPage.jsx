@@ -146,6 +146,9 @@ function TestrunListPage() {
             </div>
           </div>
         }
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        }}
       >
         {t('테스트런')}
       </PageTitle>

@@ -28,6 +28,9 @@ function ProjectListPage() {
             <i className="fa-solid fa-plus" /> {t('프로젝트')}
           </Link>,
         ]}
+        onListClick={() => {
+          navigate('/spaces');
+        }}
       >
         {t('프로젝트')}
       </PageTitle>

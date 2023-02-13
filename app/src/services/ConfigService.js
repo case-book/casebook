@@ -35,4 +35,15 @@ ConfigService.createSetUpInfo = (setupInfo, successHandler, failHandler) => {
   );
 };
 
+ConfigService.sendTestMessageToSlack = (slackUrl, successHandler, failHandler) => {
+  return request.post(
+    '/api/configs/systems/slack',
+    { slackUrl },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

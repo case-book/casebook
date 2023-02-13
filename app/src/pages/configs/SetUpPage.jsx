@@ -132,6 +132,7 @@ function SetUpPage() {
               <BlockRow>
                 <Label required>{t('비밀번호')}</Label>
                 <Input
+                  type="password"
                   value={adminUser.password}
                   onChange={val =>
                     setAdminUser({
@@ -146,6 +147,7 @@ function SetUpPage() {
               <BlockRow>
                 <Label required>{t('비밀번호 확인')}</Label>
                 <Input
+                  type="password"
                   value={adminUser.passwordConfirm}
                   onChange={val =>
                     setAdminUser({

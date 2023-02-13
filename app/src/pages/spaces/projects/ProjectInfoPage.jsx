@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Card, CardContent, CardHeader, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, Card, CardContent, CardHeader, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -76,7 +76,26 @@ function ProjectInfoPage() {
   return (
     <>
       <Page className="project-info-page-wrapper">
-        <PageTitle links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${project.id}/edit`}>{t('프로젝트 변경')}</Link>] : null}>{t('프로젝트')}</PageTitle>
+        <PageTitle
+          links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${project.id}/edit`}>{t('변경')}</Link>] : null}
+          control={
+            <div>
+              <Button size="sm" color="warning" onClick={onWithdraw}>
+                {t('프로젝트 탈퇴')}
+              </Button>
+              {project?.admin && (
+                <Button size="sm" color="danger" onClick={onDelete}>
+                  {t('프로젝트 삭제')}
+                </Button>
+              )}
+            </div>
+          }
+          onListClick={() => {
+            navigate(`/spaces/${spaceCode}/projects`);
+          }}
+        >
+          {t('프로젝트')}
+        </PageTitle>
         <PageContent>
           <Title>{t('프로젝트 정보')}</Title>
           <Block>
@@ -198,20 +217,6 @@ function ProjectInfoPage() {
                   })}
                 </Tbody>
               </Table>
-            )}
-          </Block>
-          <Title>{t('프로젝트 관리')}</Title>
-          <Block className="space-control">
-            <Button color="warning" onClick={onWithdraw}>
-              {t('프로젝트 탈퇴')}
-            </Button>
-            {project?.admin && (
-              <>
-                <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
-                <Button color="danger" onClick={onDelete}>
-                  {t('프로젝트 삭제')}
-                </Button>
-              </>
             )}
           </Block>
           <PageButtons

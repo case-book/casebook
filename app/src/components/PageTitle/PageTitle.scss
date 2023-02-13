@@ -22,11 +22,11 @@
 
       &.icon {
         flex-grow: 0;
-        font-size: 16px;
-        line-height: 0;
+        font-size: 20px;
         height: 100%;
         display: inline-flex;
         padding: 0 16px;
+        line-height: 100%;
 
         @media (max-width: 768px) {
           padding: 0 8px;
@@ -91,7 +91,7 @@
       display: flex;
 
       > a {
-        color: var(--gray-color);
+        color : var(--link-color);
         text-decoration: none;
         margin-right: 8px;
 
@@ -99,7 +99,7 @@
           margin-right: 0;
         }
         &:visited {
-          color: var(--gray-color);
+          color : var(--link-color);
         }
       }
     }

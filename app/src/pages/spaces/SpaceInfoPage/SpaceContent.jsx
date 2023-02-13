@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Label, Liner, PageButtons, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Label, PageButtons, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -26,13 +26,13 @@ function SpaceContent({ space, onRefresh }) {
   const [userRole, setUserRole] = useState('ALL');
   const [tooltipId, setTooltipId] = useState(null);
   const [statusOptions] = useState([
-    { key: 'ALL', value: '전체' },
-    { key: 'REQUEST', value: '요청' },
+    { key: 'ALL', value: t('전체') },
+    { key: 'REQUEST', value: t('요청') },
   ]);
   const [userRoles] = useState([
-    { key: 'ALL', value: '전체' },
-    { key: 'ADMIN', value: '관리자' },
-    { key: 'USER', value: '사용자' },
+    { key: 'ALL', value: t('전체') },
+    { key: 'ADMIN', value: t('관리자') },
+    { key: 'USER', value: t('사용자') },
   ]);
 
   const approve = applicantId => {
@@ -89,19 +89,19 @@ function SpaceContent({ space, onRefresh }) {
   const getApprovalStatusName = code => {
     switch (code) {
       case 'REQUEST': {
-        return '요청';
+        return t('요청');
       }
 
       case 'REQUEST_AGAIN': {
-        return '재요청';
+        return t('재요청');
       }
 
       case 'APPROVAL': {
-        return '승인';
+        return t('승인');
       }
 
       case 'REJECTED': {
-        return '거절';
+        return t('거절');
       }
 
       default: {
@@ -128,7 +128,26 @@ function SpaceContent({ space, onRefresh }) {
 
   return (
     <>
-      <PageTitle links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('스페이스 변경')}</Link>] : null}>{t('스페이스')}</PageTitle>
+      <PageTitle
+        links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('편집')}</Link>] : null}
+        control={
+          <div>
+            <Button size="sm" color="warning" onClick={withdraw}>
+              {t('스페이스 탈퇴')}
+            </Button>
+            {space?.admin && (
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('스페이스 삭제')}
+              </Button>
+            )}
+          </div>
+        }
+        onListClick={() => {
+          navigate('/spaces');
+        }}
+      >
+        {t('스페이스')}
+      </PageTitle>
       <PageContent className="space-info-content">
         <Title>{t('스페이스 정보')}</Title>
         <Block>
@@ -343,20 +362,6 @@ function SpaceContent({ space, onRefresh }) {
                 </Tbody>
               </Table>
             </div>
-          )}
-        </Block>
-        <Title>{t('스페이스 관리')}</Title>
-        <Block className="space-control">
-          <Button color="warning" onClick={withdraw}>
-            {t('스페이스 탈퇴')}
-          </Button>
-          {space?.admin && (
-            <>
-              <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
-              <Button color="danger" onClick={onDelete}>
-                {t('스페이스 삭제')}
-              </Button>
-            </>
           )}
         </Block>
         <PageButtons

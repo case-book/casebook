@@ -86,7 +86,13 @@ function ProjectDashBoardPage() {
 
   return (
     <Page className="project-overview-info-page-wrapper" list wide>
-      <PageTitle>{t('대시보드')}</PageTitle>
+      <PageTitle
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        }}
+      >
+        {t('대시보드')}
+      </PageTitle>
       <PageContent flex>
         <Card className="testruning-info">
           <CardHeader className="card-header">{t('진행 중인 테스트런')}</CardHeader>
