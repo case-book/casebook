@@ -218,7 +218,13 @@ function TestrunEditPage({ type }) {
   return (
     <>
       <Page className="testrun-edit-page-wrapper">
-        <PageTitle>{type === 'edit' ? t('테스트런') : t('새 테스트런')}</PageTitle>
+        <PageTitle
+          onListClick={() => {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+          }}
+        >
+          {type === 'edit' ? t('테스트런') : t('새 테스트런')}
+        </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
             <Title>{t('테스트런 정보')}</Title>

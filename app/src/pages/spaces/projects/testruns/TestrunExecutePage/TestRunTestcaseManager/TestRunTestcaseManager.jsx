@@ -1,7 +1,7 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, EmptyContent, FlexibleLayout, Liner, Loader, SeqId, TestcaseItem } from '@/components';
+import { Button, CloseIcon, EmptyContent, Liner, Loader, SeqId, TestcaseItem } from '@/components';
 import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -9,13 +9,14 @@ import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import { debounce } from 'lodash';
 import useStores from '@/hooks/useStores';
-import { DEFAULT_TESTRUN_RESULT_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE } from '@/constants/constants';
+import { DEFAULT_TESTRUN_RESULT_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, TESTRUN_RESULT_LAYOUTS } from '@/constants/constants';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import dateUtil from '@/utils/dateUtil';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getOption, setOption } from '@/utils/storageUtil';
 import './TestRunTestcaseManager.scss';
 
 function TestRunTestcaseManager({
@@ -31,6 +32,7 @@ function TestRunTestcaseManager({
   onDeleteComment,
   onSaveResult,
   onSaveTester,
+  setWide,
 }) {
   const {
     themeStore: { theme },
@@ -53,9 +55,23 @@ function TestRunTestcaseManager({
     type: '',
   });
 
-  const [vertical] = useState(true);
+  const [resultPopupOpened, setResultPopupOpened] = useState(false);
 
   const [comment, setComment] = useState('');
+
+  const [resultLayoutPosition, setResultLayoutPosition] = useState(
+    (() => {
+      return getOption('testrun', 'manager', 'layout') || 'BOTTOM';
+    })(),
+  );
+
+  useEffect(() => {
+    if (resultLayoutPosition === 'RIGHT') {
+      setWide(true);
+    } else {
+      setWide(false);
+    }
+  }, [resultLayoutPosition]);
 
   const onChangeDebounce = React.useMemo(
     () =>
@@ -118,64 +134,118 @@ function TestRunTestcaseManager({
     onSaveTester(value);
   };
 
+  const onChangeLayoutPosition = layoutPosition => {
+    setOption('testrun', 'manager', 'layout', layoutPosition);
+    setResultLayoutPosition(layoutPosition);
+  };
+
   return (
     <div className="testrun-testcase-manager-wrapper">
       {contentLoading && <Loader />}
-      <FlexibleLayout
-        vertical={vertical}
-        defaultSize="60%"
-        layoutOptionKey={['testrun', 'testrun-testcase-manager', 'height']}
-        className="manager-layout"
-        left={
-          <div className="manager-content">
-            <div className="testcase-title">
-              <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
-              <div className="name">{content.name}</div>
-            </div>
-            <div className="title-liner" />
-            <div className="case-content" ref={caseContentElement}>
-              {content.description && <div className="case-description">{content.description}</div>}
-              <div className="testcase-item-list">
-                {testcaseTemplate?.testcaseTemplateItems
-                  .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
-                  .map((testcaseTemplateItem, inx) => {
-                    let testcaseItem;
-                    if (testcaseTemplateItem.systemLabel) {
-                      testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-                    } else {
-                      testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-                    }
-
-                    return (
-                      <TestcaseItem
-                        key={inx}
-                        type={false}
-                        isEdit={false}
-                        testcaseTemplateItem={testcaseTemplateItem}
-                        testcaseItem={testcaseItem}
-                        content={content}
-                        theme={theme}
-                        createImage={createTestrunImage}
-                        users={users.map(d => {
-                          return {
-                            ...d,
-                            id: d.userId,
-                          };
-                        })}
-                        setOpenTooltipInfo={setOpenTooltipInfo}
-                        caseContentElement={caseContentElement}
-                        openTooltipInfo={openTooltipInfo}
-                        inx={inx}
-                        onChangeTestcaseItem={onChangeTestcaseItem}
-                      />
-                    );
-                  })}
+      <div className={`manager-layout ${resultLayoutPosition}`}>
+        <div className="manager-content">
+          <div className="testcase-title">
+            <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
+            <div className="name">{content.name}</div>
+            {resultLayoutPosition === 'POPUP' && (
+              <Button
+                size="xs"
+                className="result-popup-open-button"
+                onClick={() => {
+                  setResultPopupOpened(true);
+                }}
+              >
+                {t('결과 입력')}
+              </Button>
+            )}
+            <div className="result-layout-selector">
+              <div className="circle" />
+              <div className="current-layout">{TESTRUN_RESULT_LAYOUTS[resultLayoutPosition]}</div>
+              <div className="layout-label">{t('결과 입력 레이아웃')}</div>
+              <div
+                className={`selector-item popup ${resultLayoutPosition === 'POPUP' ? 'selected' : ''}`}
+                onClick={() => {
+                  onChangeLayoutPosition('POPUP');
+                }}
+              >
+                <div>{t('팝업')}</div>
+              </div>
+              <div
+                className={`selector-item right ${resultLayoutPosition === 'RIGHT' ? 'selected' : ''}`}
+                onClick={() => {
+                  onChangeLayoutPosition('RIGHT');
+                }}
+              >
+                <div>{t('우측')}</div>
+              </div>
+              <div
+                className={`selector-item bottom ${resultLayoutPosition === 'BOTTOM' ? 'selected' : ''}`}
+                onClick={() => {
+                  onChangeLayoutPosition('BOTTOM');
+                }}
+              >
+                <div>{t('하단')}</div>
               </div>
             </div>
           </div>
-        }
-        right={
-          <div className="testurn-result-info">
+          <div className="title-liner" />
+          <div className="case-content" ref={caseContentElement}>
+            {content.description && <div className="case-description">{content.description}</div>}
+            <div className="testcase-item-list">
+              {testcaseTemplate?.testcaseTemplateItems
+                .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
+                .map((testcaseTemplateItem, inx) => {
+                  let testcaseItem;
+                  if (testcaseTemplateItem.systemLabel) {
+                    testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+                  } else {
+                    testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
+                  }
+
+                  return (
+                    <TestcaseItem
+                      key={inx}
+                      type={false}
+                      isEdit={false}
+                      testcaseTemplateItem={testcaseTemplateItem}
+                      testcaseItem={testcaseItem}
+                      content={content}
+                      theme={theme}
+                      createImage={createTestrunImage}
+                      users={users.map(d => {
+                        return {
+                          ...d,
+                          id: d.userId,
+                        };
+                      })}
+                      setOpenTooltipInfo={setOpenTooltipInfo}
+                      caseContentElement={caseContentElement}
+                      openTooltipInfo={openTooltipInfo}
+                      inx={inx}
+                      onChangeTestcaseItem={onChangeTestcaseItem}
+                    />
+                  );
+                })}
+            </div>
+          </div>
+        </div>
+        <div className={`testrun-result-info ${resultPopupOpened ? 'opened' : ''}`}>
+          <div>
+            <div className="result-liner title-liner" />
+            <div className="layout-title">
+              <span>{t('테스트 결과 입력')}</span>
+              <Button
+                className="exit-button"
+                color="transparent"
+                onClick={() => {
+                  setResultPopupOpened(false);
+                }}
+              >
+                <span>
+                  <CloseIcon size="sm" />
+                </span>
+              </Button>
+            </div>
             <div className="testrun-result-content">
               <div className="testrun-result-list is-edit">
                 <TestcaseItem
@@ -184,6 +254,7 @@ function TestRunTestcaseManager({
                   isEdit
                   testcaseTemplateItem={{
                     ...DEFAULT_TESTRUN_RESULT_ITEM,
+                    size: resultLayoutPosition === 'RIGHT' ? 12 : DEFAULT_TESTRUN_RESULT_ITEM.size,
                   }}
                   testcaseItem={{ value: content.testResult }}
                   content={content}
@@ -202,6 +273,7 @@ function TestRunTestcaseManager({
                   isEdit
                   testcaseTemplateItem={{
                     ...DEFAULT_TESTRUN_TESTER_ITEM,
+                    size: resultLayoutPosition === 'RIGHT' ? 12 : DEFAULT_TESTRUN_RESULT_ITEM.size,
                   }}
                   testcaseItem={{ value: content.testerId }}
                   content={content}
@@ -227,7 +299,10 @@ function TestRunTestcaseManager({
                         type={false}
                         key={inx}
                         isEdit
-                        testcaseTemplateItem={testcaseTemplateItem}
+                        testcaseTemplateItem={{
+                          ...testcaseTemplateItem,
+                          size: resultLayoutPosition === 'RIGHT' ? 12 : DEFAULT_TESTRUN_RESULT_ITEM.size,
+                        }}
                         testcaseItem={testcaseItem}
                         content={content}
                         theme={theme}
@@ -349,8 +424,8 @@ function TestRunTestcaseManager({
               </div>
             </div>
           </div>
-        }
-      />
+        </div>
+      </div>
     </div>
   );
 }
@@ -427,6 +502,7 @@ TestRunTestcaseManager.propTypes = {
   onSaveResult: PropTypes.func,
   onSaveTester: PropTypes.func,
   onSaveTestResultItem: PropTypes.func,
+  setWide: PropTypes.func.isRequired,
 };
 
 export default observer(TestRunTestcaseManager);

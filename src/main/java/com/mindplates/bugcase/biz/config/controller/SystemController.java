@@ -4,15 +4,17 @@ import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.config.vo.SystemInfo;
 import com.mindplates.bugcase.biz.config.vo.request.SetUpRequest;
+import com.mindplates.bugcase.biz.config.vo.request.SlackTestRequest;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateDataResponse;
-import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.service.SlackService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,9 @@ public class SystemController {
 
     private final ConfigService configService;
 
-    private final UserService userService;
+    private final SlackService slackService;
+
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @GetMapping("/info")
     @Operation(summary = "API 버전 조회", description = "API 버전 조회")
@@ -58,6 +62,13 @@ public class SystemController {
 
         configService.createSetUpInfo(setUpRequest.getAdminUser().toDTO());
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/slack")
+    @Operation(summary = "슬랙 메세지 전송 테스트")
+    public ResponseEntity sendTestMessageToSlack(@Valid @RequestBody SlackTestRequest slackTestRequest) {
+        slackService.sendText(slackTestRequest.getSlackUrl(), messageSourceAccessor.getMessage("slack.test.message"));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

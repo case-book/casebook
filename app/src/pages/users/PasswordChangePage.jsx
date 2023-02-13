@@ -35,7 +35,7 @@ function PasswordChangePage() {
 
   return (
     <Page>
-      <PageTitle links={user?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${user.id}/edit`}>{t('프로젝트 변경')}</Link>] : null}>{t('프로젝트')}</PageTitle>
+      <PageTitle links={user?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${user.id}/edit`}>{t('프로젝트 변경')}</Link>] : null}>{t('사용자 비밀번호 변경')}</PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
           <Title>{t('비밀번호 변경')}</Title>

@@ -107,7 +107,7 @@ function Join() {
               minLength={1}
             />
           </div>
-          <div className="label">{t('비밀번호 ')}</div>
+          <div className="label">{t('비밀번호')}</div>
           <div className="input">
             <Input
               type="password"

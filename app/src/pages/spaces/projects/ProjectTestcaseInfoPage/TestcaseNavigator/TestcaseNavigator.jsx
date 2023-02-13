@@ -10,6 +10,7 @@ import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPag
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './TestcaseNavigator.scss';
+import { useTranslation } from 'react-i18next';
 
 function TestcaseNavigator({
   testcaseGroups,
@@ -32,6 +33,7 @@ function TestcaseNavigator({
 
   enableDrag,
 }) {
+  const { t } = useTranslation();
   const scroller = useRef(null);
 
   const { width, ref } = useResizeDetector({
@@ -75,35 +77,35 @@ function TestcaseNavigator({
       testcaseGroupColumns: {
         id: {
           show: false,
-          name: '아이디',
+          name: t('아이디'),
         },
         itemOrder: {
           show: false,
-          name: '순서',
+          name: t('순서'),
         },
 
         testcase: {
           show: true,
-          name: '테스트케이스',
+          name: t('테스트케이스'),
         },
         testcaseCount: {
           show: false,
-          name: '테스트케이스 개수',
+          name: t('테스트케이스 개수'),
         },
         ...storageSetting?.testcaseGroupColumns,
       },
       testcaseColumns: {
         id: {
           show: false,
-          name: '아이디',
+          name: t('아이디'),
         },
         itemOrder: {
           show: false,
-          name: '순서',
+          name: t('순서'),
         },
         closed: {
           show: false,
-          name: '종료',
+          name: t('종료'),
         },
         ...storageSetting?.testcaseColumns,
       },
@@ -129,13 +131,11 @@ function TestcaseNavigator({
     if (selectedItemInfo.id && contentChanged) {
       dialogUtil.setConfirm(
         MESSAGE_CATEGORY.WARNING,
-        '변경된 데이터가 저장되지 않았습니다.',
+        t('변경된 데이터가 저장되지 않았습니다.'),
         <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
         () => {
           onSelect(info);
         },
-        null,
-        '확인',
       );
     } else {
       onSelect(info);
@@ -149,7 +149,7 @@ function TestcaseNavigator({
       if (selectedItemInfo.id && contentChanged) {
         dialogUtil.setConfirm(
           MESSAGE_CATEGORY.WARNING,
-          '변경된 데이터가 저장되지 않았습니다.',
+          t('변경된 데이터가 저장되지 않았습니다.'),
           <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
           () => {
             onSelect({ id, type });
@@ -161,8 +161,6 @@ function TestcaseNavigator({
               name,
             });
           },
-          null,
-          '확인',
         );
       } else {
         onSelect({ id, type });
@@ -326,15 +324,24 @@ function TestcaseNavigator({
         </div>
         {user && (
           <div className="navigation-filter">
-            <div className="label">테스터</div>
+            <div className="label">{t('테스터')}</div>
             <div>
+              <Button
+                size="xs"
+                className="my-button"
+                onClick={() => {
+                  setUserFilter(user.id);
+                }}
+              >
+                MY
+              </Button>
               <Selector
                 className="selector"
                 size="xs"
                 items={[
                   {
                     userId: '',
-                    name: '전체',
+                    name: t('전체'),
                   },
                 ]
                   .concat(users)
@@ -365,7 +372,7 @@ function TestcaseNavigator({
               outline
             >
               <i className="small-icon fa-solid fa-plus" />
-              <i className="fa-solid fa-flask" /> <span className="button-text">테스트케이스</span>
+              <i className="fa-solid fa-flask" /> <span className="button-text">{t('테스트케이스')}</span>
             </Button>
             <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
             {addTestcaseGroup && (
@@ -377,7 +384,7 @@ function TestcaseNavigator({
                 color="white"
                 outline
               >
-                <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
+                <i className="fa-solid fa-folder-plus" /> <span className="button-text">{t('그룹')}</span>
               </Button>
             )}
           </div>
@@ -408,7 +415,7 @@ function TestcaseNavigator({
         <div className={`content-scroller ${dragChange}`} ref={scroller}>
           {!min && testcaseGroups?.length < 1 && (
             <EmptyContent className="empty-content">
-              <div>테스트케이스 그룹이 없습니다.</div>
+              <div>{t('테스트케이스 그룹이 없습니다.')}</div>
               {addTestcaseGroup && (
                 <div className="empty-control">
                   <Button
@@ -420,12 +427,12 @@ function TestcaseNavigator({
                   >
                     {width < 180 && (
                       <>
-                        <i className="fa-solid fa-folder-plus" /> <span className="button-text">그룹</span>
+                        <i className="fa-solid fa-folder-plus" /> <span className="button-text">{t('그룹')}</span>
                       </>
                     )}
                     {width >= 180 && (
                       <>
-                        <i className="fa-solid fa-folder-plus" /> <span className="button-text">테스트케이스 그룹</span>
+                        <i className="fa-solid fa-folder-plus" /> <span className="button-text">{t('테스트케이스 그룹')}</span>
                       </>
                     )}
                   </Button>

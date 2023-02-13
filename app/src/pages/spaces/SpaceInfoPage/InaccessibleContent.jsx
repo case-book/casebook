@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import './InaccessibleContent.scss';
 import { useTranslation } from 'react-i18next';
 
-function SpaceInfoPage({ space, onRefresh }) {
+function InaccessibleContent({ space, onRefresh }) {
   const { id } = useParams();
   const { t } = useTranslation();
 
@@ -148,11 +148,11 @@ function SpaceInfoPage({ space, onRefresh }) {
   );
 }
 
-SpaceInfoPage.defaultProps = {
+InaccessibleContent.defaultProps = {
   space: {},
 };
 
-SpaceInfoPage.propTypes = {
+InaccessibleContent.propTypes = {
   space: PropTypes.shape({
     id: PropTypes.number,
     name: PropTypes.string,
@@ -173,4 +173,4 @@ SpaceInfoPage.propTypes = {
   onRefresh: PropTypes.func.isRequired,
 };
 
-export default SpaceInfoPage;
+export default InaccessibleContent;

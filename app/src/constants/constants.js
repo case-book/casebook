@@ -32,29 +32,35 @@ const ITEM_TYPE = {
 };
 
 const USER_ASSIGNED_OPERATIONS = {
-  SEQ: '< 랜덤(SEQ) 사용자 >',
-  RND: '< 랜덤(RND) 사용자 >',
+  SEQ: i18n.t('< 랜덤(SEQ) 사용자 >'),
+  RND: i18n.t('< 랜덤(RND) 사용자 >'),
 };
 
 const TESTRUN_RESULT_CODE = {
-  UNTESTED: '미수행',
-  UNTESTABLE: '수행불가능',
-  FAILED: '실패',
-  PASSED: '성공',
-  OTHERS: '미수행&수행불가',
+  UNTESTED: i18n.t('미수행'),
+  UNTESTABLE: i18n.t('수행불가능'),
+  FAILED: i18n.t('실패'),
+  PASSED: i18n.t('성공'),
+  OTHERS: i18n.t('미수행&수행불가'),
 };
 
 const DEFAULT_TESTRUN_RESULT_ITEM = {
   type: 'RADIO',
-  label: '테스트 결과',
+  label: i18n.t('테스트 결과'),
   size: 6,
   options: ['PASSED', 'FAILED', 'UNTESTABLE', 'UNTESTED'],
 };
 
 const DEFAULT_TESTRUN_TESTER_ITEM = {
   type: 'USER',
-  label: '테스터',
+  label: i18n.t('테스터'),
   size: 6,
+};
+
+const TESTRUN_RESULT_LAYOUTS = {
+  POPUP: i18n.t('팝업'),
+  RIGHT: i18n.t('우측'),
+  BOTTOM: i18n.t('하단'),
 };
 
 const DATE_FORMATS = {
@@ -239,4 +245,5 @@ export {
   DEFAULT_TESTRUN_TESTER_ITEM,
   TESTRUN_CREATION_TYPES,
   DURATIONS,
+  TESTRUN_RESULT_LAYOUTS,
 };

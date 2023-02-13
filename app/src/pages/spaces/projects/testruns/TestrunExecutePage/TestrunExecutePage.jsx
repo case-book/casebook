@@ -38,6 +38,8 @@ function TestrunExecutePage() {
 
   const navigate = useNavigate();
 
+  const [wide, setWide] = useState(false);
+
   const [min, setMin] = useState(false);
 
   const [countSummary, setCountSummary] = useState({
@@ -310,7 +312,7 @@ function TestrunExecutePage() {
   };
 
   return (
-    <Page className="testrun-execute-page-wrapper" list wide>
+    <Page className="testrun-execute-page-wrapper" list wide={wide}>
       <PageTitle
         control={
           <div>
@@ -319,6 +321,9 @@ function TestrunExecutePage() {
             </Button>
           </div>
         }
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        }}
       >
         {testrun.name}
       </PageTitle>
@@ -347,6 +352,7 @@ function TestrunExecutePage() {
             id &&
             type === ITEM_TYPE.TESTCASE && (
               <TestRunTestcaseManager
+                setWide={setWide}
                 contentLoading={contentLoading}
                 content={content || {}}
                 testcaseTemplates={project?.testcaseTemplates}

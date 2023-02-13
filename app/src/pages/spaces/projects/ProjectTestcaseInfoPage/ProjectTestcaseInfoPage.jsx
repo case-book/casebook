@@ -10,9 +10,11 @@ import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/T
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
 import testcaseUtil from '@/utils/testcaseUtil';
+import { useNavigate } from 'react-router-dom';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
   const [tags, setTags] = useState([]);
@@ -392,8 +394,14 @@ function ProjectTestcaseInfoPage() {
   };
 
   return (
-    <Page className="project-testcase-info-page-wrapper" list wide>
-      <PageTitle>{t('테스트케이스')}</PageTitle>
+    <Page className="project-testcase-info-page-wrapper" list>
+      <PageTitle
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        }}
+      >
+        {t('테스트케이스')}
+      </PageTitle>
       <PageContent className="page-content">
         <FlexibleLayout
           layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}

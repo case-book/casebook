@@ -47,6 +47,17 @@
   }
 
   &.wide {
+    max-width: none;
+    margin: 0 2rem;
+    .page-title-wrapper {
+      > div {
+        max-width: none;
+      }
+    }
+
+    .page-content-wrapper {
+      max-width: none;
+    }
   }
 
   &.pure {

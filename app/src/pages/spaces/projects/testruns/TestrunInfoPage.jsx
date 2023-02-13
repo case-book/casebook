@@ -118,7 +118,14 @@ function TestrunInfoPage() {
 
   return (
     <Page className="testrun-info-page-wrapper">
-      <PageTitle links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`}>{t('테스트런 변경')}</Link>] : null}>{t('테스트런')}</PageTitle>
+      <PageTitle
+        links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`}>{t('변경')}</Link>] : null}
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        }}
+      >
+        {t('테스트런')}
+      </PageTitle>
       <PageContent>
         <Title>{t('테스트런 정보')}</Title>
         <Block>

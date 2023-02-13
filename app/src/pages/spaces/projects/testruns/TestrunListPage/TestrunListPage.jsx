@@ -68,7 +68,7 @@ function TestrunListPage() {
   };
 
   return (
-    <Page className="testrun-list-page-wrapper" wide list={type === 'CREATE'}>
+    <Page className="testrun-list-page-wrapper" list={type === 'CREATE'}>
       <PageTitle
         className="page-title"
         links={[
@@ -146,6 +146,9 @@ function TestrunListPage() {
             </div>
           </div>
         }
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        }}
       >
         {t('테스트런')}
       </PageTitle>

@@ -81,7 +81,7 @@ function SpaceListPage() {
   };
 
   return (
-    <Page className="space-list-page-wrapper" list wide>
+    <Page className="space-list-page-wrapper" list>
       <PageContent className="page-content">
         <div className="intro">
           <div className="foreground">

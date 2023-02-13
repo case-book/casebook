@@ -20,7 +20,7 @@ function ProjectListPage() {
   }, [spaceCode]);
 
   return (
-    <Page className="project-list-page-wrapper" list wide>
+    <Page className="project-list-page-wrapper" list>
       <PageTitle
         className="page-title"
         links={[
@@ -28,6 +28,9 @@ function ProjectListPage() {
             <i className="fa-solid fa-plus" /> {t('프로젝트')}
           </Link>,
         ]}
+        onListClick={() => {
+          navigate('/spaces');
+        }}
       >
         {t('프로젝트')}
       </PageTitle>

@@ -26,7 +26,7 @@ function MemberCardManager({ className, users, edit, onChangeUserRole, onUndoRem
 
   useEffect(() => {
     if (opened) {
-      setSpaceUsers([]);
+      getSpaceUserList();
       setSearched(false);
       setSelectedUsers(cloneDeep(users));
     }

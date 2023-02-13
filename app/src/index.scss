@@ -329,3 +329,30 @@ hr {
 .toastui-editor-defaultUI-toolbar {
   padding: 0;
 }
+
+.toastui-editor-defaultUI .ProseMirror {
+  padding: 16px;
+  font-family: NotoSans, sans-serif;
+}
+
+.toastui-editor-mode-switch {
+  .tab-item {
+    margin-top: 0;
+    border: none;
+    background-color: transparent;
+    font-family: NotoSans, sans-serif;
+    text-transform: uppercase;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    height: 100%;
+
+    &:hover {
+      color: black;
+      border-bottom: 2px solid lighten($color-primary-light, 10%);
+    }
+
+    &.active {
+      border-bottom: 2px solid $color-primary-light;
+    }
+  }
+}
