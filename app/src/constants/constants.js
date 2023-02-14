@@ -29,6 +29,7 @@ const MESSAGE_CATEGORY = {
 const ITEM_TYPE = {
   TESTCASE: 'case',
   TESTCASE_GROUP: 'group',
+  TESTRUN: 'testrun',
 };
 
 const USER_ASSIGNED_OPERATIONS = {

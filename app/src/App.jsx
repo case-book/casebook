@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Common, Header, Join, Login, Message, SetUpPage, SpaceListPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
-import ProjectsRoutes from '@/pages/spaces/projects';
 import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
-import { observer } from 'mobx-react';
 import ConfigsRoutes from '@/pages/configs';
+import ProjectsRoutes from '@/pages/spaces/projects';
 import { LogoIcon, Star } from '@/components';
 import { debounce } from 'lodash';
 import './App.scss';

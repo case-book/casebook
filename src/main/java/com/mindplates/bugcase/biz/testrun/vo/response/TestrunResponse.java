@@ -29,15 +29,16 @@ public class TestrunResponse {
     private int passedTestcaseCount;
     private int failedTestcaseCount;
     private int untestableTestcaseCount;
-    private String projectName;
-    private List<TestrunUserResponse> testrunUsers;
-    private List<TestrunTestcaseGroupResponse> testcaseGroups;
+    private LocalDateTime closedDate;
     private TestrunCreationTypeCode creationType;
     private String days;
     private Boolean onHoliday;
     private LocalTime startTime;
     private Integer durationHours;
     private Boolean reserveExpired;
+    private String projectName;
+    private List<TestrunUserResponse> testrunUsers;
+    private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Long reserveResultId;
 
     public TestrunResponse(TestrunDTO testrun) {
@@ -52,6 +53,7 @@ public class TestrunResponse {
         this.passedTestcaseCount = testrun.getPassedTestcaseCount();
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
         this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
+        this.closedDate = testrun.getClosedDate();
         this.projectName = testrun.getProject().getName();
         this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();

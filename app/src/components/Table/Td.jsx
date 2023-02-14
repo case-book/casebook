@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Td.scss';
 
-function Td({ className, children, align, rowSpan, colSpan }) {
+function Td({ className, children, align, rowSpan, colSpan, bold }) {
   return (
-    <td className={`td-wrapper ${className} align-${align}`} rowSpan={rowSpan} colSpan={colSpan}>
+    <td className={`td-wrapper ${className} align-${align} ${bold ? 'bold' : ''}`} rowSpan={rowSpan} colSpan={colSpan}>
       {children}
     </td>
   );
@@ -16,6 +16,7 @@ Td.defaultProps = {
   rowSpan: undefined,
   colSpan: undefined,
   children: undefined,
+  bold: false,
 };
 
 Td.propTypes = {
@@ -24,6 +25,7 @@ Td.propTypes = {
   align: PropTypes.oneOf(['left', 'center', 'right']),
   rowSpan: PropTypes.number,
   colSpan: PropTypes.number,
+  bold: PropTypes.bool,
 };
 
 export default Td;

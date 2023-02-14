@@ -1,0 +1,14 @@
+.report-group-item-wrapper {
+  .group-info {
+    border-right: 1px solid var(--border-color);
+  }
+
+  .seq-name {
+    display: flex;
+    color: var(--link-color);
+    cursor: pointer;
+    > div {
+      align-self: center;
+    }
+  }
+}

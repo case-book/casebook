@@ -1,0 +1,329 @@
+.report-list-page-wrapper {
+  display: flex;
+
+  .page-title {
+    .options {
+      display: flex;
+    }
+  }
+
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  .no-project {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    > div {
+      align-self: center;
+      text-align: center;
+
+      > div {
+        &:last-child {
+          margin-top: 2rem;
+        }
+      }
+    }
+  }
+
+  ul.report-cards {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    > li {
+      display: inline-block;
+      width: calc((100% - 2rem) / 3);
+      margin-bottom: 1rem;
+      margin-right: 1rem;
+
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+
+      @media (max-width: 1300px) {
+        width: calc((100% - 2rem) / 3);
+
+        &:nth-child(4n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(3n) {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        width: calc((100% - 1rem) / 2);
+
+        &:nth-child(4n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(3n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(2n) {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .testrun-card {
+        width: 100%;
+        padding: 1rem 1rem;
+        position: relative;
+
+        .config-button {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+        }
+
+        .name {
+          text-align: center;
+          margin-bottom: 0.75rem;
+
+          .seq {
+            margin-bottom: 0.25rem;
+
+            .seq-id {
+              margin-right: 0;
+            }
+          }
+
+          .text {
+            font-weight: bold;
+          }
+        }
+
+        .summary-bar {
+          height: 10px;
+          line-height: 0;
+          background-color: var(--light-color);
+          margin-bottom: 0.25rem;
+          > div {
+            display: inline-block;
+            height: 100%;
+            &.PASSED {
+              background-color: var(--success-color);
+            }
+
+            &.FAILED {
+              background-color: var(--danger-color);
+            }
+
+            &.UNTESTABLE {
+              background-color: var(--gray-color);
+            }
+          }
+        }
+
+        .description {
+          text-align: justify;
+          flex-grow: 1;
+          max-height: 54px;
+          min-height: 54px;
+          padding: 0.5rem;
+          display: flex;
+          border-radius: 0;
+          overflow-y: auto;
+          margin-bottom: 1rem;
+          font-size: 12px;
+          white-space: pre-wrap;
+          background-color: var(--lighter-color);
+          color: var(--text-color);
+          > div {
+            align-self: center;
+          }
+        }
+
+        .summary {
+          width: 100%;
+          position: relative;
+          display: flex;
+          flex-direction: row;
+          border-radius: 8px;
+
+          .progress-content {
+            width: 100px;
+            height: 100px;
+            position: relative;
+
+            .percentage-content {
+              position: absolute;
+              top: 30px;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              text-align: center;
+
+              > div.percentage-info {
+                align-self: center;
+                display: inline-flex;
+                position: relative;
+
+                .percentage {
+                  @include number;
+                  font-size: 30px;
+                  display: inline-block;
+                  line-height: 100%;
+                  align-self: center;
+                }
+
+                .symbol {
+                  font-family: SpaceMono, sans-serif;
+                  font-size: 16px;
+                  display: inline-block;
+                  align-self: center;
+                  position: absolute;
+                  right: -7px;
+                  top: -5px;
+                }
+              }
+
+              > .progress-label {
+                text-align: center;
+
+                line-height: 100%;
+                font-size: 12px;
+              }
+            }
+          }
+
+          .result-summary {
+            flex-grow: 1;
+            margin-left: 1rem;
+            display: flex;
+            > div {
+              flex: 1 1 0;
+              text-align: center;
+              border: 1px solid var(--border-color);
+              margin-right: 0.5rem;
+              border-radius: 4px;
+              display: flex;
+              flex-direction: column;
+              &:last-child {
+                margin-right: 0;
+              }
+
+              .label {
+                padding: 0.5rem 0 0.25rem;
+                font-weight: bold;
+                font-size: 14px;
+              }
+
+              .percentage {
+                flex-grow: 1;
+                @include number;
+                font-size: 24px;
+                display: flex;
+                justify-content: center;
+                position: relative;
+                left: -3px;
+                width: calc(100% + 6px);
+                border-radius: 3px;
+                > div {
+                  align-self: center;
+                }
+
+                &.FAILED {
+                  color: var(--white-color);
+                  background-color: var(--danger-color);
+                }
+
+                &.PASSED {
+                  color: var(--white-color);
+                  background-color: var(--success-color);
+                }
+
+                &.UNTESTABLE {
+                  color: var(--white-color);
+                  background-color: var(--gray-color);
+                }
+              }
+
+              .count-and-total {
+                padding: 0.25rem 0 0.5rem;
+                @include number;
+                font-size: 14px;
+              }
+            }
+          }
+        }
+
+        .testrun-others {
+          margin-top: 1rem;
+
+          .time-info {
+            display: flex;
+
+            .calendar {
+              padding-bottom: 2px;
+              margin-right: 0.5rem;
+            }
+
+            .label {
+              font-size: 12px;
+              margin-right: 0.5rem;
+            }
+
+            > span,
+            > div {
+              align-self: center;
+            }
+
+            .end-date-info {
+              position: relative;
+              display: flex;
+
+              &.no-start-time {
+                margin-left: 0.5rem;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .testrun-table-content {
+    background-color: var(--theme-color);
+    td {
+      &.count {
+        font-weight: bold;
+        @include number;
+        > div {
+          display: inline-block;
+          text-align: center;
+        }
+      }
+      &.PASSED {
+        color: var(--success-color);
+      }
+
+      &.FAILED {
+        color: var(--danger-color);
+      }
+
+      &.UNTESTABLE {
+        color: var(--gray-color);
+      }
+
+      .summary {
+        font-size: 12px;
+      }
+
+      &.date {
+        font-size: 14px;
+      }
+    }
+  }
+}

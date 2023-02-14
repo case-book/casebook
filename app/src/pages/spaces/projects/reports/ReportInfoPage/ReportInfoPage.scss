@@ -1,0 +1,180 @@
+.report-info-page-wrapper {
+  .sub-title {
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+  }
+
+  .testrun-info {
+    padding: 1rem 1rem 0;
+
+    .description {
+      font-size: 14px;
+      padding: 8px 12px;
+      line-height: 160%;
+      height: 58px;
+      background-color: var(--lighter-color);
+      border: 1px solid var(--border-lighter-color);
+      border-radius: 4px;
+      overflow: hidden;
+      display: block;
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+
+    .text-summary {
+      font-size: 14px;
+      margin-bottom: 1rem;
+      .range {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .summary {
+    display: flex;
+    margin-top: 2rem;
+    padding: 0 1rem;
+
+    .summary-content {
+      &.report-metric {
+        margin-right: 1rem;
+        flex-grow: 0;
+      }
+
+      &.user-metric {
+        flex-grow: 1;
+        overflow-x: auto;
+      }
+
+      .boxes {
+        display: flex;
+        overflow: auto;
+        padding-bottom: 0.5rem;
+
+        .summary-box {
+          width: 120px;
+          height: 120px;
+          min-width: 120px;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          margin-right: 1rem;
+          border-radius: 4px;
+          border: 1px solid #aaa;
+
+          &.success {
+            background-color: var(--danger-color);
+            .progress-bar {
+              background-color: var(--success-color);
+            }
+
+            .count-info {
+              .progress-percentage {
+                color: var(--white-color);
+              }
+
+              .progress-count {
+                color: var(--white-color);
+              }
+            }
+          }
+
+          &.progress,
+          &.tester {
+            background-color: #e9ecef;
+            color: var(--black-color);
+            .progress-bar {
+              background-color: var(--yellow-color);
+            }
+          }
+
+          .progress-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 4px;
+          }
+
+          .count-info {
+            align-self: center;
+            position: relative;
+
+            .progress-percentage {
+              @include number;
+              text-align: center;
+              font-size: 24px;
+              margin-bottom: 0.25rem;
+              text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
+            }
+
+            .progress-count {
+              @include number;
+              text-align: center;
+              font-size: 14px;
+              text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
+              > span {
+                display: inline-block;
+              }
+            }
+
+            .label {
+              text-align: center;
+              margin-bottom: 0.5rem;
+              color: var(--black-color);
+              > span {
+                border: 1px solid var(--border-color);
+                background-color: var(--white-color);
+                display: inline-block;
+                padding: 0.25rem;
+                font-size: 12px;
+                border-radius: 4px;
+                line-height: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .tester {
+    margin-right: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .testcase-result {
+    padding: 0 1rem;
+    margin-top: 2rem;
+
+
+    .FAILED {
+      background-color: var(--danger-color);
+      color: var(--white-color);
+    }
+
+    .PASSED {
+      background-color: var(--success-color);
+      color: var(--white-color);
+    }
+
+    .UNTESTABLE {
+      background-color: var(--gray-color);
+      color: var(--white-color);
+    }
+
+    .UNTESTED {
+      background-color: var(--dark-gray-color);
+      color: var(--white-color);
+    }
+  }
+
+  .no-user {
+    background-color: var(--lighter-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+}
