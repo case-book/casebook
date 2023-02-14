@@ -58,7 +58,7 @@ TestcaseManager.defaultProps = {
 TestcaseManager.propTypes = {
   className: PropTypes.string,
   children: PropTypes.string,
-  type: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['case', 'group', 'testrun']).isRequired,
   copy: PropTypes.bool,
   size: PropTypes.string,
 };

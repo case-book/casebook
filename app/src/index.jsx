@@ -5,6 +5,7 @@ import '@/configurations/i18n';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'react-datepicker/dist/react-datepicker.css';
+import './styles/global.scss';
 import './index.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -17,7 +17,7 @@ import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
 import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
-import ProjectReportInfoPage from '@/pages/spaces/projects/ProjectReportInfoPage';
+
 import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
 
 import SystemInfoPage from '@/pages/configs/SystemInfoPage';
@@ -27,6 +27,9 @@ import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/Te
 import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
 import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage';
+
+import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage';
+import ReportInfoPage from '@/pages/spaces/projects/reports/ReportInfoPage/ReportInfoPage';
 
 export {
   ProjectDashBoardPage,
@@ -45,7 +48,6 @@ export {
   ProjectEditPage,
   ProjectInfoPage,
   ProjectBugInfoPage,
-  ProjectReportInfoPage,
   ProjectTestcaseInfoPage,
   SystemInfoPage,
   SetUpPage,
@@ -53,4 +55,6 @@ export {
   TestrunEditPage,
   TestrunExecutePage,
   TestrunInfoPage,
+  ReportListPage,
+  ReportInfoPage,
 };

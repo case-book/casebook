@@ -12,6 +12,10 @@
     &.RIGHT {
       display: flex;
 
+      .manager-content {
+        flex-grow: 1;
+      }
+
       .testrun-result-info {
         width: 600px;
       }

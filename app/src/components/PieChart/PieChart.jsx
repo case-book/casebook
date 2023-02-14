@@ -6,7 +6,7 @@ import './PieChart.scss';
 import { useTranslation } from 'react-i18next';
 import { EmptyContent } from '@/components';
 
-function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, activeOuterRadiusOffset, margin, fill, isInteractive }) {
+function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, activeOuterRadiusOffset, margin, fill, isInteractive, cornerRadius, borderWidth, innerRadius }) {
   const { t } = useTranslation();
 
   const dataRankInfo = useMemo(() => {
@@ -30,11 +30,11 @@ function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, 
         <ResponsivePie
           data={data}
           margin={margin}
-          innerRadius={0.5}
+          innerRadius={innerRadius}
           padAngle={2}
-          cornerRadius={10}
+          cornerRadius={cornerRadius}
           activeOuterRadiusOffset={activeOuterRadiusOffset}
-          borderWidth={1}
+          borderWidth={borderWidth}
           borderColor={{
             from: 'color',
             modifiers: [['darker', 0.7]],
@@ -113,6 +113,9 @@ PieChart.defaultProps = {
   margin: { top: 40, right: 80, bottom: 80, left: 80 },
   fill: [],
   isInteractive: true,
+  cornerRadius: 10,
+  borderWidth: 1,
+  innerRadius: 0.5,
 };
 
 PieChart.propTypes = {
@@ -148,6 +151,9 @@ PieChart.propTypes = {
     }),
   ),
   isInteractive: PropTypes.bool,
+  cornerRadius: PropTypes.number,
+  borderWidth: PropTypes.number,
+  innerRadius: PropTypes.number,
 };
 
 export default React.memo(PieChart);
