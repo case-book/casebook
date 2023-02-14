@@ -89,7 +89,7 @@ public class TestrunScheduler {
                     testrunService.createTestrunInfo(testrunDTO.getProject().getSpace().getCode(), testrunDTO);
                 }
 
-                if (endDateTime == null || now.isAfter(endDateTime)) {
+                if (endDateTime != null && now.isAfter(endDateTime)) {
                     testrunService.updateTestrunReserveExpired(testrunId, true, null);
                 }
             }
