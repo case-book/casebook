@@ -144,7 +144,7 @@ function ReportInfoPage() {
                   </Tag>
                 );
               })}
-              <span>{t('테스터가 테스트 진행')}</span>
+              <span>{t('@명의 테스터가 테스트를 진행했습니다.', { count: testrun.testrunUsers?.length || 0 })}</span>
             </div>
             <div className="description">{testrun?.description}</div>
           </div>

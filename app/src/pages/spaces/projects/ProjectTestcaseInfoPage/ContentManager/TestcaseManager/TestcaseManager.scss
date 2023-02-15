@@ -67,12 +67,12 @@
     padding: 1rem 1rem 4rem;
 
     .case-description {
-      margin: 0.5rem 0.5rem 0;
+      margin: 0.5rem 0.5rem 0.5rem;
       padding: 1rem;
       font-family: NotoSans, sans-serif;
       font-size: 14px;
-      border-radius: 8px;
-      background-color: var(--lighter-color);
+      border-radius: 2px;
+      background-color: var(--testcase-item-background);
       border: 1px solid var(--border-lighter-color);
 
       .case-description-content {
@@ -88,9 +88,8 @@
 
   &.is-edit {
     .case-content {
-      padding: 1rem 0.5rem 4rem;
       .case-description {
-        padding: 0 0.5rem;
+        padding: 0;
         background-color: transparent;
         border: none;
       }
