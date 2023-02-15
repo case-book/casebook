@@ -67,8 +67,10 @@ function TestRunTestcaseManager({
 
   useEffect(() => {
     if (resultLayoutPosition === 'RIGHT') {
-      setWide(true);
-    } else {
+      if (setWide) {
+        setWide(true);
+      }
+    } else if (setWide) {
       setWide(false);
     }
   }, [resultLayoutPosition]);
@@ -190,7 +192,7 @@ function TestRunTestcaseManager({
           </div>
           <div className="title-liner" />
           <div className="case-content" ref={caseContentElement}>
-            {content.description && <div className="case-description">{content.description}</div>}
+            <div className="case-description">{content.description || t('설명이 없습니다.')}</div>
             <div className="testcase-item-list">
               {testcaseTemplate?.testcaseTemplateItems
                 .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
@@ -223,6 +225,7 @@ function TestRunTestcaseManager({
                       openTooltipInfo={openTooltipInfo}
                       inx={inx}
                       onChangeTestcaseItem={onChangeTestcaseItem}
+                      size="sm"
                     />
                   );
                 })}
@@ -250,6 +253,7 @@ function TestRunTestcaseManager({
               <div className="testrun-result-list is-edit">
                 <TestcaseItem
                   selectUserOnly
+                  type={false}
                   size="sm"
                   isEdit
                   testcaseTemplateItem={{
@@ -269,6 +273,7 @@ function TestRunTestcaseManager({
                 />
                 <TestcaseItem
                   selectUserOnly
+                  type={false}
                   size="sm"
                   isEdit
                   testcaseTemplateItem={{
@@ -441,6 +446,7 @@ TestRunTestcaseManager.defaultProps = {
   onSaveResult: null,
   onSaveTester: null,
   onSaveTestResultItem: null,
+  setWide: null,
 };
 
 TestRunTestcaseManager.propTypes = {
@@ -502,7 +508,7 @@ TestRunTestcaseManager.propTypes = {
   onSaveResult: PropTypes.func,
   onSaveTester: PropTypes.func,
   onSaveTestResultItem: PropTypes.func,
-  setWide: PropTypes.func.isRequired,
+  setWide: PropTypes.func,
 };
 
 export default observer(TestRunTestcaseManager);

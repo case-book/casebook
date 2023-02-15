@@ -7,6 +7,7 @@ import { ITEM_TYPE } from '@/constants/constants';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
+import { useTranslation } from 'react-i18next';
 
 function ContentManager({
   type,
@@ -25,6 +26,7 @@ function ContentManager({
   setPopupContent,
   tags,
 }) {
+  const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
   const [content, setContent] = useState({});
 
@@ -52,7 +54,7 @@ function ContentManager({
             <div className="icon">
               <i className="fa-solid fa-circle-info" />
             </div>
-            <div>아이템을 선택해주세요.</div>
+            <div>{t('아이템을 선택해주세요.')}</div>
           </EmptyContent>
         )}
 

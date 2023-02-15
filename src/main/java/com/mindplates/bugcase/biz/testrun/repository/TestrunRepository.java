@@ -13,15 +13,15 @@ import java.util.List;
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
 
 
     List<Testrun> findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode creationTypeCode1, TestrunCreationTypeCode creationTypeCode2);
 
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened, TestrunCreationTypeCode creationTypeCode);
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened, TestrunCreationTypeCode creationTypeCode);
 
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
 
     Long countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 

@@ -143,6 +143,10 @@ body {
   &.page-moving {
     overflow: hidden;
   }
+
+  &.stop-scroll {
+    overflow: hidden;
+  }
 }
 
 code {
@@ -322,16 +326,12 @@ hr {
   padding: 8px;
 }
 
-.toastui-editor-contents {
-  font-size: 16px;
-}
-
 .toastui-editor-defaultUI-toolbar {
   padding: 0;
 }
 
 .toastui-editor-defaultUI .ProseMirror {
-  padding: 16px;
+  padding: 14px;
   font-family: NotoSans, sans-serif;
 }
 
@@ -354,5 +354,34 @@ hr {
     &.active {
       border-bottom: 2px solid $color-primary-light;
     }
+  }
+}
+
+.toastui-editor-defaultUI {
+  border-radius: 2px;
+}
+
+.toastui-editor-contents {
+  font-family: NotoSans, sans-serif !important;
+  font-size: 14px;
+
+  h1:first-of-type {
+    margin-top: 14px;
+  }
+
+  ul, ol {
+    padding-left: 16px;
+  }
+
+  ul > li::before {
+    margin-top: 8px;
+  }
+
+  ul:last-child {
+    margin-bottom: 0;
+  }
+
+  ul:first-child {
+    margin-top: 0;
   }
 }

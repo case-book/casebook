@@ -40,7 +40,7 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, onNameClick })
                 <div
                   className="seq-name"
                   onClick={() => {
-                    onNameClick(testcase.id);
+                    onNameClick(testcaseGroup.id, testcase.id);
                   }}
                 >
                   <div>

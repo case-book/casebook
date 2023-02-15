@@ -176,6 +176,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
               <TestcaseItem
                 key={inx}
                 isEdit={isEdit}
+                type={isEdit}
                 testcaseTemplateItem={testcaseTemplateItem}
                 testcaseItem={testcaseItem}
                 content={content}
@@ -188,12 +189,14 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
                 openTooltipInfo={openTooltipInfo}
                 inx={inx}
                 onChangeTestcaseItem={onChangeTestcaseItem}
+                size="sm"
               />
             );
           })}
         <div>
           <TestcaseItem
             isEdit={isEdit}
+            type={isEdit}
             testcaseTemplateItem={{
               ...DEFAULT_TESTRUN_TESTER_ITEM,
             }}
@@ -209,6 +212,7 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
             onChangeTestcaseItem={(id, typeValue, temp1, val) => {
               onChangeTestcaseTester(typeValue, val);
             }}
+            size="sm"
           />
         </div>
       </div>

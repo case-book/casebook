@@ -68,7 +68,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
       <div className="title-liner" />
       <div className="group-content">
         <div className={`group-description ${!isEdit && content.description ? '' : 'empty'}`}>
-          {!isEdit && <div className={`group-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다')}</div>}
+          {!isEdit && <div className={`group-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다.')}</div>}
           {isEdit && (
             <TextArea
               size="sm"
@@ -83,7 +83,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
           )}
         </div>
         <div className="list-title">
-          <div>테스트케이스 리스트</div>
+          <div>{t('테스트케이스 리스트')}</div>
           <div>
             <Button
               size="sm"

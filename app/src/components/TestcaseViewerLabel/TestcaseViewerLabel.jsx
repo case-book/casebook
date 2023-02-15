@@ -18,7 +18,7 @@ function TestcaseViewerLabel({ testcaseTemplateItem, setOpenTooltipInfo, caseCon
             });
           }}
           parentElement={caseContentElement}
-          icon={<i className="fa-solid fa-info" />}
+          icon={<i className="fa-solid fa-question" />}
           title="설명"
           text={testcaseTemplateItem.description}
           opened={openTooltipInfo.inx === inx && openTooltipInfo.type === 'description' && openTooltipInfo.category === 'CASE'}
