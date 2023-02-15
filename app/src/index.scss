@@ -143,6 +143,10 @@ body {
   &.page-moving {
     overflow: hidden;
   }
+
+  &.stop-scroll {
+    overflow: hidden;
+  }
 }
 
 code {

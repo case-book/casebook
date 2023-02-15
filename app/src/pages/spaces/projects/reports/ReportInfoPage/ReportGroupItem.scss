@@ -4,7 +4,7 @@
   }
 
   .seq-name {
-    display: flex;
+    display: inline-flex;
     color: var(--link-color);
     cursor: pointer;
     > div {
