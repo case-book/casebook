@@ -1,5 +1,14 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
+import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
+import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
+import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.service.UserService;
+import com.mindplates.bugcase.biz.user.vo.request.UpdateMyInfoRequest;
+import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -7,13 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -23,6 +32,34 @@ public class AdminController {
 
     private final JsonRedisTemplate jsonRedisTemplate;
 
+    private final UserService userService;
+
+    private final SpaceService spaceService;
+
+    @Operation(description = "모든 사용자 조회")
+    @GetMapping("/users")
+    public List<UserListResponse> selectUserList() {
+        List<UserDTO> users = userService.selectUserList();
+        return users.stream().map((userDTO -> {
+            List<SpaceDTO> userSpaceList = spaceService.selectUserSpaceList(userDTO.getId());
+            return new UserListResponse(userDTO, userSpaceList);
+        })).collect(Collectors.toList());
+    }
+
+    @Operation(description = "사용자 조회")
+    @GetMapping("/users/{userId}")
+    public UserDetailResponse selectUserInfo(@PathVariable Long userId) {
+        UserDTO user = userService.selectUserInfo(userId);
+        List<SpaceDTO> userSpaceList = spaceService.selectUserSpaceList(user.getId());
+        return new UserDetailResponse(user, userSpaceList);
+    }
+
+    @Operation(description = "사용자 정보 변경")
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<?> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
+        userService.updateUserByAdmin(userId, userUpdateRequest.toDTO());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @Operation(description = "시스템 정보 조회")
     @GetMapping("/system/info")

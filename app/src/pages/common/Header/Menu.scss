@@ -79,6 +79,36 @@ ul.common-menu-wrapper {
           }
         }
       }
+
+      ul.sub-menu-list {
+        display: none;
+        position: absolute;
+        white-space: nowrap;
+        top : calc(100% - 10px);
+        left : 0;
+        margin: 0;
+        padding: 0.25rem;
+        list-style: none;
+        background-color: var(--box-color);
+        border: 1px solid var(--border-color);
+        font-size: 14px;
+        border-radius: 2px;
+
+        li {
+          padding: 0.25rem 0.5rem;
+          font-weight: normal;
+          &:hover {
+            color : var(--primary-color);
+          }
+        }
+      }
+
+      &:hover {
+        ul.sub-menu-list {
+          display: block;
+
+        }
+      }
     }
 
     &.selected {

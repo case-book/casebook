@@ -1,0 +1,35 @@
+.user-list-page-wrapper {
+  .user-info {
+    text-transform: uppercase;
+    color: var(--link-color);
+    cursor: pointer;
+    .name {
+      font-weight: bold;
+    }
+    .email {
+      font-size: 12px;
+    }
+  }
+  .tag-info {
+    > div {
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .space-tag {
+    position: relative;
+    .is-admin {
+      position: absolute;
+      top : -12px;
+      right : -8px;
+      background-color: var(--danger-color);
+      color: var(--white-color);
+      font-size: 10px;
+      padding: 2px;
+      border-radius: 2px;
+    }
+  }
+}

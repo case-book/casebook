@@ -18,7 +18,6 @@ public class SpaceListResponse {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private Boolean isMember;
-
     private Boolean isAdmin;
     private Long projectCount;
     private Integer userCount;

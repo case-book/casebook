@@ -122,7 +122,7 @@ public class UserController {
         }
 
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(user.getId());
-        List<String> roleList = Arrays.asList(user.getSystemRole().toString().split(","));
+        List<String> roleList = Arrays.asList(user.getActiveSystemRole().toString().split(","));
         return new MyInfoResponse(user, jwtTokenProvider.createToken(Long.toString(user.getId()), roleList), spaces);
     }
 
