@@ -20,9 +20,11 @@ import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 
 import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
 
-import SystemInfoPage from '@/pages/configs/SystemInfoPage';
-import SetUpPage from '@/pages/configs/SetUpPage';
-
+import SystemInfoPage from '@/pages/admin/SystemInfoPage';
+import SetUpPage from '@/pages/admin/SetUpPage';
+import UserListPage from '@/pages/admin/UserListPage';
+import UserInfoPage from '@/pages/admin/UserInfoPage';
+import UserEditPage from '@/pages/admin/UserEditPage';
 import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/TestrunListPage';
 import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
@@ -51,6 +53,9 @@ export {
   ProjectTestcaseInfoPage,
   SystemInfoPage,
   SetUpPage,
+  UserListPage,
+  UserInfoPage,
+  UserEditPage,
   TestrunListPage,
   TestrunEditPage,
   TestrunExecutePage,

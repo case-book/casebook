@@ -1,10 +1,9 @@
-package com.mindplates.bugcase.biz.user.vo.response;
+package com.mindplates.bugcase.biz.admin.vo.response;
 
 
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.SystemRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,21 +18,22 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class MyInfoResponse {
+public class UserListResponse {
 
     private Long id;
-    private String uuid;
-    private SystemRole systemRole;
-    private SystemRole activeSystemRole;
-    private String token;
     private String email;
     private String name;
+    private String uuid;
+    private Boolean activateYn;
+    private Boolean useYn;
     private String language;
     private String country;
+    private SystemRole activeSystemRole;
     private String timezone;
+    private SystemRole systemRole;
     private List<SpaceListResponse> spaces;
 
-    public MyInfoResponse(UserDTO user, String token) {
+    public UserListResponse(UserDTO user) {
         if (user != null) {
             this.id = user.getId();
             this.uuid = user.getUuid();
@@ -44,15 +44,15 @@ public class MyInfoResponse {
             this.language = user.getLanguage();
             this.country = user.getCountry();
             this.timezone = user.getTimezone();
+            this.useYn = user.getUseYn();
+            this.activateYn = user.getActivateYn();
         }
-
-        this.token = token;
     }
 
-    public MyInfoResponse(UserDTO user, String token, List<SpaceDTO> spaces) {
-        this(user, token);
+    public UserListResponse(UserDTO user, List<SpaceDTO> spaces) {
+        this(user);
         if (spaces != null) {
-            this.spaces = spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());
+            this.spaces = spaces.stream().map((spaceDTO -> new SpaceListResponse(spaceDTO, user.getId()))).collect(Collectors.toList());
         }
 
 

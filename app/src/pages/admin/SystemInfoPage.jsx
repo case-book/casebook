@@ -86,7 +86,7 @@ function SystemInfoPage() {
             <Text>{info?.keyCount || 0}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('메모리 사용율')}</Label>
+            <Label minWidth={labelMinWidth}>{t('메모리 사용률')}</Label>
             <Text>
               {info.usedMemory} / {info.maxMemory} ({info.usedPercent}%)
             </Text>
@@ -101,7 +101,7 @@ function SystemInfoPage() {
             <Label minWidth={labelMinWidth}>{t('레디스 초기화')}</Label>
             <Text>
               <Button className="remove-button" color="danger" onClick={flushRedis}>
-                레디스의 모든 정보를 삭제합니다.
+                {t('레디스의 모든 정보를 삭제합니다.')}
               </Button>
             </Text>
           </BlockRow>
@@ -109,12 +109,11 @@ function SystemInfoPage() {
             <Label minWidth={labelMinWidth}>{t('캐시 초기화')}</Label>
             <Text>
               <Button className="remove-button" color="danger" onClick={deleteRedis}>
-                스페이스, 프로젝트 관련 캐시 데이터를 삭제합니다.
+                {t('스페이스, 프로젝트 관련 캐시 데이터를 삭제합니다.')}
               </Button>
             </Text>
           </BlockRow>
         </Block>
-
         <PageButtons
           onBack={() => {
             navigate('/');

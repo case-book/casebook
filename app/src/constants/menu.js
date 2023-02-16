@@ -21,14 +21,28 @@ const STATIC_MENUS = [
     selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects$/],
   },
   {
-    key: 'configs',
-    to: '/configs/system',
+    key: 'admin',
+    to: '/admin',
     icon: <i className="fas fa-home-alt" />,
-    name: '시스템 설정',
+    name: '관리',
     admin: true,
     pc: true,
     prefixSpace: false,
-    selectedAlias: [/^\/configs\/*$/],
+    selectedAlias: [/^\/admin\/*/],
+    list: [
+      {
+        key: 'systems',
+        to: '/systems',
+        name: '시스템 설정',
+        admin: true,
+      },
+      {
+        key: 'users',
+        to: '/users',
+        name: '사용자 관리',
+        admin: true,
+      },
+    ],
   },
 ];
 

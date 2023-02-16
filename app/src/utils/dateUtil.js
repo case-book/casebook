@@ -14,6 +14,10 @@ function getUserLocale() {
  * @returns {string}
  */
 function getDateString(val, format) {
+  if (!val) {
+    return '';
+  }
+
   return moment
     .utc(val)
     .local()

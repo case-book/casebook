@@ -15,9 +15,9 @@ const COUNTRIES = {
   US: 'US',
 };
 
-const USER_ROLE = {
-  ADMIN: 'ADMIN',
-  MEMBER: 'MEMBER',
+const SYSTEM_ROLE = {
+  ROLE_ADMIN: i18n.t('관리자'),
+  ROLE_USER: i18n.t('사용자'),
 };
 
 const MESSAGE_CATEGORY = {
@@ -232,7 +232,7 @@ const DURATIONS = (() => {
 
 export {
   LANGUAGES,
-  USER_ROLE,
+  SYSTEM_ROLE,
   MESSAGE_CATEGORY,
   COUNTRIES,
   ITEM_TYPE,

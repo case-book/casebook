@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +28,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new UserDTO(user);
     }
+
 
     public boolean existUserByEmail(String email, Long exceptUserId) {
         if (exceptUserId != null) {
@@ -75,6 +77,20 @@ public class UserService {
         targetUser.setLanguage(user.getLanguage());
         targetUser.setCountry(user.getCountry());
         targetUser.setTimezone(user.getTimezone());
+        return new UserDTO(userRepository.save(targetUser));
+    }
+
+    @Transactional
+    public UserDTO updateUserByAdmin(Long userId, UserDTO user) {
+        User targetUser = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        targetUser.setName(user.getName());
+        targetUser.setLanguage(user.getLanguage());
+        targetUser.setCountry(user.getCountry());
+        targetUser.setTimezone(user.getTimezone());
+        targetUser.setSystemRole(user.getSystemRole());
+        targetUser.setActiveSystemRole(user.getActiveSystemRole());
+        targetUser.setUseYn(user.getUseYn());
+        targetUser.setActivateYn(user.getActivateYn());
         return new UserDTO(userRepository.save(targetUser));
     }
 
@@ -140,8 +156,9 @@ public class UserService {
         return userRepository.findByUuid(uuid).orElse(null);
     }
 
-    public List<User> selectUserList() {
-        return userRepository.findAll();
+    public List<UserDTO> selectUserList() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
 }

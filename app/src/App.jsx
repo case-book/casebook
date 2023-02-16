@@ -5,7 +5,7 @@ import { Common, Header, Join, Login, Message, SetUpPage, SpaceListPage } from '
 import SpacesRoutes from '@/pages/spaces';
 import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
-import ConfigsRoutes from '@/pages/configs';
+import AdminRoutes from '@/pages/admin';
 import ProjectsRoutes from '@/pages/spaces/projects';
 import { LogoIcon, Star } from '@/components';
 import { debounce } from 'lodash';
@@ -118,7 +118,7 @@ function App() {
                 <Route path="/users/*" element={<UsersRoutes />} />
                 <Route path="/spaces/*" element={<SpacesRoutes />} />
                 <Route path="/projects/*" element={<ProjectsRoutes />} />
-                <Route path="/configs/*" element={<ConfigsRoutes />} />
+                <Route path="/admin/*" element={<AdminRoutes />} />
                 <Route path="*" element={<Message code="404" />} />
               </Routes>
             )}

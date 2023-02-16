@@ -41,22 +41,23 @@
   }
 
   &.color-black {
-    color: $white;
-  }
-
-  &.color-black {
-    background-color: #242424;
-    color: $white;
+    background-color: var(--black-color);
+    color: var(--white-color);
   }
 
   &.color-white {
-    color: $black;
-    background-color: $white;
+    color: var(--black-color);
+    background-color: var(--white-color);
+  }
+
+  &.color-danger {
+    color: var(--white-color);
+    background-color: var(--danger-color);
   }
 
   &.color-primary {
-    color: $white;
-    background-color: $color-primary-light;
+    color: var(--primary-text-color);
+    background-color: var(--primary-color);
   }
 
   &.color-secondary {

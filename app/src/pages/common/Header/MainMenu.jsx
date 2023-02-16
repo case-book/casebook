@@ -53,7 +53,7 @@ function MainMenu({ className, closeMobileMenu }) {
   return (
     <ul className={`main-menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : 'no-collapsed'}`}>
       {STATIC_MENUS.filter(d => d.pc)
-        .filter(d => !d.admin || (d.admin && user.systemRole === 'ROLE_ADMIN'))
+        .filter(d => !d.admin || (d.admin && user.activeSystemRole === 'ROLE_ADMIN'))
         .map((d, inx) => {
           const isSelected = d.selectedAlias.reduce((p, c) => {
             return p || c.test(location.pathname);
@@ -68,11 +68,11 @@ function MainMenu({ className, closeMobileMenu }) {
               }}
             >
               <Link
-                to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+                className="menu-item"
+                to="/"
                 onClick={e => {
+                  e.preventDefault();
                   if (d.prefixSpace) {
-                    e.preventDefault();
-
                     if (isSpaceSelected) {
                       if (closeMobileMenu) {
                         closeMobileMenu();
@@ -97,8 +97,13 @@ function MainMenu({ className, closeMobileMenu }) {
                         });
                       }, 2000);
                     }
-                  } else if (closeMobileMenu) {
-                    closeMobileMenu();
+                  } else {
+                    if (!d.list) {
+                      navigate(d.to);
+                    }
+                    if (closeMobileMenu) {
+                      closeMobileMenu();
+                    }
                   }
                 }}
               >
@@ -108,6 +113,22 @@ function MainMenu({ className, closeMobileMenu }) {
                     <div />
                     {menuAlert.message}
                   </span>
+                )}
+                {d.list?.length > 0 && (
+                  <ul className="sub-menu-list">
+                    {d.list?.map(sub => {
+                      return (
+                        <li
+                          key={sub.key}
+                          onClick={() => {
+                            navigate(`${d.to}${sub.to}`);
+                          }}
+                        >
+                          {sub.name}
+                        </li>
+                      );
+                    })}
+                  </ul>
                 )}
               </Link>
               {d.key === 'space' && isSpaceSelected && (
