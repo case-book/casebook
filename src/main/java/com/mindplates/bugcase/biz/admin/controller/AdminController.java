@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
 import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
@@ -8,6 +9,8 @@ import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.biz.user.vo.request.UpdateMyInfoRequest;
+
+import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,8 +59,18 @@ public class AdminController {
 
     @Operation(description = "사용자 정보 변경")
     @PutMapping("/users/{userId}")
-    public ResponseEntity<?> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<?> updateUserPasswordInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
         userService.updateUserByAdmin(userId, userUpdateRequest.toDTO());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "사용자 비밀번호 변경")
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<?> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        if (!updatePasswordRequest.getNextPassword().equals(updatePasswordRequest.getNextPasswordConfirm())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "user.password.confirm.not.matched");
+        }
+        userService.updateUserPasswordByAdmin(userId, updatePasswordRequest.getNextPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

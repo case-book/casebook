@@ -46,6 +46,17 @@ AdminService.updateUserInfo = (userId, userInfo, successHandler, failHandler) =>
   );
 };
 
+AdminService.updateUserPasswordInfo = (userId, userInfo, successHandler, failHandler) => {
+  return request.put(
+    `/api/admin/users/${userId}/password`,
+    userInfo,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 AdminService.selectSystemInfo = (successHandler, failHandler) => {
   return request.get(
     '/api/admin/system/info',

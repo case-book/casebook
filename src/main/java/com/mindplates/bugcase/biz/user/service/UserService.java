@@ -116,6 +116,19 @@ public class UserService {
     }
 
     @Transactional
+    public UserDTO updateUserPasswordByAdmin(Long userId, String newPassword) {
+        User userInfo = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        byte[] saltBytes = encryptUtil.getSaltByteArray();
+        String salt = encryptUtil.getSaltString(saltBytes);
+        userInfo.setSalt(salt);
+        String encryptedText = encryptUtil.getEncrypt(newPassword, saltBytes);
+        userInfo.setPassword(encryptedText);
+
+        return new UserDTO(userRepository.save(userInfo));
+    }
+
+    @Transactional
     public void updateUserLastSeen(Long userId, LocalDateTime lastSeen) {
         userRepository.updateUserLastSeen(userId, lastSeen);
     }
