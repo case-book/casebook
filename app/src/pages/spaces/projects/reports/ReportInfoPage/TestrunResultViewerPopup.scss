@@ -21,6 +21,8 @@
       border-right: 1px solid var(--light-color);
       height: 100%;
       background-color: var(--theme-color);
+      display: flex;
+      flex-direction: column;
     }
 
     .testcase-title {

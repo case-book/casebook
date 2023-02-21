@@ -300,8 +300,14 @@ function TestrunExecutePage() {
   };
 
   const onSaveTestResult = testResult => {
-    TestrunService.updateTestrunResult(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, testResult, () => {
-      getTestrunInfo();
+    TestrunService.updateTestrunResult(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, testResult, done => {
+      if (done) {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('테스트 완료'), t('모든 테스트케이스의 결과가 입력되었습니다. 테스트런 리포트 화면으로 이동합니다.'), () => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/reports/${testrunId}`);
+        });
+      } else {
+        getTestrunInfo();
+      }
     });
   };
 

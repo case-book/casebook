@@ -12,6 +12,7 @@ export default class UserStore {
   user = {
     id: null,
     uuid: null,
+    activeSystemRole: null,
     roleCode: null,
     token: null,
     email: null,
@@ -34,6 +35,7 @@ export default class UserStore {
       clearUser: action,
       setTried: action,
       isLogin: computed,
+      isAdmin: computed,
       addSpace: action,
       removeSpace: action,
       setNotificationCount: action,
@@ -42,6 +44,7 @@ export default class UserStore {
   }
 
   setUser = user => {
+    console.log(user);
     this.user = {
       ...user,
     };
@@ -103,5 +106,9 @@ export default class UserStore {
 
   get isLogin() {
     return !!this.user?.id;
+  }
+
+  get isAdmin() {
+    return this.user?.activeSystemRole === 'ROLE_ADMIN';
   }
 }

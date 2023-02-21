@@ -14,7 +14,7 @@ import NotificationList from '@/components/NotificationList/NotificationList';
 
 function SideControl({ className }) {
   const {
-    userStore: { isLogin, setUser, notificationCount, setNotificationCount },
+    userStore: { isLogin, isAdmin, setUser, notificationCount, setNotificationCount },
     controlStore: { hideHeader, setHideHeader },
     themeStore: { theme, setTheme },
   } = useStores();
@@ -159,6 +159,7 @@ function SideControl({ className }) {
               setUserMenuOpen(true);
             }}
           >
+            {isAdmin && <div className="admin-flag">ADMIN</div>}
             <div className="icon">
               <i className="fa-solid fa-skull" />
             </div>
