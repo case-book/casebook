@@ -361,9 +361,14 @@
     padding: 1rem;
     color: var(--gray-color);
 
+    @media (max-width: 1660px) {
+      bottom: -20px;
+      position: absolute;
+    }
+
     @media (max-width: 1024px) {
       bottom: -10px;
-      position: static;
+      position: relative;
     }
     > div {
       display: inline-block;

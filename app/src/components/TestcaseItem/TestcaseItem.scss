@@ -14,6 +14,15 @@
       background-color: var(--testcase-item-background);
       border: 1px solid var(--border-lighter-color);
 
+      &.URL {
+        .value-text {
+          > span {
+            color: var(--link-color);
+            cursor: pointer;
+          }
+        }
+      }
+
       > div {
         align-self: center;
         width: 100%;
@@ -49,8 +58,6 @@
 
       .editor {
         white-space: pre-wrap;
-
-
 
         > div {
           white-space: normal;
