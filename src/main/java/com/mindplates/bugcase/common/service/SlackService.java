@@ -17,9 +17,15 @@ public class SlackService {
     @Value("${bug-case.web-url}")
     private String webUrl;
 
-    public void sendText(String url, String message) {
-        httpRequestUtil.sendPost(url, SlackMessage.builder().username("CASEBOOK").icon_url(webUrl + "/logo192.png").text(message).build(), String.class);
+    public boolean sendText(String url, String message) {
+        try {
+            httpRequestUtil.sendPost(url, SlackMessage.builder().username("CASEBOOK").icon_url(webUrl + "/logo192.png").text(message).build(), String.class);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
 
+        return true;
     }
 
 }

@@ -73,3 +73,26 @@ bug-case:
 file:
   upload-dir: c:/fileupload/
   allowed-extension: bmp,jpeg,png,jpg,gif,webp,svg
+proxy:
+  enabled : false
+  host:
+  port:
+---
+spring:
+  config:
+    activate:
+      on-profile: "production"
+  datasource:
+    url: jdbc:mysql://matrix-server-mysql-254-dbaas.mydev.onkakao.net:3306/casebook?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
+    username: casebook
+    password: casebook
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: casebook
+  jwt:
+    secret: casebook
+    expireMinutes: 1440
+file:
+  upload-dir: /data/casebook/files/
+  allowed-extension: bmp,jpeg,png,jpg,gif,webp,svg

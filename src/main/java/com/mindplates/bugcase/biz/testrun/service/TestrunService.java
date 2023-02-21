@@ -25,6 +25,7 @@ import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TestrunService {
 
     private final TestrunRepository testrunRepository;
@@ -358,25 +360,19 @@ public class TestrunService {
 
             message.append(messageSourceAccessor.getMessage("testrun.created", new Object[]{result.getName(), testrunUrl}));
 
-            List<ProjectUserDTO> testers = result.getTestcaseGroups().stream()
-                    .flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
-                    .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
-                    .distinct()
-                    .map(userId -> {
-                        return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
-                    })
-                    .collect(Collectors.toList());
+            List<ProjectUserDTO> testers = result.getTestcaseGroups().stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()).map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId()).distinct().map(userId -> {
+                return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+            }).collect(Collectors.toList());
 
             if (!testers.isEmpty()) {
                 for (ProjectUserDTO projectUserDTO : testers) {
-                    message.append(messageSourceAccessor.getMessage("testrun.user.link",
-                            new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
+                    message.append(messageSourceAccessor.getMessage("testrun.user.link", new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
                 }
 
             }
 
-
             slackService.sendText(project.getSlackUrl(), message.toString());
+
         }
 
         return new TestrunDTO(result, true);

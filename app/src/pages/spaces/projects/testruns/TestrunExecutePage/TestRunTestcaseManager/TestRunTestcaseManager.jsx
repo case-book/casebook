@@ -61,7 +61,7 @@ function TestRunTestcaseManager({
 
   const [resultLayoutPosition, setResultLayoutPosition] = useState(
     (() => {
-      return getOption('testrun', 'manager', 'layout') || 'BOTTOM';
+      return getOption('testrun', 'manager', 'layout') || 'RIGHT';
     })(),
   );
 

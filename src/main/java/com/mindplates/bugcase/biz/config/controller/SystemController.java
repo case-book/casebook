@@ -52,7 +52,7 @@ public class SystemController {
 
     @PostMapping("/setup")
     @Operation(summary = "시스템 설정 정보 등록")
-    public ResponseEntity createSetUpInfo(@Valid @RequestBody SetUpRequest setUpRequest) {
+    public ResponseEntity<?> createSetUpInfo(@Valid @RequestBody SetUpRequest setUpRequest) {
 
         ConfigDTO config = configService.selectConfig("SET_UP");
 
@@ -67,9 +67,15 @@ public class SystemController {
 
     @PostMapping("/slack")
     @Operation(summary = "슬랙 메세지 전송 테스트")
-    public ResponseEntity sendTestMessageToSlack(@Valid @RequestBody SlackTestRequest slackTestRequest) {
-        slackService.sendText(slackTestRequest.getSlackUrl(), messageSourceAccessor.getMessage("slack.test.message"));
+    public ResponseEntity<?> sendTestMessageToSlack(@Valid @RequestBody SlackTestRequest slackTestRequest) {
+        boolean result = slackService.sendText(slackTestRequest.getSlackUrl(), messageSourceAccessor.getMessage("slack.test.message"));
+
+        if (!result) {
+            throw new ServiceException("fail.send.slack.message");
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
 }
