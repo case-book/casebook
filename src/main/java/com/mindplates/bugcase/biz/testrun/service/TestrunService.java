@@ -436,10 +436,10 @@ public class TestrunService {
         int currentSeq = random.nextInt(testrunUsers.size());
 
         // 삭제된 테스트런 테스트케이스 그룹 제거
-        targetTestrun.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrun.getTestcaseGroups().stream().noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
+        targetTestrun.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
         // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
         for (TestrunTestcaseGroup testcaseGroup : targetTestrun.getTestcaseGroups()) {
-            TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+            TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
             if (testcaseGroup.getTestcases() != null) {
                 testcaseGroup.getTestcases().removeIf(testcase -> {
                     if (updateTestrunTestcaseGroup != null) {

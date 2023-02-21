@@ -14,6 +14,8 @@ import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
@@ -44,6 +46,10 @@ public class TestcaseService {
     private final TestcaseRepository testcaseRepository;
 
     private final TestcaseItemRepository testcaseItemRepository;
+
+    private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
+
+    private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
     private final ProjectFileRepository projectFileRepository;
     private final ProjectRepository projectRepository;
@@ -204,6 +210,9 @@ public class TestcaseService {
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTCASE, testcaseId);
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTCASE, testcaseId);
         testcaseItemRepository.deleteByTestcaseId(testcaseId);
+        testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseId(testcaseId);
+        testrunTestcaseGroupTestcaseRepository.deleteByTestcaseId(testcaseId);
+
         testcaseRepository.deleteById(testcaseId);
         files.forEach((testcaseFile -> {
             Resource resource = fileUtil.loadFileIfExist(testcaseFile.getPath());
