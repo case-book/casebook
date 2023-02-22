@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import moment from 'moment-timezone';
 import UserService from '@/services/UserService';
-import { COUNTRIES, LANGUAGES } from '@/constants/constants';
+import { COUNTRIES, LANGUAGES, SYSTEM_ROLE } from '@/constants/constants';
 import './MyInfoPage.scss';
 
 function MyInfoPage() {
@@ -37,7 +37,13 @@ function MyInfoPage() {
           {user?.systemRole === 'ROLE_ADMIN' && (
             <BlockRow>
               <Label>{t('시스템 권한')}</Label>
-              <Text>{t('시스템 관리자')}</Text>
+              <Text>{SYSTEM_ROLE[user?.systemRole]}</Text>
+            </BlockRow>
+          )}
+          {user?.systemRole === 'ROLE_ADMIN' && (
+            <BlockRow>
+              <Label>{t('적용 권한')}</Label>
+              <Text>{SYSTEM_ROLE[user?.activeSystemRole]}</Text>
             </BlockRow>
           )}
           <BlockRow>

@@ -44,6 +44,18 @@ public class SpaceService {
     private final NotificationService notificationService;
     private final MappingUtil mappingUtil;
 
+    public List<SpaceDTO> selectSpaceList() {
+        List<Space> spaceList = spaceRepository.findAll();
+        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
+
+        result.forEach((space -> {
+            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
+            space.setProjectCount(projectCount);
+        }));
+
+        return result;
+    }
+
     public SpaceDTO selectSpaceInfo(Long id) {
         Space space = spaceRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new SpaceDTO(space);

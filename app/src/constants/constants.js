@@ -230,6 +230,13 @@ const DURATIONS = (() => {
   return list;
 })();
 
+const APPROVAL_STATUS_INFO = {
+  REQUEST: i18n.t('요청'),
+  REQUEST_AGAIN: i18n.t('재요청'),
+  APPROVAL: i18n.t('승인'),
+  REJECTED: i18n.t('거절'),
+};
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -247,4 +254,5 @@ export {
   TESTRUN_CREATION_TYPES,
   DURATIONS,
   TESTRUN_RESULT_LAYOUTS,
+  APPROVAL_STATUS_INFO,
 };

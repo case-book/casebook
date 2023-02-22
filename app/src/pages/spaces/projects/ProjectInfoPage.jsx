@@ -10,9 +10,13 @@ import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './ProjectInfoPage.scss';
+import useStores from '@/hooks/useStores';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
+  const {
+    userStore: { isAdmin },
+  } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
@@ -77,13 +81,13 @@ function ProjectInfoPage() {
     <>
       <Page className="project-info-page-wrapper">
         <PageTitle
-          links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${project.id}/edit`}>{t('변경')}</Link>] : null}
+          links={isAdmin || project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${project?.id}/edit`}>{t('편집')}</Link>] : null}
           control={
             <div>
               <Button size="sm" color="warning" onClick={onWithdraw}>
                 {t('프로젝트 탈퇴')}
               </Button>
-              {project?.admin && (
+              {(isAdmin || project?.admin) && (
                 <Button size="sm" color="danger" onClick={onDelete}>
                   {t('프로젝트 삭제')}
                 </Button>
@@ -225,7 +229,7 @@ function ProjectInfoPage() {
               navigate(-1);
             }}
             onEdit={
-              project?.admin
+              isAdmin || project?.admin
                 ? () => {
                     navigate(`/spaces/${spaceCode}/projects/${project.id}/edit`);
                   }

@@ -132,6 +132,11 @@ const defaultProjectConfig = {
 
 function ProjectEditPage({ type }) {
   const { t } = useTranslation();
+
+  const {
+    userStore: { isAdmin },
+  } = useStores();
+
   const { projectId, spaceCode } = useParams();
 
   const {
@@ -213,37 +218,40 @@ function ProjectEditPage({ type }) {
         return;
       }
 
-      const currentUser = project.users.find(user => user.userId === userStore.user?.id);
+      if (isAdmin) {
+        updateProject();
+      } else {
+        const currentUser = project.users.find(user => user.userId === userStore.user?.id);
+        if (currentUser.crud !== 'D' && currentUser.role === 'USER') {
+          dialogUtil.setConfirm(
+            MESSAGE_CATEGORY.WARNING,
+            t('프로젝트 권한 경고'),
+            <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 변경할 수 없습니다. 계속 하시겠습니까?')}</div>,
+            () => {
+              updateProject();
+            },
+            null,
+            t('확인'),
+          );
+          return;
+        }
 
-      if (currentUser.crud !== 'D' && currentUser.role === 'USER') {
-        dialogUtil.setConfirm(
-          MESSAGE_CATEGORY.WARNING,
-          t('프로젝트 권한 경고'),
-          <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 변경할 수 없습니다. 계속 하시겠습니까?')}</div>,
-          () => {
-            updateProject();
-          },
-          null,
-          t('확인'),
-        );
-        return;
+        if (currentUser.crud === 'D') {
+          dialogUtil.setConfirm(
+            MESSAGE_CATEGORY.WARNING,
+            t('프로젝트 권한 경고'),
+            <div>{t('프로젝트 사용자에서 현재 사용자가 제외되었습니다. 저장 후 더 이상 프로젝트에 접근할 수 없습니다. 계속 하시겠습니까?')}</div>,
+            () => {
+              updateProject();
+            },
+            null,
+            t('확인'),
+          );
+          return;
+        }
+
+        updateProject();
       }
-
-      if (currentUser.crud === 'D') {
-        dialogUtil.setConfirm(
-          MESSAGE_CATEGORY.WARNING,
-          t('프로젝트 권한 경고'),
-          <div>{t('프로젝트 사용자에서 현재 사용자가 제외되었습니다. 저장 후 더 이상 프로젝트에 접근할 수 없습니다. 계속 하시겠습니까?')}</div>,
-          () => {
-            updateProject();
-          },
-          null,
-          t('확인'),
-        );
-        return;
-      }
-
-      updateProject();
     }
   };
 
@@ -399,7 +407,7 @@ function ProjectEditPage({ type }) {
               <BlockRow>
                 <Label>{t('슬랙 URL')}</Label>
                 <Input
-                  value={project.slackUrl}
+                  value={project.slackUrl || ''}
                   onChange={val =>
                     setProject({
                       ...project,

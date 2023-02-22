@@ -5,11 +5,16 @@ import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
 import com.mindplates.bugcase.biz.admin.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -35,6 +40,23 @@ public class AdminController {
     private final UserService userService;
 
     private final SpaceService spaceService;
+
+    private final ProjectService projectService;
+
+    @Operation(description = "모든 스페이스 조회")
+    @GetMapping("/spaces")
+    public List<SpaceListResponse> selectSpaceList() {
+        List<SpaceDTO> spaces = spaceService.selectSpaceList();
+        return spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "스페이스 조회")
+    @GetMapping("/spaces/{spaceId}")
+    public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {
+        SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
+        List<ProjectDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceId);
+        return new SpaceResponse(space, spaceProjectList);
+    }
 
     @Operation(description = "모든 사용자 조회")
     @GetMapping("/users")
