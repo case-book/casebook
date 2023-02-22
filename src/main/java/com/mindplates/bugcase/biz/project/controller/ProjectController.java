@@ -91,12 +91,6 @@ public class ProjectController {
     @Operation(description = "프로젝트 조회")
     @GetMapping("/{id}")
     public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
-        boolean isSpaceMember = spaceService.selectIsSpaceMember(spaceCode, SessionUtil.getUserId());
-
-        if (!isSpaceMember) {
-            throw new ServiceException("common.not.authorized");
-        }
-
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, id);
 
         /*
@@ -111,15 +105,7 @@ public class ProjectController {
     @PostMapping("/{id}/images")
     public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
         String path = projectFileService.createImage(id, file);
-        ProjectFileDTO testcaseFile = ProjectFileDTO.builder()
-                .project(ProjectDTO.builder().id(id).build())
-                .name(name)
-                .size(size)
-                .type(type)
-                .path(path)
-                .uuid(UUID.randomUUID().toString())
-                .fileSourceType(FileSourceTypeCode.PROJECT)
-                .build();
+        ProjectFileDTO testcaseFile = ProjectFileDTO.builder().project(ProjectDTO.builder().id(id).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.PROJECT).build();
         ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
         return new ProjectFileResponse(projectFile, spaceCode, id);
     }
