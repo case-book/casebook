@@ -10,10 +10,11 @@ import ConfigService from '@/services/ConfigService';
 import ReactTooltip from 'react-tooltip';
 import { getOption, setOption } from '@/utils/storageUtil';
 import { useLocation } from 'react-router-dom';
-import { SocketClient } from '@/components';
+import { CloseIcon, SocketClient, Tag } from '@/components';
 import { observer } from 'mobx-react';
 import i18n from 'i18next';
 import './Common.scss';
+import { useTranslation } from 'react-i18next';
 
 function Common() {
   const {
@@ -23,6 +24,8 @@ function Common() {
     controlStore: { requestLoading, confirm, message, error, requestMessages },
     contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
   } = useStores();
+
+  const { t } = useTranslation();
 
   const location = useLocation();
 
@@ -57,6 +60,10 @@ function Common() {
 
   const [loading, setLoading] = useState(false);
 
+  const [latestRelease, setLatestRelease] = useState({
+    released: false,
+  });
+
   const getUserNotificationCount = () => {
     UserService.getUserNotificationCount(count => {
       userStore.setNotificationCount(count);
@@ -78,9 +85,74 @@ function Common() {
     );
   };
 
+  const getRelease = version => {
+    const url = 'https://api.github.com/repos/mindplates/bug-case/releases/latest';
+    const request = new XMLHttpRequest();
+
+    request.onreadystatechange = function () {
+      if (request.readyState === 4 && request.status === 200) {
+        try {
+          const data = JSON.parse(request.responseText);
+          const latestVersion = getOption('casebook', 'version', 'latest');
+
+          if (data.tag_name > version && (latestVersion === null || data.tag_name > latestVersion)) {
+            const lines = data.body.split('\n');
+            const text = {
+              title: lines[0],
+              category: [],
+            };
+
+            let current;
+            for (let i = 1; i < lines.length; i += 1) {
+              const line = lines[i];
+              if (!line || line.trim() === '') {
+                //
+              } else if (line[0] === '<') {
+                text.category.push({
+                  title: line.substring(1, line.length - 2),
+                  lines: [],
+                });
+                current = text.category[text.category.length - 1];
+              } else {
+                if (!current) {
+                  text.category.push({
+                    title: 'MISC',
+                    lines: [],
+                  });
+                  current = text.category[text.category.length - 1];
+                }
+
+                if (line[0] === '-') {
+                  current.lines.push(line.substring(1, line.length - 1));
+                } else {
+                  current.lines.push(line);
+                }
+              }
+            }
+
+            setLatestRelease({
+              released: true,
+              version: data.name,
+              url: data.html_url,
+              _text: data.body,
+              text,
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    // URL에 데이터 추가해서 요청 보내기
+    request.open('GET', url, true);
+    request.send();
+  };
+
   const getSystemInfo = () => {
     ConfigService.selectSystemInfo(version => {
       setVersion(version);
+      getRelease(version.version);
     });
   };
 
@@ -123,10 +195,10 @@ function Common() {
 
   const onMessage = useCallback(info => {
     const {
-      data: { type, data },
+      data: { type /* , data */ },
     } = info;
 
-    console.log(type, data);
+    // console.log(type, data);
 
     switch (type) {
       case 'NEW-NOTIFICATION': {
@@ -202,6 +274,63 @@ function Common() {
         </div>
       )}
       <ReactTooltip effect="solid" />
+      {latestRelease.released && (
+        <div className="release-info">
+          <div>
+            <div className="note">
+              <div>
+                <div className="note-content">
+                  <div className="release-title">
+                    <h2>
+                      <div>{latestRelease.text.title}</div>
+                      <div className="version-tag">
+                        <Tag>{latestRelease.version}</Tag>
+                      </div>
+                    </h2>
+                    <div className="close-btn">
+                      <CloseIcon
+                        onClick={() => {
+                          setOption('casebook', 'version', 'latest', latestRelease.version);
+                          setLatestRelease({
+                            released: false,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="release-note scrollbar">
+                    {latestRelease.text.category.map((d, jnx) => {
+                      return (
+                        <div className="category" key={jnx}>
+                          {d.title !== 'MISC' && (
+                            <div className="category-title">
+                              <span>{d.title}</span>
+                            </div>
+                          )}
+                          <div className="category-content">
+                            {d.lines.map((line, inx) => {
+                              return (
+                                <div className={line[0] === ' ' ? 'list' : ''} key={inx}>
+                                  {line}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="btns">
+                    <a target="_blank" href={latestRelease.url} rel="noreferrer">
+                      <span>{t('다운로드 바로가기')}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
