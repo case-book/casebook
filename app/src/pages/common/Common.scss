@@ -118,3 +118,81 @@ $logo-color-1: #fe0000;
     display: none;
   }
 }
+
+.release-info {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--modal-overlay-color);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+
+  > div {
+    align-self: center;
+    background-color: var(--theme-color);
+    min-width: 600px;
+
+    .release-title {
+      padding: 1.5rem 1.5rem 0;
+      position: relative;
+      h2 {
+        padding: 0;
+        margin: 0;
+        display: flex;
+
+        > div {
+          align-self: center;
+
+          &.version-tag {
+            margin-left: 0.5rem;
+          }
+        }
+      }
+
+      .close-btn {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
+    }
+
+    .release-note {
+      padding: 1rem 1.5rem 0.5rem;
+      line-height: 160%;
+      .category {
+        margin-bottom: 1rem;
+        .category-title {
+          margin-bottom: 0.5rem;
+          > span {
+            display: inline-block;
+            font-weight: bold;
+            _padding: 4px;
+            _background-color: var(--primary-color);
+            _color: var(--primary-text-color);
+            _border-radius: 4px;
+          }
+        }
+
+        .category-content {
+          > div {
+            &.list {
+              margin-left: 1rem;
+              list-style: disc inside;
+              display: list-item;
+              padding-left: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .btns {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+    }
+  }
+}
