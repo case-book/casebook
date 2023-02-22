@@ -192,7 +192,12 @@ function TestrunListPage() {
 
               return (
                 <li key={testrun.id}>
-                  <Card className="testrun-card" border>
+                  <Card className={`testrun-card ${testrun.opened ? 'opened' : 'closed'}`} border>
+                    <div className="status">
+                      <Tag className="status-tag" size="xs">
+                        {testrun.opened ? t('진행중') : t('종료됨')}
+                      </Tag>
+                    </div>
                     <div className="config-button">
                       <Button
                         rounded
@@ -274,50 +279,65 @@ function TestrunListPage() {
                           <span className="symbol">%</span>
                         </div>
                         <div className="progress-label">{t('진행')}</div>
-                        <div className="time-span">
-                          {testrun.opened && span.days > 0 && (
-                            <Tag size="xxs" color="transparent" uppercase>
-                              {t('@ 일 남음', { days: span.days })}
-                            </Tag>
-                          )}
-                          {testrun.opened && span.days <= 0 && span.hours > 0 && (
-                            <Tag size="xxs" color="transparent" uppercase>
-                              {t('@ 시간 남음', { hours: span.hours })}
-                            </Tag>
-                          )}
-                          {testrun.opened && span.days <= 0 && span.hours <= 0 && (
-                            <Tag size="xxs" color="transparent" uppercase>
-                              {t('기간 지남')}
-                            </Tag>
-                          )}
-                        </div>
                       </div>
                     </div>
                     <div className="testrun-others">
-                      <div className="time-info">
-                        <span className="calendar">
-                          <i className="fa-regular fa-clock" />
-                        </span>
-                        {testrun.startDateTime && (
-                          <Tag color="transparent" uppercase>
-                            {dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}
-                          </Tag>
-                        )}
-                        <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
-                          {(testrun.startDateTime || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.25rem 0 0" />}
-                          {testrun.startDateTime && testrun.endDateTime && (
-                            <Tag color="white" border uppercase>
-                              {dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}
+                      {testrun.opened && (
+                        <div className="time-info">
+                          <div className="time-span">
+                            {testrun.opened && span.days > 0 && (
+                              <Tag color="white" border uppercase>
+                                {t('@ 일 남음', { days: span.days })}
+                              </Tag>
+                            )}
+                            {testrun.opened && span.days <= 0 && span.hours > 0 && (
+                              <Tag color="white" border uppercase>
+                                {t('@ 시간 남음', { hours: span.hours })}
+                              </Tag>
+                            )}
+                            {testrun.opened && span.days <= 0 && span.hours <= 0 && (
+                              <Tag color="white" border uppercase>
+                                {t('기간 지남')}
+                              </Tag>
+                            )}
+                          </div>
+                          <span className="calendar">
+                            <i className="fa-regular fa-clock" />
+                          </span>
+                          {testrun.startDateTime && (
+                            <Tag color="transparent" uppercase>
+                              {dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}
                             </Tag>
                           )}
-                          {!testrun.startDateTime && testrun.endDateTime && (
-                            <Tag color="white" border uppercase>
-                              {dateUtil.getDateString(testrun.endDateTime)}
-                            </Tag>
-                          )}
+                          <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
+                            {(testrun.startDateTime || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.25rem 0 0" />}
+                            {testrun.startDateTime && testrun.endDateTime && (
+                              <Tag color="white" border uppercase className={testrun.endDateTime && moment.utc().isAfter(moment.utc(testrun.endDateTime)) ? 'past' : ''}>
+                                {dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}
+                              </Tag>
+                            )}
+                            {!testrun.startDateTime && testrun.endDateTime && (
+                              <Tag color="white" border uppercase>
+                                {dateUtil.getDateString(testrun.endDateTime)}
+                              </Tag>
+                            )}
+                          </div>
+                          {!testrun.startDateTime && !testrun.endDateTime && <Tag color="transparent">{t('설정된 테스트런 기간이 없습니다.')}</Tag>}
                         </div>
-                        {!testrun.startDateTime && !testrun.endDateTime && <Tag color="transparent">{t('설정된 테스트런 기간이 없습니다.')}</Tag>}
-                      </div>
+                      )}
+                      {!testrun.opened && (
+                        <div className="time-info">
+                          {testrun.startDateTime && (testrun.closedDate || testrun.endDateTime) && (
+                            <div className="time-summary">
+                              {t('@부터 @까지 테스트 진행', {
+                                from: dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes'),
+                                to: dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate || testrun.endDateTime),
+                              })}
+                            </div>
+                          )}
+                          {!(testrun.startDateTime && (testrun.closedDate || testrun.endDateTime)) && <div className="time-summary">{t('설정된 테스트런 기간이 없습니다.')}</div>}
+                        </div>
+                      )}
                     </div>
                   </Card>
                 </li>

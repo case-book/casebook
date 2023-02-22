@@ -81,6 +81,30 @@
         padding: 1rem 1rem;
         position: relative;
 
+        .status {
+          position: absolute;
+          top: 8px;
+          left: 8px;
+        }
+
+        &.opened {
+          .status {
+            .status-tag {
+              background-color: var(--success-color);
+              color: var(--white-color);
+            }
+          }
+        }
+
+        &.closed {
+          .status {
+            .status-tag {
+              background-color: var(--gray-color);
+              color: var(--white-color);
+            }
+          }
+        }
+
         .config-button {
           position: absolute;
           top: 8px;
@@ -172,12 +196,6 @@
               line-height: 100%;
               font-size: 12px;
             }
-
-            .time-span {
-              position: absolute;
-              right: -8px;
-              bottom: -8px;
-            }
           }
         }
 
@@ -186,6 +204,22 @@
 
           .time-info {
             display: flex;
+            position: relative;
+            height: 26px;
+
+            .time-span {
+              position: absolute;
+              right: 0;
+            }
+
+            .time-summary {
+              flex-grow: 1;
+              font-size: 12px;
+              padding: 5px;
+              font-weight: bold;
+              text-align: right;
+              color: var(--gray-color);
+            }
 
             .calendar {
               padding-bottom: 2px;
@@ -199,6 +233,10 @@
             .end-date-info {
               position: relative;
               display: flex;
+
+              .past {
+                color: var(--danger-color);
+              }
 
               &.no-start-time {
                 margin-left: 0.5rem;

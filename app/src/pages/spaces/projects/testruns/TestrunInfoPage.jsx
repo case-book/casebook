@@ -120,6 +120,23 @@ function TestrunInfoPage() {
     <Page className="testrun-info-page-wrapper">
       <PageTitle
         links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`}>{t('편집')}</Link>] : null}
+        control={
+          <div>
+            {testrun.opened && (
+              <Button size="sm" color="warning" onClick={onClosed}>
+                {t('테스트런 종료')}
+              </Button>
+            )}
+            {!testrun.opened && (
+              <Button size="sm" color="warning" onClick={onOpened}>
+                {t('테스트런 오픈')}
+              </Button>
+            )}
+            <Button size="sm" color="danger" onClick={onDelete}>
+              {t('테스트런 삭제')}
+            </Button>
+          </div>
+        }
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
         }}
@@ -213,6 +230,12 @@ function TestrunInfoPage() {
               </BlockRow>
             </>
           )}
+          <BlockRow>
+            <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
+              {t('자동 종료')}
+            </Label>
+            <Text>{testrun.deadlineClose ? 'Y' : 'N'}</Text>
+          </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
             {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
@@ -325,28 +348,6 @@ function TestrunInfoPage() {
             )}
           </BlockRow>
         </Block>
-        {project?.admin && (
-          <>
-            <Title>{t('테스트런 관리')}</Title>
-            <Block className="space-control">
-              {testrun.opened && (
-                <Button color="warning" onClick={onClosed}>
-                  {t('테스트런 종료')}
-                </Button>
-              )}
-              {!testrun.opened && (
-                <Button color="warning" onClick={onOpened}>
-                  {t('테스트런 오픈')}
-                </Button>
-              )}
-              <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 1rem" />
-              <Button color="danger" onClick={onDelete}>
-                {t('테스트런 삭제')}
-              </Button>
-            </Block>
-          </>
-        )}
-
         <PageButtons
           outline
           onBack={() => {

@@ -41,6 +41,8 @@ public class TestrunResponse {
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Long reserveResultId;
 
+    private Boolean deadlineClose;
+
     public TestrunResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
         this.seqId = testrun.getSeqId();
@@ -62,6 +64,7 @@ public class TestrunResponse {
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
+        this.deadlineClose = testrun.getDeadlineClose();
 
         if (testrun.getTestrunUsers() != null && !testrun.getTestrunUsers().isEmpty()) {
             this.testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserResponse::new).collect(Collectors.toList());

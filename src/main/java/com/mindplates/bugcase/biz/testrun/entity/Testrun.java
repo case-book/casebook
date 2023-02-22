@@ -15,9 +15,9 @@ import java.util.List;
 
 @Entity
 @Builder
-@Table(name = "testrun", indexes = {
-        @Index(name = "IDX_TESTCASE_PROJECT_ID_AND_SEQ_ID", columnList = "project_id, seq_id", unique = true)
-})
+@Table(name = "testrun", indexes = {@Index(name = "IDX_TESTRUN_PROJECT_ID", columnList = "project_id"),
+        @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,end_date_time,id"),
+        @Index(name = "IDX_TESTRUN_PROJECT_ID_CREATION_TYPE_START_DATE_TIME_ID", columnList = "project_id,creation_type,start_date_time,id")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -94,5 +94,8 @@ public class Testrun extends CommonEntity {
 
     @Column(name = "reserve_result_id")
     private Long reserveResultId;
+
+    @Column(name = "deadline_close")
+    private Boolean deadlineClose;
 
 }

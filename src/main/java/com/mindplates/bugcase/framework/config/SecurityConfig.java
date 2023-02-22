@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final SpaceService spaceService;
 
+    private final MessageSourceAccessor messageSourceAccessor;
     private final ProjectService projectService;
 
     @Value("${bug-case.corsUrls}")
@@ -60,14 +62,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/api/configs/systems/**")
-                .antMatchers(HttpMethod.OPTIONS, "/**")
-                .antMatchers("/api/configs/systems/**")
-                .antMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
-                .antMatchers("/api/**/projects/**/testcases/**/images/**")
-                .antMatchers("/api/**/projects/**/testruns/**/images/**")
-                .antMatchers("/api/**/projects/**/images/**")
-                .antMatchers("/ws/**");
+        web.ignoring().mvcMatchers("/api/configs/systems/**")
+                .mvcMatchers(HttpMethod.OPTIONS, "/**")
+                .mvcMatchers("/api/configs/systems/**")
+                .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
+                .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
+                .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
+                .mvcMatchers("/api/**/projects/**/images/**")
+                .mvcMatchers("/ws/**");
 
     }
 
@@ -79,13 +81,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
-                .authorizeRequests().antMatchers("/ws/**").permitAll().anyRequest().authenticated()
+                .authorizeRequests().mvcMatchers("/ws/**").permitAll().anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager())
                 .and()
                 .formLogin().disable();
 
 
-        http.addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
     }

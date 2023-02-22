@@ -49,7 +49,7 @@ public class TestrunScheduler {
     }
 
     @Scheduled(cron = "0 * * * * *")
-    public void printDate() {
+    public void createTestrunScheduler() {
         LocalDateTime now = LocalDateTime.now();
         String nowStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
         List<TestrunDTO> testrunList = testrunService.selectReserveTestrunList();
@@ -93,6 +93,16 @@ public class TestrunScheduler {
                     testrunService.updateTestrunReserveExpired(testrunId, true, null);
                 }
             }
+        }));
+
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    public void closeTestrunScheduler() {
+        LocalDateTime now = LocalDateTime.now();
+        List<TestrunDTO> testrunList = testrunService.selectDeadlineTestrunList(now);
+        testrunList.forEach((testrunDTO -> {
+            testrunService.updateProjectTestrunStatusClosed(testrunDTO.getProject().getSpace().getCode(), testrunDTO.getProject().getId(), testrunDTO.getId());
         }));
 
     }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.ErrorResponse;
 import io.jsonwebtoken.JwtException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,8 +18,11 @@ import java.io.IOException;
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    @Autowired
     private MessageSourceAccessor messageSourceAccessor;
+
+    public ExceptionHandlerFilter (MessageSourceAccessor messageSourceAccessor) {
+        this.messageSourceAccessor = messageSourceAccessor;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,6 +47,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     private void setErrorResponse(HttpServletResponse response, HttpStatus httpStatus, String errorMsg) {
 
         response.setStatus(httpStatus.value());
+        response.setCharacterEncoding("utf-8");
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         try {

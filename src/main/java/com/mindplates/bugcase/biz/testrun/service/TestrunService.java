@@ -91,6 +91,11 @@ public class TestrunService {
         return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
     }
 
+    public List<TestrunDTO> selectDeadlineTestrunList(LocalDateTime endDateTime) {
+        List<Testrun> list = testrunRepository.findAllByDeadlineCloseTrueAndCreationTypeAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(TestrunCreationTypeCode.CREATE, endDateTime);
+        return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
+    }
+
     public List<TestrunDTO> selectProjectAllTestrunList(String spaceCode, long projectId) {
         List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(spaceCode, projectId);
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
@@ -150,7 +155,7 @@ public class TestrunService {
 
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
-            slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, testrun.getName());
+            slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
         }
 
         testrunRepository.save(testrun);
@@ -217,7 +222,7 @@ public class TestrunService {
             Long projectId = testrun.getProject().getId();
             ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
             if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
-                slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, testrun.getName());
+                slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
             }
         }
 
@@ -424,6 +429,7 @@ public class TestrunService {
         targetTestrun.setStartTime(testrun.getStartTime());
         targetTestrun.setDurationHours(testrun.getDurationHours());
         targetTestrun.setReserveExpired(testrun.getReserveExpired());
+        targetTestrun.setDeadlineClose(testrun.getDeadlineClose());
         // 삭제된 테스트 제거
         targetTestrun.getTestrunUsers().removeIf((testrunUser -> testrun.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())))));
         // 추가된 테스터 추가

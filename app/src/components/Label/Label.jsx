@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Label.scss';
 
-function Label({ className, children, minWidth, required, separator, size, verticalAlign, disabled }) {
+function Label({ className, children, minWidth, required, separator, size, verticalAlign, disabled, tip }) {
   return (
     <div
       className={`label-wrapper size-${size} ${className} ${required ? 'required' : ''} ${disabled ? 'disabled' : ''}`}
@@ -23,6 +23,11 @@ function Label({ className, children, minWidth, required, separator, size, verti
           </div>
         )}
       </span>
+      {tip && (
+        <span className="tip" data-tip={tip}>
+          <i className="fa-regular fa-circle-question" />
+        </span>
+      )}
       {separator && (
         <span
           className="liner"
@@ -46,6 +51,7 @@ Label.defaultProps = {
   verticalAlign: 'center',
   children: null,
   disabled: false,
+  tip: '',
 };
 
 Label.propTypes = {
@@ -57,6 +63,7 @@ Label.propTypes = {
   size: PropTypes.string,
   verticalAlign: PropTypes.string,
   disabled: PropTypes.bool,
+  tip: PropTypes.string,
 };
 
 export default Label;

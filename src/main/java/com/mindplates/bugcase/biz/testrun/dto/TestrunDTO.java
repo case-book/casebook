@@ -44,6 +44,8 @@ public class TestrunDTO extends CommonDTO {
     private Boolean reserveExpired;
     private Long reserveResultId;
 
+    private Boolean deadlineClose;
+
     public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
         this.seqId = testrun.getSeqId();
@@ -72,6 +74,7 @@ public class TestrunDTO extends CommonDTO {
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
+        this.deadlineClose = testrun.getDeadlineClose();
     }
 
     public TestrunDTO(Testrun testrun, boolean detail) {
