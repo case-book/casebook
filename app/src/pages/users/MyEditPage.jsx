@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import moment from 'moment-timezone';
 import UserService from '@/services/UserService';
-import { COUNTRIES, LANGUAGES, TIMEZONES } from '@/constants/constants';
+import { COUNTRIES, LANGUAGES, SYSTEM_ROLE, TIMEZONES } from '@/constants/constants';
 import i18n from 'i18next';
 import useStores from '@/hooks/useStores';
 
@@ -63,7 +63,27 @@ function MyEditPage() {
             {user?.systemRole === 'ROLE_ADMIN' && (
               <BlockRow>
                 <Label>{t('시스템 권한')}</Label>
-                <Text>{t('시스템 관리자')}</Text>
+                <Text>{SYSTEM_ROLE[user?.systemRole]}</Text>
+              </BlockRow>
+            )}
+            {user?.systemRole === 'ROLE_ADMIN' && (
+              <BlockRow>
+                <Label>{t('적용 권한')}</Label>
+                <Selector
+                  items={Object.keys(SYSTEM_ROLE).map(key => {
+                    return {
+                      key,
+                      value: SYSTEM_ROLE[key],
+                    };
+                  })}
+                  value={user?.activeSystemRole}
+                  onChange={value => {
+                    setUser({
+                      ...user,
+                      activeSystemRole: value,
+                    });
+                  }}
+                />
               </BlockRow>
             )}
             <BlockRow>

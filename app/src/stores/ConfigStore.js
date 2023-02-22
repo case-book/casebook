@@ -24,7 +24,7 @@ export default class ConfigStore {
   setVersion = version => {
     this.version = {
       name: version.name,
-      version: version.name,
+      version: version.version,
     };
 
     this.setUp = version.setUp;

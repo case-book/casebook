@@ -7,7 +7,6 @@ import com.mindplates.bugcase.biz.notification.vo.NotificationResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.biz.user.vo.request.JoinRequest;
 import com.mindplates.bugcase.biz.user.vo.request.LoginRequest;
@@ -47,8 +46,6 @@ public class UserController {
     private final SpaceService spaceService;
     private final NotificationService notificationService;
     private final JwtTokenProvider jwtTokenProvider;
-
-
 
     @Operation(description = "회원 가입 및 로그인 처리")
     @PostMapping("/join")

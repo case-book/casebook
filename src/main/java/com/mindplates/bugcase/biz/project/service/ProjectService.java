@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
@@ -45,15 +46,18 @@ public class ProjectService {
 
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
+    private final ProjectUserRepository projectUserRepository;
+
     private final MappingUtil mappingUtil;
 
-    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, MappingUtil mappingUtil) {
+    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository, MappingUtil mappingUtil) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
         this.testrunService = testrunService;
         this.testcaseItemRepository = testcaseItemRepository;
         this.testrunTestcaseGroupTestcaseItemRepository = testrunTestcaseGroupTestcaseItemRepository;
+        this.projectUserRepository = projectUserRepository;
         this.mappingUtil = mappingUtil;
     }
 
@@ -249,6 +253,14 @@ public class ProjectService {
         }
 
         projectRepository.save(project);
+    }
+
+    public boolean selectIsProjectMember(Long projectId, Long userId) {
+        return projectUserRepository.existsByProjectIdAndUserId(projectId, userId);
+    }
+
+    public boolean selectIsProjectAdmin(Long projectId, Long userId) {
+        return projectUserRepository.existsByProjectIdAndUserIdAndRole(projectId, userId, UserRoleCode.ADMIN);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.framework.config;
 
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.framework.handler.ExceptionHandlerFilter;
 import com.mindplates.bugcase.framework.security.*;
@@ -35,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final SpaceService spaceService;
 
+    private final ProjectService projectService;
+
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
 
@@ -47,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
         handler.setRoleHierarchy(roleHierarchy);
 
-        ResourceVoter resourceVoter = new ResourceVoter(spaceService);
+        ResourceVoter resourceVoter = new ResourceVoter(spaceService, projectService);
         resourceVoter.setExpressionHandler(handler);
 
         List<AccessDecisionVoter<? extends Object>> decisionVoters

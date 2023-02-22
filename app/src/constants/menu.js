@@ -42,6 +42,12 @@ const STATIC_MENUS = [
         name: '사용자 관리',
         admin: true,
       },
+      {
+        key: 'spaces',
+        to: '/spaces',
+        name: '스페이스 관리',
+        admin: true,
+      },
     ],
   },
 ];

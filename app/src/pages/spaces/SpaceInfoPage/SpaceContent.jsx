@@ -7,7 +7,7 @@ import SpaceService from '@/services/SpaceService';
 import { SpacePropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { APPROVAL_STATUS_INFO, MESSAGE_CATEGORY } from '@/constants/constants';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import useStores from '@/hooks/useStores';
 import './SpaceContent.scss';
@@ -16,7 +16,7 @@ function SpaceContent({ space, onRefresh }) {
   const { t } = useTranslation();
 
   const {
-    userStore: { removeSpace },
+    userStore: { removeSpace, isAdmin },
   } = useStores();
 
   const navigate = useNavigate();
@@ -86,30 +86,6 @@ function SpaceContent({ space, onRefresh }) {
     });
   }, [space, userRole]);
 
-  const getApprovalStatusName = code => {
-    switch (code) {
-      case 'REQUEST': {
-        return t('요청');
-      }
-
-      case 'REQUEST_AGAIN': {
-        return t('재요청');
-      }
-
-      case 'APPROVAL': {
-        return t('승인');
-      }
-
-      case 'REJECTED': {
-        return t('거절');
-      }
-
-      default: {
-        return 'NONE';
-      }
-    }
-  };
-
   const onDelete = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
@@ -129,13 +105,13 @@ function SpaceContent({ space, onRefresh }) {
   return (
     <>
       <PageTitle
-        links={space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('편집')}</Link>] : null}
+        links={isAdmin || space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('편집')}</Link>] : null}
         control={
           <div>
             <Button size="sm" color="warning" onClick={withdraw}>
               {t('스페이스 탈퇴')}
             </Button>
-            {space?.admin && (
+            {(isAdmin || space?.admin) && (
               <Button size="sm" color="danger" onClick={onDelete}>
                 {t('스페이스 삭제')}
               </Button>
@@ -248,7 +224,7 @@ function SpaceContent({ space, onRefresh }) {
                         <Td className="user-info">{applicant.userName}</Td>
                         <Td className={`request-status ${applicant.approvalStatusCode}`}>
                           <Tag border rounded={false}>
-                            {t(getApprovalStatusName(applicant.approvalStatusCode))}
+                            {APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}
                           </Tag>
                         </Td>
                         <Td className="user-email">{applicant.userEmail}</Td>
@@ -370,7 +346,7 @@ function SpaceContent({ space, onRefresh }) {
             navigate(-1);
           }}
           onEdit={
-            space?.admin
+            isAdmin && space?.admin
               ? () => {
                   navigate(`/spaces/${id}/edit`);
                 }

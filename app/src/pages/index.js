@@ -25,6 +25,8 @@ import SetUpPage from '@/pages/admin/SetUpPage';
 import UserListPage from '@/pages/admin/UserListPage';
 import UserInfoPage from '@/pages/admin/UserInfoPage';
 import UserEditPage from '@/pages/admin/UserEditPage';
+import AdminSpaceListPage from '@/pages/admin/AdminSpaceListPage';
+import AdminSpaceInfoPage from '@/pages/admin/AdminSpaceInfoPage';
 import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/TestrunListPage';
 import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
@@ -62,4 +64,6 @@ export {
   TestrunInfoPage,
   ReportListPage,
   ReportInfoPage,
+  AdminSpaceListPage,
+  AdminSpaceInfoPage,
 };

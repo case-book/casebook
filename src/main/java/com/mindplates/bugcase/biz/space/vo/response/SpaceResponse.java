@@ -45,6 +45,12 @@ public class SpaceResponse {
         }
     }
 
+    public SpaceResponse(SpaceDTO space, List<ProjectDTO> projects) {
+        this(space);
+        this.applicants = space.getApplicants().stream().map(SpaceApplicantResponse::new).collect(Collectors.toList());
+        this.projects = projects.stream().map(ProjectListResponse::new).collect(Collectors.toList());
+    }
+
     public SpaceResponse(SpaceDTO space, Long userId, List<ProjectDTO> projects) {
         this(space);
         if (userId != null && space.getUsers().stream().anyMatch(spaceUser -> spaceUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(spaceUser.getRole()))) {

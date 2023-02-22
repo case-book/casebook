@@ -73,7 +73,6 @@
       .join-info {
         margin-top: 1rem;
 
-
         .message-content {
           max-width: 600px;
           margin: 0 auto 1rem;
@@ -90,20 +89,16 @@
 
       .request-info {
         text-align: left;
+        .title {
+          font-size: 14px;
+          padding: 0.5rem;
+        }
 
         .space-admin-list {
           margin-bottom: 1rem;
-          margin-top: 1rem;
-          background-color: #141414;
+          background-color: var(--lighter-color);
           position: relative;
           border-radius: 4px;
-
-          .title {
-            font-size: 12px;
-            position: absolute;
-            top: -8px;
-            left: 8px;
-          }
 
           ul {
             list-style: none;
@@ -119,7 +114,7 @@
                 font-family: NotoSans, sans-serif;
                 font-size: 12px;
                 text-transform: uppercase;
-                background-color: #333;
+
                 padding: 4px 8px;
                 border-radius: 8px;
               }

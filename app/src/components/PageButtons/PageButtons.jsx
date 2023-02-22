@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@/components/Button/Button';
 import Liner from '@/components/Liner/Liner';
+import i18n from 'i18next';
 import './PageButtons.scss';
 
 function PageButtons(props) {
@@ -143,17 +144,17 @@ PageButtons.defaultProps = {
   className: '',
   size: 'lg',
   outline: true,
-  onListText: '목록',
+  onListText: i18n.t('목록'),
   onListIcon: '', // <i className="far fa-file-alt" />,
-  onInfoText: '정보',
+  onInfoText: i18n.t('정보'),
   onInfoIcon: '', // <i className="far fa-file-alt" />,
-  onDeleteText: '삭제',
+  onDeleteText: i18n.t('삭제'),
   onDeleteIcon: '', // <i className="far fa-trash-alt" />,
-  onSubmitText: '저장',
+  onSubmitText: i18n.t('저장'),
   onSubmitIcon: '', // <i className="far fa-paper-plane" />,
-  onEditText: '편집',
+  onEditText: i18n.t('편집'),
   onEditIcon: '', // <i className="fas fa-pen-nib" />,
-  onCancelText: '취소',
+  onCancelText: i18n.t('취소'),
   onCancelIcon: '', // <i className="fas fa-chevron-left" />,
   onList: null,
   onInfo: null,
@@ -162,7 +163,7 @@ PageButtons.defaultProps = {
   onEdit: null,
   onCancel: null,
   border: false,
-  onBackText: '뒤로',
+  onBackText: i18n.t('뒤로'),
   onBackIcon: '', // <i className="fas fa-chevron-left" />
   onBack: null,
 };

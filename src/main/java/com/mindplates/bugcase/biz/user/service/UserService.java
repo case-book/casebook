@@ -77,6 +77,9 @@ public class UserService {
         targetUser.setLanguage(user.getLanguage());
         targetUser.setCountry(user.getCountry());
         targetUser.setTimezone(user.getTimezone());
+        if (targetUser.getSystemRole().equals(SystemRole.ROLE_ADMIN)) {
+            targetUser.setActiveSystemRole(user.getActiveSystemRole());
+        }
         return new UserDTO(userRepository.save(targetUser));
     }
 
@@ -105,6 +108,19 @@ public class UserService {
         if (!userInfo.getPassword().equals(currentEncryptedText)) {
             throw new ServiceException(HttpStatus.BAD_REQUEST, "user.current.password.not.matched");
         }
+
+        byte[] saltBytes = encryptUtil.getSaltByteArray();
+        String salt = encryptUtil.getSaltString(saltBytes);
+        userInfo.setSalt(salt);
+        String encryptedText = encryptUtil.getEncrypt(newPassword, saltBytes);
+        userInfo.setPassword(encryptedText);
+
+        return new UserDTO(userRepository.save(userInfo));
+    }
+
+    @Transactional
+    public UserDTO updateUserPasswordByAdmin(Long userId, String newPassword) {
+        User userInfo = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         byte[] saltBytes = encryptUtil.getSaltByteArray();
         String salt = encryptUtil.getSaltString(saltBytes);

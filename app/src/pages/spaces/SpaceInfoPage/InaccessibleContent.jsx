@@ -78,14 +78,15 @@ function InaccessibleContent({ space, onRefresh }) {
             {!space.allowAutoJoin && space.applicant && (space.applicant.approvalStatusCode === 'REQUEST' || space.applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
               <div className="requesting-join">
                 <div className="msg">{t('스페이스 관리자의 승인 후 스페이스에 참여 할 수 있습니다.')}</div>
+
                 <div className="request-info">
+                  <div className="title">{t('스페이스 관리자')}</div>
                   <div className="space-admin-list">
-                    <div className="title">{t('스페이스 관리자')}</div>
                     <ul>
                       {space.admins.map(admin => {
                         return (
                           <li key={admin.id}>
-                            <div className="admin">{admin.email}</div>
+                            <Tag color="white">{admin.email}</Tag>
                           </li>
                         );
                       })}

@@ -3,4 +3,11 @@
     margin-left: 0;
   }
 
+  .system-property-table {
+    .property-value {
+      white-space: normal;
+      word-break: break-all;
+    }
+  }
+
 }

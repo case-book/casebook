@@ -25,6 +25,7 @@ import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TestrunService {
 
     private final TestrunRepository testrunRepository;
@@ -145,6 +147,12 @@ public class TestrunService {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testrun.setOpened(false);
         testrun.setClosedDate(LocalDateTime.now());
+
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+            slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, testrun.getName());
+        }
+
         testrunRepository.save(testrun);
     }
 
@@ -153,7 +161,14 @@ public class TestrunService {
     public void updateProjectTestrunStatusOpened(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testrun.setOpened(true);
-        testrun.setClosedDate(LocalDateTime.now());
+        testrun.setClosedDate(null);
+
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+            List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
+            slackService.sendTestrunReOpenMessage(project.getSlackUrl(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(), testers);
+        }
+
         testrunRepository.save(testrun);
     }
 
@@ -172,7 +187,7 @@ public class TestrunService {
     }
 
     @Transactional
-    public void updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
+    public boolean updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
 
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -193,15 +208,41 @@ public class TestrunService {
             testrun.setUntestableTestcaseCount(testrun.getUntestableTestcaseCount() + 1);
         }
 
+        boolean done = false;
+        if (testrun.getTotalTestcaseCount() <= testrun.getPassedTestcaseCount() + testrun.getFailedTestcaseCount() + testrun.getUntestableTestcaseCount()) {
+            testrun.setOpened(false);
+            done = true;
+
+            String spaceCode = testrun.getProject().getSpace().getCode();
+            Long projectId = testrun.getProject().getId();
+            ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+            if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+                slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, testrun.getName());
+            }
+        }
+
         testrunTestcaseGroupTestcase.setTestResult(testResultCode);
         testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
         testrunRepository.save(testrun);
+
+        return done;
     }
 
     @Transactional
-    public void updateTestrunTestcaseTester(Long testrunTestcaseGroupTestcaseId, Long testerId) {
+    public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, Long testerId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Long oldUserId = testrunTestcaseGroupTestcase.getTester().getId();
         testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
+
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
+            Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(oldUserId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
+            String afterUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
+
+            slackService.sendTestrunTesterChangeMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName);
+        }
+
         testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
     }
 
@@ -352,35 +393,18 @@ public class TestrunService {
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
 
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
-            StringBuilder message = new StringBuilder();
-
-            String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + result.getProject().getId() + "/testruns/" + result.getId();
-
-            message.append(messageSourceAccessor.getMessage("testrun.created", new Object[]{result.getName(), testrunUrl}));
-
-            List<ProjectUserDTO> testers = result.getTestcaseGroups().stream()
-                    .flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
-                    .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
-                    .distinct()
-                    .map(userId -> {
-                        return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
-                    })
-                    .collect(Collectors.toList());
-
-            if (!testers.isEmpty()) {
-                for (ProjectUserDTO projectUserDTO : testers) {
-                    message.append(messageSourceAccessor.getMessage("testrun.user.link",
-                            new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
-                }
-
-            }
-
-
-            slackService.sendText(project.getSlackUrl(), message.toString());
+            List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
+            slackService.sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
         }
 
         return new TestrunDTO(result, true);
         // return mappingUtil.convert(result, TestrunDTO.class);
+    }
+
+    private List<ProjectUserDTO> getTester(ProjectDTO project, List<TestrunTestcaseGroup> testcaseGroups) {
+        return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()).map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId()).distinct().map(userId -> {
+            return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -412,10 +436,10 @@ public class TestrunService {
         int currentSeq = random.nextInt(testrunUsers.size());
 
         // 삭제된 테스트런 테스트케이스 그룹 제거
-        targetTestrun.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrun.getTestcaseGroups().stream().noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
+        targetTestrun.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
         // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
         for (TestrunTestcaseGroup testcaseGroup : targetTestrun.getTestcaseGroups()) {
-            TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+            TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
             if (testcaseGroup.getTestcases() != null) {
                 testcaseGroup.getTestcases().removeIf(testcase -> {
                     if (updateTestrunTestcaseGroup != null) {

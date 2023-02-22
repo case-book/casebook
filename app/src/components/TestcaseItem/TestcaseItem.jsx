@@ -85,14 +85,25 @@ function TestcaseItem({
             )}
             {(testcaseTemplateItem.type === 'URL' || testcaseTemplateItem.type === 'TEXT' || testcaseTemplateItem.type === 'NUMBER') && (
               <div>
-                {!isEdit && <div className="value-text">{testcaseItem.value}</div>}
+                {!isEdit && (
+                  <div className="value-text">
+                    <span
+                      onClick={() => {
+                        if (testcaseItem.value) {
+                          window.open(testcaseItem.value, '_blank', 'noopener, noreferrer');
+                        }
+                      }}
+                    >
+                      {testcaseItem.value}
+                    </span>
+                  </div>
+                )}
                 {isEdit && (
                   <Input
                     type={testcaseTemplateItem.type.toLowerCase()}
                     value={testcaseItem.value}
                     size={size}
                     outline
-                    color="black"
                     onChange={val => {
                       onChangeTestcaseItem(testcaseTemplateItem.id, 'value', 'value', val, testcaseTemplateItem.type);
                     }}

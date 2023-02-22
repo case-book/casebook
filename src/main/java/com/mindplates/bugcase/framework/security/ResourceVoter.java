@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.framework.security;
 
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.vo.SecurityUser;
@@ -24,10 +25,12 @@ import java.util.regex.Pattern;
 public class ResourceVoter extends WebExpressionVoter {
 
     public static final Pattern USERS_PATTERN = Pattern.compile("^/api/users/my/?(.*)?$");
-    public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects(.*)");
+    public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(.*)");
     public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
     public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
     private final SpaceService spaceService;
+
+    private final ProjectService projectService;
     List<Pattern> allPassPatterns = Arrays.asList(Pattern.compile("^/api/spaces/(.*)/accessible$"), Pattern.compile("^/api/spaces/(.*)/applicants$"), Pattern.compile("^/api/spaces/(.*)/users/my$"));
 
     @Override
@@ -63,11 +66,64 @@ public class ResourceVoter extends WebExpressionVoter {
             } else if (usersMatcher.matches()) {
                 return ACCESS_GRANTED;
             } else if (projectsMatcher.matches()) {
-                String spaceCode = projectsMatcher.group(1);
-                if (StringUtils.isNotBlank(spaceCode) && spaceService.selectIsSpaceMember(spaceCode, userId)) {
+
+                if (SystemRole.ROLE_ADMIN.toString().equals(user.getRoles())) {
                     return ACCESS_GRANTED;
                 }
+
+                String spaceCode = projectsMatcher.group(1);
+                String projectIdInfo = projectsMatcher.group(2);
+
+                // 스페이스 권한 없으면 거부
+                if (!(StringUtils.isNotBlank(spaceCode) && spaceService.selectIsSpaceMember(spaceCode, userId))) {
+                    return ACCESS_DENIED;
+                }
+
+                HttpMethod method = HttpMethod.valueOf(request.getMethod());
+
+                if (method == HttpMethod.PUT || method == HttpMethod.DELETE) {
+                    Long projectId;
+                    try {
+                        projectId = Long.parseLong(projectIdInfo);
+                    } catch (Exception e) {
+                        return ACCESS_DENIED;
+                    }
+
+                    // 프로젝트 수정, 삭제는 프로젝트 어드민인 경우, 허용
+                    if (projectService.selectIsProjectAdmin(projectId, userId)) {
+                        return ACCESS_GRANTED;
+                    }
+
+                    return ACCESS_DENIED;
+
+                } else if (method == HttpMethod.POST) {
+                    // 프로젝트 생성은 스페이스 멤버인 경우 모두 허용
+                    return ACCESS_GRANTED;
+                } else {
+
+                    // 프로젝트 목록인 경우, 허용
+                    if ("".equals(projectIdInfo) || "my".equals(projectIdInfo)) {
+                        return ACCESS_GRANTED;
+                    }
+
+                    Long projectId;
+                    try {
+                        projectId = Long.parseLong(projectIdInfo);
+                    } catch (Exception e) {
+                        return ACCESS_DENIED;
+                    }
+
+                    // 특정 프로젝트 접근은 멤버인 경우 허용
+                    if (projectService.selectIsProjectMember(projectId, userId)) {
+                        return ACCESS_GRANTED;
+                    }
+
+                    return ACCESS_DENIED;
+                }
             } else if (spacesMatcher.matches()) {
+                if (SystemRole.ROLE_ADMIN.toString().equals(user.getRoles())) {
+                    return ACCESS_GRANTED;
+                }
 
                 HttpMethod method = HttpMethod.valueOf(request.getMethod());
 

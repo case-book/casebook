@@ -1,45 +1,46 @@
 package com.mindplates.bugcase.framework.config;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
+import lombok.extern.java.Log;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 @Component
+@Log
 public class RestTemplateConfig {
+
+    @Value("${proxy.enabled}")
+    private boolean proxyEnabled;
+
+    @Value("${proxy.host}")
+    private String host;
+
+    @Value("${proxy.port}")
+    private Integer port;
 
     @Bean
     public RestTemplate restTemplate() {
 
-        RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        if (proxyEnabled) {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(host, port));
+            factory.setProxy(proxy);
+        }
 
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(30 * 1000);
         factory.setReadTimeout(30 * 1000);
 
-        HttpClient httpClient = HttpClientBuilder.create()
-                .setMaxConnPerRoute(20)
-                .setMaxConnTotal(1000)
-                .setConnectionTimeToLive(10, TimeUnit.SECONDS)
-                .setDefaultRequestConfig(requestConfig)
-                .build();
-
-        factory.setHttpClient(httpClient);
-
         RestTemplate restTemplate = new RestTemplate(factory);
-        restTemplate.getMessageConverters()
-                .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
         return restTemplate;
-
 
     }
 

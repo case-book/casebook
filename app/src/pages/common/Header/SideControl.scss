@@ -34,6 +34,26 @@
 
   .user-menu {
     align-self: center;
+    position: relative;
+
+    .admin-flag {
+      position: absolute;
+      font-size: 10px;
+      font-family: Cairo, NotoSans, sans-serif;
+      font-weight: bold;
+      background-color: var(--danger-color);
+      color : var(--white-color);
+      line-height: 100%;
+      padding: 2px;
+      border-radius: 4px;
+      top : -10px;
+    }
+
+    &:hover {
+      .admin-flag {
+        top : -11px;
+      }
+    }
     > a {
       margin-right: 0.5rem;
     }

@@ -1,6 +1,6 @@
 <configuration>
 
-    <property name="PROJECT_NAME" value="eesprint"/>
+    <property name="PROJECT_NAME" value="casebook"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">

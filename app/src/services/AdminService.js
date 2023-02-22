@@ -1,6 +1,27 @@
 import * as request from '@/utils/request';
 
 const AdminService = {};
+AdminService.selectSpaceList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/admin/spaces',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+AdminService.selectSpaceInfo = (spaceId, successHandler, failHandler) => {
+  return request.get(
+    `/api/admin/spaces/${spaceId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
 
 AdminService.selectUserList = (successHandler, failHandler) => {
   return request.get(
@@ -38,6 +59,17 @@ AdminService.selectUserInfo = (userId, successHandler, failHandler) => {
 AdminService.updateUserInfo = (userId, userInfo, successHandler, failHandler) => {
   return request.put(
     `/api/admin/users/${userId}`,
+    userInfo,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+AdminService.updateUserPasswordInfo = (userId, userInfo, successHandler, failHandler) => {
+  return request.put(
+    `/api/admin/users/${userId}/password`,
     userInfo,
     res => {
       successHandler(res);

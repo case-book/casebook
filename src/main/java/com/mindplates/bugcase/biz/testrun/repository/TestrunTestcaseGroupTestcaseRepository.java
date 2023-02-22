@@ -13,5 +13,9 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
             "(SELECT ttg.id from TestrunTestcaseGroup ttg where ttg.testrun.id = :testrunId)")
     void deleteByTestrunId(@Param("testrunId") Long testrunId);
 
+    @Modifying
+    @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt where ttgt.testcase.id = :testcaseId")
+    void deleteByTestcaseId(@Param("testcaseId") Long testcaseId);
+
 }
 

@@ -1,14 +1,20 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
+import com.mindplates.bugcase.biz.admin.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
-import com.mindplates.bugcase.biz.user.vo.request.UpdateMyInfoRequest;
-import com.mindplates.bugcase.common.vo.SecurityUser;
+import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -16,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,6 +40,23 @@ public class AdminController {
     private final UserService userService;
 
     private final SpaceService spaceService;
+
+    private final ProjectService projectService;
+
+    @Operation(description = "모든 스페이스 조회")
+    @GetMapping("/spaces")
+    public List<SpaceListResponse> selectSpaceList() {
+        List<SpaceDTO> spaces = spaceService.selectSpaceList();
+        return spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "스페이스 조회")
+    @GetMapping("/spaces/{spaceId}")
+    public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {
+        SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
+        List<ProjectDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceId);
+        return new SpaceResponse(space, spaceProjectList);
+    }
 
     @Operation(description = "모든 사용자 조회")
     @GetMapping("/users")
@@ -56,14 +78,24 @@ public class AdminController {
 
     @Operation(description = "사용자 정보 변경")
     @PutMapping("/users/{userId}")
-    public ResponseEntity<?> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<?> updateUserPasswordInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
         userService.updateUserByAdmin(userId, userUpdateRequest.toDTO());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "사용자 비밀번호 변경")
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<?> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        if (!updatePasswordRequest.getNextPassword().equals(updatePasswordRequest.getNextPasswordConfirm())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "user.password.confirm.not.matched");
+        }
+        userService.updateUserPasswordByAdmin(userId, updatePasswordRequest.getNextPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "시스템 정보 조회")
     @GetMapping("/system/info")
-    public Map<String, String> selectSystemInfo() {
+    public SystemInfoResponse selectSystemInfo() {
         AtomicReference<Properties> keyspace = new AtomicReference<>();
         jsonRedisTemplate.execute((RedisCallback<Object>) connection -> {
             keyspace.set(connection.info("keyspace"));
@@ -76,15 +108,20 @@ public class AdminController {
             return null;
         });
 
-        Map<String, String> info = new HashMap<>();
+        Map<String, String> redis = new HashMap<>();
 
         Properties keyspaceProperties = keyspace.get();
-        getInfo(info, keyspaceProperties);
+        getInfo(redis, keyspaceProperties);
 
         Properties memoryProperties = memory.get();
-        getInfo(info, memoryProperties);
+        getInfo(redis, memoryProperties);
 
-        return info;
+        Map<String, String> system = new HashMap<>();
+        Properties properties = System.getProperties();
+        getInfo(system, properties);
+
+
+        return new SystemInfoResponse(redis, system);
     }
 
 

@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.user.vo.request;
 
 
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.common.code.SystemRole;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -18,8 +18,9 @@ public class UpdateMyInfoRequest {
     @NotBlank
     private String country;
     private String timezone;
+    private SystemRole activeSystemRole;
 
     public UserDTO toDTO() {
-        return UserDTO.builder().name(name).country(country).language(language).timezone(timezone).build();
+        return UserDTO.builder().name(name).country(country).language(language).timezone(timezone).activeSystemRole(activeSystemRole).build();
     }
 }
