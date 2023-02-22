@@ -13,9 +13,8 @@ import java.util.List;
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
+
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
-
-
 
     List<Testrun> findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode creationTypeCode1, TestrunCreationTypeCode creationTypeCode2);
 
@@ -26,6 +25,8 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     Long countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
     Long countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(Long spaceId, Long projectId, TestrunCreationTypeCode creationTypeCode);
+
+    List<Testrun> findAllByDeadlineCloseTrueAndCreationTypeAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(TestrunCreationTypeCode testrunCreationTypeCode, LocalDateTime endDateTime);
 
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")

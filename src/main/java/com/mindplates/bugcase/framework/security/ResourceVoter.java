@@ -24,14 +24,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ResourceVoter extends WebExpressionVoter {
 
-    public static final Pattern USERS_PATTERN = Pattern.compile("^/api/users/my/?(.*)?$");
-    public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(.*)");
-    public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
     public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
+    public static final Pattern PROJECT_SUB_PATTERN = Pattern.compile("^/api/(.*)/projects/(\\d+)/(testruns|testcases)/?(.*)?");
+    public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(\\d+|my)?");
+    public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
     private final SpaceService spaceService;
-
     private final ProjectService projectService;
-    List<Pattern> allPassPatterns = Arrays.asList(Pattern.compile("^/api/spaces/(.*)/accessible$"), Pattern.compile("^/api/spaces/(.*)/applicants$"), Pattern.compile("^/api/spaces/(.*)/users/my$"));
+    List<Pattern> allPassPatterns = Arrays.asList(Pattern.compile("^/api/users/my/?(.*)?$"), Pattern.compile("^/api/spaces/(.*)/accessible$"), Pattern.compile("^/api/spaces/(.*)/applicants$"), Pattern.compile("^/api/spaces/(.*)/users/my$"));
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -57,14 +56,37 @@ public class ResourceVoter extends WebExpressionVoter {
                 return ACCESS_GRANTED;
             }
 
-            Matcher usersMatcher = USERS_PATTERN.matcher(request.getRequestURI());
             Matcher spacesMatcher = SPACES_PATTERN.matcher(request.getRequestURI());
             Matcher projectsMatcher = PROJECTS_PATTERN.matcher(request.getRequestURI());
+            Matcher projectSubMatcher = PROJECT_SUB_PATTERN.matcher(request.getRequestURI());
+
             Matcher adminMatcher = ADMIN_PATTERN.matcher(request.getRequestURI());
             if (adminMatcher.matches()) {
                 return SystemRole.ROLE_ADMIN.toString().equals(user.getRoles()) ? ACCESS_GRANTED : ACCESS_DENIED;
-            } else if (usersMatcher.matches()) {
-                return ACCESS_GRANTED;
+            } else if (projectSubMatcher.matches()) {
+                if (SystemRole.ROLE_ADMIN.toString().equals(user.getRoles())) {
+                    return ACCESS_GRANTED;
+                }
+
+                String spaceCode = projectSubMatcher.group(1);
+
+                // 스페이스 권한 없으면 거부
+                if (!(StringUtils.isNotBlank(spaceCode) && spaceService.selectIsSpaceMember(spaceCode, userId))) {
+                    return ACCESS_DENIED;
+                }
+
+                try {
+                    // 프로젝트 하위 API는 프로젝트 멤버 모두에게 허용
+                    Long projectId = Long.parseLong(projectSubMatcher.group(2));
+                    if (projectService.selectIsProjectMember(projectId, userId)) {
+                        return ACCESS_GRANTED;
+                    }
+                } catch (Exception e) {
+                    return ACCESS_DENIED;
+                }
+
+                return ACCESS_DENIED;
+
             } else if (projectsMatcher.matches()) {
 
                 if (SystemRole.ROLE_ADMIN.toString().equals(user.getRoles())) {
@@ -72,7 +94,7 @@ public class ResourceVoter extends WebExpressionVoter {
                 }
 
                 String spaceCode = projectsMatcher.group(1);
-                String projectIdInfo = projectsMatcher.group(2);
+                String projectIdInfo = projectsMatcher.group(2) != null ? projectsMatcher.group(2) : "";
 
                 // 스페이스 권한 없으면 거부
                 if (!(StringUtils.isNotBlank(spaceCode) && spaceService.selectIsSpaceMember(spaceCode, userId))) {
@@ -82,16 +104,14 @@ public class ResourceVoter extends WebExpressionVoter {
                 HttpMethod method = HttpMethod.valueOf(request.getMethod());
 
                 if (method == HttpMethod.PUT || method == HttpMethod.DELETE) {
-                    Long projectId;
+                    // 프로젝트 수정, 삭제는 프로젝트 어드민인 경우, 허용
                     try {
-                        projectId = Long.parseLong(projectIdInfo);
+                        Long projectId = Long.parseLong(projectIdInfo);
+                        if (projectService.selectIsProjectAdmin(projectId, userId)) {
+                            return ACCESS_GRANTED;
+                        }
                     } catch (Exception e) {
                         return ACCESS_DENIED;
-                    }
-
-                    // 프로젝트 수정, 삭제는 프로젝트 어드민인 경우, 허용
-                    if (projectService.selectIsProjectAdmin(projectId, userId)) {
-                        return ACCESS_GRANTED;
                     }
 
                     return ACCESS_DENIED;
@@ -100,22 +120,19 @@ public class ResourceVoter extends WebExpressionVoter {
                     // 프로젝트 생성은 스페이스 멤버인 경우 모두 허용
                     return ACCESS_GRANTED;
                 } else {
-
                     // 프로젝트 목록인 경우, 허용
                     if ("".equals(projectIdInfo) || "my".equals(projectIdInfo)) {
                         return ACCESS_GRANTED;
                     }
 
-                    Long projectId;
                     try {
-                        projectId = Long.parseLong(projectIdInfo);
+                        // 특정 프로젝트 접근은 멤버인 경우 허용
+                        Long projectId = Long.parseLong(projectIdInfo);
+                        if (projectService.selectIsProjectMember(projectId, userId)) {
+                            return ACCESS_GRANTED;
+                        }
                     } catch (Exception e) {
                         return ACCESS_DENIED;
-                    }
-
-                    // 특정 프로젝트 접근은 멤버인 경우 허용
-                    if (projectService.selectIsProjectMember(projectId, userId)) {
-                        return ACCESS_GRANTED;
                     }
 
                     return ACCESS_DENIED;

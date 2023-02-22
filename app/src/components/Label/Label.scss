@@ -62,6 +62,11 @@
     align-self: center;
     padding-left: 1rem;
 
+    &.tip {
+      padding-left: 0.25rem;
+      color: var(--primary-color);
+    }
+
     @media (max-width: 768px) {
       padding-left: 0;
     }

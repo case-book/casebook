@@ -1,5 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CloseIcon, DatePicker, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Radio, Selector, Tag, Text, TextArea, Title } from '@/components';
+import {
+  Block,
+  Button,
+  CheckBox,
+  CloseIcon,
+  DatePicker,
+  DateRange,
+  Form,
+  Input,
+  Label,
+  Liner,
+  Page,
+  PageButtons,
+  PageContent,
+  PageTitle,
+  Radio,
+  Selector,
+  Tag,
+  Text,
+  TextArea,
+  Title,
+} from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -78,6 +99,7 @@ function TestrunEditPage({ type }) {
       return startTime.getTime();
     })(),
     durationHours: 24,
+    deadlineClose: true,
   });
 
   const isEdit = useMemo(() => {
@@ -456,7 +478,22 @@ function TestrunEditPage({ type }) {
                   </BlockRow>
                 </>
               )}
-
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
+                  {t('자동 종료')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrun.deadlineClose}
+                  onChange={val =>
+                    setTestrun({
+                      ...testrun,
+                      deadlineClose: val,
+                    })
+                  }
+                />
+              </BlockRow>
               <BlockRow className="testrun-users-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
                 <Text>

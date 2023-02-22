@@ -2,6 +2,7 @@ package com.mindplates.bugcase.common.service;
 
 
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.vo.SlackMessage;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,39 @@ public class SlackService {
         return true;
     }
 
-    public void sendTestrunClosedMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, String testrunName) {
-        String reportUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/reports/" + testrunId;
-        String message = messageSourceAccessor.getMessage("testrun.closed", new Object[]{testrunName}) + messageSourceAccessor.getMessage("testrun.report.link", new Object[]{reportUrl});
-        this.sendText(slackUrl, message);
+    public void sendTestrunClosedMessage(String slackUrl, String spaceCode, Long projectId, TestrunDTO testrun) {
+        String reportUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/reports/" + testrun.getId();
+        StringBuffer message = new StringBuffer();
+        message.append(messageSourceAccessor.getMessage("testrun.closed", new Object[]{testrun.getName()}));
+
+        float totalTestedCount = testrun.getPassedTestcaseCount() + testrun.getFailedTestcaseCount() + testrun.getUntestableTestcaseCount();
+        float totalCount = testrun.getTotalTestcaseCount();
+        float testedPercentage = 0;
+        if (totalCount > 1) {
+            testedPercentage = Math.round((totalTestedCount / totalCount) * 1000) / 10f;
+        }
+
+        float passedPercentage = 0;
+        if (totalCount > 1) {
+            passedPercentage = Math.round(((float)testrun.getPassedTestcaseCount() / totalCount) * 1000) / 10f;
+        }
+
+        float failedPercentage = 0;
+        if (totalCount > 1) {
+            failedPercentage = Math.round(((float)testrun.getFailedTestcaseCount() / totalCount) * 1000) / 10f;
+        }
+
+        float untestablePercentage = 0;
+        if (totalCount > 1) {
+            untestablePercentage = Math.round(((float)testrun.getUntestableTestcaseCount() / totalCount) * 1000) / 10f;
+        }
+
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.progress", new Object[]{testedPercentage, totalTestedCount, totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.passed", new Object[]{passedPercentage, testrun.getPassedTestcaseCount(), totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.failed", new Object[]{failedPercentage, testrun.getFailedTestcaseCount(), totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.untestable", new Object[]{untestablePercentage, testrun.getUntestableTestcaseCount(), totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.link", new Object[]{reportUrl}));
+        this.sendText(slackUrl, message.toString());
     }
 
     public void sendTestrunStartMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, String testrunName, List<ProjectUserDTO> testers) {

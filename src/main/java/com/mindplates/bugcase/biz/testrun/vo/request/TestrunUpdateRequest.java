@@ -31,6 +31,7 @@ public class TestrunUpdateRequest {
     private boolean onHoliday;
     private LocalDateTime startTime;
     private int durationHours;
+    private boolean deadlineClose;
 
     public TestrunDTO buildEntity() {
 
@@ -47,6 +48,7 @@ public class TestrunUpdateRequest {
                 .onHoliday(onHoliday)
                 .startTime(startTime.toLocalTime())
                 .durationHours(durationHours)
+                .deadlineClose(deadlineClose)
                 .build();
 
         if (testrunUsers != null) {

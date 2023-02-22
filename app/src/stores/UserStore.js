@@ -108,7 +108,6 @@ export default class UserStore {
   }
 
   get isAdmin() {
-    console.log(this.user);
     return this.user?.activeSystemRole === 'ROLE_ADMIN';
   }
 }

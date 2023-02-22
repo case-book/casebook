@@ -34,8 +34,8 @@ public class TestrunListResponse {
     private LocalTime startTime;
     private Integer durationHours;
     private Boolean reserveExpired;
-
     private Long reserveResultId;
+    private Boolean deadlineClose;
 
     public TestrunListResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -57,6 +57,7 @@ public class TestrunListResponse {
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
+        this.deadlineClose = testrun.getDeadlineClose();
     }
 
 
