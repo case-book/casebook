@@ -1,12 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
+import * as Sentry from '@sentry/browser';
 import '@/configurations/i18n';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'react-datepicker/dist/react-datepicker.css';
 import './styles/global.scss';
 import './index.scss';
+
+if (process.env.REACT_APP_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.REACT_APP_SENTRY_DSN,
+    release: process.env.REACT_APP_SENTRY_RELEASE || '',
+    maxBreadcrumbs: 50,
+    debug: true,
+    tracesSampleRate: 0.05,
+  });
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

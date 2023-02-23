@@ -46,4 +46,26 @@ ConfigService.sendTestMessageToSlack = (slackUrl, successHandler, failHandler) =
   );
 };
 
+ConfigService.createArithmeticException = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/errors/arithmetic',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ConfigService.createServiceException = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/errors/service',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

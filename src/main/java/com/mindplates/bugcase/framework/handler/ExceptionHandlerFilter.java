@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.ErrorResponse;
 import io.jsonwebtoken.JwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -29,6 +31,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (ServiceException e) {
+            log.error(e.getMessage(), e);
             if (e.getMessageCode() != null) {
                 String message = messageSourceAccessor.getMessage(e.getMessageCode(), e.getMessageParameters());
                 setErrorResponse(response, e.getCode(), message);
@@ -36,9 +39,11 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
                 setErrorResponse(response, e.getCode(), "");
             }
         } catch (JwtException | IllegalArgumentException e) {
+            log.error(e.getMessage(), e);
             String message = messageSourceAccessor.getMessage("session.error.expired");
             setErrorResponse(response, HttpStatus.UNAUTHORIZED, message);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             String message = messageSourceAccessor.getMessage("common.error.unknownError");
             setErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, message);
         }

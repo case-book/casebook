@@ -60,3 +60,15 @@ The following guides illustrate how to use some features concretely:
 
 
 -Dspring.profiles.active="default,development"
+
+
+<appender name="Sentry" class="io.sentry.logback.SentryAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+<root level="error">
+            <appender-ref ref="Sentry" />
+            <appender-ref ref="CONSOLE"/>
+        </root>
