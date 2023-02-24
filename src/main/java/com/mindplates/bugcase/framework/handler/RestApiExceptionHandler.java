@@ -32,6 +32,8 @@ public class RestApiExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<?> handleServiceException(ServiceException e) {
+        log.error(e.getMessage(), e);
+
         if (e.getMessageCode() != null) {
             String message = messageSourceAccessor.getMessage(e.getMessageCode(), e.getMessageParameters());
             return response.apply(e.getCode(), message);
@@ -44,6 +46,7 @@ public class RestApiExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleServiceException(ConstraintViolationException e) {
+        log.error(e.getMessage(), e);
         return messageResponse.apply(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -51,6 +54,6 @@ public class RestApiExceptionHandler {
     public ResponseEntity<?> handleServiceException(RuntimeException e) {
         log.error(e.getMessage(), e);
         String message = messageSourceAccessor.getMessage("common.error.unknownError");
-        return messageResponse.apply(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        return response.apply(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 }

@@ -6,6 +6,7 @@ import com.mindplates.bugcase.framework.handler.ExceptionHandlerFilter;
 import com.mindplates.bugcase.framework.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -62,7 +63,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().mvcMatchers("/api/configs/systems/**")
+        // 인증 및 인가 예외 처리
+        web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()) // favicon.ico 등의 인증을 시도하지 않음
                 .mvcMatchers(HttpMethod.OPTIONS, "/**")
                 .mvcMatchers("/api/configs/systems/**")
                 .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
@@ -70,18 +73,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
                 .mvcMatchers("/api/**/projects/**/images/**")
                 .mvcMatchers("/ws/**");
-
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.cors().and().csrf().disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
                 .and()
-                .authorizeRequests().mvcMatchers("/ws/**").permitAll().anyRequest().authenticated()
+                // TODO 아래 설정이 동작하지 않아서, allPassPatterns를 Voter에서 처리하도록 수정
+                // .authorizeRequests()
+                // .mvcMatchers("^/api/users/my/?(.*)?$")
+                // .permitAll()
+                // .and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
                 .accessDecisionManager(accessDecisionManager())
                 .and()
                 .formLogin().disable();

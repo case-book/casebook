@@ -100,6 +100,7 @@ public class SpaceService {
         spaceInfo.setActivated(updateSpaceInfo.isActivated());
         spaceInfo.setToken(updateSpaceInfo.getToken());
         spaceInfo.setAllowAutoJoin(updateSpaceInfo.isAllowAutoJoin());
+        spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
 
         updateSpaceInfo.getUsers().forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {

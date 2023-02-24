@@ -26,6 +26,8 @@ public class SpaceResponse {
     private List<SimpleMemberResponse> users;
     private List<SpaceApplicantResponse> applicants;
     private List<ProjectListResponse> projects;
+    private List<HolidayResponse> holidays;
+
     private Long projectCount;
     private boolean allowSearch = false;
     private boolean allowAutoJoin = false;
@@ -42,6 +44,9 @@ public class SpaceResponse {
         this.token = space.getToken();
         if (space.getUsers() != null) {
             this.users = space.getUsers().stream().map(SimpleMemberResponse::new).collect(Collectors.toList());
+        }
+        if (space.getHolidays() != null) {
+            this.holidays = space.getHolidays().stream().map(HolidayResponse::new).collect(Collectors.toList());
         }
     }
 

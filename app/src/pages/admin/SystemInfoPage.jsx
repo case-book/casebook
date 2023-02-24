@@ -7,6 +7,7 @@ import AdminService from '@/services/AdminService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './SystemInfoPage.scss';
+import ConfigService from '@/services/ConfigService';
 
 const labelMinWidth = '120px';
 
@@ -103,7 +104,7 @@ function SystemInfoPage() {
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('레디스 초기화')}</Label>
             <Text>
-              <Button className="remove-button" color="danger" onClick={flushRedis}>
+              <Button size="sm" className="remove-button" color="danger" onClick={flushRedis}>
                 {t('레디스의 모든 정보를 삭제합니다.')}
               </Button>
             </Text>
@@ -111,8 +112,55 @@ function SystemInfoPage() {
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('캐시 초기화')}</Label>
             <Text>
-              <Button className="remove-button" color="danger" onClick={deleteRedis}>
+              <Button size="sm" className="remove-button" color="danger" onClick={deleteRedis}>
                 {t('스페이스, 프로젝트 관련 캐시 데이터를 삭제합니다.')}
+              </Button>
+            </Text>
+          </BlockRow>
+        </Block>
+        <Title>{t('기타')}</Title>
+        <Block>
+          <BlockRow>
+            <Label minWidth={labelMinWidth} tip={t('스크립트 및 서버에서 에러를 생성합니다. 발생한 에러를 인지하고, 모니터링 할 수 있는지 확인하기 위해 인위적으로 에러를 생성합니다.')}>
+              {t('에러 생성')}
+            </Label>
+            <Text className="exception">
+              <Button
+                size="sm"
+                className="remove-button"
+                color="warning"
+                onClick={() => {
+                  const a = 10;
+                  a.none();
+                }}
+              >
+                {t('스크립트 오류 생성')}
+              </Button>
+              <Button
+                size="sm"
+                className="remove-button"
+                color="warning"
+                onClick={() => {
+                  ConfigService.createArithmeticException(null, () => {
+                    dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('요청 완료'), t('서버에서 예외가 정상적으로 발생하였습니다.'));
+                    return true;
+                  });
+                }}
+              >
+                {t('런타임 예외 생성')}
+              </Button>
+              <Button
+                size="sm"
+                className="remove-button"
+                color="warning"
+                onClick={() => {
+                  ConfigService.createServiceException(null, () => {
+                    dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('요청 완료'), t('서버에서 예외가 정상적으로 발생하였습니다.'));
+                    return true;
+                  });
+                }}
+              >
+                {t('서비스 예외 생성')}
               </Button>
             </Text>
           </BlockRow>

@@ -1,11 +1,12 @@
 {
   "name": "casebook-app",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.2.0",
     "@nivo/core": "^0.80.0",
     "@nivo/pie": "^0.80.0",
+    "@sentry/browser": "^6.18.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.mindplates'
-version = 'v1.0.2'
+version = 'v1.1.0'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -35,10 +35,8 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'org.apache.httpcomponents:httpclient'
     implementation 'org.modelmapper:modelmapper:3.1.0'
-
     implementation group: 'org.springframework.security', name: 'spring-security-messaging', version: '5.7.4'
     implementation group: 'org.springframework', name: 'spring-messaging', version: '5.3.23'
-
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -53,6 +51,7 @@ dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
+    implementation 'io.sentry:sentry-logback:5.6.1'
 }
 
 jar {

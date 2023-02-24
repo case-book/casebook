@@ -1,5 +1,8 @@
 package com.mindplates.bugcase.framework.scheduler;
 
+import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
@@ -21,6 +24,8 @@ import java.util.List;
 public class TestrunScheduler {
 
     private final TestrunService testrunService;
+
+    private final SpaceService spaceService;
 
     private void clearTestrun(TestrunDTO testrunDTO) {
         testrunDTO.setId(null);
@@ -69,6 +74,8 @@ public class TestrunScheduler {
             } else if (TestrunCreationTypeCode.ITERATION.equals(testrunDTO.getCreationType())) {
 
                 Long testrunId = testrunDTO.getId();
+
+
                 LocalDateTime startDateTime = testrunDTO.getStartDateTime();
                 LocalDateTime endDateTime = testrunDTO.getEndDateTime();
                 String startTime = testrunDTO.getStartTime().format(DateTimeFormatter.ofPattern("HHmm"));
@@ -79,6 +86,29 @@ public class TestrunScheduler {
 
                 if (testrunDTO.getDays().charAt(now.getDayOfWeek().getValue() - 1) != '1') {
                     return;
+                }
+
+                // TODO onHoliday -> exceptHoliday로 변경
+                if (testrunDTO.getOnHoliday() != null && testrunDTO.getOnHoliday()) {
+                    Long spaceId = testrunDTO.getProject().getSpace().getId();
+                    SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceId);
+                    List<HolidayDTO> holidays = spaceDTO.getHolidays();
+                    String nowDay = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    boolean isHoliday = holidays.stream().anyMatch((holidayDTO -> {
+                        String holiday;
+                        if (holidayDTO.getIsRegular() != null && holidayDTO.getIsRegular()) {
+                            holiday = now.format(DateTimeFormatter.ofPattern("yyyy")) + holidayDTO.getDate();
+                        } else {
+                            holiday = holidayDTO.getDate();
+                        }
+
+                        return nowDay.equals(holiday);
+                    }));
+
+                    if (isHoliday) {
+                        return;
+                    }
+
                 }
 
                 if ((startDateTime == null || now.isAfter(startDateTime)) && (endDateTime == null || now.isBefore(endDateTime)) && nowStartTime.equals(startTime)) {

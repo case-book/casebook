@@ -11,15 +11,11 @@ import java.util.List;
 
 @Entity
 @Builder
-@Table(name = "space", indexes = {
-        @Index(name = "IDX_SPACE_CODE", columnList = "code", unique = true),
-        @Index(name = "IDX_SPACE_CODE_AND_ACTIVATED", columnList = "code, activated")
-})
+@Table(name = "space", indexes = {@Index(name = "IDX_SPACE_CODE", columnList = "code", unique = true), @Index(name = "IDX_SPACE_CODE_AND_ACTIVATED", columnList = "code, activated")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-
 public class Space extends CommonEntity {
 
     @Id
@@ -56,6 +52,10 @@ public class Space extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     @Column(updatable = false, insertable = false)
     private List<SpaceApplicant> applicants;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Holiday> holidays;
 
 
 }

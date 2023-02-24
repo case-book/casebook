@@ -78,4 +78,25 @@ public class SystemController {
 
     }
 
+    @GetMapping("/errors/arithmetic")
+    @Operation(summary = "에러 생성")
+    public ResponseEntity<?> arithmetic() {
+        int zero = 0;
+        int result = 10 / zero;
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @GetMapping("/errors/service")
+    @Operation(summary = "에러 생성")
+    public ResponseEntity<?> service() {
+        if (true) {
+            throw new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
 }
