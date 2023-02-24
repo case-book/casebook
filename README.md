@@ -72,3 +72,20 @@ The following guides illustrate how to use some features concretely:
             <appender-ref ref="Sentry" />
             <appender-ref ref="CONSOLE"/>
         </root>
+
+
+
+
+CASEBOOK v1.0.1
+케이스북 v1.0.1 버전이 릴리즈되었습니다.
+
+<관리자 기능 강화>
+- 시스템 관리자의 전체 사용자 및 스페이스 관리 기능 추가
+- 프로젝트 권한 강화
+
+<프로젝트 권한 검증 추가>
+- 프로젝트 접근 시 프로젝트의 권한에 따른 접근 가능 여부 판단 로직 추가
+- 관리자 접근 권한 예외 처리
+
+<최신 릴리즈 알림 기능 추가>
+- GIT에 새로운 릴리즈가 등록 알림 기능
