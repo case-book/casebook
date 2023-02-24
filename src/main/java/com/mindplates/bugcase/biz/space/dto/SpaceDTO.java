@@ -27,6 +27,7 @@ public class SpaceDTO extends CommonDTO {
     private String token;
     private List<SpaceUserDTO> users;
     private List<SpaceApplicantDTO> applicants;
+    private List<HolidayDTO> holidays;
     private Long projectCount;
 
     public SpaceDTO(Space space) {
@@ -44,6 +45,10 @@ public class SpaceDTO extends CommonDTO {
 
         if (space.getApplicants() != null) {
             this.applicants = space.getApplicants().stream().map(SpaceApplicantDTO::new).collect(Collectors.toList());
+        }
+
+        if (space.getHolidays() != null) {
+            this.holidays = space.getHolidays().stream().map(HolidayDTO::new).collect(Collectors.toList());
         }
     }
 

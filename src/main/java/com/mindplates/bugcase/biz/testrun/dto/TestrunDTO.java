@@ -60,7 +60,7 @@ public class TestrunDTO extends CommonDTO {
         this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
         if (testrun.getProject() != null && testrun.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrun.getProject().getId()).space(SpaceDTO.builder().id(testrun.getProject().getId()).code(testrun.getProject().getSpace().getCode()).build()).build();
+            this.project = ProjectDTO.builder().id(testrun.getProject().getId()).space(SpaceDTO.builder().id(testrun.getProject().getSpace().getId()).code(testrun.getProject().getSpace().getCode()).build()).build();
         }
 
         if (testrun.getProject() != null && testrun.getProject().getSpace() == null) {

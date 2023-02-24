@@ -1,0 +1,21 @@
+.holiday-edit-popup-wrapper {
+
+  .modal-body {
+    padding: 1.5rem 1rem 0 0rem !important;
+  }
+
+  .modal-footer {
+    padding: 1.5rem !important;
+  }
+  .date-row {
+    > div {
+      padding-bottom: 0;
+    }
+  }
+  .description {
+    margin-left: 120px;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+}

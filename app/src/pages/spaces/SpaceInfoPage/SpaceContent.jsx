@@ -7,10 +7,12 @@ import SpaceService from '@/services/SpaceService';
 import { SpacePropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
 import dialogUtil from '@/utils/dialogUtil';
-import { APPROVAL_STATUS_INFO, MESSAGE_CATEGORY } from '@/constants/constants';
+import { APPROVAL_STATUS_INFO, DATE_FORMATS, MESSAGE_CATEGORY } from '@/constants/constants';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import useStores from '@/hooks/useStores';
 import './SpaceContent.scss';
+import moment from 'moment';
+import dateUtil from '@/utils/dateUtil';
 
 function SpaceContent({ space, onRefresh }) {
   const { t } = useTranslation();
@@ -178,112 +180,159 @@ function SpaceContent({ space, onRefresh }) {
         <Block>
           <MemberCardManager users={users} />
         </Block>
-        <Title
-          control={statusOptions.map(option => {
-            return (
-              <Radio
-                key={option.key}
-                type="line"
-                size="sm"
-                value={option.key}
-                checked={status === option.key}
-                label={option.value}
-                onChange={val => {
-                  setStatus(val);
-                }}
-              />
-            );
-          })}
-          paddingBottom={false}
-          border={false}
-        >
-          {t('스페이스 참여 요청')}
+        {isAdmin && space?.admin && (
+          <>
+            <Title
+              control={statusOptions.map(option => {
+                return (
+                  <Radio
+                    key={option.key}
+                    type="line"
+                    size="sm"
+                    value={option.key}
+                    checked={status === option.key}
+                    label={option.value}
+                    onChange={val => {
+                      setStatus(val);
+                    }}
+                  />
+                );
+              })}
+              paddingBottom={false}
+              border={false}
+            >
+              {t('스페이스 참여 요청')}
+            </Title>
+            <Block>
+              {applicants?.length < 1 && (
+                <EmptyContent className="empty-content">
+                  <div>{t('참여 요청이 없습니다.')}</div>
+                </EmptyContent>
+              )}
+              {applicants?.length > 0 && (
+                <div className="applicant-list-content">
+                  <Table className="applicant-list" cols={['1px', '1px', '1px', '100%', '1px']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="center">{t('상태')}</Th>
+                        <Th align="left">{t('이메일')}</Th>
+                        <Th align="left">{t('메세지')}</Th>
+                        <Th />
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      {applicants?.map(applicant => {
+                        return (
+                          <Tr key={applicant.id}>
+                            <Td className="user-info">{applicant.userName}</Td>
+                            <Td className={`request-status ${applicant.approvalStatusCode}`}>
+                              <Tag border rounded={false}>
+                                {APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}
+                              </Tag>
+                            </Td>
+                            <Td className="user-email">{applicant.userEmail}</Td>
+                            <Td className="message">
+                              {tooltipId === applicant.id && (
+                                <>
+                                  <div
+                                    className="message-tooltip-overlay"
+                                    onClick={() => {
+                                      setTooltipId(null);
+                                    }}
+                                  />
+                                  <div className="message-tooltip">
+                                    <div className="arrow">
+                                      <div />
+                                    </div>
+                                    <div className="message-content">{applicant.message}</div>
+                                  </div>
+                                </>
+                              )}
+                              {applicant.message && (
+                                <Button
+                                  size="xs"
+                                  onClick={() => {
+                                    if (applicant.id !== tooltipId) {
+                                      setTooltipId(applicant.id);
+                                    } else {
+                                      setTooltipId(null);
+                                    }
+                                  }}
+                                >
+                                  <i className="fa-regular fa-envelope" /> {t('메세지')}
+                                </Button>
+                              )}
+                            </Td>
+                            <Td className="role">
+                              {(applicant.approvalStatusCode === 'REQUEST' || applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    color="primary"
+                                    onClick={() => {
+                                      approve(applicant.id);
+                                    }}
+                                  >
+                                    {t('승인')}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    color="danger"
+                                    onClick={() => {
+                                      reject(applicant.id);
+                                    }}
+                                  >
+                                    {t('거절')}
+                                  </Button>
+                                </>
+                              )}
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                    </Tbody>
+                  </Table>
+                </div>
+              )}
+            </Block>
+          </>
+        )}
+
+        <Title paddingBottom={false} border={false}>
+          {t('휴일 관리')}
         </Title>
-        <Block>
-          {applicants?.length < 1 && (
+        <Block className="space-project-block">
+          {!(space.holidays?.length > 0) && (
             <EmptyContent className="empty-content">
-              <div>{t('참여 요청이 없습니다.')}</div>
+              <div>{t('등록된 휴일이 없습니다.')}</div>
             </EmptyContent>
           )}
-          {applicants?.length > 0 && (
-            <div className="applicant-list-content">
-              <Table className="applicant-list" cols={['1px', '1px', '1px', '100%', '1px']} border>
+          {space.holidays?.length > 0 && (
+            <div className="holiday-list-content">
+              <Table cols={['1px', '1px', '100%']} border>
                 <THead>
                   <Tr>
+                    <Th align="center">{t('타입')}</Th>
+                    <Th align="left">{t('날짜')}</Th>
                     <Th align="left">{t('이름')}</Th>
-                    <Th align="center">{t('상태')}</Th>
-                    <Th align="left">{t('이메일')}</Th>
-                    <Th align="left">{t('메세지')}</Th>
-                    <Th />
                   </Tr>
                 </THead>
                 <Tbody>
-                  {applicants?.map(applicant => {
+                  {space.holidays.map((holiday, inx) => {
                     return (
-                      <Tr key={applicant.id}>
-                        <Td className="user-info">{applicant.userName}</Td>
-                        <Td className={`request-status ${applicant.approvalStatusCode}`}>
-                          <Tag border rounded={false}>
-                            {APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}
+                      <Tr key={inx}>
+                        <Td align="center">
+                          <Tag size="sm" color="white" border>
+                            {holiday.isRegular ? t('정기 휴일') : t('지정 휴일')}
                           </Tag>
                         </Td>
-                        <Td className="user-email">{applicant.userEmail}</Td>
-                        <Td className="message">
-                          {tooltipId === applicant.id && (
-                            <>
-                              <div
-                                className="message-tooltip-overlay"
-                                onClick={() => {
-                                  setTooltipId(null);
-                                }}
-                              />
-                              <div className="message-tooltip">
-                                <div className="arrow">
-                                  <div />
-                                </div>
-                                <div className="message-content">{applicant.message}</div>
-                              </div>
-                            </>
-                          )}
-                          {applicant.message && (
-                            <Button
-                              size="xs"
-                              onClick={() => {
-                                if (applicant.id !== tooltipId) {
-                                  setTooltipId(applicant.id);
-                                } else {
-                                  setTooltipId(null);
-                                }
-                              }}
-                            >
-                              <i className="fa-regular fa-envelope" /> {t('메세지')}
-                            </Button>
-                          )}
+                        <Td>
+                          {holiday.isRegular
+                            ? moment(holiday.date, 'MMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].days.moment)
+                            : moment(holiday.date, 'YYYYMMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].yearsDays.moment)}
                         </Td>
-                        <Td className="role">
-                          {(applicant.approvalStatusCode === 'REQUEST' || applicant.approvalStatusCode === 'REQUEST_AGAIN') && (
-                            <>
-                              <Button
-                                size="sm"
-                                color="primary"
-                                onClick={() => {
-                                  approve(applicant.id);
-                                }}
-                              >
-                                {t('승인')}
-                              </Button>
-                              <Button
-                                size="sm"
-                                color="danger"
-                                onClick={() => {
-                                  reject(applicant.id);
-                                }}
-                              >
-                                {t('거절')}
-                              </Button>
-                            </>
-                          )}
-                        </Td>
+                        <Td>{holiday.name}</Td>
                       </Tr>
                     );
                   })}

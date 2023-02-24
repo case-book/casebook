@@ -26,6 +26,7 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
     private List<SpaceUserRequest> users;
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
+    private List<HolidayRequest> holidays;
 
     public SpaceDTO toDTO() {
 
@@ -43,6 +44,10 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
         if (users != null) {
             List<SpaceUserDTO> spaceUsers = users.stream().map(spaceUser -> spaceUser.toDTO(space)).collect(Collectors.toList());
             space.setUsers(spaceUsers);
+        }
+
+        if (holidays != null) {
+            space.setHolidays(holidays.stream().map(holiday -> holiday.toDTO(space)).collect(Collectors.toList()));
         }
 
         return space;

@@ -6,6 +6,7 @@ import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.space.vo.request.HolidayRequest;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceCreateRequest;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceJoinRequest;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceUpdateRequest;
@@ -23,6 +24,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,8 +56,31 @@ public class SpaceController {
     @Operation(description = "새 스페이스 추가")
     @PostMapping("")
     public SpaceListResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
+        checkValidHoliday(spaceCreateRequest.getHolidays());
         SpaceDTO spaceInfo = spaceService.createSpaceInfo(spaceCreateRequest.toDTO(), SessionUtil.getUserId());
         return new SpaceListResponse(spaceInfo, null);
+    }
+
+    private void checkValidHoliday(List<HolidayRequest> holidays) {
+
+        if (holidays == null) {
+            return;
+        }
+
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+            for (HolidayRequest holiday : holidays) {
+                if (holiday.getIsRegular() != null && holiday.getIsRegular()) {
+                    LocalDate.parse(now.format(DateTimeFormatter.ofPattern("yyyy")) + holiday.getDate(), formatter);
+                } else {
+                    LocalDate.parse(holiday.getDate(), formatter);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException("holiday.format.invalid");
+        }
     }
 
     @Operation(description = "스페이스 정보 변경")
@@ -62,12 +89,13 @@ public class SpaceController {
         if (!spaceId.equals(spaceUpdateRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
+
+        checkValidHoliday(spaceUpdateRequest.getHolidays());
+
         SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
         SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(space.getCode()));
         return new SpaceResponse(spaceInfo);
     }
-
-
 
     @Operation(description = "스페이스 정보 조회")
     @GetMapping("/{spaceCode}")
