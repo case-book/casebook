@@ -416,6 +416,10 @@ const HOLIDAY_CONDITION_WEEK_LIST = [
     key: 6,
     value: i18n.t('마지막주'),
   },
+  {
+    key: 7,
+    value: i18n.t('마지막'),
+  },
 ];
 for (let i = 1; i <= 5; i += 1) {
   HOLIDAY_CONDITION_WEEK_LIST.push({
@@ -426,31 +430,31 @@ for (let i = 1; i <= 5; i += 1) {
 
 const HOLIDAY_CONDITION_DAY_LIST = [
   {
-    key: 0,
+    key: 1,
     value: i18n.t('월요일'),
   },
   {
-    key: 1,
+    key: 2,
     value: i18n.t('화요일'),
   },
   {
-    key: 2,
+    key: 3,
     value: i18n.t('수요일'),
   },
   {
-    key: 3,
+    key: 4,
     value: i18n.t('목요일'),
   },
   {
-    key: 4,
+    key: 5,
     value: i18n.t('금요일'),
   },
   {
-    key: 5,
+    key: 6,
     value: i18n.t('토요일'),
   },
   {
-    key: 6,
+    key: 7,
     value: i18n.t('일요일'),
   },
 ];
