@@ -2,14 +2,17 @@ package com.mindplates.bugcase.biz.config.controller;
 
 import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
-import com.mindplates.bugcase.biz.config.vo.SystemInfo;
 import com.mindplates.bugcase.biz.config.vo.request.SetUpRequest;
 import com.mindplates.bugcase.biz.config.vo.request.SlackTestRequest;
+import com.mindplates.bugcase.biz.config.vo.response.SystemInfoResponse;
+import com.mindplates.bugcase.biz.config.vo.response.TimeZoneResponse;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateDataResponse;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.service.SlackService;
+import com.mindplates.bugcase.common.util.SessionUtil;
+import com.mindplates.bugcase.common.vo.SecurityUser;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +20,13 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Arrays;
+import java.time.ZoneId;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,10 +44,28 @@ public class SystemController {
     private final MessageSourceAccessor messageSourceAccessor;
 
     @GetMapping("/info")
-    @Operation(summary = "API 버전 조회", description = "API 버전 조회")
-    public SystemInfo selectSystemVersion() {
+    @Operation(description = "API 버전 조회")
+    public SystemInfoResponse selectSystemVersion() {
         ConfigDTO config = configService.selectConfig("SET_UP");
-        return SystemInfo.builder().version(buildProperties.getVersion()).name(buildProperties.getName()).setUp("Y".equals(config.getValue())).build();
+        return SystemInfoResponse.builder().version(buildProperties.getVersion()).name(buildProperties.getName()).setUp("Y".equals(config.getValue())).build();
+    }
+
+    @GetMapping("/timezones")
+    @Operation(description = "타임존 목록 조회")
+    public List<TimeZoneResponse> selectTimeZoneList(@RequestParam(value = "language") String language) {
+
+
+        Locale locale = new Locale(language);
+        Set<String> zoneIds = ZoneId.getAvailableZoneIds();
+        List<TimeZoneResponse> timezones = new ArrayList<>();
+
+
+        for (String id : zoneIds) {
+            ZoneId zoneId = ZoneId.of(id);
+            timezones.add(TimeZoneResponse.builder().zoneId(id).name(zoneId.getDisplayName(TextStyle.FULL, locale)).build());
+        }
+
+        return timezones;
     }
 
     @GetMapping("/testcase/configs")

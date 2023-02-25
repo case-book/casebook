@@ -68,4 +68,15 @@ ConfigService.createServiceException = (successHandler, failHandler) => {
   );
 };
 
+ConfigService.selectTimeZoneList = (language, successHandler, failHandler) => {
+  return request.get(
+    `/api/configs/systems/timezones?language=${language}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

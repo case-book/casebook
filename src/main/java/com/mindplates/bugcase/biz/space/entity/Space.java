@@ -57,5 +57,11 @@ public class Space extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Holiday> holidays;
 
+    @Column(name = "country", length = ColumnsDef.CODE)
+    private String country;
+
+    @Column(name = "time_zone", length = ColumnsDef.CODE)
+    private String timeZone;
+
 
 }

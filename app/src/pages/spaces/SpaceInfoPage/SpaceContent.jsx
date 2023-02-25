@@ -7,7 +7,7 @@ import SpaceService from '@/services/SpaceService';
 import { SpacePropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
 import dialogUtil from '@/utils/dialogUtil';
-import { APPROVAL_STATUS_INFO, DATE_FORMATS, MESSAGE_CATEGORY } from '@/constants/constants';
+import { APPROVAL_STATUS_INFO, DATE_FORMATS, HOLIDAY_CONDITION_DAY_LIST, HOLIDAY_CONDITION_MONTH_LIST, HOLIDAY_CONDITION_WEEK_LIST, HOLIDAY_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import useStores from '@/hooks/useStores';
 import './SpaceContent.scss';
@@ -314,8 +314,8 @@ function SpaceContent({ space, onRefresh }) {
                 <THead>
                   <Tr>
                     <Th align="center">{t('타입')}</Th>
-                    <Th align="left">{t('날짜')}</Th>
                     <Th align="left">{t('이름')}</Th>
+                    <Th align="left">{t('조건')}</Th>
                   </Tr>
                 </THead>
                 <Tbody>
@@ -324,15 +324,30 @@ function SpaceContent({ space, onRefresh }) {
                       <Tr key={inx}>
                         <Td align="center">
                           <Tag size="sm" color="white" border>
-                            {holiday.isRegular ? t('정기 휴일') : t('지정 휴일')}
+                            {HOLIDAY_TYPE_CODE[holiday.holidayType]}
                           </Tag>
                         </Td>
-                        <Td>
-                          {holiday.isRegular
-                            ? moment(holiday.date, 'MMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].days.moment)
-                            : moment(holiday.date, 'YYYYMMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].yearsDays.moment)}
-                        </Td>
                         <Td>{holiday.name}</Td>
+                        {(holiday.holidayType === 'YEARLY' || holiday.holidayType === 'SPECIFIED_DATE') && (
+                          <Td>
+                            {holiday.holidayType === 'YEARLY'
+                              ? moment(holiday.date, 'MMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].days.moment)
+                              : moment(holiday.date, 'YYYYMMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].yearsDays.moment)}
+                          </Td>
+                        )}
+                        {holiday.holidayType === 'CONDITION' && (
+                          <Td className="condition">
+                            <Tag size="sm" color="white" border>
+                              {HOLIDAY_CONDITION_MONTH_LIST.find(d => d.key === holiday.month)?.value || ''}
+                            </Tag>
+                            <Tag size="sm" color="white" border>
+                              {HOLIDAY_CONDITION_WEEK_LIST.find(d => d.key === holiday.week)?.value || ''}
+                            </Tag>
+                            <Tag size="sm" color="white" border>
+                              {HOLIDAY_CONDITION_DAY_LIST.find(d => d.key === holiday.day)?.value || ''}
+                            </Tag>
+                          </Td>
+                        )}
                       </Tr>
                     );
                   })}

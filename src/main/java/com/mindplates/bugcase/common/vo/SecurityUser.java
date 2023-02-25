@@ -21,6 +21,7 @@ public class SecurityUser implements UserDetails {
     private String roles;
 
     private String email;
+    private String language;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -37,6 +38,10 @@ public class SecurityUser implements UserDetails {
     @Override
     public String getUsername() {
         return name;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

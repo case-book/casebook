@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
+import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import lombok.*;
 
 @Builder
@@ -11,16 +12,26 @@ import lombok.*;
 public class HolidayResponse {
 
     private Long id;
+    private HolidayTypeCode holidayType;
     private Long spaceId;
-    private Boolean isRegular;
     private String date;
+    private Integer month;
+    private Integer week;
+    private Integer day;
     private String name;
+
+
+    private Boolean isRegular;
 
     public HolidayResponse(HolidayDTO holiday) {
         this.id = holiday.getId();
+        this.holidayType = holiday.getHolidayType();
         this.spaceId = holiday.getSpace().getId();
-        this.isRegular = holiday.getIsRegular();
         this.date = holiday.getDate();
+        this.month = holiday.getMonth();
+        this.week = holiday.getWeek();
+        this.day = holiday.getDay();
         this.name = holiday.getName();
+        this.isRegular = holiday.getIsRegular();
     }
 }

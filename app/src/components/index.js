@@ -1,3 +1,4 @@
+import ReactSelect from '@/components/ReactSelect/ReactSelect';
 import Tabs from './Tabs/Tabs';
 import Page from './Page/Page';
 import PageTitle from './PageTitle/PageTitle';
@@ -112,4 +113,5 @@ export {
   PieChart,
   THead,
   Th,
+  ReactSelect,
 };

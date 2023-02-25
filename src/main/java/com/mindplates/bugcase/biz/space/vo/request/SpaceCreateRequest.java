@@ -18,7 +18,7 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
     @NotNull
     @Size(min = 1)
     private String name;
-    @Pattern(message="SPACE_NAME_REGEX" , regexp="^([A-Z]+)([A-Z0-9_-]){2,}$")
+    @Pattern(message = "SPACE_NAME_REGEX", regexp = "^([A-Z]+)([A-Z0-9_-]){2,}$")
     private String code;
     private String description;
     private Boolean activated;
@@ -27,18 +27,15 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private List<HolidayRequest> holidays;
+    private String country;
+    private String timeZone;
 
     public SpaceDTO toDTO() {
 
-        SpaceDTO space = SpaceDTO.builder()
-                .id(id)
-                .name(name)
-                .code(code)
-                .description(description)
-                .activated(activated)
-                .token(token)
-                .allowSearch(allowSearch)
-                .allowAutoJoin(allowAutoJoin)
+        SpaceDTO space = SpaceDTO.builder().id(id).name(name).code(code).description(description).activated(activated).token(token).allowSearch(allowSearch).allowAutoJoin(allowAutoJoin)
+                .country(country)
+                .timeZone(timeZone)
+
                 .build();
 
         if (users != null) {

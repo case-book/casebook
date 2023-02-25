@@ -230,12 +230,230 @@ const DURATIONS = (() => {
   return list;
 })();
 
+const DEFAULT_HOLIDAY = {
+  KR: [
+    {
+      id: null,
+      date: '0101',
+      name: '새해 첫날',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0301',
+      name: '삼일절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0505',
+      name: '어린이날',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0606',
+      name: '현충일',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0815',
+      name: '광복절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '1003',
+      name: '개천절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '1009',
+      name: '한글날',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '1225',
+      name: '성탄절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+  ],
+  US: [
+    {
+      id: null,
+      date: '0101',
+      name: '미국 첫날',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0301',
+      name: '삼일절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0505',
+      name: '어린이날',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0606',
+      name: '현충일',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '0815',
+      name: '광복절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '1003',
+      name: '개천절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '1009',
+      name: '한글날',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+    {
+      id: null,
+      date: '1225',
+      name: '성탄절',
+      holidayType: 'YEARLY',
+      month: null,
+      week: null,
+      day: null,
+    },
+  ],
+};
+
 const APPROVAL_STATUS_INFO = {
   REQUEST: i18n.t('요청'),
   REQUEST_AGAIN: i18n.t('재요청'),
   APPROVAL: i18n.t('승인'),
   REJECTED: i18n.t('거절'),
 };
+
+const HOLIDAY_TYPE_CODE = {
+  YEARLY: i18n.t('매년반복'),
+  SPECIFIED_DATE: i18n.t('지정일자'),
+  CONDITION: i18n.t('월/주/요일 조건'),
+};
+
+const HOLIDAY_CONDITION_MONTH_LIST = [
+  {
+    key: -1,
+    value: i18n.t('매월'),
+  },
+];
+for (let i = 1; i <= 12; i += 1) {
+  HOLIDAY_CONDITION_MONTH_LIST.push({
+    key: i,
+    value: i18n.t('@월', { month: i }),
+  });
+}
+
+const HOLIDAY_CONDITION_WEEK_LIST = [
+  {
+    key: -1,
+    value: i18n.t('매주'),
+  },
+  {
+    key: 6,
+    value: i18n.t('마지막주'),
+  },
+];
+for (let i = 1; i <= 5; i += 1) {
+  HOLIDAY_CONDITION_WEEK_LIST.push({
+    key: i,
+    value: i18n.t('@주', { week: i }),
+  });
+}
+
+const HOLIDAY_CONDITION_DAY_LIST = [
+  {
+    key: 0,
+    value: i18n.t('월요일'),
+  },
+  {
+    key: 1,
+    value: i18n.t('화요일'),
+  },
+  {
+    key: 2,
+    value: i18n.t('수요일'),
+  },
+  {
+    key: 3,
+    value: i18n.t('목요일'),
+  },
+  {
+    key: 4,
+    value: i18n.t('금요일'),
+  },
+  {
+    key: 5,
+    value: i18n.t('토요일'),
+  },
+  {
+    key: 6,
+    value: i18n.t('일요일'),
+  },
+];
 
 export {
   LANGUAGES,
@@ -255,4 +473,9 @@ export {
   DURATIONS,
   TESTRUN_RESULT_LAYOUTS,
   APPROVAL_STATUS_INFO,
+  DEFAULT_HOLIDAY,
+  HOLIDAY_TYPE_CODE,
+  HOLIDAY_CONDITION_MONTH_LIST,
+  HOLIDAY_CONDITION_WEEK_LIST,
+  HOLIDAY_CONDITION_DAY_LIST,
 };

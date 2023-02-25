@@ -34,7 +34,12 @@ public class SessionUtil {
     public static SecurityUser getSecurityUser() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (SecurityUser) authentication.getPrincipal();
+        if (authentication != null) {
+            return (SecurityUser) authentication.getPrincipal();
+        }
+
+        return null;
+
     }
 
 
