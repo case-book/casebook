@@ -52,7 +52,7 @@ function TestrunInfoPage() {
     failedTestcaseCount: true,
     creationType: 'CREATE',
     days: '1111100',
-    onHoliday: false,
+    excludeHoliday: false,
     startTime: (() => {
       const startTime = new Date();
       startTime.setHours(9);
@@ -219,7 +219,7 @@ function TestrunInfoPage() {
                       );
                     })}
                   <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                  <div>{testrun.onHoliday ? t('휴일 제외') : t('휴일 포함')}</div>
+                  <div>{testrun.excludeHoliday ? t('휴일 제외') : t('휴일 포함')}</div>
                   <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                   <div className="label">{t('시작 시간')}</div>
                   <div>{dateUtil.getDateString(testrun.startTime, 'hoursMinutes')}</div>

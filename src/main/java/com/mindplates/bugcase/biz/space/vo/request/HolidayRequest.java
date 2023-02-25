@@ -20,14 +20,9 @@ public class HolidayRequest {
     @NotBlank
     @Size(min = 1)
     private String name;
-    private Boolean isRegular;
+
 
     public HolidayDTO toDTO(SpaceDTO space) {
-        return HolidayDTO.builder().id(id).space(space)
-                .holidayType(holidayType)
-                .month(month)
-                .week(week)
-                .day(day)
-                .isRegular(isRegular).date(date).name(name).build();
+        return HolidayDTO.builder().id(id).space(space).holidayType(holidayType).month(month).week(week).day(day).date(date).name(name).build();
     }
 }

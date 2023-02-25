@@ -24,7 +24,6 @@ public class HolidayDTO extends CommonEntity {
     private Integer week;
     private Integer day;
     private String name;
-    private Boolean isRegular;
 
     public HolidayDTO(Holiday holiday) {
         this.id = holiday.getId();
@@ -35,7 +34,6 @@ public class HolidayDTO extends CommonEntity {
         this.day = holiday.getDay();
         this.date = holiday.getDate();
         this.name = holiday.getName();
-        this.isRegular = holiday.getIsRegular();
     }
 
 }

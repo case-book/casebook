@@ -30,7 +30,7 @@ public class TestrunListResponse {
     private LocalDateTime closedDate;
     private TestrunCreationTypeCode creationType;
     private String days;
-    private Boolean onHoliday;
+    private Boolean excludeHoliday;
     private LocalTime startTime;
     private Integer durationHours;
     private Boolean reserveExpired;
@@ -52,7 +52,7 @@ public class TestrunListResponse {
         this.closedDate = testrun.getClosedDate();
         this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();
-        this.onHoliday = testrun.getOnHoliday();
+        this.excludeHoliday = testrun.getExcludeHoliday();
         this.startTime = testrun.getStartTime();
         this.durationHours = testrun.getDurationHours();
         this.reserveExpired = testrun.getReserveExpired();

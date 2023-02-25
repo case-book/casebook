@@ -21,8 +21,6 @@ public class HolidayResponse {
     private String name;
 
 
-    private Boolean isRegular;
-
     public HolidayResponse(HolidayDTO holiday) {
         this.id = holiday.getId();
         this.holidayType = holiday.getHolidayType();
@@ -32,6 +30,6 @@ public class HolidayResponse {
         this.week = holiday.getWeek();
         this.day = holiday.getDay();
         this.name = holiday.getName();
-        this.isRegular = holiday.getIsRegular();
+
     }
 }

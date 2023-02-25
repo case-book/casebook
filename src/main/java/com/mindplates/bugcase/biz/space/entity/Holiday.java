@@ -44,9 +44,4 @@ public class Holiday extends CommonEntity {
 
     @Column(name = "name", length = ColumnsDef.NAME)
     private String name;
-
-    // 아래는 삭제
-    @Column(name = "is_regular")
-    private Boolean isRegular;
-
 }

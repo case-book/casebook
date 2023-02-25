@@ -96,15 +96,12 @@ public class TestrunScheduler {
                 ZonedDateTime nowUTC = ZonedDateTime.of(now, ZoneId.of("UTC"));
                 ZonedDateTime zonedNow = nowUTC.withZoneSameInstant(ZoneId.of(spaceDTO.getTimeZone()));
 
-                log.error(now.getDayOfWeek().toString());
-                log.error(zonedNow.getDayOfWeek().toString());
-
                 if (testrunDTO.getDays().charAt(zonedNow.getDayOfWeek().getValue() - 1) != '1') {
                     return;
                 }
 
-                // TODO onHoliday -> exceptHoliday로 변경
-                if (testrunDTO.getOnHoliday() != null && testrunDTO.getOnHoliday()) {
+
+                if (testrunDTO.getExcludeHoliday() != null && testrunDTO.getExcludeHoliday()) {
                     List<HolidayDTO> holidays = spaceDTO.getHolidays();
                     String nowDay = zonedNow.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
                     String nowYear = zonedNow.format(DateTimeFormatter.ofPattern("yyyy"));

@@ -28,7 +28,7 @@ public class TestrunUpdateRequest {
     private List<TestrunTestcaseGroupRequest> testcaseGroups;
     private TestrunCreationTypeCode creationType;
     private String days;
-    private boolean onHoliday;
+    private boolean excludeHoliday;
     private LocalDateTime startTime;
     private int durationHours;
     private boolean deadlineClose;
@@ -45,7 +45,7 @@ public class TestrunUpdateRequest {
                 .opened(opened)
                 .creationType(creationType)
                 .days(days)
-                .onHoliday(onHoliday)
+                .excludeHoliday(excludeHoliday)
                 .startTime(startTime.toLocalTime())
                 .durationHours(durationHours)
                 .deadlineClose(deadlineClose)

@@ -159,7 +159,7 @@ const TestrunPropTypes = PropTypes.shape({
   endDateTime: PropTypes.string,
   reserveExpired: PropTypes.bool,
   days: PropTypes.string,
-  onHoliday: PropTypes.bool,
+  excludeHoliday: PropTypes.bool,
   startTime: PropTypes.string,
   durationHours: PropTypes.number,
   opened: PropTypes.bool,
