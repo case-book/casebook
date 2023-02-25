@@ -24,7 +24,6 @@ function ReactSelect({ minWidth, value, onChange, options, size, defaultValue })
         }),
       }}
       defaultValue={defaultValue}
-      defaultInputValue={defaultValue}
     />
   );
 }
@@ -41,8 +40,14 @@ ReactSelect.defaultProps = {
 ReactSelect.propTypes = {
   minWidth: PropTypes.string,
   size: PropTypes.string,
-  value: PropTypes.string,
-  defaultValue: PropTypes.string,
+  value: PropTypes.shape({
+    value: PropTypes.string,
+    label: PropTypes.string,
+  }),
+  defaultValue: PropTypes.shape({
+    value: PropTypes.string,
+    label: PropTypes.string,
+  }),
   onChange: PropTypes.func,
   options: PropTypes.arrayOf(
     PropTypes.shape({

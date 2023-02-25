@@ -94,7 +94,7 @@ public class TestrunScheduler {
                 }
 
                 ZonedDateTime nowUTC = ZonedDateTime.of(now, ZoneId.of("UTC"));
-                ZonedDateTime zonedNow = nowUTC.withZoneSameInstant(ZoneId.of(spaceDTO.getTimeZone()));
+                ZonedDateTime zonedNow = nowUTC.withZoneSameInstant(ZoneId.of(spaceDTO.getTimeZone() != null ? spaceDTO.getTimeZone() : "UTC"));
 
                 if (testrunDTO.getDays().charAt(zonedNow.getDayOfWeek().getValue() - 1) != '1') {
                     return;
@@ -131,10 +131,15 @@ public class TestrunScheduler {
                             LocalDate startDateOfMonth = LocalDate.of(zonedNow.getYear(), zonedNow.getMonth(), 1);
                             LocalDate endDateOfMonth = startDateOfMonth.plusDays(startDateOfMonth.lengthOfMonth() - 1);
                             int lastWeek = endDateOfMonth.get(weekOfMonth);
-
+                            double nowDayOfMonth = zonedNow.getDayOfMonth();
+                            double weekTimes = Math.ceil(nowDayOfMonth / 7.0);
                             // 마지막주의 경우, 현재 주 값이랑 달의 마지막 날짜의 주 값이랑 동일한 경우 참
                             // 마지막인 경우, 요일이 같고, 달의 마지막 날짜까지 해당 요일이 없는 경우 참
-                            if (!((week == currentWeek) || (week == 6 && lastWeek == currentWeek) || (week == 7 && day == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7))) {
+                            if (!((week == currentWeek)
+                                    || (week == 6 && lastWeek == currentWeek)
+                                    || (week == 7 && day == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
+                                    || ((week >= 8 && week <=11) && (day == currentDay) && (weekTimes == (week - 7)))
+                            )) {
                                 return false;
                             }
 

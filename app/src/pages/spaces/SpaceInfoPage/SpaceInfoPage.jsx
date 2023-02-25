@@ -4,31 +4,45 @@ import SpaceService from '@/services/SpaceService';
 import { useParams } from 'react-router';
 import InaccessibleContent from '@/pages/spaces/SpaceInfoPage/InaccessibleContent';
 import SpaceContent from '@/pages/spaces/SpaceInfoPage/SpaceContent';
+import ConfigService from '@/services/ConfigService';
+import useStores from '@/hooks/useStores';
 
 function SpaceInfoPage() {
   const { id } = useParams();
   const [space, setSpace] = useState(null);
   const [accessible, setAccessible] = useState(null);
+  const {
+    userStore: { language },
+  } = useStores();
 
   const getSpaceInfo = () => {
-    SpaceService.selectSpaceInfo(
-      id,
-      info => {
-        setAccessible(true);
-        setSpace(info);
-      },
-      status => {
-        setAccessible(false);
+    ConfigService.selectTimeZoneList(language || 'ko', list => {
+      const zoneList = list.map(timeZone => {
+        return {
+          value: timeZone.zoneId,
+          label: `${timeZone.zoneId} (${timeZone.name})`,
+        };
+      });
 
-        if (status === 403) {
-          SpaceService.selectSpaceAccessibleInfo(id, data => {
-            setSpace(data);
-          });
-          return true;
-        }
-        return false;
-      },
-    );
+      SpaceService.selectSpaceInfo(
+        id,
+        info => {
+          setAccessible(true);
+          setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone)?.label });
+        },
+        status => {
+          setAccessible(false);
+
+          if (status === 403) {
+            SpaceService.selectSpaceAccessibleInfo(id, data => {
+              setSpace(data);
+            });
+            return true;
+          }
+          return false;
+        },
+      );
+    });
   };
 
   useEffect(() => {

@@ -69,7 +69,7 @@ function SpaceEditPage({ type }) {
     token: uuidv4(),
     allowSearch: true,
     allowAutoJoin: false,
-    timeZone: country === 'KR' ? 'Asia/Seoul' : 'US/Central',
+    timeZone: null, // country === 'KR' ? 'Asia/Seoul' : 'US/Central',
     country,
     holidays: country === 'KR' ? cloneDeep(DEFAULT_HOLIDAY.KR) : cloneDeep(DEFAULT_HOLIDAY.US),
   });
@@ -95,52 +95,72 @@ function SpaceEditPage({ type }) {
   useEffect(() => {
     window.scrollTo(0, 0);
     ConfigService.selectTimeZoneList(language || 'ko', list => {
-      setTimeZoneList(
-        list
-          .map(timeZone => {
-            return {
-              value: timeZone.zoneId,
-              label: `${timeZone.zoneId} (${timeZone.name})`,
-            };
-          })
-          .sort((a, b) => {
-            if (a.zoneId < b.zoneId) {
-              return -1;
-            }
-            if (a.zoneId > b.zoneId) {
-              return 1;
-            }
-            return 0;
-          }),
-      );
-    });
-    if (id && isEdit) {
-      SpaceService.selectSpaceInfo(id, info => {
-        setSpace(info);
+      const zoneList = list.map(timeZone => {
+        return {
+          value: timeZone.zoneId,
+          label: `${timeZone.zoneId} (${timeZone.name})`,
+        };
       });
-    }
+
+      zoneList.sort((a, b) => {
+        if (a.zoneId < b.zoneId) {
+          return -1;
+        }
+        if (a.zoneId > b.zoneId) {
+          return 1;
+        }
+        return 0;
+      });
+
+      setTimeZoneList(zoneList);
+
+      if (!isEdit) {
+        const defaultTimeZoneId = country === 'KR' ? 'Asia/Seoul' : 'US/Central';
+        let defaultTimeZone = zoneList.find(d => d.value === defaultTimeZoneId);
+        if (!defaultTimeZone) {
+          if (zoneList.length > 0) {
+            const [firstZone] = zoneList;
+            defaultTimeZone = firstZone;
+          }
+        }
+
+        setSpace({
+          ...space,
+          timeZone: defaultTimeZone,
+        });
+      } else if (id && isEdit) {
+        SpaceService.selectSpaceInfo(id, info => {
+          setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone) });
+        });
+      }
+    });
   }, [type, id]);
 
   const onSubmit = e => {
     e.preventDefault();
 
+    const spaceInfo = {
+      ...space,
+      timeZone: space.timeZone?.value,
+    };
+
     if (type === 'new') {
-      SpaceService.createSpace(space, result => {
+      SpaceService.createSpace(spaceInfo, result => {
         addSpace(result);
         navigate('/spaces');
       });
     } else if (isEdit) {
-      if ((space?.users?.filter(d => d.crud !== 'D') || []).length < 1) {
+      if ((spaceInfo?.users?.filter(d => d.crud !== 'D') || []).length < 1) {
         dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '스페이스 사용자 오류', '최소한 1명의 스페이스 사용자는 존재해야 합니다.');
         return;
       }
 
-      if ((space?.users?.filter(d => d.crud !== 'D' && d.role === 'ADMIN') || []).length < 1) {
+      if ((spaceInfo?.users?.filter(d => d.crud !== 'D' && d.role === 'ADMIN') || []).length < 1) {
         dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '스페이스 사용자 오류', '최소한 1명의 스페이스 관리자는 지정되어야 합니다.');
         return;
       }
 
-      SpaceService.updateSpace(space, () => {
+      SpaceService.updateSpace(spaceInfo, () => {
         navigate(`/spaces/${id}/info`);
       });
     }

@@ -101,6 +101,8 @@ public class SpaceService {
         spaceInfo.setToken(updateSpaceInfo.getToken());
         spaceInfo.setAllowAutoJoin(updateSpaceInfo.isAllowAutoJoin());
         spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
+        spaceInfo.setCountry(updateSpaceInfo.getCountry());
+        spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
 
         updateSpaceInfo.getUsers().forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {

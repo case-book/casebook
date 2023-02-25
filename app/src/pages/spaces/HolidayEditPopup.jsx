@@ -69,7 +69,7 @@ function HolidayEditPopup({ data, setOpened, onApply }) {
                             holidayType: val,
                             month: -1,
                             week: -1,
-                            day: 0,
+                            day: 1,
                           });
                         } else {
                           setHoliday({

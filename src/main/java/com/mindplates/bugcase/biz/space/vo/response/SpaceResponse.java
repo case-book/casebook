@@ -32,6 +32,8 @@ public class SpaceResponse {
     private boolean allowSearch = false;
     private boolean allowAutoJoin = false;
     private boolean isAdmin = false;
+    private String country;
+    private String timeZone;
 
     public SpaceResponse(SpaceDTO space) {
         this.id = space.getId();
@@ -41,6 +43,8 @@ public class SpaceResponse {
         this.description = space.getDescription();
         this.allowSearch = space.isAllowSearch();
         this.allowAutoJoin = space.isAllowAutoJoin();
+        this.timeZone = space.getTimeZone();
+        this.country = space.getCountry();
         this.token = space.getToken();
         if (space.getUsers() != null) {
             this.users = space.getUsers().stream().map(SimpleMemberResponse::new).collect(Collectors.toList());
