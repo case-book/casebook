@@ -64,14 +64,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         // 인증 및 인가 예외 처리
+        // TODO api 경로 제외 모두 패스하도록 설정해야함
         web.ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()) // favicon.ico 등의 인증을 시도하지 않음
-                .mvcMatchers(HttpMethod.OPTIONS, "/**")
+                .mvcMatchers(HttpMethod.OPTIONS, "/(.*)")
+                .mvcMatchers("/")
+                .mvcMatchers("/**.html")
+                .mvcMatchers("/**.png")
+                .mvcMatchers("/**.svg")
+                .mvcMatchers("/**.ico")
+                .mvcMatchers("/**.txt")
+                .mvcMatchers("/**.json")
+                .mvcMatchers("/static/**")
                 .mvcMatchers("/api/configs/systems/**")
                 .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
-                .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
-                .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
-                .mvcMatchers("/api/**/projects/**/images/**")
+                .mvcMatchers("/api/**/projects//**/testcases/(.*)/images/**")
+                .mvcMatchers("/api/**/projects//**/testruns//**/images/**")
+                .mvcMatchers("/api/**/projects//**/images//**")
                 .mvcMatchers("/ws/**");
     }
 

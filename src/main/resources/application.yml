@@ -29,11 +29,6 @@ spring:
     host: localhost
     port: 6679
     password: admin1234
-  session:
-    store-type: redis
-    redis:
-      flush-mode: immediate
-      namespace: bug-case
   messages:
     basename: messages/message
     encoding: UTF-8
@@ -48,15 +43,6 @@ spring:
     expireMinutes: 1440
 server:
   port: 8080
-  servlet:
-    session:
-      timeout: 12h # Session timeout. If a duration suffix is not specified, seconds is used.
-  #ssl:
-    #key-store: classpath:keystores/keystore.p12
-    #key-store-type: PKCS12
-    #key-store-password: 123456
-    #key-password: a123456
-    #key-alias: keystore-alias
   error:
     include-exception: false
     include-stacktrace: NEVER
@@ -67,9 +53,6 @@ bug-case:
   corsUrls: http://localhost:3000,https://localhost:3000
   url: http://localhost:3000
   web-url: http://localhost:3000
-  # web-url: https://localhost:3000/
-  # oauth-err-web-url: https://localhost:3000/users/oauth/fail
-  # oauth-register-web-url: https://localhost:3000/users/oauth/register
 file:
   upload-dir: c:/fileupload/
   allowed-extension: bmp,jpeg,png,jpg,gif,webp,svg
@@ -77,22 +60,3 @@ proxy:
   enabled : false
   host:
   port:
----
-spring:
-  config:
-    activate:
-      on-profile: "production"
-  datasource:
-    url: jdbc:mysql://matrix-server-mysql-254-dbaas.mydev.onkakao.net:3306/casebook?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
-    username: casebook
-    password: casebook
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    password: casebook
-  jwt:
-    secret: casebook
-    expireMinutes: 1440
-file:
-  upload-dir: /data/casebook/files/
-  allowed-extension: bmp,jpeg,png,jpg,gif,webp,svg

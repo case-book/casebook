@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
+import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -20,7 +21,9 @@ import java.util.TimeZone;
 public class BugCaseApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BugCaseApplication.class, args);
+        SpringApplication app = new SpringApplication(BugCaseApplication.class);
+        app.addListeners(new ApplicationPidFileWriter());
+        app.run(args);
     }
 
     @PostConstruct

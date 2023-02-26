@@ -42,6 +42,8 @@ build/
 
 # production
 /app/build
+src/main/resources/static/**
+application.pid
 
 # misc
 /app/.DS_Store
