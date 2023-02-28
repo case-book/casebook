@@ -1,91 +1,25 @@
-# Getting Started
+CASEBOOK
+======================
 
--- server
-docker-compose up -d
+> CASEBOOK은 소프트웨어나 기타 테스트가 필요한 환경에서 테스트 수행과 관련된 테스트케이스의 작성, 테스트의 실행 및 리포트 등의 테스트 수행과 관련된 여러 기능을 보다 편리하게 사용하기 위해 사용할 수 있는 오픈 소스 소프트웨어입니다.
+## 주요 기능
+> CASEBOOK은 테스트 수행을 위해 필요한 테스트케이스의 작성, 테스트의 수행, E2E 테스트 도구와의 통합, 테스트 결과 리포팅 및 알림 등을 기능을 제공합니다.
+* 회사나 조직 혹은 공통의 관심사를 가지는 그룹이 공유할 수 있는 '스페이스'라는 공간을 생성하고, '스페이스'의 참여자를 관리할 수 있습니다.
+* '스페이스'에 '프로젝트'를 생성하고, '프로젝트'의 참여자를 관리할 수 있습니다.
+* '프로젝트'에 트리 형태의 '테스트케이스 그룹'을 생성하고, '테스트케이스 그룹' 아래에 '테스트케이스'를 작성할 수 있습니다.
+* '테스트케이스'에 작성을 위한 '테스트케이스 템플릿'을 추가하거나, 편집하여, '프로젝트' 별로 '테스트케이스' 작성이나, 결과 입력에 필요한 항목을 커스터마이징 할 수 있습니다.
+* 작성된 '테스트케이스'를 테스트 수행을 위해 필요한 여러 조건을 선택하여, '테스트런'을 생성한 후, 테스트를 수행할 수 있습니다.
+* '테스트런' 생성 시 테스트를 수행할 기간, 테스트 대상이 되는 '테스트케이스 그룹'이나 '테스트케이스', 테스트를 수행할 '테스터'를 자유롭게 선택할 수 있습니다.
+* '테스트런'의 시작, 종료, 테스터의 변경 등의 '테스트런'의 상황 변화를 슬랙과 연동할 수 있습니다.
+* '테스트런' 진행율을 비롯하여, 테스트 성공, 실패, 테스트 불가 등의 비율, 테스터별 테스트 진행 상황 등을 '대시보드'를 통해 확인할 수 있습니다.
+* '테스트런'을 예약하여 특정 시간에 테스트가 수행될 수 있도록 미리 설정할 수 있으며, 혹은 '매일', '매주 월요일' 등 특정 날짜 조건에 따라 반복 수행할 수 있도록 '테스트런' 계획을 수립할 수 있습니다.
+* 종료된 '테스트런'에 대한 다양한 지표와 함께 전체 테스트 수행 대상에 대한 결과를 '리포트'를 통해 확인할 수 있습니다.
+* 반복 설정된 '테스트런'의 반복 조건에 '휴일 제외' 옵션을 적용할 수 있으며, '스페이스'별로 특성에 맞게 휴일을 설정할 수 있습니다. (매주 마지막 금요일 휴일 등)* 
 
--- backend application
-run com.mindplates.bugcase.BugCaseApplication
-
--- swagger 
-https://localhost:8080/swagger-ui/
-
--- api test
-https://localhost:8080/api/configs/systems/version
-
-
--- front dev server start 
-cd app
-npm install
-npm run start
-
---
-https://localhost:3000/
-
-
-npm config delete "@fortawesome:registry"
-
--- build
-
-
-### Reference Documentation
-
-For further reference, please consider the following sections:
-
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.7.3/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.7.3/maven-plugin/reference/html/#build-image)
-* [Validation](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#io.validation)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#data.sql.jpa-and-spring-data)
-* [Spring Batch](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#howto.batch)
-* [Spring Session](https://docs.spring.io/spring-session/reference/)
-* [Spring Data Redis (Access+Driver)](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#data.nosql.redis)
-* [Quartz Scheduler](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#io.quartz)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#web)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#using.devtools)
-* [WebSocket](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#messaging.websockets)
-
-### Guides
-
-The following guides illustrate how to use some features concretely:
-
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
-* [Creating a Batch Service](https://spring.io/guides/gs/batch-processing/)
-* [Messaging with Redis](https://spring.io/guides/gs/messaging-redis/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Using WebSocket to build an interactive web application](https://spring.io/guides/gs/messaging-stomp-websocket/)
-
-
--Dspring.profiles.active="default,development"
-
-
-<appender name="Sentry" class="io.sentry.logback.SentryAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
-        </filter>
-    </appender>
-
-<root level="error">
-            <appender-ref ref="Sentry" />
-            <appender-ref ref="CONSOLE"/>
-        </root>
-
-
-
-
-CASEBOOK v1.0.1
-케이스북 v1.0.1 버전이 릴리즈되었습니다.
-
-<관리자 기능 강화>
-- 시스템 관리자의 전체 사용자 및 스페이스 관리 기능 추가
-- 프로젝트 권한 강화
-
-<프로젝트 권한 검증 추가>
-- 프로젝트 접근 시 프로젝트의 권한에 따른 접근 가능 여부 판단 로직 추가
-- 관리자 접근 권한 예외 처리
-
-<최신 릴리즈 알림 기능 추가>
-- GIT에 새로운 릴리즈가 등록 알림 기능
+## 라이선스
+* TBD 
+## 설치 방법
+* TBD
+## 추가 설정
+* TBD
+## 개발 환경 구성
