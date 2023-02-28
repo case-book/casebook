@@ -61,8 +61,8 @@ function IterationTestrunList({ spaceCode, projectId, testruns }) {
                       return undefined;
                     })}
                   {testrun.creationType === 'ITERATION' && (
-                    <Tag className={`day ${testrun.onHoliday ? 'selected' : ''}`} uppercase border color="transparent">
-                      {testrun.onHoliday ? t('휴일 포함') : t('휴일 제외')}
+                    <Tag className={`day ${testrun.excludeHoliday ? 'selected' : ''}`} uppercase border color="transparent">
+                      {testrun.excludeHoliday ? t('휴일 포함') : t('휴일 제외')}
                     </Tag>
                   )}
                 </Td>

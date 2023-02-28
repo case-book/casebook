@@ -36,6 +36,8 @@ export default class UserStore {
       setTried: action,
       isLogin: computed,
       isAdmin: computed,
+      language: computed,
+      country: computed,
       addSpace: action,
       removeSpace: action,
       setNotificationCount: action,
@@ -109,5 +111,13 @@ export default class UserStore {
 
   get isAdmin() {
     return this.user?.activeSystemRole === 'ROLE_ADMIN';
+  }
+
+  get language() {
+    return this.user?.language;
+  }
+
+  get country() {
+    return this.user?.country;
   }
 }

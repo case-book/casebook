@@ -6,14 +6,22 @@
     width: 60px;
     height: 60px;
     display: inline-flex;
-    background-color: var(--point-backgroup-color);
-    color: var(--point-color);
+    _background-color: var(--point-backgroup-color);
+    _color: var(--point-color);
+    _background-color: #7bde89;
     justify-content: center;
     border-radius: 50%;
     i {
       align-self: center;
       font-size: 28px;
     }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+
   }
 
   &.size-xs {

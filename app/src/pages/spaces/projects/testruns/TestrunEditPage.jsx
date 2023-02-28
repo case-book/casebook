@@ -91,7 +91,7 @@ function TestrunEditPage({ type }) {
     failedTestcaseCount: true,
     creationType: 'CREATE',
     days: '1111100',
-    onHoliday: false,
+    excludeHoliday: false,
     startTime: (() => {
       const startTime = new Date();
       startTime.setHours(9);
@@ -430,12 +430,12 @@ function TestrunEditPage({ type }) {
                       <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
                       <Button
                         size="md"
-                        className={`holiday-button ${testrun.onHoliday ? 'selected' : ''}`}
+                        className={`holiday-button ${testrun.excludeHoliday ? 'selected' : ''}`}
                         outline
                         onClick={() => {
                           setTestrun({
                             ...testrun,
-                            onHoliday: !testrun.onHoliday,
+                            excludeHoliday: !testrun.excludeHoliday,
                           });
                         }}
                       >

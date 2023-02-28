@@ -14,6 +14,7 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceAccessibleResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
+import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,9 +73,9 @@ public class SpaceController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
             for (HolidayRequest holiday : holidays) {
-                if (holiday.getIsRegular() != null && holiday.getIsRegular()) {
+                if (HolidayTypeCode.YEARLY.equals(holiday.getHolidayType())) {
                     LocalDate.parse(now.format(DateTimeFormatter.ofPattern("yyyy")) + holiday.getDate(), formatter);
-                } else {
+                } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holiday.getHolidayType())) {
                     LocalDate.parse(holiday.getDate(), formatter);
                 }
             }

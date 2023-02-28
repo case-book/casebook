@@ -8,15 +8,22 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
+import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 
 @Component
 @Slf4j
@@ -60,7 +67,6 @@ public class TestrunScheduler {
         List<TestrunDTO> testrunList = testrunService.selectReserveTestrunList();
         testrunList.forEach((testrunDTO -> {
             if (TestrunCreationTypeCode.RESERVE.equals(testrunDTO.getCreationType())) {
-
                 Long testrunId = testrunDTO.getId();
                 LocalDateTime startDateTime = testrunDTO.getStartDateTime();
 
@@ -69,12 +75,15 @@ public class TestrunScheduler {
                     TestrunDTO result = testrunService.createTestrunInfo(testrunDTO.getProject().getSpace().getCode(), testrunDTO);
                     testrunService.updateTestrunReserveExpired(testrunId, true, result.getId());
                 }
-
-
             } else if (TestrunCreationTypeCode.ITERATION.equals(testrunDTO.getCreationType())) {
 
                 Long testrunId = testrunDTO.getId();
+                Long spaceId = testrunDTO.getProject().getSpace().getId();
+                SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceId);
 
+                Locale spaceLocale = spaceDTO.getCountry() != null ? new Locale(spaceDTO.getCountry()) : Locale.US;
+                WeekFields weekFields = WeekFields.of(spaceLocale);
+                TemporalField weekOfMonth = weekFields.weekOfMonth();
 
                 LocalDateTime startDateTime = testrunDTO.getStartDateTime();
                 LocalDateTime endDateTime = testrunDTO.getEndDateTime();
@@ -84,25 +93,60 @@ public class TestrunScheduler {
                     return;
                 }
 
-                if (testrunDTO.getDays().charAt(now.getDayOfWeek().getValue() - 1) != '1') {
+                ZonedDateTime nowUTC = ZonedDateTime.of(now, ZoneId.of("UTC"));
+                ZonedDateTime zonedNow = nowUTC.withZoneSameInstant(ZoneId.of(spaceDTO.getTimeZone() != null ? spaceDTO.getTimeZone() : "UTC"));
+
+                if (testrunDTO.getDays().charAt(zonedNow.getDayOfWeek().getValue() - 1) != '1') {
                     return;
                 }
 
-                // TODO onHoliday -> exceptHoliday로 변경
-                if (testrunDTO.getOnHoliday() != null && testrunDTO.getOnHoliday()) {
-                    Long spaceId = testrunDTO.getProject().getSpace().getId();
-                    SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceId);
+
+                if (testrunDTO.getExcludeHoliday() != null && testrunDTO.getExcludeHoliday()) {
                     List<HolidayDTO> holidays = spaceDTO.getHolidays();
-                    String nowDay = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    String nowDay = zonedNow.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    String nowYear = zonedNow.format(DateTimeFormatter.ofPattern("yyyy"));
                     boolean isHoliday = holidays.stream().anyMatch((holidayDTO -> {
-                        String holiday;
-                        if (holidayDTO.getIsRegular() != null && holidayDTO.getIsRegular()) {
-                            holiday = now.format(DateTimeFormatter.ofPattern("yyyy")) + holidayDTO.getDate();
-                        } else {
-                            holiday = holidayDTO.getDate();
+
+                        if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType()) || HolidayTypeCode.SPECIFIED_DATE.equals(holidayDTO.getHolidayType())) {
+                            String holiday = null;
+                            if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType())) {
+                                holiday = nowYear + holidayDTO.getDate();
+                            } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holidayDTO.getHolidayType())) {
+                                holiday = holidayDTO.getDate();
+                            }
+                            return nowDay.equals(holiday);
+                        } else if (HolidayTypeCode.CONDITION.equals(holidayDTO.getHolidayType())) {
+                            Integer month = holidayDTO.getMonth();
+                            Integer week = holidayDTO.getWeek();
+                            Integer day = holidayDTO.getDay();
+
+                            int currentMonth = zonedNow.getMonthValue();
+                            int currentWeek = zonedNow.get(weekOfMonth);
+                            int currentDay = zonedNow.getDayOfWeek().getValue();
+
+                            if (!(currentMonth == month || month == -1)) {
+                                return false;
+                            }
+
+                            LocalDate startDateOfMonth = LocalDate.of(zonedNow.getYear(), zonedNow.getMonth(), 1);
+                            LocalDate endDateOfMonth = startDateOfMonth.plusDays(startDateOfMonth.lengthOfMonth() - 1);
+                            int lastWeek = endDateOfMonth.get(weekOfMonth);
+                            double nowDayOfMonth = zonedNow.getDayOfMonth();
+                            double weekTimes = Math.ceil(nowDayOfMonth / 7.0);
+                            // 마지막주의 경우, 현재 주 값이랑 달의 마지막 날짜의 주 값이랑 동일한 경우 참
+                            // 마지막인 경우, 요일이 같고, 달의 마지막 날짜까지 해당 요일이 없는 경우 참
+                            if (!((week == currentWeek)
+                                    || (week == 6 && lastWeek == currentWeek)
+                                    || (week == 7 && day == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
+                                    || ((week >= 8 && week <=11) && (day == currentDay) && (weekTimes == (week - 7)))
+                            )) {
+                                return false;
+                            }
+
+                            return day == currentDay;
                         }
 
-                        return nowDay.equals(holiday);
+                        return false;
                     }));
 
                     if (isHoliday) {

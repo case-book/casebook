@@ -15,4 +15,14 @@
   .invalid {
     color: var(--danger-color);
   }
+
+  .condition {
+    > div {
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
 }

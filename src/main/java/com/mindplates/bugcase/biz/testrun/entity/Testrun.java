@@ -80,8 +80,8 @@ public class Testrun extends CommonEntity {
     @Column(name = "days", length = ColumnsDef.CODE)
     private String days;
 
-    @Column(name = "on_holiday")
-    private Boolean onHoliday;
+    @Column(name = "exclude_holiday")
+    private Boolean excludeHoliday;
 
     @Column(name = "start_time")
     private LocalTime startTime;

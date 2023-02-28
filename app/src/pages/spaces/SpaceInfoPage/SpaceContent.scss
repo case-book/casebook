@@ -10,6 +10,16 @@
     margin-bottom: 1rem;
   }
 
+  .condition {
+    > div {
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
   table.applicant-list {
     td {
       &.message {

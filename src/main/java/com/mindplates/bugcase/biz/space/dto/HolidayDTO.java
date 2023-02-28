@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.space.dto;
 
 
 import com.mindplates.bugcase.biz.space.entity.Holiday;
+import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,15 +17,21 @@ import lombok.NoArgsConstructor;
 public class HolidayDTO extends CommonEntity {
 
     Long id;
+    private HolidayTypeCode holidayType;
     private SpaceDTO space;
-    private Boolean isRegular;
     private String date;
+    private Integer month;
+    private Integer week;
+    private Integer day;
     private String name;
 
     public HolidayDTO(Holiday holiday) {
         this.id = holiday.getId();
         this.space = SpaceDTO.builder().id(holiday.getSpace().getId()).build();
-        this.isRegular = holiday.getIsRegular();
+        this.month = holiday.getMonth();
+        this.holidayType = holiday.getHolidayType();
+        this.week = holiday.getWeek();
+        this.day = holiday.getDay();
         this.date = holiday.getDate();
         this.name = holiday.getName();
     }

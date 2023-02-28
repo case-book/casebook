@@ -27,6 +27,8 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
     private Boolean allowSearch;
     private Boolean allowAutoJoin;
     private List<HolidayRequest> holidays;
+    private String country;
+    private String timeZone;
 
     @Override
     public SpaceDTO toDTO() {
@@ -35,7 +37,7 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
 
     public SpaceDTO toDTO(String code) {
 
-        SpaceDTO space = SpaceDTO.builder().id(id).name(name).code(code).description(description).activated(activated).token(token).allowSearch(allowSearch).allowAutoJoin(allowAutoJoin).build();
+        SpaceDTO space = SpaceDTO.builder().id(id).name(name).code(code).description(description).activated(activated).token(token).allowSearch(allowSearch).allowAutoJoin(allowAutoJoin).country(country).timeZone(timeZone).build();
 
         if (users != null) {
             List<SpaceUserDTO> spaceUsers = users.stream().map(spaceUser -> spaceUser.toDTO(space)).collect(Collectors.toList());

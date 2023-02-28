@@ -425,7 +425,7 @@ public class TestrunService {
         targetTestrun.setEndDateTime(testrun.getEndDateTime());
         targetTestrun.setOpened(testrun.isOpened());
         targetTestrun.setDays(testrun.getDays());
-        targetTestrun.setOnHoliday(testrun.getOnHoliday());
+        targetTestrun.setExcludeHoliday(testrun.getExcludeHoliday());
         targetTestrun.setStartTime(testrun.getStartTime());
         targetTestrun.setDurationHours(testrun.getDurationHours());
         targetTestrun.setReserveExpired(testrun.getReserveExpired());

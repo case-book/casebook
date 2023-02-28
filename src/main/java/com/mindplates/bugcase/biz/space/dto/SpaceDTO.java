@@ -28,6 +28,8 @@ public class SpaceDTO extends CommonDTO {
     private List<SpaceUserDTO> users;
     private List<SpaceApplicantDTO> applicants;
     private List<HolidayDTO> holidays;
+    private String country;
+    private String timeZone;
     private Long projectCount;
 
     public SpaceDTO(Space space) {
@@ -39,6 +41,8 @@ public class SpaceDTO extends CommonDTO {
         this.allowSearch = space.isAllowSearch();
         this.allowAutoJoin = space.isAllowAutoJoin();
         this.token = space.getToken();
+        this.country = space.getCountry();
+        this.timeZone = space.getTimeZone();
         if (space.getUsers() != null) {
             this.users = space.getUsers().stream().map(SpaceUserDTO::new).collect(Collectors.toList());
         }
