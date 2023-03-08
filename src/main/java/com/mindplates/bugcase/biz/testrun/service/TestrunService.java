@@ -433,13 +433,16 @@ public class TestrunService {
         // 삭제된 테스트 제거
         targetTestrun.getTestrunUsers().removeIf((testrunUser -> testrun.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())))));
         // 추가된 테스터 추가
-        targetTestrun.getTestrunUsers().addAll(testrun.getTestrunUsers().stream().filter((testrunUserDTO -> testrunUserDTO.getId() == null)).map((testrunUserDTO -> TestrunUser.builder().user(User.builder().id(testrunUserDTO.getUser().getId()).build()).testrun(targetTestrun).build())).collect(Collectors.toList()));
+        targetTestrun.getTestrunUsers().addAll(testrun.getTestrunUsers().stream().filter(testrunUserDTO -> targetTestrun.getTestrunUsers().stream().noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId()))).map((testrunUserDTO -> TestrunUser.builder().user(User.builder().id(testrunUserDTO.getUser().getId()).build()).testrun(targetTestrun).build())).collect(Collectors.toList()));
 
         List<TestrunUser> testrunUsers = targetTestrun.getTestrunUsers();
         Map<String, List<ProjectUserDTO>> tagUserMap = getTagUserMap(project, testrunUsers);
 
         Random random = new Random();
-        int currentSeq = random.nextInt(testrunUsers.size());
+        int currentSeq = -1;
+        if (!testrunUsers.isEmpty()) {
+            currentSeq = random.nextInt(testrunUsers.size());
+        }
 
         // 삭제된 테스트런 테스트케이스 그룹 제거
         targetTestrun.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
@@ -489,75 +492,7 @@ public class TestrunService {
 
                         List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
                         testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
-                        // 테스터 입력
-                        if ("tag".equals(testcase.getTesterType())) {
-                            if (tagUserMap.containsKey(testcase.getTesterValue())) {
-                                List<ProjectUserDTO> tagUsers = tagUserMap.get(testcase.getTesterValue());
-                                int userIndex = random.nextInt(tagUsers.size());
-                                testrunTestcaseGroupTestcase.setTester(User.builder().id(tagUsers.get(userIndex).getUser().getId()).build());
-                            } else {
-                                int userIndex = random.nextInt(testrunUsers.size());
-                                testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
-                            }
-                        } else if ("operation".equals(testcase.getTesterType())) {
-                            if ("RND".equals(testcase.getTesterValue())) {
-                                int userIndex = random.nextInt(testrunUsers.size());
-                                testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
-                            } else if ("SEQ".equals(testcase.getTesterValue())) {
-                                if (currentSeq > testrunUsers.size() - 1) {
-                                    currentSeq = 0;
-                                }
-
-                                testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build());
-                                currentSeq++;
-                            }
-                        } else {
-                            testrunTestcaseGroupTestcase.setTester(User.builder().id(Long.parseLong(testcase.getTesterValue())).build());
-                        }
-
-                        for (TestcaseItemDTO testcaseItem : testcaseItems) {
-
-                            if (testcaseItem.getValue() == null) {
-                                continue;
-                            }
-
-                            TestcaseTemplateItem testcaseTemplateItem = mappingUtil.convert(testcaseItem.getTestcaseTemplateItem(), TestcaseTemplateItem.class);
-
-                            if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
-
-                                TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem.builder().testcaseTemplateItem(testcaseTemplateItem).testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase).type("value").build();
-
-                                if ("RND".equals(testcaseItem.getValue())) {
-                                    int userIndex = random.nextInt(testrunUsers.size());
-                                    testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
-                                } else if ("SEQ".equals(testcaseItem.getValue())) {
-
-                                    if (currentSeq > testrunUsers.size() - 1) {
-                                        currentSeq = 0;
-                                    }
-
-                                    testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
-
-                                    currentSeq++;
-
-                                } else {
-                                    testrunTestcaseGroupTestcaseItem.setValue(testcaseItem.getValue());
-                                }
-
-                                if (testrunTestcaseGroupTestcase.getTestcaseItems() == null) {
-                                    testrunTestcaseGroupTestcase.setTestcaseItems(new ArrayList<>());
-                                }
-                                testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
-                            }
-                        }
-                    } else {
-                        // 존재하는 테스트케이스에 테스터가 삭제된 경우 처리
-
-                        TestcaseDTO testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
-
-                        boolean removedUser = testrunUsers.stream().noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null));
-
-                        if (removedUser) {
+                        if (!testrunUsers.isEmpty()) {
                             // 테스터 입력
                             if ("tag".equals(testcase.getTesterType())) {
                                 if (tagUserMap.containsKey(testcase.getTesterValue())) {
@@ -585,6 +520,83 @@ public class TestrunService {
                             }
                         }
 
+                        for (TestcaseItemDTO testcaseItem : testcaseItems) {
+
+                            if (testcaseItem.getValue() == null) {
+                                continue;
+                            }
+
+                            TestcaseTemplateItem testcaseTemplateItem = mappingUtil.convert(testcaseItem.getTestcaseTemplateItem(), TestcaseTemplateItem.class);
+
+                            if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
+
+                                TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem.builder().testcaseTemplateItem(testcaseTemplateItem).testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase).type("value").build();
+
+                                if (!testrunUsers.isEmpty()) {
+                                    if ("RND".equals(testcaseItem.getValue())) {
+                                        int userIndex = random.nextInt(testrunUsers.size());
+                                        testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
+                                    } else if ("SEQ".equals(testcaseItem.getValue())) {
+
+                                        if (currentSeq > testrunUsers.size() - 1) {
+                                            currentSeq = 0;
+                                        }
+
+                                        testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
+
+                                        currentSeq++;
+
+                                    } else {
+                                        testrunTestcaseGroupTestcaseItem.setValue(testcaseItem.getValue());
+                                    }
+                                }
+
+
+                                if (testrunTestcaseGroupTestcase.getTestcaseItems() == null) {
+                                    testrunTestcaseGroupTestcase.setTestcaseItems(new ArrayList<>());
+                                }
+                                testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
+                            }
+                        }
+                    } else {
+                        // 존재하는 테스트케이스에 테스터가 삭제된 경우 처리
+
+                        TestcaseDTO testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
+
+                        boolean removedUser = testrunUsers.stream().noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null));
+
+                        if (removedUser) {
+                            if (!testrunUsers.isEmpty()) {
+                                // 테스터 입력
+                                if ("tag".equals(testcase.getTesterType())) {
+                                    if (tagUserMap.containsKey(testcase.getTesterValue())) {
+                                        List<ProjectUserDTO> tagUsers = tagUserMap.get(testcase.getTesterValue());
+                                        int userIndex = random.nextInt(tagUsers.size());
+                                        testrunTestcaseGroupTestcase.setTester(User.builder().id(tagUsers.get(userIndex).getUser().getId()).build());
+                                    } else {
+                                        int userIndex = random.nextInt(testrunUsers.size());
+                                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
+                                    }
+                                } else if ("operation".equals(testcase.getTesterType())) {
+                                    if ("RND".equals(testcase.getTesterValue())) {
+                                        int userIndex = random.nextInt(testrunUsers.size());
+                                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build());
+                                    } else if ("SEQ".equals(testcase.getTesterValue())) {
+                                        if (currentSeq > testrunUsers.size() - 1) {
+                                            currentSeq = 0;
+                                        }
+
+                                        testrunTestcaseGroupTestcase.setTester(User.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build());
+                                        currentSeq++;
+                                    }
+                                } else {
+                                    testrunTestcaseGroupTestcase.setTester(User.builder().id(Long.parseLong(testcase.getTesterValue())).build());
+                                }
+                            } else {
+                                testrunTestcaseGroupTestcase.setTester(null);
+                            }
+                        }
+
 
                         List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
                         for (TestcaseItemDTO testcaseItem : testcaseItems) {
@@ -596,25 +608,26 @@ public class TestrunService {
                             TestcaseTemplateItem testcaseTemplateItem = mappingUtil.convert(testcaseItem.getTestcaseTemplateItem(), TestcaseTemplateItem.class);
 
                             if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
-
-
                                 TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = testrunTestcaseGroupTestcase.getTestcaseItems().stream().filter((item -> item.getTestcaseTemplateItem().getId().equals(testcaseTemplateItem.getId()))).findAny().orElse(null);
 
-                                // TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem.builder().testcaseTemplateItem(testcaseTemplateItem).testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase).type("value").build();
-
                                 if (testrunTestcaseGroupTestcaseItem != null) {
-                                    if ("RND".equals(testcaseItem.getValue())) {
-                                        int userIndex = random.nextInt(testrunUsers.size());
-                                        testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
-                                    } else if ("SEQ".equals(testcaseItem.getValue())) {
+                                    if (!testrunUsers.isEmpty()) {
+                                        if ("RND".equals(testcaseItem.getValue())) {
+                                            int userIndex = random.nextInt(testrunUsers.size());
+                                            testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
+                                        } else if ("SEQ".equals(testcaseItem.getValue())) {
 
-                                        if (currentSeq > testrunUsers.size() - 1) {
-                                            currentSeq = 0;
+                                            if (currentSeq > testrunUsers.size() - 1) {
+                                                currentSeq = 0;
+                                            }
+
+                                            testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
+                                            currentSeq++;
                                         }
-
-                                        testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
-                                        currentSeq++;
+                                    } else {
+                                        testrunTestcaseGroupTestcaseItem.setValue(null);
                                     }
+
                                 }
                             }
                         }
