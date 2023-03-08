@@ -128,7 +128,7 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
     rootStore.controlStore.setRequestLoading(true);
   }
 
-  const messageId = Date.now();
+  const messageId = (performance && performance.now && performance.now()) || Date.now();
   if (message) {
     rootStore.controlStore.addRequestMessage(messageId, message);
   }
