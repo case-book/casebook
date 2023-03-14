@@ -7,13 +7,13 @@ import com.mindplates.bugcase.biz.notification.vo.NotificationResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.dto.UserTokenDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
-import com.mindplates.bugcase.biz.user.vo.request.JoinRequest;
-import com.mindplates.bugcase.biz.user.vo.request.LoginRequest;
-import com.mindplates.bugcase.biz.user.vo.request.UpdateMyInfoRequest;
-import com.mindplates.bugcase.biz.user.vo.request.UpdatePasswordRequest;
+import com.mindplates.bugcase.biz.user.service.UserTokenService;
+import com.mindplates.bugcase.biz.user.vo.request.*;
 import com.mindplates.bugcase.biz.user.vo.response.MyDetailInfoResponse;
 import com.mindplates.bugcase.biz.user.vo.response.MyInfoResponse;
+import com.mindplates.bugcase.biz.user.vo.response.UserTokenResponse;
 import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
@@ -43,6 +43,7 @@ public class UserController {
 
     private static final int NOTIFICATION_PAGE_SIZE = 10;
     private final UserService userService;
+    private final UserTokenService userTokenService;
     private final SpaceService spaceService;
     private final NotificationService notificationService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -127,6 +128,55 @@ public class UserController {
     @DeleteMapping("/logout")
     public MyInfoResponse logout(HttpServletRequest request) {
         return new MyInfoResponse(null, null);
+    }
+
+    @Operation(description = "사용자 토큰 목록")
+    @GetMapping("/my/tokens")
+    public List<UserTokenResponse> selectUserTokenList() {
+        List<UserTokenDTO> userTokenList = userTokenService.selectUserTokenList(SessionUtil.getUserId());
+        return userTokenList.stream().map(UserTokenResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "사용자 토큰 조회")
+    @GetMapping("/my/tokens/{tokenId}")
+    public UserTokenResponse selectUserTokenInfo(@PathVariable Long tokenId) {
+        UserTokenDTO userToken = userTokenService.selectUserTokenInfo(tokenId);
+        if (!SessionUtil.getUserId().equals(userToken.getUser().getId())) {
+            throw new ServiceException(HttpStatus.UNAUTHORIZED);
+        }
+        return new UserTokenResponse(userToken);
+    }
+
+    @Operation(description = "사용자 토큰 생성")
+    @PostMapping("/my/tokens")
+    public UserTokenResponse createUserToken(@Valid @RequestBody CreateUserTokenRequest createUserTokenRequest) {
+        UserTokenDTO userTokenDTO = createUserTokenRequest.toDTO();
+        return new UserTokenResponse(userTokenService.createUserToken(userTokenDTO));
+    }
+
+    @Operation(description = "사용자 토큰 변경")
+    @PutMapping("/my/tokens")
+    public UserTokenResponse updateUserToken(@Valid @RequestBody UpdateUserTokenRequest updateUserTokenRequest) {
+
+        UserTokenDTO targetUserToken = userTokenService.selectUserTokenInfo(updateUserTokenRequest.getId());
+        if (!SessionUtil.getUserId().equals(targetUserToken.getUser().getId())) {
+            throw new ServiceException(HttpStatus.UNAUTHORIZED);
+        }
+
+        UserTokenDTO userTokenDTO = updateUserTokenRequest.toDTO();
+        return new UserTokenResponse(userTokenService.updateUserToken(userTokenDTO));
+    }
+
+    @Operation(description = "사용자 토큰 삭제")
+    @DeleteMapping("/my/tokens/{tokenId}")
+    public ResponseEntity<?> deleteUserToken(@PathVariable Long tokenId) {
+        UserTokenDTO userToken = userTokenService.selectUserTokenInfo(tokenId);
+        if (!SessionUtil.getUserId().equals(userToken.getUser().getId())) {
+            throw new ServiceException(HttpStatus.UNAUTHORIZED);
+        }
+
+        userTokenService.deleteUserToken(tokenId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
