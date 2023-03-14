@@ -72,7 +72,7 @@ function ProjectUserSelectPopup({ users, selectedUsers, setOpened, onApply }) {
           {projectUsers?.length > 0 && (
             <ul>
               {projectUsers?.map(user => {
-                const selected = currentSelectedUsers.findIndex(d => d.userId === user.userId) > -1;
+                const selected = currentSelectedUsers?.findIndex(d => d.userId === user.userId) > -1;
                 return (
                   <li
                     key={user.id}

@@ -51,7 +51,7 @@ function MainMenu({ className, closeMobileMenu }) {
   });
 
   return (
-    <ul className={`main-menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : 'no-collapsed'}`}>
+    <ul className={`main-menu-wrapper common-menu-wrapper ${isProjectSelected ? 'project-selected' : ''} ${className} ${hideHeader ? 'collapsed' : 'no-collapsed'}`}>
       {STATIC_MENUS.filter(d => d.pc)
         .filter(d => !d.admin || (d.admin && user.activeSystemRole === 'ROLE_ADMIN'))
         .map((d, inx) => {
@@ -62,7 +62,7 @@ function MainMenu({ className, closeMobileMenu }) {
           return (
             <li
               key={inx}
-              className={isSelected ? 'selected' : ''}
+              className={`${isSelected ? 'selected' : ''} ${d.key}`}
               style={{
                 animationDelay: `${inx * 0.1}s`,
               }}

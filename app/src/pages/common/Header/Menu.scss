@@ -84,8 +84,8 @@ ul.common-menu-wrapper {
         display: none;
         position: absolute;
         white-space: nowrap;
-        top : calc(100% - 10px);
-        left : 0;
+        top: calc(100% - 10px);
+        left: 0;
         margin: 0;
         padding: 0.25rem;
         list-style: none;
@@ -98,7 +98,7 @@ ul.common-menu-wrapper {
           padding: 0.25rem 0.5rem;
           font-weight: normal;
           &:hover {
-            color : var(--primary-color);
+            color: var(--primary-color);
           }
         }
       }
@@ -106,7 +106,6 @@ ul.common-menu-wrapper {
       &:hover {
         ul.sub-menu-list {
           display: block;
-
         }
       }
     }
@@ -146,13 +145,13 @@ ul.common-menu-wrapper {
     @media (max-width: 1400px) {
       margin-left: 1rem;
     }
-
   }
 
   &.main-menu-wrapper.project-selected.no-collapsed {
     margin-left: 0;
     @media (max-width: 1400px) {
-      > li {
+      > li.space,
+      > li.project {
         display: inline-block !important;
         padding-top: 16px;
         margin-right: 1rem;
@@ -170,10 +169,10 @@ ul.common-menu-wrapper {
 
           > span {
             font-size: 12px;
-            border: 1px solid var(--border-color);
             line-height: 100%;
             padding: 0 0.5rem;
             border-radius: 8px;
+            color: var(--gray-color);
           }
         }
 
@@ -184,6 +183,14 @@ ul.common-menu-wrapper {
         .liner {
           display: none !important;
         }
+      }
+    }
+
+    @media (max-width: 1200px) {
+      > li,
+      > li.space,
+      > li.project {
+        display: none !important;
       }
     }
   }

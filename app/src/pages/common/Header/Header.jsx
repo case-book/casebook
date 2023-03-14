@@ -18,7 +18,6 @@ function Header({ className }) {
     userStore: { isLogin, setUser },
     controlStore: { hideHeader },
     themeStore: { theme },
-    contextStore: { isProjectSelected },
   } = useStores();
 
   const navigate = useNavigate();
@@ -87,7 +86,7 @@ function Header({ className }) {
         </div>
         <div className="spacer">{isLogin && <div />}</div>
         <ProjectMenu className="project-menu" />
-        {isLogin && <MainMenu className={`static-menu ${isProjectSelected ? 'project-selected' : ''}`} />}
+        {isLogin && <MainMenu className="static-menu" />}
         <SideControl />
       </div>
       {mobileMenuOpen && (

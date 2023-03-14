@@ -620,7 +620,7 @@ function TestrunEditPage({ type }) {
       {projectUserSelectPopupOpened && (
         <ProjectUserSelectPopup
           users={project.users}
-          selectedUsers={testrun.testrunUsers}
+          selectedUsers={testrun.testrunUsers || []}
           setOpened={setProjectUserSelectPopupOpened}
           onApply={selectedUsers => {
             onChangeTestrun('testrunUsers', selectedUsers);
