@@ -218,4 +218,48 @@ UserService.getUserNotificationList = (pageNo, successHandler, failHandler) => {
   );
 };
 
+UserService.getUserTokenList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/users/my/tokens',
+    {},
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+UserService.createUserToken = (userToken, successHandler, failHandler) => {
+  return request.post(
+    '/api/users/my/tokens',
+    userToken,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+UserService.updateUserToken = (userTokenId, userToken, successHandler, failHandler) => {
+  return request.put(
+    `/api/users/my/tokens/${userTokenId}`,
+    userToken,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+UserService.deleteUserToken = (userTokenId, successHandler, failHandler) => {
+  return request.del(
+    `/api/users/my/tokens/${userTokenId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default UserService;
