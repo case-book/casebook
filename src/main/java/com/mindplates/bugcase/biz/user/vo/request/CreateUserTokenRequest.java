@@ -10,12 +10,12 @@ import javax.validation.constraints.NotBlank;
 public class CreateUserTokenRequest {
     @NotBlank
     private String name;
-    private String token;
+    private boolean enabled;
 
     public UserTokenDTO toDTO() {
         return UserTokenDTO.builder()
                 .name(name)
-                .token(token)
+                .enabled(enabled)
                 .build();
     }
 }

@@ -23,7 +23,7 @@ public class UserTokenDTO extends CommonEntity {
 
     public UserTokenDTO(UserToken userToken) {
         this.id = userToken.getId();
-        this.user = UserDTO.builder().id(userToken.getUser().getId()).build();
+        this.user = new UserDTO(userToken.getUser());
         this.name = userToken.getName();
         this.token = userToken.getToken();
         this.enabled = userToken.isEnabled();

@@ -25,9 +25,11 @@ import java.util.regex.Pattern;
 public class ResourceVoter extends WebExpressionVoter {
 
     public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
+    public static final Pattern AUTOMATION_PATTERN = Pattern.compile("^/api/automation/projects/(\\d+)/testruns/(\\d+)/(.*)");
     public static final Pattern PROJECT_SUB_PATTERN = Pattern.compile("^/api/(.*)/projects/(\\d+)/(testruns|testcases)/?(.*)?");
     public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(\\d+|my)?");
     public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
+
     private final SpaceService spaceService;
     private final ProjectService projectService;
     List<Pattern> allPassPatterns = Arrays.asList(
@@ -61,12 +63,31 @@ public class ResourceVoter extends WebExpressionVoter {
             }
 
             Matcher spacesMatcher = SPACES_PATTERN.matcher(request.getRequestURI());
+            Matcher nightWatchMatcher = AUTOMATION_PATTERN.matcher(request.getRequestURI());
             Matcher projectsMatcher = PROJECTS_PATTERN.matcher(request.getRequestURI());
             Matcher projectSubMatcher = PROJECT_SUB_PATTERN.matcher(request.getRequestURI());
 
             Matcher adminMatcher = ADMIN_PATTERN.matcher(request.getRequestURI());
             if (adminMatcher.matches()) {
                 return SystemRole.ROLE_ADMIN.toString().equals(user.getRoles()) ? ACCESS_GRANTED : ACCESS_DENIED;
+            } else if (nightWatchMatcher.matches()) {
+
+                String projectIdText = nightWatchMatcher.group(1);
+                String testrunIdText = nightWatchMatcher.group(2);
+
+                boolean isNumber = NumberUtils.isCreatable(projectIdText) && NumberUtils.isCreatable(testrunIdText);
+                if (!isNumber) {
+                    return ACCESS_DENIED;
+                }
+
+                // Long testrunId = Long.parseLong(testrunIdText);
+                // TestrunDTO testrunDTO = testrunService.selectProjectTestrunInfo(Long.parseLong(projectIdText), Long.parseLong(testrunIdText));
+
+                if (projectService.selectIsProjectMember(Long.parseLong(projectIdText), userId)) {
+                    return ACCESS_GRANTED;
+                }
+
+                return ACCESS_DENIED;
             } else if (projectSubMatcher.matches()) {
                 if (SystemRole.ROLE_ADMIN.toString().equals(user.getRoles())) {
                     return ACCESS_GRANTED;

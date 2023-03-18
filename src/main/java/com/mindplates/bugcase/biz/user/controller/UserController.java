@@ -155,16 +155,16 @@ public class UserController {
     }
 
     @Operation(description = "사용자 토큰 변경")
-    @PutMapping("/my/tokens")
-    public UserTokenResponse updateUserToken(@Valid @RequestBody UpdateUserTokenRequest updateUserTokenRequest) {
+    @PutMapping("/my/tokens/{tokenId}")
+    public UserTokenResponse updateUserToken(@PathVariable Long tokenId, @Valid @RequestBody UpdateUserTokenRequest updateUserTokenRequest) {
 
-        UserTokenDTO targetUserToken = userTokenService.selectUserTokenInfo(updateUserTokenRequest.getId());
+        UserTokenDTO targetUserToken = userTokenService.selectUserTokenInfo(tokenId);
         if (!SessionUtil.getUserId().equals(targetUserToken.getUser().getId())) {
             throw new ServiceException(HttpStatus.UNAUTHORIZED);
         }
 
         UserTokenDTO userTokenDTO = updateUserTokenRequest.toDTO();
-        return new UserTokenResponse(userTokenService.updateUserToken(userTokenDTO));
+        return new UserTokenResponse(userTokenService.updateUserToken(tokenId, userTokenDTO));
     }
 
     @Operation(description = "사용자 토큰 삭제")

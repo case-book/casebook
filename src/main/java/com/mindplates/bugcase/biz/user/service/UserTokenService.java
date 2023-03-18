@@ -63,8 +63,8 @@ public class UserTokenService {
     }
 
     @Transactional
-    public UserTokenDTO updateUserToken(UserTokenDTO updateUserToken) {
-        UserToken userToken = userTokenRepository.findById(updateUserToken.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    public UserTokenDTO updateUserToken(Long tokenId, UserTokenDTO updateUserToken) {
+        UserToken userToken = userTokenRepository.findById(tokenId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         userToken.setName(updateUserToken.getName());
         userToken.setEnabled(updateUserToken.isEnabled());
         return new UserTokenDTO(userTokenRepository.save(userToken));
