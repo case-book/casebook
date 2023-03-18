@@ -36,4 +36,19 @@ public class ServiceException extends CommonException {
         this.messageCode = messageCode;
         this.messageParameters = messageParameters;
     }
+
+    @Override
+    public String getMessage() {
+
+        if (this.getMessageCode() != null) {
+            return this.getMessageCode();
+        }
+
+        if (this.code != null) {
+            return this.code.toString();
+        }
+
+        return "";
+
+    }
 }

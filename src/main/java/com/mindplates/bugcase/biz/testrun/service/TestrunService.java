@@ -120,6 +120,11 @@ public class TestrunService {
         return new TestrunDTO(testrun, true);
     }
 
+    public TestrunDTO selectProjectTestrunInfo(long projectId, long testrunSeqNumber) {
+        Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new TestrunDTO(testrun, true);
+    }
+
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectTestrunInfo(String spaceCode, long projectId, long testrunId) {
@@ -197,6 +202,33 @@ public class TestrunService {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
+        boolean done = testcaseResultUpdater(testrun, testrunTestcaseGroupTestcase, testResultCode);
+        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+        testrunRepository.save(testrun);
+
+        return done;
+    }
+
+    @Transactional
+    public boolean updateTestrunTestcaseResult(Long targetProjectId, Long testrunSeqNumber, Long testcaseSeqNumber, TestResultCode resultCode, String comment) {
+
+        Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(targetProjectId, "R" + testrunSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(targetProjectId, testrun.getId(), "TC" + testcaseSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
+
+        boolean done = testcaseResultUpdater(testrun, testrunTestcaseGroupTestcase, resultCode);
+        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+        testrunRepository.save(testrun);
+
+        TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment = TestrunTestcaseGroupTestcaseComment.builder()
+                .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
+                .comment(comment).build();
+
+        testrunTestcaseGroupTestcaseCommentRepository.save(testrunTestcaseGroupTestcaseComment);
+
+        return done;
+    }
+
+    private boolean testcaseResultUpdater(Testrun testrun, TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, TestResultCode testResultCode) {
         if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
             testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() - 1);
         } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
@@ -227,9 +259,6 @@ public class TestrunService {
         }
 
         testrunTestcaseGroupTestcase.setTestResult(testResultCode);
-        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
-        testrunRepository.save(testrun);
-
         return done;
     }
 

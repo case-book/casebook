@@ -76,7 +76,7 @@ public class TestrunController {
 
     @Operation(description = "테스트런 삭제")
     @DeleteMapping("/{testrunId}")
-    public ResponseEntity<?> deleteTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+    public ResponseEntity<HttpStatus> deleteTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
 
         testrunService.deleteProjectTestrunInfo(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -84,14 +84,14 @@ public class TestrunController {
 
     @Operation(description = "테스트런 닫기")
     @PutMapping("/{testrunId}/status/closed")
-    public ResponseEntity<?> updateTestrunClosed(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+    public ResponseEntity<HttpStatus> updateTestrunClosed(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
         testrunService.updateProjectTestrunStatusClosed(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 열기")
     @PutMapping("/{testrunId}/status/opened")
-    public ResponseEntity<?> updateTestrunOpened(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+    public ResponseEntity<HttpStatus> updateTestrunOpened(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
         testrunService.updateProjectTestrunStatusOpened(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -131,7 +131,7 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 테스터 변경")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/tester")
-    public ResponseEntity<?> updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
+    public ResponseEntity<HttpStatus> updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
         testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunTesterRequest.getTesterId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -145,7 +145,7 @@ public class TestrunController {
 
     @Operation(description = "테스트런 코멘트 입력")
     @DeleteMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
-    public ResponseEntity<?> updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
+    public ResponseEntity<HttpStatus> updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
         testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseCommentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

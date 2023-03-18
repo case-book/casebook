@@ -1,10 +1,13 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<TestrunTestcaseGroupTestcase, Long> {
 
@@ -16,6 +19,8 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     @Modifying
     @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt where ttgt.testcase.id = :testcaseId")
     void deleteByTestcaseId(@Param("testcaseId") Long testcaseId);
+
+    Optional<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(Long projectId, Long testrunId, String seqId);
 
 }
 

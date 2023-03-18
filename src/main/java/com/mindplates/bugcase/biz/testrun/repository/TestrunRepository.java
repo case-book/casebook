@@ -9,8 +9,11 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
+
+    Optional<Testrun> findAllByProjectIdAndSeqId(Long projectId, String seqId);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
 
