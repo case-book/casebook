@@ -186,6 +186,7 @@ function TestRunTestcaseManager({
                               <Link
                                 to="#1"
                                 onClick={e => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   onDeleteComment(info.id);
                                 }}
