@@ -107,34 +107,30 @@ function FlexibleLayout({ min, left, right, layoutOptionKey, vertical, className
         style={
           vertical
             ? {
-                height: right ? testcaseGroupSize : '100%',
+                height: testcaseGroupSize,
               }
             : {
-                width: right ? testcaseGroupSize : '100%',
+                width: testcaseGroupSize,
               }
         }
       >
         {left}
       </div>
-      {right && (
-        <>
-          <div className="grabber" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
-          <div
-            className="right-layout"
-            style={
-              vertical
-                ? {
-                    height: `calc(100% - ${testcaseGroupSize})`,
-                  }
-                : {
-                    width: `calc(100% - ${testcaseGroupSize})`,
-                  }
-            }
-          >
-            <div>{right}</div>
-          </div>
-        </>
-      )}
+      <div className="grabber" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
+      <div
+        className="right-layout"
+        style={
+          vertical
+            ? {
+                height: `calc(100% - ${testcaseGroupSize})`,
+              }
+            : {
+                width: `calc(100% - ${testcaseGroupSize})`,
+              }
+        }
+      >
+        <div>{right}</div>
+      </div>
     </div>
   );
 }
