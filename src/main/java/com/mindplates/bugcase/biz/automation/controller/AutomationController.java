@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/automation/projects/{projectId}")
+@RequestMapping("/api/automation/projects/{projectToken}")
 @AllArgsConstructor
 public class AutomationController {
 
@@ -19,8 +19,8 @@ public class AutomationController {
 
     @Operation(description = "")
     @PostMapping("/testruns/{testrunSeqNumber}/testcases/{testcaseSeqNumber}")
-    public ResponseEntity<HttpStatus> createTestrunResult(@PathVariable long projectId, @PathVariable long testrunSeqNumber, @PathVariable long testcaseSeqNumber, @RequestBody TestResultRequest testResultRequest) {
-        testrunService.updateTestrunTestcaseResult(projectId, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
+    public ResponseEntity<HttpStatus> createTestrunResult(@PathVariable String projectToken, @PathVariable long testrunSeqNumber, @PathVariable long testcaseSeqNumber, @RequestBody TestResultRequest testResultRequest) {
+        testrunService.updateTestrunTestcaseResult(projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

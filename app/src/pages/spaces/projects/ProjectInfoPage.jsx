@@ -1,5 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Card, CardContent, CardHeader, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import {
+  Block,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  EmptyContent,
+  Label,
+  Page,
+  PageButtons,
+  PageContent,
+  PageTitle,
+  Table,
+  Tag,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  THead,
+  Title,
+  TokenList,
+  Tr,
+} from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -11,6 +33,7 @@ import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './ProjectInfoPage.scss';
 import useStores from '@/hooks/useStores';
+import TokenDialog from '@/pages/common/Header/TokenDialog';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -20,11 +43,43 @@ function ProjectInfoPage() {
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [projectTokenList, setProjectTokenList] = useState([]);
   const [tagUserMap, setTagUserMap] = useState({});
   const [templateViewerPopupInfo, setTemplateViewerPopupInfo] = useState({
     opened: false,
     testcaseTemplate: null,
   });
+
+  const [createTokenPopupOpened, setCreateTokenPopupOpened] = useState(false);
+  const [updateTokenPopupOpened, setUpdateTokenPopupOpened] = useState(false);
+  const [updateTokenPopupInfo, setUpdateTokenPopupInfo] = useState({
+    id: '',
+    name: '',
+    token: '',
+    lastAccess: '',
+    enabled: true,
+  });
+
+  const createProjectToken = (name, enabled) => {
+    ProjectService.createProjectToken(spaceCode, projectId, { name, enabled }, projectToken => {
+      const nextProjectTokenList = projectTokenList.slice(0);
+      nextProjectTokenList.push(projectToken);
+      setProjectTokenList(nextProjectTokenList);
+      setCreateTokenPopupOpened(false);
+    });
+  };
+
+  const updateProjectToken = (id, name, enabled) => {
+    ProjectService.updateProjectToken(spaceCode, projectId, id, { name, enabled }, userToken => {
+      const nextProjectTokenList = projectTokenList.slice(0);
+      const targetTokenIndex = nextProjectTokenList.findIndex(d => d.id === id);
+      if (targetTokenIndex > -1) {
+        nextProjectTokenList[targetTokenIndex] = userToken;
+        setProjectTokenList(nextProjectTokenList);
+      }
+      setUpdateTokenPopupOpened(false);
+    });
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -44,6 +99,10 @@ function ProjectInfoPage() {
       });
 
       setTagUserMap(nextTagUserMap);
+    });
+
+    ProjectService.getProjectTokenList(spaceCode, projectId, tokens => {
+      setProjectTokenList(tokens);
     });
   }, [projectId]);
 
@@ -74,6 +133,28 @@ function ProjectInfoPage() {
       },
       null,
       t('탈퇴'),
+    );
+  };
+
+  const deleteProjectToken = id => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('토큰 삭제'),
+      <div>{t('인증 토큰을 삭제하면, 해당 토큰을 사용하여 더 이상 로그인 할 수 없습니다. 삭제하시겠습니까?')}</div>,
+      () => {
+        ProjectService.deleteProjectToken(spaceCode, projectId, id, () => {
+          const nextProjectTokenList = projectTokenList.slice(0);
+          const targetTokenIndex = nextProjectTokenList.findIndex(d => d.id === id);
+          if (targetTokenIndex > -1) {
+            nextProjectTokenList.splice(targetTokenIndex, 1);
+          }
+          setProjectTokenList(nextProjectTokenList);
+        });
+      },
+      null,
+      t('삭제'),
+      null,
+      'danger',
     );
   };
 
@@ -123,6 +204,34 @@ function ProjectInfoPage() {
               <Label>{t('토큰')}</Label>
               <Text>{project?.token}</Text>
             </BlockRow>
+          </Block>
+          <Title
+            control={
+              <Button
+                size="sm"
+                onClick={() => {
+                  setCreateTokenPopupOpened(true);
+                }}
+              >
+                {t('인증 토큰 추가')}
+              </Button>
+            }
+          >
+            {t('인증 토큰')}
+          </Title>
+          <Block>
+            <TokenList
+              tokens={projectTokenList}
+              onDeleteButtonClick={id => {
+                deleteProjectToken(id);
+              }}
+              onChangeButtonClick={info => {
+                setUpdateTokenPopupInfo({
+                  ...info,
+                });
+                setUpdateTokenPopupOpened(true);
+              }}
+            />
           </Block>
           <Title>{t('알림 설정')}</Title>
           <Block>
@@ -249,6 +358,27 @@ function ProjectInfoPage() {
           });
         }}
       />
+      {createTokenPopupOpened && (
+        <TokenDialog
+          setOpened={() => {
+            setCreateTokenPopupOpened(false);
+          }}
+          setToken={(id, name, enabled) => {
+            createProjectToken(name, enabled);
+          }}
+        />
+      )}
+      {updateTokenPopupOpened && (
+        <TokenDialog
+          setOpened={() => {
+            setUpdateTokenPopupOpened(false);
+          }}
+          setToken={(id, name, enabled) => {
+            updateProjectToken(id, name, enabled);
+          }}
+          token={updateTokenPopupInfo}
+        />
+      )}
     </>
   );
 }

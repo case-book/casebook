@@ -55,6 +55,7 @@ import TestcaseItem from './TestcaseItem/TestcaseItem';
 import PieChart from './PieChart/PieChart';
 import THead from './Table/THead';
 import Th from './Table/Th';
+import TokenList from './TokenList/TokenList';
 
 export {
   Selector,
@@ -114,4 +115,5 @@ export {
   THead,
   Th,
   ReactSelect,
+  TokenList,
 };

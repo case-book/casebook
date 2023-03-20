@@ -3,7 +3,9 @@ package com.mindplates.bugcase.biz.project.service;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectToken;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
@@ -36,27 +38,22 @@ public class ProjectService {
 
     private final SpaceRepository spaceRepository;
     private final ProjectRepository projectRepository;
-
     private final ProjectFileService projectFileService;
-
     private final TestrunService testrunService;
-
-
     private final TestcaseItemRepository testcaseItemRepository;
-
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
-
     private final ProjectUserRepository projectUserRepository;
-
+    private final ProjectTokenRepository projectTokenRepository;
     private final MappingUtil mappingUtil;
 
-    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository, MappingUtil mappingUtil) {
+    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository, ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
         this.testrunService = testrunService;
         this.testcaseItemRepository = testcaseItemRepository;
         this.testrunTestcaseGroupTestcaseItemRepository = testrunTestcaseGroupTestcaseItemRepository;
+        this.projectTokenRepository = projectTokenRepository;
         this.projectUserRepository = projectUserRepository;
         this.mappingUtil = mappingUtil;
     }
@@ -89,6 +86,11 @@ public class ProjectService {
     public ProjectDTO selectProjectInfo(String spaceCode, Long projectId) {
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new ProjectDTO(project);
+    }
+
+    public Long selectProjectId(String token) {
+        ProjectToken projectToken = projectTokenRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
+        return projectToken.getProject().getId();
     }
 
     public ProjectDTO selectByName(String spaceCode, String name) {
@@ -262,5 +264,6 @@ public class ProjectService {
     public boolean selectIsProjectAdmin(Long projectId, Long userId) {
         return projectUserRepository.existsByProjectIdAndUserIdAndRole(projectId, userId, UserRoleCode.ADMIN);
     }
+
 
 }

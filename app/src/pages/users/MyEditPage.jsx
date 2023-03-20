@@ -24,9 +24,6 @@ function MyEditPage() {
     UserService.getMyDetailInfo(info => {
       setUser(info);
     });
-    UserService.getUserTokenList(tokens => {
-      console.log(tokens);
-    });
   }, []);
 
   const onSubmit = e => {

@@ -97,4 +97,48 @@ ProjectService.createImage = (spaceCode, projectId, name, size, type, file) => {
   return request.post(`/api/${spaceCode}/projects/${projectId}/images`, formData, null, null, null, null, null, true);
 };
 
+ProjectService.getProjectTokenList = (spaceCode, projectId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/tokens`,
+    {},
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ProjectService.createProjectToken = (spaceCode, projectId, projectToken, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/tokens`,
+    projectToken,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ProjectService.updateProjectToken = (spaceCode, projectId, projectTokenId, projectToken, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/tokens/${projectTokenId}`,
+    projectToken,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ProjectService.deleteProjectToken = (spaceCode, projectId, projectTokenId, successHandler, failHandler) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/tokens/${projectTokenId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ProjectService;

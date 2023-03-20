@@ -28,7 +28,7 @@ public class UserTokenService {
     }
 
     public UserTokenDTO selectUserTokenInfo(String token) {
-        UserToken userToken = userTokenRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        UserToken userToken = userTokenRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "user.token.invalid"));
         return new UserTokenDTO(userToken);
     }
 
