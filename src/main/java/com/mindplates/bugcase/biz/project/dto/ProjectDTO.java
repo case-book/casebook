@@ -43,13 +43,18 @@ public class ProjectDTO extends CommonDTO {
         this.activated = project.isActivated();
         this.token = project.getToken();
         this.creationDate = project.getCreationDate();
-        this.space = SpaceDTO.builder().id(project.getSpace().getId()).name(project.getSpace().getName()).build();
+        if (project.getSpace() != null) {
+            this.space = SpaceDTO.builder().id(project.getSpace().getId()).name(project.getSpace().getName()).build();
+        }
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
         this.testcaseSeq = project.getTestcaseSeq();
         this.testrunSeq = project.getTestrunSeq();
         this.slackUrl = project.getSlackUrl();
         this.enableTestrunAlarm = project.isEnableTestrunAlarm();
-        this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
+        if (project.getUsers() != null) {
+            this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
+        }
+
         if (project.getTestcaseTemplates() != null) {
             this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateDTO::new).collect(Collectors.toList());
         }

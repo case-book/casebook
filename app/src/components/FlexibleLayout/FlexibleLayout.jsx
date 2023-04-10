@@ -7,9 +7,11 @@ function FlexibleLayout({ min, left, right, layoutOptionKey, vertical, className
   const [testcaseGroupSize, setTestcaseGroupSize] = useState(() => {
     if (layoutOptionKey?.length === 3) {
       let option = getOption(layoutOptionKey[0], layoutOptionKey[1], layoutOptionKey[2]);
-      if (option && window.innerHeight - 250 < option) {
+
+      if (vertical && option && window.innerHeight - 250 < option) {
         option = window.innerHeight - 250;
       }
+
       return option ? `${option}px` : defaultSize;
     }
 
@@ -115,7 +117,18 @@ function FlexibleLayout({ min, left, right, layoutOptionKey, vertical, className
         {left}
       </div>
       <div className="grabber" onMouseDown={onGrabMouseDown} onMouseUp={onGrabMouseUp} onMouseMove={onGrabMouseMove} />
-      <div className="right-layout">
+      <div
+        className="right-layout"
+        style={
+          vertical
+            ? {
+                height: `calc(100% - ${testcaseGroupSize})`,
+              }
+            : {
+                width: `calc(100% - ${testcaseGroupSize})`,
+              }
+        }
+      >
         <div>{right}</div>
       </div>
     </div>

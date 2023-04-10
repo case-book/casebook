@@ -13,6 +13,8 @@ import com.mindplates.bugcase.biz.testrun.vo.request.*;
 import com.mindplates.bugcase.biz.testrun.vo.response.*;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
+import com.mindplates.bugcase.common.message.MessageSendService;
+import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -37,6 +39,8 @@ public class TestrunController {
     private final TestrunService testrunService;
 
     private final ProjectFileService projectFileService;
+
+    private final MessageSendService messageSendService;
 
     @Operation(description = "프로젝트 테스트런 목록 조회")
     @GetMapping("")
@@ -123,6 +127,12 @@ public class TestrunController {
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
     public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
         boolean done = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
+
+        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
+        participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);
+        participantData.addData("testResult", testrunResultRequest.getTestResult());
+        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
+
         if (done) {
             return true;
         }

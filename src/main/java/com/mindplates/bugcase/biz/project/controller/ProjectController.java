@@ -2,13 +2,17 @@ package com.mindplates.bugcase.biz.project.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectTokenDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.project.service.ProjectTokenService;
+import com.mindplates.bugcase.biz.project.vo.request.CreateProjectTokenRequest;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
+import com.mindplates.bugcase.biz.project.vo.request.UpdateProjectTokenRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
-import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectTokenResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
@@ -35,7 +39,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    private final SpaceService spaceService;
+    private final ProjectTokenService projectTokenService;
 
     private final ProjectFileService projectFileService;
 
@@ -125,6 +129,53 @@ public class ProjectController {
     @DeleteMapping("/{id}/users/my")
     public ResponseEntity<?> deleteProjectUserInfo(@PathVariable String spaceCode, @PathVariable Long id) {
         projectService.deleteProjectUser(spaceCode, id, SessionUtil.getUserId());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @Operation(description = "프로젝트 토큰 목록")
+    @GetMapping("/{id}/tokens")
+    public List<ProjectTokenResponse> selectProjectTokenList(@PathVariable Long id) {
+        List<ProjectTokenDTO> projectTokenList = projectTokenService.selectProjectTokenList(id);
+        return projectTokenList.stream().map(ProjectTokenResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "프로젝트 토큰 조회")
+    @GetMapping("/{id}/tokens/{tokenId}")
+    public ProjectTokenResponse selectProjectTokenInfo(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable Long tokenId) {
+        ProjectTokenDTO projectToken = projectTokenService.selectProjectTokenInfo(tokenId);
+        return new ProjectTokenResponse(projectToken);
+    }
+
+    @Operation(description = "프로젝트 토큰 생성")
+    @PostMapping("/{id}/tokens")
+    public ProjectTokenResponse createProjectToken(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody CreateProjectTokenRequest createProjectTokenRequest) {
+        ProjectTokenDTO projectTokenDTO = createProjectTokenRequest.toDTO(id);
+        return new ProjectTokenResponse(projectTokenService.createProjectToken(projectTokenDTO));
+    }
+
+    @Operation(description = "프로젝트 토큰 변경")
+    @PutMapping("/{id}/tokens/{tokenId}")
+    public ProjectTokenResponse updateProjectToken(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable Long tokenId, @Valid @RequestBody UpdateProjectTokenRequest updateProjectTokenRequest) {
+
+        ProjectTokenDTO targetProjectToken = projectTokenService.selectProjectTokenInfo(tokenId);
+        if (!id.equals(targetProjectToken.getProject().getId())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        ProjectTokenDTO projectTokenDTO = updateProjectTokenRequest.toDTO();
+        return new ProjectTokenResponse(projectTokenService.updateProjectToken(tokenId, projectTokenDTO));
+    }
+
+    @Operation(description = "프로젝트 토큰 삭제")
+    @DeleteMapping("/{id}/tokens/{tokenId}")
+    public ResponseEntity<?> deleteProjectToken(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable Long tokenId) {
+        ProjectTokenDTO projectToken = projectTokenService.selectProjectTokenInfo(tokenId);
+        if (!id.equals(projectToken.getProject().getId())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        projectTokenService.deleteProjectToken(tokenId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

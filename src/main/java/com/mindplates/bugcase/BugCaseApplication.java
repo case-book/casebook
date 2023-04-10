@@ -3,8 +3,6 @@ package com.mindplates.bugcase;
 import com.mindplates.bugcase.framework.config.FileConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -16,7 +14,7 @@ import java.util.TimeZone;
         FileConfig.class
 })
 // @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-@SpringBootApplication(exclude = { RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class })
+@SpringBootApplication
 @EnableJpaAuditing
 public class BugCaseApplication {
 

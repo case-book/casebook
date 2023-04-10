@@ -7,9 +7,10 @@ import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
 import AdminRoutes from '@/pages/admin';
 import ProjectsRoutes from '@/pages/spaces/projects';
-import { LogoIcon, Star } from '@/components';
+import { Button, LogoIcon, Star } from '@/components';
 import { debounce } from 'lodash';
 import './App.scss';
+import { useTranslation } from 'react-i18next';
 
 function App() {
   const {
@@ -19,6 +20,7 @@ function App() {
   } = useStores();
 
   const location = useLocation();
+  const { t } = useTranslation();
 
   const [starInfo, setStarInfo] = useState({
     star1: {
@@ -75,7 +77,7 @@ function App() {
   return (
     <div className={`app-wrapper theme-${theme}`}>
       <Common />
-      {!tried && (
+      {(tried === null || setUp == null) && (
         <div className="tried-content">
           <div>
             <div className="logo">
@@ -84,6 +86,21 @@ function App() {
                 <div>CASEBOOK</div>
               </div>
             </div>
+            {tried && setUp == null && (
+              <div className="network-error">
+                <div>{t('서버에 접속할 수 없습니다.')}</div>
+                <div>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      window.location.reload();
+                    }}
+                  >
+                    {t('재시도')}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

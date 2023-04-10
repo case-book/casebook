@@ -13,7 +13,9 @@
       border-radius: 10px;
       text-align: center;
       display: flex;
+      flex-direction: column;
       justify-content: center;
+      position: relative;
 
       @media (max-width: 640px) {
         width: 100%;
@@ -23,6 +25,8 @@
         font-size: 28px;
         font-family: Rowdies, sans-serif;
         height: 100%;
+        justify-content: center;
+        display: flex;
 
         .logo-icon {
           margin-right: 0.5rem;
@@ -32,14 +36,21 @@
           display: flex;
           height: 100%;
 
-          &:hover {
-            color: var(--primary-color);
-            cursor: pointer;
-          }
-
           > div {
             align-self: center;
           }
+        }
+      }
+
+      .network-error {
+        position: absolute;
+        font-size: 14px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin-bottom: 1rem;
+        > div:first-child {
+          margin-bottom: 0.5rem;
         }
       }
     }

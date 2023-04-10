@@ -17,6 +17,8 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,17 +37,35 @@ public class FilterChannelInterceptor implements ChannelInterceptor {
 
         assert headerAccessor != null;
         if (headerAccessor.getCommand() == StompCommand.CONNECT) {
-            String token = String.valueOf(headerAccessor.getNativeHeader("X-AUTH-TOKEN").get(0));
+            Map<String, String> extensionHeaderMap = new HashMap<>();
+            Map<String, List<String>> nativeHeaderMap = headerAccessor.toNativeHeaderMap();
+            for (Map.Entry<String, List<String>> entry : nativeHeaderMap.entrySet()) {
+                if (entry.getKey().indexOf("X-") == 0) {
+                    List<String> list = entry.getValue();
+                    if (list != null && !list.isEmpty()) {
+                        extensionHeaderMap.put(entry.getKey(), list.get(0));
+                    }
+                }
+            }
+
+            String token = extensionHeaderMap.get("X-AUTH-TOKEN");
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
-
                 SecurityUser securityUser = (SecurityUser) auth.getPrincipal();
                 if (securityUser != null) {
                     Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
                     if (sessionAttributes != null) {
-                        sessionAttributes.put("USER_ID", String.valueOf(securityUser.getId()));
-                        headerAccessor.setSessionAttributes(sessionAttributes);
+                        // 사용자 ID 저장
+                        sessionAttributes.put("USER-ID", String.valueOf(securityUser.getId()));
+                        sessionAttributes.put("USER-EMAIL", String.valueOf(securityUser.getEmail()));
+                        sessionAttributes.put("USER-NAME", String.valueOf(securityUser.getName()));
+                        // X-로 시작하는 키를 X-를 제거하고 저장
+                        for (Map.Entry<String, String> entry : extensionHeaderMap.entrySet()) {
+                            if (!entry.getKey().equals("X-AUTH-TOKEN")) {
+                                sessionAttributes.put(entry.getKey().replaceFirst("X-", ""), entry.getValue());
+                            }
+                        }
                     }
                 }
             }
@@ -56,7 +76,7 @@ public class FilterChannelInterceptor implements ChannelInterceptor {
     }
 
     private void validateSubscriptionHeader(StompHeaderAccessor headerAccessor) {
-        String userId = (String) headerAccessor.getSessionAttributes().get("USER_ID");
+        String userId = (String) headerAccessor.getSessionAttributes().get("USER-ID");
         String destination = headerAccessor.getDestination();
 
         if (StringUtils.isBlank(userId)) {
@@ -70,5 +90,7 @@ public class FilterChannelInterceptor implements ChannelInterceptor {
                 throw new ServiceException(HttpStatus.FORBIDDEN);
             }
         }
+
+        // TESTRUN SUB 권한 검증
     }
 }
