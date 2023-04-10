@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, Radio, SeqId, SocketClient, Tag, Title } from '@/components';
+import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, Radio, SeqId, Tag, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -17,6 +17,7 @@ function TestrunListPage() {
   const { t } = useTranslation();
   const {
     userStore: { user },
+    socketStore: { addTopic, removeTopic, addMessageHandler, removeMessageHandler },
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
@@ -68,13 +69,6 @@ function TestrunListPage() {
     }
   }, [type, spaceCode, status]);
 
-  const onChangeSearchTestrunCreationType = value => {
-    if (value) {
-      setStatus('OPENED');
-    }
-    setQuery({ type: value });
-  };
-
   const onMessage = info => {
     const { data } = info;
 
@@ -122,19 +116,27 @@ function TestrunListPage() {
     }
   };
 
+  useEffect(() => {
+    if (user?.id && projectId) {
+      addTopic(`/sub/projects/${projectId}`);
+      addMessageHandler('TestrunListPage', onMessage);
+    }
+
+    return () => {
+      removeTopic(`/sub/projects/${projectId}`);
+      removeMessageHandler('TestrunListPage');
+    };
+  }, [user?.id, projectId, testruns]);
+
+  const onChangeSearchTestrunCreationType = value => {
+    if (value) {
+      setStatus('OPENED');
+    }
+    setQuery({ type: value });
+  };
+
   return (
     <Page className="testrun-list-page-wrapper" list={type === 'CREATE'}>
-      {user?.id && (
-        <SocketClient
-          topics={[`/sub/projects/${projectId}`]}
-          headers={{
-            'X-AUTH-TOKEN': window.localStorage.getItem('token'),
-          }}
-          onMessage={onMessage}
-          onConnect={() => {}}
-          onDisconnect={() => {}}
-        />
-      )}
       <PageTitle
         className="page-title"
         links={[

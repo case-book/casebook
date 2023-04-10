@@ -63,6 +63,13 @@ public class TestrunMessageController {
         Long userId = Long.parseLong((String) attributes.get("USER-ID"));
 
         testrunService.deleteTestrunParticipantInfo(spaceCode, projectId, testrunId, userId);
+
+        List<TestrunParticipantDTO> participants = testrunService.selectTestrunParticipantList(testrunId, userId);
+        participants.forEach((participant) -> {
+            MessageData participantData = MessageData.builder().type("TESTRUN-USER-LEAVE").build();
+            participantData.addData("participant", participant);
+            messageSendService.sendTo("projects/" + participant.getProjectId() + "/testruns/" + participant.getTestrunId(), participantData);
+        });
     }
 
     @MessageMapping("/{testrunId}/testcases/{testcaseId}/watch")

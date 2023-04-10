@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, FlexibleLayout, Page, PageContent, PageTitle, SocketClient } from '@/components';
+import { Button, FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import dialogUtil from '@/utils/dialogUtil';
-import { ITEM_TYPE, MESSAGE_CATEGORY, WORK_CODES } from '@/constants/constants';
+import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import TestrunService from '@/services/TestrunService';
@@ -32,10 +32,10 @@ function TestrunExecutePage() {
   const { projectId, spaceCode, testrunId } = useParams();
   const { query, setQuery } = useQueryString();
   const { tester = '', id = null, type } = query;
-  const socket = useRef(null);
 
   const {
     userStore: { user },
+    socketStore: { addTopic, removeTopic, addMessageHandler, removeMessageHandler, socketClient },
   } = useStores();
 
   const navigate = useNavigate();
@@ -59,11 +59,9 @@ function TestrunExecutePage() {
 
   const [paricipants, setParicipants] = useState([]);
 
-  const [watcherInfo, setWatcherInfo] = useState({});
+  const lastParicipants = useRef(null);
 
-  useEffect(() => {
-    ReactTooltip.rebuild();
-  }, [paricipants]);
+  const [watcherInfo, setWatcherInfo] = useState({});
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -98,8 +96,8 @@ function TestrunExecutePage() {
   }, [projectId]);
 
   const join = () => {
-    if (socket?.current && socket?.current.state.connected) {
-      socket?.current.sendMessage(
+    if (socketClient && socketClient.state.connected) {
+      socketClient.sendMessage(
         `/pub/api/message/${spaceCode}/projects/${projectId}/testruns/${testrunId}/join`,
         JSON.stringify({
           type: 'JOIN',
@@ -109,8 +107,8 @@ function TestrunExecutePage() {
   };
 
   const watch = testcaseId => {
-    if (socket?.current && socket?.current.state.connected) {
-      socket?.current.sendMessage(
+    if (socketClient && socketClient.state.connected) {
+      socketClient.sendMessage(
         `/pub/api/message/${spaceCode}/projects/${projectId}/testruns/${testrunId}/testcases/${testcaseId}/watch`,
         JSON.stringify({
           type: 'WATCH',
@@ -120,8 +118,8 @@ function TestrunExecutePage() {
   };
 
   const leave = () => {
-    if (socket?.current && socket?.current.state.connected) {
-      socket?.current.sendMessage(
+    if (socketClient && socketClient.state.connected) {
+      socketClient.sendMessage(
         `/pub/api/message/${spaceCode}/projects/${projectId}/testruns/${testrunId}/leave`,
         JSON.stringify({
           type: 'LEAVE',
@@ -177,7 +175,7 @@ function TestrunExecutePage() {
     return () => {
       leave();
     };
-  }, []);
+  }, [socketClient]);
 
   useEffect(() => {
     if (!project) {
@@ -375,28 +373,32 @@ function TestrunExecutePage() {
     switch (data.type) {
       case 'TESTRUN-PARTICIPANTS': {
         setParicipants(data?.data?.participants);
+        lastParicipants.current = data?.data?.participants;
         break;
       }
 
       case 'TESTRUN-USER-JOIN': {
-        const nextParicipants = paricipants.slice(0);
-        const userExist = nextParicipants.find(d => d.id === data?.data?.participant.id);
+        const nextParicipants = lastParicipants.current.slice(0);
+        const userExist = lastParicipants.current.find(d => d.id === data?.data?.participant.id);
 
         if (!userExist) {
           nextParicipants.push(data?.data?.participant);
           setParicipants(nextParicipants);
+          lastParicipants.current = nextParicipants;
         }
 
         break;
       }
 
       case 'TESTRUN-USER-LEAVE': {
-        const nextParicipants = paricipants.slice(0);
+        const nextParicipants = lastParicipants.current.slice(0);
         const userIndex = nextParicipants.findIndex(d => d.id === data?.data?.participant.id);
 
         if (userIndex > -1) {
           nextParicipants.splice(userIndex, 1);
+
           setParicipants(nextParicipants);
+          lastParicipants.current = nextParicipants;
         }
 
         const nextWatcherInfo = { ...watcherInfo };
@@ -446,7 +448,7 @@ function TestrunExecutePage() {
       case 'TESTRUN-TESTCASE-RESULT-CHANGED': {
         const nextTestrun = { ...testrun };
         for (let i = 0; i < nextTestrun.testcaseGroups.length; i += 1) {
-          const target = nextTestrun.testcaseGroups[i].testcases.find(testcase => testcase.id === data.data.testrunTestcaseGroupTestcaseId);
+          const target = nextTestrun.testcaseGroups[i].testcases?.find(testcase => testcase.id === data.data.testrunTestcaseGroupTestcaseId);
           if (target) {
             target.testResult = data.data.testResult;
             break;
@@ -488,24 +490,23 @@ function TestrunExecutePage() {
     }
   };
 
+  useEffect(() => {
+    if (user?.id) {
+      ReactTooltip.rebuild();
+      addTopic(`/sub/projects/${projectId}/testruns/${testrunId}`);
+      addTopic(`/sub/projects/${projectId}/testruns/${testrunId}/users/${user.id}`);
+      addMessageHandler('TestrunExecutePage', onMessage);
+    }
+
+    return () => {
+      removeTopic(`/sub/projects/${projectId}/testruns/${testrunId}`);
+      removeTopic(`/sub/projects/${projectId}/testruns/${testrunId}/users/${user.id}`);
+      removeMessageHandler('TestrunExecutePage');
+    };
+  }, [user, paricipants, watcherInfo, testrun, socketClient]);
+
   return (
     <Page className="testrun-execute-page-wrapper" list wide={wide}>
-      {user?.id && (
-        <SocketClient
-          topics={[`/sub/projects/${projectId}/testruns/${testrunId}`, `/sub/projects/${projectId}/testruns/${testrunId}/users/${user.id}`]}
-          headers={{
-            'X-AUTH-TOKEN': window.localStorage.getItem('token'),
-            'X-WORK-CODE': WORK_CODES['TESTRUN-SYNC'],
-            'X-TESTRUN-ID': testrunId,
-          }}
-          onMessage={onMessage}
-          onConnect={() => {}}
-          onDisconnect={() => {}}
-          setRef={client => {
-            socket.current = client;
-          }}
-        />
-      )}
       <PageTitle
         control={
           <div className="testrun-title-content">

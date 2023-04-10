@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -21,6 +21,7 @@ function Common() {
     userStore,
     userStore: { user },
     configStore: { setVersion },
+    socketStore: { topics, messageHandlers, addTopic, removeTopic, addMessageHandler, removeMessageHandler, setSocketClient },
     controlStore: { requestLoading, confirm, message, error, requestMessages },
     contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
   } = useStores();
@@ -28,8 +29,6 @@ function Common() {
   const { t } = useTranslation();
 
   const location = useLocation();
-
-  const socket = useRef(null);
 
   useEffect(() => {
     let nextSpaceCode = null;
@@ -193,12 +192,10 @@ function Common() {
     }
   }, [requestLoading]);
 
-  const onMessage = useCallback(info => {
+  const onCommonMessage = info => {
     const {
       data: { type /* , data */ },
     } = info;
-
-    // console.log(type, data);
 
     switch (type) {
       case 'NEW-NOTIFICATION': {
@@ -210,13 +207,33 @@ function Common() {
         break;
       }
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    if (user?.id && projectId) {
+      addTopic(`/sub/users/${user?.id}`);
+      addMessageHandler('Common', onCommonMessage);
+    }
+
+    return () => {
+      removeTopic(`/sub/users/${user?.id}`);
+      removeMessageHandler('Common');
+    };
+  }, [user?.id]);
+
+  const onMessage = info => {
+    messageHandlers.forEach(messageHandler => {
+      if (messageHandler.handler && typeof messageHandler.handler === 'function') {
+        messageHandler.handler(info);
+      }
+    });
+  };
 
   return (
     <div>
       {user?.id && (
         <SocketClient
-          topics={[`/sub/users/${user?.id}`]}
+          topics={topics}
           headers={{
             'X-AUTH-TOKEN': window.localStorage.getItem('token'),
           }}
@@ -230,7 +247,9 @@ function Common() {
             // setConnectTried(true);
           }}
           setRef={client => {
-            socket.current = client;
+            if (client) {
+              setSocketClient(client);
+            }
           }}
         />
       )}
