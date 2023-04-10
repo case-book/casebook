@@ -255,8 +255,6 @@ function TestcaseNavigator({
     setOption('testcase', 'testcase-group-layout', 'setting', nextSetting);
   };
 
-  console.log(watcherInfo);
-
   return (
     <div className={`testcase-groups-wrapper g-no-select ${min ? 'min' : ''}`} ref={ref}>
       <div className="testcase-manage-button">

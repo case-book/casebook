@@ -384,7 +384,6 @@ function TestrunExecutePage() {
 
         if (!userExist) {
           nextParicipants.push(data?.data?.participant);
-
           setParicipants(nextParicipants);
         }
 
@@ -399,6 +398,19 @@ function TestrunExecutePage() {
           nextParicipants.splice(userIndex, 1);
           setParicipants(nextParicipants);
         }
+
+        const nextWatcherInfo = { ...watcherInfo };
+
+        const testcaseIds = Object.keys(nextWatcherInfo);
+        for (let inx = testcaseIds.length - 1; inx >= 0; inx -= 1) {
+          for (let jnx = nextWatcherInfo[testcaseIds[inx]].length - 1; jnx >= 0; jnx -= 1) {
+            if (nextWatcherInfo[testcaseIds[inx]][jnx].userId === data?.data?.participant.userId) {
+              nextWatcherInfo[testcaseIds[inx]].splice(jnx, 1);
+            }
+          }
+        }
+
+        setWatcherInfo(nextWatcherInfo);
 
         break;
       }
@@ -475,8 +487,6 @@ function TestrunExecutePage() {
       }
     }
   };
-
-  console.log(watcherInfo);
 
   return (
     <Page className="testrun-execute-page-wrapper" list wide={wide}>
