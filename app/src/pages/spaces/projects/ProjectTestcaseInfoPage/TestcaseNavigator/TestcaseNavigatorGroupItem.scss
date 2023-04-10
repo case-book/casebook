@@ -68,6 +68,42 @@ li.testcase-group-item-wrapper {
         }
       }
 
+      .watcher {
+        position: absolute;
+        left : -20px;
+        max-height: 37px;
+        overflow-y: hidden;
+        ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          text-align: left;
+          li {
+            display: block;
+            line-height: 100%;
+
+            .user-email-char {
+              display: inline-flex;
+              text-transform: uppercase;
+              background-color: var(--point-backgroup-color);
+              width: 16px;
+              height: 16px;
+              justify-content: center;
+              border-radius: 50%;
+              > span {
+                align-self: center;
+                display: inline-block;
+                text-align: center;
+
+                color: black;
+                font-size: 10px;
+                font-weight: normal;
+              }
+            }
+          }
+        }
+      }
+
       .case-icon {
         padding: 0;
         display: flex;

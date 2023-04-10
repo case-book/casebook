@@ -24,7 +24,7 @@ function TestcaseNavigatorGroupItem({
   setAllOpen,
   setting,
   showTestResult,
-
+  watcherInfo,
   enableDrag,
 }) {
   const [treeOpen, setTreeOpen] = useState(false);
@@ -278,6 +278,43 @@ function TestcaseNavigatorGroupItem({
                         onContextMenu(e, ITEM_TYPE.TESTCASE, testcase.id, testcase.name);
                       }}
                     >
+                      {watcherInfo && watcherInfo[testcase.id]?.length > 0 && watcherInfo[testcase.id]?.length < 3 && (
+                        <div className="watcher">
+                          <ul>
+                            {watcherInfo[testcase.id].map(watcher => {
+                              return (
+                                <li key={watcher.userId}>
+                                  <div className="user-email-char">
+                                    <span>{watcher.userEmail.substring(0, 1)}</span>
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                      {watcherInfo && watcherInfo[testcase.id]?.length >= 3 && (
+                        <div className="watcher">
+                          <ul>
+                            {watcherInfo[testcase.id]
+                              .filter((d, inx) => inx < 1)
+                              .map(watcher => {
+                                return (
+                                  <li key={watcher.userId}>
+                                    <div className="user-email-char">
+                                      <span>{watcher.userEmail.substring(0, 1)}</span>
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            <li>
+                              <div className="user-email-char">
+                                <span>+{watcherInfo[testcase.id].length - 1}</span>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
                       <div className="case-icon">
                         <span>
                           <i className="fa-solid fa-flask" />
@@ -416,6 +453,7 @@ function TestcaseNavigatorGroupItem({
                   setAllOpen={setAllOpen}
                   setting={setting}
                   showTestResult={showTestResult}
+                  watcherInfo={watcherInfo}
                 />
               );
             })}
@@ -448,8 +486,8 @@ TestcaseNavigatorGroupItem.defaultProps = {
   setting: {},
   onChangeTestcaseGroupName: null,
   showTestResult: false,
-
   enableDrag: true,
+  watcherInfo: null,
 };
 
 TestcaseNavigatorGroupItem.propTypes = {
@@ -493,6 +531,12 @@ TestcaseNavigatorGroupItem.propTypes = {
   setting: TestcaseGroupSettingPropTypes,
   showTestResult: PropTypes.bool,
   enableDrag: PropTypes.bool,
+  watcherInfo: PropTypes.shape({
+    [PropTypes.number]: PropTypes.shape({
+      userId: PropTypes.number,
+      userEmail: PropTypes.string,
+    }),
+  }),
 };
 
 export default TestcaseNavigatorGroupItem;

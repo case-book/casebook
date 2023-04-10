@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TestrunService {
 
+    private final TestrunParticipantRedisRepository testrunParticipantRedisRepository;
     private final TestrunRepository testrunRepository;
     private final TestcaseService testcaseService;
     private final ProjectService projectService;
@@ -57,6 +58,7 @@ public class TestrunService {
     private final MappingUtil mappingUtil;
     private final FileUtil fileUtil;
     private final SlackService slackService;
+
 
     private final MessageSourceAccessor messageSourceAccessor;
     @Value("${bug-case.web-url}")
@@ -718,6 +720,53 @@ public class TestrunService {
         return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
         // return mappingUtil.convert(list, TestrunDTO.class);
 
+    }
+
+    @Transactional
+    public TestrunParticipantDTO createTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, UserDTO user) {
+        TestrunParticipant participant = TestrunParticipant.builder()
+                .id(spaceCode + "-" + spaceCode + "-" + testrunId + "-" + user.getId())
+                .spaceCode(spaceCode)
+                .projectId(projectId)
+                .testrunId(testrunId)
+                .userId(user.getId())
+                .userName(user.getName())
+                .userEmail(user.getEmail())
+                .build();
+
+        return new TestrunParticipantDTO(testrunParticipantRedisRepository.save(participant));
+
+    }
+
+    @Transactional
+    public void deleteTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, Long userId) {
+        testrunParticipantRedisRepository.deleteById((spaceCode + "-" + projectId + "-" + testrunId + "-" + userId));
+
+    }
+
+    @Transactional
+    public void deleteTestrunParticipantInfo(TestrunParticipantDTO testrunParticipantDTO) {
+        Optional<TestrunParticipant> participant = testrunParticipantRedisRepository.findById(testrunParticipantDTO.getId());
+        if (participant.isPresent()) {
+            testrunParticipantRedisRepository.delete(participant.get());
+        }
+    }
+
+
+    public List<TestrunParticipantDTO> selectTestrunParticipantList(String spaceCode, Long projectId, Long testrunId) {
+        List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository.findAllBySpaceCodeAndProjectIdAndTestrunId(spaceCode, projectId, testrunId);
+
+        return testrunParticipants.stream()
+                .map(TestrunParticipantDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<TestrunParticipantDTO> selectTestrunParticipantList(Long testrunId, Long userId) {
+        List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository.findAllByTestrunIdAndUserId(testrunId, userId);
+
+        return testrunParticipants.stream()
+                .map(TestrunParticipantDTO::new)
+                .collect(Collectors.toList());
     }
 
 }

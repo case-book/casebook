@@ -30,7 +30,7 @@ function TestcaseNavigator({
   userFilter,
   setUserFilter,
   showTestResult,
-
+  watcherInfo,
   enableDrag,
 }) {
   const { t } = useTranslation();
@@ -255,6 +255,8 @@ function TestcaseNavigator({
     setOption('testcase', 'testcase-group-layout', 'setting', nextSetting);
   };
 
+  console.log(watcherInfo);
+
   return (
     <div className={`testcase-groups-wrapper g-no-select ${min ? 'min' : ''}`} ref={ref}>
       <div className="testcase-manage-button">
@@ -465,6 +467,7 @@ function TestcaseNavigator({
                     setAllOpen={setAllOpen}
                     setting={setting}
                     showTestResult={showTestResult}
+                    watcherInfo={watcherInfo}
                   />
                 );
               })}
@@ -527,8 +530,8 @@ TestcaseNavigator.defaultProps = {
   userFilter: null,
   setUserFilter: null,
   showTestResult: false,
-
   enableDrag: true,
+  watcherInfo: {},
 };
 
 TestcaseNavigator.propTypes = {
@@ -563,6 +566,12 @@ TestcaseNavigator.propTypes = {
   userFilter: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   showTestResult: PropTypes.bool,
   enableDrag: PropTypes.bool,
+  watcherInfo: PropTypes.shape({
+    [PropTypes.number]: PropTypes.shape({
+      userId: PropTypes.number,
+      userEmail: PropTypes.string,
+    }),
+  }),
 };
 
 export default TestcaseNavigator;

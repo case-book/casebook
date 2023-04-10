@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Button, FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, FlexibleLayout, Page, PageContent, PageTitle, SocketClient } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import dialogUtil from '@/utils/dialogUtil';
-import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
+import { ITEM_TYPE, MESSAGE_CATEGORY, WORK_CODES } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import TestrunService from '@/services/TestrunService';
@@ -13,6 +13,7 @@ import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/T
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunTestcaseManager';
 import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
+import ReactTooltip from 'react-tooltip';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -31,6 +32,7 @@ function TestrunExecutePage() {
   const { projectId, spaceCode, testrunId } = useParams();
   const { query, setQuery } = useQueryString();
   const { tester = '', id = null, type } = query;
+  const socket = useRef(null);
 
   const {
     userStore: { user },
@@ -54,6 +56,14 @@ function TestrunExecutePage() {
   const [contentLoading, setContentLoading] = useState(false);
 
   const [content, setContent] = useState(null);
+
+  const [paricipants, setParicipants] = useState([]);
+
+  const [watcherInfo, setWatcherInfo] = useState({});
+
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [paricipants]);
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -87,11 +97,46 @@ function TestrunExecutePage() {
     getProject();
   }, [projectId]);
 
+  const join = () => {
+    if (socket?.current && socket?.current.state.connected) {
+      socket?.current.sendMessage(
+        `/pub/api/message/${spaceCode}/projects/${projectId}/testruns/${testrunId}/join`,
+        JSON.stringify({
+          type: 'JOIN',
+        }),
+      );
+    }
+  };
+
+  const watch = testcaseId => {
+    if (socket?.current && socket?.current.state.connected) {
+      socket?.current.sendMessage(
+        `/pub/api/message/${spaceCode}/projects/${projectId}/testruns/${testrunId}/testcases/${testcaseId}/watch`,
+        JSON.stringify({
+          type: 'WATCH',
+        }),
+      );
+    }
+  };
+
+  const leave = () => {
+    if (socket?.current && socket?.current.state.connected) {
+      socket?.current.sendMessage(
+        `/pub/api/message/${spaceCode}/projects/${projectId}/testruns/${testrunId}/leave`,
+        JSON.stringify({
+          type: 'LEAVE',
+        }),
+      );
+    }
+  };
+
   const getTestrunInfo = () => {
     TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, info => {
       if (!project) {
         return;
       }
+
+      join();
 
       setTestrun(info);
 
@@ -127,6 +172,12 @@ function TestrunExecutePage() {
     }
     getTestrunInfo();
   }, [project, testrunId]);
+
+  useEffect(() => {
+    return () => {
+      leave();
+    };
+  }, []);
 
   useEffect(() => {
     if (!project) {
@@ -190,6 +241,7 @@ function TestrunExecutePage() {
   const getContent = (loading = true) => {
     if (type === ITEM_TYPE.TESTCASE) {
       getTestcase(Number(id), loading);
+      watch(id);
     } else {
       setContent(null);
       setQuery({});
@@ -317,14 +369,158 @@ function TestrunExecutePage() {
     });
   };
 
+  const onMessage = info => {
+    const { data } = info;
+
+    switch (data.type) {
+      case 'TESTRUN-PARTICIPANTS': {
+        setParicipants(data?.data?.participants);
+        break;
+      }
+
+      case 'TESTRUN-USER-JOIN': {
+        const nextParicipants = paricipants.slice(0);
+        const userExist = nextParicipants.find(d => d.id === data?.data?.participant.id);
+
+        if (!userExist) {
+          nextParicipants.push(data?.data?.participant);
+
+          setParicipants(nextParicipants);
+        }
+
+        break;
+      }
+
+      case 'TESTRUN-USER-LEAVE': {
+        const nextParicipants = paricipants.slice(0);
+        const userIndex = nextParicipants.findIndex(d => d.id === data?.data?.participant.id);
+
+        if (userIndex > -1) {
+          nextParicipants.splice(userIndex, 1);
+          setParicipants(nextParicipants);
+        }
+
+        break;
+      }
+
+      case 'TESTRUN-TESTCASE-WATCH': {
+        const nextWatcherInfo = { ...watcherInfo };
+
+        if (!nextWatcherInfo[data.data.testcaseId]) {
+          nextWatcherInfo[data.data.testcaseId] = [];
+        }
+
+        Object.keys(nextWatcherInfo).forEach(testcaseId => {
+          if (nextWatcherInfo[testcaseId]) {
+            const index = nextWatcherInfo[testcaseId].findIndex(d => d.userId === data.data.userId);
+            if (index > -1) {
+              nextWatcherInfo[testcaseId].splice(index, 1);
+            }
+          }
+        });
+
+        const exist = nextWatcherInfo[data.data.testcaseId].find(d => d.userId === data.data.userId);
+        if (!exist) {
+          nextWatcherInfo[data.data.testcaseId].push({
+            userId: data.data.userId,
+            userEmail: data.data.userEmail,
+          });
+        }
+        setWatcherInfo(nextWatcherInfo);
+
+        break;
+      }
+
+      case 'TESTRUN-TESTCASE-RESULT-CHANGED': {
+        const nextTestrun = { ...testrun };
+        for (let i = 0; i < nextTestrun.testcaseGroups.length; i += 1) {
+          const target = nextTestrun.testcaseGroups[i].testcases.find(testcase => testcase.id === data.data.testrunTestcaseGroupTestcaseId);
+          if (target) {
+            target.testResult = data.data.testResult;
+            break;
+          }
+        }
+
+        setTestrun(nextTestrun);
+
+        const filteredTestcaseGroups = nextTestrun.testcaseGroups?.map(d => {
+          return {
+            ...d,
+            testcases:
+              d.testcases?.filter(testcase => {
+                if (tester === '') {
+                  return true;
+                }
+
+                return String(testcase.testerId) === String(tester);
+              }) || [],
+          };
+        });
+
+        setCountSummary({
+          testcaseGroupCount: filteredTestcaseGroups?.length || 0,
+          testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
+            return count + (next?.testcases?.length || 0);
+          }, 0),
+        });
+
+        const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
+        setTestcaseGroups(groups);
+
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  };
+
+  console.log(watcherInfo);
+
   return (
     <Page className="testrun-execute-page-wrapper" list wide={wide}>
+      {user?.id && (
+        <SocketClient
+          topics={[`/sub/projects/${projectId}/testruns/${testrunId}`, `/sub/projects/${projectId}/testruns/${testrunId}/users/${user.id}`]}
+          headers={{
+            'X-AUTH-TOKEN': window.localStorage.getItem('token'),
+            'X-WORK-CODE': WORK_CODES['TESTRUN-SYNC'],
+            'X-TESTRUN-ID': testrunId,
+          }}
+          onMessage={onMessage}
+          onConnect={() => {}}
+          onDisconnect={() => {}}
+          setRef={client => {
+            socket.current = client;
+          }}
+        />
+      )}
       <PageTitle
         control={
-          <div>
-            <Button size="sm" color="warning" onClick={onClosed}>
-              {t('테스트런 종료')}
-            </Button>
+          <div className="testrun-title-content">
+            <div className="separator">
+              <div />
+            </div>
+            <div className="label">{t('참여중')}</div>
+            <div className="participants">
+              <ul>
+                {paricipants.map(paricipant => {
+                  return (
+                    <li key={paricipant.id} data-tip={paricipant.userName}>
+                      <div className="user-email-char">
+                        <span>{paricipant.userEmail?.substring(0, 1)}</span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div>
+              <Button size="sm" color="warning" onClick={onClosed}>
+                {t('테스트런 종료')}
+              </Button>
+            </div>
           </div>
         }
         onListClick={() => {
@@ -352,6 +548,7 @@ function TestrunExecutePage() {
               countSummary={countSummary}
               userFilter={tester}
               setUserFilter={onChangeTester}
+              watcherInfo={watcherInfo}
             />
           }
           right={
