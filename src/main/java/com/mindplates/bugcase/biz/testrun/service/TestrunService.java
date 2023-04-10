@@ -199,7 +199,7 @@ public class TestrunService {
     }
 
     @Transactional
-    public boolean updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
+    public TestrunStatusDTO updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
 
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -208,7 +208,7 @@ public class TestrunService {
         testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
         testrunRepository.save(testrun);
 
-        return done;
+        return new TestrunStatusDTO(testrun, done);
     }
 
     @Transactional

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, Radio, SeqId, Tag, Title } from '@/components';
+import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, Radio, SeqId, SocketClient, Tag, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -11,9 +11,13 @@ import './TestrunListPage.scss';
 import ReserveTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/ReserveTestrunList';
 import IterationTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/IterationTestrunList';
 import { ITEM_TYPE } from '@/constants/constants';
+import useStores from '@/hooks/useStores';
 
 function TestrunListPage() {
   const { t } = useTranslation();
+  const {
+    userStore: { user },
+  } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
   const [testruns, setTestruns] = useState([]);
@@ -21,34 +25,38 @@ function TestrunListPage() {
   const { query, setQuery } = useQueryString();
   const { type = 'CREATE' } = query;
 
+  const getGraphData = testrun => {
+    const list = [];
+    const progress = testrun.passedTestcaseCount + testrun.failedTestcaseCount + testrun.untestableTestcaseCount;
+    if (progress > 0) {
+      list.push({
+        id: 'PROGRESS',
+        value: progress,
+        color: 'rgba(57,125,2,0.6)',
+        label: `수행-${Math.round((progress / testrun.totalTestcaseCount) * 100)}%`,
+      });
+    }
+
+    if (testrun.totalTestcaseCount - progress > 0) {
+      list.push({
+        id: 'REMAINS',
+        value: testrun.totalTestcaseCount - progress,
+        color: 'rgba(0,0,0,0.2)',
+        label: `미수행-${Math.round(((testrun.totalTestcaseCount - progress) / testrun.totalTestcaseCount) * 100)}%`,
+      });
+    }
+
+    return list;
+  };
+
   useEffect(() => {
     if (type === 'CREATE') {
       TestrunService.selectProjectTestrunList(spaceCode, projectId, status, 'CREATE', list => {
         setTestruns(
           list.map(testrun => {
-            const data = [];
-            const progress = testrun.passedTestcaseCount + testrun.failedTestcaseCount + testrun.untestableTestcaseCount;
-            if (progress > 0) {
-              data.push({
-                id: 'PROGRESS',
-                value: progress,
-                color: 'rgba(57,125,2,0.6)',
-                label: `수행-${Math.round((progress / testrun.totalTestcaseCount) * 100)}%`,
-              });
-            }
-
-            if (testrun.totalTestcaseCount - progress > 0) {
-              data.push({
-                id: 'REMAINS',
-                value: testrun.totalTestcaseCount - progress,
-                color: 'rgba(0,0,0,0.2)',
-                label: `미수행-${Math.round(((testrun.totalTestcaseCount - progress) / testrun.totalTestcaseCount) * 100)}%`,
-              });
-            }
-
             return {
               ...testrun,
-              data,
+              data: getGraphData(testrun),
             };
           }),
         );
@@ -67,8 +75,66 @@ function TestrunListPage() {
     setQuery({ type: value });
   };
 
+  const onMessage = info => {
+    const { data } = info;
+
+    switch (data.type) {
+      case 'TESTRUN-CREATED': {
+        if (type === 'CREATE') {
+          const createdTestun = data.data.testrun;
+          const nextTestruns = testruns.slice(0);
+          const nextTestrun = nextTestruns.find(d => d.id === createdTestun.id);
+          if (!nextTestrun) {
+            nextTestruns.push({
+              ...createdTestun,
+              data: getGraphData(createdTestun),
+            });
+            setTestruns(nextTestruns);
+          }
+        }
+
+        break;
+      }
+      case 'TESTRUN-RESULT-CHANGED': {
+        const { testrunStatus } = data.data;
+        const changedTestrunId = data.data.testrunId;
+
+        const nextTestruns = testruns.slice(0);
+        const nextTestrun = nextTestruns.find(d => d.id === changedTestrunId);
+
+        if (nextTestrun) {
+          nextTestrun.failedTestcaseCount = testrunStatus.failedTestcaseCount;
+          nextTestrun.passedTestcaseCount = testrunStatus.passedTestcaseCount;
+          nextTestrun.totalTestcaseCount = testrunStatus.totalTestcaseCount;
+          nextTestrun.untestableTestcaseCount = testrunStatus.untestableTestcaseCount;
+
+          nextTestrun.data = getGraphData(nextTestrun);
+          nextTestrun.opened = !testrunStatus.done;
+          setTestruns(nextTestruns);
+        }
+
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  };
+
   return (
     <Page className="testrun-list-page-wrapper" list={type === 'CREATE'}>
+      {user?.id && (
+        <SocketClient
+          topics={[`/sub/projects/${projectId}`]}
+          headers={{
+            'X-AUTH-TOKEN': window.localStorage.getItem('token'),
+          }}
+          onMessage={onMessage}
+          onConnect={() => {}}
+          onDisconnect={() => {}}
+        />
+      )}
       <PageTitle
         className="page-title"
         links={[

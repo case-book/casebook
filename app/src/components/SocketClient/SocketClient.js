@@ -27,7 +27,9 @@ class SocketClient extends React.PureComponent {
           console.error(e);
         }}
         ref={client => {
-          setRef(client);
+          if (setRef) {
+            setRef(client);
+          }
         }}
       />
     );
@@ -38,6 +40,7 @@ export default SocketClient;
 
 SocketClient.defaultProps = {
   headers: {},
+  setRef: null,
 };
 
 SocketClient.propTypes = {
@@ -47,5 +50,5 @@ SocketClient.propTypes = {
   topics: PropTypes.arrayOf(PropTypes.string).isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   headers: PropTypes.objectOf(PropTypes.any),
-  setRef: PropTypes.func.isRequired,
+  setRef: PropTypes.func,
 };
