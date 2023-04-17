@@ -69,6 +69,12 @@ public class TestrunService {
         return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase);
     }
 
+    private void checkIsTestrunClosed(Testrun testrun) {
+        if (!testrun.isOpened()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "project.already.closed");
+        }
+    }
+
 
     public List<TestrunDTO> selectProjectTestrunList(String spaceCode, long projectId, String status, TestrunCreationTypeCode creationTypeCode) {
 
@@ -157,6 +163,7 @@ public class TestrunService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsTestrunClosed(testrun);
         testrun.setOpened(false);
         testrun.setClosedDate(LocalDateTime.now());
 
@@ -192,23 +199,26 @@ public class TestrunService {
     }
 
     @Transactional
-    public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
+    public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(long testrunId, TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsTestrunClosed(testrun);
         TestrunTestcaseGroupTestcaseItem result = testrunTestcaseGroupTestcaseItemRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseItem, TestrunTestcaseGroupTestcaseItem.class));
         return new TestrunTestcaseGroupTestcaseItemDTO(result);
         //return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
     }
 
     @Transactional
-    public boolean updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
+    public TestrunStatusDTO updateTestrunTestcaseResult(long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
 
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsTestrunClosed(testrun);
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         boolean done = testcaseResultUpdater(testrun, testrunTestcaseGroupTestcase, testResultCode);
         testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
         testrunRepository.save(testrun);
 
-        return done;
+        return new TestrunStatusDTO(testrun, done);
     }
 
     @Transactional
@@ -274,6 +284,7 @@ public class TestrunService {
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            checkIsTestrunClosed(testrun);
             String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(oldUserId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
             String afterUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
 
@@ -284,14 +295,17 @@ public class TestrunService {
     }
 
     @Transactional
-    public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
+    public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(long testrunId, TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsTestrunClosed(testrun);
         TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseComment, TestrunTestcaseGroupTestcaseComment.class));
         return new TestrunTestcaseGroupTestcaseCommentDTO(comment);
-        // return mappingUtil.convert(comment, TestrunTestcaseGroupTestcaseCommentDTO.class);
     }
 
     @Transactional
-    public void deleteTestrunTestcaseGroupTestcaseComment(Long testrunTestcaseGroupTestcaseCommentId) {
+    public void deleteTestrunTestcaseGroupTestcaseComment(long testrunId, Long testrunTestcaseGroupTestcaseCommentId) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsTestrunClosed(testrun);
         testrunTestcaseGroupTestcaseCommentRepository.deleteById(testrunTestcaseGroupTestcaseCommentId);
     }
 

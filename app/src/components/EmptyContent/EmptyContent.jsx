@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './EmptyContent.scss';
 
-function EmptyContent({ className, children, minHeight, color }) {
+function EmptyContent({ className, children, minHeight, color, fill }) {
   return (
     <div
-      className={`empty-content-wrapper ${className} color-${color}`}
+      className={`empty-content-wrapper ${className} color-${color} ${fill ? 'fill' : ''}`}
       style={{
         minHeight,
       }}
@@ -20,6 +20,7 @@ EmptyContent.defaultProps = {
   children: '데이터가 없습니다.',
   minHeight: '140px',
   color: 'gray',
+  fill: false,
 };
 
 EmptyContent.propTypes = {
@@ -27,6 +28,7 @@ EmptyContent.propTypes = {
   children: PropTypes.node,
   minHeight: PropTypes.string,
   color: PropTypes.string,
+  fill: PropTypes.bool,
 };
 
 export default EmptyContent;

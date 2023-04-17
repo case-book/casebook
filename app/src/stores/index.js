@@ -4,6 +4,7 @@ import ControlStore from '@/stores/ControlStore';
 import ConfigStore from '@/stores/ConfigStore';
 import ThemeStore from '@/stores/ThemeStore';
 import ContextStore from '@/stores/ContextStore';
+import SocketStore from '@/stores/SocketStore';
 
 class RootStore {
   constructor() {
@@ -12,6 +13,7 @@ class RootStore {
     this.configStore = new ConfigStore();
     this.themeStore = new ThemeStore();
     this.contextStore = new ContextStore();
+    this.socketStore = new SocketStore();
   }
 }
 

@@ -12,6 +12,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -36,8 +37,13 @@ public class WebSocketEventListener {
             if (workCode != null && workCode.equals("TESTRUN-SYNC")) {
                 Long testrunId = Long.parseLong((String) attributes.get("TESTRUN-ID"));
                 List<TestrunParticipantDTO> participants = testrunService.selectTestrunParticipantList(testrunId, userId);
+
+                Optional<TestrunParticipantDTO> currentParticipant = participants.stream().filter((testrunParticipantDTO -> testrunParticipantDTO.getUserId().equals(userId))).findFirst();
+                if (currentParticipant.isPresent()) {
+                    testrunService.deleteTestrunParticipantInfo(currentParticipant.get());
+                }
                 participants.forEach((participant) -> {
-                    testrunService.deleteTestrunParticipantInfo(participant);
+
                     MessageData participantData = MessageData.builder().type("TESTRUN-USER-LEAVE").build();
                     participantData.addData("participant", participant);
                     messageSendService.sendTo("projects/" + participant.getProjectId() + "/testruns/" + participant.getTestrunId(), participantData);

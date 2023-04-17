@@ -4,10 +4,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
+import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.*;
 import com.mindplates.bugcase.biz.testrun.vo.response.*;
@@ -61,7 +58,13 @@ public class TestrunController {
     @PostMapping("")
     public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
-        return new TestrunListResponse(testrunService.createTestrunInfo(spaceCode, testrun));
+        TestrunDTO createdTestrun = testrunService.createTestrunInfo(spaceCode, testrun);
+
+        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
+        createdTestrunData.addData("testrun", createdTestrun);
+        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        return new TestrunListResponse(createdTestrun);
     }
 
     @Operation(description = "프로젝트 테스트런 변경")
@@ -116,24 +119,29 @@ public class TestrunController {
     }
 
     @Operation(description = "테스트런 결과 아이템 입력 (단건)")
-    @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/items/{testcaseTemplateItemId}")
+    @PutMapping("/{testrunId}/testcases/{testrunTestcaseGroupTestcaseId}/items/{testcaseTemplateItemId}")
     public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testcaseTemplateItemId, @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItems = testrunTestcaseGroupTestcaseItemRequest.toDTO();
-        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(testrunTestcaseGroupTestcaseItems);
+        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(testrunId, testrunTestcaseGroupTestcaseItems);
         return new TestrunTestcaseGroupTestcaseItemResponse(testrunTestcaseGroupTestcaseItemList);
     }
 
     @Operation(description = "테스트런 결과 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
     public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
-        boolean done = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
+        TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
 
         MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
         participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);
         participantData.addData("testResult", testrunResultRequest.getTestResult());
         messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
 
-        if (done) {
+        MessageData testrunResultChangeData = MessageData.builder().type("TESTRUN-RESULT-CHANGED").build();
+        testrunResultChangeData.addData("testrunId", testrunId);
+        testrunResultChangeData.addData("testrunStatus", testrunStatusDTO);
+        messageSendService.sendTo("projects/" + projectId, testrunResultChangeData);
+
+        if (testrunStatusDTO.isDone()) {
             return true;
         }
         return false;
@@ -149,14 +157,14 @@ public class TestrunController {
     @Operation(description = "테스트런 코멘트 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
     public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
-        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseCommentRequest.toDTO());
+        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentRequest.toDTO());
         return new TestrunTestcaseGroupTestcaseCommentResponse(result);
     }
 
     @Operation(description = "테스트런 코멘트 입력")
     @DeleteMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
     public ResponseEntity<HttpStatus> updateTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
-        testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunTestcaseGroupTestcaseCommentId);
+        testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

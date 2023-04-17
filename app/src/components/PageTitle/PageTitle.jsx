@@ -30,7 +30,7 @@ function PageTitle({ className, children, links, control, onListClick }) {
                   <div>{d}</div>
                   {inx !== links.length - 1 && (
                     <div>
-                      <Liner className="page-title-liner" display="inline-block" width="1px" height="10px" color="light" margin="0 0.5rem" />
+                      <Liner className="page-title-liner" display="inline-block" width="1px" height="12px" color="light" margin="0 1rem" />
                     </div>
                   )}
                 </React.Fragment>
