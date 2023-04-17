@@ -5,6 +5,8 @@
     display: flex;
   }
 
+  
+
   .testrun-title-content {
     display: flex;
     > div {
@@ -12,7 +14,7 @@
       &.separator {
         > div {
           height: 0.5rem;
-          background-color: rgba(0,0,0,0.4);
+          background-color: rgba(0, 0, 0, 0.4);
           width: 1px;
           display: inline-block;
           margin-right: 10px;

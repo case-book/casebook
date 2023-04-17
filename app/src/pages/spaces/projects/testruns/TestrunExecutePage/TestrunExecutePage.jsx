@@ -138,6 +138,19 @@ function TestrunExecutePage() {
 
       setTestrun(info);
 
+      if (!info.opened) {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('종료된 테스트런'),
+          <div>{t('테스트런이 종료되었습니다. 테스트런 리포트로 이동하시겠습니까?')}</div>,
+          () => {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/reports/${testrunId}`);
+          },
+          null,
+          t('이동'),
+        );
+      }
+
       const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
         return {
           ...d,
@@ -343,7 +356,7 @@ function TestrunExecutePage() {
    */
 
   const onSaveTestResultItem = target => {
-    TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, () => {
+    TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, () => {
       // getTestrunInfo();
       getContent(false);
     });
@@ -527,11 +540,13 @@ function TestrunExecutePage() {
                 })}
               </ul>
             </div>
-            <div>
-              <Button size="sm" color="warning" onClick={onClosed}>
-                {t('테스트런 종료')}
-              </Button>
-            </div>
+            {testrun.opened && (
+              <div>
+                <Button size="sm" color="warning" onClick={onClosed}>
+                  {t('테스트런 종료')}
+                </Button>
+              </div>
+            )}
           </div>
         }
         onListClick={() => {
