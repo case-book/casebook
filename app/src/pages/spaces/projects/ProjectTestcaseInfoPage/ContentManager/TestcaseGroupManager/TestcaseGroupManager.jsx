@@ -56,10 +56,10 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
           {isEdit && (
             <>
               <Button outline size="md" color="white" onClick={onCancel}>
-                취소
+                {t('취소')}
               </Button>
               <Button size="md" color="primary" outline onClick={onSaveTestcaseGroup}>
-                저장
+                {t('저장')}
               </Button>
             </>
           )}

@@ -143,46 +143,7 @@ function TestrunListPage() {
           <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/new`}>
             <i className="fa-solid fa-plus" /> {t('테스트런')}
           </Link>,
-        ]}
-        control={
           <div className="options">
-            {type === 'CREATE' && (
-              <>
-                <div>
-                  <Radio
-                    size="sm"
-                    value="ALL"
-                    type="line"
-                    checked={status === 'ALL'}
-                    onChange={val => {
-                      setStatus(val);
-                    }}
-                    label={t('전체')}
-                  />
-                  <Radio
-                    size="sm"
-                    value="OPENED"
-                    type="line"
-                    checked={status === 'OPENED'}
-                    onChange={val => {
-                      setStatus(val);
-                    }}
-                    label={t('진행 중인 테스트런')}
-                  />
-                  <Radio
-                    size="sm"
-                    value="CLOSED"
-                    type="line"
-                    checked={status === 'CLOSED'}
-                    onChange={val => {
-                      setStatus(val);
-                    }}
-                    label={t('종료된 테스트런')}
-                  />
-                </div>
-                <Liner className="dash" width="1px" height="10px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
-              </>
-            )}
             <div>
               <Radio
                 size="sm"
@@ -191,7 +152,7 @@ function TestrunListPage() {
                 onChange={val => {
                   onChangeSearchTestrunCreationType(val);
                 }}
-                label="테스트런"
+                label={t('테스트런')}
               />
               <Radio
                 size="sm"
@@ -200,7 +161,7 @@ function TestrunListPage() {
                 onChange={val => {
                   onChangeSearchTestrunCreationType(val);
                 }}
-                label="예약"
+                label={t('예약된 테스트런')}
               />
               <Radio
                 size="sm"
@@ -209,11 +170,11 @@ function TestrunListPage() {
                 onChange={val => {
                   onChangeSearchTestrunCreationType(val);
                 }}
-                label="반복"
+                label={t('반복 설정 테스트런')}
               />
             </div>
-          </div>
-        }
+          </div>,
+        ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
         }}
