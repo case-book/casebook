@@ -16,4 +16,9 @@
     align-self: center;
     text-align: center;
   }
+
+  &.fill {
+    height: 100%;
+    flex-grow: 1;
+  }
 }

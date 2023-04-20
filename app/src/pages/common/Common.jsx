@@ -85,7 +85,7 @@ function Common() {
   };
 
   const getRelease = version => {
-    const url = 'https://api.github.com/repos/mindplates/bug-case/releases/latest';
+    const url = 'https://api.github.com/repositories/532306732/releases/latest';
     const request = new XMLHttpRequest();
 
     request.onreadystatechange = function () {

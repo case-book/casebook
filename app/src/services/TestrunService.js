@@ -155,20 +155,9 @@ TestrunService.updateTestrunResultItems = (spaceCode, projectId, testrunId, test
   );
 };
 
-TestrunService.updateTestrunResultItem = (
-  spaceCode,
-  projectId,
-  testrunId,
-  testrunTestcaseGroupId,
-  testrunTestcaseGroupTestcaseId,
-  testcaseTemplateItemId,
-  testrunItem,
-  successHandler,
-  failHandler,
-  loading = false,
-) => {
+TestrunService.updateTestrunResultItem = (spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testcaseTemplateItemId, testrunItem, successHandler, failHandler, loading = false) => {
   return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/items/${testcaseTemplateItemId}`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/testcases/${testrunTestcaseGroupTestcaseId}/items/${testcaseTemplateItemId}`,
     testrunItem,
     res => {
       if (successHandler) {

@@ -34,7 +34,10 @@ function Login() {
       setToken(data.token);
       userStore.setUser(data);
       getUserNotificationCount();
-      navigate('/');
+
+      if (location.pathname === '/users/login' || location.pathname === '/users/join') {
+        navigate('/');
+      }
     });
   };
 
