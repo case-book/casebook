@@ -14,6 +14,7 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.service.RedisService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +43,8 @@ public class AdminController {
     private final SpaceService spaceService;
 
     private final ProjectService projectService;
+
+    private final RedisService redisService;
 
     @Operation(description = "모든 스페이스 조회")
     @GetMapping("/spaces")
@@ -142,13 +145,7 @@ public class AdminController {
     public ResponseEntity<?> deleteRedis() {
 
         String[] patterns = {"space*", "project*"};
-
-        for (String pattern : patterns) {
-            Set<String> keys = jsonRedisTemplate.keys(pattern);
-            if (keys != null && !keys.isEmpty()) {
-                jsonRedisTemplate.delete(keys);
-            }
-        }
+        redisService.deleteRedisKeys(patterns);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
