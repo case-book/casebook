@@ -16,6 +16,7 @@ import com.mindplates.bugcase.biz.user.vo.response.MyInfoResponse;
 import com.mindplates.bugcase.biz.user.vo.response.UserTokenResponse;
 import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.service.RedisService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
@@ -48,6 +49,8 @@ public class UserController {
     private final NotificationService notificationService;
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final RedisService redisService;
+
     @Operation(description = "회원 가입 및 로그인 처리")
     @PostMapping("/join")
     public MyInfoResponse createUser(@Valid @RequestBody JoinRequest joinRequest) {
@@ -78,6 +81,10 @@ public class UserController {
     @PutMapping("/my")
     public ResponseEntity<?> updateMyInfo(@Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest, @AuthenticationPrincipal SecurityUser securityUser) {
         userService.updateUser(securityUser.getId(), updateMyInfoRequest.toDTO());
+
+        String[] patterns = {"space*", "project*"};
+        redisService.deleteRedisKeys(patterns);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
