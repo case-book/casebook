@@ -201,83 +201,85 @@ function ReportListPage() {
             );
           })}
         </ul>
-        <div className="testrun-table-content">
-          <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
-            <THead>
-              <Tr>
-                <Th align="center">{t('테스트런 ID')}</Th>
-                <Th align="left">{t('이름')}</Th>
-                <Th align="center">{t('수행률')}</Th>
-                <Th align="center">{t('성공')}</Th>
-                <Th align="center">{t('실패')}</Th>
-                <Th align="center">{t('테스트 불가')}</Th>
-                <Th align="center">{t('테스트 시작일시')}</Th>
-                <Th align="center">{t('테스트 종료일시')}</Th>
-              </Tr>
-            </THead>
-            <Tbody>
-              {testruns?.map(testrun => {
-                const testedCount = testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount;
-                const progressPercentage = Math.round((testedCount / testrun.totalTestcaseCount) * 1000) / 10;
-                const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-                const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-                const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+        {testruns?.length > 0 && (
+          <div className="testrun-table-content">
+            <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
+              <THead>
+                <Tr>
+                  <Th align="center">{t('테스트런 ID')}</Th>
+                  <Th align="left">{t('이름')}</Th>
+                  <Th align="center">{t('수행률')}</Th>
+                  <Th align="center">{t('성공')}</Th>
+                  <Th align="center">{t('실패')}</Th>
+                  <Th align="center">{t('테스트 불가')}</Th>
+                  <Th align="center">{t('테스트 시작일시')}</Th>
+                  <Th align="center">{t('테스트 종료일시')}</Th>
+                </Tr>
+              </THead>
+              <Tbody>
+                {testruns?.map(testrun => {
+                  const testedCount = testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount;
+                  const progressPercentage = Math.round((testedCount / testrun.totalTestcaseCount) * 1000) / 10;
+                  const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+                  const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+                  const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
 
-                return (
-                  <Tr key={testrun.id}>
-                    <Td align="center">
-                      <SeqId type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                        {testrun.seqId}
-                      </SeqId>
-                    </Td>
-                    <Td bold>
-                      <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>{testrun.name}</Link>
-                    </Td>
-                    <Td className="count" align="right">
-                      <div>
-                        <div>{progressPercentage}%</div>
-                        <div className="summary">
-                          ({testedCount}/{testrun.totalTestcaseCount})
+                  return (
+                    <Tr key={testrun.id}>
+                      <Td align="center">
+                        <SeqId type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                          {testrun.seqId}
+                        </SeqId>
+                      </Td>
+                      <Td bold>
+                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>{testrun.name}</Link>
+                      </Td>
+                      <Td className="count" align="right">
+                        <div>
+                          <div>{progressPercentage}%</div>
+                          <div className="summary">
+                            ({testedCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
-                      </div>
-                    </Td>
-                    <Td className="count PASSED" align="right">
-                      <div>
-                        <div>{passedPercentage}%</div>
-                        <div className="summary">
-                          ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
+                      </Td>
+                      <Td className="count PASSED" align="right">
+                        <div>
+                          <div>{passedPercentage}%</div>
+                          <div className="summary">
+                            ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
-                      </div>
-                    </Td>
-                    <Td className="count FAILED" align="right">
-                      <div>
-                        <div>{failedPercentage}%</div>
+                      </Td>
+                      <Td className="count FAILED" align="right">
+                        <div>
+                          <div>{failedPercentage}%</div>
 
-                        <div className="summary">
-                          ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
+                          <div className="summary">
+                            ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
-                      </div>
-                    </Td>
-                    <Td className="count UNTESTABLE" align="right">
-                      <div>
-                        <div>{untestablePercentage}%</div>
-                        <div className="summary">
-                          ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                      </Td>
+                      <Td className="count UNTESTABLE" align="right">
+                        <div>
+                          <div>{untestablePercentage}%</div>
+                          <div className="summary">
+                            ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
-                      </div>
-                    </Td>
-                    <Td className="date" align="center">
-                      {dateUtil.getDateString(testrun.startDateTime)}
-                    </Td>
-                    <Td className="date" align="center">
-                      {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-        </div>
+                      </Td>
+                      <Td className="date" align="center">
+                        {dateUtil.getDateString(testrun.startDateTime)}
+                      </Td>
+                      <Td className="date" align="center">
+                        {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}
+                      </Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </div>
+        )}
       </PageContent>
     </Page>
   );
