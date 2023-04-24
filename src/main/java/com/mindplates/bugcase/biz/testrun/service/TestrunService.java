@@ -144,11 +144,12 @@ public class TestrunService {
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
 
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunId(testrunId);
         testrunUserRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupRepository.deleteByTestrunId(testrunId);
-        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
+
         testrunRepository.deleteById(testrunId);
 
         files.forEach((projectFile -> {
@@ -801,6 +802,11 @@ public class TestrunService {
         return testrunParticipants.stream()
                 .map(TestrunParticipantDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteTestrunTestcaseGroup(long testcaseGroupId) {
+        testrunTestcaseGroupRepository.deleteByTestcaseGroupId(testcaseGroupId);
     }
 
 }
