@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<TestrunTestcaseGroupTestcase, Long> {
@@ -19,6 +20,14 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     @Modifying
     @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt where ttgt.testcase.id = :testcaseId")
     void deleteByTestcaseId(@Param("testcaseId") Long testcaseId);
+
+    @Modifying
+    @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt where ttgt.testrunTestcaseGroup.id in " +
+            "(SELECT ttg.id from TestrunTestcaseGroup ttg where ttg.testcaseGroup.id = :testcaseGroupId)")
+    void deleteByTestcaseGroupId(@Param("testcaseGroupId") Long testcaseGroupId);
+    @Modifying
+    @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testrunTestcaseGroup.id in (SELECT ttg.id from TestrunTestcaseGroup ttg where ttg.testcaseGroup.id in (:ids))")
+    void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);
 
     Optional<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(Long projectId, Long testrunId, String seqId);
 

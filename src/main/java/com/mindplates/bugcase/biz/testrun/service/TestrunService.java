@@ -20,6 +20,8 @@ import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.message.MessageSendService;
+import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.service.SlackService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -58,6 +60,8 @@ public class TestrunService {
     private final MappingUtil mappingUtil;
     private final FileUtil fileUtil;
     private final SlackService slackService;
+
+    private final MessageSendService messageSendService;
 
 
     private final MessageSourceAccessor messageSourceAccessor;
@@ -140,11 +144,12 @@ public class TestrunService {
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
 
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunId(testrunId);
         testrunUserRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupRepository.deleteByTestrunId(testrunId);
-        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
+
         testrunRepository.deleteById(testrunId);
 
         files.forEach((projectFile -> {
@@ -219,6 +224,22 @@ public class TestrunService {
         testrunRepository.save(testrun);
 
         return new TestrunStatusDTO(testrun, done);
+    }
+
+    public void sendTestrunStatusChangeMessage(String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, boolean done) {
+        Long projectId = projectService.selectProjectId(projectToken);
+        Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(projectId, testrun.getId(), "TC" + testcaseSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
+
+        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
+        participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcase.getId());
+        participantData.addData("testResult", testrunTestcaseGroupTestcase.getTestResult());
+        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrun.getId(), participantData);
+
+        MessageData testrunResultChangeData = MessageData.builder().type("TESTRUN-RESULT-CHANGED").build();
+        testrunResultChangeData.addData("testrunId", testrun.getId());
+        testrunResultChangeData.addData("testrunStatus", new TestrunStatusDTO(testrun, done));
+        messageSendService.sendTo("projects/" + projectId, testrunResultChangeData);
     }
 
     @Transactional
@@ -781,6 +802,11 @@ public class TestrunService {
         return testrunParticipants.stream()
                 .map(TestrunParticipantDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteTestrunTestcaseGroup(long testcaseGroupId) {
+        testrunTestcaseGroupRepository.deleteByTestcaseGroupId(testcaseGroupId);
     }
 
 }

@@ -14,6 +14,8 @@ import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
@@ -40,24 +42,17 @@ import java.util.stream.Collectors;
 public class TestcaseService {
 
     private final TestcaseTemplateRepository testcaseTemplateRepository;
-
     private final TestcaseGroupRepository testcaseGroupRepository;
-
     private final TestcaseRepository testcaseRepository;
-
     private final TestcaseItemRepository testcaseItemRepository;
-
-    private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
-
-    private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
-
     private final ProjectFileRepository projectFileRepository;
     private final ProjectRepository projectRepository;
-
     private final FileUtil fileUtil;
-
     private final MappingUtil mappingUtil;
-
+    private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
+    private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
+    private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
+    private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
     public List<TestcaseTemplateDTO> selectTestcaseTemplateItemList(Long projectId) {
         List<TestcaseTemplate> testcaseTemplates = testcaseTemplateRepository.findAllByProjectId(projectId);
@@ -188,6 +183,10 @@ public class TestcaseService {
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceIdIn(projectId, FileSourceTypeCode.TESTCASE, deleteTestcaseIds);
 
         projectFileRepository.deleteByProjectFileSourceIds(projectId, FileSourceTypeCode.TESTCASE, deleteTestcaseIds);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testrunTestcaseGroupTestcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testrunTestcaseGroupRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
@@ -209,10 +208,10 @@ public class TestcaseService {
 
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTCASE, testcaseId);
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTCASE, testcaseId);
-        testcaseItemRepository.deleteByTestcaseId(testcaseId);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseId(testcaseId);
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseId(testcaseId);
         testrunTestcaseGroupTestcaseRepository.deleteByTestcaseId(testcaseId);
-
+        testcaseItemRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
         files.forEach((testcaseFile -> {
             Resource resource = fileUtil.loadFileIfExist(testcaseFile.getPath());

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface TestrunTestcaseGroupTestcaseItemRepository extends JpaRepository<TestrunTestcaseGroupTestcaseItem, Long> {
 
     @Modifying
@@ -21,5 +23,10 @@ public interface TestrunTestcaseGroupTestcaseItemRepository extends JpaRepositor
     @Modifying
     @Query("DELETE FROM TestrunTestcaseGroupTestcaseItem ttgti WHERE ttgti.testrunTestcaseGroupTestcase.id IN (select ttgt.id from TestrunTestcaseGroupTestcase ttgt where ttgt.testcase.id = :testcaseId)")
     void deleteByTestcaseId(@Param("testcaseId") Long testcaseId);
+
+    @Modifying
+    @Query("DELETE FROM TestrunTestcaseGroupTestcaseItem ttgti WHERE ttgti.testrunTestcaseGroupTestcase.id IN " +
+            "(SELECT ttgt.id from TestrunTestcaseGroupTestcase ttgt where ttgt.testrunTestcaseGroup.id in (SELECT ttg.id from TestrunTestcaseGroup ttg where ttg.testcaseGroup.id in (:ids)))")
+    void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);
 }
 
