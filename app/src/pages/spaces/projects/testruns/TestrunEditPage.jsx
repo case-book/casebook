@@ -165,8 +165,15 @@ function TestrunEditPage({ type }) {
   const onSubmit = e => {
     e.preventDefault();
 
+    console.log(testrun);
+
     if (testrun.startDateTime && testrun.endDateTime && testrun.startDateTime > testrun.endDateTime) {
       dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트 기간 오류', '테스트 종료 일시가 테스트 시작 일시보다 빠릅니다.');
+      return;
+    }
+
+    if (!testrun.testcaseGroups || testrun.testcaseGroups?.length < 1) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트케이스 없음', '테스트런에 포함된 테스트케이스가 없습니다.');
       return;
     }
 
@@ -190,26 +197,54 @@ function TestrunEditPage({ type }) {
         },
       );
     } else {
-      TestrunService.createProjectTestrunInfo(
-        spaceCode,
-        projectId,
-        {
-          ...testrun,
+      if (testrun.creationType === 'RESERVE') {
+        TestrunService.createProjectTestrunReservationInfo(
+          spaceCode,
           projectId,
-          // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-          // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-          startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
-          endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
-          startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
-        },
-        () => {
-          if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
-            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
-          } else {
-            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-          }
-        },
-      );
+          {
+            ...testrun,
+            projectId,
+            name: testrun.name,
+            description: testrun.description,
+            testrunUsers: testrun.testrunUsers,
+            testcaseGroups: testrun.testcaseGroups,
+            startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
+            endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
+            expired: false,
+            deadlineClose: testrun.deadlineClose,
+          },
+          () => {
+            if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
+              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
+            } else {
+              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+            }
+          },
+        );
+      }
+
+      if (testrun.creationType === 'CREATE') {
+        TestrunService.createProjectTestrunInfo(
+          spaceCode,
+          projectId,
+          {
+            ...testrun,
+            projectId,
+            // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+            // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+            startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
+            endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
+            startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
+          },
+          () => {
+            if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
+              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
+            } else {
+              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+            }
+          },
+        );
+      }
     }
   };
 

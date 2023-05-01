@@ -49,6 +49,7 @@ public class TestrunService {
 
     private final TestrunParticipantRedisRepository testrunParticipantRedisRepository;
     private final TestrunRepository testrunRepository;
+    private final TestrunReservationRepository testrunReservationRepository;
     private final TestcaseService testcaseService;
     private final ProjectService projectService;
     private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
@@ -60,7 +61,6 @@ public class TestrunService {
     private final MappingUtil mappingUtil;
     private final FileUtil fileUtil;
     private final SlackService slackService;
-
     private final MessageSendService messageSendService;
 
 
@@ -93,9 +93,9 @@ public class TestrunService {
 
     }
 
-    public List<TestrunDTO> selectProjectReserveTestrunList(String spaceCode, long projectId, TestrunCreationTypeCode creationTypeCode) {
-        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, creationTypeCode);
-        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+    public List<TestrunReservationDTO> selectProjectReserveTestrunList(String spaceCode, long projectId, Boolean expired) {
+        List<TestrunReservation> list = testrunReservationRepository.findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByStartDateTimeDescIdDesc(spaceCode, projectId, expired);
+        return list.stream().map(TestrunReservationDTO::new).collect(Collectors.toList());
     }
 
     public List<TestrunDTO> selectReserveTestrunList() {
@@ -132,6 +132,11 @@ public class TestrunService {
         return new TestrunDTO(testrun, true);
     }
 
+    public TestrunReservationDTO selectProjectTestrunReservationInfo(long testrunReservationId) {
+        TestrunReservation testrunReservation = testrunReservationRepository.findById(testrunReservationId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new TestrunReservationDTO(testrunReservation, true);
+    }
+
     public TestrunDTO selectProjectTestrunInfo(long projectId, long testrunSeqNumber) {
         Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestrunDTO(testrun, true);
@@ -162,6 +167,15 @@ public class TestrunService {
 
         }));
 
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteProjectTestrunReservationInfo(String spaceCode, long projectId, long testrunReservationId) {
+        testrunTestcaseGroupTestcaseRepository.deleteByTestrunReservationId(testrunReservationId);
+        testrunUserRepository.deleteByTestrunReservationId(testrunReservationId);
+        testrunTestcaseGroupRepository.deleteByTestrunReservationId(testrunReservationId);
+        testrunReservationRepository.deleteById(testrunReservationId);
     }
 
     @Transactional
@@ -473,6 +487,33 @@ public class TestrunService {
         // return mappingUtil.convert(result, TestrunDTO.class);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
+    public TestrunReservationDTO createTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
+
+        int testcaseGroupCount = 0;
+        int testcaseCount = 0;
+
+        for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrunReservation.getTestcaseGroups()) {
+            testcaseGroupCount += 1;
+            testrunTestcaseGroup.setTestrunReservation(testrunReservation);
+
+            if (testrunTestcaseGroup.getTestcases() != null) {
+                for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
+                    testcaseCount += 1;
+                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                }
+            }
+        }
+
+        testrunReservation.setTestcaseGroupCount(testcaseGroupCount);
+        testrunReservation.setTestcaseCount(testcaseCount);
+
+        TestrunReservation result = testrunReservationRepository.save(mappingUtil.convert(testrunReservation, TestrunReservation.class));
+
+        return new TestrunReservationDTO(result, true);
+    }
+
     private List<ProjectUserDTO> getTester(ProjectDTO project, List<TestrunTestcaseGroup> testcaseGroups) {
         return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()).map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId()).distinct().map(userId -> {
             return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
@@ -710,6 +751,85 @@ public class TestrunService {
 
         Testrun result = testrunRepository.save(targetTestrun);
         return new TestrunDTO(result, true);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
+    public TestrunReservationDTO updateTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
+
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrunReservation.getProject().getId());
+
+        TestrunReservation targetTestrunReservation = testrunReservationRepository.findById(testrunReservation.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (targetTestrunReservation.getExpired()) {
+            throw new ServiceException("testrun.reservation.expired");
+        }
+
+        targetTestrunReservation.setName(testrunReservation.getName());
+        targetTestrunReservation.setDescription(testrunReservation.getDescription());
+        targetTestrunReservation.setStartDateTime(testrunReservation.getStartDateTime());
+        targetTestrunReservation.setEndDateTime(testrunReservation.getEndDateTime());
+        targetTestrunReservation.setDeadlineClose(testrunReservation.getDeadlineClose());
+        // 삭제된 테스터 제거
+        targetTestrunReservation.getTestrunUsers().removeIf((testrunUser -> testrunReservation.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())))));
+        // 추가된 테스터 추가
+        targetTestrunReservation.getTestrunUsers()
+                .addAll(testrunReservation.getTestrunUsers()
+                        .stream()
+                        .filter(testrunUserDTO -> targetTestrunReservation.getTestrunUsers()
+                                .stream()
+                                .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId()))
+                        ).map((testrunUserDTO -> TestrunUser.builder()
+                                .user(User.builder().id(testrunUserDTO.getUser().getId()).build())
+                                .testrunReservation(targetTestrunReservation).build()))
+                        .collect(Collectors.toList())
+                );
+
+        // 삭제된 테스트런 테스트케이스 그룹 제거
+        targetTestrunReservation.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
+
+        // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
+        for (TestrunTestcaseGroup testcaseGroup : targetTestrunReservation.getTestcaseGroups()) {
+            TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+            if (testcaseGroup.getTestcases() != null) {
+                testcaseGroup.getTestcases().removeIf(testcase -> {
+                    if (updateTestrunTestcaseGroup != null) {
+                        return updateTestrunTestcaseGroup.getTestcases().stream().noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                    }
+
+                    return true;
+                });
+            }
+        }
+
+        // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
+        testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).forEach(testrunTestcaseGroupDTO -> {
+            TestrunTestcaseGroup targetTestcaseGroup = targetTestrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testrunTestcaseGroupDTO.getId())).findAny().orElse(null);
+
+            if (targetTestcaseGroup != null && testrunTestcaseGroupDTO.getTestcases() != null) {
+                testrunTestcaseGroupDTO.getTestcases().stream().filter(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId() == null).forEach(testrunTestcaseGroupTestcaseDTO -> {
+                    TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = mappingUtil.convert(testrunTestcaseGroupTestcaseDTO, TestrunTestcaseGroupTestcase.class);
+                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
+                    targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+                });
+            }
+        });
+
+        // 추가된 테스트런 테스트케이스 그룹 추가
+        testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() == null).forEach(testrunTestcaseGroupDTO -> {
+            TestrunTestcaseGroup testrunTestcaseGroup = mappingUtil.convert(testrunTestcaseGroupDTO, TestrunTestcaseGroup.class);
+            testrunTestcaseGroup.setTestrunReservation(targetTestrunReservation);
+            targetTestrunReservation.getTestcaseGroups().add(testrunTestcaseGroup);
+        });
+
+        int testcaseGroupCount = targetTestrunReservation.getTestcaseGroups().size();
+        int testcaseCount = targetTestrunReservation.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
+
+        targetTestrunReservation.setTestcaseGroupCount(testcaseGroupCount);
+        targetTestrunReservation.setTestcaseCount(testcaseCount);
+
+        TestrunReservation result = testrunReservationRepository.save(targetTestrunReservation);
+        return new TestrunReservationDTO(result);
     }
 
     private Map<String, List<ProjectUserDTO>> getTagUserMap(ProjectDTO project, List<TestrunUser> testrunUsers) {

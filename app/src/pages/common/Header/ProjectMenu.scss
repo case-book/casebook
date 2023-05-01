@@ -1,0 +1,43 @@
+.project-menu-wrapper {
+  > li {
+    &:hover {
+      .sub-menu {
+        display: block;
+      }
+    }
+  }
+  .sub-menu {
+    position: absolute;
+    white-space: nowrap;
+    list-style: none;
+    margin: 0;
+    top: 100%;
+    left: -10px;
+    background-color: white;
+    padding: 10px;
+    display: none;
+
+    li {
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: normal !important;
+      margin-bottom: 5px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  @media (max-width: 1400px) {
+    margin-left: 0.5rem;
+    > li {
+      margin-left: 0.5rem;
+      .liner {
+        display: none !important;
+      }
+    }
+  }
+}

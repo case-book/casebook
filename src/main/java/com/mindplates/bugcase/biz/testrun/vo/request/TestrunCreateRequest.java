@@ -59,7 +59,12 @@ public class TestrunCreateRequest {
 
         if (testcaseGroups != null) {
             List<TestrunTestcaseGroupDTO> groups = testcaseGroups.stream().map((testrunTestcaseGroupRequest) -> {
-                TestrunTestcaseGroupDTO testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getId()).testrun(testrun).testcaseGroup(TestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getTestcaseGroupId()).build()).testrun(testrun).build();
+                TestrunTestcaseGroupDTO testrunTestcaseGroup = TestrunTestcaseGroupDTO
+                        .builder()
+                        .id(testrunTestcaseGroupRequest.getId())
+                        .testrun(testrun)
+                        .testcaseGroup(TestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getTestcaseGroupId()).build())
+                        .build();
 
                 if (testrunTestcaseGroupRequest.getTestcases() != null) {
                     List<TestrunTestcaseGroupTestcaseDTO> testcases = testrunTestcaseGroupRequest.getTestcases().stream().map((testrunTestcaseGroupTestcaseRequest) -> TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getId()).testrunTestcaseGroup(testrunTestcaseGroup).testcase(TestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getTestcaseId()).build()).build()).collect(Collectors.toList());

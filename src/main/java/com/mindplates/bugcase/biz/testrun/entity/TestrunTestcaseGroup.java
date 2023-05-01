@@ -28,6 +28,14 @@ public class TestrunTestcaseGroup extends CommonEntity {
     private Testrun testrun;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testrun_reservation_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP__TESTRUN_RESERVATION"))
+    private TestrunReservation testrunReservation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testrun_iteration_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP__TESTRUN_ITERATION"))
+    private TestrunIteration testrunIteration;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP__TESTCASE_GROUP"))
     private TestcaseGroup testcaseGroup;
 

@@ -1,0 +1,101 @@
+.testrun-reservation-info-page-wrapper {
+  .testrun-range {
+    display: flex;
+  }
+
+  .day-of-weeks {
+    display: flex;
+    > div {
+      align-self: center;
+
+      &.label {
+        margin-right: 1rem;
+      }
+    }
+    button:first-child {
+      margin-left: 0;
+    }
+
+    .day {
+      display: inline-flex;
+      width: $md-height;
+      height: $md-height;
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      margin-left: 0.5rem;
+      align-self: center;
+      justify-content: center;
+
+      > span {
+        align-self: center;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+
+    .holiday-button {
+      margin-left: 0;
+    }
+  }
+
+  .iteration-period {
+    display: flex;
+    > div {
+      align-self: center;
+    }
+  }
+
+  .tester {
+    margin-right: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .group-info {
+    border-right: 1px solid var(--border-color);
+  }
+
+  .testrun-testcases-content {
+    padding: 0 1rem;
+    max-width: 100%;
+    overflow-y: auto;
+
+    @media (max-width: 768px) {
+      padding: 0;
+    }
+
+    .seq-name {
+      display: flex;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .FAILED {
+      background-color: var(--danger-color);
+      color: var(--white-color);
+    }
+
+    .PASSED {
+      background-color: var(--success-color);
+      color: var(--white-color);
+    }
+
+    .UNTESTABLE {
+      background-color: var(--gray-color);
+      color: var(--white-color);
+    }
+
+    .UNTESTED {
+      background-color: var(--dark-gray-color);
+      color: var(--white-color);
+    }
+  }
+
+  .no-user {
+    background-color: var(--lighter-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+}

@@ -6,7 +6,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { Liner } from '@/components';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
-import './Menu.scss';
+
+import './ProjectMenu.scss';
 
 function ProjectMenu({ className, closeMobileMenu }) {
   const {
@@ -68,6 +69,26 @@ function ProjectMenu({ className, closeMobileMenu }) {
               <div />
             </div>
             <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px" />
+            {d.list && (
+              <ul className="sub-menu">
+                {d.list?.map(info => {
+                  return (
+                    <li key={info.key}>
+                      <Link
+                        to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : d.to}
+                        onClick={() => {
+                          if (closeMobileMenu) {
+                            closeMobileMenu();
+                          }
+                        }}
+                      >
+                        {info.name}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </li>
         );
       })}

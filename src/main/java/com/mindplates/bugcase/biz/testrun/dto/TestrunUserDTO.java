@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
+import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
@@ -17,6 +18,8 @@ public class TestrunUserDTO extends CommonDTO {
     private Long id;
     private UserDTO user;
     private TestrunDTO testrun;
+    private TestrunReservationDTO testrunReservation;
+    private TestrunIteration testrunIteration;
 
     public TestrunUserDTO(TestrunUser testrunUser) {
         this.id = testrunUser.getId();

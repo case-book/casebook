@@ -130,17 +130,7 @@ ul.common-menu-wrapper {
     }
   }
 
-  &.project-menu-wrapper {
-    @media (max-width: 1400px) {
-      margin-left: 0.5rem;
-      > li {
-        margin-left: 0.5rem;
-        .liner {
-          display: none !important;
-        }
-      }
-    }
-  }
+
   &.main-menu-wrapper {
     @media (max-width: 1400px) {
       margin-left: 1rem;

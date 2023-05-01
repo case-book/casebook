@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import dateUtil from '@/utils/dateUtil';
 import PropTypes from 'prop-types';
-import { TestrunPropTypes } from '@/proptypes';
+import { TestrunReservationPropTypes } from '@/proptypes';
 import './ReserveTestrunList.scss';
 
-function ReserveTestrunList({ spaceCode, projectId, testruns }) {
+function ReserveTestrunList({ spaceCode, projectId, testrunReservations, expired }) {
   const { t } = useTranslation();
 
   return (
@@ -19,45 +19,42 @@ function ReserveTestrunList({ spaceCode, projectId, testruns }) {
             <Th align="left">{t('이름')}</Th>
             <Th align="center">{t('테스트 시작일시')}</Th>
             <Th align="center">{t('테스트 종료일시')}</Th>
-            <Th align="center">{t('테스트케이스 개수')}</Th>
-            <Th align="center">{t('처리 상태')}</Th>
+            <Th align="center">{t('테스트케이스 그룹')}</Th>
+            <Th align="center">{t('테스트케이스')}</Th>
+            {expired && <Th align="center">{t('테스트런')}</Th>}
           </Tr>
         </THead>
         <Tbody>
-          {testruns?.map(testrun => {
+          {testrunReservations?.map(testrunReservation => {
             return (
-              <Tr key={testrun.id}>
+              <Tr key={testrunReservation.id}>
                 <Td>
-                  <Tag uppercase>{t(testrun.creationType)}</Tag>
+                  <Tag uppercase>{t(testrunReservation.expired ? '완료' : '예약')}</Tag>
                 </Td>
                 <Td className="name">
-                  <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`}>{testrun.name}</Link>
+                  <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservation.id}/info`}>{testrunReservation.name}</Link>
                 </Td>
                 <Td align="center">
                   <Tag className="tag" uppercase>
-                    {dateUtil.getDateString(testrun.startDateTime)}
+                    {dateUtil.getDateString(testrunReservation.startDateTime)}
                   </Tag>
                 </Td>
                 <Td align="center">
                   <Tag className="tag" uppercase>
-                    {dateUtil.getDateString(testrun.endDateTime)}
+                    {dateUtil.getDateString(testrunReservation.endDateTime)}
                   </Tag>
                 </Td>
                 <Td className="testcase-count" align="right">
-                  {t('@ 테스트케이스', { count: testrun.totalTestcaseCount })}
+                  {testrunReservation.testcaseGroupCount}
                 </Td>
-                <Td align="center">
-                  {testrun.creationType === 'RESERVE' && (
-                    <Tag className="tag" uppercase>
-                      {testrun.reserveExpired ? t('생성 완료') : t('미처리')}
-                    </Tag>
-                  )}
-                  {testrun.creationType === 'ITERATION' && (
-                    <Tag className="tag" uppercase>
-                      {testrun.reserveExpired ? t('만료') : t('반복중')}
-                    </Tag>
-                  )}
+                <Td className="testcase-count" align="right">
+                  {testrunReservation.testcaseCount}
                 </Td>
+                {expired && (
+                  <Td className="testcase-count" align="center">
+                    {testrunReservation.testrunId && <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports//${testrunReservation.testrunId}`}>{t('리포트')}</Link>}
+                  </Td>
+                )}
               </Tr>
             );
           })}
@@ -68,13 +65,14 @@ function ReserveTestrunList({ spaceCode, projectId, testruns }) {
 }
 
 ReserveTestrunList.defaultProps = {
-  testruns: [],
+  testrunReservations: [],
 };
 
 ReserveTestrunList.propTypes = {
   spaceCode: PropTypes.string.isRequired,
   projectId: PropTypes.string.isRequired,
-  testruns: PropTypes.arrayOf(TestrunPropTypes),
+  expired: PropTypes.bool.isRequired,
+  testrunReservations: PropTypes.arrayOf(TestrunReservationPropTypes),
 };
 
 export default ReserveTestrunList;

@@ -168,6 +168,18 @@ const TestrunPropTypes = PropTypes.shape({
   failedTestcaseCount: PropTypes.number,
 });
 
+const TestrunReservationPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  description: PropTypes.string,
+  startDateTime: PropTypes.string,
+  endDateTime: PropTypes.string,
+  expired: PropTypes.bool,
+  deadlineClose: PropTypes.bool,
+  testcaseGroupCount: PropTypes.number,
+  testcaseCount: PropTypes.number,
+});
+
 export {
   NullableNumber,
   NullableString,
@@ -178,4 +190,5 @@ export {
   TestcaseTemplatePropTypes,
   SpacePropTypes,
   TestrunPropTypes,
+  TestrunReservationPropTypes,
 };

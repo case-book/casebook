@@ -97,6 +97,26 @@ const MENUS = [
     login: true,
     project: true,
     selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects\/[\dA-Z]+\/testruns\/*/],
+    list: [
+      {
+        key: 'testrun',
+        to: '',
+        name: '테스트런',
+        admin: true,
+      },
+      {
+        key: 'reservations',
+        to: '/reservations',
+        name: '예약 테스트런',
+        admin: true,
+      },
+      {
+        key: 'iterations',
+        to: '/iterations',
+        name: '반복 테스트런',
+        admin: true,
+      },
+    ],
   },
 
   {

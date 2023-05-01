@@ -8,7 +8,7 @@ import dateUtil from '@/utils/dateUtil';
 import moment from 'moment';
 import useQueryString from '@/hooks/useQueryString';
 import './TestrunListPage.scss';
-import ReserveTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/ReserveTestrunList';
+import ReserveTestrunList from '@/pages/spaces/projects/testruns/TestrunReservationListPage/ReserveTestrunList';
 import IterationTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/IterationTestrunList';
 import { ITEM_TYPE } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
@@ -23,6 +23,7 @@ function TestrunListPage() {
   const navigate = useNavigate();
   const [testruns, setTestruns] = useState([]);
   const [status, setStatus] = useState('OPENED');
+  const [expired, setExpired] = useState(false);
   const { query, setQuery } = useQueryString();
   const { type = 'CREATE' } = query;
 
@@ -63,11 +64,11 @@ function TestrunListPage() {
         );
       });
     } else {
-      TestrunService.selectProjectTestrunList(spaceCode, projectId, '', type, list => {
+      TestrunService.selectProjectTestrunReservationList(spaceCode, projectId, expired, list => {
         setTestruns(list);
       });
     }
-  }, [type, spaceCode, status]);
+  }, [type, expired, spaceCode, status]);
 
   const onMessage = info => {
     const { data } = info;
@@ -175,6 +176,30 @@ function TestrunListPage() {
             </div>
           </div>,
         ]}
+        control={
+          type === 'RESERVE' && (
+            <div>
+              <Radio
+                size="sm"
+                value={false}
+                checked={expired === false}
+                onChange={() => {
+                  setExpired(!expired);
+                }}
+                label={t('유효')}
+              />
+              <Radio
+                size="sm"
+                value
+                checked={expired}
+                onChange={() => {
+                  setExpired(!expired);
+                }}
+                label={t('만료')}
+              />
+            </div>
+          )
+        }
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
         }}

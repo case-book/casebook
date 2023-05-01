@@ -10,6 +10,7 @@ import com.mindplates.bugcase.biz.testrun.vo.request.*;
 import com.mindplates.bugcase.biz.testrun.vo.response.*;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
+import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.util.SessionUtil;
@@ -42,16 +43,24 @@ public class TestrunController {
     @Operation(description = "프로젝트 테스트런 목록 조회")
     @GetMapping("")
     public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "status") String status, @RequestParam(value = "testrunCreationType") TestrunCreationTypeCode testrunCreationType) {
-        List<TestrunDTO> testruns;
+        List<TestrunDTO> testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status, TestrunCreationTypeCode.CREATE);
 
+        /*
         if (TestrunCreationTypeCode.CREATE.equals(testrunCreationType)) {
             testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status, TestrunCreationTypeCode.CREATE);
         } else {
             testruns = testrunService.selectProjectReserveTestrunList(spaceCode, projectId, testrunCreationType);
-        }
+        } */
 
 
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "프로젝트 예약 테스트런 목록 조회")
+    @GetMapping("/reservation")
+    public List<TestrunReservationListResponse> selectTestrunReservationList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "expired") Boolean expired) {
+        List<TestrunReservationDTO> testrunReservationList = testrunService.selectProjectReserveTestrunList(spaceCode, projectId, expired);
+        return testrunReservationList.stream().map(TestrunReservationListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "프로젝트 테스트런 생성")
@@ -67,11 +76,44 @@ public class TestrunController {
         return new TestrunListResponse(createdTestrun);
     }
 
-    @Operation(description = "프로젝트 테스트런 변경")
-    @PutMapping("")
+    @Operation(description = "프로젝트 예약 테스트런 생성")
+    @PostMapping("/reservation")
+    public TestrunReservationListResponse createTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunReservationRequest testrunReservationRequest) {
+
+        if (!testrunReservationRequest.getProjectId().equals(projectId)) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        TestrunReservationDTO testrunReservation = testrunReservationRequest.buildEntity();
+        TestrunReservationDTO createdTestrunReservation = testrunService.createTestrunReservationInfo(spaceCode, testrunReservation);
+
+        return new TestrunReservationListResponse(createdTestrunReservation);
+    }
+
+    @Operation(description = "테스트런 변경")
+    @PutMapping("/{testrunId}")
     public TestrunListResponse updateTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunUpdateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
         return new TestrunListResponse(testrunService.updateTestrunInfo(spaceCode, testrun));
+    }
+
+    @Operation(description = "예약 테스트런 변경")
+    @PutMapping("/reservations/{testrunId}")
+    public ResponseEntity<HttpStatus> updateTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunReservationRequest testrunReservationRequest) {
+        TestrunReservationDTO testrunReservation = testrunReservationRequest.buildEntity();
+
+
+        int testcaseCount = testrunReservation.getTestcaseGroups()
+                .stream()
+                .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
+
+        if (testcaseCount < 1) {
+            throw new ServiceException("testrun.reservation.testcase.empty");
+        }
+
+
+        testrunService.updateTestrunReservationInfo(spaceCode, testrunReservation);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 상세 조회")
@@ -81,11 +123,25 @@ public class TestrunController {
         return new TestrunResponse(testrun);
     }
 
+    @Operation(description = "테스트런 예약 상세 조회")
+    @GetMapping("/reservations/{testrunReservationId}")
+    public TestrunReservationResponse selectTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {
+        TestrunReservationDTO testrunReservation = testrunService.selectProjectTestrunReservationInfo(testrunReservationId);
+        return new TestrunReservationResponse(testrunReservation);
+    }
+
     @Operation(description = "테스트런 삭제")
     @DeleteMapping("/{testrunId}")
     public ResponseEntity<HttpStatus> deleteTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
 
         testrunService.deleteProjectTestrunInfo(spaceCode, projectId, testrunId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "예약 테스트런 삭제")
+    @DeleteMapping("/reservations/{testrunReservationId}")
+    public ResponseEntity<HttpStatus> deleteTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {
+        testrunService.deleteProjectTestrunReservationInfo(spaceCode, projectId, testrunReservationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
