@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Page, PageContent, PageTitle, Radio, Title } from '@/components';
+import { Button, Page, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import TestrunService from '@/services/TestrunService';
-import ReserveTestrunList from './ReserveTestrunList';
 import './TestrunReservationListPage.scss';
+import dateUtil from '@/utils/dateUtil';
 
 function TestrunReservationListPage() {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ function TestrunReservationListPage() {
   }, [expired, spaceCode]);
 
   return (
-    <Page className="testrun0reservation-list-page-wrapper">
+    <Page className="testrun-reservation-list-page-wrapper">
       <PageTitle
         className="page-title"
         links={[
@@ -80,7 +80,56 @@ function TestrunReservationListPage() {
         {testrunReservations?.length > 0 && (
           <>
             <Title border={false}>{t('예약 테스트런 리스트')}</Title>
-            <ReserveTestrunList projectId={projectId} spaceCode={spaceCode} testrunReservations={testrunReservations} expired={expired} />
+            <div className="testrun-reservation-list">
+              <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('타입')}</Th>
+                    <Th align="left">{t('이름')}</Th>
+                    <Th align="center">{t('테스트 시작일시')}</Th>
+                    <Th align="center">{t('테스트 종료일시')}</Th>
+                    <Th align="center">{t('테스트케이스 그룹')}</Th>
+                    <Th align="center">{t('테스트케이스')}</Th>
+                    {expired && <Th align="center">{t('테스트런')}</Th>}
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {testrunReservations?.map(testrunReservation => {
+                    return (
+                      <Tr key={testrunReservation.id}>
+                        <Td>
+                          <Tag uppercase>{t(testrunReservation.expired ? '완료' : '예약')}</Tag>
+                        </Td>
+                        <Td className="name">
+                          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservation.id}/info`}>{testrunReservation.name}</Link>
+                        </Td>
+                        <Td align="center">
+                          <Tag className="tag" uppercase>
+                            {dateUtil.getDateString(testrunReservation.startDateTime)}
+                          </Tag>
+                        </Td>
+                        <Td align="center">
+                          <Tag className="tag" uppercase>
+                            {dateUtil.getDateString(testrunReservation.endDateTime)}
+                          </Tag>
+                        </Td>
+                        <Td className="testcase-count" align="right">
+                          {testrunReservation.testcaseGroupCount}
+                        </Td>
+                        <Td className="testcase-count" align="right">
+                          {testrunReservation.testcaseCount}
+                        </Td>
+                        {expired && (
+                          <Td className="testcase-count" align="center">
+                            {testrunReservation.testrunId && <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrunReservation.testrunId}`}>{t('리포트')}</Link>}
+                          </Td>
+                        )}
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </div>
           </>
         )}
       </PageContent>

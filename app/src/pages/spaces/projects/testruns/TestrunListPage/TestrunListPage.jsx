@@ -8,7 +8,6 @@ import dateUtil from '@/utils/dateUtil';
 import moment from 'moment';
 import useQueryString from '@/hooks/useQueryString';
 import './TestrunListPage.scss';
-import ReserveTestrunList from '@/pages/spaces/projects/testruns/TestrunReservationListPage/ReserveTestrunList';
 import IterationTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/IterationTestrunList';
 import { ITEM_TYPE } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
@@ -225,12 +224,6 @@ function TestrunListPage() {
               </div>
             </div>
           </div>
-        )}
-        {type === 'RESERVE' && testruns?.length > 0 && (
-          <>
-            <Title border={false}>{t('예약 테스트런 리스트')}</Title>
-            <ReserveTestrunList projectId={projectId} spaceCode={spaceCode} testruns={testruns} />
-          </>
         )}
         {type === 'ITERATION' && testruns?.length > 0 && (
           <>

@@ -19,7 +19,9 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
-    List<Testrun> findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode creationTypeCode1, TestrunCreationTypeCode creationTypeCode2);
+    // List<Testrun> findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode creationTypeCode1, TestrunCreationTypeCode creationTypeCode2);
+
+    List<Testrun> findAllByCreationTypeAndReserveExpiredIsNull(TestrunCreationTypeCode creationTypeCode);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened, TestrunCreationTypeCode creationTypeCode);
 

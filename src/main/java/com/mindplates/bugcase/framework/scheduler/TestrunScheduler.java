@@ -1,13 +1,12 @@
 package com.mindplates.bugcase.framework.scheduler;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
+import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.AllArgsConstructor;
@@ -22,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -60,22 +60,85 @@ public class TestrunScheduler {
         }
     }
 
+    private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO) {
+        TestrunDTO testrun = TestrunDTO
+                .builder()
+                .name(testrunReservationDTO.getName())
+                .description(testrunReservationDTO.getDescription())
+                .project(ProjectDTO.builder().id(testrunReservationDTO.getProject().getId()).build())
+                .startDateTime(testrunReservationDTO.getStartDateTime())
+                .endDateTime(testrunReservationDTO.getEndDateTime())
+                .deadlineClose(testrunReservationDTO.getDeadlineClose())
+                .creationType(TestrunCreationTypeCode.CREATE)
+                .build();
+
+        List<TestrunUserDTO> testrunUserList = new ArrayList<>();
+        if (testrunReservationDTO.getTestrunUsers() != null) {
+            for (TestrunUserDTO testrunUser : testrunReservationDTO.getTestrunUsers()) {
+                testrunUserList.add(TestrunUserDTO
+                        .builder()
+                        .testrun(testrun)
+                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                        .build()
+                );
+            }
+        }
+        testrun.setTestrunUsers(testrunUserList);
+
+
+        List<TestrunTestcaseGroupDTO> testcaseGroups = new ArrayList<>();
+
+        if (testrunReservationDTO.getTestcaseGroups() != null) {
+            testrunReservationDTO.getTestcaseGroups().forEach((testrunTestcaseGroupDTO -> {
+                TestrunTestcaseGroupDTO testcaseGroup = TestrunTestcaseGroupDTO
+                        .builder()
+                        .testrun(testrun)
+                        .testcaseGroup(testrunTestcaseGroupDTO.getTestcaseGroup())
+                        .build();
+
+
+                List<TestrunTestcaseGroupTestcaseDTO> testrunTestcaseGroupTestcaseList = new ArrayList<>();
+                for (TestrunTestcaseGroupTestcaseDTO testcase : testrunTestcaseGroupDTO.getTestcases()) {
+                    testrunTestcaseGroupTestcaseList.add(TestrunTestcaseGroupTestcaseDTO
+                            .builder()
+                            .testcase(testcase.getTestcase())
+                            .testrunTestcaseGroup(testcaseGroup)
+                            .build());
+                }
+
+                testcaseGroup.setTestcases(testrunTestcaseGroupTestcaseList);
+                testcaseGroups.add(testcaseGroup);
+            }));
+        }
+
+        testrun.setTestcaseGroups(testcaseGroups);
+
+        return testrun;
+    }
+
     @Scheduled(cron = "0 * * * * *")
     public void createTestrunScheduler() {
         LocalDateTime now = LocalDateTime.now();
         String nowStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
-        List<TestrunDTO> testrunList = testrunService.selectReserveTestrunList();
-        testrunList.forEach((testrunDTO -> {
-            if (TestrunCreationTypeCode.RESERVE.equals(testrunDTO.getCreationType())) {
-                Long testrunId = testrunDTO.getId();
-                LocalDateTime startDateTime = testrunDTO.getStartDateTime();
+        List<TestrunReservationDTO> testrunReservationList = testrunService.selectReserveTestrunList();
 
-                if (now.isAfter(startDateTime)) {
-                    clearTestrun(testrunDTO);
-                    TestrunDTO result = testrunService.createTestrunInfo(testrunDTO.getProject().getSpace().getCode(), testrunDTO);
-                    testrunService.updateTestrunReserveExpired(testrunId, true, result.getId());
-                }
-            } else if (TestrunCreationTypeCode.ITERATION.equals(testrunDTO.getCreationType())) {
+        testrunReservationList.forEach((testrunReservation -> {
+            TestrunDTO testrun = getTestrun(testrunReservation);
+
+            Long testrunId = testrunReservation.getId();
+            LocalDateTime startDateTime = testrunReservation.getStartDateTime();
+
+            if (now.isAfter(startDateTime)) {
+                TestrunDTO result = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
+                testrunService.updateTestrunReserveExpired(testrunId, true, result.getId());
+            }
+
+        }));
+
+
+        List<TestrunDTO> testrunList = testrunService.selectTestrunIterationList();
+        testrunList.forEach((testrunDTO -> {
+            if (TestrunCreationTypeCode.ITERATION.equals(testrunDTO.getCreationType())) {
 
                 Long testrunId = testrunDTO.getId();
                 Long spaceId = testrunDTO.getProject().getSpace().getId();
@@ -138,7 +201,7 @@ public class TestrunScheduler {
                             if (!((week == currentWeek)
                                     || (week == 6 && lastWeek == currentWeek)
                                     || (week == 7 && day == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
-                                    || ((week >= 8 && week <=11) && (day == currentDay) && (weekTimes == (week - 7)))
+                                    || ((week >= 8 && week <= 11) && (day == currentDay) && (weekTimes == (week - 7)))
                             )) {
                                 return false;
                             }

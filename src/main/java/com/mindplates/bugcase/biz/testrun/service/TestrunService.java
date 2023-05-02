@@ -98,8 +98,13 @@ public class TestrunService {
         return list.stream().map(TestrunReservationDTO::new).collect(Collectors.toList());
     }
 
-    public List<TestrunDTO> selectReserveTestrunList() {
-        List<Testrun> list = testrunRepository.findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode.CREATE, TestrunCreationTypeCode.CREATE);
+    public List<TestrunReservationDTO> selectReserveTestrunList() {
+        List<TestrunReservation> list = testrunReservationRepository.findAllByExpiredFalse();
+        return list.stream().map((testrun -> new TestrunReservationDTO(testrun, true))).collect(Collectors.toList());
+    }
+
+    public List<TestrunDTO> selectTestrunIterationList() {
+        List<Testrun> list = testrunRepository.findAllByCreationTypeAndReserveExpiredIsNull(TestrunCreationTypeCode.ITERATION);
         return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
     }
 
@@ -345,8 +350,8 @@ public class TestrunService {
     }
 
     @Transactional
-    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired, Long reserveResultId) {
-        testrunRepository.updateTestrunReserveExpired(testrunId, reserveExpired, reserveResultId);
+    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired, Long referenceTestrunId) {
+        testrunReservationRepository.updateTestrunReservationExpired(testrunId, reserveExpired, referenceTestrunId);
     }
 
     @Transactional

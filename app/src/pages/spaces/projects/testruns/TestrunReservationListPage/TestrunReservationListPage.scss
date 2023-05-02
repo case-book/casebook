@@ -1,2 +1,27 @@
-.testrun0reservation-list-page-wrapper {
+.testrun-reservation-list-page-wrapper {
+  .testrun-reservation-list {
+    width: 100%;
+    overflow: auto;
+
+    .testrun-table {
+      .name {
+        font-weight: bold;
+      }
+      .day {
+        margin-left: 0.25rem;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+
+      .start-time {
+        @include date;
+      }
+
+      .duration,
+      .testcase-count {
+        @include number;
+      }
+    }
+  }
 }
