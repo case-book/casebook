@@ -20,7 +20,7 @@ function TestrunReservationListPage() {
     TestrunService.selectProjectTestrunReservationList(spaceCode, projectId, expired, list => {
       setTestrunReservations(list);
     });
-  }, [expired, spaceCode]);
+  }, [expired, spaceCode, projectId]);
 
   return (
     <Page className="testrun-reservation-list-page-wrapper">

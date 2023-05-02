@@ -19,7 +19,7 @@ public class TestrunUserDTO extends CommonDTO {
     private UserDTO user;
     private TestrunDTO testrun;
     private TestrunReservationDTO testrunReservation;
-    private TestrunIteration testrunIteration;
+    private TestrunIterationDTO testrunIteration;
 
     public TestrunUserDTO(TestrunUser testrunUser) {
         this.id = testrunUser.getId();

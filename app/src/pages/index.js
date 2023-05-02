@@ -37,6 +37,9 @@ import ReportInfoPage from '@/pages/spaces/projects/reports/ReportInfoPage/Repor
 import TestrunReservationListPage from '@/pages/spaces/projects/testruns/TestrunReservationListPage/TestrunReservationListPage';
 import TestrunReservationEditPage from '@/pages/spaces/projects/testruns/TestrunReservationEditPage/TestrunReservationEditPage';
 import TestrunReservationInfoPage from '@/pages/spaces/projects/testruns/TestrunReservationInfoPage/TestrunReservationInfoPage';
+import TestrunIterationListPage from '@/pages/spaces/projects/testruns/TestrunIterationListPage/TestrunIterationListPage';
+import TestrunIterationEditPage from '@/pages/spaces/projects/testruns/TestrunIterationEditPage/TestrunIterationEditPage';
+import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIterationInfoPage/TestrunIterationInfoPage';
 
 export {
   ProjectDashBoardPage,
@@ -72,4 +75,7 @@ export {
   TestrunReservationListPage,
   TestrunReservationEditPage,
   TestrunReservationInfoPage,
+  TestrunIterationListPage,
+  TestrunIterationEditPage,
+  TestrunIterationInfoPage,
 };

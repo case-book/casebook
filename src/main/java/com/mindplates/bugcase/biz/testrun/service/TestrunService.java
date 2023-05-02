@@ -50,6 +50,8 @@ public class TestrunService {
     private final TestrunParticipantRedisRepository testrunParticipantRedisRepository;
     private final TestrunRepository testrunRepository;
     private final TestrunReservationRepository testrunReservationRepository;
+
+    private final TestrunIterationRepository testrunIterationRepository;
     private final TestcaseService testcaseService;
     private final ProjectService projectService;
     private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
@@ -98,6 +100,11 @@ public class TestrunService {
         return list.stream().map(TestrunReservationDTO::new).collect(Collectors.toList());
     }
 
+    public List<TestrunIterationDTO> selectProjectTestrunIterationList(String spaceCode, long projectId, Boolean expired) {
+        List<TestrunIteration> list = testrunIterationRepository.findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByReserveStartDateTimeDescIdDesc(spaceCode, projectId, expired);
+        return list.stream().map(TestrunIterationDTO::new).collect(Collectors.toList());
+    }
+
     public List<TestrunReservationDTO> selectReserveTestrunList() {
         List<TestrunReservation> list = testrunReservationRepository.findAllByExpiredFalse();
         return list.stream().map((testrun -> new TestrunReservationDTO(testrun, true))).collect(Collectors.toList());
@@ -142,6 +149,11 @@ public class TestrunService {
         return new TestrunReservationDTO(testrunReservation, true);
     }
 
+    public TestrunIterationDTO selectProjectTestrunIterationInfo(long testrunIterationId) {
+        TestrunIteration testrunIteration = testrunIterationRepository.findById(testrunIterationId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new TestrunIterationDTO(testrunIteration, true);
+    }
+
     public TestrunDTO selectProjectTestrunInfo(long projectId, long testrunSeqNumber) {
         Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestrunDTO(testrun, true);
@@ -181,6 +193,15 @@ public class TestrunService {
         testrunUserRepository.deleteByTestrunReservationId(testrunReservationId);
         testrunTestcaseGroupRepository.deleteByTestrunReservationId(testrunReservationId);
         testrunReservationRepository.deleteById(testrunReservationId);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteProjectTestrunIterationInfo(String spaceCode, long projectId, long testrunIterationId) {
+        testrunTestcaseGroupTestcaseRepository.deleteByTestrunIterationId(testrunIterationId);
+        testrunUserRepository.deleteByTestrunIterationId(testrunIterationId);
+        testrunTestcaseGroupRepository.deleteByTestrunIterationId(testrunIterationId);
+        testrunIterationRepository.deleteById(testrunIterationId);
     }
 
     @Transactional
@@ -519,6 +540,34 @@ public class TestrunService {
         return new TestrunReservationDTO(result, true);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
+    public TestrunIterationDTO createTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration) {
+
+        int testcaseGroupCount = 0;
+        int testcaseCount = 0;
+
+        for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrunIteration.getTestcaseGroups()) {
+            testcaseGroupCount += 1;
+            testrunTestcaseGroup.setTestrunIteration(testrunIteration);
+
+            if (testrunTestcaseGroup.getTestcases() != null) {
+                for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
+                    testcaseCount += 1;
+                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                }
+            }
+        }
+
+        testrunIteration.setTestcaseGroupCount(testcaseGroupCount);
+        testrunIteration.setTestcaseCount(testcaseCount);
+        testrunIteration.setExpired(false);
+
+        TestrunIteration result = testrunIterationRepository.save(mappingUtil.convert(testrunIteration, TestrunIteration.class));
+
+        return new TestrunIterationDTO(result, true);
+    }
+
     private List<ProjectUserDTO> getTester(ProjectDTO project, List<TestrunTestcaseGroup> testcaseGroups) {
         return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()).map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId()).distinct().map(userId -> {
             return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
@@ -762,14 +811,10 @@ public class TestrunService {
     @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
     public TestrunReservationDTO updateTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
 
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrunReservation.getProject().getId());
-
         TestrunReservation targetTestrunReservation = testrunReservationRepository.findById(testrunReservation.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-        if (targetTestrunReservation.getExpired()) {
-            throw new ServiceException("testrun.reservation.expired");
-        }
 
+        targetTestrunReservation.setExpired(false);
         targetTestrunReservation.setName(testrunReservation.getName());
         targetTestrunReservation.setDescription(testrunReservation.getDescription());
         targetTestrunReservation.setStartDateTime(testrunReservation.getStartDateTime());
@@ -835,6 +880,95 @@ public class TestrunService {
 
         TestrunReservation result = testrunReservationRepository.save(targetTestrunReservation);
         return new TestrunReservationDTO(result);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
+    public TestrunIterationDTO updateTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration) {
+
+        TestrunIteration targetTestrunIteration = testrunIterationRepository.findById(testrunIteration.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        targetTestrunIteration.setExpired(false);
+        targetTestrunIteration.setName(testrunIteration.getName());
+        targetTestrunIteration.setDescription(testrunIteration.getDescription());
+        targetTestrunIteration.setReserveStartDateTime(testrunIteration.getReserveStartDateTime());
+        targetTestrunIteration.setReserveEndDateTime(testrunIteration.getReserveEndDateTime());
+        targetTestrunIteration.setTestrunIterationTimeType(testrunIteration.getTestrunIterationTimeType());
+        targetTestrunIteration.setExcludeHoliday(testrunIteration.getExcludeHoliday());
+        targetTestrunIteration.setDurationHours(testrunIteration.getDurationHours());
+        targetTestrunIteration.setDays(testrunIteration.getDays());
+        targetTestrunIteration.setStartTime(testrunIteration.getStartTime());
+        targetTestrunIteration.setDeadlineClose(testrunIteration.getDeadlineClose());
+        targetTestrunIteration.setDate(testrunIteration.getDate());
+        targetTestrunIteration.setWeek(testrunIteration.getWeek());
+        targetTestrunIteration.setDay(testrunIteration.getDay());
+        targetTestrunIteration.setTestrunIterationUserFilterType(testrunIteration.getTestrunIterationUserFilterType());
+        targetTestrunIteration.setTestrunIterationUserFilterSelectRule(testrunIteration.getTestrunIterationUserFilterSelectRule());
+        targetTestrunIteration.setFilteringUserCount(testrunIteration.getFilteringUserCount());
+
+        // 삭제된 테스터 제거
+        targetTestrunIteration.getTestrunUsers().removeIf((testrunUser -> testrunIteration.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())))));
+        // 추가된 테스터 추가
+        targetTestrunIteration.getTestrunUsers()
+                .addAll(testrunIteration.getTestrunUsers()
+                        .stream()
+                        .filter(testrunUserDTO -> targetTestrunIteration.getTestrunUsers()
+                                .stream()
+                                .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId()))
+                        ).map((testrunUserDTO -> TestrunUser.builder()
+                                .user(User.builder().id(testrunUserDTO.getUser().getId()).build())
+                                .testrunIteration(targetTestrunIteration).build()))
+                        .collect(Collectors.toList())
+                );
+
+        // 삭제된 테스트런 테스트케이스 그룹 제거
+        targetTestrunIteration.getTestcaseGroups().removeIf((testrunTestcaseGroup -> testrunIteration.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())))));
+
+        // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
+        for (TestrunTestcaseGroup testcaseGroup : targetTestrunIteration.getTestcaseGroups()) {
+            TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = testrunIteration.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+            if (testcaseGroup.getTestcases() != null) {
+                testcaseGroup.getTestcases().removeIf(testcase -> {
+                    if (updateTestrunTestcaseGroup != null) {
+                        return updateTestrunTestcaseGroup.getTestcases().stream().noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                    }
+
+                    return true;
+                });
+            }
+        }
+
+        // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
+        testrunIteration.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).forEach(testrunTestcaseGroupDTO -> {
+            TestrunTestcaseGroup targetTestcaseGroup = targetTestrunIteration.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testrunTestcaseGroupDTO.getId())).findAny().orElse(null);
+
+            if (targetTestcaseGroup != null && testrunTestcaseGroupDTO.getTestcases() != null) {
+                testrunTestcaseGroupDTO.getTestcases().stream().filter(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId() == null).forEach(testrunTestcaseGroupTestcaseDTO -> {
+                    TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = mappingUtil.convert(testrunTestcaseGroupTestcaseDTO, TestrunTestcaseGroupTestcase.class);
+                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
+                    targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+                });
+            }
+        });
+
+        // 추가된 테스트런 테스트케이스 그룹 추가
+        testrunIteration.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() == null).forEach(testrunTestcaseGroupDTO -> {
+            TestrunTestcaseGroup testrunTestcaseGroup = mappingUtil.convert(testrunTestcaseGroupDTO, TestrunTestcaseGroup.class);
+            testrunTestcaseGroup.setTestrunIteration(targetTestrunIteration);
+            targetTestrunIteration.getTestcaseGroups().add(testrunTestcaseGroup);
+        });
+
+        int testcaseGroupCount = targetTestrunIteration.getTestcaseGroups().size();
+        int testcaseCount = targetTestrunIteration.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
+
+        targetTestrunIteration.setTestcaseGroupCount(testcaseGroupCount);
+        targetTestrunIteration.setTestcaseCount(testcaseCount);
+
+        List<Long> currentFilteringUserIds = targetTestrunIteration.getCurrentFilteringUserIds();
+        currentFilteringUserIds.removeIf((userId) -> testrunIteration.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId))));
+
+        TestrunIteration result = testrunIterationRepository.save(targetTestrunIteration);
+        return new TestrunIterationDTO(result);
     }
 
     private Map<String, List<ProjectUserDTO>> getTagUserMap(ProjectDTO project, List<TestrunUser> testrunUsers) {

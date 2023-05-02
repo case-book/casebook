@@ -1,0 +1,134 @@
+.testrun-iteration-edit-page-wrapper {
+  .testrun-users-type-row,
+  .testrun-selection-type-row,
+  .testrun-range-type-row {
+    > div {
+      padding-bottom: 0;
+      a {
+        font-weight: bold;
+        display: inline-block;
+        align-self: center;
+      }
+    }
+  }
+
+  .iteration-period {
+    display: flex;
+    > div {
+      align-self: center;
+    }
+  }
+
+  .day-of-weeks,
+  .date-of-month {
+    display: flex;
+    > div {
+      align-self: center;
+
+      &.label {
+        margin-right: 1rem;
+      }
+    }
+    button:first-child {
+      margin-left: 0;
+    }
+
+    button {
+      background-color: var(--input-background);
+      color: var(--text-color);
+      &:hover {
+        background-color: var(--hover-background-color);
+        color: var(--text-color);
+      }
+    }
+
+    button.selected {
+      background-color: var(--primary-color);
+      color: var(--primary-text-color);
+    }
+
+    .holiday-button {
+      margin-left: 0;
+    }
+  }
+
+
+  ul.testrun-users {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 -1rem 0;
+
+    > li {
+      display: inline-flex;
+      margin-right: 1rem;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background-color: var(--lighter-color);
+      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+      margin-bottom: 1rem;
+      font-size: 14px;
+      > div {
+        align-self: center;
+        &:first-child {
+          padding: 0.75rem 0.75rem 0.75rem 1rem;
+        }
+        &:last-child {
+          padding: 0 1rem 0 0;
+
+          svg {
+            &:hover {
+              fill: var(--danger-color);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  ul.testrun-testcases {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 -1rem 0;
+
+    > li {
+      display: inline-flex;
+      margin-right: 1rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--lighter-color);
+      border-radius: 20px;
+      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+      margin-bottom: 1rem;
+      font-size: 14px;
+      > div {
+        align-self: center;
+        &:first-child {
+          padding: 0.75rem 0.75rem 0.75rem 1rem;
+          position: relative;
+          .badge {
+            font-family: Rowdies, NotoSans, sans-serif;
+            font-size: 13px;
+            position: absolute;
+            left: -5px;
+            top: -8px;
+            background-color: var(--green-color);
+            color: var(--white-color);
+            display: inline-flex;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            justify-content: center;
+            > span {
+              align-self: center;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .no-user {
+    background-color: var(--lighter-color);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+}

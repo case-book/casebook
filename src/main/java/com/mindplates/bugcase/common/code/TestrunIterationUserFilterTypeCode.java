@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum TestrunIterationUserFilterTypeCode {
 
+    NONE("NONE"),
     TESTRUN("TESTRUN"),
-    WEEEKLY("WEEEKLY"),
+    WEEKLY("WEEKLY"),
     MONTHLY("MONTHLY");
     private String code;
 

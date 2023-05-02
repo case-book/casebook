@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 public enum TestrunIterationTimeTypeCode {
 
     MONTHLY("MONTHLY"),
-    WEEEKLY("WEEEKLY");
+    WEEKLY("WEEKLY"),
+    MONTHLY_WEEKLY("MONTHLY_WEEKLY");
     private String code;
 
 }
