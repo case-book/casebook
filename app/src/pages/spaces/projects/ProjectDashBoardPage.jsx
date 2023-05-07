@@ -32,7 +32,7 @@ function ProjectDashBoardPage() {
   }, [testrunHistories]);
 
   useEffect(() => {
-    TestrunService.selectProjectTestrunList(spaceCode, projectId, 'OPENED', 'CREATE', list => {
+    TestrunService.selectProjectTestrunList(spaceCode, projectId, list => {
       setTestruns(
         list.map(testrun => {
           const data = [];

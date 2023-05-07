@@ -15,7 +15,6 @@ import {
   TESTRUN_ITERATION_MONTHLY_DATES,
   TESTRUN_ITERATION_USER_FILTER_SELECT_RULE,
   TESTRUN_ITERATION_USER_FILTER_TYPE_CODE,
-  TESTRUN_RESULT_CODE,
 } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
@@ -80,7 +79,6 @@ function TestrunIterationInfoPage() {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
       TestrunService.selectTestrunIterationInfo(spaceCode, projectId, testrunIterationId, data => {
-        console.log(data);
         setTestrunIteration({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
       });
     });
@@ -241,12 +239,6 @@ function TestrunIterationInfoPage() {
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
                     <Th align="left">{t('테스트케이스')}</Th>
-                    {testrunIteration.creationType === 'CREATE' && (
-                      <>
-                        <Th align="left">{t('테스터')}</Th>
-                        <Th align="center">{t('테스트 결과')}</Th>
-                      </>
-                    )}
                   </Tr>
                 </THead>
                 <Tbody>
@@ -255,10 +247,6 @@ function TestrunIterationInfoPage() {
                       return (
                         <React.Fragment key={d.id}>
                           {d.testcases?.map((testcase, inx) => {
-                            const tester = project.users.find(user => {
-                              return user.userId === testcase.testerId;
-                            });
-
                             return (
                               <Tr key={testcase.id}>
                                 {inx === 0 && (
@@ -283,16 +271,6 @@ function TestrunIterationInfoPage() {
                                     <div>{testcase.name}</div>
                                   </div>
                                 </Td>
-                                {testrunIteration.creationType === 'CREATE' && (
-                                  <>
-                                    <Td align="left">
-                                      <Tag>{tester?.name}</Tag>
-                                    </Td>
-                                    <Td align="center">
-                                      <Tag className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</Tag>
-                                    </Td>
-                                  </>
-                                )}
                               </Tr>
                             );
                           })}
@@ -313,12 +291,6 @@ function TestrunIterationInfoPage() {
                           </div>
                         </Td>
                         <Td />
-                        {testrunIteration.creationType === 'CREATE' && (
-                          <>
-                            <Td />
-                            <Td />
-                          </>
-                        )}
                       </Tr>
                     );
                   })}

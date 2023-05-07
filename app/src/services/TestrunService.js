@@ -3,9 +3,9 @@ import i18n from 'i18next';
 
 const TestrunService = {};
 
-TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, testrunCreationType, successHandler, failHandler, loading = true) => {
+TestrunService.selectProjectTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
   return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns?status=${option}&&testrunCreationType=${testrunCreationType}`,
+    `/api/${spaceCode}/projects/${projectId}/testruns`,
     null,
     res => {
       successHandler(res);

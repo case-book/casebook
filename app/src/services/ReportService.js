@@ -5,7 +5,7 @@ const ReportService = {};
 
 ReportService.selectReportList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
   return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns?status=CLOSED&testrunCreationType=CREATE`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/closed`,
     null,
     res => {
       successHandler(res);

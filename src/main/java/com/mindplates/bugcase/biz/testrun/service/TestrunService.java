@@ -18,7 +18,6 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
@@ -50,7 +49,6 @@ public class TestrunService {
     private final TestrunParticipantRedisRepository testrunParticipantRedisRepository;
     private final TestrunRepository testrunRepository;
     private final TestrunReservationRepository testrunReservationRepository;
-
     private final TestrunIterationRepository testrunIterationRepository;
     private final TestcaseService testcaseService;
     private final ProjectService projectService;
@@ -82,17 +80,14 @@ public class TestrunService {
     }
 
 
-    public List<TestrunDTO> selectProjectTestrunList(String spaceCode, long projectId, String status, TestrunCreationTypeCode creationTypeCode) {
-
-        List<Testrun> list;
-        if ("ALL".equals(status)) {
-            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, creationTypeCode);
-        } else {
-            list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, "OPENED".equals(status), creationTypeCode);
-        }
-
+    public List<TestrunDTO> selectOpenedProjectTestrunList(String spaceCode, long projectId) {
+        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true);
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+    }
 
+    public List<TestrunDTO> selectClosedProjectTestrunList(String spaceCode, long projectId) {
+        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, false);
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
     }
 
     public List<TestrunReservationDTO> selectProjectReserveTestrunList(String spaceCode, long projectId, Boolean expired) {
@@ -110,13 +105,13 @@ public class TestrunService {
         return list.stream().map((testrun -> new TestrunReservationDTO(testrun, true))).collect(Collectors.toList());
     }
 
-    public List<TestrunDTO> selectTestrunIterationList() {
-        List<Testrun> list = testrunRepository.findAllByCreationTypeAndReserveExpiredIsNull(TestrunCreationTypeCode.ITERATION);
-        return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
+    public List<TestrunIterationDTO> selectTestrunIterationList() {
+        List<TestrunIteration> list = testrunIterationRepository.findAllByExpiredFalse();
+        return list.stream().map((testrun -> new TestrunIterationDTO(testrun, true))).collect(Collectors.toList());
     }
 
     public List<TestrunDTO> selectDeadlineTestrunList(LocalDateTime endDateTime) {
-        List<Testrun> list = testrunRepository.findAllByDeadlineCloseTrueAndCreationTypeAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(TestrunCreationTypeCode.CREATE, endDateTime);
+        List<Testrun> list = testrunRepository.findAllByDeadlineCloseTrueAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(endDateTime);
         return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
     }
 
@@ -126,12 +121,12 @@ public class TestrunService {
 
     }
 
-    public Long selectProjectOpenedTestrunCount(String spaceCode, long projectId, TestrunCreationTypeCode creationTypeCode) {
-        return testrunRepository.countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(spaceCode, projectId, creationTypeCode);
+    public Long selectProjectOpenedTestrunCount(String spaceCode, long projectId) {
+        return testrunRepository.countByProjectSpaceCodeAndProjectIdAndOpenedTrue(spaceCode, projectId);
     }
 
-    public Long selectProjectOpenedTestrunCount(Long spaceId, long projectId, TestrunCreationTypeCode creationTypeCode) {
-        return testrunRepository.countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(spaceId, projectId, creationTypeCode);
+    public Long selectProjectOpenedTestrunCount(Long spaceId, long projectId) {
+        return testrunRepository.countByProjectSpaceIdAndProjectIdAndOpenedTrue(spaceId, projectId);
     }
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
@@ -213,7 +208,7 @@ public class TestrunService {
         testrun.setClosedDate(LocalDateTime.now());
 
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
         }
 
@@ -228,7 +223,7 @@ public class TestrunService {
         testrun.setClosedDate(null);
 
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
             slackService.sendTestrunReOpenMessage(project.getSlackUrl(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(), testers);
         }
@@ -327,7 +322,7 @@ public class TestrunService {
             String spaceCode = testrun.getProject().getSpace().getCode();
             Long projectId = testrun.getProject().getId();
             ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-            if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+            if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
                 slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
             }
         }
@@ -376,16 +371,21 @@ public class TestrunService {
     }
 
     @Transactional
+    public void updateTestrunIterationExpired(Long testrunId, Boolean expired) {
+        testrunIterationRepository.updateTestrunIterationExpired(testrunId, expired);
+    }
+
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#testrun.project.id}", value = CacheConfig.PROJECT)
     public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrun) {
 
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId());
-        if (TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
-            int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
-            project.setTestrunSeq(currentTestrunSeq);
-            projectService.updateProjectInfo(spaceCode, project);
-            testrun.setSeqId("R" + currentTestrunSeq);
-        }
+
+        int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
+        project.setTestrunSeq(currentTestrunSeq);
+        projectService.updateProjectInfo(spaceCode, project);
+        testrun.setSeqId("R" + currentTestrunSeq);
+
 
         testrun.setOpened(true);
 
@@ -504,7 +504,7 @@ public class TestrunService {
 
         Testrun result = testrunRepository.save(mappingUtil.convert(testrun, Testrun.class));
 
-        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null && TestrunCreationTypeCode.CREATE.equals(testrun.getCreationType())) {
+        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
             slackService.sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
         }
@@ -883,6 +883,11 @@ public class TestrunService {
     }
 
     @Transactional
+    public void updateTestrunIterationCursor(Long testrunIterationId, Integer filteringUserCursor, List<Long> currentFilteringUserIds) {
+        testrunIterationRepository.updateTestrunIterationUserCursor(testrunIterationId, filteringUserCursor, currentFilteringUserIds);
+    }
+
+    @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
     public TestrunIterationDTO updateTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration) {
 
@@ -905,6 +910,8 @@ public class TestrunService {
         targetTestrunIteration.setTestrunIterationUserFilterType(testrunIteration.getTestrunIterationUserFilterType());
         targetTestrunIteration.setTestrunIterationUserFilterSelectRule(testrunIteration.getTestrunIterationUserFilterSelectRule());
         targetTestrunIteration.setFilteringUserCount(testrunIteration.getFilteringUserCount());
+        targetTestrunIteration.setFilteringUserCursor(testrunIteration.getFilteringUserCursor());
+        targetTestrunIteration.setCurrentFilteringUserIds(testrunIteration.getCurrentFilteringUserIds());
 
         // 삭제된 테스터 제거
         targetTestrunIteration.getTestrunUsers().removeIf((testrunUser -> testrunIteration.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())))));
@@ -999,7 +1006,7 @@ public class TestrunService {
     }
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
-        List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true, TestrunCreationTypeCode.CREATE);
+        List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true);
 
         List<Testrun> list = testruns.stream().filter((testrun -> testrun.getTestcaseGroups().stream().anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
             List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {

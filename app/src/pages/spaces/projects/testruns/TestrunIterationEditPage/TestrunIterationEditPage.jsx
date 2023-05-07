@@ -24,7 +24,6 @@ import {
 } from '@/constants/constants';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import dateUtil from '@/utils/dateUtil';
-import useQueryString from '@/hooks/useQueryString';
 import './TestrunIterationEditPage.scss';
 
 const labelMinWidth = '120px';
@@ -32,9 +31,6 @@ const labelMinWidth = '120px';
 function TestrunIterationEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunIterationId } = useParams();
-  const {
-    query: { creationType },
-  } = useQueryString();
 
   const navigate = useNavigate();
 
@@ -139,11 +135,9 @@ function TestrunIterationEditPage({ type }) {
               }),
             };
           }),
-          creationType: creationType || 'CREATE',
         });
       } else {
         TestrunService.selectTestrunIterationInfo(spaceCode, projectId, testrunIterationId, data => {
-          console.log(data);
           setTestrunIteration({
             ...data,
             startTime: dateUtil.getHourMinuteTime(data.startTime),
@@ -157,8 +151,6 @@ function TestrunIterationEditPage({ type }) {
 
   const onSubmit = e => {
     e.preventDefault();
-
-    console.log(testrunIteration);
 
     if (testrunIteration.reserveStartDateTime && testrunIteration.reserveEndDateTime && testrunIteration.reserveStartDateTime > testrunIteration.reserveEndDateTime) {
       dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트 기간 오류', '테스트 종료 일시가 테스트 시작 일시보다 빠릅니다.');
@@ -629,16 +621,9 @@ function TestrunIterationEditPage({ type }) {
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
                   <Text>
-                    {testrunIteration.creationType === 'RESERVE' && (
-                      <Tag className="tag" size="md" uppercase>
-                        {testrunIteration.reserveExpired ? t('생성 완료') : t('미처리')}
-                      </Tag>
-                    )}
-                    {testrunIteration.creationType === 'ITERATION' && (
-                      <Tag className="tag" size="md" uppercase>
-                        {testrunIteration.reserveExpired ? t('만료') : t('반복중')}
-                      </Tag>
-                    )}
+                    <Tag className="tag" size="md" uppercase>
+                      {testrunIteration.reserveExpired ? t('만료') : t('반복중')}
+                    </Tag>
                   </Text>
                 </BlockRow>
               )}

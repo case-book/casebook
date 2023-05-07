@@ -9,7 +9,6 @@ import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.*;
 import com.mindplates.bugcase.biz.testrun.vo.response.*;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
@@ -40,19 +39,17 @@ public class TestrunController {
 
     private final MessageSendService messageSendService;
 
-    @Operation(description = "테스트런 목록 조회")
+    @Operation(description = "진행중인 테스트런 목록 조회")
     @GetMapping("")
-    public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "status") String status) {
-        List<TestrunDTO> testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status, TestrunCreationTypeCode.CREATE);
+    public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
+        List<TestrunDTO> testruns = testrunService.selectOpenedProjectTestrunList(spaceCode, projectId);
+        return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    }
 
-        /*
-        if (TestrunCreationTypeCode.CREATE.equals(testrunCreationType)) {
-            testruns = testrunService.selectProjectTestrunList(spaceCode, projectId, status, TestrunCreationTypeCode.CREATE);
-        } else {
-            testruns = testrunService.selectProjectReserveTestrunList(spaceCode, projectId, testrunCreationType);
-        } */
-
-
+    @Operation(description = "종료된 테스트런 목록 조회")
+    @GetMapping("/closed")
+    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
+        List<TestrunDTO> testruns = testrunService.selectClosedProjectTestrunList(spaceCode, projectId);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 

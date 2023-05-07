@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,21 +16,16 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
 
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
 
-    // List<Testrun> findAllByCreationTypeNotAndReserveExpiredIsNullOrCreationTypeNotAndReserveExpiredIsFalse(TestrunCreationTypeCode creationTypeCode1, TestrunCreationTypeCode creationTypeCode2);
-
-    List<Testrun> findAllByCreationTypeAndReserveExpiredIsNull(TestrunCreationTypeCode creationTypeCode);
-
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedAndCreationTypeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened, TestrunCreationTypeCode creationTypeCode);
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
 
-    Long countByProjectSpaceCodeAndProjectIdAndCreationTypeAndOpenedTrue(String spaceCode, Long projectId, TestrunCreationTypeCode creationTypeCode);
+    Long countByProjectSpaceCodeAndProjectIdAndOpenedTrue(String spaceCode, Long projectId);
 
-    Long countByProjectSpaceIdAndProjectIdAndCreationTypeAndOpenedTrue(Long spaceId, Long projectId, TestrunCreationTypeCode creationTypeCode);
+    Long countByProjectSpaceIdAndProjectIdAndOpenedTrue(Long spaceId, Long projectId);
 
-    List<Testrun> findAllByDeadlineCloseTrueAndCreationTypeAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(TestrunCreationTypeCode testrunCreationTypeCode, LocalDateTime endDateTime);
+    List<Testrun> findAllByDeadlineCloseTrueAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(LocalDateTime endDateTime);
 
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")

@@ -1,26 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Block,
-  Button,
-  CheckBox,
-  CloseIcon,
-  DatePicker,
-  DateRange,
-  Form,
-  Input,
-  Label,
-  Liner,
-  Page,
-  PageButtons,
-  PageContent,
-  PageTitle,
-  Radio,
-  Selector,
-  Tag,
-  Text,
-  TextArea,
-  Title,
-} from '@/components';
+import { Block, Button, CheckBox, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -34,19 +13,14 @@ import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUser
 import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
-import { DATE_FORMATS, DURATIONS, MESSAGE_CATEGORY, TESTRUN_CREATION_TYPES } from '@/constants/constants';
-import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
-import useQueryString from '@/hooks/useQueryString';
 
 const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
-  const {
-    query: { creationType },
-  } = useQueryString();
 
   const {
     userStore: { user },
@@ -89,7 +63,6 @@ function TestrunEditPage({ type }) {
     totalTestcaseCount: true,
     passedTestcaseCount: true,
     failedTestcaseCount: true,
-    creationType: 'CREATE',
     days: '1111100',
     excludeHoliday: false,
     startTime: (() => {
@@ -152,7 +125,6 @@ function TestrunEditPage({ type }) {
               }),
             };
           }),
-          creationType: creationType || 'CREATE',
         });
       } else {
         TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
@@ -189,62 +161,26 @@ function TestrunEditPage({ type }) {
           startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
         },
         () => {
-          if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
-            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
-          } else {
-            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-          }
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
         },
       );
     } else {
-      if (testrun.creationType === 'RESERVE') {
-        TestrunService.createProjectTestrunReservationInfo(
-          spaceCode,
+      TestrunService.createProjectTestrunInfo(
+        spaceCode,
+        projectId,
+        {
+          ...testrun,
           projectId,
-          {
-            ...testrun,
-            projectId,
-            name: testrun.name,
-            description: testrun.description,
-            testrunUsers: testrun.testrunUsers,
-            testcaseGroups: testrun.testcaseGroups,
-            startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
-            endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
-            expired: false,
-            deadlineClose: testrun.deadlineClose,
-          },
-          () => {
-            if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
-              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
-            } else {
-              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-            }
-          },
-        );
-      }
-
-      if (testrun.creationType === 'CREATE') {
-        TestrunService.createProjectTestrunInfo(
-          spaceCode,
-          projectId,
-          {
-            ...testrun,
-            projectId,
-            // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-            // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
-            startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
-            endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
-            startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
-          },
-          () => {
-            if (testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') {
-              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns?type=${testrun.creationType}`);
-            } else {
-              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-            }
-          },
-        );
-      }
+          // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+          // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
+          startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
+          endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
+          startTime: testrun.startTime ? new Date(testrun.startTime)?.toISOString() : null,
+        },
+        () => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        },
+      );
     }
   };
 
@@ -319,200 +255,36 @@ function TestrunEditPage({ type }) {
                   }}
                 />
               </BlockRow>
-              <BlockRow>
+
+              <BlockRow className="testrun-range-type-row">
                 <Label minWidth={labelMinWidth} required>
-                  {t('생성 타입')}
+                  {t('테스트 기간')}
                 </Label>
-                {isEdit && <Text>{t(testrun.creationType)}</Text>}
-                {!isEdit && (
-                  <div>
-                    {TESTRUN_CREATION_TYPES.map(info => {
-                      return (
-                        <Radio
-                          key={info.key}
-                          value={info.key}
-                          type="default"
-                          checked={testrun.creationType === info.key}
-                          onChange={val => {
-                            if (val === 'RESERVE') {
-                              const start = new Date();
-                              start.setHours(10);
-                              start.setMinutes(0);
-                              start.setSeconds(0);
-                              start.setMilliseconds(0);
-
-                              const end = new Date();
-                              end.setDate(end.getDate() + 2);
-                              end.setHours(19);
-                              end.setMinutes(0);
-                              end.setSeconds(0);
-                              end.setMilliseconds(0);
-
-                              setTestrun({
-                                ...testrun,
-                                creationType: val,
-                                startDateTime: start.getTime(),
-                                endDateTime: end.getTime(),
-                              });
-                            } else {
-                              setTestrun({
-                                ...testrun,
-                                creationType: val,
-                              });
-                            }
-                          }}
-                          label={t(info.value)}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
+                <DateRange
+                  country={user.country}
+                  language={user.language}
+                  startDate={testrun.startDateTime}
+                  endDate={testrun.endDateTime}
+                  startDateKey="startDateTime"
+                  endDateKey="endDateTime"
+                  onChange={(key, value) => {
+                    setTestrun({
+                      ...testrun,
+                      [key]: value,
+                    });
+                  }}
+                />
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+                <Link
+                  to="/"
+                  onClick={e => {
+                    e.preventDefault();
+                    resetRange();
+                  }}
+                >
+                  {t('기간 없음')}
+                </Link>
               </BlockRow>
-              {(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
-                <BlockRow className="testrun-range-type-row">
-                  <Label minWidth={labelMinWidth} required>
-                    {t('테스트 기간')}
-                  </Label>
-                  <DateRange
-                    country={user.country}
-                    language={user.language}
-                    startDate={testrun.startDateTime}
-                    endDate={testrun.endDateTime}
-                    startDateKey="startDateTime"
-                    endDateKey="endDateTime"
-                    onChange={(key, value) => {
-                      setTestrun({
-                        ...testrun,
-                        [key]: value,
-                      });
-                    }}
-                  />
-                  {testrun.creationType === 'CREATE' && (
-                    <>
-                      <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
-                      <Link
-                        to="/"
-                        onClick={e => {
-                          e.preventDefault();
-                          resetRange();
-                        }}
-                      >
-                        {t('기간 없음')}
-                      </Link>
-                    </>
-                  )}
-                </BlockRow>
-              )}
-              {!(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
-                <>
-                  <BlockRow>
-                    <Label minWidth={labelMinWidth} required>
-                      {t('반복 기간')}
-                    </Label>
-                    <div className="iteration-period">
-                      <DatePicker
-                        className="date-picker start-date-picker"
-                        date={testrun.startDateTime}
-                        showTimeSelect
-                        onChange={date => {
-                          setTestrun({
-                            ...testrun,
-                            startDateTime: date,
-                          });
-                        }}
-                        customInput={<DateCustomInput />}
-                      />
-                      <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
-                      <DatePicker
-                        className="date-picker start-date-picker"
-                        date={testrun.endDateTime}
-                        showTimeSelect
-                        onChange={date => {
-                          setTestrun({
-                            ...testrun,
-                            endDateTime: date,
-                          });
-                        }}
-                        customInput={<DateCustomInput />}
-                      />
-                    </div>
-                  </BlockRow>
-                  <BlockRow>
-                    <Label minWidth={labelMinWidth} />
-                    <div className="day-of-weeks">
-                      {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')].map((day, jnx) => {
-                        return (
-                          <Button
-                            key={jnx}
-                            className={testrun.days[jnx] === '1' ? 'selected' : ''}
-                            size="md"
-                            outline
-                            rounded
-                            onClick={() => {
-                              const list = testrun.days.split('');
-                              list[jnx] = testrun.days[jnx] === '1' ? '0' : '1';
-                              const nextDays = list.join('');
-                              setTestrun({
-                                ...testrun,
-                                days: nextDays,
-                              });
-                            }}
-                          >
-                            {day}
-                          </Button>
-                        );
-                      })}
-                      <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                      <Button
-                        size="md"
-                        className={`holiday-button ${testrun.excludeHoliday ? 'selected' : ''}`}
-                        outline
-                        onClick={() => {
-                          setTestrun({
-                            ...testrun,
-                            excludeHoliday: !testrun.excludeHoliday,
-                          });
-                        }}
-                      >
-                        {t('휴일 제외')}
-                      </Button>
-                      <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                      <div className="label">{t('시작 시간')}</div>
-                      <div>
-                        <DatePicker
-                          clear={false}
-                          className="date-picker start-date-picker"
-                          date={testrun.startTime}
-                          showTimeSelect
-                          showTimeSelectOnly
-                          onChange={date => {
-                            setTestrun({
-                              ...testrun,
-                              startTime: date,
-                            });
-                          }}
-                          customInput={<DateCustomInput />}
-                          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()].hoursMinutes.picker}
-                        />
-                      </div>
-                      <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                      <div className="label">{t('테스트 기간')}</div>
-                      <Selector
-                        className="selector"
-                        size="md"
-                        items={DURATIONS}
-                        value={testrun.durationHours}
-                        onChange={value => {
-                          setTestrun({
-                            ...testrun,
-                            durationHours: value,
-                          });
-                        }}
-                      />
-                    </div>
-                  </BlockRow>
-                </>
-              )}
               <BlockRow>
                 <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
                   {t('자동 종료')}
@@ -622,23 +394,6 @@ function TestrunEditPage({ type }) {
                   </ul>
                 )}
               </BlockRow>
-              {isEdit && (
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
-                  <Text>
-                    {testrun.creationType === 'RESERVE' && (
-                      <Tag className="tag" size="md" uppercase>
-                        {testrun.reserveExpired ? t('생성 완료') : t('미처리')}
-                      </Tag>
-                    )}
-                    {testrun.creationType === 'ITERATION' && (
-                      <Tag className="tag" size="md" uppercase>
-                        {testrun.reserveExpired ? t('만료') : t('반복중')}
-                      </Tag>
-                    )}
-                  </Text>
-                </BlockRow>
-              )}
             </Block>
             <PageButtons
               outline

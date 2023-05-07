@@ -154,7 +154,6 @@ const SpacePropTypes = PropTypes.shape({
 const TestrunPropTypes = PropTypes.shape({
   id: PropTypes.number,
   name: PropTypes.string,
-  creationType: PropTypes.string,
   startDateTime: PropTypes.string,
   endDateTime: PropTypes.string,
   reserveExpired: PropTypes.bool,

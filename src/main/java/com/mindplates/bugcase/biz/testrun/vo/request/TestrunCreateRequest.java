@@ -8,7 +8,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -26,7 +25,6 @@ public class TestrunCreateRequest {
     private boolean opened;
     private List<TestrunUserRequest> testrunUsers;
     private List<TestrunTestcaseGroupRequest> testcaseGroups;
-    private TestrunCreationTypeCode creationType;
     private String days;
     private boolean excludeHoliday;
     private LocalDateTime startTime;
@@ -43,7 +41,6 @@ public class TestrunCreateRequest {
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
                 .opened(opened)
-                .creationType(creationType)
                 .days(days)
                 .excludeHoliday(excludeHoliday)
                 .startTime(startTime.toLocalTime())

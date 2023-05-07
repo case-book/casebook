@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
@@ -17,7 +16,7 @@ import java.util.List;
 @Builder
 @Table(name = "testrun", indexes = {@Index(name = "IDX_TESTRUN_PROJECT_ID", columnList = "project_id"),
         @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,end_date_time,id"),
-        @Index(name = "IDX_TESTRUN_PROJECT_ID_CREATION_TYPE_START_DATE_TIME_ID", columnList = "project_id,creation_type,start_date_time,id")})
+        @Index(name = "IDX_TESTRUN_PROJECT_ID_START_DATE_TIME_ID", columnList = "project_id,start_date_time,id")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -73,9 +72,6 @@ public class Testrun extends CommonEntity {
 
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
-
-    @Column(name = "creation_type", length = ColumnsDef.CODE, nullable = false)
-    private TestrunCreationTypeCode creationType;
 
     @Column(name = "days", length = ColumnsDef.CODE)
     private String days;

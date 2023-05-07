@@ -65,17 +65,6 @@ const MENUS = [
     project: true,
   },
   {
-    key: 'bugs',
-    to: '/bugs',
-    icon: <i className="fa-solid fa-viruses" />,
-    color: '#ff4935',
-    name: '버그',
-    admin: false,
-    pc: true,
-    login: true,
-    project: true,
-  },
-  {
     key: 'testcases',
     to: '/testcases',
     icon: <i className="fa-solid fa-vial-virus" />,
