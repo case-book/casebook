@@ -79,7 +79,7 @@ public class TestrunIteration extends CommonEntity {
 
     /* 월 단위 반복 룰 */
     @Column(name = "date")
-    private Integer date; // 첫번째 워킹 데이=-2, 매월 말일=-1, 매월 1일=1, 미설정=null
+    private Integer date; // 첫번째 워킹 데이=-2(미구현), 매월 말일=-1, 매월 1일=1, 미설정=null
 
     /* 월/주 단위 반복 룰 */
     @Column(name = "week")

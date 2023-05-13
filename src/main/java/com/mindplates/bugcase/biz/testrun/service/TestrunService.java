@@ -972,7 +972,9 @@ public class TestrunService {
         targetTestrunIteration.setTestcaseCount(testcaseCount);
 
         List<Long> currentFilteringUserIds = targetTestrunIteration.getCurrentFilteringUserIds();
-        currentFilteringUserIds.removeIf((userId) -> testrunIteration.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId))));
+        if (currentFilteringUserIds != null) {
+            currentFilteringUserIds.removeIf((userId) -> testrunIteration.getTestrunUsers().stream().noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId))));
+        }
 
         TestrunIteration result = testrunIterationRepository.save(targetTestrunIteration);
         return new TestrunIterationDTO(result);

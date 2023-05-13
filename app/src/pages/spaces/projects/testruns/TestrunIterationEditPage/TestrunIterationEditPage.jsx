@@ -322,7 +322,7 @@ function TestrunIterationEditPage({ type }) {
                     setTestrunIteration({
                       ...testrunIteration,
                       testrunIterationTimeType: val,
-                      date: -2,
+                      date: 1,
                       excludeHoliday: false,
                     });
                   }}

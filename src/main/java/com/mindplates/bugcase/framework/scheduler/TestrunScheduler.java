@@ -243,6 +243,7 @@ public class TestrunScheduler {
             if (!isFirst && needChange) {
                 if (isRandom) {
                     userIds.clear();
+                    testrunUserList.clear();;
                     while (userIds.size() < filteringUserCount) {
                         int userIndex = random.nextInt(testrunIterationDTO.getTestrunUsers().size());
                         if (userIds.stream().noneMatch(userId -> userId.equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
@@ -270,13 +271,9 @@ public class TestrunScheduler {
                     }
 
                     userIds.clear();
+                    testrunUserList.clear();;
                     while (userIds.size() < filteringUserCount) {
                         TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
-                        testrunUserList.add(TestrunUserDTO
-                                .builder()
-                                .testrun(testrun)
-                                .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                                .build());
                         userIds.add(testrunUser.getUser().getId());
 
                         currentIndex += 1;
@@ -414,6 +411,7 @@ public class TestrunScheduler {
             int currentMonth = zonedNow.getMonthValue();
             int currentWeek = zonedNow.get(weekOfMonth);
             int currentDay = zonedNow.getDayOfWeek().getValue();
+            int currentDate = zonedNow.getDayOfMonth();
 
             List<HolidayDTO> holidays = spaceDTO.getHolidays();
             String nowDay = zonedNow.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -423,6 +421,12 @@ public class TestrunScheduler {
             double nowDayOfMonth = zonedNow.getDayOfMonth();
             double weekTimes = Math.ceil(nowDayOfMonth / 7.0);
             int lastWeek = endDateOfMonth.get(weekOfMonth);
+            int lastDate = startDateOfMonth.lengthOfMonth() ;
+
+            // 월 단위 반복이고, -1인 경우인데, 마지막 일자랑 같지 않다면 스킵
+            if (TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType()) && testrunIterationDTO.getDate() == -1 && currentDate != lastDate) {
+                return;
+            }
 
             boolean isHoliday = holidays.stream().anyMatch((holidayDTO -> {
 
@@ -478,11 +482,11 @@ public class TestrunScheduler {
                 return;
             }
 
-            String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH"));
-            String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH"));
+            // String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
+            // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
-            // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
-            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) {
+            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
+            // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
             }

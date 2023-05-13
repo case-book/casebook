@@ -537,10 +537,12 @@ const TESTRUN_ITERATION_USER_FILTER_SELECT_RULE = [
 ];
 
 const TESTRUN_ITERATION_MONTHLY_DATES = [];
+/*
 TESTRUN_ITERATION_MONTHLY_DATES.push({
   key: -2,
   value: i18n.t('첫번째 워킹 데이'),
 });
+ */
 
 TESTRUN_ITERATION_MONTHLY_DATES.push({
   key: -1,
