@@ -6,7 +6,7 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { DURATIONS, ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import './TestrunInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
@@ -50,7 +50,6 @@ function TestrunInfoPage() {
     totalTestcaseCount: true,
     passedTestcaseCount: true,
     failedTestcaseCount: true,
-    creationType: 'CREATE',
     days: '1111100',
     excludeHoliday: false,
     startTime: (() => {
@@ -159,77 +158,15 @@ function TestrunInfoPage() {
             <Text>{testrun?.description}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('생성 타입')}</Label>
-            <Text>{t(testrun.creationType)}</Text>
+            <Label minWidth={labelMinWidth}>{t('테스트 기간')}</Label>
+            <Text>
+              <div className="testrun-range">
+                <div>{dateUtil.getDateString(testrun.startDateTime)}</div>
+                <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
+                <div>{dateUtil.getDateString(testrun.endDateTime)}</div>
+              </div>
+            </Text>
           </BlockRow>
-          {(testrun.creationType === 'RESERVE' || testrun.creationType === 'ITERATION') && (
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('생성 여부')}</Label>
-              <Text>
-                {testrun.creationType === 'RESERVE' && !testrun.reserveExpired && <span>{t('예약 중')}</span>}
-                {testrun.creationType === 'RESERVE' && testrun.reserveExpired && (
-                  <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.reserveResultId}/info`}>{t('생성 완료')}</Link>
-                )}
-                {testrun.creationType === 'ITERATION' && (
-                  <Tag className="tag" size="md" uppercase>
-                    {testrun.reserveExpired ? t('만료') : t('반복중')}
-                  </Tag>
-                )}
-              </Text>
-            </BlockRow>
-          )}
-          {(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('테스트 기간')}</Label>
-              <Text>
-                <div className="testrun-range">
-                  <div>{dateUtil.getDateString(testrun.startDateTime)}</div>
-                  <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
-                  <div>{dateUtil.getDateString(testrun.endDateTime)}</div>
-                </div>
-              </Text>
-            </BlockRow>
-          )}
-          {!(testrun.creationType === 'CREATE' || testrun.creationType === 'RESERVE') && (
-            <>
-              <BlockRow>
-                <Label minWidth={labelMinWidth}>{t('반복 기간')}</Label>
-                <Text>
-                  <div className="iteration-period">
-                    <div className="testrun-range">
-                      <div>{dateUtil.getDateString(testrun.startDateTime)}</div>
-                      <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
-                      <div>{dateUtil.getDateString(testrun.endDateTime)}</div>
-                    </div>
-                  </div>
-                </Text>
-              </BlockRow>
-              <BlockRow>
-                <Label minWidth={labelMinWidth} />
-                <div className="day-of-weeks">
-                  {[t('월'), t('화'), t('수'), t('목'), t('금'), t('토'), t('일')]
-                    .filter((day, jnx) => {
-                      return testrun.days[jnx] === '1' ? 'selected' : '';
-                    })
-                    .map(day => {
-                      return (
-                        <div key={day} className="day">
-                          <span>{day}</span>
-                        </div>
-                      );
-                    })}
-                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                  <div>{testrun.excludeHoliday ? t('휴일 제외') : t('휴일 포함')}</div>
-                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                  <div className="label">{t('시작 시간')}</div>
-                  <div>{dateUtil.getDateString(testrun.startTime, 'hoursMinutes')}</div>
-                  <Liner display="inline-block" width="1px" height="10px" color="light" margin="0 1rem" />
-                  <div className="label">{t('테스트 기간')}</div>
-                  <div>{DURATIONS.find(d => d.key === testrun.durationHours)?.value || testrun.durationHours}</div>
-                </div>
-              </BlockRow>
-            </>
-          )}
           <BlockRow>
             <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
               {t('자동 종료')}
@@ -262,12 +199,8 @@ function TestrunInfoPage() {
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
                     <Th align="left">{t('테스트케이스')}</Th>
-                    {testrun.creationType === 'CREATE' && (
-                      <>
-                        <Th align="left">{t('테스터')}</Th>
-                        <Th align="center">{t('테스트 결과')}</Th>
-                      </>
-                    )}
+                    <Th align="left">{t('테스터')}</Th>
+                    <Th align="center">{t('테스트 결과')}</Th>
                   </Tr>
                 </THead>
                 <Tbody>
@@ -304,16 +237,13 @@ function TestrunInfoPage() {
                                     <div>{testcase.name}</div>
                                   </div>
                                 </Td>
-                                {testrun.creationType === 'CREATE' && (
-                                  <>
-                                    <Td align="left">
-                                      <Tag>{tester?.name}</Tag>
-                                    </Td>
-                                    <Td align="center">
-                                      <Tag className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</Tag>
-                                    </Td>
-                                  </>
-                                )}
+
+                                <Td align="left">
+                                  <Tag>{tester?.name}</Tag>
+                                </Td>
+                                <Td align="center">
+                                  <Tag className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</Tag>
+                                </Td>
                               </Tr>
                             );
                           })}
@@ -334,12 +264,8 @@ function TestrunInfoPage() {
                           </div>
                         </Td>
                         <Td />
-                        {testrun.creationType === 'CREATE' && (
-                          <>
-                            <Td />
-                            <Td />
-                          </>
-                        )}
+                        <Td />
+                        <Td />
                       </Tr>
                     );
                   })}

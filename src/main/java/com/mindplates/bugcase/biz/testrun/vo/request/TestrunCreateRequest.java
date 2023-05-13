@@ -8,7 +8,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -26,7 +25,6 @@ public class TestrunCreateRequest {
     private boolean opened;
     private List<TestrunUserRequest> testrunUsers;
     private List<TestrunTestcaseGroupRequest> testcaseGroups;
-    private TestrunCreationTypeCode creationType;
     private String days;
     private boolean excludeHoliday;
     private LocalDateTime startTime;
@@ -43,7 +41,6 @@ public class TestrunCreateRequest {
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
                 .opened(opened)
-                .creationType(creationType)
                 .days(days)
                 .excludeHoliday(excludeHoliday)
                 .startTime(startTime.toLocalTime())
@@ -59,7 +56,12 @@ public class TestrunCreateRequest {
 
         if (testcaseGroups != null) {
             List<TestrunTestcaseGroupDTO> groups = testcaseGroups.stream().map((testrunTestcaseGroupRequest) -> {
-                TestrunTestcaseGroupDTO testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getId()).testrun(testrun).testcaseGroup(TestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getTestcaseGroupId()).build()).testrun(testrun).build();
+                TestrunTestcaseGroupDTO testrunTestcaseGroup = TestrunTestcaseGroupDTO
+                        .builder()
+                        .id(testrunTestcaseGroupRequest.getId())
+                        .testrun(testrun)
+                        .testcaseGroup(TestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getTestcaseGroupId()).build())
+                        .build();
 
                 if (testrunTestcaseGroupRequest.getTestcases() != null) {
                     List<TestrunTestcaseGroupTestcaseDTO> testcases = testrunTestcaseGroupRequest.getTestcases().stream().map((testrunTestcaseGroupTestcaseRequest) -> TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getId()).testrunTestcaseGroup(testrunTestcaseGroup).testcase(TestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getTestcaseId()).build()).build()).collect(Collectors.toList());

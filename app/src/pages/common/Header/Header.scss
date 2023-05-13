@@ -83,14 +83,14 @@
 
     ul {
       list-style: none;
-      margin: 0 0 1rem !important;
+      margin: 0 0 1rem;
       padding: 0;
       height: auto;
 
       > li {
         margin-bottom: 0.25rem;
-        display: block !important;
-        margin-left: 0 !important;
+        display: block;
+        margin-left: 0;
 
         .target-select {
           display: none;

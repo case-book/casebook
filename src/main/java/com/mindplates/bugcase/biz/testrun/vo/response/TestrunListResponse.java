@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +27,6 @@ public class TestrunListResponse {
     private int failedTestcaseCount;
     private int untestableTestcaseCount;
     private LocalDateTime closedDate;
-    private TestrunCreationTypeCode creationType;
     private String days;
     private Boolean excludeHoliday;
     private LocalTime startTime;
@@ -50,7 +48,6 @@ public class TestrunListResponse {
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
         this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
-        this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();
         this.excludeHoliday = testrun.getExcludeHoliday();
         this.startTime = testrun.getStartTime();

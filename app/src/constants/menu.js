@@ -65,17 +65,6 @@ const MENUS = [
     project: true,
   },
   {
-    key: 'bugs',
-    to: '/bugs',
-    icon: <i className="fa-solid fa-viruses" />,
-    color: '#ff4935',
-    name: '버그',
-    admin: false,
-    pc: true,
-    login: true,
-    project: true,
-  },
-  {
     key: 'testcases',
     to: '/testcases',
     icon: <i className="fa-solid fa-vial-virus" />,
@@ -97,6 +86,26 @@ const MENUS = [
     login: true,
     project: true,
     selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects\/[\dA-Z]+\/testruns\/*/],
+    list: [
+      {
+        key: 'testrun',
+        to: '',
+        name: '테스트런',
+        admin: true,
+      },
+      {
+        key: 'reservations',
+        to: '/reservations',
+        name: '예약 테스트런',
+        admin: true,
+      },
+      {
+        key: 'iterations',
+        to: '/iterations',
+        name: '반복 테스트런',
+        admin: true,
+      },
+    ],
   },
 
   {

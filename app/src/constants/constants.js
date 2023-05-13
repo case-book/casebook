@@ -506,6 +506,56 @@ const WORK_CODES = {
   'TESTRUN-SYNC': 'TESTRUN-SYNC',
 };
 
+const TESTRUN_ITERATION_USER_FILTER_TYPE_CODE = [
+  {
+    key: 'NONE',
+    value: i18n.t('필터 없음'),
+  },
+  {
+    key: 'TESTRUN',
+    value: i18n.t('테스트런별로'),
+  },
+  {
+    key: 'WEEKLY',
+    value: i18n.t('주별로'),
+  },
+  {
+    key: 'MONTHLY',
+    value: i18n.t('월별로'),
+  },
+];
+
+const TESTRUN_ITERATION_USER_FILTER_SELECT_RULE = [
+  {
+    key: 'RANDOM',
+    value: i18n.t('랜덤하게'),
+  },
+  {
+    key: 'SEQ',
+    value: i18n.t('순서대로'),
+  },
+];
+
+const TESTRUN_ITERATION_MONTHLY_DATES = [];
+/*
+TESTRUN_ITERATION_MONTHLY_DATES.push({
+  key: -2,
+  value: i18n.t('첫번째 워킹 데이'),
+});
+ */
+
+TESTRUN_ITERATION_MONTHLY_DATES.push({
+  key: -1,
+  value: i18n.t('마지막일'),
+});
+
+for (let i = 1; i <= 31; i += 1) {
+  TESTRUN_ITERATION_MONTHLY_DATES.push({
+    key: i,
+    value: i18n.t('@ 일', { days: i }),
+  });
+}
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -530,4 +580,7 @@ export {
   HOLIDAY_CONDITION_WEEK_LIST,
   HOLIDAY_CONDITION_DAY_LIST,
   WORK_CODES,
+  TESTRUN_ITERATION_USER_FILTER_TYPE_CODE,
+  TESTRUN_ITERATION_MONTHLY_DATES,
+  TESTRUN_ITERATION_USER_FILTER_SELECT_RULE,
 };

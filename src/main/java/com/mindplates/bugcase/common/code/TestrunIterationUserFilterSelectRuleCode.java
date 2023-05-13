@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum TestrunCreationTypeCode {
+public enum TestrunIterationUserFilterSelectRuleCode {
 
-    CREATE("CREATE"),
-    RESERVE("RESERVE"),
-    ITERATION("ITERATION");
+    RANDOM("RANDOM"),
+    SEQ("SEQ");
     private String code;
 
 }

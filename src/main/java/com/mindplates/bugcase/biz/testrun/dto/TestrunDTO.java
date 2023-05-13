@@ -3,7 +3,6 @@ package com.mindplates.bugcase.biz.testrun.dto;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
-import com.mindplates.bugcase.common.code.TestrunCreationTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +35,6 @@ public class TestrunDTO extends CommonDTO {
     private int failedTestcaseCount;
     private int untestableTestcaseCount;
     private LocalDateTime closedDate;
-    private TestrunCreationTypeCode creationType;
     private String days;
     private Boolean excludeHoliday;
     private LocalTime startTime;
@@ -67,7 +65,6 @@ public class TestrunDTO extends CommonDTO {
             this.project = ProjectDTO.builder().id(testrun.getProject().getId()).build();
         }
 
-        this.creationType = testrun.getCreationType();
         this.days = testrun.getDays();
         this.excludeHoliday = testrun.getExcludeHoliday();
         this.startTime = testrun.getStartTime();

@@ -3,9 +3,9 @@ import i18n from 'i18next';
 
 const TestrunService = {};
 
-TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, testrunCreationType, successHandler, failHandler, loading = true) => {
+TestrunService.selectProjectTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
   return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns?status=${option}&&testrunCreationType=${testrunCreationType}`,
+    `/api/${spaceCode}/projects/${projectId}/testruns`,
     null,
     res => {
       successHandler(res);
@@ -15,6 +15,36 @@ TestrunService.selectProjectTestrunList = (spaceCode, projectId, option, testrun
     null,
     loading,
     i18n.t('프로젝트의 테스트런 목록을 불러오고 있습니다.'),
+  );
+};
+
+TestrunService.selectProjectTestrunReservationList = (spaceCode, projectId, option, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/reservations?expired=${option}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('프로젝트의 예약 테스트런 목록을 불러오고 있습니다.'),
+  );
+};
+
+TestrunService.selectProjectTestrunIterationList = (spaceCode, projectId, option, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/iterations?expired=${option}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('프로젝트의 반복 테스트런 목록을 불러오고 있습니다.'),
   );
 };
 
@@ -57,10 +87,54 @@ TestrunService.createProjectTestrunInfo = (spaceCode, projectId, testrun, succes
   );
 };
 
+TestrunService.createProjectTestrunReservationInfo = (spaceCode, projectId, testrun, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testruns/reservations`,
+    testrun,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+TestrunService.createProjectTestrunIterationInfo = (spaceCode, projectId, testrunIteration, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testruns/iterations`,
+    testrunIteration,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 TestrunService.updateProjectTestrunInfo = (spaceCode, projectId, testrun, successHandler, failHandler) => {
   return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testruns`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`,
     testrun,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+TestrunService.updateProjectTestrunIterationInfo = (spaceCode, projectId, testrunIteration, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIteration.id}`,
+    testrunIteration,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+TestrunService.updateProjectTestrunReservationInfo = (spaceCode, projectId, testrunReservation, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservation.id}`,
+    testrunReservation,
     res => {
       successHandler(res);
     },
@@ -83,6 +157,36 @@ TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHand
   );
 };
 
+TestrunService.selectTestrunReservationInfo = (spaceCode, projectId, testrunReservationId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('테스트런 상세 정보를 불러오고 있습니다.'),
+  );
+};
+
+TestrunService.selectTestrunIterationInfo = (spaceCode, projectId, testrunIterationId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('반복 테스트런 상세 정보를 불러오고 있습니다.'),
+  );
+};
+
 TestrunService.selectTestrunTestcaseGroupTestcase = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}`,
@@ -100,6 +204,34 @@ TestrunService.selectTestrunTestcaseGroupTestcase = (spaceCode, projectId, testr
 TestrunService.deleteTestrunInfo = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
   return request.del(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.deleteTestrunIterationInfo = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.deleteTestrunReservationInfo = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunId}`,
     null,
     res => {
       successHandler(res);

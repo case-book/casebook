@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, Radio, SeqId, Tag, Title } from '@/components';
+import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import TestrunService from '@/services/TestrunService';
 import dateUtil from '@/utils/dateUtil';
 import moment from 'moment';
-import useQueryString from '@/hooks/useQueryString';
-import './TestrunListPage.scss';
-import ReserveTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/ReserveTestrunList';
-import IterationTestrunList from '@/pages/spaces/projects/testruns/TestrunListPage/IterationTestrunList';
 import { ITEM_TYPE } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
+import './TestrunListPage.scss';
 
 function TestrunListPage() {
   const { t } = useTranslation();
@@ -22,9 +19,6 @@ function TestrunListPage() {
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
   const [testruns, setTestruns] = useState([]);
-  const [status, setStatus] = useState('OPENED');
-  const { query, setQuery } = useQueryString();
-  const { type = 'CREATE' } = query;
 
   const getGraphData = testrun => {
     const list = [];
@@ -51,40 +45,32 @@ function TestrunListPage() {
   };
 
   useEffect(() => {
-    if (type === 'CREATE') {
-      TestrunService.selectProjectTestrunList(spaceCode, projectId, status, 'CREATE', list => {
-        setTestruns(
-          list.map(testrun => {
-            return {
-              ...testrun,
-              data: getGraphData(testrun),
-            };
-          }),
-        );
-      });
-    } else {
-      TestrunService.selectProjectTestrunList(spaceCode, projectId, '', type, list => {
-        setTestruns(list);
-      });
-    }
-  }, [type, spaceCode, status]);
+    TestrunService.selectProjectTestrunList(spaceCode, projectId, list => {
+      setTestruns(
+        list.map(testrun => {
+          return {
+            ...testrun,
+            data: getGraphData(testrun),
+          };
+        }),
+      );
+    });
+  }, [spaceCode]);
 
   const onMessage = info => {
     const { data } = info;
 
     switch (data.type) {
       case 'TESTRUN-CREATED': {
-        if (type === 'CREATE') {
-          const createdTestun = data.data.testrun;
-          const nextTestruns = testruns.slice(0);
-          const nextTestrun = nextTestruns.find(d => d.id === createdTestun.id);
-          if (!nextTestrun) {
-            nextTestruns.push({
-              ...createdTestun,
-              data: getGraphData(createdTestun),
-            });
-            setTestruns(nextTestruns);
-          }
+        const createdTestun = data.data.testrun;
+        const nextTestruns = testruns.slice(0);
+        const nextTestrun = nextTestruns.find(d => d.id === createdTestun.id);
+        if (!nextTestrun) {
+          nextTestruns.push({
+            ...createdTestun,
+            data: getGraphData(createdTestun),
+          });
+          setTestruns(nextTestruns);
         }
 
         break;
@@ -128,52 +114,14 @@ function TestrunListPage() {
     };
   }, [user?.id, projectId, testruns]);
 
-  const onChangeSearchTestrunCreationType = value => {
-    if (value) {
-      setStatus('OPENED');
-    }
-    setQuery({ type: value });
-  };
-
   return (
-    <Page className="testrun-list-page-wrapper" list={type === 'CREATE'}>
+    <Page className="testrun-list-page-wrapper" list={testruns?.length > 0}>
       <PageTitle
         className="page-title"
         links={[
           <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/new`}>
             <i className="fa-solid fa-plus" /> {t('테스트런')}
           </Link>,
-          <div className="options">
-            <div>
-              <Radio
-                size="sm"
-                value="CREATE"
-                checked={type === 'CREATE'}
-                onChange={val => {
-                  onChangeSearchTestrunCreationType(val);
-                }}
-                label={t('테스트런')}
-              />
-              <Radio
-                size="sm"
-                value="RESERVE"
-                checked={type === 'RESERVE'}
-                onChange={val => {
-                  onChangeSearchTestrunCreationType(val);
-                }}
-                label={t('예약된 테스트런')}
-              />
-              <Radio
-                size="sm"
-                value="ITERATION"
-                checked={type === 'ITERATION'}
-                onChange={val => {
-                  onChangeSearchTestrunCreationType(val);
-                }}
-                label={t('반복 설정 테스트런')}
-              />
-            </div>
-          </div>,
         ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
@@ -183,16 +131,14 @@ function TestrunListPage() {
       </PageTitle>
       <PageContent className="page-content">
         {testruns?.length <= 0 && (
-          <div className="no-project">
+          <div className="empty">
             <div>
-              {type === 'RESERVE' && <div>{t('예약된 테스트런이 없습니다.')}</div>}
-              {type === 'ITERATION' && <div>{t('반복 설정된 테스트런이 없습니다.')}</div>}
-              {!(type === 'RESERVE' || type === 'ITERATION') && <div>{t('조회된 테스트런이 없습니다.')}</div>}
+              <div>{t('실행 중인 테스트런이 없습니다.')}</div>
               <div>
                 <Button
                   outline
                   onClick={() => {
-                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new?creationType=${type}`);
+                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
                   }}
                 >
                   <i className="fa-solid fa-plus" /> {t('테스트런')}
@@ -201,19 +147,8 @@ function TestrunListPage() {
             </div>
           </div>
         )}
-        {type === 'RESERVE' && testruns?.length > 0 && (
-          <>
-            <Title border={false}>{t('예약 테스트런 리스트')}</Title>
-            <ReserveTestrunList projectId={projectId} spaceCode={spaceCode} testruns={testruns} />
-          </>
-        )}
-        {type === 'ITERATION' && testruns?.length > 0 && (
-          <>
-            <Title border={false}>{t('반복 테스트런 리스트')}</Title>
-            <IterationTestrunList projectId={projectId} spaceCode={spaceCode} testruns={testruns} />
-          </>
-        )}
-        {type === 'CREATE' && testruns?.length > 0 && (
+
+        {testruns?.length > 0 && (
           <ul className="testrun-cards">
             {testruns.map(testrun => {
               const progressPercentage = Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
