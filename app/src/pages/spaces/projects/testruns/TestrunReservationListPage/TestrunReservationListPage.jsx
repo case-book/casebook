@@ -61,7 +61,7 @@ function TestrunReservationListPage() {
       </PageTitle>
       <PageContent className="page-content">
         {testrunReservations?.length <= 0 && (
-          <div className="no-project">
+          <div className="empty">
             <div>
               <div>{t('예약된 테스트런이 없습니다.')}</div>
               <div>

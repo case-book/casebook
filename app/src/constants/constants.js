@@ -546,7 +546,7 @@ TESTRUN_ITERATION_MONTHLY_DATES.push({
 
 TESTRUN_ITERATION_MONTHLY_DATES.push({
   key: -1,
-  value: i18n.t('말일'),
+  value: i18n.t('마지막일'),
 });
 
 for (let i = 1; i <= 31; i += 1) {

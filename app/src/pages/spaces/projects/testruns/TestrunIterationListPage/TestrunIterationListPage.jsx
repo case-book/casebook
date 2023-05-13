@@ -26,13 +26,12 @@ function TestrunIterationListPage() {
 
   useEffect(() => {
     TestrunService.selectProjectTestrunIterationList(spaceCode, projectId, expired, list => {
-      console.log(list);
       setTestrunIterations(list);
     });
   }, [expired, projectId, spaceCode]);
 
   return (
-    <Page className="testrun-reservation-list-page-wrapper">
+    <Page className="testrun-iteration-list-page-wrapper">
       <PageTitle
         className="page-title"
         links={[
@@ -70,9 +69,9 @@ function TestrunIterationListPage() {
       </PageTitle>
       <PageContent className="page-content">
         {testrunIterations?.length <= 0 && (
-          <div className="no-project">
+          <div className="empty">
             <div>
-              <div>{t('반복된 테스트런이 없습니다.')}</div>
+              <div>{t('반복 중인 테스트런이 없습니다.')}</div>
               <div>
                 <Button
                   outline
@@ -89,7 +88,7 @@ function TestrunIterationListPage() {
         {testrunIterations?.length > 0 && (
           <>
             <Title border={false}>{t('반복 테스트런 리스트')}</Title>
-            <div className="testrun-reservation-list">
+            <div className="testrun-iteration-list">
               <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
                 <THead>
                   <Tr>

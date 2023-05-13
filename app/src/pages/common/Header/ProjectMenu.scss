@@ -11,22 +11,37 @@
     white-space: nowrap;
     list-style: none;
     margin: 0;
-    top: 100%;
+    top: calc(100% - 20px);
     left: -10px;
     background-color: white;
     padding: 10px;
     display: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 
     li {
       cursor: pointer;
       font-size: 14px;
-      font-weight: normal !important;
       margin-bottom: 5px;
+      > a {
+        font-weight: normal !important;
+        color: var(--text-color);
+      }
       &:last-child {
         margin-bottom: 0;
       }
       &:hover {
         text-decoration: underline;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      position: static;
+      display: block;
+      border: none;
+      margin-top: 0.25rem !important;
+
+      li {
+        margin-left: 0.5rem !important;
       }
     }
   }

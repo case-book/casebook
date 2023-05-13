@@ -1,4 +1,27 @@
 .testrun-reservation-list-page-wrapper {
+  display: flex;
+
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  .empty {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    > div {
+      align-self: center;
+      text-align: center;
+
+      > div {
+        &:last-child {
+          margin-top: 2rem;
+        }
+      }
+    }
+  }
+
   .testrun-reservation-list {
     width: 100%;
     overflow: auto;
