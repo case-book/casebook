@@ -12,6 +12,7 @@ import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
@@ -39,13 +40,15 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectFileService projectFileService;
     private final TestrunService testrunService;
+
+    private final TestcaseService testcaseService;
     private final TestcaseItemRepository testcaseItemRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
     private final MappingUtil mappingUtil;
 
-    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository, ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil) {
+    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository, ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
@@ -55,36 +58,40 @@ public class ProjectService {
         this.projectTokenRepository = projectTokenRepository;
         this.projectUserRepository = projectUserRepository;
         this.mappingUtil = mappingUtil;
+        this.testcaseService = testcaseService;
     }
 
     public List<ProjectDTO> selectSpaceProjectList(String spaceCode) {
         List<Project> projectList = projectRepository.findAllBySpaceCode(spaceCode);
-        return projectList.stream().map((project -> {
+        return projectList.parallelStream().map((project -> {
             Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId());
-            return new ProjectDTO(project, testrunCount);
+            Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceCode, project.getId());
+            return new ProjectDTO(project, testrunCount, testcaseCount);
         })).collect(Collectors.toList());
     }
 
     public List<ProjectDTO> selectSpaceProjectList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
-        return projectList.stream().map((project -> {
+        return projectList.parallelStream().map((project -> {
             Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceId, project.getId());
-            return new ProjectDTO(project, testrunCount);
+            Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceId, project.getId());
+            return new ProjectDTO(project, testrunCount, testcaseCount);
         })).collect(Collectors.toList());
     }
 
     public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
-        return projectList.stream().map((project -> {
+        return projectList.parallelStream().map((project -> {
             Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId());
-            return new ProjectDTO(project, testrunCount);
+            Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceCode, project.getId());
+            return new ProjectDTO(project, testrunCount, testcaseCount);
         })).collect(Collectors.toList());
     }
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public ProjectDTO selectProjectInfo(String spaceCode, Long projectId) {
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new ProjectDTO(project);
+        return new ProjectDTO(project, true);
     }
 
     public Long selectProjectId(String token) {
@@ -92,14 +99,7 @@ public class ProjectService {
         return projectToken.getProject().getId();
     }
 
-    public ProjectDTO selectByName(String spaceCode, String name) {
-        Project project = projectRepository.findBySpaceCodeAndName(spaceCode, name).orElse(null);
-        if (project != null) {
-            return new ProjectDTO(project);
-        }
 
-        return null;
-    }
 
     public boolean existByName(String spaceCode, String name) {
         Long count = projectRepository.countBySpaceCodeAndName(spaceCode, name);
@@ -134,7 +134,7 @@ public class ProjectService {
         // 기본 어드민 유저로 사용자 추가
         ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
         projectInfo.setUsers(Collections.singletonList(projectUser));
-        return new ProjectDTO(projectRepository.save(mappingUtil.convert(projectInfo, Project.class)));
+        return new ProjectDTO(projectRepository.save(mappingUtil.convert(projectInfo, Project.class)), true);
     }
 
     @Transactional
@@ -219,7 +219,7 @@ public class ProjectService {
 
         projectInfo.setUsers(updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D")).collect(Collectors.toList()));
         Project updateResult = mappingUtil.convert(projectInfo, Project.class);
-        return new ProjectDTO(projectRepository.save(updateResult));
+        return new ProjectDTO(projectRepository.save(updateResult), true);
 
     }
 

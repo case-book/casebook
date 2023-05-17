@@ -298,7 +298,9 @@ public class TestrunService {
     }
 
     private boolean testcaseResultUpdater(Testrun testrun, TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, TestResultCode testResultCode) {
-        if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
+        if (testrunTestcaseGroupTestcase.getTestResult() == null) {
+
+        } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
             testrun.setPassedTestcaseCount(testrun.getPassedTestcaseCount() - 1);
         } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
             testrun.setFailedTestcaseCount(testrun.getFailedTestcaseCount() - 1);

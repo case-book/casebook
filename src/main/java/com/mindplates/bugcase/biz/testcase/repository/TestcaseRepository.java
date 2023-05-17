@@ -24,6 +24,11 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
     Optional<Testcase> findByIdAndProjectId(Long id, Long projectId);
 
+    Long countByProjectSpaceCodeAndProjectId(String spaceCode, Long projectId);
+
+    Long countByProjectSpaceIdAndProjectId(Long spaceId, Long projectId);
+
+
 
 }
 

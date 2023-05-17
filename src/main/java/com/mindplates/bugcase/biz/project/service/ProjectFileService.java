@@ -47,13 +47,13 @@ public class ProjectFileService {
     }
 
     public ProjectFileDTO createProjectFile(ProjectFileDTO createProjectFileInfo) {
-        ProjectFile projectFileInfo = projectFileRepository.save(mappingUtil.convert(createProjectFileInfo, ProjectFile.class));
-        return mappingUtil.convert(projectFileInfo, ProjectFileDTO.class);
+        ProjectFile projectFile = projectFileRepository.save(mappingUtil.convert(createProjectFileInfo, ProjectFile.class));
+        return new ProjectFileDTO(projectFile);
     }
 
     public ProjectFileDTO selectProjectFile(Long projectId, Long imageId, String uuid) {
         ProjectFile projectFile = projectFileRepository.findByIdAndProjectIdAndUuid(imageId, projectId, uuid).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(projectFile, ProjectFileDTO.class);
+        return new ProjectFileDTO(projectFile);
     }
 
     public void deleteProjectFile(Long projectId) {

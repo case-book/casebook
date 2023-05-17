@@ -72,7 +72,7 @@ function ProjectListPage() {
                         <div>
                           <div className="description">{project.description}</div>
                           <div className="count">
-                            <div>
+                            <div className="bug-info">
                               <div
                                 className="bug-count"
                                 onClick={() => {

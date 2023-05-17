@@ -33,17 +33,19 @@ public class ProjectDTO extends CommonDTO {
     private Integer testcaseSeq = 0;
     private Integer testrunSeq = 0;
     private Long testrunCount = 0L;
+
+    private Long testcaseCount = 0L;
     private String slackUrl;
     private boolean enableTestrunAlarm;
 
-    public ProjectDTO(Project project) {
+    public ProjectDTO(Project project, boolean detail) {
         this.id = project.getId();
         this.name = project.getName();
         this.description = project.getDescription();
         this.activated = project.isActivated();
         this.token = project.getToken();
         this.creationDate = project.getCreationDate();
-        if (project.getSpace() != null) {
+        if (detail && project.getSpace() != null) {
             this.space = SpaceDTO.builder().id(project.getSpace().getId()).name(project.getSpace().getName()).build();
         }
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
@@ -51,27 +53,28 @@ public class ProjectDTO extends CommonDTO {
         this.testrunSeq = project.getTestrunSeq();
         this.slackUrl = project.getSlackUrl();
         this.enableTestrunAlarm = project.isEnableTestrunAlarm();
-        if (project.getUsers() != null) {
+        if (detail && project.getUsers() != null) {
             this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
         }
 
-        if (project.getTestcaseTemplates() != null) {
+        if (detail && project.getTestcaseTemplates() != null) {
             this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateDTO::new).collect(Collectors.toList());
         }
 
-        if (project.getTestcaseGroups() != null) {
+        if (detail && project.getTestcaseGroups() != null) {
             this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupDTO::new).collect(Collectors.toList());
         }
 
-        if (project.getApplicants() != null) {
+        if (detail && project.getApplicants() != null) {
             this.applicants = project.getApplicants().stream().map(ProjectApplicantDTO::new).collect(Collectors.toList());
         }
 
     }
 
-    public ProjectDTO(Project project, Long testrunCount) {
-        this(project);
+    public ProjectDTO(Project project, Long testrunCount, Long testcaseCount) {
+        this(project, false);
         this.testrunCount = testrunCount;
+        this.testcaseCount = testcaseCount;
     }
 
 }
