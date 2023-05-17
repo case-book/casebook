@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    Optional<Project> findBySpaceCodeAndName(String spaceCode, String name);
+
 
     Long countBySpaceCodeAndName(String spaceCode, String name);
 

@@ -23,7 +23,7 @@ public class ProjectTokenDTO extends CommonEntity {
 
     public ProjectTokenDTO(ProjectToken projectToken) {
         this.id = projectToken.getId();
-        this.project = new ProjectDTO(projectToken.getProject());
+        this.project = ProjectDTO.builder().id(projectToken.getId()).build();
         this.name = projectToken.getName();
         this.token = projectToken.getToken();
         this.enabled = projectToken.isEnabled();

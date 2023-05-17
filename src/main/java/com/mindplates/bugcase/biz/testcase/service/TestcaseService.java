@@ -398,5 +398,13 @@ public class TestcaseService {
 
     }
 
+    public Long selectProjectTestcaseCount(String spaceCode, long projectId) {
+        return testcaseRepository.countByProjectSpaceCodeAndProjectId(spaceCode, projectId);
+    }
+
+    public Long selectProjectTestcaseCount(Long spaceId, long projectId) {
+        return testcaseRepository.countByProjectSpaceIdAndProjectId(spaceId, projectId);
+    }
+
 
 }
