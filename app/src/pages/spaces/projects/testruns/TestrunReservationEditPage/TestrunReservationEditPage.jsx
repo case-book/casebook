@@ -61,6 +61,8 @@ function TestrunReservationEditPage({ type }) {
     })(),
     expired: false,
     deadlineClose: true,
+    selectCreatedTestcase: false,
+    selectUpdatedTestcase: false,
   });
 
   const isEdit = useMemo(() => {
@@ -130,15 +132,8 @@ function TestrunReservationEditPage({ type }) {
   const onSubmit = e => {
     e.preventDefault();
 
-    console.log(testrunReservation);
-
     if (testrunReservation.startDateTime && testrunReservation.endDateTime && testrunReservation.startDateTime > testrunReservation.endDateTime) {
       dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트 기간 오류', '테스트 종료 일시가 테스트 시작 일시보다 빠릅니다.');
-      return;
-    }
-
-    if (!testrunReservation.testcaseGroups || testrunReservation.testcaseGroups?.length < 1) {
-      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트케이스 없음', '테스트런에 포함된 테스트케이스가 없습니다.');
       return;
     }
 
@@ -263,7 +258,6 @@ function TestrunReservationEditPage({ type }) {
                   }}
                 />
               </BlockRow>
-
               <BlockRow>
                 <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
                   {t('자동 종료')}
@@ -372,6 +366,38 @@ function TestrunReservationEditPage({ type }) {
                     })}
                   </ul>
                 )}
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('예약 테스트런을 만든 시점부터, 예약 테스트런에 생성될때까지 추가된 테스트케이스를 자동으로 추가합니다.')}>
+                  {t('자동 추가')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  label={t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가')}
+                  value={testrunReservation.selectCreatedTestcase}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      selectCreatedTestcase: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} />
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  label={t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가')}
+                  value={testrunReservation.selectUpdatedTestcase}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      selectUpdatedTestcase: val,
+                    })
+                  }
+                />
               </BlockRow>
               {isEdit && (
                 <BlockRow>

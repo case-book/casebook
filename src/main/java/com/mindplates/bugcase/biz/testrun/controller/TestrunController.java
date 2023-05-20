@@ -119,17 +119,6 @@ public class TestrunController {
     @PutMapping("/reservations/{testrunId}")
     public ResponseEntity<HttpStatus> updateTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunReservationRequest testrunReservationRequest) {
         TestrunReservationDTO testrunReservation = testrunReservationRequest.buildEntity();
-
-
-        int testcaseCount = testrunReservation.getTestcaseGroups()
-                .stream()
-                .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
-
-        if (testcaseCount < 1) {
-            throw new ServiceException("testrun.reservation.testcase.empty");
-        }
-
-
         testrunService.updateTestrunReservationInfo(spaceCode, testrunReservation);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -247,10 +236,7 @@ public class TestrunController {
         testrunResultChangeData.addData("testrunStatus", testrunStatusDTO);
         messageSendService.sendTo("projects/" + projectId, testrunResultChangeData);
 
-        if (testrunStatusDTO.isDone()) {
-            return true;
-        }
-        return false;
+        return testrunStatusDTO.isDone();
     }
 
     @Operation(description = "테스트런 테스트케이스 테스터 변경")
@@ -277,7 +263,6 @@ public class TestrunController {
     @Operation(description = "사용자에게 할당된 테스트런 목록 조회")
     @GetMapping("/assigned")
     public List<TestrunResponse> selectUserAssignedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
-
         List<TestrunDTO> testruns = testrunService.selectUserAssignedTestrunList(spaceCode, projectId, SessionUtil.getUserId());
         return testruns.stream().map(TestrunResponse::new).collect(Collectors.toList());
     }

@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
+import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -26,7 +27,7 @@ public class TestrunReservation extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
     private Project project;
 
@@ -65,5 +66,13 @@ public class TestrunReservation extends CommonEntity {
     @OneToOne
     @JoinColumn(name = "testrun_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_RESERVATION__TESTRUN"))
     private Testrun testrun;
+
+    @Comment("생성일자부터 예약된 시간까지 생성된 테스트케이스를 자동으로 추가하는지의 여부")
+    @Column(name = "select_created_testcase")
+    private Boolean selectCreatedTestcase;
+
+    @Comment("생성일자부터 예약된 시간까지 수정된 테스트케이스를 자동으로 추가하는지의 여부")
+    @Column(name = "select_updated_testcase")
+    private Boolean selectUpdatedTestcase;
 
 }

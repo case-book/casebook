@@ -131,7 +131,7 @@ public class TestrunService {
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
         List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, start, end);
-        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+        return list.stream().map(testrun -> new TestrunDTO(testrun, false)).collect(Collectors.toList());
     }
 
     public TestrunDTO selectProjectTestrunInfo(long testrunId) {
@@ -855,24 +855,27 @@ public class TestrunService {
         }
 
         // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
-        testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).forEach(testrunTestcaseGroupDTO -> {
-            TestrunTestcaseGroup targetTestcaseGroup = targetTestrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testrunTestcaseGroupDTO.getId())).findAny().orElse(null);
+        if (testrunReservation.getTestcaseGroups() != null) {
 
-            if (targetTestcaseGroup != null && testrunTestcaseGroupDTO.getTestcases() != null) {
-                testrunTestcaseGroupDTO.getTestcases().stream().filter(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId() == null).forEach(testrunTestcaseGroupTestcaseDTO -> {
-                    TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = mappingUtil.convert(testrunTestcaseGroupTestcaseDTO, TestrunTestcaseGroupTestcase.class);
-                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
-                    targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
-                });
-            }
-        });
+            testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null).forEach(testrunTestcaseGroupDTO -> {
+                TestrunTestcaseGroup targetTestcaseGroup = targetTestrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testrunTestcaseGroupDTO.getId())).findAny().orElse(null);
 
-        // 추가된 테스트런 테스트케이스 그룹 추가
-        testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() == null).forEach(testrunTestcaseGroupDTO -> {
-            TestrunTestcaseGroup testrunTestcaseGroup = mappingUtil.convert(testrunTestcaseGroupDTO, TestrunTestcaseGroup.class);
-            testrunTestcaseGroup.setTestrunReservation(targetTestrunReservation);
-            targetTestrunReservation.getTestcaseGroups().add(testrunTestcaseGroup);
-        });
+                if (targetTestcaseGroup != null && testrunTestcaseGroupDTO.getTestcases() != null) {
+                    testrunTestcaseGroupDTO.getTestcases().stream().filter(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId() == null).forEach(testrunTestcaseGroupTestcaseDTO -> {
+                        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = mappingUtil.convert(testrunTestcaseGroupTestcaseDTO, TestrunTestcaseGroupTestcase.class);
+                        testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
+                        targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+                    });
+                }
+            });
+
+            // 추가된 테스트런 테스트케이스 그룹 추가
+            testrunReservation.getTestcaseGroups().stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() == null).forEach(testrunTestcaseGroupDTO -> {
+                TestrunTestcaseGroup testrunTestcaseGroup = mappingUtil.convert(testrunTestcaseGroupDTO, TestrunTestcaseGroup.class);
+                testrunTestcaseGroup.setTestrunReservation(targetTestrunReservation);
+                targetTestrunReservation.getTestcaseGroups().add(testrunTestcaseGroup);
+            });
+        }
 
         int testcaseGroupCount = targetTestrunReservation.getTestcaseGroups().size();
         int testcaseCount = targetTestrunReservation.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
@@ -1012,15 +1015,27 @@ public class TestrunService {
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
         List<Testrun> testruns = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true);
 
-        List<Testrun> list = testruns.stream().filter((testrun -> testrun.getTestcaseGroups().stream().anyMatch((testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))))))).map((testrun -> {
-            List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {
-                List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
-                testrunTestcaseGroup.setTestcases(userTestcaseList);
-                return testrunTestcaseGroup;
-            })).collect(Collectors.toList());
-            testrun.setTestcaseGroups(userTestcaseGroupList);
-            return testrun;
-        })).collect(Collectors.toList());
+        List<Testrun> list = testruns.stream()
+                .filter(
+                        (testrun -> testrun.getTestcaseGroups()
+                                .stream()
+                                .anyMatch(
+                                        (testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
+                                                .stream()
+                                                .anyMatch(
+                                                        (testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))
+                                                ))
+                                ))
+                )
+                .map((testrun -> {
+                    List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {
+                        List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
+                        testrunTestcaseGroup.setTestcases(userTestcaseList);
+                        return testrunTestcaseGroup;
+                    })).collect(Collectors.toList());
+                    testrun.setTestcaseGroups(userTestcaseGroupList);
+                    return testrun;
+                })).collect(Collectors.toList());
 
         return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
         // return mappingUtil.convert(list, TestrunDTO.class);
@@ -1078,5 +1093,11 @@ public class TestrunService {
     public void deleteTestrunTestcaseGroup(long testcaseGroupId) {
         testrunTestcaseGroupRepository.deleteByTestcaseGroupId(testcaseGroupId);
     }
+
+    public List<Long> selectTestcaseIncludeTestrunList(String projectToken, Long testcaseSeqNumber) {
+        Long projectId = projectService.selectProjectId(projectToken);
+        return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
+    }
+
 
 }

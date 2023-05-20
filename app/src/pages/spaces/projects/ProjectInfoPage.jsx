@@ -200,10 +200,6 @@ function ProjectInfoPage() {
               <Label>{t('활성화')}</Label>
               <Text>{project?.activated ? 'Y' : 'N'}</Text>
             </BlockRow>
-            <BlockRow>
-              <Label>{t('토큰')}</Label>
-              <Text>{project?.token}</Text>
-            </BlockRow>
           </Block>
           <Title
             control={

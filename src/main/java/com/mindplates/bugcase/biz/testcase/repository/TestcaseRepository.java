@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,10 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     Long countByProjectSpaceCodeAndProjectId(String spaceCode, Long projectId);
 
     Long countByProjectSpaceIdAndProjectId(Long spaceId, Long projectId);
+
+    List<Testcase> findAllByCreationDateBetween(LocalDateTime from, LocalDateTime to);
+
+    List<Testcase> findAllByLastUpdateDateBetween(LocalDateTime from, LocalDateTime to);
 
 
 

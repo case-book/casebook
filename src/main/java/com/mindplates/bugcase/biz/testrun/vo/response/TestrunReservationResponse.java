@@ -29,6 +29,8 @@ public class TestrunReservationResponse {
     private String projectName;
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
+    private Boolean selectCreatedTestcase;
+    private Boolean selectUpdatedTestcase;
 
     public TestrunReservationResponse(TestrunReservationDTO testrunReservation) {
         this.id = testrunReservation.getId();
@@ -41,6 +43,8 @@ public class TestrunReservationResponse {
         this.testcaseGroupCount = testrunReservation.getTestcaseGroupCount();
         this.testcaseCount = testrunReservation.getTestcaseCount();
         this.projectName = testrunReservation.getProject().getName();
+        this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();
+        this.selectUpdatedTestcase = testrunReservation.getSelectUpdatedTestcase();
         if (testrunReservation.getTestrun() != null) {
             this.testrunId = testrunReservation.getTestrun().getId();
         }

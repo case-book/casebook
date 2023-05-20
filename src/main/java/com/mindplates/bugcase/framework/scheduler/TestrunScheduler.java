@@ -4,10 +4,15 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.common.code.*;
+import com.mindplates.bugcase.common.code.HolidayTypeCode;
+import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
+import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
+import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,10 +25,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -32,9 +35,11 @@ public class TestrunScheduler {
 
     private final TestrunService testrunService;
 
+    private final TestcaseService testcaseService;
+
     private final SpaceService spaceService;
 
-    private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO) {
+    private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
         TestrunDTO testrun = TestrunDTO
                 .builder()
                 .name(testrunReservationDTO.getName())
@@ -59,10 +64,13 @@ public class TestrunScheduler {
         testrun.setTestrunUsers(testrunUserList);
 
 
+        Map<Long, ArrayList<Long>> testcaseGroupIdMap = new HashMap<>();
+
         List<TestrunTestcaseGroupDTO> testcaseGroups = new ArrayList<>();
 
         if (testrunReservationDTO.getTestcaseGroups() != null) {
             testrunReservationDTO.getTestcaseGroups().forEach((testrunTestcaseGroupDTO -> {
+                ArrayList<Long> testcaseIds = new ArrayList<>();
                 TestrunTestcaseGroupDTO testcaseGroup = TestrunTestcaseGroupDTO
                         .builder()
                         .testrun(testrun)
@@ -77,12 +85,85 @@ public class TestrunScheduler {
                             .testcase(testcase.getTestcase())
                             .testrunTestcaseGroup(testcaseGroup)
                             .build());
+                    testcaseIds.add(testcase.getTestcase().getId());
                 }
 
                 testcaseGroup.setTestcases(testrunTestcaseGroupTestcaseList);
                 testcaseGroups.add(testcaseGroup);
+                testcaseGroupIdMap.put(testcaseGroup.getTestcaseGroup().getId(), testcaseIds);
+
             }));
         }
+
+        List<TestcaseDTO> conditionalTestcaseList = new ArrayList<>();
+        Map<Long, Boolean> conditionalTestcaseIdMap = new HashMap<>();
+        if (testrunReservationDTO.getSelectCreatedTestcase() != null && testrunReservationDTO.getSelectCreatedTestcase()) {
+            List<TestcaseDTO> createdTestcaseList = testcaseService.selectTestcaseItemListByCreationTime(testrunReservationDTO.getCreationDate(), now);
+            for (TestcaseDTO testcaseDTO : createdTestcaseList) {
+                conditionalTestcaseList.add(testcaseDTO);
+                conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
+            }
+        }
+
+        if (testrunReservationDTO.getSelectUpdatedTestcase() != null && testrunReservationDTO.getSelectUpdatedTestcase()) {
+            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByLastUpdateDate(testrunReservationDTO.getCreationDate(), now);
+
+            for (TestcaseDTO testcaseDTO : updateDateTestcaseList) {
+                if (!conditionalTestcaseIdMap.containsKey(testcaseDTO.getId())) {
+                    conditionalTestcaseList.add(testcaseDTO);
+                    conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
+                }
+            }
+        }
+
+
+        if (conditionalTestcaseList.size() > 0) {
+
+            conditionalTestcaseList.forEach(testcaseDTO -> {
+                Long testcaseGroupId = testcaseDTO.getTestcaseGroup().getId();
+                Long testcaseId = testcaseDTO.getId();
+                if (!testcaseGroupIdMap.containsKey(testcaseGroupId)) {
+                    TestrunTestcaseGroupDTO testrunTestcaseGroupDTO = TestrunTestcaseGroupDTO.builder()
+                            .testrun(testrun)
+                            .testcaseGroup(testcaseDTO.getTestcaseGroup())
+                            .testcases(new ArrayList<>())
+                            .build();
+                    testcaseGroups.add(testrunTestcaseGroupDTO);
+                    testcaseGroupIdMap.put(testcaseGroupId, new ArrayList<>());
+                }
+
+                ArrayList<Long> testcaseIds = testcaseGroupIdMap.get(testcaseGroupId);
+                if (!testcaseIds.contains(testcaseId)) {
+                    TestrunTestcaseGroupDTO testcaseGroup = testcaseGroups.stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getTestcaseGroup().getId().equals(testcaseGroupId)).findFirst().orElse(null);
+                    if (testcaseGroup != null) {
+
+                        TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO = TestrunTestcaseGroupTestcaseDTO
+                                .builder()
+                                .testrunTestcaseGroup(testcaseGroup)
+                                .testcase(testcaseDTO)
+                                .build();
+
+                        testrunTestcaseGroupTestcaseDTO
+                                .setTestcaseItems(testcaseDTO.getTestcaseItems()
+                                        .stream()
+                                        .map(testcaseItemDTO -> {
+                                            return TestrunTestcaseGroupTestcaseItemDTO
+                                                    .builder()
+                                                    .testcaseTemplateItem(testcaseItemDTO.getTestcaseTemplateItem())
+                                                    .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcaseDTO)
+                                                    .type(testcaseItemDTO.getType())
+                                                    .value(testcaseItemDTO.getValue())
+                                                    .text(testcaseItemDTO.getText())
+                                                    .build();
+                                        }).collect(Collectors.toList()));
+
+                        testcaseGroup.getTestcases().add(testrunTestcaseGroupTestcaseDTO);
+                        testcaseIds.add(testcaseId);
+                    }
+                }
+            });
+        }
+
 
         testrun.setTestcaseGroups(testcaseGroups);
 
@@ -243,7 +324,7 @@ public class TestrunScheduler {
             if (!isFirst && needChange) {
                 if (isRandom) {
                     userIds.clear();
-                    testrunUserList.clear();;
+                    testrunUserList.clear();
                     while (userIds.size() < filteringUserCount) {
                         int userIndex = random.nextInt(testrunIterationDTO.getTestrunUsers().size());
                         if (userIds.stream().noneMatch(userId -> userId.equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
@@ -271,7 +352,7 @@ public class TestrunScheduler {
                     }
 
                     userIds.clear();
-                    testrunUserList.clear();;
+                    testrunUserList.clear();
                     while (userIds.size() < filteringUserCount) {
                         TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
                         userIds.add(testrunUser.getUser().getId());
@@ -359,12 +440,12 @@ public class TestrunScheduler {
         // 예약 테스트런
         List<TestrunReservationDTO> testrunReservationList = testrunService.selectReserveTestrunList();
         testrunReservationList.forEach((testrunReservation -> {
-            TestrunDTO testrun = getTestrun(testrunReservation);
 
             Long testrunReservationId = testrunReservation.getId();
             LocalDateTime startDateTime = testrunReservation.getStartDateTime();
 
             if (now.isAfter(startDateTime)) {
+                TestrunDTO testrun = getTestrun(testrunReservation, now);
                 TestrunDTO result = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
                 testrunService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
             }
@@ -421,7 +502,7 @@ public class TestrunScheduler {
             double nowDayOfMonth = zonedNow.getDayOfMonth();
             double weekTimes = Math.ceil(nowDayOfMonth / 7.0);
             int lastWeek = endDateOfMonth.get(weekOfMonth);
-            int lastDate = startDateOfMonth.lengthOfMonth() ;
+            int lastDate = startDateOfMonth.lengthOfMonth();
 
             // 월 단위 반복이고, -1인 경우인데, 마지막 일자랑 같지 않다면 스킵
             if (TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType()) && testrunIterationDTO.getDate() == -1 && currentDate != lastDate) {

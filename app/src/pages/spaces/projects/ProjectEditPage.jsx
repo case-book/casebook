@@ -382,25 +382,6 @@ function ProjectEditPage({ type }) {
                   }
                 />
               </BlockRow>
-              <BlockRow>
-                <Label>{t('토큰')}</Label>
-                <Text>
-                  {project.token}
-                  <Button
-                    outline
-                    rounded
-                    size="sm"
-                    onClick={() => {
-                      setProject({
-                        ...project,
-                        token: uuidv4(),
-                      });
-                    }}
-                  >
-                    <i className="fa-solid fa-arrows-rotate" />
-                  </Button>
-                </Text>
-              </BlockRow>
             </Block>
             <Title>{t('알림 설정')}</Title>
             <Block>

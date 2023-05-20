@@ -26,6 +26,8 @@ public class TestrunReservationRequest {
     private LocalDateTime endDateTime;
     private boolean expired;
     private boolean deadlineClose;
+    private boolean selectCreatedTestcase;
+    private boolean selectUpdatedTestcase;
 
     public TestrunReservationDTO buildEntity() {
 
@@ -38,6 +40,8 @@ public class TestrunReservationRequest {
                 .endDateTime(endDateTime)
                 .expired(expired)
                 .deadlineClose(deadlineClose)
+                .selectCreatedTestcase(selectCreatedTestcase)
+                .selectUpdatedTestcase(selectUpdatedTestcase)
                 .build();
 
         if (testrunUsers != null) {

@@ -40,7 +40,7 @@ public class TestrunTestcaseGroup extends CommonEntity {
     private TestcaseGroup testcaseGroup;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunTestcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunTestcaseGroupTestcase> testcases;
 
 }

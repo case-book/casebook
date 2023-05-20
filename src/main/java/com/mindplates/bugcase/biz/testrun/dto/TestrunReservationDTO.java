@@ -33,6 +33,8 @@ public class TestrunReservationDTO extends CommonDTO {
     private int testcaseGroupCount;
     private int testcaseCount;
     private TestrunDTO testrun;
+    private Boolean selectCreatedTestcase;
+    private Boolean selectUpdatedTestcase;
 
     public TestrunReservationDTO(TestrunReservation testrunReservation) {
         this.id = testrunReservation.getId();
@@ -44,6 +46,10 @@ public class TestrunReservationDTO extends CommonDTO {
         this.deadlineClose = testrunReservation.getDeadlineClose();
         this.testcaseGroupCount = Optional.ofNullable(testrunReservation.getTestcaseGroupCount()).orElse(0);
         this.testcaseCount = Optional.ofNullable(testrunReservation.getTestcaseCount()).orElse(0);
+        this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();
+        this.selectUpdatedTestcase = testrunReservation.getSelectUpdatedTestcase();
+        this.creationDate = testrunReservation.getCreationDate();
+        this.lastUpdateDate = testrunReservation.getLastUpdateDate();
         if (testrunReservation.getProject() != null && testrunReservation.getProject().getSpace() != null) {
             this.project = ProjectDTO.builder().id(testrunReservation.getProject().getId()).space(SpaceDTO.builder().id(testrunReservation.getProject().getSpace().getId()).code(testrunReservation.getProject().getSpace().getCode()).build()).build();
         }
