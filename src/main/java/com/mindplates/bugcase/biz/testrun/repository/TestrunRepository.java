@@ -16,7 +16,6 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
 
-
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
@@ -34,6 +33,17 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     @Modifying
     @Query("UPDATE Testrun tr SET tr.reserveExpired = :reserveExpired, tr.reserveResultId = :reserveResultId WHERE tr.id = :testrunId")
     void updateTestrunReserveExpired(@Param("testrunId") Long testrunId, @Param("reserveExpired") Boolean reserveExpired, @Param("reserveResultId") Long reserveResultId);
+
+    @Query("SELECT new java.lang.String(t.seqId) FROM Testrun t " +
+            "WHERE t.opened = true " +
+            "AND t.id IN (SELECT ttg.testrun.id FROM TestrunTestcaseGroup ttg " +
+            "                                  WHERE ttg.testrun.id IS NOT NULL " +
+            "                                    AND ttg.id IN (SELECT ttgt.testrunTestcaseGroup.id " +
+            "                                                     FROM TestrunTestcaseGroupTestcase ttgt " +
+            "                                                    WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t " +
+            "                                                                                WHERE t.seqId = :seqId " +
+            "                                                                                  AND t.project.id = :projectId ))) ")
+    List<String> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
 
 }
 

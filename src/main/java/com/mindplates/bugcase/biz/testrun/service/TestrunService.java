@@ -1028,14 +1028,14 @@ public class TestrunService {
                                 ))
                 )
                 .map((testrun -> {
-            List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {
-                List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
-                testrunTestcaseGroup.setTestcases(userTestcaseList);
-                return testrunTestcaseGroup;
-            })).collect(Collectors.toList());
-            testrun.setTestcaseGroups(userTestcaseGroupList);
-            return testrun;
-        })).collect(Collectors.toList());
+                    List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups().stream().filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream().anyMatch((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))).map((testrunTestcaseGroup -> {
+                        List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream().filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId()))).collect(Collectors.toList());
+                        testrunTestcaseGroup.setTestcases(userTestcaseList);
+                        return testrunTestcaseGroup;
+                    })).collect(Collectors.toList());
+                    testrun.setTestcaseGroups(userTestcaseGroupList);
+                    return testrun;
+                })).collect(Collectors.toList());
 
         return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
         // return mappingUtil.convert(list, TestrunDTO.class);
@@ -1093,5 +1093,11 @@ public class TestrunService {
     public void deleteTestrunTestcaseGroup(long testcaseGroupId) {
         testrunTestcaseGroupRepository.deleteByTestcaseGroupId(testcaseGroupId);
     }
+
+    public List<String> selectTestcaseIncludeTestrunList(String projectToken, String testcaseSeq) {
+        Long projectId = projectService.selectProjectId(projectToken);
+        return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, testcaseSeq);
+    }
+
 
 }
