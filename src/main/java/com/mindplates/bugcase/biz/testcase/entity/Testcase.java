@@ -53,7 +53,7 @@ public class Testcase extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<TestcaseItem> testcaseItems;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
     private Project project;
 

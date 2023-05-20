@@ -49,6 +49,8 @@ function TestrunReservationInfoPage() {
     projectName: '',
     testrunUsers: [],
     testcaseGroups: [],
+    selectCreatedTestcase: false,
+    selectUpdatedTestcase: false,
   });
 
   useEffect(() => {
@@ -74,8 +76,6 @@ function TestrunReservationInfoPage() {
       t('삭제'),
     );
   };
-
-  console.log(testrunReservation);
 
   return (
     <Page className="testrun-reservation-info-page-wrapper">
@@ -111,7 +111,7 @@ function TestrunReservationInfoPage() {
           </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('상태')}</Label>
-            <Text>{testrunReservation?.expired ? t('완료') : t('예약 ')}</Text>
+            <Text>{testrunReservation?.expired ? t('완료') : t('예약')}</Text>
           </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('테스트런')}</Label>
@@ -147,6 +147,18 @@ function TestrunReservationInfoPage() {
                 })}
               </Text>
             )}
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={labelMinWidth} tip={t('예약 테스트런을 만든 시점부터, 예약 테스트런에 생성될때까지 추가된 테스트케이스를 자동으로 추가합니다.')}>
+              {t('자동 추가')}
+            </Label>
+            <div>
+              <Text>
+                {testrunReservation.selectCreatedTestcase && testrunReservation.selectUpdatedTestcase ? t('예약 테스트런 생성전까지 생성/변경된 테스트케이스 자동 추가') : ''}
+                {testrunReservation.selectCreatedTestcase && !testrunReservation.selectUpdatedTestcase ? t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가') : ''}
+                {!testrunReservation.selectCreatedTestcase && testrunReservation.selectUpdatedTestcase ? t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가') : ''}
+              </Text>
+            </div>
           </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>

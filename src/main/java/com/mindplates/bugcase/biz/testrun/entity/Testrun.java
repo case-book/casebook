@@ -37,15 +37,13 @@ public class Testrun extends CommonEntity {
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
+    @OneToMany(mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestrunUser> testrunUsers;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
+    @OneToMany(mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestrunTestcaseGroup> testcaseGroups;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
     private Project project;
 

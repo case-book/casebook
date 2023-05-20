@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -59,6 +60,15 @@ public class TestcaseService {
         return mappingUtil.convert(testcaseTemplates, TestcaseTemplateDTO.class);
     }
 
+    public List<TestcaseDTO> selectTestcaseItemListByCreationTime(LocalDateTime from, LocalDateTime to) {
+        List<Testcase> testcases = testcaseRepository.findAllByCreationDateBetween(from, to);
+        return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
+    }
+
+    public List<TestcaseDTO> selectTestcaseItemListByLastUpdateDate(LocalDateTime from, LocalDateTime to) {
+        List<Testcase> testcases = testcaseRepository.findAllByLastUpdateDateBetween(from, to);
+        return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
+    }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)

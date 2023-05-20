@@ -45,7 +45,7 @@ public class TestrunIteration extends CommonEntity {
     @Fetch(value = FetchMode.SELECT)
     private List<TestrunTestcaseGroup> testcaseGroups;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
     private Project project;
 

@@ -137,8 +137,6 @@ function TestrunEditPage({ type }) {
   const onSubmit = e => {
     e.preventDefault();
 
-    console.log(testrun);
-
     if (testrun.startDateTime && testrun.endDateTime && testrun.startDateTime > testrun.endDateTime) {
       dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트 기간 오류', '테스트 종료 일시가 테스트 시작 일시보다 빠릅니다.');
       return;
