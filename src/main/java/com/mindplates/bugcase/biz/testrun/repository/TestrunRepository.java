@@ -34,7 +34,7 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     @Query("UPDATE Testrun tr SET tr.reserveExpired = :reserveExpired, tr.reserveResultId = :reserveResultId WHERE tr.id = :testrunId")
     void updateTestrunReserveExpired(@Param("testrunId") Long testrunId, @Param("reserveExpired") Boolean reserveExpired, @Param("reserveResultId") Long reserveResultId);
 
-    @Query("SELECT new java.lang.String(t.seqId) FROM Testrun t " +
+    @Query("SELECT new java.lang.Long(SUBSTRING(t.seqId,2, LENGTH(t.seqId))) FROM Testrun t " +
             "WHERE t.opened = true " +
             "AND t.id IN (SELECT ttg.testrun.id FROM TestrunTestcaseGroup ttg " +
             "                                  WHERE ttg.testrun.id IS NOT NULL " +
@@ -43,7 +43,7 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
             "                                                    WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t " +
             "                                                                                WHERE t.seqId = :seqId " +
             "                                                                                  AND t.project.id = :projectId ))) ")
-    List<String> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
+    List<Long> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
 
 }
 

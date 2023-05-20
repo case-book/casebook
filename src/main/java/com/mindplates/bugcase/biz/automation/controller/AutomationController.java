@@ -22,6 +22,11 @@ public class AutomationController {
 
     private final MessageSendService messageSendService;
 
+
+
+    // curl -u kevin.12@kakaocorp.com:3ad56155-6faf-475c-abba-9897fcf6fb56 -d "{""result"":""SUCCESS"", ""comment"":""your comment""}" -H "Content-Type: application/json"  -X POST http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testruns/147/testcases/40
+    // curl -u kevin.12@kakaocorp.com:3ad56155-6faf-475c-abba-9897fcf6fb56 -d "{""result"":""PASSED"", ""comment"":""your comment""}" -H "Content-Type: application/json"  -X POST http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testruns/147/testcases/40
+    // curl -u kevin.12@kakaocorp.com:3ad56155-6faf-475c-abba-9897fcf6fb56 -d "{""result"":""FAILED"", ""comment"":""your comment""}" -H "Content-Type: application/json"  -X POST http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testruns/147/testcases/40
     @Operation(description = "")
     @PostMapping("/testruns/{testrunSeqNumber}/testcases/{testcaseSeqNumber}")
     public ResponseEntity<HttpStatus> createTestrunResult(@PathVariable String projectToken, @PathVariable long testrunSeqNumber, @PathVariable long testcaseSeqNumber, @RequestBody TestResultRequest testResultRequest) {
@@ -30,11 +35,12 @@ public class AutomationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // curl -u kevin.12@kakaocorp.com:3ad56155-6faf-475c-abba-9897fcf6fb56 http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testcases/TC40/testruns
+    // curl -u kevin.12@kakaocorp.com:3ad56155-6faf-475c-abba-9897fcf6fb56 http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testcases/40/testruns
+    // [147]
     @Operation(description = "")
-    @GetMapping("/testcases/{testcaseSeq}/testruns")
-    public List<String> selectTestcaseIncludeTestrunList(@PathVariable String projectToken, @PathVariable String testcaseSeq) {
-        return testrunService.selectTestcaseIncludeTestrunList(projectToken, testcaseSeq);
+    @GetMapping("/testcases/{testcaseSeqNumber}/testruns")
+    public List<Long> selectTestcaseIncludeTestrunList(@PathVariable String projectToken, @PathVariable Long testcaseSeqNumber) {
+        return testrunService.selectTestcaseIncludeTestrunList(projectToken, testcaseSeqNumber);
     }
 
 

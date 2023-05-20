@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -50,10 +51,17 @@ public class RestApiExceptionHandler {
         return messageResponse.apply(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleServiceException(RuntimeException e) {
         log.error(e.getMessage(), e);
         String message = messageSourceAccessor.getMessage("common.error.unknownError");
         return response.apply(HttpStatus.INTERNAL_SERVER_ERROR, message);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleServiceException(HttpMessageNotReadableException e) {
+        log.error(e.getMessage(), e);
+        return response.apply(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 }

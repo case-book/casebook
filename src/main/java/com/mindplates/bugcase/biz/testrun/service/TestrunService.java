@@ -1094,9 +1094,9 @@ public class TestrunService {
         testrunTestcaseGroupRepository.deleteByTestcaseGroupId(testcaseGroupId);
     }
 
-    public List<String> selectTestcaseIncludeTestrunList(String projectToken, String testcaseSeq) {
+    public List<Long> selectTestcaseIncludeTestrunList(String projectToken, Long testcaseSeqNumber) {
         Long projectId = projectService.selectProjectId(projectToken);
-        return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, testcaseSeq);
+        return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
     }
 
 
