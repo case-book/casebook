@@ -119,6 +119,197 @@ $logo-color-1: #fe0000;
   }
 }
 
+.git-release-list {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--modal-overlay-color);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  font-family: NanumGothic, sans-serif;
+
+  > div {
+    align-self: center;
+    background-color: var(--theme-color);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 20px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      font-family: Cairo, sans-serif;
+      font-weight: bold;
+      padding: 14px 10px;
+      border-bottom: 1px solid var(--border-light-color);
+      display: flex;
+      > div {
+        align-self: center;
+      }
+      > div:first-child {
+        flex-grow: 1;
+      }
+    }
+
+    .content {
+      display: flex;
+      flex-grow: 1;
+      overflow-y: hidden;
+
+      .version-list {
+        font-size: 12px;
+        min-width: 100px;
+        height: 100%;
+        overflow-y: auto;
+        border-right: 1px solid var(--border-light-color);
+
+        ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          > li {
+            padding: 10px 8px;
+            cursor: pointer;
+            text-align: right;
+            border-bottom: 1px solid var(--border-light-color);
+            background-color: var(--lighter-color);
+            position: relative;
+
+            .your-version {
+              position: absolute;
+              font-size: 10px;
+              bottom: 2px;
+              right: 8px;
+              white-space: nowrap;
+              font-family: Cairo, sans-serif;
+              line-height: 100%;
+              font-weight: normal;
+              color: var(--gray-color);
+              letter-spacing: -0.25px;
+            }
+
+            .name {
+              font-weight: bold;
+            }
+
+            &.selected {
+              background-color: var(--primary-color);
+              color: var(--primary-text-color);
+              font-weight: bold;
+
+              .your-version {
+                color: var(--primary-text-color);
+              }
+            }
+          }
+        }
+      }
+
+      .release-content {
+        flex-grow: 1;
+        font-size: 13px;
+        padding: 20px;
+        overflow-y: auto;
+
+        .version-and-publish {
+          display: flex;
+          margin-bottom: 14px;
+          border-bottom: 1px solid var(--light-color);
+          padding-bottom: 14px;
+
+          > div {
+            align-self: center;
+          }
+
+          .version {
+            flex-grow: 1;
+            font-weight: bold;
+            font-size: 20px;
+            font-family: Cairo, sans-serif;
+          }
+
+          .published-at {
+            font-size: 11px;
+            @include date;
+            font-weight: normal;
+            letter-spacing: -0.5px;
+            word-spacing: -3px;
+            color: var(--gray-color);
+          }
+
+          .git-link {
+            font-size: 11px;
+            font-weight: bold;
+          }
+        }
+
+        .body {
+          blockquote {
+            background-color: var(--lighter-color);
+            padding: 1px 1rem;
+            line-height: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            border-radius: 4px;
+            font-weight: bold;
+            position: relative;
+            border: 1px solid var(--light-color);
+            &:before {
+              content: '\f05a';
+              font-family: 'Font Awesome 6 Free', sans-serif;
+              position: absolute;
+              font-size: 16px;
+              top: 0;
+              left: -2px;
+            }
+          }
+
+          h2 {
+            font-size: 1.2em;
+            margin-top: 20px;
+          }
+
+          ul {
+            padding-inline-start: 30px;
+
+            li {
+              margin-bottom: 0.5em;
+              p {
+
+              }
+            }
+          }
+          p {
+          }
+
+          pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+            background-color: var(--light-color);
+            padding: 10px;
+            border-radius: 8px;
+          }
+
+          code {
+            font-family: SpaceMono, monospace !important;
+            font-size: 12px;
+          }
+        }
+        .issue {
+          margin-top: 2rem;
+          span {
+            margin-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+}
+
 .release-info {
   position: fixed;
   top: 0;

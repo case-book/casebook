@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Card, CardContent, Page, PageContent, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
 import { useResizeDetector } from 'react-resize-detector';
 import useStores from '@/hooks/useStores';
@@ -14,7 +14,7 @@ function SpaceListPage() {
   const { t } = useTranslation();
 
   const {
-    configStore: { version },
+    configStore: { version, openReleasePopup },
   } = useStores();
 
   const [isSearch, setIsSearch] = useState(false);
@@ -264,6 +264,18 @@ function SpaceListPage() {
           <div className="slash">/</div>
           <div className="api-version">
             {version?.name}-{version?.version}
+          </div>
+          <div className="slash">/</div>
+          <div className="api-version">
+            <Link
+              to="/"
+              onClick={e => {
+                e.preventDefault();
+                openReleasePopup();
+              }}
+            >
+              RELEASE LIST
+            </Link>
           </div>
         </div>
         <SpaceSearchPopup isSearch={isSearch} setIsSearch={setIsSearch} />

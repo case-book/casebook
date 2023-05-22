@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { DATE_FORMATS, MESSAGE_CATEGORY } from '@/constants/constants';
 import ConfirmDialog from '@/pages/common/ConfirmDialog';
 import MessageDialog from '@/pages/common/MessageDialog';
 import ErrorDialog from '@/pages/common/ErrorDialog';
@@ -9,18 +9,22 @@ import { debounce } from 'lodash';
 import ConfigService from '@/services/ConfigService';
 import ReactTooltip from 'react-tooltip';
 import { getOption, setOption } from '@/utils/storageUtil';
-import { useLocation } from 'react-router-dom';
-import { CloseIcon, SocketClient, Tag } from '@/components';
+import { Link, useLocation } from 'react-router-dom';
+import { CloseIcon, Liner, SocketClient } from '@/components';
 import { observer } from 'mobx-react';
 import i18n from 'i18next';
-import './Common.scss';
+import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
+import GitService from '@/services/GitService';
+import moment from 'moment';
+import dateUtil from '@/utils/dateUtil';
+import './Common.scss';
 
 function Common() {
   const {
     userStore,
     userStore: { user },
-    configStore: { setVersion },
+    configStore: { releasePopup, closeReleasePopup, version, setVersion },
     socketStore: { topics, messageHandlers, addTopic, removeTopic, addMessageHandler, removeMessageHandler, setSocketClient },
     controlStore: { requestLoading, confirm, message, error, requestMessages },
     contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
@@ -59,9 +63,10 @@ function Common() {
 
   const [loading, setLoading] = useState(false);
 
-  const [latestRelease, setLatestRelease] = useState({
-    released: false,
-  });
+  const [releases, setReleases] = useState([]);
+
+  const [lastTagName] = useState(getOption('casebook', 'version', 'tag') || '');
+  const [release, setRelease] = useState(null);
 
   const getUserNotificationCount = () => {
     UserService.getUserNotificationCount(count => {
@@ -84,74 +89,26 @@ function Common() {
     );
   };
 
-  const getRelease = version => {
-    const url = 'https://api.github.com/repositories/532306732/releases/latest';
-    const request = new XMLHttpRequest();
-
-    request.onreadystatechange = function () {
-      if (request.readyState === 4 && request.status === 200) {
-        try {
-          const data = JSON.parse(request.responseText);
-          const latestVersion = getOption('casebook', 'version', 'latest');
-
-          if (data.tag_name > version && (latestVersion === null || data.tag_name > latestVersion)) {
-            const lines = data.body.split('\n');
-            const text = {
-              title: lines[0],
-              category: [],
-            };
-
-            let current;
-            for (let i = 1; i < lines.length; i += 1) {
-              const line = lines[i];
-              if (!line || line.trim() === '') {
-                //
-              } else if (line[0] === '<') {
-                text.category.push({
-                  title: line.substring(1, line.length - 2),
-                  lines: [],
-                });
-                current = text.category[text.category.length - 1];
-              } else {
-                if (!current) {
-                  text.category.push({
-                    title: 'MISC',
-                    lines: [],
-                  });
-                  current = text.category[text.category.length - 1];
-                }
-
-                if (line[0] === '-') {
-                  current.lines.push(line.substring(1, line.length - 1));
-                } else {
-                  current.lines.push(line);
-                }
-              }
-            }
-
-            setLatestRelease({
-              released: true,
-              version: data.name,
-              url: data.html_url,
-              _text: data.body,
-              text,
-            });
+  const getReleaseList = () => {
+    GitService.getReleaseList(
+      list => {
+        const filtered = list.filter(d => !d.prerelease);
+        setReleases(filtered);
+        if (filtered.length > 0) {
+          if (filtered[0].tag_name > lastTagName) {
+            setRelease(list[0]);
           }
-        } catch (e) {
-          console.error(e);
         }
-      }
-    };
-
-    // URL에 데이터 추가해서 요청 보내기
-    request.open('GET', url, true);
-    request.send();
+      },
+      e => {
+        console.log(e);
+      },
+    );
   };
 
   const getSystemInfo = () => {
-    ConfigService.selectSystemInfo(version => {
-      setVersion(version);
-      getRelease(version.version);
+    ConfigService.selectSystemInfo(info => {
+      setVersion(info);
     });
   };
 
@@ -169,7 +126,16 @@ function Common() {
     getUserProfile();
     getSystemInfo();
     setAutoLogin();
+    getReleaseList();
   }, []);
+
+  useEffect(() => {
+    if (releasePopup) {
+      if (releases.length > 0) {
+        setRelease(releases[0]);
+      }
+    }
+  }, [releasePopup, releases]);
 
   const setLoadingDebounce = React.useMemo(
     () =>
@@ -293,57 +259,81 @@ function Common() {
         </div>
       )}
       <ReactTooltip effect="solid" />
-      {latestRelease.released && (
-        <div className="release-info">
+      {((releasePopup && release) || release) && (
+        <div className="git-release-list">
           <div>
-            <div className="note">
+            <div className="title">
+              <div>CASEBOOK RELEASE NOTES</div>
               <div>
-                <div className="note-content">
-                  <div className="release-title">
-                    <h2>
-                      <div>{latestRelease.text.title}</div>
-                      <div className="version-tag">
-                        <Tag>{latestRelease.version}</Tag>
-                      </div>
-                    </h2>
-                    <div className="close-btn">
-                      <CloseIcon
+                <CloseIcon
+                  size="xs"
+                  onClick={() => {
+                    setOption('casebook', 'version', 'tag', releases[0]?.tag_name);
+                    setRelease(null);
+                    closeReleasePopup();
+                  }}
+                />
+              </div>
+            </div>
+            <div className="content">
+              <div className="version-list">
+                <ul>
+                  {releases.map(d => {
+                    return (
+                      <li
+                        key={d.node_id}
+                        className={`g-no-select ${release === d ? 'selected' : ''}`}
                         onClick={() => {
-                          setOption('casebook', 'version', 'latest', latestRelease.version);
-                          setLatestRelease({
-                            released: false,
-                          });
+                          setRelease(d);
                         }}
-                      />
-                    </div>
+                      >
+                        <div className="your-version">{version.version === d.tag_name ? 'YOUR VERSION' : ''}</div>
+                        <div className="name">{d.name}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className="release-content">
+                <div className="version-and-publish">
+                  <div className="version">{release.name}</div>
+                  <div className="git-link">
+                    <Link
+                      to={release.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={e => {
+                        e.preventDefault();
+                        window.open(release.html_url, '_blank');
+                      }}
+                    >
+                      <i className="fa-brands fa-github" /> GITHUB
+                    </Link>
                   </div>
-                  <div className="release-note scrollbar">
-                    {latestRelease.text.category.map((d, jnx) => {
-                      return (
-                        <div className="category" key={jnx}>
-                          {d.title !== 'MISC' && (
-                            <div className="category-title">
-                              <span>{d.title}</span>
-                            </div>
-                          )}
-                          <div className="category-content">
-                            {d.lines.map((line, inx) => {
-                              return (
-                                <div className={line[0] === ' ' ? 'list' : ''} key={inx}>
-                                  {line}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div>
+                    <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.75rem" />
                   </div>
-                  <div className="btns">
-                    <a target="_blank" href={latestRelease.url} rel="noreferrer">
-                      <span>{t('다운로드 바로가기')}</span>
-                    </a>
+                  <div className="published-at">
+                    <i className="fa-regular fa-clock" /> {moment(release.published_at).format(DATE_FORMATS[dateUtil.getUserLocale()].full.moment)}
                   </div>
+                </div>
+                <div className="body">
+                  <ReactMarkdown>{release.body}</ReactMarkdown>
+                </div>
+                <div className="issue">
+                  <span>{t('기능의 제안이나, 사용중 발생하는 버그나 오류 등은')}</span>
+                  <Link
+                    to="https://github.com/case-book/casebook/issues"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={e => {
+                      e.preventDefault();
+                      window.open('https://github.com/case-book/casebook/issues', '_blank');
+                    }}
+                  >
+                    CASEBOOK GITHUB
+                  </Link>
+                  {t('을 통해 제보해주시면 감사하겠습니다.')}
                 </div>
               </div>
             </div>
