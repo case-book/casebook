@@ -7,13 +7,18 @@ export default class ConfigStore {
 
   setUp = null;
 
+  releasePopup = null;
+
   constructor() {
     makeObservable(this, {
       holidays: observable,
       version: observable,
       setUp: observable,
+      releasePopup: observable,
       setHolidays: action,
       setVersion: action,
+      openReleasePopup: action,
+      closeReleasePopup: action,
     });
   }
 
@@ -28,5 +33,13 @@ export default class ConfigStore {
     };
 
     this.setUp = version.setUp;
+  };
+
+  openReleasePopup = () => {
+    this.releasePopup = Date.now();
+  };
+
+  closeReleasePopup = () => {
+    this.releasePopup = null;
   };
 }
