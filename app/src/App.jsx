@@ -11,6 +11,7 @@ import { Button, LogoIcon, Star } from '@/components';
 import { debounce } from 'lodash';
 import './App.scss';
 import { useTranslation } from 'react-i18next';
+import GuestHeader from '@/pages/common/Header/GuestHeader';
 
 function App() {
   const {
@@ -107,7 +108,8 @@ function App() {
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
-          <Header />
+          {!isLogin && <GuestHeader />}
+          {isLogin && <Header />}
           <main className="main-content">
             <div className="bg">
               <div

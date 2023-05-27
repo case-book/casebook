@@ -1,43 +1,73 @@
 .logo-wrapper {
-  position: relative;
-  white-space: nowrap;
-  display: flex;
-  > div.logo-icon {
-    background-color: $color-tangerine;
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    border-radius: 5px;
-    align-self: center;
-    font-size: 24px;
-    color: $white;
-    justify-content: center;
-    > span {
-      align-self: center;
-      line-height: 0;
+  align-self: center;
+
+  > .logo-content {
+    font-size: 32px;
+    position: relative;
+    padding: 0;
+
+
+    > div.logo-content {
+      display: flex;
+      justify-content: center;
+
+      position: relative;
+      z-index: 1;
+
+      > div {
+        align-self: center;
+        color: var(--text-color);
+        .case {
+          margin-right: 2px;
+        }
+
+        .book {
+        }
+
+        .case,
+        .book {
+          display: inline-block;
+          font-family: Rowdies, sans-serif;
+          font-weight: 400;
+          line-height: 100%;
+          position: relative;
+          top: 2px;
+        }
+      }
+
+      .logo-icon {
+        margin-right: 0.5rem;
+      }
     }
 
-    &.animate {
-      animation: rotate-animation 2s ease-out;
-      animation-fill-mode: forwards;
-    }
-  }
-
-  > div.logo-text {
-    align-self: center;
-    font-family: PatrickHand, sans-serif;
-
-    line-height: 100%;
-    margin-left: 10px;
-
-    > div:nth-child(1) {
-      font-size: 18px;
-    }
-
-    > div:nth-child(2) {
-      font-size: 12px;
-      font-family: NotoSans, sans-serif;
+    .floating-icon {
+      position: absolute;
+      font-size: 14px;
+      color: white;
+      display: inline-flex;
+      width: 24px;
+      height: 24px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      justify-content: center;
+      z-index: 0;
       display: none;
+
+      > i {
+        align-self: center;
+      }
+
+      &.icon-pencil {
+        top: -6px;
+        left: 10px;
+        transform: rotate(135deg);
+      }
+
+      &.icon-book {
+        bottom: -6px;
+        right: 10px;
+        transform: rotate(30deg);
+      }
     }
   }
 }

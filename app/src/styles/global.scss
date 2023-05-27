@@ -9,7 +9,6 @@ html {
   --warning-color: #ff4935;
   --yellow-color: #ffbc4b;
   --disable-opacity: 0.6;
-  --link-color: #386bd8;
   --secondary-color: #7bde89;
 }
 
@@ -20,9 +19,10 @@ html {
   --background-color: #eaeef3;
   --card-background-color: #fff;
   --text-color: #222;
-  --primary-color: #3e8ef1;
-  --primary-hover-color: #2e7ed1;
+  --primary-color: #111;
+  --primary-hover-color: #000;
   --primary-text-color: #fff;
+  --primary-text-empahsis-color: #ffbc4b;
   --box-color: #fff;
   --testcase-item-background: #FCFCFC;
   --lighter-color: #f8f9fa;
@@ -45,6 +45,10 @@ html {
   --modal-overlay-color: rgba(0, 0, 0, 0.6);
   --modal-header-border-color: rgba(0, 0, 0, 0.2);
   --hover-background-color: rgba(0, 0, 0, 0.05);
+  --color-first: rgb(165, 0, 52);
+  --color-second: #1428a0;
+  --link-color: #1428a0;
+  --link-hover-color : #102496;
 }
 
 html.theme-DARK {
@@ -57,6 +61,7 @@ html.theme-DARK {
   --primary-color: #ffbc4b;
   --primary-hover-color: #dfac3b;
   --primary-text-color: #222;
+  --primary-text-empahsis-color: #222;
   --box-color: #000;
   --testcase-item-background: #1d1d1d;
   --lighter-color: #1d1d1d;
@@ -79,5 +84,9 @@ html.theme-DARK {
   --modal-overlay-color: rgba(0, 0, 0, 0.7);
   --modal-header-border-color: rgba(255, 255, 255, 0.2);
   --hover-background-color: rgba(255, 255, 255, 0.05);
+  --color-first: rgb(165, 0, 52);
+  --color-second: #1428a0;
+  --link-color: #386bd8;
+  --link-hover-color : #409eff;
 }
 

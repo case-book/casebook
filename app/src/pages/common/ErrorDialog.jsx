@@ -44,7 +44,7 @@ function ErrorDialog({ className, title, message, handler }) {
       </ModalBody>
       <ModalFooter>
         <Button
-          outline
+          color="primary"
           onClick={() => {
             controlStore.setError(null);
             if (handler) {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Button, CheckBox, Form, Input, LogoIcon } from '@/components';
+import { Button, CheckBox, Form, Info, Input, Version } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { setToken } from '@/utils/request';
@@ -44,10 +44,14 @@ function Login() {
   return (
     <div className="login-wrapper">
       <div>
-        <div className="login-box">
-          <div className="logo">
-            <LogoIcon />
+        {location.pathname !== '/users/login' && location.pathname !== '/users/join' && (
+          <div className="message">
+            <Info color="danger">
+              <span>{t('로그인이 필요한 페이지입니다.')}</span>
+            </Info>
           </div>
+        )}
+        <div className="login-box">
           <div className="login-title">LOGIN</div>
           <Form onSubmit={onSubmit}>
             <div className="label">{t('이메일')}</div>
@@ -55,8 +59,8 @@ function Login() {
               <Input
                 type="email"
                 value={info.email}
-                placeholder={t('이메일')}
-                size="lg"
+                placeholder={t('이메일 주소를 입력해주세요.')}
+                size="md"
                 underline
                 onChange={val =>
                   setInfo({
@@ -72,10 +76,10 @@ function Login() {
             <div className="input">
               <Input
                 type="password"
-                size="lg"
+                size="md"
                 underline
                 value={info.password}
-                placeholder={t('비밀번호')}
+                placeholder={t('비밀번호를 입력해주세요.')}
                 autoComplete="current-password"
                 onChange={val =>
                   setInfo({
@@ -105,21 +109,14 @@ function Login() {
               </div>
             </div>
             <div className="button">
-              <Button type="submit" color="yellow" size="md">
+              <Button type="submit" color="primary" size="md">
                 {t('로그인')}
               </Button>
             </div>
           </Form>
-          {location.pathname !== '/users/login' && location.pathname !== '/users/join' && (
-            <div className="message">
-              <span>{t('로그인이 필요합니다.')}</span>
-            </div>
-          )}
-        </div>
-        <div className="join">
-          <Link to="/users/join">{t('새로운 사용자 등록')}</Link>
         </div>
       </div>
+      <Version className="version" />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 .btn-wrapper {
-  border-radius: 2px;
+  border-radius: 4px;
   background-color: transparent;
   border: none;
   padding: 0 12px;
@@ -27,12 +27,12 @@
   }
 
   &.btn-md {
-    font-size: 16px;
+    font-size: 14px;
     height: $md-height;
   }
 
   &.btn-lg {
-    font-size: 18px;
+    font-size: 16px;
     height: $lg-height;
     padding: 0 16px;
   }

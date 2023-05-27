@@ -11,12 +11,12 @@ $success: #397d02;
 $black: #222;
 $gray: #555;
 
-$xs-height: 24px;
+$xs-height: 26px;
 $sm-height: 30px;
-$md-height: 36px;
-$lg-height: 42px;
-$xl-height: 48px;
-$xxl-height: 60px;
+$md-height: 34px;
+$lg-height: 38px;
+$xl-height: 42px;
+$xxl-height: 46px;
 
 $color-point: #7bde89;
 $color-tag: #7bde89;
@@ -98,7 +98,11 @@ $color-form-control-dark: #121212;
 
 @mixin title() {
   font-weight: bold;
-  font-family: $font-family-menu;
+  font-family: LINESeed, sans-serif;
+}
+
+@mixin monospace() {
+  font-family: MartianMono, monospace;
 }
 
 @mixin date() {
