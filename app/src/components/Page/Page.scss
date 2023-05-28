@@ -8,8 +8,7 @@
   min-height: calc(100vh - 100px);
   border-radius: 10px;
   display: flex;
-  border: 1px solid var(--border-light-color);
-  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
+
   overflow: visible;
 
   &.hide-header {
@@ -49,6 +48,8 @@
   }
 
   &.info-page {
+    border: 1px solid var(--border-light-color);
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
   }
 
   &.list-page {

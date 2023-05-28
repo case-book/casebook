@@ -40,7 +40,7 @@ function PageTitle({ className, name, children, links, control, onListClick, bre
             </ul>
           )}
         </div>
-        {links && (
+        {links?.length > 0 && (
           <ul className="links">
             {links.map((d, inx) => {
               return (

@@ -190,11 +190,15 @@ function SpaceListPage() {
                               <span>
                                 <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
                               </span>
-                              <span className="count">{space.projectCount} 프로젝트</span>
+                              <span className="count">
+                                {space.projectCount} {t('프로젝트')}
+                              </span>
                               <span>
                                 <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
                               </span>
-                              <span className="count">{space.userCount} 사용자</span>
+                              <span className="count">
+                                {space.userCount} {t('사용자')}
+                              </span>
                             </>
                           )}
                           {!space.isMember && (
@@ -202,7 +206,7 @@ function SpaceListPage() {
                               <span>
                                 <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
                               </span>
-                              <span className="count">{space.allowAutoJoin ? '자동 가입' : '승인 필요'}</span>
+                              <span className="count">{space.allowAutoJoin ? t('자동 가입') : t('승인 필요')}</span>
                             </>
                           )}
                         </div>
