@@ -1,14 +1,19 @@
 .page-title-wrapper {
   height: 80px;
+  border-bottom: 1px solid var(--border-light-color);
+  position: relative;
+
+  .page-name {
+    position: absolute;
+    top: -20px;
+    z-index: 5;
+    display: inline-block;
+    color: var(--gray-color);
+    font-size: 12px;
+  }
 
   @media (max-width: 768px) {
     height: 60px;
-  }
-
-  .page-title-liner {
-    > div {
-      background-color: var(--border-color);
-    }
   }
 
   > div {
@@ -22,11 +27,9 @@
 
       &.icon {
         flex-grow: 0;
-        font-size: 20px;
         height: 100%;
         display: inline-flex;
-        padding: 0 16px;
-        line-height: 100%;
+        padding: 0 10px;
 
         @media (max-width: 768px) {
           padding: 0 8px;
@@ -34,7 +37,23 @@
 
         cursor: pointer;
         > span {
-          align-self: center;
+          align-self: flex-start;
+          margin-top: 14px;
+          display: inline-flex;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          font-size: 16px;
+          justify-content: center;
+
+          &:hover {
+            background-color: var(--primary-color);
+            color: var(--primary-text-color);
+          }
+
+          i {
+            align-self: center;
+          }
         }
 
         &:hover {
@@ -42,23 +61,50 @@
         }
       }
 
-      &.title-text {
+      &.page-title-info {
         flex-grow: 0;
-        line-height: 100%;
-        font-weight: bold;
-        font-size: 24px;
 
-        @media (max-width: 768px) {
-          font-size: 20px;
+        .page-title-text {
+          font-weight: bold;
+          font-size: 24px;
+          @include title;
+
+          @media (max-width: 768px) {
+            font-size: 20px;
+          }
+        }
+
+        .breadcrumbs {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          font-size: 11px;
+          li {
+            display: inline-block;
+
+            .bullet {
+              margin: 0 4px;
+            }
+
+            a {
+              padding-bottom: 1px;
+              display: inline-block;
+              border-bottom: 1px solid transparent;
+              &:hover {
+                border-bottom: 1px solid var(--link-color);
+              }
+            }
+          }
         }
       }
     }
   }
 
   .control {
-    margin-left: 0.5rem;
+    margin-left: 10px;
     flex-grow: 1;
     text-align: right;
+    margin-right: 20px;
 
     &.has-link {
       flex-grow: 0;
@@ -76,32 +122,14 @@
   .links {
     font-size: 16px;
     display: flex;
-    margin-right: 1rem;
+    margin-right: 30px;
     flex-grow: 1;
+    justify-content: flex-end;
+    list-style: none;
 
-    @media (max-width: 768px) {
-      justify-content: flex-end;
-      .liner-wrapper {
-        display: none !important;
-      }
-    }
-
-    > div {
+    > li {
       align-self: center;
-      display: flex;
-
-      > a {
-        color : var(--link-color);
-        text-decoration: none;
-        margin-right: 8px;
-
-        &:last-child {
-          margin-right: 0;
-        }
-        &:visited {
-          color : var(--link-color);
-        }
-      }
+      display: inline-block;
     }
   }
 }

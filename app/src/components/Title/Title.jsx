@@ -1,13 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Title.scss';
+import { Liner } from '@/components';
 
-function Title({ className, children, type, control, border, paddingBottom }) {
+function Title({ className, children, type, control, border, paddingBottom, marginBottom, colored }) {
   return (
-    <div className={`title-wrapper ${type} ${className} ${border ? 'border' : ''} ${paddingBottom ? 'padding-bottom' : ''}`}>
+    <div className={`title-wrapper ${type} ${className} ${border ? 'border' : ''} ${colored ? 'colored' : ''} ${paddingBottom ? 'padding-bottom' : ''} ${marginBottom ? 'margin-bottom' : ''}`}>
       <div className="title-content">
-        <div className="title-text">{children}</div>
-        {control && <div className="control">{control}</div>}
+        <div className="title-text">
+          <i className="fa-solid fa-shapes" /> {children}
+        </div>
+        {control && (
+          <div className="control">
+            <Liner display="inline-block" width="1px" height="10px" margin="0 10px" />
+            <div className="control-content">{control}</div>
+          </div>
+        )}
       </div>
       {border && <div className="title-bottom-liner" />}
     </div>
@@ -17,10 +25,12 @@ function Title({ className, children, type, control, border, paddingBottom }) {
 Title.defaultProps = {
   className: '',
   children: '',
-  type: 'h1',
+  type: 'h2',
   control: null,
   border: true,
   paddingBottom: true,
+  marginBottom: true,
+  colored: false,
 };
 
 Title.propTypes = {
@@ -30,6 +40,8 @@ Title.propTypes = {
   control: PropTypes.node,
   border: PropTypes.bool,
   paddingBottom: PropTypes.bool,
+  marginBottom: PropTypes.bool,
+  colored: PropTypes.bool,
 };
 
 export default Title;

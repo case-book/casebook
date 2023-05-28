@@ -1,6 +1,9 @@
 .title-wrapper {
+  &.margin-bottom {
+    margin-bottom: 20px;
+  }
   > .title-content {
-    padding: 1rem 0.5rem 0;
+    padding: 0.5rem 0.5rem 0;
     font-weight: bold;
     display: flex;
     flex-direction: row;
@@ -13,12 +16,21 @@
     .title-text {
       flex-grow: 0;
       align-self: center;
+      @include title;
+
+      i {
+        margin-right: 2px;
+        font-size: 14px;
+        position: relative;
+        top : -2px;
+      }
     }
     .control {
       flex-grow: 1;
-      text-align: right;
       align-self: center;
-      margin-left: 1rem;
+      .control-content {
+        display: inline-block;
+      }
       @media (max-width: 768px) {
         margin-left: 0;
         text-align: right;
@@ -26,19 +38,26 @@
     }
   }
 
+  &.colored {
+    > .title-content {
+      .title-text {
+        padding: 6px 10px 4px;
+        background-color: var(--light-color);
+        border-radius: 10px;
+      }
+    }
+  }
+
   &.padding-bottom {
     > .title-content {
-      padding-bottom: calc(2rem - 4px);
-      @media (max-width: 768px) {
-        padding-bottom: 1rem;
-      }
+      padding-bottom: 0.75rem;
     }
   }
 
   > .title-bottom-liner {
     height: 1px;
     background-color: transparent;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-light-color);
     border-left: none;
     border-right: none;
     border-radius: 3px;
@@ -60,7 +79,7 @@
     margin-top: 0;
   }
   &.h1 {
-    font-size: 22px;
+    font-size: 24px;
 
     @media (max-width: 768px) {
       font-size: 20px;
@@ -68,7 +87,7 @@
   }
 
   &.h2 {
-    font-size: 19px;
+    font-size: 18px;
   }
 
   &.h3 {
@@ -76,10 +95,10 @@
   }
 
   &.h4 {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   &.h5 {
-    font-size: 10px;
+    font-size: 12px;
   }
 }

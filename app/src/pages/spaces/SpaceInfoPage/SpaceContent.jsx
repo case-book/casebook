@@ -28,6 +28,7 @@ function SpaceContent({ space, onRefresh }) {
 
   const {
     userStore: { removeSpace, isAdmin },
+    contextStore: { spaceCode },
   } = useStores();
 
   const navigate = useNavigate();
@@ -70,6 +71,8 @@ function SpaceContent({ space, onRefresh }) {
       },
       null,
       t('탈퇴'),
+      null,
+      'danger',
     );
   };
 
@@ -110,33 +113,50 @@ function SpaceContent({ space, onRefresh }) {
       },
       null,
       t('삭제'),
+      null,
+      'danger',
     );
   };
 
   return (
     <>
       <PageTitle
-        links={isAdmin || space?.admin ? [<Link to={`/spaces/${id}/edit`}>{t('편집')}</Link>] : null}
-        control={
-          <div>
-            <Button size="sm" color="warning" onClick={withdraw}>
-              {t('스페이스 탈퇴')}
-            </Button>
-            {(isAdmin || space?.admin) && (
-              <Button size="sm" color="danger" onClick={onDelete}>
-                {t('스페이스 삭제')}
-              </Button>
-            )}
-          </div>
+        name={t('스페이스 정보')}
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: space?.name,
+          },
+        ]}
+        links={
+          isAdmin || space?.admin
+            ? [
+                {
+                  to: `/spaces/${id}/edit`,
+                  text: t('편집'),
+                  color: 'primary',
+                },
+              ]
+            : null
         }
         onListClick={() => {
-          navigate('/spaces');
+          navigate('/');
         }}
       >
-        {t('스페이스')}
+        {space?.name}
       </PageTitle>
       <PageContent className="space-info-content">
-        <Title>{t('스페이스 정보')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('스페이스 정보')}
+        </Title>
         <Block>
           <BlockRow>
             <Label>{t('이름')}</Label>
@@ -180,8 +200,8 @@ function SpaceContent({ space, onRefresh }) {
             return (
               <Radio
                 key={option.key}
-                type="line"
-                size="sm"
+                type="inline"
+                size="xs"
                 value={option.key}
                 checked={userRole === option.key}
                 label={t(option.value)}
@@ -315,12 +335,11 @@ function SpaceContent({ space, onRefresh }) {
             </Block>
           </>
         )}
-
         <Title paddingBottom={false} border={false}>
           {t('휴일 관리')}
         </Title>
         <Block className="space-project-block">
-          {!(space.holidays?.length > 0) && (
+          {space.holidays?.length < 1 && (
             <EmptyContent className="empty-content">
               <div>{t('등록된 휴일이 없습니다.')}</div>
             </EmptyContent>
@@ -341,7 +360,7 @@ function SpaceContent({ space, onRefresh }) {
                       <Tr key={inx}>
                         <Td align="center">
                           <Tag size="sm" color="white" border>
-                            {HOLIDAY_TYPE_CODE[holiday.holidayType]}
+                            {HOLIDAY_TYPE_CODE[holiday.holidayType] || 'N/A'}
                           </Tag>
                         </Td>
                         <Td>{holiday.name}</Td>
@@ -388,9 +407,9 @@ function SpaceContent({ space, onRefresh }) {
                 <THead>
                   <Tr>
                     <Th align="left">{t('프로젝트 명')}</Th>
-                    <Th align="center">{t('상태')}</Th>
+                    <Th align="center">{t('테스트런')}</Th>
                     <Th align="center">{t('테스트케이스')}</Th>
-                    <Th align="center">{t('버그')}</Th>
+                    <Th align="center">{t('상태')}</Th>
                   </Tr>
                 </THead>
                 <Tbody>
@@ -400,18 +419,20 @@ function SpaceContent({ space, onRefresh }) {
                         <Td className="project-name">
                           <Link to={`/spaces/${space.code}/projects/${project.id}`}>{project.name}</Link>
                         </Td>
-                        <Td align="center" className="activated">
-                          <Tag uppercase>{project.activated ? 'activated' : 'disabled'}</Tag>
+                        <Td align="center" className="testcase-count">
+                          <div>
+                            <span>{project.testrunCount}</span>
+                          </div>
                         </Td>
                         <Td align="center" className="testcase-count">
                           <div>
                             <span>{project.testcaseCount}</span>
                           </div>
                         </Td>
-                        <Td align="center" className="bug-count">
-                          <div>
-                            <span>{project.bugCount}</span>
-                          </div>
+                        <Td align="center" className="activated">
+                          <Tag border uppercase>
+                            {project.activated ? 'activated' : 'disabled'}
+                          </Tag>
                         </Td>
                       </Tr>
                     );
@@ -421,13 +442,31 @@ function SpaceContent({ space, onRefresh }) {
             </div>
           )}
         </Block>
+        <Title paddingBottom={false} border={false} marginBottom={false}>
+          {t('관리')}
+        </Title>
+        <Block>
+          <BlockRow>
+            <Label>{t('스페이스 탈퇴')}</Label>
+            <Button size="sm" color="warning" onClick={withdraw}>
+              {t('@ 스페이스에서 탈퇴합니다.', { name: space.name })}
+            </Button>
+          </BlockRow>
+          {(isAdmin || space?.admin) && (
+            <BlockRow>
+              <Label>{t('스페이스 삭제')}</Label>
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('@ 스페이스를 삭제합니다.', { name: space.name })}
+              </Button>
+            </BlockRow>
+          )}
+        </Block>
         <PageButtons
-          outline
           onBack={() => {
             navigate(-1);
           }}
           onEdit={
-            isAdmin && space?.admin
+            isAdmin || space?.admin
               ? () => {
                   navigate(`/spaces/${id}/edit`);
                 }

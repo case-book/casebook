@@ -169,21 +169,9 @@
 }
 
 html {
-  background-color: var(--background-color);
+  background-color: var(--theme-color);
   color: var(--text-color);
   transition: background-color 0.3s, color 0.3s;
-
-  &.theme-LIGHT {
-    @media (max-width: 640px) {
-      background-color: $white;
-    }
-  }
-
-  &.theme-DARK {
-    @media (max-width: 640px) {
-      background-color: var(--background-color);
-    }
-  }
 }
 
 body {

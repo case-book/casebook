@@ -110,7 +110,7 @@
   }
 
   &.btn-warning {
-    background-color: $warning;
+    background-color: var(--warning-color);
     color: $white;
   }
 

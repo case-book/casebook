@@ -104,28 +104,39 @@ function SpaceListPage() {
           </div>
         </div>
         <div className="type">
-          <Radio
-            type="inline"
-            size="xs"
-            checked={isCardType}
-            onChange={() => {
-              setQuery({
-                type: 'card',
-              });
-            }}
-            label={<i className="fa-regular fa-rectangle-list" />}
-          />
-          <Radio
-            type="inline"
-            size="xs"
-            checked={!isCardType}
-            onChange={() => {
-              setQuery({
-                type: 'table',
-              });
-            }}
-            label={<i className="fa-solid fa-table-list" />}
-          />
+          <div>
+            {isMine ? (
+              ''
+            ) : (
+              <span>
+                <i className="fa-solid fa-circle-info" /> 스페이스의 &rsquo;검색 허용&lsquo; 설정에 따라 검색 결과에 포함되지 않을 수 있습니다.
+              </span>
+            )}
+          </div>
+          <div>
+            <Radio
+              type="inline"
+              size="xs"
+              checked={isCardType}
+              onChange={() => {
+                setQuery({
+                  type: 'card',
+                });
+              }}
+              label={<i className="fa-regular fa-rectangle-list" />}
+            />
+            <Radio
+              type="inline"
+              size="xs"
+              checked={!isCardType}
+              onChange={() => {
+                setQuery({
+                  type: 'table',
+                });
+              }}
+              label={<i className="fa-solid fa-table-list" />}
+            />
+          </div>
         </div>
         <div className={`space-list ${isCardType ? 'card-type' : ''}`}>
           {spaces?.length < 1 && (
