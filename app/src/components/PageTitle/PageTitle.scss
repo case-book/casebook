@@ -10,10 +10,16 @@
     display: inline-block;
     color: var(--gray-color);
     font-size: 12px;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
   @media (max-width: 768px) {
-    height: 60px;
+    height: 70px;
+    background-color: var(--lighter-color);
+    border-bottom: none;
   }
 
   > div {
@@ -30,12 +36,8 @@
         height: 100%;
         display: inline-flex;
         padding: 0 10px;
-
-        @media (max-width: 768px) {
-          padding: 0 8px;
-        }
-
         cursor: pointer;
+
         > span {
           align-self: flex-start;
           margin-top: 14px;
@@ -45,6 +47,13 @@
           border-radius: 50%;
           font-size: 16px;
           justify-content: center;
+
+          @media (max-width: 768px) {
+            margin-top: 10px;
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+          }
 
           &:hover {
             background-color: var(--primary-color);
@@ -79,6 +88,10 @@
           margin: 0;
           padding: 0;
           font-size: 11px;
+
+          @media (max-width: 768px) {
+            font-size: 10px;
+          }
           li {
             display: inline-block;
 
@@ -126,6 +139,10 @@
     flex-grow: 1;
     justify-content: flex-end;
     list-style: none;
+
+    @media (max-width: 768px) {
+      margin-right: 10px;
+    }
 
     > li {
       align-self: center;

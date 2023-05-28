@@ -31,11 +31,21 @@
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 10px;
-    min-height: calc(100vh - 80px - 10px);
+    min-height: calc(100vh - 100px);
 
     &.hide-header {
       min-height: calc(100vh - 30px - 20px);
     }
+  }
+
+  @media (max-width: 768px) {
+    border: none;
+    box-shadow: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  @media (max-width: 768px) {
   }
 
   &.info-page {

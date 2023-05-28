@@ -54,6 +54,10 @@
     height: $xs-height;
   }
 
+  @media (max-width: 768px) {
+    height: auto !important;
+  }
+
   &.is-bold {
     font-weight: bold;
   }

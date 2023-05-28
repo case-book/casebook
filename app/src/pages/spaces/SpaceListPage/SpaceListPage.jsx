@@ -22,6 +22,7 @@ function SpaceListPage() {
   const isCardType = type === 'card';
   const navigate = useNavigate();
   const [spaces, setSpaces] = useState([]);
+  const [searchOpened, setSearchOpened] = useState(false);
 
   const onSearch = useCallback(() => {
     if (isMine) {
@@ -46,7 +47,21 @@ function SpaceListPage() {
   return (
     <Page className="space-list-page-wrapper" pure>
       <PageContent className="page-content">
-        <div className="search">
+        <div className="search-opener">
+          <Button
+            size="sm"
+            color="primary"
+            onClick={() => {
+              setSearchOpened(!searchOpened);
+            }}
+          >
+            <i className="fa-solid fa-magnifying-glass" /> {t('검색')}
+          </Button>
+        </div>
+        <div className={`search ${searchOpened ? 'opened' : ''}`}>
+          <div className="arrow">
+            <span />
+          </div>
           <div>
             <Radio
               type="inline"

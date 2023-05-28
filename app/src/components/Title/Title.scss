@@ -9,7 +9,7 @@
     flex-direction: row;
 
     @media (max-width: 768px) {
-      padding: 0.25rem 0.5rem 0;
+      padding: 0;
       display: block;
     }
 
@@ -51,6 +51,9 @@
   &.padding-bottom {
     > .title-content {
       padding-bottom: 0.75rem;
+      @media (max-width: 768px) {
+        padding-bottom: 0.25rem;
+      }
     }
   }
 

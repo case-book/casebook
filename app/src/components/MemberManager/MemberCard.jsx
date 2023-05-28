@@ -56,7 +56,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
           <div className="name-text">{spaceUser.name}</div>
           {showRole && !edit && (
             <div className={`role ${spaceUser.role}`}>
-              <Tag className="tag" border={false}>
+              <Tag className="tag" border>
                 <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
                 {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
               </Tag>
@@ -65,7 +65,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
           {showRole && edit && (
             <div className={`role ${spaceUser.role}`}>
               {spaceUser.crud !== 'D' && (
-                <Tag className="tag" border={false}>
+                <Tag className="tag" border>
                   <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
                   {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
                 </Tag>

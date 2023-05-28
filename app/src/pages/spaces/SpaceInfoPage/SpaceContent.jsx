@@ -184,15 +184,11 @@ function SpaceContent({ space, onRefresh }) {
           </BlockRow>
           <BlockRow>
             <Label>{t('타임존')}</Label>
-            <Text>{space?.timeZone}</Text>
+            <Text>{space?.timeZone || 'N/A'}</Text>
           </BlockRow>
           <BlockRow>
             <Label>{t('지역')}</Label>
-            <Text>{COUNTRIES[space?.country]}</Text>
-          </BlockRow>
-          <BlockRow>
-            <Label>{t('토큰')}</Label>
-            <Text>{space?.token}</Text>
+            <Text>{COUNTRIES[space?.country] || 'N/A'}</Text>
           </BlockRow>
         </Block>
         <Title
@@ -448,9 +444,11 @@ function SpaceContent({ space, onRefresh }) {
         <Block>
           <BlockRow>
             <Label>{t('스페이스 탈퇴')}</Label>
-            <Button size="sm" color="warning" onClick={withdraw}>
-              {t('@ 스페이스에서 탈퇴합니다.', { name: space.name })}
-            </Button>
+            <Text>
+              <Button size="sm" color="warning" onClick={withdraw}>
+                {t('@ 스페이스에서 탈퇴합니다.', { name: space.name })}
+              </Button>
+            </Text>
           </BlockRow>
           {(isAdmin || space?.admin) && (
             <BlockRow>
