@@ -5,7 +5,7 @@
   flex-direction: column;
   max-width: $max-page-width;
   margin: 0 auto 40px;
-  min-height: calc(100vh - 80px - 40px);
+  min-height: calc(100vh - 100px);
   border-radius: 20px;
   display: flex;
 
@@ -17,7 +17,7 @@
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
-    min-height: calc(100vh - 80px - 20px);
+    min-height: calc(100vh - 100px);
 
     &.hide-header {
       min-height: calc(100vh - 30px - 20px);
@@ -49,6 +49,7 @@
   &.wide {
     max-width: none;
     margin: 0 2rem;
+    min-height: calc(100vh - 100px);
     .page-title-wrapper {
       > div {
         max-width: none;
@@ -61,7 +62,10 @@
   }
 
   &.pure {
-
+    margin: 0;
+    max-width: none;
+    background-color: var(--theme-color);
+    border-radius: 0;
   }
 
   &.colored {

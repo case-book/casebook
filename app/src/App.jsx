@@ -17,6 +17,7 @@ function App() {
   const {
     themeStore: { theme },
     userStore: { isLogin, tried },
+    contextStore: { isSpaceSelected },
     configStore: { setUp },
   } = useStores();
 
@@ -108,8 +109,8 @@ function App() {
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
-          {!isLogin && <GuestHeader />}
-          {isLogin && <Header />}
+          {(!isLogin || !isSpaceSelected) && <GuestHeader />}
+          {isLogin && isSpaceSelected && <Header />}
           <main className="main-content">
             <div className="bg">
               <div

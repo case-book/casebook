@@ -12,7 +12,7 @@ function Page({ className, children, colored, list, wide, pure }) {
 
   return (
     <div
-      className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} ${pure ? 'pure-page' : ''} theme-${theme} ${
+      className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} ${pure ? 'pure' : ''} theme-${theme} ${
         hideHeader ? 'hide-header' : ''
       }`}
     >

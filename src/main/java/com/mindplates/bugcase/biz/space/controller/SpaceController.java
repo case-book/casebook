@@ -49,8 +49,8 @@ public class SpaceController {
 
     @Operation(description = "내 스페이스 목록 조회")
     @GetMapping("/my")
-    public List<SpaceListResponse> selectMySpaceList() {
-        List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId());
+    public List<SpaceListResponse> selectMySpaceList(@RequestParam(value = "query", required = false) String query) {
+        List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId(), query);
         return spaceList.stream().map((space -> new SpaceListResponse(space, SessionUtil.getUserId()))).collect(Collectors.toList());
     }
 

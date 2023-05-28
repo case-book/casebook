@@ -7,10 +7,12 @@ import { useTranslation } from 'react-i18next';
 import './GuestHeader.scss';
 import { Liner, Logo } from '@/components';
 import { THEMES } from '@/constants/constants';
+import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
 
 function GuestHeader({ className }) {
   const {
     controlStore: { hideHeader },
+    userStore: { isLogin },
     themeStore: { theme, setTheme },
   } = useStores();
 
@@ -50,17 +52,22 @@ function GuestHeader({ className }) {
           />
         </div>
         <div className="right">
-          <Link to="/users/login">
-            <span>
-              {t('로그인')} <i className="fa-solid fa-circle-right" />
-            </span>
-          </Link>
-          <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 6px 0 7px" />
-          <Link className="join-link" to="/users/join">
-            <span>
-              {t('회원 가입')} <i className="fa-solid fa-circle-right" />
-            </span>
-          </Link>
+          <UserHeaderControl className="user-header-control" />
+          {!isLogin && (
+            <>
+              <Link to="/users/login">
+                <span>
+                  {t('로그인')} <i className="fa-solid fa-circle-right" />
+                </span>
+              </Link>
+              <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 6px 0 7px" />
+              <Link className="join-link" to="/users/join">
+                <span>
+                  {t('회원 가입')} <i className="fa-solid fa-circle-right" />
+                </span>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

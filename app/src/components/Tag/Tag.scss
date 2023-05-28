@@ -5,7 +5,7 @@
   padding: 6px;
   font-family: Cairo, NotoSans, sans-serif;
   font-weight: bold;
-  background-color: var(--light-color);
+  background-color: var(--lighter-color);
   color: var(--text-color);
 
   &.size-xxs {
@@ -14,7 +14,7 @@
   }
 
   &.size-xs {
-    padding: 6px;
+    padding: 4px;
     font-size: 12px;
   }
 
@@ -25,7 +25,7 @@
 
   &.size-md {
     padding: 10px;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   &.border {

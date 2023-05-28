@@ -29,10 +29,11 @@
   }
 }
 
-.pure-page {
+.pure {
   .page-content-wrapper {
     background-color: transparent;
-    padding: 0;
+    padding: 0 20px;
     border-radius: 0;
+    margin: 0 auto;
   }
 }

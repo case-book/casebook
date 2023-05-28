@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './EmptyContent.scss';
 
-function EmptyContent({ className, children, minHeight, color, fill }) {
+function EmptyContent({ className, children, minHeight, color, fill, border }) {
   return (
     <div
-      className={`empty-content-wrapper ${className} color-${color} ${fill ? 'fill' : ''}`}
+      className={`empty-content-wrapper ${className} color-${color} ${fill ? 'fill' : ''} ${border ? 'border' : ''}`}
       style={{
         minHeight,
       }}
@@ -21,6 +21,7 @@ EmptyContent.defaultProps = {
   minHeight: '140px',
   color: 'gray',
   fill: false,
+  border: false,
 };
 
 EmptyContent.propTypes = {
@@ -29,6 +30,7 @@ EmptyContent.propTypes = {
   minHeight: PropTypes.string,
   color: PropTypes.string,
   fill: PropTypes.bool,
+  border: PropTypes.bool,
 };
 
 export default EmptyContent;

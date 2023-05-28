@@ -18,7 +18,11 @@
   }
 
   &.fill {
-    height: 100%;
+    height: auto;
     flex-grow: 1;
+  }
+
+  &.border {
+    border : 1px solid var(--border-lighter-color);
   }
 }

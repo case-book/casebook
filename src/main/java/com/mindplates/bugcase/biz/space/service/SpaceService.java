@@ -149,6 +149,25 @@ public class SpaceService {
 
     }
 
+    public List<SpaceDTO> selectUserSpaceList(Long userId, String query) {
+        List<Space> spaceList;
+        if (StringUtils.isBlank(query)) {
+            spaceList = spaceRepository.findAllByUsersUserId(userId);
+        } else {
+            spaceList = spaceRepository.findAllByUsersUserIdAndNameContainingIgnoreCase(userId, query);
+        }
+
+        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
+
+        result.forEach((space -> {
+            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
+            space.setProjectCount(projectCount);
+        }));
+
+        return result;
+
+    }
+
     public List<SpaceUserDTO> selectSpaceUserList(String spaceCode, String query) {
         if (StringUtils.isNotBlank(query)) {
             List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);

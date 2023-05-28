@@ -58,6 +58,7 @@ import Th from './Table/Th';
 import TokenList from './TokenList/TokenList';
 import Info from './Info/Info';
 import Version from './Version/Version';
+import Search from './Search/Search';
 
 export {
   Selector,
@@ -120,4 +121,5 @@ export {
   TokenList,
   Info,
   Version,
+  Search,
 };

@@ -38,7 +38,7 @@ Radio.defaultProps = {
 
 Radio.propTypes = {
   className: PropTypes.string,
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   onChange: PropTypes.func,
   size: PropTypes.string,
   checked: PropTypes.bool,
