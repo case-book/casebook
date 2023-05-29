@@ -219,8 +219,8 @@ function SpaceContent({ space, onRefresh }) {
                 return (
                   <Radio
                     key={option.key}
-                    type="line"
-                    size="sm"
+                    type="inline"
+                    size="xs"
                     value={option.key}
                     checked={status === option.key}
                     label={option.value}
@@ -259,9 +259,7 @@ function SpaceContent({ space, onRefresh }) {
                           <Tr key={applicant.id}>
                             <Td className="user-info">{applicant.userName}</Td>
                             <Td className={`request-status ${applicant.approvalStatusCode}`}>
-                              <Tag border rounded={false}>
-                                {APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}
-                              </Tag>
+                              <Tag border>{APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}</Tag>
                             </Td>
                             <Td className="user-email">{applicant.userEmail}</Td>
                             <Td className="message">
@@ -360,7 +358,7 @@ function SpaceContent({ space, onRefresh }) {
                         </Td>
                         <Td>{holiday.name}</Td>
                         {(holiday.holidayType === 'YEARLY' || holiday.holidayType === 'SPECIFIED_DATE') && (
-                          <Td>
+                          <Td className="date-condition">
                             {holiday.holidayType === 'YEARLY'
                               ? moment(holiday.date, 'MMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].days.moment)
                               : moment(holiday.date, 'YYYYMMDD').format(DATE_FORMATS[dateUtil.getUserLocale()].yearsDays.moment)}

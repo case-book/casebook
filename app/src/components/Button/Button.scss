@@ -1,3 +1,35 @@
+@keyframes flash {
+  0% {
+    opacity: 0;
+    width: 0;
+    left: 0;
+  }
+
+  33% {
+    opacity: 1;
+    width: 120%;
+    left: 0;
+  }
+
+  50% {
+    opacity: 1;
+    width: 120%;
+    left: 0;
+  }
+
+  88% {
+    opacity: 1;
+    width: 120%;
+    left: 120%;
+  }
+
+  100% {
+    opacity: 0;
+    width: 120%;
+    left: 120%;
+  }
+}
+
 .btn-wrapper {
   border-radius: 4px;
   background-color: transparent;
@@ -7,6 +39,7 @@
   align-self: center;
   box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
   white-space: nowrap;
+  position: relative;
 
   &.shadow-none {
     box-shadow: none;
@@ -17,40 +50,47 @@
   }
 
   &.btn-xs {
+    padding: 0 8px;
     font-size: 12px;
     height: $xs-height;
   }
 
   &.btn-sm {
+    padding: 0 10px;
     font-size: 14px;
     height: $sm-height;
   }
 
   &.btn-md {
+    padding: 0 12px;
     font-size: 14px;
     height: $md-height;
   }
 
   &.btn-lg {
+    padding: 0 14px;
     font-size: 16px;
     height: $lg-height;
-    padding: 0 16px;
   }
 
   &.btn-xl {
+    padding: 0 16px;
     font-size: 18px;
     height: $xl-height;
-    padding: 0 20px;
   }
 
   &.btn-xxl {
+    padding: 0 18px;
     font-size: 20px;
     height: $xxl-height;
-    padding: 0 24px;
   }
 
   &:hover {
     filter: brightness(var(--hover-brightness));
+    .inner {
+      animation: flash 0.4s linear;
+      animation-fill-mode: forwards;
+    }
   }
 
   &.disabled {

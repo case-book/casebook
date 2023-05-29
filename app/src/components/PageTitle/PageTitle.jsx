@@ -20,7 +20,7 @@ function PageTitle({ className, name, children, links, control, onListClick, bre
             }}
           >
             <span>
-              <i className="fa-solid fa-list" />
+              <i className="fa-solid fa-arrow-up" />
             </span>
           </div>
         )}
@@ -51,7 +51,8 @@ function PageTitle({ className, name, children, links, control, onListClick, bre
                       navigate(d.to);
                     }}
                   >
-                    {d.text}
+                    {d.icon && <span className="icon">{d.icon}</span>}
+                    <span>{d.text}</span>
                   </Button>
                   {links.length - 1 > inx && <Liner display="inline-block" width="1px" height="12px" color="light" margin="0 5px" />}
                 </li>

@@ -7,6 +7,7 @@ import {
   Form,
   Input,
   Label,
+  Liner,
   Page,
   PageButtons,
   PageContent,
@@ -486,20 +487,7 @@ function SpaceEditPage({ type }) {
                               </Tag>
                             </Td>
                           )}
-                          <Td className="holiday-button">
-                            <Button
-                              size="xs"
-                              color="primary"
-                              onClick={() => {
-                                setHolidayPopupInfo({
-                                  ...holiday,
-                                  isOpened: true,
-                                  index: inx,
-                                });
-                              }}
-                            >
-                              {t('변경')}
-                            </Button>
+                          <Td>
                             <Button
                               size="xs"
                               color="danger"
@@ -514,6 +502,20 @@ function SpaceEditPage({ type }) {
                             >
                               {t('삭제')}
                             </Button>
+                            <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.5rem " />
+                            <Button
+                              size="xs"
+                              color="primary"
+                              onClick={() => {
+                                setHolidayPopupInfo({
+                                  ...holiday,
+                                  isOpened: true,
+                                  index: inx,
+                                });
+                              }}
+                            >
+                              {t('변경')}
+                            </Button>
                           </Td>
                         </Tr>
                       );
@@ -523,7 +525,6 @@ function SpaceEditPage({ type }) {
               )}
             </Block>
             <PageButtons
-              outline
               onCancel={() => {
                 if (isEdit) {
                   navigate(`/spaces/${spaceCode}/info`);

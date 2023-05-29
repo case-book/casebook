@@ -4,13 +4,9 @@
   width: 100%;
   flex-direction: column;
   max-width: $max-width;
-  padding: 1rem 1.5rem;
+  padding: 20px;
   background-color: var(--page-background-color);
-  border-radius: 4px;
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
+  border-radius: 10px;
 
   @media (max-width: 640px) {
     background-color: var(--theme-color);
@@ -25,7 +21,15 @@
 .list-page {
   .page-content-wrapper {
     background-color: transparent;
-    padding: 0;
+    padding: 0 0 20px;
+
+    @media (max-width: 1024px) {
+      padding: 0 10px 20px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 20px 20px 20px;
+    }
   }
 }
 

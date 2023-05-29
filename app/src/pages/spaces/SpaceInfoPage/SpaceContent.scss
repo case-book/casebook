@@ -20,6 +20,14 @@
     }
   }
 
+  .holiday-list-content {
+    .date-condition {
+      @include monospace;
+
+    }
+
+  }
+
   table.applicant-list {
     td {
       &.message {
@@ -100,22 +108,22 @@
         &.REQUEST,
         &.REQUEST_AGAIN {
           > div {
-            background-color: $color-sunflower;
-            color: #111;
+            background-color: var(--warning-color);;
+            color: var(--primary-text-color);
           }
         }
 
         &.APPROVAL {
           > div {
-            background-color: $color-azure;
-            color: $white;
+            _background-color: var(--primary-color);
+            _color: var(--primary-text-color);
           }
         }
 
         &.REJECTED {
           > div {
-            background-color: $color-tangerine;
-            color: $white;
+            background-color: var(--danger-color);;
+            color: var(--primary-text-color);
           }
         }
       }

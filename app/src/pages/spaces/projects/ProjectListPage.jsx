@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import './ProjectListPage.scss';
 import { MENUS } from '@/constants/menu';
+import SpaceService from '@/services/SpaceService';
 
 function ProjectListPage() {
   const { t } = useTranslation();
   const { spaceCode } = useParams();
+  const [space, setSpace] = useState(null);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
 
+  const getSpaceInfo = () => {
+    SpaceService.selectSpaceInfo(spaceCode, info => {
+      setSpace(info);
+    });
+  };
+
   useEffect(() => {
+    getSpaceInfo();
     ProjectService.selectMyProjectList(spaceCode, list => {
       setProjects(list);
     });
@@ -23,10 +32,31 @@ function ProjectListPage() {
     <Page className="project-list-page-wrapper" list>
       <PageTitle
         className="page-title"
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: space?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+        ]}
         links={[
-          <Link to={`/spaces/${spaceCode}/projects/new`}>
-            <i className="fa-solid fa-plus" /> {t('프로젝트')}
-          </Link>,
+          {
+            to: `/spaces/${spaceCode}/projects/new`,
+            text: t('새 프로젝트'),
+            color: 'primary',
+            icon: <i className="fa-solid fa-plus" />,
+          },
         ]}
         onListClick={() => {
           navigate('/spaces');

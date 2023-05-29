@@ -258,7 +258,6 @@ function TestrunReservationInfoPage() {
           </BlockRow>
         </Block>
         <PageButtons
-          outline
           onBack={() => {
             navigate(-1);
           }}

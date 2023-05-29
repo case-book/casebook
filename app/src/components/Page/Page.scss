@@ -8,8 +8,8 @@
   min-height: calc(100vh - 100px);
   border-radius: 10px;
   display: flex;
-
   overflow: visible;
+  box-sizing: border-box;
 
   &.hide-header {
     min-height: calc(100vh - 30px - 40px);
@@ -19,7 +19,7 @@
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 120px);
 
     &.hide-header {
       min-height: calc(100vh - 30px - 20px);
@@ -30,7 +30,7 @@
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 10px;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 110px);
 
     &.hide-header {
       min-height: calc(100vh - 30px - 20px);
@@ -90,7 +90,7 @@
   }
 
   .block-wrapper ~ .title-wrapper {
-    margin-top: 10px;
+    margin-top: 20px;
   }
 }
 .page-wrapper > .page-content-wrapper:first-child {

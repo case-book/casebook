@@ -75,7 +75,7 @@ $color-muted-black: #837e7e;
 
 $font-family-menu: NotoSans, sans-serif;
 $font-family-count: Rowdies, NotoSans, sans-serif;
-$font-family-date: AzeretMono, NotoSans, monospace;
+$font-family-date: IBMPlexMono, NotoSans, monospace;
 
 $gray-200: #eaeef3;
 
@@ -109,7 +109,7 @@ $color-form-control-dark: #121212;
 }
 
 @mixin monospace() {
-  font-family: IBMPlexMono, monospace;
+  font-family: $font-family-date;
 }
 
 @mixin date() {

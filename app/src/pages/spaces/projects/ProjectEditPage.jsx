@@ -328,6 +328,58 @@ function ProjectEditPage({ type }) {
     <>
       <Page className="project-edit-page-wrapper">
         <PageTitle
+          name={isEdit ? t('프로젝트 편집') : t('프로젝트 생성')}
+          breadcrumbs={
+            isEdit
+              ? [
+                  {
+                    to: '/',
+                    text: t('HOME'),
+                  },
+                  {
+                    to: '/',
+                    text: t('스페이스 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/info`,
+                    text: space?.name,
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects`,
+                    text: t('프로젝트 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects/${projectId}/info`,
+                    text: project?.name,
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/edit`,
+                    text: t('편집'),
+                  },
+                ]
+              : [
+                  {
+                    to: '/',
+                    text: t('HOME'),
+                  },
+                  {
+                    to: '/',
+                    text: t('스페이스 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/info`,
+                    text: space?.name,
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects`,
+                    text: t('프로젝트 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects/new`,
+                    text: t('생성'),
+                  },
+                ]
+          }
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects`);
           }}
@@ -336,7 +388,9 @@ function ProjectEditPage({ type }) {
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('프로젝트 정보')}</Title>
+            <Title border={false} marginBottom={false}>
+              {t('프로젝트 정보')}
+            </Title>
             <Block>
               <BlockRow>
                 <Label>{t('스페이스')}</Label>
@@ -383,7 +437,9 @@ function ProjectEditPage({ type }) {
                 />
               </BlockRow>
             </Block>
-            <Title>{t('알림 설정')}</Title>
+            <Title border={false} marginBottom={false}>
+              {t('알림 설정')}
+            </Title>
             <Block>
               <BlockRow>
                 <Label>{t('슬랙 URL')}</Label>
@@ -398,7 +454,7 @@ function ProjectEditPage({ type }) {
                   minLength={1}
                 />
                 <Button
-                  outline
+                  color="primary"
                   onClick={() => {
                     ConfigService.sendTestMessageToSlack(project.slackUrl, () => {
                       dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, '메세지 발송 완료', '입력하신 URL로 슬랙 메세지가 발송되었습니다.');

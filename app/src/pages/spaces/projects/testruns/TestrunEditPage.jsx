@@ -394,7 +394,6 @@ function TestrunEditPage({ type }) {
               </BlockRow>
             </Block>
             <PageButtons
-              outline
               onCancel={() => {
                 navigate(-1);
               }}

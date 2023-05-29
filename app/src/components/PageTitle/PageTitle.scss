@@ -148,6 +148,12 @@
     > li {
       align-self: center;
       display: inline-block;
+
+      button {
+        .icon {
+          margin-right: 4px;
+        }
+      }
     }
   }
 }
@@ -155,5 +161,38 @@
 .page-wrapper.info-page {
   .page-title-wrapper {
     border-bottom: 1px solid var(--border-light-color);
+  }
+}
+
+.page-wrapper.list-page {
+  .page-title-wrapper {
+    > div {
+      max-width: $max-width;
+      margin: 0 auto;
+      display: flex;
+      width: 100%;
+      height: 100%;
+
+      @media (max-width: 1024px) {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      > div {
+        align-self: center;
+
+        &.icon {
+          padding: 0 0 0 0;
+        }
+      }
+    }
+
+    .links {
+      margin-right: 0;
+
+      @media (max-width: 768px) {
+        margin-right: 10px;
+      }
+    }
   }
 }

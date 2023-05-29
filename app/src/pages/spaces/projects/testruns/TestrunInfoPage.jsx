@@ -275,7 +275,6 @@ function TestrunInfoPage() {
           </BlockRow>
         </Block>
         <PageButtons
-          outline
           onBack={() => {
             navigate(-1);
           }}

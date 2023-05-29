@@ -7,6 +7,10 @@
       display: block;
       padding: 0;
     }
+
+    input ~ button:last-child {
+      margin-left: 10px;
+    }
   }
 
   > .block-row-liner {
@@ -29,6 +33,4 @@
       }
     }
   }
-
-
 }

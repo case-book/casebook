@@ -170,21 +170,21 @@
 
 @font-face {
   font-family: 'IBMPlexMono';
-  src: url('./fonts/IBM-Plex-Mono/IBMPlexMono-Regular.ttf');
+  src: url('./fonts/IBMPlexMono/IBMPlexMono-Regular.ttf');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'IBMPlexMono';
-  src: url('./fonts/IBM-Plex-Mono/IBMPlexMono-Light.ttf');
+  src: url('./fonts/IBMPlexMono/IBMPlexMono-Light.ttf');
   font-weight: 100;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'IBMPlexMono';
-  src: url('./fonts/IBM-Plex-Mono/IBMPlexMono-Bold.ttf');
+  src: url('./fonts/IBMPlexMono/IBMPlexMono-Bold.ttf');
   font-weight: 700;
   font-style: normal;
 }
@@ -231,6 +231,10 @@ a {
 
   &:hover {
     color: var(--link-hover-color);
+  }
+
+  &:visited {
+    color: var(--link-color);
   }
 }
 
