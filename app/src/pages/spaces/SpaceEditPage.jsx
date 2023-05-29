@@ -53,7 +53,9 @@ import { cloneDeep } from 'lodash';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
-  const { id } = useParams();
+  const { spaceCode } = useParams();
+
+  console.log(spaceCode);
 
   const {
     userStore: { addSpace, language, country },
@@ -128,13 +130,13 @@ function SpaceEditPage({ type }) {
           ...space,
           timeZone: defaultTimeZone,
         });
-      } else if (id && isEdit) {
-        SpaceService.selectSpaceInfo(id, info => {
+      } else if (spaceCode && isEdit) {
+        SpaceService.selectSpaceInfo(spaceCode, info => {
           setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone) });
         });
       }
     });
-  }, [type, id]);
+  }, [type, spaceCode]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -161,7 +163,7 @@ function SpaceEditPage({ type }) {
       }
 
       SpaceService.updateSpace(spaceInfo, () => {
-        navigate(`/spaces/${id}/info`);
+        navigate(`/spaces/${spaceCode}/info`);
       });
     }
   };
@@ -192,15 +194,53 @@ function SpaceEditPage({ type }) {
     <>
       <Page className="space-edit-page-wrapper">
         <PageTitle
+          name={isEdit ? t('스페이스 편집') : t('스페이스 생성')}
+          breadcrumbs={
+            isEdit
+              ? [
+                  {
+                    to: '/',
+                    text: t('HOME'),
+                  },
+                  {
+                    to: '/',
+                    text: t('스페이스 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/info`,
+                    text: space?.name,
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/edit`,
+                    text: t('편집'),
+                  },
+                ]
+              : [
+                  {
+                    to: '/',
+                    text: t('HOME'),
+                  },
+                  {
+                    to: '/',
+                    text: t('스페이스 목록'),
+                  },
+                  {
+                    to: '/spaces/new',
+                    text: t('생성'),
+                  },
+                ]
+          }
           onListClick={() => {
             navigate('/spaces');
           }}
         >
-          {isEdit ? t('스페이스') : t('새 스페이스')}
+          {isEdit ? t('스페이스 편집') : t('새 스페이스')}
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('스페이스 정보')}</Title>
+            <Title border={false} marginBottom={false}>
+              {t('스페이스 정보')}
+            </Title>
             <Block>
               <BlockRow>
                 <Label required>{t('이름')}</Label>
@@ -295,7 +335,7 @@ function SpaceEditPage({ type }) {
                 />
               </BlockRow>
               <BlockRow>
-                <Label required tip={t('스페이스의 타임존은 휴일 관리에 입력된 조건들을 통해 휴일임을 판단하기 위한 용도로만 사용되며, 다른 의미를 가지지 않습니다.')}>
+                <Label required tip={t('스페이스의 타임존은 휴일 관리에 입력된 조건들을 통해 휴일임을 판단하기 위한 용도로만 사용됩니다.')}>
                   {t('타임존')}
                 </Label>
                 <ReactSelect
@@ -312,7 +352,7 @@ function SpaceEditPage({ type }) {
                 />
               </BlockRow>
               <BlockRow>
-                <Label tip={t('스페이스의 지역은 기본적으로 설정되어 있는 휴일 관리의 기본 목록을 제안하는 용도로만 사용되며, 다른 의미를 가지지 않습니다.')}>{t('지역')}</Label>
+                <Label tip={t('스페이스의 지역은 기본 휴일 데이터를 제안하기 위한 용도로만 사용됩니다.')}>{t('지역')}</Label>
                 <Selector
                   className="selector"
                   items={[{ key: '', value: t('없음') }].concat(
@@ -378,7 +418,8 @@ function SpaceEditPage({ type }) {
             <Title
               control={
                 <Button
-                  size="sm"
+                  size="xs"
+                  color="primary"
                   onClick={() => {
                     setHolidayPopupInfo({
                       isOpened: true,
@@ -426,7 +467,7 @@ function SpaceEditPage({ type }) {
                           </Td>
                           <Td>{holiday.name}</Td>
                           {(holiday.holidayType === 'YEARLY' || holiday.holidayType === 'SPECIFIED_DATE') && (
-                            <Td className={holidayDate.isValid() ? '' : 'invalid'}>
+                            <Td className={`date-condition ${holidayDate.isValid() ? '' : 'invalid'}`}>
                               {holidayDate.isValid()
                                 ? holidayDate.format(DATE_FORMATS[dateUtil.getUserLocale()][holiday.holidayType === 'SPECIFIED_DATE' ? 'yearsDays' : 'days'].moment)
                                 : t('잘못된 날짜')}
@@ -445,10 +486,10 @@ function SpaceEditPage({ type }) {
                               </Tag>
                             </Td>
                           )}
-
                           <Td className="holiday-button">
                             <Button
-                              size="sm"
+                              size="xs"
+                              color="primary"
                               onClick={() => {
                                 setHolidayPopupInfo({
                                   ...holiday,
@@ -460,7 +501,8 @@ function SpaceEditPage({ type }) {
                               {t('변경')}
                             </Button>
                             <Button
-                              size="sm"
+                              size="xs"
+                              color="danger"
                               onClick={() => {
                                 const nextHolidays = space.holidays.slice(0);
                                 nextHolidays.splice(inx, 1);
@@ -484,7 +526,7 @@ function SpaceEditPage({ type }) {
               outline
               onCancel={() => {
                 if (isEdit) {
-                  navigate(`/spaces/${id}/info`);
+                  navigate(`/spaces/${spaceCode}/info`);
                 } else {
                   navigate('/');
                 }

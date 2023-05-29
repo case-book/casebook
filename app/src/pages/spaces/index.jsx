@@ -8,8 +8,8 @@ function SpacesRoutes() {
     <Routes>
       <Route path="/:spaceCode/projects/*" element={<ProjectsRoutes />} />
       <Route path="/new" element={<SpaceEditPage />} />
-      <Route path="/:id/edit" element={<SpaceEditPage type="edit" />} />
-      <Route path="/:id/info" element={<SpaceInfoPage />} />
+      <Route path="/:spaceCode/edit" element={<SpaceEditPage type="edit" />} />
+      <Route path="/:spaceCode/info" element={<SpaceInfoPage />} />
       <Route path="/" element={<SpaceListPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>

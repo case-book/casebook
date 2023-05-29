@@ -8,7 +8,7 @@ import ConfigService from '@/services/ConfigService';
 import useStores from '@/hooks/useStores';
 
 function SpaceInfoPage() {
-  const { id } = useParams();
+  const { spaceCode } = useParams();
   const [space, setSpace] = useState(null);
   const [accessible, setAccessible] = useState(null);
   const {
@@ -25,7 +25,7 @@ function SpaceInfoPage() {
       });
 
       SpaceService.selectSpaceInfo(
-        id,
+        spaceCode,
         info => {
           setAccessible(true);
           setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone)?.label });
@@ -34,7 +34,7 @@ function SpaceInfoPage() {
           setAccessible(false);
 
           if (status === 403) {
-            SpaceService.selectSpaceAccessibleInfo(id, data => {
+            SpaceService.selectSpaceAccessibleInfo(spaceCode, data => {
               setSpace(data);
             });
             return true;
@@ -48,7 +48,7 @@ function SpaceInfoPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     getSpaceInfo();
-  }, [id]);
+  }, [spaceCode]);
 
   return (
     <Page className="space-info-page-wrapper">

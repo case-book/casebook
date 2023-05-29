@@ -6,7 +6,6 @@
   z-index: 2;
   border-radius: 2px;
   resize: none;
-  font-family: NotoSans, sans-serif;
   line-height: 120%;
   color: var(--text-color);
   border : none;
@@ -40,26 +39,26 @@
   }
 
   &.size-xl {
-    font-size: 20px;
-    padding: 12px;
-  }
-
-  &.size-lg {
     font-size: 18px;
     padding: 12px;
   }
 
-  &.size-md {
+  &.size-lg {
     font-size: 16px;
     padding: 12px;
   }
 
-  &.size-sm {
+  &.size-md {
     font-size: 14px;
+    padding: 12px;
+  }
+
+  &.size-sm {
+    font-size: 12px;
   }
 
   &.size-xs {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   &.disabled {

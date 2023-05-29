@@ -18,6 +18,13 @@ $lg-height: 38px;
 $xl-height: 42px;
 $xxl-height: 46px;
 
+$xs-font-size: 10px;
+$sm-font-size: 12px;
+$md-font-size: 14px;
+$lg-font-size: 16px;
+$xl-font-size: 18px;
+$xxl-font-size: 20px;
+
 $color-point: #7bde89;
 $color-tag: #7bde89;
 $color-sub1: #7bde89;
@@ -102,7 +109,7 @@ $color-form-control-dark: #121212;
 }
 
 @mixin monospace() {
-  font-family: MartianMono, monospace;
+  font-family: IBMPlexMono, monospace;
 }
 
 @mixin date() {

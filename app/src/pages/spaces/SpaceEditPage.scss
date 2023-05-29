@@ -16,7 +16,12 @@
     color: var(--danger-color);
   }
 
+  .date-condition {
+    @include monospace;
+  }
+
   .condition {
+
     > div {
       margin-right: 0.5rem;
 

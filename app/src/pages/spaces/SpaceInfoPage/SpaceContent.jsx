@@ -28,12 +28,11 @@ function SpaceContent({ space, onRefresh }) {
 
   const {
     userStore: { removeSpace, isAdmin },
-    contextStore: { spaceCode },
   } = useStores();
 
   const navigate = useNavigate();
 
-  const { id } = useParams();
+  const { spaceCode } = useParams();
   const [status, setStatus] = useState('REQUEST');
   const [userRole, setUserRole] = useState('ALL');
   const [tooltipId, setTooltipId] = useState(null);
@@ -48,13 +47,13 @@ function SpaceContent({ space, onRefresh }) {
   ]);
 
   const approve = applicantId => {
-    SpaceService.approveSpaceJoinRequest(id, applicantId, () => {
+    SpaceService.approveSpaceJoinRequest(spaceCode, applicantId, () => {
       onRefresh();
     });
   };
 
   const reject = applicantId => {
-    SpaceService.rejectSpaceJoinRequest(id, applicantId, () => {
+    SpaceService.rejectSpaceJoinRequest(spaceCode, applicantId, () => {
       onRefresh();
     });
   };
@@ -65,7 +64,7 @@ function SpaceContent({ space, onRefresh }) {
       t('스페이스 탈퇴'),
       <div>{t('스페이스를 탈퇴하면, 스페이스 및 스페이스 하위 프로젝트들에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?')}</div>,
       () => {
-        SpaceService.withdrawSpace(id, () => {
+        SpaceService.withdrawSpace(spaceCode, () => {
           onRefresh();
         });
       },
@@ -140,7 +139,7 @@ function SpaceContent({ space, onRefresh }) {
           isAdmin || space?.admin
             ? [
                 {
-                  to: `/spaces/${id}/edit`,
+                  to: `/spaces/${spaceCode}/edit`,
                   text: t('편집'),
                   color: 'primary',
                 },
@@ -453,9 +452,11 @@ function SpaceContent({ space, onRefresh }) {
           {(isAdmin || space?.admin) && (
             <BlockRow>
               <Label>{t('스페이스 삭제')}</Label>
-              <Button size="sm" color="danger" onClick={onDelete}>
-                {t('@ 스페이스를 삭제합니다.', { name: space.name })}
-              </Button>
+              <Text>
+                <Button size="sm" color="danger" onClick={onDelete}>
+                  {t('@ 스페이스를 삭제합니다.', { name: space.name })}
+                </Button>
+              </Text>
             </BlockRow>
           )}
         </Block>
@@ -466,7 +467,7 @@ function SpaceContent({ space, onRefresh }) {
           onEdit={
             isAdmin || space?.admin
               ? () => {
-                  navigate(`/spaces/${id}/edit`);
+                  navigate(`/spaces/${spaceCode}/edit`);
                 }
               : null
           }
