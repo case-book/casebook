@@ -56,6 +56,7 @@
     background-color: transparent;
     border-radius: 0;
     border: none;
+    min-height: calc(100vh - 100px - 40px);
   }
 
   &.wide {

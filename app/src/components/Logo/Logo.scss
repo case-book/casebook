@@ -1,11 +1,91 @@
+@keyframes blink {
+  0% {
+    position: relative;
+    top: -40px;
+    opacity: 0;
+  }
+
+  90% {
+    top: -1px;
+    opacity: 1;
+  }
+
+  100% {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes rise-up {
+  0% {
+    top: 7px;
+  }
+
+  100% {
+    top: -100px;
+  }
+}
+
 .logo-wrapper {
   align-self: center;
+  animation: blink 0.6s ease-in-out;
+  animation-fill-mode: forwards;
+  position: relative;
+
+  .hand-1,
+  .hand-2 {
+    font-size: 20px;
+    position: absolute;
+    z-index: 4;
+    top: 7px;
+
+    animation: rise-up 0.6s ease-in-out;
+    animation-fill-mode: forwards;
+    animation-delay: 1.2s;
+
+    > .hand {
+      display: inline-block;
+      transform: rotate(90deg);
+    }
+
+    > .bar-1 {
+      position: absolute;
+      display: inline-block;
+      width: 6px;
+      height: 65px;
+      background-color: var(--text-color);
+    }
+  }
+
+  .hand-1 {
+    left: -20px;
+    > .hand {
+      transform: rotate(90deg);
+    }
+    > .bar-1 {
+      left: -4px;
+      top: -49px;
+      border-radius: 0 0 0 4px;
+    }
+  }
+
+  .hand-2 {
+    right: -20px;
+    > .hand {
+      transform: rotate(90deg) rotateX(180deg);
+    }
+
+    > .bar-1 {
+      right: -4px;
+      top: -49px;
+      border-radius: 0 0 4px 0;
+    }
+  }
 
   > .logo-content {
     font-size: 32px;
     position: relative;
     padding: 0;
-
 
     > div.logo-content {
       display: flex;

@@ -5,6 +5,18 @@ import './Logo.scss';
 function Logo({ className, onClick }) {
   return (
     <div className={`logo-wrapper ${className} ${onClick ? 'g-clickable' : ''}`}>
+      <div className="hand-1">
+        <span className="hand">
+          <i className="fa-solid fa-hand-back-fist" />
+        </span>
+        <span className="bar-1" />
+      </div>
+      <div className="hand-2">
+        <span className="hand">
+          <i className="fa-solid fa-hand-back-fist" />
+        </span>
+        <span className="bar-1" />
+      </div>
       <div className="logo-content">
         <div
           className="logo-content"

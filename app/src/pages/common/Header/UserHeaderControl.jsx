@@ -122,7 +122,7 @@ function UserHeaderControl({ className }) {
           outline
           rounded
           className={notificationChangeEffect ? 'effect' : ''}
-          color={notificationOpen ? 'primary' : ''}
+          color={notificationOpen ? 'primary' : 'white'}
           onClick={e => {
             e.preventDefault();
             openUserNotificationPopup(true);
@@ -140,7 +140,7 @@ function UserHeaderControl({ className }) {
         <Button
           outline
           rounded
-          color={userMenuOpen ? 'primary' : ''}
+          color={userMenuOpen ? 'primary' : 'white'}
           onClick={e => {
             e.preventDefault();
             setUserMenuOpen(true);
