@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckBox, Form, Input, Label, LogoIcon, Page, PageButtons, PageContent } from '@/components';
+import { CheckBox, Form, Input, Label, Logo, Page, PageButtons, PageContent } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
@@ -74,10 +74,7 @@ function SetUpPage() {
       <PageContent>
         <Form onSubmit={onSubmit}>
           <div className="logo">
-            <div>
-              <LogoIcon className="logo-icon" size="md" />
-              <div>CASEBOOK</div>
-            </div>
+            <Logo />
           </div>
           <div className="page-description">
             <i className="fa-solid fa-circle-info" />
@@ -315,7 +312,6 @@ function SetUpPage() {
               </div>
             </div>
           </div>
-
           <PageButtons onSubmit={() => {}} onSubmitText={t('저장')} />
         </Form>
       </PageContent>

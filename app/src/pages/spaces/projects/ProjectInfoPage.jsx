@@ -374,7 +374,7 @@ function ProjectInfoPage() {
             <BlockRow>
               <Label>{t('프로젝트 탈퇴')}</Label>
               <Text>
-                <Button size="sm" color="warning" onClick={onWithdraw}>
+                <Button size="sm" color="warning" outline onClick={onWithdraw}>
                   {t('@ 프로젝트에서 탈퇴합니다.', { name: project?.name })}
                 </Button>
               </Text>
@@ -383,7 +383,7 @@ function ProjectInfoPage() {
               <BlockRow>
                 <Label>{t('프로젝트 삭제')}</Label>
                 <Text>
-                  <Button size="sm" color="danger" onClick={onDelete}>
+                  <Button size="sm" color="danger" outline onClick={onDelete}>
                     {t('@ 프로젝트를 삭제합니다.', { name: project?.name })}
                   </Button>
                 </Text>

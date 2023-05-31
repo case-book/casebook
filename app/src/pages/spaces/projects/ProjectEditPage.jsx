@@ -456,8 +456,12 @@ function ProjectEditPage({ type }) {
                 <Button
                   color="primary"
                   onClick={() => {
+                    if (!project.slackUrl) {
+                      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('URL 없음'), t('슬랙 URL을 입력해주세요.'));
+                      return;
+                    }
                     ConfigService.sendTestMessageToSlack(project.slackUrl, () => {
-                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, '메세지 발송 완료', '입력하신 URL로 슬랙 메세지가 발송되었습니다.');
+                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 URL로 슬랙 메세지가 발송되었습니다.'));
                     });
                   }}
                 >
@@ -475,7 +479,7 @@ function ProjectEditPage({ type }) {
                       enableTestrunAlarm: val,
                     })
                   }
-                  label="테스트런이 생성되거나, 종료되면 슬랙을 통해 알립니다."
+                  label={t('테스트런이 생성되거나, 종료되면 슬랙을 통해 알립니다.')}
                 />
               </BlockRow>
             </Block>
