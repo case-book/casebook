@@ -71,6 +71,9 @@ function ProjectMenu({ className, closeMobileMenu }) {
             <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px" />
             {d.list && (
               <ul className="sub-menu">
+                <div className="arrow">
+                  <div />
+                </div>
                 {d.list?.map(info => {
                   return (
                     <li key={info.key}>

@@ -1,0 +1,119 @@
+.project-header-wrapper {
+  background-color: var(--header-background-color);
+  padding: 0 20px 0 10px;
+  @media (max-width: 768px) {
+    padding: 0 20px;
+  }
+  position: relative;
+  z-index: 4;
+
+  > div.header-content {
+    height: 80px;
+    display: flex;
+    max-width: $max-width;
+    margin: 0 auto;
+    position: relative;
+
+    > div {
+      align-self: center;
+
+      &.back-navigator,
+      &.mobile-menu {
+        height: 100%;
+        line-height: 0;
+        overflow: hidden;
+        transition: width, 0.5s;
+        display: flex;
+        justify-content: center;
+        margin-right: 4px;
+
+        &.is-root {
+          width: 0;
+          transition: width, 0.5s;
+        }
+
+        > div {
+          display: inline-flex;
+          width: 40px;
+          height: 40px;
+          align-self: center;
+          font-size: 24px;
+          cursor: pointer;
+          line-height: 0;
+          border-radius: 50%;
+          justify-content: center;
+
+          &:hover {
+            background-color: var(--primary-color);
+            color: var(--primary-text-color);
+          }
+
+          > div {
+            align-self: center;
+          }
+        }
+      }
+
+      &.mobile-menu {
+        display: none;
+        @media (max-width: 768px) {
+          display: flex;
+          width: 80px;
+          justify-content: left;
+          margin-right: 0;
+        }
+      }
+
+      &.mobile-menu-list {
+
+      }
+
+      &.back-navigator {
+        @media (max-width: 768px) {
+          display: none;
+        }
+      }
+
+      &.logo {
+        margin-right: 20px;
+        @media (max-width: 768px) {
+          margin-right: 0;
+          flex-grow: 1;
+          justify-content: center;
+          display: inline-flex;
+        }
+        > div {
+          display: flex;
+          > div {
+            align-self: center;
+          }
+
+          .logo-icon {
+            margin-right: 0.5rem;
+          }
+        }
+      }
+    }
+
+    .project-menu {
+      flex-grow: 1;
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+
+    .user-header-control {
+      @media (max-width: 768px) {
+        width: 80px;
+        justify-content: flex-end;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .back-navigator,
+      .project-menu {
+        _display: none;
+      }
+    }
+  }
+}

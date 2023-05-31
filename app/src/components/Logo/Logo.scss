@@ -33,9 +33,14 @@
 
 .logo-wrapper {
   align-self: center;
-  animation: blink 0.6s ease-in-out;
-  animation-fill-mode: forwards;
   position: relative;
+  height: 40px;
+  padding-top: 2px;
+
+  &.animation {
+    animation: blink 0.6s ease-in-out;
+    animation-fill-mode: forwards;
+  }
 
   .hand-1,
   .hand-2 {
@@ -89,13 +94,15 @@
 
   > .logo-content {
     font-size: 32px;
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
     position: relative;
     padding: 0;
 
     > div.logo-content {
       display: flex;
       justify-content: center;
-
       position: relative;
       z-index: 1;
 
@@ -115,8 +122,6 @@
           font-family: Rowdies, sans-serif;
           font-weight: 400;
           line-height: 100%;
-          position: relative;
-          top: 2px;
         }
       }
 

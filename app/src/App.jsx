@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Common, Header, Join, Login, Message, SetUpPage, SpaceListPage } from '@/pages';
+import { Common, Join, Login, Message, SetUpPage, SpaceListPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
 import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
@@ -12,6 +12,7 @@ import { debounce } from 'lodash';
 import './App.scss';
 import { useTranslation } from 'react-i18next';
 import GuestHeader from '@/pages/common/Header/GuestHeader';
+import ProjectHeader from '@/pages/common/Header/ProjectHeader';
 
 function App() {
   const {
@@ -88,7 +89,7 @@ function App() {
       {tried && setUp != null && setUp && (
         <div className="app-content">
           {!(isLogin && isProjectSelected) && <GuestHeader />}
-          {isLogin && isProjectSelected && <Header />}
+          {isLogin && isProjectSelected && <ProjectHeader />}
           <main className="main-content">
             {isLogin && (
               <Routes location={location}>
