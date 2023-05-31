@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Table, Tag, Tbody, Td, Th, THead, Tr } from '@/components';
+import { Button, Card, EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Table, Tag, Tbody, Td, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -48,7 +48,7 @@ function ReportListPage() {
   }, [spaceCode]);
 
   return (
-    <Page className="report-list-page-wrapper" list>
+    <Page className="report-list-page-wrapper">
       <PageTitle
         className="page-title"
         onListClick={() => {
@@ -58,13 +58,7 @@ function ReportListPage() {
         {t('리포트')}
       </PageTitle>
       <PageContent className="page-content">
-        {testruns?.length <= 0 && (
-          <div className="no-project">
-            <div>
-              <div>{t('조회된 리포트가 없습니다.')}</div>
-            </div>
-          </div>
-        )}
+        {testruns?.length <= 0 && <EmptyContent fill>{t('조회된 리포트가 없습니다.')}</EmptyContent>}
 
         <ul className="report-cards">
           {testruns.slice(0, 3).map(testrun => {

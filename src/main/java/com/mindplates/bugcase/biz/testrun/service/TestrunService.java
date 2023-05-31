@@ -522,14 +522,16 @@ public class TestrunService {
         int testcaseGroupCount = 0;
         int testcaseCount = 0;
 
-        for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrunReservation.getTestcaseGroups()) {
-            testcaseGroupCount += 1;
-            testrunTestcaseGroup.setTestrunReservation(testrunReservation);
+        if (testrunReservation.getTestcaseGroups() != null) {
+            for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrunReservation.getTestcaseGroups()) {
+                testcaseGroupCount += 1;
+                testrunTestcaseGroup.setTestrunReservation(testrunReservation);
 
-            if (testrunTestcaseGroup.getTestcases() != null) {
-                for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
-                    testcaseCount += 1;
-                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                if (testrunTestcaseGroup.getTestcases() != null) {
+                    for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
+                        testcaseCount += 1;
+                        testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                    }
                 }
             }
         }

@@ -15,7 +15,6 @@ function MainMenu({ className, closeMobileMenu }) {
     userStore: { user },
     themeStore: { theme },
     contextStore: { spaceCode, projectId, isProjectSelected, isSpaceSelected, refreshProjectTime },
-    controlStore: { hideHeader },
   } = useStores();
 
   const navigate = useNavigate();
@@ -51,7 +50,7 @@ function MainMenu({ className, closeMobileMenu }) {
   });
 
   return (
-    <ul className={`main-menu-wrapper common-menu-wrapper ${isProjectSelected ? 'project-selected' : ''} ${className} ${hideHeader ? 'collapsed' : 'no-collapsed'}`}>
+    <ul className={`main-menu-wrapper common-menu-wrapper ${isProjectSelected ? 'project-selected' : ''} ${className}`}>
       {STATIC_MENUS.filter(d => d.pc)
         .filter(d => !d.admin || (d.admin && user.activeSystemRole === 'ROLE_ADMIN'))
         .map((d, inx) => {

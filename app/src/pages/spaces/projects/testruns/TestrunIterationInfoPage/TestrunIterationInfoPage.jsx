@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
@@ -96,20 +96,51 @@ function TestrunIterationInfoPage() {
       },
       null,
       t('삭제'),
+      null,
+      'danger',
     );
   };
 
   return (
     <Page className="testrun-Iteration-info-page-wrapper">
       <PageTitle
-        links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/edit`}>{t('편집')}</Link>] : null}
-        control={
-          <div>
-            <Button size="sm" color="danger" onClick={onDelete}>
-              {t('반복 테스트런 삭제')}
-            </Button>
-          </div>
-        }
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations`,
+            text: t('반복 테스트런 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/info`,
+            text: testrunIteration?.name,
+          },
+        ]}
+        links={[
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/edit`,
+            text: t('편집'),
+            color: 'primary',
+          },
+        ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/iterations`);
         }}
@@ -117,7 +148,9 @@ function TestrunIterationInfoPage() {
         {t('테스트런')}
       </PageTitle>
       <PageContent>
-        <Title>{t('테스트런 정보')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('테스트런 정보')}
+        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -297,6 +330,19 @@ function TestrunIterationInfoPage() {
                 </Tbody>
               </Table>
             )}
+          </BlockRow>
+        </Block>
+        <Title paddingBottom={false} border={false} marginBottom={false}>
+          {t('관리')}
+        </Title>
+        <Block>
+          <BlockRow>
+            <Label>{t('예약 테스트런 삭제')}</Label>
+            <Text>
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('반복 테스트런 삭제')}
+              </Button>
+            </Text>
           </BlockRow>
         </Block>
         <PageButtons

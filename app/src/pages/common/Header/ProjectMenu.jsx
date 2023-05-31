@@ -14,7 +14,6 @@ function ProjectMenu({ className, closeMobileMenu }) {
     userStore: { isLogin },
     themeStore: { theme },
     contextStore: { spaceCode, projectId, isProjectSelected },
-    controlStore: { hideHeader },
   } = useStores();
 
   const location = useLocation();
@@ -27,7 +26,7 @@ function ProjectMenu({ className, closeMobileMenu }) {
     .filter(d => d.login === undefined || d.login === isLogin);
 
   return (
-    <ul className={`project-menu-wrapper common-menu-wrapper ${className} ${hideHeader ? 'collapsed' : ''} ${isProjectSelected ? 'project-selected' : ''} ${list?.length > 0 ? '' : 'no-menu'}`}>
+    <ul className={`project-menu-wrapper common-menu-wrapper ${className} ${isProjectSelected ? 'project-selected' : ''} ${list?.length > 0 ? '' : 'no-menu'}`}>
       {list.map((d, inx) => {
         let isSelected = false;
         if (d.project) {

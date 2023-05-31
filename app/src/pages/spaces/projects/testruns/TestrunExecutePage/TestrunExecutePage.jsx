@@ -519,7 +519,7 @@ function TestrunExecutePage() {
   }, [user, paricipants, watcherInfo, testrun, socketClient]);
 
   return (
-    <Page className="testrun-execute-page-wrapper" list wide={wide}>
+    <Page className="testrun-execute-page-wrapper" wide={wide}>
       <PageTitle
         control={
           <div className="testrun-title-content">

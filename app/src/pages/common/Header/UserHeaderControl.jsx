@@ -14,7 +14,6 @@ import NotificationList from '@/components/NotificationList/NotificationList';
 function UserHeaderControl({ className }) {
   const {
     userStore: { isAdmin, setUser, notificationCount, setNotificationCount },
-    controlStore: { hideHeader },
   } = useStores();
 
   const navigate = useNavigate();
@@ -116,7 +115,7 @@ function UserHeaderControl({ className }) {
   };
 
   return (
-    <div className={`user-header-control-wrapper ${className} ${hideHeader ? 'collapsed' : ''}`}>
+    <div className={`user-header-control-wrapper ${className}`}>
       <div className="notification-menu side-menu-item">
         <Button
           outline

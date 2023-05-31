@@ -68,7 +68,7 @@ function ProjectDashBoardPage() {
       setUserAssignedTestruns(list);
     });
 
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+    ProjectService.selectProjectName(spaceCode, projectId, info => {
       setProject(info);
     });
   }, [spaceCode, projectId]);
@@ -111,7 +111,7 @@ function ProjectDashBoardPage() {
             text: t('프로젝트 목록'),
           },
           {
-            to: `/spaces/${spaceCode}/projects/${projectId}/info`,
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
             text: project?.name,
           },
           {

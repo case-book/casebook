@@ -16,7 +16,6 @@ import SideControl from '@/pages/common/Header/SideControl';
 function Header({ className }) {
   const {
     userStore: { isLogin, setUser },
-    controlStore: { hideHeader },
     themeStore: { theme },
   } = useStores();
 
@@ -51,7 +50,7 @@ function Header({ className }) {
   const isRoot = location.pathname === '/';
 
   return (
-    <header className={`${className} g-no-select header-wrapper ${hideHeader ? 'hide' : ''} ${isRoot ? 'is-main' : ''} theme-${theme}`}>
+    <header className={`${className} g-no-select header-wrapper ${isRoot ? 'is-main' : ''} theme-${theme}`}>
       <div className="header-content">
         <div
           className="mobile-menu-button"

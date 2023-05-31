@@ -7,18 +7,9 @@ import './Page.scss';
 function Page({ className, children, colored, list, wide, pure }) {
   const {
     themeStore: { theme },
-    controlStore: { hideHeader },
   } = useStores();
 
-  return (
-    <div
-      className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} ${pure ? 'pure' : ''} theme-${theme} ${
-        hideHeader ? 'hide-header' : ''
-      }`}
-    >
-      {children}
-    </div>
-  );
+  return <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} ${pure ? 'pure' : ''} theme-${theme}`}>{children}</div>;
 }
 
 Page.defaultProps = {

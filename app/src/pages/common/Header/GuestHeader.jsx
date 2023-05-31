@@ -11,7 +11,6 @@ import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
 
 function GuestHeader({ className }) {
   const {
-    controlStore: { hideHeader },
     userStore: { isLogin },
     themeStore: { theme, setTheme },
   } = useStores();
@@ -21,7 +20,7 @@ function GuestHeader({ className }) {
   const { t } = useTranslation();
 
   return (
-    <header className={`${className} g-no-select guest-header-wrapper ${hideHeader ? 'hide' : ''} theme-${theme}`}>
+    <header className={`${className} g-no-select guest-header-wrapper theme-${theme}`}>
       <div className="header-content">
         <div className="left">
           <div className="theme-selector">

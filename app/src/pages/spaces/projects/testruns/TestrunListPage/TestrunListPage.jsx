@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Tag } from '@/components';
+import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Tag, EmptyContent } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -9,6 +9,7 @@ import moment from 'moment';
 import { ITEM_TYPE } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
 import './TestrunListPage.scss';
+import ProjectService from '@/services/ProjectService';
 
 function TestrunListPage() {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ function TestrunListPage() {
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
+  const [project, setProject] = useState(null);
   const [testruns, setTestruns] = useState([]);
 
   const getGraphData = testrun => {
@@ -55,7 +57,10 @@ function TestrunListPage() {
         }),
       );
     });
-  }, [spaceCode]);
+    ProjectService.selectProjectName(spaceCode, projectId, info => {
+      setProject(info);
+    });
+  }, [spaceCode, projectId]);
 
   const onMessage = info => {
     const { data } = info;
@@ -118,10 +123,39 @@ function TestrunListPage() {
     <Page className="testrun-list-page-wrapper" list={testruns?.length > 0}>
       <PageTitle
         className="page-title"
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
+            text: t('테스트런'),
+          },
+        ]}
         links={[
-          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/new`}>
-            <i className="fa-solid fa-plus" /> {t('테스트런')}
-          </Link>,
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/new`,
+            text: t('테스트런'),
+            color: 'primary',
+            icon: <i className="fa-solid fa-plus" />,
+          },
         ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
@@ -131,21 +165,20 @@ function TestrunListPage() {
       </PageTitle>
       <PageContent className="page-content">
         {testruns?.length <= 0 && (
-          <div className="empty">
+          <EmptyContent fill color="transparent">
+            <div>{t('실행 중인 테스트런이 없습니다.')}</div>
             <div>
-              <div>{t('실행 중인 테스트런이 없습니다.')}</div>
-              <div>
-                <Button
-                  outline
-                  onClick={() => {
-                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
-                  }}
-                >
-                  <i className="fa-solid fa-plus" /> {t('테스트런')}
-                </Button>
-              </div>
+              <Button
+                outline
+                color="primary"
+                onClick={() => {
+                  navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
+                }}
+              >
+                <i className="fa-solid fa-plus" /> {t('테스트런')}
+              </Button>
             </div>
-          </div>
+          </EmptyContent>
         )}
 
         {testruns?.length > 0 && (

@@ -74,20 +74,52 @@ function TestrunReservationInfoPage() {
       },
       null,
       t('삭제'),
+      null,
+      'danger',
     );
   };
 
   return (
     <Page className="testrun-reservation-info-page-wrapper">
       <PageTitle
-        links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/edit`}>{t('편집')}</Link>] : null}
-        control={
-          <div>
-            <Button size="sm" color="danger" onClick={onDelete}>
-              {t('예약 테스트런 삭제')}
-            </Button>
-          </div>
-        }
+        name={t('예약 테스트런 정보')}
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations`,
+            text: t('예약 테스트런 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/info`,
+            text: testrunReservation?.name,
+          },
+        ]}
+        links={[
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/edit`,
+            text: t('편집'),
+            color: 'primary',
+          },
+        ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations`);
         }}
@@ -95,7 +127,9 @@ function TestrunReservationInfoPage() {
         {t('예약 테스트런')}
       </PageTitle>
       <PageContent>
-        <Title>{t('테스트런 정보')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('테스트런 정보')}
+        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -255,6 +289,19 @@ function TestrunReservationInfoPage() {
                 </Tbody>
               </Table>
             )}
+          </BlockRow>
+        </Block>
+        <Title paddingBottom={false} border={false} marginBottom={false}>
+          {t('관리')}
+        </Title>
+        <Block>
+          <BlockRow>
+            <Label>{t('예약 테스트런 삭제')}</Label>
+            <Text>
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('예약 테스트런 삭제')}
+              </Button>
+            </Text>
           </BlockRow>
         </Block>
         <PageButtons

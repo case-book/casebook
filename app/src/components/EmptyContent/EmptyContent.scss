@@ -22,6 +22,9 @@
   }
 
   &.border {
-    border : 1px solid var(--border-lighter-color);
+    border: 1px solid var(--border-lighter-color);
+  }
+  button {
+    margin-top: 10px;
   }
 }

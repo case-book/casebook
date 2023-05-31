@@ -1,6 +1,10 @@
 .testrun-reservation-list-page-wrapper {
   display: flex;
 
+  .condition {
+    text-align: right;
+  }
+
   .page-content {
     flex-grow: 1;
     display: flex;
@@ -30,6 +34,7 @@
       .name {
         font-weight: bold;
       }
+
       .day {
         margin-left: 0.25rem;
         &:first-child {
@@ -37,8 +42,8 @@
         }
       }
 
-      .start-time {
-        @include date;
+      .date {
+        font-size: 12px;
       }
 
       .duration,

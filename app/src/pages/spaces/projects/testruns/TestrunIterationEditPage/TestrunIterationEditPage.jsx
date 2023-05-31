@@ -224,6 +224,37 @@ function TestrunIterationEditPage({ type }) {
     <>
       <Page className="testrun-iteration-edit-page-wrapper">
         <PageTitle
+          name={isEdit ? t('반복 테스트런 편집') : t('반복 테스트런 생성')}
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/',
+              text: t('스페이스 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/info`,
+              text: spaceCode,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects`,
+              text: t('프로젝트 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}`,
+              text: project?.name,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations`,
+              text: t('반복 테스트런 목록'),
+            },
+            {
+              to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/new`,
+              text: isEdit ? t('편집') : t('생성'),
+            },
+          ]}
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/iterations`);
           }}
@@ -232,7 +263,9 @@ function TestrunIterationEditPage({ type }) {
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('테스트런 정보')}</Title>
+            <Title border={false} marginBottom={false}>
+              {t('테스트런 정보')}
+            </Title>
             <Block>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>

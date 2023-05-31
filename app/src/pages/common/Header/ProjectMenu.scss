@@ -34,10 +34,12 @@
 
     li {
       cursor: pointer;
-      padding: 5px 8px;
+
       > a {
         font-weight: normal !important;
         color: var(--text-color);
+        padding: 5px 8px;
+        display: inline-block;
       }
       &:last-child {
         margin-bottom: 0;

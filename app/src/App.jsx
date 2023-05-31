@@ -56,7 +56,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <div className={`app-wrapper theme-${theme}`}>
+    <div className={`app-wrapper theme-${theme} ${isLogin && isProjectSelected ? 'project-selected' : ''}`}>
       <Common />
       {(tried === null || setUp == null) && (
         <div className="tried-content">

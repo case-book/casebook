@@ -30,21 +30,17 @@ export default class ControlStore {
     okHandler: null,
   };
 
-  hideHeader = false;
-
   constructor() {
     makeObservable(this, {
       message: observable,
       confirm: observable,
       requestLoading: observable,
       error: observable,
-      hideHeader: observable,
       requestMessages: observable,
       setMessage: action,
       setConfirm: action,
       setRequestLoading: action,
       setError: action,
-      setHideHeader: action,
       addRequestMessage: action,
       removeRequestMessage: action,
     });
@@ -99,11 +95,5 @@ export default class ControlStore {
       message,
       okHandler,
     };
-  };
-
-  setHideHeader = hideHeader => {
-    if (this.hideHeader !== hideHeader) {
-      this.hideHeader = hideHeader;
-    }
   };
 }

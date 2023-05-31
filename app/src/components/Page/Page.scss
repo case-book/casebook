@@ -11,19 +11,13 @@
   overflow: visible;
   box-sizing: border-box;
 
-  &.hide-header {
-    min-height: calc(100vh - 30px - 40px);
-  }
+
 
   @media (max-width: 1660px) {
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
     min-height: calc(100vh - 120px);
-
-    &.hide-header {
-      min-height: calc(100vh - 30px - 20px);
-    }
   }
 
   @media (max-width: 1024px) {
@@ -31,10 +25,6 @@
     margin-right: 10px;
     margin-bottom: 10px;
     min-height: calc(100vh - 110px);
-
-    &.hide-header {
-      min-height: calc(100vh - 30px - 20px);
-    }
   }
 
   @media (max-width: 768px) {
@@ -99,5 +89,12 @@
 
   @media (max-width: 1660px) {
     margin-top: 20px;
+  }
+}
+
+
+.project-selected {
+  .page-wrapper {
+    min-height: calc(100vh - 100px);
   }
 }

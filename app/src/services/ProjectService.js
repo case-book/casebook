@@ -43,6 +43,17 @@ ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHa
   );
 };
 
+ProjectService.selectProjectName = (spaceCode, projectId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/name`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 ProjectService.createProject = (spaceCode, project, successHandler, failHandler) => {
   return request.post(
     `/api/${spaceCode}/projects`,

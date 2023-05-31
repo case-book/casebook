@@ -174,6 +174,7 @@ function ProjectInfoPage() {
     <>
       <Page className="project-info-page-wrapper">
         <PageTitle
+          name={t('프로젝트 정보')}
           breadcrumbs={[
             {
               to: '/',

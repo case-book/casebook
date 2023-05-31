@@ -15,7 +15,6 @@ import NotificationList from '@/components/NotificationList/NotificationList';
 function SideControl({ className }) {
   const {
     userStore: { isLogin, isAdmin, setUser, notificationCount, setNotificationCount },
-    controlStore: { hideHeader, setHideHeader },
     themeStore: { theme, setTheme },
   } = useStores();
 
@@ -118,7 +117,7 @@ function SideControl({ className }) {
   };
 
   return (
-    <div className={`side-control-wrapper ${className} ${hideHeader ? 'collapsed' : ''} ${isLogin ? 'is-login' : 'is-not-login'}`}>
+    <div className={`side-control-wrapper ${className} ${isLogin ? 'is-login' : 'is-not-login'}`}>
       <div className="theme-selector side-menu-item">
         <div>
           <Switch
@@ -178,13 +177,9 @@ function SideControl({ className }) {
           rounded
           onClick={e => {
             e.preventDefault();
-            setHideHeader(!hideHeader);
           }}
         >
-          <div className="icon">
-            {!hideHeader && <i className="fa-solid fa-turn-up" />}
-            {hideHeader && <i className="fa-solid fa-arrow-down" />}
-          </div>
+          1
         </Button>
       </div>
       {notificationOpen && (

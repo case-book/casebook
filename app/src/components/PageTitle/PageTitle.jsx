@@ -46,6 +46,7 @@ function PageTitle({ className, name, children, links, control, onListClick, bre
               return (
                 <li key={inx}>
                   <Button
+                    size="sm"
                     color={d.color || 'white'}
                     onClick={() => {
                       navigate(d.to);

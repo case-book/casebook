@@ -11,7 +11,6 @@ import MobileMenu from '@/pages/common/Header/MobileMenu';
 
 function ProjectHeader({ className }) {
   const {
-    controlStore: { hideHeader },
     themeStore: { theme },
   } = useStores();
 
@@ -21,7 +20,7 @@ function ProjectHeader({ className }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className={`${className} g-no-select project-header-wrapper ${hideHeader ? 'hide' : ''} ${isRoot ? 'is-main' : ''} theme-${theme}`}>
+    <header className={`${className} g-no-select project-header-wrapper ${isRoot ? 'is-main' : ''} theme-${theme}`}>
       <div className="header-content">
         <div className="mobile-menu">
           <div

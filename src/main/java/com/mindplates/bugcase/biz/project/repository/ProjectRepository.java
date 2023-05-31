@@ -14,6 +14,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Optional<Project> findBySpaceCodeAndId(String spaceCode, Long id);
 
+    Optional<Project> findNameBySpaceCodeAndId(String spaceCode, Long id);
+
     List<Project> findAllBySpaceCode(String spaceCode);
 
     List<Project> findAllBySpaceId(Long spaceId);

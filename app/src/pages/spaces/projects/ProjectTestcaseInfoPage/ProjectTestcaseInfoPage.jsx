@@ -394,8 +394,34 @@ function ProjectTestcaseInfoPage() {
   };
 
   return (
-    <Page className="project-testcase-info-page-wrapper" list>
+    <Page className="project-testcase-info-page-wrapper">
       <PageTitle
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testcases`,
+            text: t('테스트케이스'),
+          },
+        ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
         }}
