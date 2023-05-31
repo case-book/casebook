@@ -1,4 +1,377 @@
 .project-overview-info-page-wrapper {
+  .scroll-content {
+    position: relative;
+    height: 400px;
+
+    &.my-testrun-content {
+      height: 500px;
+    }
+
+    > div {
+      padding: 0;
+      position: absolute;
+      z-index: 4;
+      width: auto;
+      left: 1rem;
+      right: 1rem;
+      top: 1rem;
+      bottom: 1rem;
+      overflow-x: auto;
+      > ul {
+        margin: 0;
+        padding: 0 1rem 1rem;
+        white-space: nowrap;
+        height: 100%;
+
+        > li {
+          display: inline-flex;
+          height: 100%;
+          flex-direction: column;
+          margin-right: 1rem;
+          background-color: var(--lighter-color);
+          padding-top: 1rem;
+          width: calc((100% - 2rem) / 3);
+          border: 1px solid rgba(0, 0, 0, 0.05);
+
+          &.until-3 {
+            &:nth-child(3n) {
+              margin-right: 0;
+            }
+          }
+
+          > .name {
+            text-align: center;
+            flex-grow: 0;
+            font-weight: bold;
+
+            .seq {
+              margin-bottom: 4px;
+              font-size: 14px;
+            }
+
+            .text {
+              font-size: 18px;
+            }
+          }
+
+          > .summary {
+            padding: 0 1rem;
+            margin-top: 1rem;
+            > div {
+              display: flex;
+              height: 30px;
+              > div {
+                align-self: center;
+              }
+
+              > .percentage {
+                margin-right: 0.5rem;
+                text-align: right;
+                font-weight: bold;
+              }
+
+              > .remain-count {
+                flex-grow: 1;
+
+                height: 100%;
+                > div {
+                  width: 100%;
+                  display: flex;
+                  height: 100%;
+                  > div {
+                    align-self: center;
+                    height: 100%;
+
+                    display: flex;
+                    > div {
+                      align-self: center;
+                      width: 100%;
+                      text-align: center;
+                      color: var(--white-color);
+                      font-size: 13px;
+                    }
+
+                    &.done {
+                      background-color: var(--green-color);
+                      border-radius: 4px 0 0 4px;
+
+                      &.full {
+                        border-radius: 4px;
+                      }
+                    }
+
+                    &.remain {
+                      background-color: var(--danger-color);
+                      border-radius: 0 4px 4px 0;
+                      &.full {
+                        border-radius: 4px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          > .testcase-list-title {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+          }
+
+          > .list {
+            padding: 1rem 1rem;
+            overflow-y: auto;
+            background-color: var(--card-background-color);
+            margin: 0 1rem 1rem;
+            flex-grow: 1;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+
+            > ul {
+              list-style: none;
+              margin: 0;
+              padding: 0;
+
+              > li {
+                margin-bottom: 0.5rem;
+                .testcase-group-name {
+                  margin-bottom: 0.125rem;
+                  font-weight: bold;
+                  font-size: 15px;
+                }
+
+                > ul {
+                  list-style: none;
+                  margin: 0 0 0 1rem;
+                  padding: 0;
+                  > li {
+                    line-height: 160%;
+                    > div {
+                      display: flex;
+                      > div.testcase-name {
+                        flex-grow: 1;
+                        overflow-x: hidden;
+                        text-overflow: ellipsis;
+                        font-size: 15px;
+                      }
+
+                      > div.testcase-result {
+                        min-width: 80px;
+                        text-align: right;
+                        display: flex;
+                        justify-content: flex-end;
+                        > span {
+                          display: inline-block;
+                          line-height: 100%;
+                          font-size: 12px;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          align-self: center;
+
+                          &.FAILED {
+                            color: var(--white-color);
+                            background-color: var(--danger-color);
+                          }
+
+                          &.PASSED {
+                            color: var(--white-color);
+                            background-color: var(--success-color);
+                          }
+
+                          &.UNTESTABLE {
+                            color: var(--white-color);
+                            background-color: var(--gray-color);
+                          }
+
+                          &.UNTESTED {
+                            color: var(--white-color);
+                            background-color: var(--gray-color);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          > .chart {
+            width: 100%;
+            flex-grow: 1;
+            position: relative;
+
+            .chart-content {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .testrun-history-content {
+    > div {
+      padding: 0 1rem 1rem;
+    }
+    .testrun-history-chart {
+      padding: 0 1rem 1rem;
+    }
+    .chart-content {
+      max-height: 400px;
+      overflow-y: auto;
+      > ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        > li {
+          position: relative;
+          height: 40px;
+          overflow: hidden;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          border-bottom: 1px solid var(--border-color);
+
+          &:first-child {
+            border-top: 1px solid var(--border-color);
+          }
+
+          > div {
+            position: relative;
+            height: 100%;
+
+            > div.start-end-line {
+              display: none;
+            }
+
+            > div.start-close-line {
+              position: absolute;
+              left: 0;
+              top: 0;
+              white-space: nowrap;
+              background-color: var(--gray-color);
+              height: 100%;
+              display: flex;
+              border-radius: 2px;
+              cursor: pointer;
+              min-width: 50px;
+
+              > div.passed {
+                background-color: var(--success-color);
+                border-radius: 2px 0 0 2px;
+              }
+
+              > div.failed {
+                background-color: var(--danger-color);
+                border-radius: 0 2px 2px 0;
+              }
+            }
+
+            .testrun-name,
+            .testrun-start-date {
+              font-size: 12px;
+              padding: 0;
+              display: flex;
+              height: 20px;
+              position: absolute;
+              > span {
+                align-self: center;
+                line-height: 100%;
+                font-size: 12px;
+                padding: 2px;
+                margin-left: 2px;
+              }
+            }
+
+            .testrun-name {
+              top: 0;
+            }
+
+            .testrun-start-date {
+              top: 20px;
+            }
+
+            .testrun-name.left,
+            .testrun-start-date.left {
+              left: -2px;
+              > span {
+                position: absolute;
+                right: 0;
+                white-space: nowrap;
+              }
+            }
+
+            .testrun-start-date {
+              padding-bottom: 4px;
+            }
+          }
+        }
+      }
+    }
+
+    .chart-axis {
+      padding: 1rem;
+      display: flex;
+      position: relative;
+      margin-top: 1rem;
+
+      .line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        display: flex;
+
+        > div {
+          align-self: center;
+        }
+
+        .start-line,
+        .end-line {
+          > div {
+            height: 16px;
+            width: 1px;
+          }
+        }
+
+        .center-line {
+          flex-grow: 1;
+          > div {
+            width: 100%;
+            height: 1px;
+          }
+        }
+
+        .start-line,
+        .end-line,
+        .center-line {
+          > div {
+            background-color: var(--border-color);
+          }
+        }
+      }
+      > div.range {
+        flex: 1 1 0;
+        position: relative;
+        > span {
+          background-color: var(--card-background-color);
+          font-size: 14px;
+          padding: 0 0.5rem;
+        }
+
+        &:first-child {
+        }
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
+  }
+
   .testrun-history {
     .card-header {
       padding: 2rem;
@@ -15,163 +388,6 @@
         }
       }
     }
-
-    .testrun-history-content {
-      > div {
-        padding: 0 1rem 1rem;
-      }
-      .testrun-history-chart {
-        padding: 0 1rem 1rem;
-      }
-      .chart-content {
-        > ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          > li {
-            position: relative;
-            height: 40px;
-            overflow: hidden;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid var(--border-color);
-
-            &:first-child {
-              border-top: 1px solid var(--border-color);
-            }
-
-            > div {
-              position: relative;
-              height: 100%;
-
-              > div.start-end-line {
-                display: none;
-              }
-
-              > div.start-close-line {
-                position: absolute;
-                left: 0;
-                top: 0;
-                white-space: nowrap;
-                background-color: var(--gray-color);
-                height: 100%;
-                display: flex;
-                border-radius: 2px;
-                cursor: pointer;
-                min-width: 50px;
-
-                > div.passed {
-                  background-color: var(--success-color);
-                  border-radius: 2px 0 0 2px;
-                }
-
-                > div.failed {
-                  background-color: var(--danger-color);
-                  border-radius: 0 2px 2px 0;
-                }
-              }
-
-              .testrun-name,
-              .testrun-start-date {
-                font-size: 12px;
-                padding: 0;
-                display: flex;
-                height: 20px;
-                position: absolute;
-                > span {
-                  align-self: center;
-                  line-height: 100%;
-                  font-size: 12px;
-                  padding: 2px;
-                  margin-left: 2px;
-                }
-              }
-
-              .testrun-name {
-                top: 0;
-              }
-
-              .testrun-start-date {
-                top: 20px;
-              }
-
-              .testrun-name.left,
-              .testrun-start-date.left {
-                left: -2px;
-                > span {
-                  position: absolute;
-                  right: 0;
-                  white-space: nowrap;
-                }
-              }
-
-              .testrun-start-date {
-                padding-bottom: 4px;
-              }
-            }
-          }
-        }
-      }
-
-      .chart-axis {
-        padding: 1rem;
-        display: flex;
-        position: relative;
-        margin-top: 1rem;
-
-        .line {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 100%;
-          display: flex;
-
-          > div {
-            align-self: center;
-          }
-
-          .start-line,
-          .end-line {
-            > div {
-              height: 16px;
-              width: 1px;
-            }
-          }
-
-          .center-line {
-            flex-grow: 1;
-            > div {
-              width: 100%;
-              height: 1px;
-            }
-          }
-
-          .start-line,
-          .end-line,
-          .center-line {
-            > div {
-              background-color: var(--border-color);
-            }
-          }
-        }
-        > div.range {
-          flex: 1 1 0;
-          position: relative;
-          > span {
-            background-color: var(--card-background-color);
-            font-size: 14px;
-            padding: 0 0.5rem;
-          }
-
-          &:first-child {
-          }
-
-          &:last-child {
-            text-align: right;
-          }
-        }
-      }
-    }
   }
 
   .testruning-info,
@@ -183,209 +399,9 @@
     .card-content {
       height: 400px;
 
-      &.my-testrun-content {
-        height: 500px;
-      }
-
       &.empty {
         > div {
           padding: 0 1rem 1rem;
-        }
-      }
-
-      > div {
-        > ul {
-          margin: 0;
-          padding: 0 1rem 1rem;
-          white-space: nowrap;
-          height: 100%;
-
-          > li {
-            display: inline-flex;
-            height: 100%;
-            flex-direction: column;
-            margin-right: 1rem;
-            background-color: var(--lighter-color);
-            padding-top: 1rem;
-            width: calc((100% - 2rem) / 3);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-
-            &.until-3 {
-              &:nth-child(3n) {
-                margin-right: 0;
-              }
-            }
-
-            > .name {
-              text-align: center;
-              flex-grow: 0;
-              font-weight: bold;
-
-              .seq {
-                margin-bottom: 4px;
-                font-size: 14px;
-              }
-
-              .text {
-                font-size: 18px;
-              }
-            }
-
-            > .summary {
-              padding: 0 1rem;
-              margin-top: 1rem;
-              > div {
-                display: flex;
-                height: 30px;
-                > div {
-                  align-self: center;
-                }
-
-                > .percentage {
-                  margin-right: 0.5rem;
-                  text-align: right;
-                  font-weight: bold;
-                }
-
-                > .remain-count {
-                  flex-grow: 1;
-
-                  height: 100%;
-                  > div {
-                    width: 100%;
-                    display: flex;
-                    height: 100%;
-                    > div {
-                      align-self: center;
-                      height: 100%;
-
-                      display: flex;
-                      > div {
-                        align-self: center;
-                        width: 100%;
-                        text-align: center;
-                        color: var(--white-color);
-                        font-size: 13px;
-                      }
-
-                      &.done {
-                        background-color: var(--green-color);
-                        border-radius: 4px 0 0 4px;
-
-                        &.full {
-                          border-radius: 4px;
-                        }
-                      }
-
-                      &.remain {
-                        background-color: var(--danger-color);
-                        border-radius: 0 4px 4px 0;
-                        &.full {
-                          border-radius: 4px;
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            > .testcase-list-title {
-              margin-top: 0.5rem;
-              padding: 0.5rem 1rem;
-            }
-
-            > .list {
-              padding: 1rem 1rem;
-              overflow-y: auto;
-              background-color: var(--card-background-color);
-              margin: 0 1rem 1rem;
-              flex-grow: 1;
-              border: 1px solid rgba(0, 0, 0, 0.06);
-
-              > ul {
-                list-style: none;
-                margin: 0;
-                padding: 0;
-
-                > li {
-                  margin-bottom: 0.5rem;
-                  .testcase-group-name {
-                    margin-bottom: 0.125rem;
-                    font-weight: bold;
-                    font-size: 15px;
-                  }
-
-                  > ul {
-                    list-style: none;
-                    margin: 0 0 0 1rem;
-                    padding: 0;
-                    > li {
-                      line-height: 160%;
-                      > div {
-                        display: flex;
-                        > div.testcase-name {
-                          flex-grow: 1;
-                          overflow-x: hidden;
-                          text-overflow: ellipsis;
-                          font-size: 15px;
-                        }
-
-                        > div.testcase-result {
-                          min-width: 80px;
-                          text-align: right;
-                          display: flex;
-                          justify-content: flex-end;
-                          > span {
-                            display: inline-block;
-                            line-height: 100%;
-                            font-size: 12px;
-                            padding: 4px 8px;
-                            border-radius: 4px;
-                            align-self: center;
-
-                            &.FAILED {
-                              color: var(--white-color);
-                              background-color: var(--danger-color);
-                            }
-
-                            &.PASSED {
-                              color: var(--white-color);
-                              background-color: var(--success-color);
-                            }
-
-                            &.UNTESTABLE {
-                              color: var(--white-color);
-                              background-color: var(--gray-color);
-                            }
-
-                            &.UNTESTED {
-                              color: var(--white-color);
-                              background-color: var(--gray-color);
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-            > .chart {
-              width: 100%;
-              flex-grow: 1;
-              position: relative;
-
-              .chart-content {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-              }
-            }
-          }
         }
       }
     }
