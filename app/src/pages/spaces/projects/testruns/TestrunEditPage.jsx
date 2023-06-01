@@ -210,6 +210,37 @@ function TestrunEditPage({ type }) {
     <>
       <Page className="testrun-edit-page-wrapper">
         <PageTitle
+          name={isEdit ? t('테스트런 편집') : t('테스트런 생성')}
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/',
+              text: t('스페이스 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/info`,
+              text: spaceCode,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects`,
+              text: t('프로젝트 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}`,
+              text: project?.name,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
+              text: t('테스트런 목록'),
+            },
+            {
+              to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/new`,
+              text: isEdit ? t('편집') : t('생성'),
+            },
+          ]}
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
           }}
@@ -218,7 +249,9 @@ function TestrunEditPage({ type }) {
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('테스트런 정보')}</Title>
+            <Title border={false} marginBottom={false}>
+              {t('테스트런 정보')}
+            </Title>
             <Block>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -394,7 +427,6 @@ function TestrunEditPage({ type }) {
               </BlockRow>
             </Block>
             <PageButtons
-              outline
               onCancel={() => {
                 navigate(-1);
               }}

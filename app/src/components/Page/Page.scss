@@ -5,50 +5,52 @@
   flex-direction: column;
   max-width: $max-page-width;
   margin: 0 auto 40px;
-  min-height: calc(100vh - 80px - 40px);
-  border-radius: 20px;
+  min-height: calc(100vh - 100px);
+  border-radius: 10px;
   display: flex;
-
-  &.hide-header {
-    min-height: calc(100vh - 30px - 40px);
-  }
+  overflow: visible;
+  box-sizing: border-box;
 
   @media (max-width: 1660px) {
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
-    min-height: calc(100vh - 80px - 20px);
-
-    &.hide-header {
-      min-height: calc(100vh - 30px - 20px);
-    }
+    min-height: calc(100vh - 120px);
   }
 
   @media (max-width: 1024px) {
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 10px;
-    min-height: calc(100vh - 80px - 10px);
-
-    &.hide-header {
-      min-height: calc(100vh - 30px - 20px);
-    }
+    min-height: calc(100vh - 110px);
   }
 
+  @media (max-width: 768px) {
+    border: none;
+    box-shadow: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
 
+  @media (max-width: 768px) {
+  }
 
   &.info-page {
+    border: 1px solid var(--border-light-color);
+    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
   }
 
   &.list-page {
     background-color: transparent;
     border-radius: 0;
     border: none;
+    min-height: calc(100vh - 100px - 40px);
   }
 
   &.wide {
     max-width: none;
-    margin: 0 2rem;
+    margin: 20px 20px !important;
+    min-height: calc(100vh - 100px);
     .page-title-wrapper {
       > div {
         max-width: none;
@@ -61,7 +63,11 @@
   }
 
   &.pure {
-
+    margin: 0;
+    max-width: none;
+    background-color: var(--theme-color);
+    border-radius: 0;
+    border: none;
   }
 
   &.colored {
@@ -73,7 +79,7 @@
   }
 
   .block-wrapper ~ .title-wrapper {
-    margin-top: 2rem;
+    margin-top: 20px;
   }
 }
 .page-wrapper > .page-content-wrapper:first-child {
@@ -83,11 +89,32 @@
     margin-top: 20px;
   }
 }
-.page-wrapper .title-wrapper ~ .block-wrapper {
-  margin-top: 2rem;
-  margin-top: 28px;
 
-  @media (max-width: 768px) {
-    margin-top: 1rem;
+.project-selected {
+  .page-wrapper {
+    min-height: calc(100vh - 100px);
+
+    &.info-page {
+      border: 1px solid var(--border-light-color);
+      box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
+      margin: 20px auto 20px;
+      min-height: calc(100vh - 120px);
+
+      @media (max-width: 1660px) {
+        margin: 20px;
+      }
+
+      @media (max-width: 1024px) {
+        margin: 10px;
+        min-height: calc(100vh - 100px);
+      }
+
+      @media (max-width: 768px) {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        min-height: calc(100vh - 80px);
+      }
+    }
   }
 }

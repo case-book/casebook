@@ -94,6 +94,13 @@ public class ProjectService {
         return new ProjectDTO(project, true);
     }
 
+    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public ProjectDTO selectProjectName(String spaceCode, Long projectId) {
+        Project project = projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new ProjectDTO(project, true);
+    }
+
+
     public Long selectProjectId(String token) {
         ProjectToken projectToken = projectTokenRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
         return projectToken.getProject().getId();

@@ -195,6 +195,37 @@ function TestrunReservationEditPage({ type }) {
     <>
       <Page className="testrun-reservation-edit-page-wrapper">
         <PageTitle
+          name={isEdit ? t('예약 테스트런 편집') : t('예약 테스트런 생성')}
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/',
+              text: t('스페이스 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/info`,
+              text: spaceCode,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects`,
+              text: t('프로젝트 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}`,
+              text: project?.name,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations`,
+              text: t('예약 테스트런 목록'),
+            },
+            {
+              to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/new`,
+              text: isEdit ? t('편집') : t('생성'),
+            },
+          ]}
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations`);
           }}
@@ -203,7 +234,9 @@ function TestrunReservationEditPage({ type }) {
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
-            <Title>{t('예약 테스트런 정보')}</Title>
+            <Title border={false} marginBottom={false}>
+              {t('예약 테스트런 정보')}
+            </Title>
             <Block>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -371,39 +404,43 @@ function TestrunReservationEditPage({ type }) {
                 <Label minWidth={labelMinWidth} tip={t('예약 테스트런을 만든 시점부터, 예약 테스트런에 생성될때까지 추가된 테스트케이스를 자동으로 추가합니다.')}>
                   {t('자동 추가')}
                 </Label>
-                <CheckBox
-                  size="sm"
-                  type="checkbox"
-                  label={t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가')}
-                  value={testrunReservation.selectCreatedTestcase}
-                  onChange={val =>
-                    setTestrunReservation({
-                      ...testrunReservation,
-                      selectCreatedTestcase: val,
-                    })
-                  }
-                />
+                <Text>
+                  <CheckBox
+                    size="sm"
+                    type="checkbox"
+                    label={t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가')}
+                    value={testrunReservation.selectCreatedTestcase}
+                    onChange={val =>
+                      setTestrunReservation({
+                        ...testrunReservation,
+                        selectCreatedTestcase: val,
+                      })
+                    }
+                  />
+                </Text>
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth} />
-                <CheckBox
-                  size="sm"
-                  type="checkbox"
-                  label={t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가')}
-                  value={testrunReservation.selectUpdatedTestcase}
-                  onChange={val =>
-                    setTestrunReservation({
-                      ...testrunReservation,
-                      selectUpdatedTestcase: val,
-                    })
-                  }
-                />
+                <Text>
+                  <CheckBox
+                    size="sm"
+                    type="checkbox"
+                    label={t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가')}
+                    value={testrunReservation.selectUpdatedTestcase}
+                    onChange={val =>
+                      setTestrunReservation({
+                        ...testrunReservation,
+                        selectUpdatedTestcase: val,
+                      })
+                    }
+                  />
+                </Text>
               </BlockRow>
               {isEdit && (
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
                   <Text>
-                    <Tag className="tag" size="md" uppercase>
+                    <Tag border className="tag" size="sm" uppercase>
                       {testrunReservation.expired ? t('생성 완료') : t('미처리')}
                     </Tag>
                   </Text>
@@ -411,7 +448,6 @@ function TestrunReservationEditPage({ type }) {
               )}
             </Block>
             <PageButtons
-              outline
               onCancel={() => {
                 navigate(-1);
               }}

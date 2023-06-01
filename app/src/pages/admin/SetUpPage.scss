@@ -1,24 +1,11 @@
 .set-up-page-wrapper {
-  min-height: calc(100vh - 40px);
+  min-height: calc(100vh - 80px);
+  margin: 40px auto;
 
   .logo {
-    font-size: 28px;
-    font-family: Rowdies, sans-serif;
-    height: 100%;
-    padding: 1rem 0;
-
-    .logo-icon {
-      margin-right: 0.5rem;
-    }
-
+    text-align: center;
     > div {
-      display: flex;
-      height: 100%;
-      justify-content: center;
-
-      > div {
-        align-self: center;
-      }
+      display: inline-block;
     }
   }
 

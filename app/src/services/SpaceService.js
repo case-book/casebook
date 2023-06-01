@@ -29,10 +29,10 @@ SpaceService.selectSpaceList = (query, successHandler, failHandler) => {
   );
 };
 
-SpaceService.selectMySpaceList = (successHandler, failHandler) => {
+SpaceService.selectMySpaceList = (query, successHandler, failHandler) => {
   return request.get(
     '/api/spaces/my',
-    null,
+    { query },
     res => {
       successHandler(res);
     },

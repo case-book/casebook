@@ -39,7 +39,7 @@
       min-width: 120px;
       display: flex;
       background-color: var(--card-background-color);
-      border-radius: 4px;
+      border-radius: 4px 4px 4px 10px;
 
       &.min {
         min-width: auto;

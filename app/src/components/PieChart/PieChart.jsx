@@ -6,7 +6,7 @@ import './PieChart.scss';
 import { useTranslation } from 'react-i18next';
 import { EmptyContent } from '@/components';
 
-function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, activeOuterRadiusOffset, margin, fill, isInteractive, cornerRadius, borderWidth, innerRadius }) {
+function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, activeOuterRadiusOffset, margin, fill, isInteractive, cornerRadius, borderWidth, innerRadius, getArcLabel }) {
   const { t } = useTranslation();
 
   const dataRankInfo = useMemo(() => {
@@ -46,12 +46,16 @@ function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, 
           arcLinkLabelsThickness={2}
           arcLinkLabelsColor={{ from: 'color' }}
           arcLinkLabel={e => {
+            let name = e.id;
+            if (getArcLabel) {
+              name = getArcLabel(e.id);
+            }
             if (showTopArcLabelCount === Infinity) {
-              return `${e.id} (${e.value})`;
+              return `${name} (${e.value})`;
             }
 
             if (dataRankInfo[e.id] < showTopArcLabelCount) {
-              return `${e.id} (${e.value})`;
+              return `${name} (${e.value})`;
             }
 
             return '';
@@ -116,6 +120,7 @@ PieChart.defaultProps = {
   cornerRadius: 10,
   borderWidth: 1,
   innerRadius: 0.5,
+  getArcLabel: null,
 };
 
 PieChart.propTypes = {
@@ -154,6 +159,7 @@ PieChart.propTypes = {
   cornerRadius: PropTypes.number,
   borderWidth: PropTypes.number,
   innerRadius: PropTypes.number,
+  getArcLabel: PropTypes.func,
 };
 
 export default React.memo(PieChart);

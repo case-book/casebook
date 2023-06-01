@@ -1,173 +1,217 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, CardContent, Page, PageContent, Tag } from '@/components';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, EmptyContent, Liner, Page, PageContent, Radio, Search, Tag, Version } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
-import { useResizeDetector } from 'react-resize-detector';
+import { THEMES } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
+import { observer } from 'mobx-react';
+import useQueryString from '@/hooks/useQueryString';
 import './SpaceListPage.scss';
-import SpaceSearchPopup from '@/pages/spaces/SpaceListPage/SpaceSearchPopup';
-
-const scrollUnit = 360 + 16;
 
 function SpaceListPage() {
   const { t } = useTranslation();
 
   const {
-    configStore: { version, openReleasePopup },
+    themeStore: { theme },
   } = useStores();
 
-  const [isSearch, setIsSearch] = useState(false);
-
+  const { query, setQuery } = useQueryString();
+  const { my = 'Y', text = '', type = 'card' } = query;
+  const isMine = my === 'Y';
+  const isCardType = type === 'card';
   const navigate = useNavigate();
   const [spaces, setSpaces] = useState([]);
-  const listContentElement = useRef(null);
-  const listElement = useRef(null);
-  const [navigator, setNavigator] = useState(false);
+  const [searchOpened, setSearchOpened] = useState(false);
 
-  const { width, ref } = useResizeDetector({
-    handleHeight: false,
-    refreshMode: 'throttle',
-    refreshRate: 100,
-  });
-
-  const onChangeWidth = () => {
-    if (listContentElement?.current && listElement?.current) {
-      const contentWidth = listContentElement.current?.offsetWidth;
-      const listWidth = listElement.current?.offsetWidth;
-
-      if (contentWidth < listWidth && navigator === false) {
-        setNavigator(true);
-      }
-
-      if (contentWidth > listWidth && navigator) {
-        setNavigator(false);
-      }
+  const onSearch = useCallback(() => {
+    if (isMine) {
+      SpaceService.selectMySpaceList(
+        text,
+        list => {
+          setSpaces(list);
+        },
+        null,
+      );
+    } else {
+      SpaceService.selectSpaceList(text, list => {
+        setSpaces(list);
+      });
     }
-  };
+  }, [text, isMine]);
 
   useEffect(() => {
-    SpaceService.selectMySpaceList(list => {
-      setSpaces(list);
-      onChangeWidth();
-    }, null);
-  }, []);
-
-  useEffect(() => {
-    onChangeWidth();
-  }, [width, spaces]);
-
-  const scrollLeft = () => {
-    if (listContentElement.current) {
-      let nextScrollLeft = listContentElement.current.scrollLeft;
-      nextScrollLeft -= scrollUnit;
-      if (nextScrollLeft < 0) {
-        nextScrollLeft = 0;
-      } else {
-        nextScrollLeft -= nextScrollLeft % scrollUnit;
-      }
-
-      listContentElement.current.scrollLeft = nextScrollLeft;
-    }
-  };
-
-  const scrollRight = () => {
-    if (listContentElement.current) {
-      let nextScrollLeft = listContentElement.current.scrollLeft;
-      nextScrollLeft += scrollUnit;
-      nextScrollLeft -= nextScrollLeft % scrollUnit;
-      listContentElement.current.scrollLeft = nextScrollLeft;
-    }
-  };
+    onSearch();
+  }, [text, isMine]);
 
   return (
-    <Page className="space-list-page-wrapper" list>
+    <Page className="space-list-page-wrapper" pure>
       <PageContent className="page-content">
-        <div className="intro">
-          <div className="foreground">
-            <div className="intro-button">
-              <Button
-                size="sm"
-                outline
-                onClick={() => {
-                  navigate('/spaces/new');
-                }}
-              >
-                <i className="fa-solid fa-plus" /> {t('새 스페이스')}
-              </Button>
-              <Button
-                size="sm"
-                outline
-                onClick={e => {
-                  e.preventDefault();
-                  setIsSearch(true);
-                }}
-              >
-                <i className="fa-solid fa-magnifying-glass" /> {t('스페이스 검색')}
-              </Button>
-            </div>
-            <div className="space-message">
-              <div>
-                {t('스페이스를 선택해주세요.')}
-                <div className="icons">
-                  <div className="snow">
-                    <i className="fa-solid fa-star-of-life" />
-                  </div>
-                  <div className="star">
-                    <i className="fa-solid fa-star" />
-                  </div>
-                  <div className="heart">
-                    <i className="fa-solid fa-heart" />
-                  </div>
-                  <div className="book">
-                    <i className="fa-solid fa-book" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="search-opener">
+          <Button
+            size="sm"
+            color="primary"
+            onClick={() => {
+              setSearchOpened(!searchOpened);
+            }}
+          >
+            <i className="fa-solid fa-magnifying-glass" /> {t('검색')}
+          </Button>
         </div>
-        <div className="space-list-content" ref={ref}>
+        <div className={`search ${searchOpened ? 'opened' : ''}`}>
+          <div className="arrow">
+            <span />
+          </div>
           <div>
-            {navigator && (
-              <div className="arrow">
-                <Button onClick={scrollLeft} color="transparent" outline={false}>
-                  <i className="fa-solid fa-chevron-left" />
-                </Button>
-              </div>
-            )}
-            <div
-              className="space-card-list scrollbar-sm"
-              ref={listContentElement}
-              onWheel={e => {
-                if (e.deltaY > 0) {
-                  scrollRight();
-                } else {
-                  scrollLeft();
-                }
+            <Radio
+              type="inline"
+              size="md"
+              checked={isMine}
+              onChange={() => {
+                setQuery({
+                  my: 'Y',
+                });
+              }}
+              label={t('내 스페이스')}
+            />
+            <Radio
+              type="inline"
+              size="md"
+              checked={!isMine}
+              onChange={() => {
+                setQuery({
+                  my: 'N',
+                });
+              }}
+              label={t('모든 스페이스')}
+            />
+          </div>
+          <div>
+            <Search
+              value={text}
+              placeholder={t('스페이스 이름이나 코드를 입력해주세요.')}
+              onSearch={value => {
+                setQuery({
+                  text: value,
+                });
+              }}
+            />
+          </div>
+          <div>
+            <Button
+              size="md"
+              color="primary"
+              onClick={() => {
+                onSearch();
               }}
             >
-              <ul ref={listElement}>
-                {spaces?.map((space, inx) => {
-                  return (
-                    <li
-                      key={space.id}
-                      style={{
-                        animationDelay: `${inx * 0.1}s`,
-                      }}
-                    >
-                      <Card
-                        className="space-card"
-                        circle
-                        color="gray"
-                        point
-                        border
-                        onClick={() => {
-                          navigate(`/spaces/${space.code}/projects`);
-                        }}
-                      >
-                        <CardContent className="space-card-content">
-                          <div className="config-button">
+              {t('검색')}
+            </Button>
+            <Button
+              size="md"
+              color="primary"
+              onClick={() => {
+                navigate('/spaces/new');
+              }}
+            >
+              <i className="fa-solid fa-plus" /> {t('새 스페이스')}
+            </Button>
+          </div>
+        </div>
+        <div className="type">
+          <div>
+            {isMine ? (
+              ''
+            ) : (
+              <span>
+                <i className="fa-solid fa-circle-info" /> 스페이스의 &rsquo;검색 허용&lsquo; 설정에 따라 검색 결과에 포함되지 않을 수 있습니다.
+              </span>
+            )}
+          </div>
+          <div>
+            <Radio
+              type="inline"
+              size="xs"
+              checked={isCardType}
+              onChange={() => {
+                setQuery({
+                  type: 'card',
+                });
+              }}
+              label={<i className="fa-regular fa-rectangle-list" />}
+            />
+            <Radio
+              type="inline"
+              size="xs"
+              checked={!isCardType}
+              onChange={() => {
+                setQuery({
+                  type: 'table',
+                });
+              }}
+              label={<i className="fa-solid fa-table-list" />}
+            />
+          </div>
+        </div>
+        <div className={`space-list ${isCardType ? 'card-type' : ''}`}>
+          {spaces?.length < 1 && (
+            <EmptyContent fill border>
+              {t('조회된 스페이스가 없습니다.')}
+            </EmptyContent>
+          )}
+          {spaces?.length > 0 && (
+            <ul>
+              {spaces?.map((space, inx) => {
+                return (
+                  <li
+                    key={space.id}
+                    style={{
+                      animationDelay: `${inx * 0.05}s`,
+                    }}
+                  >
+                    <div className="info">
+                      <div className="name">
+                        <div>
+                          <span
+                            onClick={() => {
+                              navigate(`/spaces/${space.code}/projects`);
+                            }}
+                          >
+                            {space.name}
+                          </span>
+                          <span>
+                            <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
+                          </span>
+                          <span>
+                            <Tag border>{space.code}</Tag>
+                          </span>
+                          {space.isMember && (
+                            <>
+                              <span>
+                                <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
+                              </span>
+                              <span className="count">
+                                {space.projectCount} {t('프로젝트')}
+                              </span>
+                              <span>
+                                <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
+                              </span>
+                              <span className="count">
+                                {space.userCount} {t('사용자')}
+                              </span>
+                            </>
+                          )}
+                          {!space.isMember && (
+                            <>
+                              <span>
+                                <Liner width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 0.5rem" />
+                              </span>
+                              <span className="count">{space.allowAutoJoin ? t('자동 가입') : t('승인 필요')}</span>
+                            </>
+                          )}
+                        </div>
+                        <div>
+                          {space.isMember && (
                             <Button
                               rounded
                               outline
@@ -179,109 +223,24 @@ function SpaceListPage() {
                             >
                               <i className="fa-solid fa-gear" />
                             </Button>
-                          </div>
-                          <div className="name-and-code">
-                            <div className="name">{space.name}</div>
-                            <div className="code">
-                              <Tag border>{space.code}</Tag>
-                            </div>
-                          </div>
-                          <div className="description">
-                            <div>{space.description}</div>
-                          </div>
-                          <div className="counter-info">
-                            <div>
-                              <div>
-                                <div className="icon projects">
-                                  <div>
-                                    <i className="fa-solid fa-shield-heart" />
-                                  </div>
-                                </div>
-                                <div className="label projects">PROJECTS</div>
-                                <div className="counter projects">
-                                  <div>{space.projectCount}</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div>
-                              <div>
-                                <div className="icon users">
-                                  <div>
-                                    <i className="fa-solid fa-shield-cat" />
-                                  </div>
-                                </div>
-                                <div className="label users">USERS</div>
-                                <div className="counter users">
-                                  <div>{space.userCount}</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </li>
-                  );
-                })}
-                <li
-                  style={{
-                    animationDelay: `${(spaces?.length || 1) * 0.1}s`,
-                  }}
-                >
-                  <Card
-                    border
-                    className="space-card"
-                    color="gray"
-                    point
-                    onClick={() => {
-                      navigate('/spaces/new');
-                    }}
-                  >
-                    <div className="new-space-card-content">
-                      <div>
-                        <div className="plus-icon">
-                          <i className="fa-solid fa-plus" />
+                          )}
+                          {!space.isMember && <Link to={`/spaces/${space.code}/info`}>{t('참여')}</Link>}
                         </div>
-                        <div>{t('새 스페이스')}</div>
+                      </div>
+                      <div className="description">
+                        <div>{space.description}</div>
                       </div>
                     </div>
-                  </Card>
-                </li>
-              </ul>
-            </div>
-            {navigator && (
-              <div className="arrow">
-                <Button onClick={scrollRight} color="transparent" outline={false}>
-                  <i className="fa-solid fa-chevron-right" />
-                </Button>
-              </div>
-            )}
-          </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
-        <div className="version">
-          <div className="app-version">
-            {process.env.REACT_APP_NAME}-{process.env.REACT_APP_VERSION}
-          </div>
-          <div className="slash">/</div>
-          <div className="api-version">
-            {version?.name}-{version?.version}
-          </div>
-          <div className="slash">/</div>
-          <div className="api-version">
-            <Link
-              to="/"
-              onClick={e => {
-                e.preventDefault();
-                openReleasePopup();
-              }}
-            >
-              RELEASE LIST
-            </Link>
-          </div>
-        </div>
-        <SpaceSearchPopup isSearch={isSearch} setIsSearch={setIsSearch} />
+        <Version className="version" />
       </PageContent>
     </Page>
   );
 }
 
-export default SpaceListPage;
+export default observer(SpaceListPage);

@@ -1,6 +1,6 @@
 .seq-id-wrapper {
   line-height: 0;
-  margin-right: 0.5rem;
+
   align-self: center;
 
   &.size-sm {
@@ -45,7 +45,6 @@
       display: flex;
       color: $white;
       font-size: 12px;
-      font-family: NotoSans, sans-serif;
       z-index: 10;
 
       > div {

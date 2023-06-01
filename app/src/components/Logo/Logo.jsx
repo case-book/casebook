@@ -1,28 +1,46 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Logo.scss';
-import WordSplitter from '@/components/WordSplitter/WordSplitter';
 
-function Logo({ className, onClick, icon, animate }) {
+function Logo({ className, onClick, animation }) {
   return (
-    <div
-      className={`logo-wrapper ${className} ${onClick ? 'g-clickable' : ''}`}
-      onClick={() => {
-        if (onClick) {
-          onClick();
-        }
-      }}
-    >
-      {icon && (
-        <div className={`logo-icon ${animate ? 'animate' : ''}`}>
-          <span>
-            <i className="fa-solid fa-virus" />
-          </span>
-        </div>
+    <div className={`logo-wrapper ${className} ${onClick ? 'g-clickable' : ''} ${animation ? 'animation' : ''}`}>
+      {animation && (
+        <>
+          <div className="hand-1">
+            <span className="hand">
+              <i className="fa-solid fa-hand-back-fist" />
+            </span>
+            <span className="bar-1" />
+          </div>
+          <div className="hand-2">
+            <span className="hand">
+              <i className="fa-solid fa-hand-back-fist" />
+            </span>
+            <span className="bar-1" />
+          </div>
+        </>
       )}
-      <div className="logo-text">
-        <WordSplitter text="CASEBOOK" rounded={false} swing={false} bouncing={false} animate={animate} />
-        <div className="version">v1.0.0</div>
+      <div className="logo-content">
+        <div
+          className="logo-content"
+          onClick={() => {
+            if (onClick) {
+              onClick();
+            }
+          }}
+        >
+          <div>
+            <span className="case">CASE</span>
+            <span className="book">BOOK</span>
+          </div>
+        </div>
+        <span className="floating-icon icon-pencil">
+          <i className="fa-solid fa-pencil" />
+        </span>
+        <span className="floating-icon icon-book">
+          <i className="fa-solid fa-book" />
+        </span>
       </div>
     </div>
   );
@@ -31,15 +49,13 @@ function Logo({ className, onClick, icon, animate }) {
 Logo.defaultProps = {
   className: '',
   onClick: null,
-  icon: true,
-  animate: false,
+  animation: true,
 };
 
 Logo.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
-  icon: PropTypes.bool,
-  animate: PropTypes.bool,
+  animation: PropTypes.bool,
 };
 
 export default Logo;

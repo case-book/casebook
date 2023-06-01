@@ -9,8 +9,6 @@
   }
 }
 
-$logo-color-1: #fe0000;
-
 .loading-group {
   position: relative;
 
@@ -113,7 +111,6 @@ $logo-color-1: #fe0000;
 
 .__react_component_tooltip {
   font-size: 12px !important;
-  font-family: NotoSans, sans-serif;
   &::before {
     display: none;
   }
@@ -129,7 +126,10 @@ $logo-color-1: #fe0000;
   z-index: 2;
   display: flex;
   justify-content: center;
-  font-family: NanumGothic, sans-serif;
+
+  @media (max-width: 800px) {
+    padding: 0 20px;
+  }
 
   > div {
     align-self: center;
@@ -142,11 +142,12 @@ $logo-color-1: #fe0000;
     flex-direction: column;
 
     .title {
-      font-family: Cairo, sans-serif;
       font-weight: bold;
       padding: 14px 10px;
       border-bottom: 1px solid var(--border-light-color);
       display: flex;
+      @include title;
+      font-size: 20px;
       > div {
         align-self: center;
       }
@@ -160,17 +161,39 @@ $logo-color-1: #fe0000;
       flex-grow: 1;
       overflow-y: hidden;
 
+      @media (max-width: 800px) {
+        flex-direction: column;
+        width: 100%;
+      }
+
       .version-list {
         font-size: 12px;
-        min-width: 100px;
+        min-width: 120px;
         height: 100%;
         overflow-y: auto;
         border-right: 1px solid var(--border-light-color);
+        background-color: var(--light-color);
+
+        @media (max-width: 800px) {
+          overflow-y: hidden;
+          overflow-x: auto;
+          height: 40px;
+          min-height: 40px;
+          width: 100%;
+          &::-webkit-scrollbar {
+            height: 4px;
+          }
+        }
 
         ul {
           margin: 0;
           padding: 0;
           list-style: none;
+          @media (max-width: 800px) {
+            height: 100%;
+            vertical-align: top;
+            white-space: nowrap;
+          }
           > li {
             padding: 10px 8px;
             cursor: pointer;
@@ -178,22 +201,45 @@ $logo-color-1: #fe0000;
             border-bottom: 1px solid var(--border-light-color);
             background-color: var(--lighter-color);
             position: relative;
+            display: flex;
+            flex-direction: row;
+
+            @media (max-width: 800px) {
+              display: inline-block;
+              vertical-align: top;
+              height: 100%;
+              border-right: 1px solid var(--border-light-color);
+            }
 
             .your-version {
-              position: absolute;
-              font-size: 10px;
-              bottom: 2px;
-              right: 8px;
+              align-self: center;
               white-space: nowrap;
               font-family: Cairo, sans-serif;
               line-height: 100%;
-              font-weight: normal;
-              color: var(--gray-color);
               letter-spacing: -0.25px;
+              @media (max-width: 800px) {
+                display: none;
+              }
+              > span {
+                font-size: 10px;
+                color: var(--primary-text-color);
+                background-color: var(--primary-color);
+                font-weight: bold;
+                display: inline-block;
+                padding: 2px 4px;
+                border-radius: 4px;
+              }
             }
 
             .name {
               font-weight: bold;
+              flex-grow: 1;
+              @include monospace;
+              letter-spacing: -1px;
+              align-self: center;
+              @media (max-width: 800px) {
+                margin-top: 2px;
+              }
             }
 
             &.selected {
@@ -215,11 +261,25 @@ $logo-color-1: #fe0000;
         padding: 20px;
         overflow-y: auto;
 
+        @media (max-width: 800px) {
+        }
+
         .version-and-publish {
           display: flex;
           margin-bottom: 14px;
           border-bottom: 1px solid var(--light-color);
           padding-bottom: 14px;
+
+          @media (max-width: 800px) {
+            display: block;
+            text-align: right;
+
+            .git-liner {
+              display: inline-block;
+              position: relative;
+              top: 1px;
+            }
+          }
 
           > div {
             align-self: center;
@@ -228,8 +288,12 @@ $logo-color-1: #fe0000;
           .version {
             flex-grow: 1;
             font-weight: bold;
-            font-size: 20px;
-            font-family: Cairo, sans-serif;
+            font-size: 24px;
+            @include title;
+
+            @media (max-width: 800px) {
+              text-align: left;
+            }
           }
 
           .published-at {
@@ -239,11 +303,18 @@ $logo-color-1: #fe0000;
             letter-spacing: -0.5px;
             word-spacing: -3px;
             color: var(--gray-color);
+            @media (max-width: 800px) {
+              display: inline-block;
+            }
           }
 
           .git-link {
             font-size: 11px;
             font-weight: bold;
+            @media (max-width: 800px) {
+              text-align: right;
+              display: inline-block;
+            }
           }
         }
 
@@ -279,7 +350,6 @@ $logo-color-1: #fe0000;
             li {
               margin-bottom: 0.5em;
               p {
-
               }
             }
           }

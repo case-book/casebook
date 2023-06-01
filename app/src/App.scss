@@ -61,49 +61,6 @@
     min-height: 100vh;
 
     .main-content {
-      > .bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        overflow: hidden;
-        min-height: 100vh;
-
-        @media (max-width: 640px) {
-          display: none !important;
-        }
-
-        > .star {
-          position: absolute;
-          _transition: all 10s;
-          animation-iteration-count: infinite;
-          fill: var(--start-background-color);
-
-          > svg {
-            width: 100%;
-            height: 100%;
-          }
-        }
-
-        > .star-1 {
-          top: -30%;
-          left: -20%;
-          width: 1200px;
-          height: 1200px;
-          animation: rotate-0 480s linear;
-          opacity: var(--start-opacity);
-        }
-
-        > .star-2 {
-          bottom: 0;
-          right: 0;
-          width: 1600px;
-          height: 1600px;
-          animation: rotate-30 480s linear;
-          opacity: var(--start-opacity);
-        }
-      }
     }
   }
 }

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Tag } from '@/components';
+import { Button, Card, EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import TestrunService from '@/services/TestrunService';
 import dateUtil from '@/utils/dateUtil';
 import moment from 'moment';
-import { ITEM_TYPE } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
 import './TestrunListPage.scss';
+import ProjectService from '@/services/ProjectService';
 
 function TestrunListPage() {
   const { t } = useTranslation();
@@ -18,6 +18,7 @@ function TestrunListPage() {
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
+  const [project, setProject] = useState(null);
   const [testruns, setTestruns] = useState([]);
 
   const getGraphData = testrun => {
@@ -55,7 +56,10 @@ function TestrunListPage() {
         }),
       );
     });
-  }, [spaceCode]);
+    ProjectService.selectProjectName(spaceCode, projectId, info => {
+      setProject(info);
+    });
+  }, [spaceCode, projectId]);
 
   const onMessage = info => {
     const { data } = info;
@@ -115,13 +119,42 @@ function TestrunListPage() {
   }, [user?.id, projectId, testruns]);
 
   return (
-    <Page className="testrun-list-page-wrapper" list={testruns?.length > 0}>
+    <Page className="testrun-list-page-wrapper" list>
       <PageTitle
         className="page-title"
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
+            text: t('테스트런'),
+          },
+        ]}
         links={[
-          <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/new`}>
-            <i className="fa-solid fa-plus" /> {t('테스트런')}
-          </Link>,
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/new`,
+            text: t('테스트런'),
+            color: 'primary',
+            icon: <i className="fa-solid fa-plus" />,
+          },
         ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
@@ -131,21 +164,20 @@ function TestrunListPage() {
       </PageTitle>
       <PageContent className="page-content">
         {testruns?.length <= 0 && (
-          <div className="empty">
+          <EmptyContent fill>
+            <div>{t('실행 중인 테스트런이 없습니다.')}</div>
             <div>
-              <div>{t('실행 중인 테스트런이 없습니다.')}</div>
-              <div>
-                <Button
-                  outline
-                  onClick={() => {
-                    navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
-                  }}
-                >
-                  <i className="fa-solid fa-plus" /> {t('테스트런')}
-                </Button>
-              </div>
+              <Button
+                outline
+                color="primary"
+                onClick={() => {
+                  navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new`);
+                }}
+              >
+                <i className="fa-solid fa-plus" /> {t('테스트런')}
+              </Button>
             </div>
-          </div>
+          </EmptyContent>
         )}
 
         {testruns?.length > 0 && (
@@ -157,11 +189,6 @@ function TestrunListPage() {
               return (
                 <li key={testrun.id}>
                   <Card className={`testrun-card ${testrun.opened ? 'opened' : 'closed'}`} border>
-                    <div className="status">
-                      <Tag className="status-tag" size="xs">
-                        {testrun.opened ? t('진행중') : t('종료됨')}
-                      </Tag>
-                    </div>
                     <div className="config-button">
                       <Button
                         rounded
@@ -176,11 +203,7 @@ function TestrunListPage() {
                       </Button>
                     </div>
                     <div className="name">
-                      <div className="seq">
-                        <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE} copy={false} size="sm">
-                          {testrun.seqId}
-                        </SeqId>
-                      </div>
+                      <div className="seq">{testrun.seqId}</div>
                       <div className="text">
                         <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
                       </div>
@@ -246,62 +269,35 @@ function TestrunListPage() {
                       </div>
                     </div>
                     <div className="testrun-others">
-                      {testrun.opened && (
-                        <div className="time-info">
-                          <div className="time-span">
-                            {testrun.opened && span.days > 0 && (
-                              <Tag color="white" border uppercase>
-                                {t('@ 일 남음', { days: span.days })}
-                              </Tag>
-                            )}
-                            {testrun.opened && span.days <= 0 && span.hours > 0 && (
-                              <Tag color="white" border uppercase>
-                                {t('@ 시간 남음', { hours: span.hours })}
-                              </Tag>
-                            )}
-                            {testrun.opened && span.days <= 0 && span.hours <= 0 && (
-                              <Tag color="white" border uppercase>
-                                {t('기간 지남')}
-                              </Tag>
-                            )}
-                          </div>
-                          <span className="calendar">
-                            <i className="fa-regular fa-clock" />
-                          </span>
-                          {testrun.startDateTime && (
-                            <Tag color="transparent" uppercase>
-                              {dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}
+                      <div className="time-info">
+                        <div className="time-span">
+                          {testrun.opened && span.days > 0 && <span>{t('@ 일 남음', { days: span.days })}</span>}
+                          {testrun.opened && span.days <= 0 && span.hours > 0 && (
+                            <Tag color="white" border uppercase>
+                              {t('@ 시간 남음', { hours: span.hours })}
                             </Tag>
                           )}
-                          <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
-                            {(testrun.startDateTime || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.25rem 0 0" />}
-                            {testrun.startDateTime && testrun.endDateTime && (
-                              <Tag color="white" border uppercase className={testrun.endDateTime && moment.utc().isAfter(moment.utc(testrun.endDateTime)) ? 'past' : ''}>
-                                {dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}
-                              </Tag>
-                            )}
-                            {!testrun.startDateTime && testrun.endDateTime && (
-                              <Tag color="white" border uppercase>
-                                {dateUtil.getDateString(testrun.endDateTime)}
-                              </Tag>
-                            )}
-                          </div>
-                          {!testrun.startDateTime && !testrun.endDateTime && <Tag color="transparent">{t('설정된 테스트런 기간이 없습니다.')}</Tag>}
+                          {testrun.opened && span.days <= 0 && span.hours <= 0 && <span>{t('기간 지남')}</span>}
                         </div>
-                      )}
-                      {!testrun.opened && (
-                        <div className="time-info">
-                          {testrun.startDateTime && (testrun.closedDate || testrun.endDateTime) && (
-                            <div className="time-summary">
-                              {t('@부터 @까지 테스트 진행', {
-                                from: dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes'),
-                                to: dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate || testrun.endDateTime),
-                              })}
-                            </div>
+                        <span className="calendar">
+                          <i className="fa-regular fa-clock" />
+                        </span>
+                        {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
+                        <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
+                          {(testrun.startDateTime || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.25rem 0 0" />}
+                          {testrun.startDateTime && testrun.endDateTime && (
+                            <span className={testrun.endDateTime && moment.utc().isAfter(moment.utc(testrun.endDateTime)) ? 'past' : ''}>
+                              {dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}
+                            </span>
                           )}
-                          {!(testrun.startDateTime && (testrun.closedDate || testrun.endDateTime)) && <div className="time-summary">{t('설정된 테스트런 기간이 없습니다.')}</div>}
+                          {!testrun.startDateTime && testrun.endDateTime && (
+                            <Tag color="white" border uppercase>
+                              {dateUtil.getDateString(testrun.endDateTime)}
+                            </Tag>
+                          )}
                         </div>
-                      )}
+                        {!testrun.startDateTime && !testrun.endDateTime && <Tag color="transparent">{t('설정된 테스트런 기간이 없습니다.')}</Tag>}
+                      </div>
                     </div>
                   </Card>
                 </li>

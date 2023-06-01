@@ -51,7 +51,6 @@
     box-sizing: border-box;
     border: none;
     transition: border-bottom 0.5s;
-    font-family: NotoSans, sans-serif;
     background-color: var(--input-background-color);
     color: var(--text-color);
 
@@ -222,11 +221,9 @@
           &.email {
             flex-grow: 1;
             margin-right: 0.5rem;
-
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            font-family: NotoSans, sans-serif;
             text-transform: uppercase;
           }
 

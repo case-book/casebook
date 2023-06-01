@@ -149,6 +149,10 @@
         margin-right: 0.5rem;
       }
 
+      .seq-id {
+        margin-right: 8px;
+      }
+
       > div {
         align-self: center;
 
@@ -179,7 +183,7 @@
           font-size: 12px;
           position: absolute;
           left: -10px;
-          top: 2px;
+          top: 5px;
           width: 50px;
           text-align: center;
           color: var(--primary-text-color);
@@ -276,7 +280,6 @@
         background-color: var(--testcase-item-background);
         border: 1px solid var(--border-lighter-color);
         padding: 1rem;
-        font-family: NotoSans, sans-serif;
         font-size: 14px;
         border-radius: 2px;
         margin: 0.5rem 0.5rem 0.5rem;
@@ -303,7 +306,6 @@
         padding: 0.5rem 0.5rem;
         .text {
           font-size: 14px;
-          font-family: NotoSans, sans-serif;
           color: var(--gray-color);
           line-height: 125%;
           margin-bottom: 0.5rem;
@@ -328,7 +330,7 @@
 
               .comment-content {
                 .toastui-editor-contents {
-                  font-family: NotoSans, sans-serif;
+                  font-family: NanumSquareNeo, sans-serif;
                 }
               }
 
@@ -366,7 +368,7 @@
 
           .toastui-editor-defaultUI .ProseMirror {
             padding: 16px;
-            font-family: NotoSans, sans-serif;
+            font-family: NanumSquareNeo, sans-serif;
           }
         }
       }

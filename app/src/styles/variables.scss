@@ -11,12 +11,19 @@ $success: #397d02;
 $black: #222;
 $gray: #555;
 
-$xs-height: 24px;
+$xs-height: 26px;
 $sm-height: 30px;
-$md-height: 36px;
-$lg-height: 42px;
-$xl-height: 48px;
-$xxl-height: 60px;
+$md-height: 34px;
+$lg-height: 38px;
+$xl-height: 42px;
+$xxl-height: 46px;
+
+$xs-font-size: 10px;
+$sm-font-size: 12px;
+$md-font-size: 14px;
+$lg-font-size: 16px;
+$xl-font-size: 18px;
+$xxl-font-size: 20px;
 
 $color-point: #7bde89;
 $color-tag: #7bde89;
@@ -68,7 +75,7 @@ $color-muted-black: #837e7e;
 
 $font-family-menu: NotoSans, sans-serif;
 $font-family-count: Rowdies, NotoSans, sans-serif;
-$font-family-date: AzeretMono, NotoSans, monospace;
+$font-family-date: IBMPlexMono;
 
 $gray-200: #eaeef3;
 
@@ -98,7 +105,11 @@ $color-form-control-dark: #121212;
 
 @mixin title() {
   font-weight: bold;
-  font-family: $font-family-menu;
+  font-family: LINESeed, sans-serif;
+}
+
+@mixin monospace() {
+  font-family: $font-family-date;
 }
 
 @mixin date() {

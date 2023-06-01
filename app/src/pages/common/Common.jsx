@@ -263,7 +263,7 @@ function Common() {
         <div className="git-release-list">
           <div>
             <div className="title">
-              <div>CASEBOOK RELEASE NOTES</div>
+              <div>RELEASE NOTES</div>
               <div>
                 <CloseIcon
                   size="xs"
@@ -287,7 +287,11 @@ function Common() {
                           setRelease(d);
                         }}
                       >
-                        <div className="your-version">{version.version === d.tag_name ? 'YOUR VERSION' : ''}</div>
+                        {version.version === d.tag_name && (
+                          <div className="your-version">
+                            <span>{version.version === d.tag_name ? 'YOURS' : ''}</span>
+                          </div>
+                        )}
                         <div className="name">{d.name}</div>
                       </li>
                     );
@@ -310,7 +314,7 @@ function Common() {
                       <i className="fa-brands fa-github" /> GITHUB
                     </Link>
                   </div>
-                  <div>
+                  <div className="git-liner">
                     <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.75rem" />
                   </div>
                   <div className="published-at">

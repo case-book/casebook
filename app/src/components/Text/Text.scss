@@ -24,24 +24,38 @@
     align-self: center;
   }
 
-  &.size-xs {
-    min-height: $xs-height;
-    .text {
-    }
+  &.size-xxl {
+    font-size: 20px;
+    height: $xxl-height;
   }
 
-  &.size-sm {
-    min-height: $sm-height;
-    font-size: 14px;
-    padding: 7px;
-  }
-
-  &.size-md {
-    min-height: $md-height;
+  &.size-xl {
+    font-size: 18px;
+    height: $xl-height;
   }
 
   &.size-lg {
-    min-height: $lg-height;
+    font-size: 16px;
+    height: $lg-height;
+  }
+
+  &.size-md {
+    font-size: 14px;
+    height: $md-height;
+  }
+
+  &.size-sm {
+    font-size: 12px;
+    height: $sm-height;
+  }
+
+  &.size-xs {
+    font-size: 10px;
+    height: $xs-height;
+  }
+
+  @media (max-width: 768px) {
+    height: auto !important;
   }
 
   &.is-bold {

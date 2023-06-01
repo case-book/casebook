@@ -4,7 +4,7 @@
   flex-direction: column;
 
   .testcase-group-title {
-    padding: 1.5rem 2rem 1.5rem;
+    padding: 1.5rem;
     display: flex;
     border-radius: 4px 4px 0 0;
 
@@ -13,12 +13,15 @@
     }
 
     .title-info {
-      font-weight: bold;
       flex-grow: 1;
       display: flex;
 
       > div {
         align-self: center;
+      }
+
+      .seq-id {
+        margin-right: 8px;
       }
 
       .control {
@@ -28,7 +31,8 @@
 
       .text {
         flex-grow: 1;
-        font-size: 20px;
+        font-size: 16px;
+        font-weight: bold;
       }
     }
 
@@ -108,6 +112,10 @@
           min-height: 30px;
           > div {
             align-self: center;
+          }
+
+          .seq-id {
+            margin-right: 8px;
           }
 
           .name {

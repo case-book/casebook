@@ -12,6 +12,7 @@ li.testcase-group-item-wrapper {
       position: relative;
       cursor: pointer;
       min-width: 120px;
+      border-radius: 2px;
 
       .child-tree-mark {
         width: 10px;
@@ -46,8 +47,8 @@ li.testcase-group-item-wrapper {
       .tree-toggle {
         padding: 0;
         display: flex;
-        margin-left: 4px;
-        margin-right: 4px;
+        margin-left: 8px;
+        margin-right: 8px;
         > span {
           align-self: center;
           display: inline-flex;
@@ -70,7 +71,7 @@ li.testcase-group-item-wrapper {
 
       .watcher {
         position: absolute;
-        left : -20px;
+        left: -20px;
         max-height: 37px;
         overflow-y: hidden;
         ul {
@@ -107,12 +108,11 @@ li.testcase-group-item-wrapper {
       .case-icon {
         padding: 0;
         display: flex;
-        margin-right: 4px;
-        margin-left: 4px;
+        margin-right: 8px;
+        margin-left: 8px;
         > span {
           align-self: center;
           display: inline-flex;
-          line-height: 0;
           font-size: 10px;
           height: 18px;
           width: 18px;
@@ -136,6 +136,7 @@ li.testcase-group-item-wrapper {
 
         .seq-id {
           font-size: 12px;
+          margin-right: 8px;
         }
 
         .case-col,
@@ -211,7 +212,6 @@ li.testcase-group-item-wrapper {
           text-overflow: ellipsis;
           white-space: nowrap;
           align-self: center;
-          line-height: 150%;
         }
 
         .name-editor {
@@ -222,15 +222,16 @@ li.testcase-group-item-wrapper {
 
       .testrun-result {
         display: flex;
+        padding-right: 4px;
 
         > div {
           white-space: nowrap;
           align-self: center;
-          padding: 0 0.5rem;
+          padding: 4px 6px;
           display: inline-block;
           font-size: 11px;
           font-weight: lighter;
-          border-radius: 10px;
+          border-radius: 2px;
           background-color: var(--dark-gray-color);
           color: var(--white-color);
         }
@@ -265,6 +266,10 @@ li.testcase-group-item-wrapper {
         padding: 0.5rem;
         line-height: inherit;
         display: none;
+
+        i {
+          align-self: center;
+        }
 
         &:hover {
           background-color: var(--secondary-color);
@@ -338,14 +343,20 @@ li.testcase-group-item-wrapper {
         background-color: var(--hover-background-color);
 
         .grab {
-          display: inline-block;
+          display: inline-flex;
         }
       }
 
       &.selected {
         background-color: var(--primary-color);
-        font-weight: bold;
         color: var(--primary-text-color);
+
+        .case-icon {
+          > span {
+            background-color: var(--theme-color);
+            color: var(--text-color);
+          }
+        }
       }
     }
   }

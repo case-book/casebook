@@ -106,6 +106,13 @@ public class ProjectController {
         return new ProjectResponse(project, SessionUtil.getUserId());
     }
 
+    @Operation(description = "프로젝트 이름 조회")
+    @GetMapping("/{id}/name")
+    public ProjectResponse selectProjectName(@PathVariable String spaceCode, @PathVariable Long id) {
+        ProjectDTO project = projectService.selectProjectName(spaceCode, id);
+        return ProjectResponse.builder().name(project.getName()).build();
+    }
+
     @PostMapping("/{id}/images")
     public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
         String path = projectFileService.createImage(id, file);

@@ -67,7 +67,9 @@ public class TestrunReservationDTO extends CommonDTO {
         this(testrunReservation);
         if (detail) {
             testrunUsers = testrunReservation.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
-            testcaseGroups = testrunReservation.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
+            if (testrunReservation.getTestcaseGroups() != null) {
+                testcaseGroups = testrunReservation.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
+            }
         }
     }
 

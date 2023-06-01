@@ -24,7 +24,9 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
     <div className={`testcase-group-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
       <div className="testcase-group-title">
         <div className="title-info">
-          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
+          <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
+            {content.seqId}
+          </SeqId>
           {isEdit && (
             <div className="control">
               <Input
@@ -43,9 +45,8 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
         <div className="title-button">
           {!isEdit && (
             <Button
-              size="sm"
-              outline
-              color="white"
+              size="md"
+              color="primary"
               onClick={() => {
                 setIsEdit(true);
               }}
@@ -55,10 +56,10 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
           )}
           {isEdit && (
             <>
-              <Button outline size="md" color="white" onClick={onCancel}>
+              <Button size="md" color="white" onClick={onCancel}>
                 {t('취소')}
               </Button>
-              <Button size="md" color="primary" outline onClick={onSaveTestcaseGroup}>
+              <Button size="md" color="primary" onClick={onSaveTestcaseGroup}>
                 {t('저장')}
               </Button>
             </>
@@ -87,8 +88,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
           <div>
             <Button
               size="sm"
-              outline
-              color="white"
+              color="primary"
               onClick={() => {
                 addTestcase(false);
               }}
@@ -120,7 +120,9 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                     }}
                   >
                     <div className="id-name">
-                      <SeqId type={ITEM_TYPE.TESTCASE}>{testcase.seqId}</SeqId>
+                      <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
+                        {testcase.seqId}
+                      </SeqId>
                       <div className="name">
                         {editInfo.id !== testcase.id && <span>{testcase.name}</span>}
                         {editInfo.id === testcase.id && (
@@ -163,7 +165,6 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                         {editInfo.id && editInfo.id === testcase.id && (
                           <Button
                             size="sm"
-                            outline
                             color="white"
                             onClick={e => {
                               e.stopPropagation();
@@ -178,8 +179,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                         )}
                         <Button
                           size="sm"
-                          outline
-                          color="white"
+                          color="primary"
                           onClick={e => {
                             e.stopPropagation();
                             if (editInfo.id && editInfo.id === testcase.id) {

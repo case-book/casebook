@@ -179,6 +179,8 @@ const TestrunReservationPropTypes = PropTypes.shape({
   testcaseCount: PropTypes.number,
 });
 
+const ColorPropTypes = PropTypes.oneOf([undefined, 'black', 'white', 'primary', 'danger']);
+
 export {
   NullableNumber,
   NullableString,
@@ -190,4 +192,5 @@ export {
   SpacePropTypes,
   TestrunPropTypes,
   TestrunReservationPropTypes,
+  ColorPropTypes,
 };

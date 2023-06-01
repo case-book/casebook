@@ -114,29 +114,91 @@
   src: url('./fonts/Cairo/Cairo-Bold.ttf') format('woff'), url('./fonts/Cairo/Cairo-Bold.ttf') format('woff2');
 }
 
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./fonts/Pretendard/Pretendard-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'SUITE';
+  src: url('./fonts/SUITE/SUITE-Regular.woff2') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OAGothic';
+  src: url('./fonts/OAGothic/OAGothic-ExtraBold.woff2') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  src: url('./fonts/NanumSquareNeo/NanumSquareNeo-Variable.woff2') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LINESeed';
+  src: url('./fonts/LINESeed/LINESeedKR-Bd.woff2') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MICEGothic';
+  src: url('./fonts/MICEGothic/MICEGothicBold.woff2') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  src: url('./fonts/Quicksand/Quicksand-VariableFont_wght.ttf');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MartianMono';
+  src: url('./fonts/MartianMono/MartianMono.ttf');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
+  src: url('./fonts/IBMPlexMono/IBMPlexMono-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
+  src: url('./fonts/IBMPlexMono/IBMPlexMono-Light.ttf');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'IBMPlexMono';
+  src: url('./fonts/IBMPlexMono/IBMPlexMono-Bold.ttf');
+  font-weight: 700;
+  font-style: normal;
+}
+
 html {
-  background-color: var(--background-color);
+  background-color: var(--theme-color);
   color: var(--text-color);
   transition: background-color 0.3s, color 0.3s;
-
-  &.theme-LIGHT {
-    @media (max-width: 640px) {
-      background-color: $white;
-    }
-  }
-
-  &.theme-DARK {
-    @media (max-width: 640px) {
-      background-color: var(--background-color);
-    }
-  }
 }
 
 body {
   margin: 0;
-  font-size: 16px;
-  font-family: 'NotoSans', 'NanumGothic', sans-serif;
-  line-height: 120%;
+  font-size: 14px;
+  font-family: 'NanumSquareNeo', 'NotoSans', 'NanumGothic', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -155,20 +217,24 @@ code {
 
 input,
 textarea {
-  font-family: 'NotoSans', 'NanumGothic', sans-serif;
+  font-family: 'NanumSquareNeo', 'NanumGothic', sans-serif;
   font-weight: lighter;
 }
 
 button {
-  font-family: 'NotoSans', sans-serif;
+  font-family: 'Pretendard', 'NanumSquareNeo', 'NanumGothic', sans-serif;
 }
 
 a {
-  color: var(--primary-color);
+  color: var(--link-color);
   text-decoration: none;
 
   &:hover {
-    color: var(--primary-hover-color);
+    color: var(--link-hover-color);
+  }
+
+  &:visited {
+    color: var(--link-color);
   }
 }
 
@@ -369,7 +435,8 @@ hr {
     margin-top: 14px;
   }
 
-  ul, ol {
+  ul,
+  ol {
     padding-left: 16px;
   }
 

@@ -155,7 +155,9 @@ function TestRunTestcaseManager({
     return (
       <div className="manager-content" ref={managerContentElement}>
         <div className="testcase-title">
-          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
+          <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
+            {content.seqId}
+          </SeqId>
           <div className="name">{content.name}</div>
           {resultLayoutPosition === 'POPUP' && (
             <Button

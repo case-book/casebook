@@ -3,8 +3,12 @@ import PropTypes from 'prop-types';
 import Liner from '@/components/Liner/Liner';
 import { observer } from 'mobx-react';
 import './PageTitle.scss';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components';
 
-function PageTitle({ className, children, links, control, onListClick }) {
+function PageTitle({ className, name, children, links, control, onListClick, breadcrumbs }) {
+  const navigate = useNavigate();
+
   return (
     <div className={`page-title-wrapper g-no-select ${className}`}>
       <div>
@@ -16,27 +20,46 @@ function PageTitle({ className, children, links, control, onListClick }) {
             }}
           >
             <span>
-              <i className="fa-solid fa-list" />
+              <i className="fa-solid fa-circle-up" />
             </span>
           </div>
         )}
-        <div className="title-text">{children}</div>
-        {links && (
-          <div className="links">
-            <Liner className="page-title-liner" display="inline-block" width="1px" height="12px" color="white" margin="0 1rem" />
+        {name && <div className="page-name">[{name}]</div>}
+        <div className="page-title-info">
+          <div className="page-title-text">{children}</div>
+          {breadcrumbs?.length > 0 && (
+            <ul className="breadcrumbs">
+              {breadcrumbs.map((info, inx) => {
+                return (
+                  <li key={inx}>
+                    <Link to={info.to}>{info.text}</Link>
+                    {breadcrumbs.length - 1 > inx && <span className="bullet">&gt;</span>}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+        {links?.length > 0 && (
+          <ul className="links">
             {links.map((d, inx) => {
               return (
-                <React.Fragment key={inx}>
-                  <div>{d}</div>
-                  {inx !== links.length - 1 && (
-                    <div>
-                      <Liner className="page-title-liner" display="inline-block" width="1px" height="12px" color="light" margin="0 1rem" />
-                    </div>
-                  )}
-                </React.Fragment>
+                <li key={inx}>
+                  <Button
+                    size="sm"
+                    color={d.color || 'white'}
+                    onClick={() => {
+                      navigate(d.to);
+                    }}
+                  >
+                    {d.icon && <span className="icon">{d.icon}</span>}
+                    <span>{d.text}</span>
+                  </Button>
+                  {links.length - 1 > inx && <Liner display="inline-block" width="1px" height="12px" color="light" margin="0 5px" />}
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
         {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
       </div>
@@ -46,18 +69,32 @@ function PageTitle({ className, children, links, control, onListClick }) {
 
 PageTitle.defaultProps = {
   className: '',
+  name: null,
   children: '',
   links: null,
   control: null,
   onListClick: null,
+  breadcrumbs: [],
 };
 
 PageTitle.propTypes = {
   className: PropTypes.string,
+  name: PropTypes.string,
   children: PropTypes.node,
-  links: PropTypes.arrayOf(PropTypes.node),
+  links: PropTypes.arrayOf(
+    PropTypes.shape({
+      to: PropTypes.string,
+      text: PropTypes.string,
+    }),
+  ),
   control: PropTypes.node,
   onListClick: PropTypes.func,
+  breadcrumbs: PropTypes.arrayOf(
+    PropTypes.shape({
+      to: PropTypes.string,
+      text: PropTypes.string,
+    }),
+  ),
 };
 
 export default observer(PageTitle);

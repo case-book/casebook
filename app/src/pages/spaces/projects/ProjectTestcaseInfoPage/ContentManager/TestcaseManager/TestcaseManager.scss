@@ -4,7 +4,7 @@
   flex-direction: column;
 
   .testcase-title {
-    padding: 1.5rem 2rem 1.5rem;
+    padding: 1.5rem;
     display: flex;
     border-radius: 4px 4px 0 0;
 
@@ -17,8 +17,12 @@
       flex-grow: 1;
       display: flex;
 
+      .seq-id {
+        margin-right: 8px;
+      }
+
       .name {
-        font-size: 20px;
+        font-size: 18px;
       }
 
       .title-input {
@@ -69,11 +73,10 @@
     .case-description {
       margin: 0.5rem 0.5rem 0.5rem;
       padding: 1rem;
-      font-family: NotoSans, sans-serif;
       font-size: 14px;
       border-radius: 2px;
       background-color: var(--testcase-item-background);
-      border: 1px solid var(--border-lighter-color);
+      border: 1px solid var(--border-light-color);
 
       .case-description-content {
         white-space: pre-wrap;

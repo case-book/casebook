@@ -23,7 +23,7 @@ import {
   Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
@@ -34,6 +34,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './ProjectInfoPage.scss';
 import useStores from '@/hooks/useStores';
 import TokenDialog from '@/pages/common/Header/TokenDialog';
+import SpaceService from '@/services/SpaceService';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ function ProjectInfoPage() {
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
+  const [space, setSpace] = useState(null);
   const [project, setProject] = useState(null);
   const [projectTokenList, setProjectTokenList] = useState([]);
   const [tagUserMap, setTagUserMap] = useState({});
@@ -59,6 +61,12 @@ function ProjectInfoPage() {
     lastAccess: '',
     enabled: true,
   });
+
+  useEffect(() => {
+    SpaceService.selectSpaceInfo(spaceCode, info => {
+      setSpace(info);
+    });
+  }, [spaceCode]);
 
   const createProjectToken = (name, enabled) => {
     ProjectService.createProjectToken(spaceCode, projectId, { name, enabled }, projectToken => {
@@ -118,6 +126,8 @@ function ProjectInfoPage() {
       },
       null,
       t('삭제'),
+      null,
+      'danger',
     );
   };
 
@@ -133,6 +143,8 @@ function ProjectInfoPage() {
       },
       null,
       t('탈퇴'),
+      null,
+      'danger',
     );
   };
 
@@ -162,18 +174,39 @@ function ProjectInfoPage() {
     <>
       <Page className="project-info-page-wrapper">
         <PageTitle
-          links={isAdmin || project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${project?.id}/edit`}>{t('편집')}</Link>] : null}
-          control={
-            <div>
-              <Button size="sm" color="warning" onClick={onWithdraw}>
-                {t('프로젝트 탈퇴')}
-              </Button>
-              {(isAdmin || project?.admin) && (
-                <Button size="sm" color="danger" onClick={onDelete}>
-                  {t('프로젝트 삭제')}
-                </Button>
-              )}
-            </div>
+          name={t('프로젝트 정보')}
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/',
+              text: t('스페이스 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/info`,
+              text: space?.name,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects`,
+              text: t('프로젝트 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/info`,
+              text: project?.name,
+            },
+          ]}
+          links={
+            isAdmin || project?.admin
+              ? [
+                  {
+                    to: `/spaces/${spaceCode}/projects/${project?.id}/edit`,
+                    text: t('편집'),
+                    color: 'primary',
+                  },
+                ]
+              : null
           }
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects`);
@@ -182,7 +215,9 @@ function ProjectInfoPage() {
           {t('프로젝트')}
         </PageTitle>
         <PageContent>
-          <Title>{t('프로젝트 정보')}</Title>
+          <Title border={false} marginBottom={false}>
+            {t('프로젝트 정보')}
+          </Title>
           <Block>
             <BlockRow>
               <Label>{t('스페이스')}</Label>
@@ -202,9 +237,12 @@ function ProjectInfoPage() {
             </BlockRow>
           </Block>
           <Title
+            border={false}
+            marginBottom={false}
             control={
               <Button
-                size="sm"
+                size="xs"
+                color="primary"
                 onClick={() => {
                   setCreateTokenPopupOpened(true);
                 }}
@@ -284,7 +322,9 @@ function ProjectInfoPage() {
           <Block>
             <MemberCardManager className="member-manager" users={project?.users} tags />
           </Block>
-          <Title>{t('태그별 사용자')}</Title>
+          <Title paddingBottom={false} border={false}>
+            {t('태그별 사용자')}
+          </Title>
           <Block>
             {Object.keys(tagUserMap).length < 1 && (
               <EmptyContent className="empty-content">
@@ -328,8 +368,30 @@ function ProjectInfoPage() {
               </Table>
             )}
           </Block>
+          <Title paddingBottom={false} border={false} marginBottom={false}>
+            {t('관리')}
+          </Title>
+          <Block>
+            <BlockRow>
+              <Label>{t('프로젝트 탈퇴')}</Label>
+              <Text>
+                <Button size="sm" color="warning" outline onClick={onWithdraw}>
+                  {t('@ 프로젝트에서 탈퇴합니다.', { name: project?.name })}
+                </Button>
+              </Text>
+            </BlockRow>
+            {(isAdmin || project?.admin) && (
+              <BlockRow>
+                <Label>{t('프로젝트 삭제')}</Label>
+                <Text>
+                  <Button size="sm" color="danger" outline onClick={onDelete}>
+                    {t('@ 프로젝트를 삭제합니다.', { name: project?.name })}
+                  </Button>
+                </Text>
+              </BlockRow>
+            )}
+          </Block>
           <PageButtons
-            outline
             onBack={() => {
               navigate(-1);
             }}

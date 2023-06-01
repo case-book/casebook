@@ -36,7 +36,7 @@ function TokenList({ className, tokens, onDeleteButtonClick, onChangeButtonClick
                   <Td align="center">{dateUtil.getDateString(userToken.lastAccess)}</Td>
                   <Td align="center">
                     <Button
-                      size="sm"
+                      size="xs"
                       color="danger"
                       onClick={() => {
                         onDeleteButtonClick(userToken.id);
@@ -44,9 +44,10 @@ function TokenList({ className, tokens, onDeleteButtonClick, onChangeButtonClick
                     >
                       {t('삭제')}
                     </Button>
-                    <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.75rem " />
+                    <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.5rem " />
                     <Button
-                      size="sm"
+                      color="primary"
+                      size="xs"
                       onClick={() => {
                         onChangeButtonClick(userToken);
                       }}

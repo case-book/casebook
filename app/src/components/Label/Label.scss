@@ -3,7 +3,6 @@
   margin-right: 1rem;
   color: $gray-600;
   position: relative;
-  font-weight: bold;
 
   @media (max-width: 768px) {
     display: flex;
@@ -33,29 +32,36 @@
   }
 
   &.size-xl {
-    font-size: 20px;
+    font-size: 18px;
     height: $xl-height;
   }
 
   &.size-lg {
-    font-size: 18px;
+    font-size: 16px;
     height: $lg-height;
   }
 
   &.size-md {
-    font-size: 16px;
+    font-size: 14px;
     height: $md-height;
   }
 
   &.size-sm {
-    font-size: 14px;
+    font-size: 12px;
     height: $sm-height;
   }
 
   &.size-xs {
-    font-size: 12px;
+    font-size: 10px;
     height: $xs-height;
   }
+
+  @media (max-width: 768px) {
+    height: auto !important;
+    margin-top: 10px;
+  }
+
+
 
   > span {
     position: relative;

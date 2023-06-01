@@ -3,20 +3,16 @@
     margin-top: 1.5rem;
   }
 
-  .holiday-button {
-    > button {
-      margin-right: 0.5rem;
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-
   .invalid {
     color: var(--danger-color);
   }
 
+  .date-condition {
+    @include monospace;
+  }
+
   .condition {
+
     > div {
       margin-right: 0.5rem;
 

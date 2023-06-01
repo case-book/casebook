@@ -27,7 +27,7 @@ public class ResourceVoter extends WebExpressionVoter {
     public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
     public static final Pattern AUTOMATION_PATTERN = Pattern.compile("^/api/automation/projects/(.*)/(testruns|testcases)/(\\d+|TC\\d+)/(.*)");
     public static final Pattern PROJECT_SUB_PATTERN = Pattern.compile("^/api/(.*)/projects/(\\d+)/(testruns|testcases|tokens)/?(.*)?");
-    public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(\\d+|my)?");
+    public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(\\d+|my)?|^/api/(.*)/projects/?(\\d+)?/name");
     public static final Pattern SPACES_PATTERN = Pattern.compile("^/api/spaces/?(.*)?");
 
     private final SpaceService spaceService;

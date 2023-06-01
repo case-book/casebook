@@ -4,50 +4,41 @@
   position: relative;
   flex-direction: row;
   margin: 0 auto;
-  min-height: calc(var(--vh, 1vh) * 100 - 80px);
+  min-height: calc(var(--vh, 1vh) * 100 - 100px);
   justify-content: center;
+  background-color: var(--theme-color);
+  padding-bottom: 120px;
 
   > div {
     align-self: center;
+
+    .message {
+      text-align: center;
+    }
 
     @media (max-width: 640px) {
       width: 100%;
     }
 
-    .logo {
-      text-align: center;
-      position: absolute;
-      top: -30px;
-      left: 0;
-      right: 0;
-
-      @media (max-width: 640px) {
-        display: none;
-      }
-    }
-
-    > .join {
-      margin-top: 0;
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 80px;
-
-      @media (max-width: 640px) {
-        margin-bottom: 0;
-      }
-    }
-
     > div.login-box {
       align-self: center;
-      padding: 3rem 4rem;
+      padding: 2rem 4rem 3rem;
       margin-bottom: 1rem;
+      margin-top: 1rem;
       min-width: 500px;
       position: relative;
-      border-radius: 4px;
-      background-color: var(--box-color);
+      border-radius: 20px;
+      box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border-light-color);
+
+      @media (max-width: 640px) {
+        box-shadow: none;
+      }
 
       input {
-        font-family: NotoSans, sans-serif;
+        &:invalid {
+          border-bottom-color: var(--input-border-color);
+        }
       }
 
       @media (max-width: 640px) {
@@ -55,16 +46,16 @@
         box-shadow: none;
         min-width: auto;
         width: 100%;
-        padding: 0 3rem 2rem;
         margin-bottom: 0;
+        border: none;
       }
 
       .login-title {
         text-align: center;
         font-size: 30px;
-        font-family: Rowdies, sans-serif;
         margin-bottom: 1rem;
         margin-top: 1rem;
+        @include title();
       }
 
       .label {
@@ -74,7 +65,7 @@
       }
 
       .input {
-        margin-bottom: 0.5rem;
+        margin-bottom: 20px;
       }
 
       .auto-login {
@@ -94,27 +85,28 @@
       .button {
         text-align: center;
         margin-top: 0.5rem;
-      }
-
-      .message {
-        text-align: center;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: -90px;
-        font-weight: bold;
 
         @media (max-width: 640px) {
-          top: -70px;
+          margin-top: 1.5rem;
         }
+      }
+    }
+  }
 
-        > span {
-          display: inline-block;
-          padding: 0.75rem 1rem;
-          font-size: 16px;
-          color: var(--danger-color);
-          border-radius: 8px;
-          background-color: var(--box-color);
+  .version {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+.theme-DARK {
+  .login-wrapper {
+    > div {
+      > div.login-box {
+        input {
+          background-color: transparent;
         }
       }
     }

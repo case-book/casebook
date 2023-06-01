@@ -1,14 +1,25 @@
 .page-title-wrapper {
   height: 80px;
+  position: relative;
 
-  @media (max-width: 768px) {
-    height: 60px;
+  .page-name {
+    position: absolute;
+    top: -20px;
+    z-index: 5;
+    display: inline-block;
+    color: var(--gray-color);
+    font-size: 12px;
+    display: none;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
   }
 
-  .page-title-liner {
-    > div {
-      background-color: var(--border-color);
-    }
+  @media (max-width: 768px) {
+    height: 70px;
+    background-color: var(--lighter-color);
+    border-bottom: none;
   }
 
   > div {
@@ -22,19 +33,37 @@
 
       &.icon {
         flex-grow: 0;
-        font-size: 20px;
         height: 100%;
         display: inline-flex;
-        padding: 0 16px;
-        line-height: 100%;
-
-        @media (max-width: 768px) {
-          padding: 0 8px;
-        }
-
+        padding: 0 0 0 10px;
         cursor: pointer;
+        margin-right: -10px;
+
         > span {
-          align-self: center;
+          align-self: flex-start;
+          margin-top: 14px;
+          display: inline-flex;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          font-size: 16px;
+          justify-content: center;
+
+          @media (max-width: 768px) {
+            margin-top: 10px;
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+          }
+
+          &:hover {
+            background-color: var(--primary-color);
+            color: var(--primary-text-color);
+          }
+
+          i {
+            align-self: center;
+          }
         }
 
         &:hover {
@@ -42,23 +71,55 @@
         }
       }
 
-      &.title-text {
-        flex-grow: 0;
-        line-height: 100%;
-        font-weight: bold;
-        font-size: 24px;
+      &.page-title-info {
+        flex-grow: 1;
+        padding-left: 20px;
 
-        @media (max-width: 768px) {
-          font-size: 20px;
+        .page-title-text {
+          font-weight: bold;
+          font-size: 24px;
+          @include title;
+
+          @media (max-width: 768px) {
+            font-size: 20px;
+          }
+        }
+
+        .breadcrumbs {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          font-size: 11px;
+
+          @media (max-width: 768px) {
+            font-size: 10px;
+          }
+          li {
+            display: inline-block;
+
+            .bullet {
+              margin: 0 4px;
+            }
+
+            a {
+              padding-bottom: 1px;
+              display: inline-block;
+              border-bottom: 1px solid transparent;
+              &:hover {
+                border-bottom: 1px solid var(--link-color);
+              }
+            }
+          }
         }
       }
     }
   }
 
   .control {
-    margin-left: 0.5rem;
+    margin-left: 10px;
     flex-grow: 1;
     text-align: right;
+    margin-right: 20px;
 
     &.has-link {
       flex-grow: 0;
@@ -76,31 +137,66 @@
   .links {
     font-size: 16px;
     display: flex;
-    margin-right: 1rem;
+    margin-right: 30px;
     flex-grow: 1;
+    justify-content: flex-end;
+    list-style: none;
 
     @media (max-width: 768px) {
-      justify-content: flex-end;
-      .liner-wrapper {
-        display: none !important;
+      margin-right: 10px;
+    }
+
+    > li {
+      align-self: center;
+      display: inline-block;
+
+      button {
+        .icon {
+          margin-right: 4px;
+        }
+      }
+    }
+  }
+}
+
+.page-wrapper.info-page {
+  .page-title-wrapper {
+    border-bottom: 1px solid var(--border-light-color);
+  }
+}
+
+.page-wrapper.list-page {
+  .page-title-wrapper {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    padding-top: 4px;
+
+    > div {
+      max-width: $max-width;
+      margin: 0 auto;
+      display: flex;
+      width: 100%;
+      height: 100%;
+
+      @media (max-width: 1024px) {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      > div {
+        align-self: center;
+
+        &.icon {
+          padding: 0 0 0 0;
+        }
       }
     }
 
-    > div {
-      align-self: center;
-      display: flex;
+    .links {
+      margin-right: 0;
 
-      > a {
-        color : var(--link-color);
-        text-decoration: none;
-        margin-right: 8px;
-
-        &:last-child {
-          margin-right: 0;
-        }
-        &:visited {
-          color : var(--link-color);
-        }
+      @media (max-width: 768px) {
+        margin-right: 10px;
       }
     }
   }

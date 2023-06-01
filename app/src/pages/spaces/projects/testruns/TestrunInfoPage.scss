@@ -67,6 +67,9 @@
 
     .seq-name {
       display: flex;
+      .seq-id {
+        margin-right: 8px;
+      }
       > div {
         align-self: center;
       }

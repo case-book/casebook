@@ -14,7 +14,6 @@
     justify-content: center;
     transition: all 0.3s;
     display: inline-block;
-    font-family: NotoSans, sans-serif;
     line-height: 100%;
     cursor: pointer;
   }
@@ -55,7 +54,7 @@
   &.lg {
     height: $lg-height;
     label {
-      font-size: 16px;
+      font-size: $lg-font-size;
     }
 
     .checked-icon {
@@ -70,7 +69,7 @@
     height: $md-height;
 
     label {
-      font-size: 16px;
+      font-size: $md-font-size;
     }
 
     .checked-icon {
@@ -85,7 +84,7 @@
     height: $sm-height;
     line-height: 0;
     label {
-      font-size: 14px;
+      font-size: $sm-font-size;
     }
 
     .checked-icon {
@@ -100,7 +99,7 @@
     height: $xs-height;
     line-height: 0;
     label {
-      font-size: 14px;
+      font-size: $xs-font-size;
     }
 
     .checked-icon {

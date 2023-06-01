@@ -5,6 +5,11 @@
 
     @media (max-width: 768px) {
       display: block;
+      padding: 0;
+    }
+
+    input ~ button:last-child {
+      margin-left: 10px;
     }
   }
 
@@ -27,9 +32,5 @@
         flex-grow: 1;
       }
     }
-  }
-
-  button {
-    margin-left: 8px;
   }
 }

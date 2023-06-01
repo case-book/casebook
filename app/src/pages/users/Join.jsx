@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, LogoIcon } from '@/components';
+import { Button, Form, Input, Version } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
@@ -48,9 +48,6 @@ function Join() {
   return (
     <div className="join-wrapper">
       <div className="join-box">
-        <div className="logo">
-          <LogoIcon />
-        </div>
         <div className="join-title">JOIN</div>
         <Form onSubmit={onSubmit}>
           <div className="label">{t('이메일')}</div>
@@ -58,7 +55,6 @@ function Join() {
             <Input
               type="email"
               underline
-              size="lg"
               required
               placeholder="이메일"
               value={userInfo.email}
@@ -76,7 +72,6 @@ function Join() {
             <Input
               type="text"
               underline
-              size="lg"
               required
               placeholder="이름"
               value={userInfo.name}
@@ -94,7 +89,6 @@ function Join() {
             <Input
               type="password"
               underline
-              size="lg"
               required
               placeholder="비밀번호"
               value={userInfo.password}
@@ -112,7 +106,6 @@ function Join() {
             <Input
               type="password"
               underline
-              size="lg"
               required
               placeholder="비밀번호 확인"
               value={userInfo.passwordConfirm}
@@ -126,15 +119,13 @@ function Join() {
             />
           </div>
           <div className="button">
-            <Button type="submit" color="yellow" size="md">
+            <Button type="submit" color="primary" size="md">
               {t('회원 가입')}
             </Button>
           </div>
-          <div className="login">
-            <Link to="/users/login">{t('로그인')}</Link>
-          </div>
         </Form>
       </div>
+      <Version className="version" />
     </div>
   );
 }

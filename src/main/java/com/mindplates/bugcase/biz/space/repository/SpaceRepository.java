@@ -10,6 +10,8 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
 
     List<Space> findAllByUsersUserId(Long userId);
 
+    List<Space> findAllByUsersUserIdAndNameContainingIgnoreCase(Long userId, String query);
+
 
     Optional<Space> findByCode(String code);
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
@@ -82,6 +82,8 @@ function TestrunInfoPage() {
       },
       null,
       t('삭제'),
+      null,
+      'danger',
     );
   };
 
@@ -97,6 +99,8 @@ function TestrunInfoPage() {
       },
       null,
       t('종료'),
+      null,
+      'primary',
     );
   };
 
@@ -112,13 +116,45 @@ function TestrunInfoPage() {
       },
       null,
       t('재오픈'),
+      null,
+      'primary',
     );
   };
 
   return (
     <Page className="testrun-info-page-wrapper">
       <PageTitle
-        links={project?.admin ? [<Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`}>{t('편집')}</Link>] : null}
+        name={t('테스트런 정보')}
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
+            text: t('테스트런 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/info`,
+            text: testrun?.name,
+          },
+        ]}
         control={
           <div>
             {testrun.opened && (
@@ -134,6 +170,16 @@ function TestrunInfoPage() {
             <Button size="sm" color="danger" onClick={onDelete}>
               {t('테스트런 삭제')}
             </Button>
+            <Liner display="inline-block" width="1px" height="10px" margin="0 10px 0 0" />
+            <Button
+              size="sm"
+              color="primary"
+              onClick={() => {
+                navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
+              }}
+            >
+              {t('편집')}
+            </Button>
           </div>
         }
         onListClick={() => {
@@ -143,7 +189,9 @@ function TestrunInfoPage() {
         {t('테스트런')}
       </PageTitle>
       <PageContent>
-        <Title>{t('테스트런 정보')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('테스트런 정보')}
+        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -194,7 +242,7 @@ function TestrunInfoPage() {
           <BlockRow className="testrun-testcases-content">
             {testrun.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
             {testrun.testcaseGroups?.length > 0 && (
-              <Table size="sm" cols={['1px', '100%']} border>
+              <Table cols={['1px', '100%']} border>
                 <THead>
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
@@ -219,7 +267,7 @@ function TestrunInfoPage() {
                                   <Td rowSpan={d.testcases.length} className="group-info">
                                     <div className="seq-name">
                                       <div>
-                                        <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
                                           {d.seqId}
                                         </SeqId>
                                       </div>
@@ -230,19 +278,18 @@ function TestrunInfoPage() {
                                 <Td>
                                   <div className="seq-name">
                                     <div>
-                                      <SeqId size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
+                                      <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
                                         {testcase.seqId}
                                       </SeqId>
                                     </div>
                                     <div>{testcase.name}</div>
                                   </div>
                                 </Td>
-
-                                <Td align="left">
-                                  <Tag>{tester?.name}</Tag>
-                                </Td>
+                                <Td align="left">{tester?.name}</Td>
                                 <Td align="center">
-                                  <Tag className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</Tag>
+                                  <Tag size="xs" className={testcase.testResult}>
+                                    {TESTRUN_RESULT_CODE[testcase.testResult]}
+                                  </Tag>
                                 </Td>
                               </Tr>
                             );
@@ -275,7 +322,6 @@ function TestrunInfoPage() {
           </BlockRow>
         </Block>
         <PageButtons
-          outline
           onBack={() => {
             navigate(-1);
           }}

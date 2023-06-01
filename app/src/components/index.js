@@ -56,6 +56,9 @@ import PieChart from './PieChart/PieChart';
 import THead from './Table/THead';
 import Th from './Table/Th';
 import TokenList from './TokenList/TokenList';
+import Info from './Info/Info';
+import Version from './Version/Version';
+import Search from './Search/Search';
 
 export {
   Selector,
@@ -116,4 +119,7 @@ export {
   Th,
   ReactSelect,
   TokenList,
+  Info,
+  Version,
+  Search,
 };

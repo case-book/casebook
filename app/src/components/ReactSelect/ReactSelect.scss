@@ -1,8 +1,6 @@
 .react-select-wrapper {
-  font-family: NotoSans, sans-serif !important;
-
   &.size-md {
-    font-size: 16px;
+
     height: $md-height;
     .react-select__control {
       height: $md-height;

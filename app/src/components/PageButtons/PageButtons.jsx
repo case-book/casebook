@@ -107,7 +107,7 @@ function PageButtons(props) {
           {onEdit && (
             <>
               {(onBack || onCancel || onList || onInfo) && <Liner display="inline-block" width="1px" height="10px" margin="0 0.5rem" />}
-              <Button type="button" size={size} color="white" outline={outline} onClick={onEdit}>
+              <Button type="button" size={size} color="primary" outline={outline} onClick={onEdit}>
                 <div>
                   {onEditIcon && (
                     <div className="icon">
@@ -122,7 +122,7 @@ function PageButtons(props) {
           {onSubmit && (
             <>
               {(onBack || onCancel || onList || onInfo || onEdit) && <Liner display="inline-block" width="1px" height="10px" margin="0 0.5rem" />}
-              <Button type="submit" size={size} color="white" outline={outline}>
+              <Button type="submit" size={size} color="primary" outline={outline}>
                 <div>
                   {onSubmitIcon && (
                     <div className="icon">
@@ -143,7 +143,7 @@ function PageButtons(props) {
 PageButtons.defaultProps = {
   className: '',
   size: 'lg',
-  outline: true,
+  outline: false,
   onListText: i18n.t('목록'),
   onListIcon: '', // <i className="far fa-file-alt" />,
   onInfoText: i18n.t('정보'),
