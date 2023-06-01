@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { EmptyContent, Page, PageContent, PageTitle, PieChart, Radio, SeqId, Title } from '@/components';
+import { EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, Radio, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 
 import TestrunService from '@/services/TestrunService';
@@ -129,7 +129,7 @@ function ProjectDashBoardPage() {
         <Title border={false} marginBottom={false}>
           {t('진행 중인 테스트런')}
         </Title>
-        <div className="scroll-content">
+        <div className="scroll-content current-testrun-content">
           <div>
             {testruns.length < 1 && <EmptyContent className="empty-content">{t('진행 중인 테스트런이 없습니다.')}</EmptyContent>}
             {testruns.length > 0 && (
@@ -138,11 +138,7 @@ function ProjectDashBoardPage() {
                   return (
                     <li key={testrun.id} className={`${testruns.length > 3 ? 'over-3' : 'until-3'} ${testruns.length > 2 ? 'over-2' : ''}  ${testruns.length > 1 ? 'over-1' : ''}`}>
                       <div className="name">
-                        <div className="seq">
-                          <SeqId type={ITEM_TYPE.TESTCASE} copy={false}>
-                            {testrun.seqId}
-                          </SeqId>
-                        </div>
+                        <div className="seq">{testrun.seqId}</div>
                         <div className="text">
                           <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
                         </div>
@@ -150,8 +146,24 @@ function ProjectDashBoardPage() {
                       <div className="chart">
                         <div className="chart-content">
                           <PieChart
+                            margin={{ top: 20, right: 80, bottom: 80, left: 80 }}
                             onClick={() => {
                               navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`);
+                            }}
+                            getArcLabel={id => {
+                              if (id === 'PASSED') {
+                                return '성공';
+                              }
+
+                              if (id === 'FAILED') {
+                                return '실패';
+                              }
+
+                              if (id === 'UNTESTED') {
+                                return '미수행&수행불가';
+                              }
+
+                              return id;
                             }}
                             data={testrun.data}
                             defs={[
@@ -224,13 +236,11 @@ function ProjectDashBoardPage() {
                 {userAssignedTestruns.map(testrun => {
                   let totalCount = 0;
                   let doneCount = 0;
-                  let remainCount = 0;
+
                   testrun.testcaseGroups.forEach(testcaseGroup => {
                     testcaseGroup.testcases?.forEach(testcase => {
                       totalCount += 1;
-                      if (testcase.testResult === 'UNTESTED') {
-                        remainCount += 1;
-                      } else {
+                      if (testcase.testResult !== 'UNTESTED') {
                         doneCount += 1;
                       }
                     });
@@ -239,45 +249,39 @@ function ProjectDashBoardPage() {
                   return (
                     <li key={testrun.id}>
                       <div className="name">
-                        <div className="seq">
-                          <SeqId type={ITEM_TYPE.TESTCASE} copy={false}>
-                            {testrun.seqId}
-                          </SeqId>
-                        </div>
+                        <div className="seq">{testrun.seqId}</div>
                         <div className="text">
                           <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
                         </div>
                       </div>
                       <div className="summary">
                         <div>
-                          <div className="percentage">{t('@ 진행', { percentage: `${Math.round((doneCount / totalCount) * 100)}%` })}</div>
-                          <div className="remain-count">
+                          <div className="percentage">
+                            <span>{t('내 진행률')}</span>
+                            <span>{Math.round((doneCount / totalCount) * 100)}%</span>
+                          </div>
+                          <div>
+                            <Liner width="1px" height="10px" margin="0 0.5rem" />
+                          </div>
+                          <div className="count">
+                            {doneCount} / {totalCount}
+                          </div>
+                          <div>
+                            <Liner width="1px" height="10px" margin="0 0.5rem" />
+                          </div>
+                          <div className="progress">
                             <div>
-                              {doneCount > 0 && (
-                                <div
-                                  className={`done ${doneCount === totalCount ? 'full' : ''}`}
-                                  style={{
-                                    width: `${(doneCount / totalCount) * 100}%`,
-                                  }}
-                                >
-                                  <div>{t('@개 테스트 수행', { count: doneCount })}</div>
-                                </div>
-                              )}
-                              {remainCount > 0 && (
-                                <div
-                                  className={`remain ${remainCount === totalCount ? 'full' : ''}`}
-                                  style={{
-                                    width: `${(remainCount / totalCount) * 100}%`,
-                                  }}
-                                >
-                                  <div>{t('@개 테스트 남음', { count: remainCount })}</div>
-                                </div>
-                              )}
+                              <div
+                                className="done"
+                                style={{
+                                  width: `${(doneCount / totalCount) * 100}%`,
+                                }}
+                              />
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="testcase-list-title">{t('테스트케이스 목록')}</div>
+                      <div className="testcase-list-title">{t('내 테스트케이스')}</div>
                       <div className="list">
                         <ul>
                           {testrun.testcaseGroups.map(testcaseGroup => {
@@ -354,11 +358,12 @@ function ProjectDashBoardPage() {
                       const totalSpan = end - start;
                       const currentCloseSpan = moment(d.closedDate || d.endDateTime).valueOf() - moment(d.startDateTime).valueOf();
 
+                      const left = ((moment(d.startDateTime).valueOf() - start) / totalSpan) * 100;
                       return (
                         <li key={d.id}>
                           <div
                             style={{
-                              left: `${((moment(d.startDateTime).valueOf() - start) / totalSpan) * 100}%`,
+                              left: `${left < 0 ? 0 : left}%`,
                             }}
                           >
                             <div
@@ -371,7 +376,7 @@ function ProjectDashBoardPage() {
                                 DATE_FORMATS_TYPES.monthsDaysHoursMinutes,
                               )} [ ${d.passedTestcaseCount} PASSED / ${d.failedTestcaseCount} FAILED ]`}
                               onClick={() => {
-                                navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${d.id}`);
+                                navigate(`/spaces/${spaceCode}/projects/${projectId}/reports/${d.id}`);
                               }}
                             >
                               <div
