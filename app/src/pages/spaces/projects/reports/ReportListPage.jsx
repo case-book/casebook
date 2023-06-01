@@ -1,21 +1,77 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Table, Tag, Tbody, Td, Th, THead, Tr } from '@/components';
+import { Button, Card, EmptyContent, Liner, Page, PageContent, PageTitle, Radio, Table, Tbody, Td, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import dateUtil from '@/utils/dateUtil';
-import { ITEM_TYPE } from '@/constants/constants';
 import ReportService from '@/services/ReportService';
 import './ReportListPage.scss';
+import ProjectService from '@/services/ProjectService';
+import moment from 'moment';
 
 function ReportListPage() {
   const { t } = useTranslation();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
+  const [project, setProject] = useState(null);
   const [testruns, setTestruns] = useState([]);
+  const [latestTestruns, setLatestTestruns] = useState([]);
+
+  const [periods] = useState([
+    { key: '1', value: t('@개월', { month: 1 }) },
+    { key: '3', value: t('@개월', { month: 3 }) },
+    { key: '6', value: t('@개월', { month: 6 }) },
+    { key: '12', value: t('@개월', { month: 12 }) },
+  ]);
+
+  const [period, setPeriod] = useState('1');
 
   useEffect(() => {
-    ReportService.selectReportList(spaceCode, projectId, list => {
+    ReportService.selectLatestReportList(spaceCode, projectId, list => {
+      setLatestTestruns(
+        list.map(testrun => {
+          const data = [];
+          const progress = testrun.passedTestcaseCount + testrun.failedTestcaseCount + testrun.untestableTestcaseCount;
+          if (progress > 0) {
+            data.push({
+              id: 'PROGRESS',
+              value: progress,
+              color: '#ffbc4b',
+              label: `수행-${Math.round((progress / testrun.totalTestcaseCount) * 100)}%`,
+            });
+          }
+
+          if (testrun.totalTestcaseCount - progress > 0) {
+            data.push({
+              id: 'REMAINS',
+              value: testrun.totalTestcaseCount - progress,
+              color: 'rgba(0,0,0,0.2)',
+              label: `미수행-${Math.round(((testrun.totalTestcaseCount - progress) / testrun.totalTestcaseCount) * 100)}%`,
+            });
+          }
+
+          return {
+            ...testrun,
+            data,
+          };
+        }),
+      );
+    });
+
+    ProjectService.selectProjectName(spaceCode, projectId, info => {
+      setProject(info);
+    });
+  }, [spaceCode, projectId]);
+
+  useEffect(() => {
+    const end = moment();
+    end.hour(23);
+    end.minute(59);
+    end.second(59);
+    end.millisecond(59);
+    const start = moment().subtract(period, 'months');
+
+    ReportService.selectReportList(spaceCode, projectId, start.toISOString(), end.toISOString(), list => {
       setTestruns(
         list.map(testrun => {
           const data = [];
@@ -45,12 +101,37 @@ function ReportListPage() {
         }),
       );
     });
-  }, [spaceCode]);
+  }, [spaceCode, projectId, period]);
 
   return (
-    <Page className="report-list-page-wrapper">
+    <Page className="report-list-page-wrapper" list>
       <PageTitle
-        className="page-title"
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/reports`,
+            text: t('리포트'),
+          },
+        ]}
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects`);
         }}
@@ -58,14 +139,16 @@ function ReportListPage() {
         {t('리포트')}
       </PageTitle>
       <PageContent className="page-content">
+        <Title border={false} marginBottom={false}>
+          {t('최근 종료된 3개 테스트런')}
+        </Title>
         {testruns?.length <= 0 && <EmptyContent fill>{t('조회된 리포트가 없습니다.')}</EmptyContent>}
-
         <ul className="report-cards">
-          {testruns.slice(0, 3).map(testrun => {
-            const progressPercentage = Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
+          {latestTestruns.map(testrun => {
             const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
             const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
             const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+            const remainPercentage = 100 - Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
 
             return (
               <li key={testrun.id}>
@@ -84,85 +167,96 @@ function ReportListPage() {
                     </Button>
                   </div>
                   <div className="name">
-                    <div className="seq">
-                      <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE} copy={false} size="sm">
-                        {testrun.seqId}
-                      </SeqId>
-                    </div>
+                    <div className="seq">{testrun.seqId}</div>
                     <div className="text">
                       <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>{testrun.name}</Link>
                     </div>
                   </div>
                   <div className="summary-bar">
-                    <div
-                      className="PASSED"
-                      style={{
-                        width: `${passedPercentage}%`,
-                      }}
-                    />
-                    <div
-                      className="FAILED"
-                      style={{
-                        width: `${failedPercentage}%`,
-                      }}
-                    />
-                    <div
-                      className="UNTESTABLE"
-                      style={{
-                        width: `${untestablePercentage}%`,
-                      }}
-                    />
-                  </div>
-                  <div className="description">{testrun.description}</div>
-                  <div className="summary">
-                    <div className="progress-content">
-                      <PieChart
-                        data={testrun.data}
-                        legend={false}
-                        tooltip={false}
-                        activeOuterRadiusOffset={0}
-                        margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                        isInteractive={false}
-                        innerRadius={0.7}
-                        cornerRadius={0}
-                      />
-                      <div className="percentage-content">
-                        <div className="percentage-info">
-                          <span className="percentage">{progressPercentage}</span>
-                          <span className="symbol">%</span>
-                        </div>
-                        <div className="progress-label">{t('수행률')}</div>
-                      </div>
-                    </div>
-                    <div className="result-summary">
-                      <div>
-                        <div className="label">{t('성공')}</div>
-                        <div className="percentage PASSED">
-                          <div>{passedPercentage}%</div>
-                        </div>
-                        <div className="count-and-total">
-                          ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
+                    {remainPercentage > 0 && (
+                      <div
+                        className="REMAINS"
+                        style={{
+                          width: `${remainPercentage}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('미수행')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{remainPercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.totalTestcaseCount - testrun.passedTestcaseCount - testrun.failedTestcaseCount - testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="label">{t('실패')}</div>
-                        <div className="percentage FAILED">
-                          <div>{failedPercentage}%</div>
-                        </div>
-                        <div className="count-and-total">
-                          ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
+                    )}
+                    {passedPercentage > 0 && (
+                      <div
+                        className="PASSED"
+                        style={{
+                          width: `${passedPercentage}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('성공')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{passedPercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div className="label">{t('테스트 불가')}</div>
-                        <div className="percentage UNTESTABLE">
-                          <div>{untestablePercentage}%</div>
-                        </div>
-                        <div className="count-and-total">
-                          ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                    )}
+                    {failedPercentage > 0 && (
+                      <div
+                        className="FAILED"
+                        style={{
+                          width: `${failedPercentage}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('실패')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{failedPercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
+                    {untestablePercentage > 0 && (
+                      <div
+                        className="UNTESTABLE"
+                        style={{
+                          width: `${untestablePercentage}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('불가능')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{untestablePercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="testrun-others">
                     <div className="time-info">
@@ -170,23 +264,11 @@ function ReportListPage() {
                         <i className="fa-regular fa-clock" />
                       </span>
                       <span className="label">{t('테스트 기간')}</span>
-                      {testrun.startDateTime && (
-                        <Tag color="white" uppercase>
-                          {dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}
-                        </Tag>
-                      )}
+                      {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
                       <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
                         {(testrun.startDateTime || testrun.closedDate) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
-                        {testrun.startDateTime && testrun.closedDate && (
-                          <Tag color="white" uppercase>
-                            {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}
-                          </Tag>
-                        )}
-                        {!testrun.startDateTime && testrun.closedDate && (
-                          <Tag color="white" uppercase>
-                            {dateUtil.getDateString(testrun.closedDate)}
-                          </Tag>
-                        )}
+                        {testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}</span>}
+                        {!testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getDateString(testrun.closedDate)}</span>}
                       </div>
                     </div>
                   </div>
@@ -195,6 +277,27 @@ function ReportListPage() {
             );
           })}
         </ul>
+        <Title
+          border={false}
+          marginBottom={false}
+          control={periods.map(d => {
+            return (
+              <Radio
+                key={d.key}
+                size="xs"
+                value={d.key}
+                type="inline"
+                checked={period === d.key}
+                onChange={val => {
+                  setPeriod(val);
+                }}
+                label={d.value}
+              />
+            );
+          })}
+        >
+          {t('테스트런 리포트')}
+        </Title>
         {testruns?.length > 0 && (
           <div className="testrun-table-content">
             <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
@@ -203,11 +306,11 @@ function ReportListPage() {
                   <Th align="center">{t('테스트런 ID')}</Th>
                   <Th align="left">{t('이름')}</Th>
                   <Th align="center">{t('수행률')}</Th>
-                  <Th align="center">{t('성공')}</Th>
-                  <Th align="center">{t('실패')}</Th>
+                  <Th align="center">{t('성공률')}</Th>
+                  <Th align="center">{t('실패율')}</Th>
                   <Th align="center">{t('테스트 불가')}</Th>
-                  <Th align="center">{t('테스트 시작일시')}</Th>
-                  <Th align="center">{t('테스트 종료일시')}</Th>
+                  <Th align="center">{t('테스트 일시')}</Th>
+                  <Th align="center" />
                 </Tr>
               </THead>
               <Tbody>
@@ -220,12 +323,10 @@ function ReportListPage() {
 
                   return (
                     <Tr key={testrun.id}>
-                      <Td align="center">
-                        <SeqId type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                          {testrun.seqId}
-                        </SeqId>
+                      <Td className="testrun-id" align="center">
+                        {testrun.seqId}
                       </Td>
-                      <Td bold>
+                      <Td>
                         <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>{testrun.name}</Link>
                       </Td>
                       <Td className="count" align="right">
@@ -261,11 +362,21 @@ function ReportListPage() {
                           </div>
                         </div>
                       </Td>
-                      <Td className="date" align="center">
-                        {dateUtil.getDateString(testrun.startDateTime)}
+                      <Td className="date">
+                        {dateUtil.getDateString(testrun.startDateTime)} ~ {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}
                       </Td>
-                      <Td className="date" align="center">
-                        {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}
+                      <Td align="center">
+                        <Button
+                          rounded
+                          outline
+                          size="sm"
+                          onClick={e => {
+                            e.stopPropagation();
+                            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`);
+                          }}
+                        >
+                          <i className="fa-solid fa-gear" />
+                        </Button>
                       </Td>
                     </Tr>
                   );

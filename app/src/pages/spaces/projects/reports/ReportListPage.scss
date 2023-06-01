@@ -31,13 +31,13 @@
   ul.report-cards {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 20px;
 
     > li {
       display: inline-block;
-      width: calc((100% - 2rem) / 3);
-      margin-bottom: 1rem;
-      margin-right: 1rem;
+      width: calc((100% - 20px) / 3);
+      margin-bottom: 10px;
+      margin-right: 10px;
 
       &:nth-child(3n) {
         margin-right: 0;
@@ -92,186 +92,118 @@
           margin-bottom: 0.75rem;
 
           .seq {
-            margin-bottom: 0.25rem;
-
-            .seq-id {
-              margin-right: 0;
-            }
+            position: absolute;
+            top: 10px;
+            left: 10px;
           }
 
           .text {
-            font-weight: bold;
+            font-size: 18px;
+            padding: 20px 0 0;
+
+            > a {
+              display: inline-block;
+              padding-left: 8px;
+              padding-right: 8px;
+              padding-bottom: 4px;
+            }
           }
         }
 
         .summary-bar {
-          height: 10px;
-          line-height: 0;
-          background-color: var(--light-color);
-          margin-bottom: 0.25rem;
+          display: flex;
+          border: 1px solid var(--light-color);
+          border-radius: 8px;
+
           > div {
-            display: inline-block;
-            height: 100%;
+            padding: 10px;
+            text-align: center;
+            white-space: nowrap;
+            min-width: 66px;
+            position: relative;
+
+            &:first-child {
+              .bg {
+                border-radius: 8px 0 0 8px;
+              }
+            }
+
+            &:last-child {
+              .bg {
+                border-radius: 0 8px 8px 0;
+              }
+            }
+
+            .bg {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              opacity: 0.7;
+            }
+
+            .content {
+              position: relative;
+              padding: 10px 0;
+            }
+
+            .label {
+              margin-bottom: 4px;
+              > span {
+                font-size: 13px;
+                display: inline-block;
+                padding: 2px 4px;
+                border-radius: 4px;
+                background-color: var(--primary-color);
+                color: var(--primary-text-color);
+              }
+            }
+
+            .count-and-total {
+              font-size: 12px;
+            }
+
+            .percentage {
+              margin-bottom: 4px;
+            }
+
+            &.REMAINS {
+              .bg {
+                background-color: var(--light-color);
+              }
+            }
             &.PASSED {
-              background-color: var(--success-color);
+              .bg {
+                background-color: var(--success-color);
+              }
             }
 
             &.FAILED {
-              background-color: var(--danger-color);
+              .bg {
+                background-color: var(--danger-color);
+              }
             }
 
             &.UNTESTABLE {
-              background-color: var(--gray-color);
-            }
-          }
-        }
-
-        .description {
-          text-align: justify;
-          flex-grow: 1;
-          max-height: 54px;
-          min-height: 54px;
-          padding: 0.5rem;
-          display: flex;
-          border-radius: 0;
-          overflow-y: auto;
-          margin-bottom: 1rem;
-          font-size: 12px;
-          white-space: pre-wrap;
-          background-color: var(--lighter-color);
-          color: var(--text-color);
-          > div {
-            align-self: center;
-          }
-        }
-
-        .summary {
-          width: 100%;
-          position: relative;
-          display: flex;
-          flex-direction: row;
-          border-radius: 8px;
-
-          .progress-content {
-            width: 100px;
-            height: 100px;
-            position: relative;
-
-            .percentage-content {
-              position: absolute;
-              top: 30px;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              text-align: center;
-
-              > div.percentage-info {
-                align-self: center;
-                display: inline-flex;
-                position: relative;
-
-                .percentage {
-                  @include number;
-                  font-size: 30px;
-                  display: inline-block;
-                  line-height: 100%;
-                  align-self: center;
-                }
-
-                .symbol {
-                  font-family: SpaceMono, sans-serif;
-                  font-size: 16px;
-                  display: inline-block;
-                  align-self: center;
-                  position: absolute;
-                  right: -7px;
-                  top: -5px;
-                }
-              }
-
-              > .progress-label {
-                text-align: center;
-
-                line-height: 100%;
-                font-size: 12px;
-              }
-            }
-          }
-
-          .result-summary {
-            flex-grow: 1;
-            margin-left: 1rem;
-            display: flex;
-            > div {
-              flex: 1 1 0;
-              text-align: center;
-              border: 1px solid var(--border-color);
-              margin-right: 0.5rem;
-              border-radius: 4px;
-              display: flex;
-              flex-direction: column;
-              &:last-child {
-                margin-right: 0;
-              }
-
-              .label {
-                padding: 0.5rem 0 0.25rem;
-                font-weight: bold;
-                font-size: 14px;
-              }
-
-              .percentage {
-                flex-grow: 1;
-                @include number;
-                font-size: 24px;
-                display: flex;
-                justify-content: center;
-                position: relative;
-                left: -3px;
-                width: calc(100% + 6px);
-                border-radius: 3px;
-                > div {
-                  align-self: center;
-                }
-
-                &.FAILED {
-                  color: var(--white-color);
-                  background-color: var(--danger-color);
-                }
-
-                &.PASSED {
-                  color: var(--white-color);
-                  background-color: var(--success-color);
-                }
-
-                &.UNTESTABLE {
-                  color: var(--white-color);
-                  background-color: var(--gray-color);
-                }
-              }
-
-              .count-and-total {
-                padding: 0.25rem 0 0.5rem;
-                @include number;
-                font-size: 14px;
+              .bg {
+                background-color: var(--gray-color);
               }
             }
           }
         }
 
         .testrun-others {
-          margin-top: 1rem;
+          margin-top: 20px;
 
           .time-info {
             display: flex;
 
             .calendar {
-              padding-bottom: 2px;
               margin-right: 0.5rem;
             }
 
             .label {
-              font-size: 12px;
               margin-right: 0.5rem;
             }
 
@@ -297,9 +229,10 @@
   .testrun-table-content {
     background-color: var(--theme-color);
     td {
+      &.testrun-id {
+        @include monospace;
+      }
       &.count {
-        font-weight: bold;
-        @include number;
         > div {
           display: inline-block;
           text-align: center;
@@ -319,10 +252,7 @@
 
       .summary {
         font-size: 12px;
-      }
-
-      &.date {
-        font-size: 14px;
+        margin-top: 4px;
       }
     }
   }

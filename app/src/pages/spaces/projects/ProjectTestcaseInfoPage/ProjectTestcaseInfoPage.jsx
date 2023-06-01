@@ -396,6 +396,7 @@ function ProjectTestcaseInfoPage() {
   return (
     <Page className="project-testcase-info-page-wrapper">
       <PageTitle
+        name={t('테스트케이스')}
         breadcrumbs={[
           {
             to: '/',

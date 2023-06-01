@@ -101,7 +101,9 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
     <div className={`testcase-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
       <div className="testcase-title">
         <div className="text">
-          <SeqId type={ITEM_TYPE.TESTCASE}>{content.seqId}</SeqId>
+          <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
+            {content.seqId}
+          </SeqId>
           {isEdit && (
             <div className="title-input">
               <div className="type-input">
@@ -136,9 +138,8 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
         <div className="title-button">
           {!isEdit && (
             <Button
-              size="sm"
-              outline
-              color="white"
+              size="md"
+              color="primary"
               onClick={() => {
                 setIsEdit(true);
               }}
@@ -148,10 +149,10 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
           )}
           {isEdit && (
             <>
-              <Button outline size="md" color="white" onClick={onCancel}>
+              <Button size="md" color="white" onClick={onCancel}>
                 {t('취소')}
               </Button>
-              <Button size="md" color="primary" outline onClick={onSave}>
+              <Button size="md" color="primary" onClick={onSave}>
                 {t('저장')}
               </Button>
             </>

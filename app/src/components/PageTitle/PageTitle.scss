@@ -168,6 +168,8 @@
   .page-title-wrapper {
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 20px;
+    padding-top: 4px;
+
     > div {
       max-width: $max-width;
       margin: 0 auto;

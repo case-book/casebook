@@ -85,8 +85,13 @@ public class TestrunService {
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
     }
 
-    public List<TestrunDTO> selectClosedProjectTestrunList(String spaceCode, long projectId) {
-        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, false);
+    public List<TestrunDTO> selectClosedProjectTestrunList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
+        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedAndStartDateTimeAfterAndStartDateTimeBeforeOrProjectSpaceCodeAndProjectIdAndOpenedAndEndDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, false, start, end, spaceCode, projectId, false, start, end);
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+    }
+
+    public List<TestrunDTO> selectLatestClosedProjectTestrunList(String spaceCode, long projectId) {
+        List<Testrun> list = testrunRepository.findTop3ByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDesc(spaceCode, projectId, false);
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
     }
 

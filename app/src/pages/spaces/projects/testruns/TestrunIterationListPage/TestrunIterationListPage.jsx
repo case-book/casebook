@@ -36,7 +36,7 @@ function TestrunIterationListPage() {
   }, [expired, projectId, spaceCode]);
 
   return (
-    <Page className="testrun-iteration-list-page-wrapper">
+    <Page className="testrun-iteration-list-page-wrapper" list>
       <PageTitle
         breadcrumbs={[
           {

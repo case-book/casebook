@@ -28,9 +28,8 @@ function TestrunReservationListPage() {
   }, [expired, spaceCode, projectId]);
 
   return (
-    <Page className="testrun-reservation-list-page-wrapper">
+    <Page className="testrun-reservation-list-page-wrapper" list>
       <PageTitle
-        name={t('예약 테스트런 목록')}
         breadcrumbs={[
           {
             to: '/',
@@ -128,7 +127,7 @@ function TestrunReservationListPage() {
             <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>
               <THead>
                 <Tr>
-                  <Th align="left">{t('타입')}</Th>
+                  <Th align="left">{t('상태')}</Th>
                   <Th align="left">{t('이름')}</Th>
                   <Th align="left">{t('테스트 시작일시')}</Th>
                   <Th align="left">{t('테스트 종료일시')}</Th>

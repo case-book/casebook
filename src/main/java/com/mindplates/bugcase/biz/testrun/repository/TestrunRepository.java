@@ -18,6 +18,11 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened);
 
+    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedAndStartDateTimeAfterAndStartDateTimeBeforeOrProjectSpaceCodeAndProjectIdAndOpenedAndEndDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode1, Long projectId1, boolean opened1, LocalDateTime start1, LocalDateTime end1, String spaceCode2, Long projectId2, boolean opened2, LocalDateTime start2, LocalDateTime end2);
+
+
+    List<Testrun> findTop3ByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDesc(String spaceCode, Long projectId, boolean opened);
+
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, LocalDateTime start, LocalDateTime end);
 
     Long countByProjectSpaceCodeAndProjectIdAndOpenedTrue(String spaceCode, Long projectId);

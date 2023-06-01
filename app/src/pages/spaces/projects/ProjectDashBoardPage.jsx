@@ -93,6 +93,7 @@ function ProjectDashBoardPage() {
   return (
     <Page className="project-overview-info-page-wrapper">
       <PageTitle
+        name={t('대시보드')}
         breadcrumbs={[
           {
             to: '/',

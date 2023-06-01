@@ -48,8 +48,15 @@ public class TestrunController {
 
     @Operation(description = "종료된 테스트런 목록 조회")
     @GetMapping("/closed")
-    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
-        List<TestrunDTO> testruns = testrunService.selectClosedProjectTestrunList(spaceCode, projectId);
+    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end) {
+        List<TestrunDTO> testruns = testrunService.selectClosedProjectTestrunList(spaceCode, projectId, start, end);
+        return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "최근 종료된 TOP 3 테스트런 목록 조회")
+    @GetMapping("/closed/latest")
+    public List<TestrunListResponse> selectLatestClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
+        List<TestrunDTO> testruns = testrunService.selectLatestClosedProjectTestrunList(spaceCode, projectId);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
