@@ -9,6 +9,7 @@
     display: inline-block;
     color: var(--gray-color);
     font-size: 12px;
+    display: none;
 
     @media (max-width: 768px) {
       display: none;
@@ -71,7 +72,7 @@
       }
 
       &.page-title-info {
-        flex-grow: 0;
+        flex-grow: 1;
         padding-left: 20px;
 
         .page-title-text {

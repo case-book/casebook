@@ -149,6 +149,10 @@
         margin-right: 0.5rem;
       }
 
+      .seq-id {
+        margin-right: 8px;
+      }
+
       > div {
         align-self: center;
 
@@ -179,7 +183,7 @@
           font-size: 12px;
           position: absolute;
           left: -10px;
-          top: 2px;
+          top: 5px;
           width: 50px;
           text-align: center;
           color: var(--primary-text-color);

@@ -110,7 +110,7 @@ function TestrunIterationListPage() {
           {t('반복 테스트런 리스트')}
         </Title>
         {testrunIterations?.length <= 0 && (
-          <EmptyContent fill color="transparent">
+          <EmptyContent fill>
             {expired && <div>{t('검색된 테스트런이 없습니다.')}</div>}
             {!expired && (
               <div>
@@ -144,7 +144,7 @@ function TestrunIterationListPage() {
                   <Th align="center">{t('테스트 기간')}</Th>
                   <Th align="center">{t('테스트케이스 그룹')}</Th>
                   <Th align="center">{t('테스트케이스')}</Th>
-                  <Th align="center">{t('테스터')}</Th>
+                  <Th align="left">{t('테스터')}</Th>
                 </Tr>
               </THead>
               <Tbody>
@@ -207,7 +207,7 @@ function TestrunIterationListPage() {
                       <Td className="testcase-count" align="right">
                         {testrunIteration.testcaseCount}
                       </Td>
-                      <Td className="testcase-count" align="center">
+                      <Td className="testcase-count">
                         <span>{t('@ 명', { count: testrunIteration.testrunUserCount })}</span>
                         {testrunIteration.testrunIterationUserFilterType !== 'NONE' && (
                           <>

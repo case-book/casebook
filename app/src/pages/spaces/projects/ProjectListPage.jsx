@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Page, PageContent, PageTitle } from '@/components';
+import { Button, Card, EmptyContent, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -66,7 +66,7 @@ function ProjectListPage() {
       </PageTitle>
       <PageContent className="content">
         {projects?.length <= 0 && (
-          <div className="no-project">
+          <EmptyContent fill>
             <div>
               <div>{t('아직 생성된 프로젝트가 없습니다.')}</div>
               <div>
@@ -81,7 +81,7 @@ function ProjectListPage() {
                 </Button>
               </div>
             </div>
-          </div>
+          </EmptyContent>
         )}
         {projects?.length > 0 && (
           <ul className="project-list">

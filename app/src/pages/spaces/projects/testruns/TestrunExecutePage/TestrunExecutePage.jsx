@@ -286,6 +286,8 @@ function TestrunExecutePage() {
       },
       null,
       t('종료'),
+      null,
+      'primary',
     );
   };
 
@@ -521,7 +523,51 @@ function TestrunExecutePage() {
   return (
     <Page className="testrun-execute-page-wrapper" wide={wide}>
       <PageTitle
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/',
+            text: t('스페이스 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/info`,
+            text: spaceCode,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects`,
+            text: t('프로젝트 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}`,
+            text: project?.name,
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
+            text: t('테스트런 목록'),
+          },
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}`,
+            text: testrun?.name,
+          },
+        ]}
         control={
+          testrun.opened && (
+            <div>
+              <Button size="sm" color="warning" onClick={onClosed}>
+                {t('테스트런 종료')}
+              </Button>
+            </div>
+          )
+        }
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        }}
+      >
+        <div className="page-title">
+          <div>{testrun.name}</div>
           <div className="testrun-title-content">
             <div className="separator">
               <div />
@@ -540,20 +586,8 @@ function TestrunExecutePage() {
                 })}
               </ul>
             </div>
-            {testrun.opened && (
-              <div>
-                <Button size="sm" color="warning" onClick={onClosed}>
-                  {t('테스트런 종료')}
-                </Button>
-              </div>
-            )}
           </div>
-        }
-        onListClick={() => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-        }}
-      >
-        {testrun.name}
+        </div>
       </PageTitle>
       <PageContent className="page-content">
         <FlexibleLayout

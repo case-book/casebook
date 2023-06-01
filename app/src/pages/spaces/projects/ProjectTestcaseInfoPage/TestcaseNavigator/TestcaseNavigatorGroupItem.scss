@@ -113,7 +113,6 @@ li.testcase-group-item-wrapper {
         > span {
           align-self: center;
           display: inline-flex;
-          line-height: 0;
           font-size: 10px;
           height: 18px;
           width: 18px;
@@ -137,6 +136,7 @@ li.testcase-group-item-wrapper {
 
         .seq-id {
           font-size: 12px;
+          margin-right: 8px;
         }
 
         .case-col,
@@ -222,15 +222,16 @@ li.testcase-group-item-wrapper {
 
       .testrun-result {
         display: flex;
+        padding-right: 4px;
 
         > div {
           white-space: nowrap;
           align-self: center;
-          padding: 0 0.5rem;
+          padding: 4px 6px;
           display: inline-block;
           font-size: 11px;
           font-weight: lighter;
-          border-radius: 10px;
+          border-radius: 2px;
           background-color: var(--dark-gray-color);
           color: var(--white-color);
         }

@@ -142,141 +142,147 @@ function ReportListPage() {
         <Title border={false} marginBottom={false}>
           {t('최근 종료된 3개 테스트런')}
         </Title>
-        {testruns?.length <= 0 && <EmptyContent fill>{t('조회된 리포트가 없습니다.')}</EmptyContent>}
-        <ul className="report-cards">
-          {latestTestruns.map(testrun => {
-            const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-            const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-            const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-            const remainPercentage = 100 - Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
+        {latestTestruns?.length <= 0 && (
+          <EmptyContent className="empty" fill>
+            {t('조회된 리포트가 없습니다.')}
+          </EmptyContent>
+        )}
+        {latestTestruns?.length > 0 && (
+          <ul className="report-cards">
+            {latestTestruns.map(testrun => {
+              const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+              const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+              const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+              const remainPercentage = 100 - Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
 
-            return (
-              <li key={testrun.id}>
-                <Card className="testrun-card" border>
-                  <div className="config-button">
-                    <Button
-                      rounded
-                      outline
-                      size="sm"
-                      onClick={e => {
-                        e.stopPropagation();
-                        navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`);
-                      }}
-                    >
-                      <i className="fa-solid fa-gear" />
-                    </Button>
-                  </div>
-                  <div className="name">
-                    <div className="seq">{testrun.seqId}</div>
-                    <div className="text">
-                      <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>{testrun.name}</Link>
+              return (
+                <li key={testrun.id}>
+                  <Card className="testrun-card" border>
+                    <div className="config-button">
+                      <Button
+                        rounded
+                        outline
+                        size="sm"
+                        onClick={e => {
+                          e.stopPropagation();
+                          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`);
+                        }}
+                      >
+                        <i className="fa-solid fa-gear" />
+                      </Button>
                     </div>
-                  </div>
-                  <div className="summary-bar">
-                    {remainPercentage > 0 && (
-                      <div
-                        className="REMAINS"
-                        style={{
-                          width: `${remainPercentage}%`,
-                        }}
-                      >
-                        <div className="bg" />
-                        <div className="content">
-                          <div className="label">
-                            <span>{t('미수행')}</span>
-                          </div>
-                          <div className="percentage">
-                            <div>{remainPercentage}%</div>
-                          </div>
-                          <div className="count-and-total">
-                            ({testrun.totalTestcaseCount - testrun.passedTestcaseCount - testrun.failedTestcaseCount - testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {passedPercentage > 0 && (
-                      <div
-                        className="PASSED"
-                        style={{
-                          width: `${passedPercentage}%`,
-                        }}
-                      >
-                        <div className="bg" />
-                        <div className="content">
-                          <div className="label">
-                            <span>{t('성공')}</span>
-                          </div>
-                          <div className="percentage">
-                            <div>{passedPercentage}%</div>
-                          </div>
-                          <div className="count-and-total">
-                            ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {failedPercentage > 0 && (
-                      <div
-                        className="FAILED"
-                        style={{
-                          width: `${failedPercentage}%`,
-                        }}
-                      >
-                        <div className="bg" />
-                        <div className="content">
-                          <div className="label">
-                            <span>{t('실패')}</span>
-                          </div>
-                          <div className="percentage">
-                            <div>{failedPercentage}%</div>
-                          </div>
-                          <div className="count-and-total">
-                            ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {untestablePercentage > 0 && (
-                      <div
-                        className="UNTESTABLE"
-                        style={{
-                          width: `${untestablePercentage}%`,
-                        }}
-                      >
-                        <div className="bg" />
-                        <div className="content">
-                          <div className="label">
-                            <span>{t('불가능')}</span>
-                          </div>
-                          <div className="percentage">
-                            <div>{untestablePercentage}%</div>
-                          </div>
-                          <div className="count-and-total">
-                            ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="testrun-others">
-                    <div className="time-info">
-                      <span className="calendar">
-                        <i className="fa-regular fa-clock" />
-                      </span>
-                      <span className="label">{t('테스트 기간')}</span>
-                      {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
-                      <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
-                        {(testrun.startDateTime || testrun.closedDate) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
-                        {testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}</span>}
-                        {!testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getDateString(testrun.closedDate)}</span>}
+                    <div className="name">
+                      <div className="seq">{testrun.seqId}</div>
+                      <div className="text">
+                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>{testrun.name}</Link>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              </li>
-            );
-          })}
-        </ul>
+                    <div className="summary-bar">
+                      {remainPercentage > 0 && (
+                        <div
+                          className="REMAINS"
+                          style={{
+                            width: `${remainPercentage}%`,
+                          }}
+                        >
+                          <div className="bg" />
+                          <div className="content">
+                            <div className="label">
+                              <span>{t('미수행')}</span>
+                            </div>
+                            <div className="percentage">
+                              <div>{remainPercentage}%</div>
+                            </div>
+                            <div className="count-and-total">
+                              ({testrun.totalTestcaseCount - testrun.passedTestcaseCount - testrun.failedTestcaseCount - testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {passedPercentage > 0 && (
+                        <div
+                          className="PASSED"
+                          style={{
+                            width: `${passedPercentage}%`,
+                          }}
+                        >
+                          <div className="bg" />
+                          <div className="content">
+                            <div className="label">
+                              <span>{t('성공')}</span>
+                            </div>
+                            <div className="percentage">
+                              <div>{passedPercentage}%</div>
+                            </div>
+                            <div className="count-and-total">
+                              ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {failedPercentage > 0 && (
+                        <div
+                          className="FAILED"
+                          style={{
+                            width: `${failedPercentage}%`,
+                          }}
+                        >
+                          <div className="bg" />
+                          <div className="content">
+                            <div className="label">
+                              <span>{t('실패')}</span>
+                            </div>
+                            <div className="percentage">
+                              <div>{failedPercentage}%</div>
+                            </div>
+                            <div className="count-and-total">
+                              ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {untestablePercentage > 0 && (
+                        <div
+                          className="UNTESTABLE"
+                          style={{
+                            width: `${untestablePercentage}%`,
+                          }}
+                        >
+                          <div className="bg" />
+                          <div className="content">
+                            <div className="label">
+                              <span>{t('불가능')}</span>
+                            </div>
+                            <div className="percentage">
+                              <div>{untestablePercentage}%</div>
+                            </div>
+                            <div className="count-and-total">
+                              ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="testrun-others">
+                      <div className="time-info">
+                        <span className="calendar">
+                          <i className="fa-regular fa-clock" />
+                        </span>
+                        <span className="label">{t('테스트 기간')}</span>
+                        {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
+                        <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
+                          {(testrun.startDateTime || testrun.closedDate) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
+                          {testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}</span>}
+                          {!testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getDateString(testrun.closedDate)}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </li>
+              );
+            })}
+          </ul>
+        )}
         <Title
           border={false}
           marginBottom={false}
@@ -298,6 +304,7 @@ function ReportListPage() {
         >
           {t('테스트런 리포트')}
         </Title>
+        {testruns?.length <= 0 && <EmptyContent fill>{t('조회된 리포트가 없습니다.')}</EmptyContent>}
         {testruns?.length > 0 && (
           <div className="testrun-table-content">
             <Table className="testrun-table" cols={['1px', '100%', '1px', '1px', '1px', '1px']}>

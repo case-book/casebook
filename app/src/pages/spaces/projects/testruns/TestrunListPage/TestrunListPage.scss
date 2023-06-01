@@ -78,37 +78,13 @@
 
       .testrun-card {
         width: 100%;
-        padding: 1rem 1rem;
+        padding: 1rem;
         position: relative;
-
-        .status {
-          position: absolute;
-          top: 8px;
-          left: 8px;
-        }
-
-        &.opened {
-          .status {
-            .status-tag {
-              background-color: var(--success-color);
-              color: var(--white-color);
-            }
-          }
-        }
-
-        &.closed {
-          .status {
-            .status-tag {
-              background-color: var(--gray-color);
-              color: var(--white-color);
-            }
-          }
-        }
 
         .config-button {
           position: absolute;
-          top: 8px;
-          right: 8px;
+          top: 10px;
+          right: 16px;
         }
 
         .name {
@@ -117,6 +93,9 @@
 
           .seq {
             margin-bottom: 0.25rem;
+            position: absolute;
+            top: 16px;
+            left: 16px;
 
             .seq-id {
               margin-right: 0;
@@ -124,7 +103,12 @@
           }
 
           .text {
-            font-weight: bold;
+            font-size: 22px;
+            padding-top: 20px;
+
+            > a {
+              color: var(--text-color);
+            }
           }
         }
 
@@ -205,7 +189,7 @@
           .time-info {
             display: flex;
             position: relative;
-            height: 26px;
+            font-size: 12px;
 
             .time-span {
               position: absolute;
@@ -222,7 +206,7 @@
             }
 
             .calendar {
-              padding-bottom: 2px;
+              margin-right: 4px;
             }
 
             > span,

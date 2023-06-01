@@ -56,8 +56,6 @@ function SpaceEditPage({ type }) {
   const { t } = useTranslation();
   const { spaceCode } = useParams();
 
-  console.log(spaceCode);
-
   const {
     userStore: { addSpace, language, country },
   } = useStores();
