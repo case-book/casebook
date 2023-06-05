@@ -1,7 +1,7 @@
 import React from 'react';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
-import { SeqId, Tag, Td, Tr } from '@/components';
+import { SeqId, Td, Tr } from '@/components';
 import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import './ReportGroupItem.scss';
 
@@ -44,7 +44,7 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, onNameClick })
                   }}
                 >
                   <div>
-                    <SeqId size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
+                    <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
                       {testcase.seqId}
                     </SeqId>
                   </div>
@@ -52,11 +52,9 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, onNameClick })
                 </div>
               </Td>
               <>
-                <Td align="left">
-                  <Tag>{tester?.name}</Tag>
-                </Td>
-                <Td align="center">
-                  <Tag className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</Tag>
+                <Td align="left">{tester?.name}</Td>
+                <Td align="center" className={testcase.testResult}>
+                  {TESTRUN_RESULT_CODE[testcase.testResult]}
                 </Td>
               </>
             </Tr>

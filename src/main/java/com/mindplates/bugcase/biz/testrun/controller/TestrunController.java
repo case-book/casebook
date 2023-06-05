@@ -78,6 +78,10 @@ public class TestrunController {
     @PostMapping("")
     public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
+
+        if (testrun.getTestrunUsers().isEmpty()) {
+            throw new ServiceException("error.no.testrun.users");
+        }
         TestrunDTO createdTestrun = testrunService.createTestrunInfo(spaceCode, testrun);
 
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();

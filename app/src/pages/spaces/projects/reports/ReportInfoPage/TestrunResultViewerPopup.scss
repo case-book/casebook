@@ -32,6 +32,10 @@
       line-height: 140%;
       border-bottom: 1px solid var(--light-color);
       padding: 1rem;
+
+      .seq-id {
+        margin-right: 8px;
+      }
       .name {
         flex-grow: 1;
         font-size: 20px;
@@ -50,7 +54,7 @@
 
     .case-content {
       flex-grow: 1;
-      padding: 0 1rem 1.5rem;
+      padding: 1rem;
       overflow-y: auto;
 
       .title {
@@ -110,6 +114,12 @@
             }
           }
         }
+      }
+    }
+
+    .testrun-result-info {
+      .result-title {
+        margin-top: 1rem;
       }
     }
   }
