@@ -11,7 +11,7 @@ function TokenList({ className, tokens, onDeleteButtonClick, onChangeButtonClick
   return (
     <div className={`token-list-wrapper ${className}`}>
       {tokens?.length < 1 && (
-        <EmptyContent className="empty-content">
+        <EmptyContent className="empty-content" border>
           <div>{t('등록된 인증 토큰이 없습니다.')}</div>
         </EmptyContent>
       )}

@@ -267,7 +267,7 @@ function ProjectInfoPage() {
               }}
             />
           </Block>
-          <Title>{t('알림 설정')}</Title>
+          <Title marginBottom={false}>{t('알림 설정')}</Title>
           <Block>
             <BlockRow>
               <Label>{t('슬랙 URL')}</Label>
@@ -278,7 +278,7 @@ function ProjectInfoPage() {
               <Text>{project?.enableTestrunAlarm ? 'Y' : 'N'}</Text>
             </BlockRow>
           </Block>
-          <Title>{t('테스트케이스 템플릿')}</Title>
+          <Title marginBottom={false}>{t('테스트케이스 템플릿')}</Title>
           <Block>
             <ul className="template-list">
               {project?.testcaseTemplates?.map(testcaseTemplate => {
@@ -318,7 +318,7 @@ function ProjectInfoPage() {
               })}
             </ul>
           </Block>
-          <Title>{t('프로젝트 사용자')}</Title>
+          <Title marginBottom={false}>{t('프로젝트 사용자')}</Title>
           <Block>
             <MemberCardManager className="member-manager" users={project?.users} tags />
           </Block>
@@ -327,7 +327,7 @@ function ProjectInfoPage() {
           </Title>
           <Block>
             {Object.keys(tagUserMap).length < 1 && (
-              <EmptyContent className="empty-content">
+              <EmptyContent className="empty-content" border>
                 <div>{t('태그가 설정된 사용자가 없습니다.')}</div>
               </EmptyContent>
             )}
@@ -375,8 +375,8 @@ function ProjectInfoPage() {
             <BlockRow>
               <Label>{t('프로젝트 탈퇴')}</Label>
               <Text>
-                <Button size="sm" color="warning" outline onClick={onWithdraw}>
-                  {t('@ 프로젝트에서 탈퇴합니다.', { name: project?.name })}
+                <Button size="sm" color="warning" onClick={onWithdraw}>
+                  {t('프로젝트 탈퇴')}
                 </Button>
               </Text>
             </BlockRow>
@@ -384,8 +384,8 @@ function ProjectInfoPage() {
               <BlockRow>
                 <Label>{t('프로젝트 삭제')}</Label>
                 <Text>
-                  <Button size="sm" color="danger" outline onClick={onDelete}>
-                    {t('@ 프로젝트를 삭제합니다.', { name: project?.name })}
+                  <Button size="sm" color="danger" onClick={onDelete}>
+                    {t('프로젝트 삭제')}
                   </Button>
                 </Text>
               </BlockRow>

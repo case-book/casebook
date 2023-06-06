@@ -8,7 +8,7 @@ function Title({ className, children, type, control, border, paddingBottom, marg
     <div className={`title-wrapper ${type} ${className} ${border ? 'border' : ''} ${colored ? 'colored' : ''} ${paddingBottom ? 'padding-bottom' : ''} ${marginBottom ? 'margin-bottom' : ''}`}>
       <div className="title-content">
         <div className="title-text">
-          <i className="fa-solid fa-shapes" /> {children}
+          <i className="fa-brands fa-readme" /> {children}
         </div>
         {control && (
           <div className="control">
