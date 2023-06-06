@@ -21,6 +21,79 @@
 
   .side-menu-item {
     margin-left: 0.25rem;
+    display: inline-flex;
+    > div {
+      align-self: center;
+    }
+  }
+
+  .admin-menu-item {
+    margin-right: 0.5rem;
+    > div {
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-block;
+    }
+
+    &:hover {
+      .admin-menu {
+        display: block;
+      }
+    }
+
+    .admin-menu {
+      position: absolute;
+      white-space: nowrap;
+      list-style: none;
+      margin: 0;
+      top: 34px;
+      left: -46px;
+      background-color: white;
+      padding: 10px;
+      display: none;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+
+      &.opened {
+        display: block;
+      }
+
+      .arrow {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border: 1px solid var(--border-color);
+        border-right: none;
+        border-bottom: none;
+        top: -6px;
+        left: calc(50% - 5px);
+        transform: rotate(45deg);
+        background-color: var(--theme-color);
+      }
+
+      li {
+        cursor: pointer;
+        text-align: left;
+
+        > a {
+          font-weight: normal !important;
+          color: var(--text-color);
+          padding: 5px 8px;
+          display: inline-block;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+        &:hover {
+          text-decoration: underline;
+          background-color: var(--primary-color);
+
+          > a {
+            color: var(--primary-text-color);
+          }
+        }
+      }
+    }
   }
 
   .user-menu {
@@ -42,7 +115,6 @@
 
     &:hover {
       .admin-flag {
-
       }
     }
     > a {

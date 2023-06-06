@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { setToken } from '@/utils/request';
 import './UserHeaderControl.scss';
 import NotificationList from '@/components/NotificationList/NotificationList';
+import { ADMIN_MENUS } from '@/constants/menu';
 
 function UserHeaderControl({ className }) {
   const {
@@ -38,6 +39,8 @@ function UserHeaderControl({ className }) {
   });
 
   const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
 
   const [notificationChangeEffect, setNotificationChangeEffect] = useState(false);
 
@@ -116,6 +119,36 @@ function UserHeaderControl({ className }) {
 
   return (
     <div className={`user-header-control-wrapper ${className}`}>
+      {isAdmin && (
+        <div className="notification-menu side-menu-item admin-menu-item">
+          <div
+            onClick={() => {
+              setAdminMenuOpen(!adminMenuOpen);
+            }}
+          >
+            {t('관리')}
+          </div>
+          <ul className={`admin-menu ${adminMenuOpen ? 'opened' : ''}`}>
+            <div className="arrow">
+              <div />
+            </div>
+            {ADMIN_MENUS.map(d => {
+              return (
+                <li key={d.to}>
+                  <Link
+                    to={d.to}
+                    onClick={() => {
+                      setAdminMenuOpen(false);
+                    }}
+                  >
+                    {d.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
       <div className="notification-menu side-menu-item">
         <Button
           outline
@@ -151,6 +184,7 @@ function UserHeaderControl({ className }) {
           </div>
         </Button>
       </div>
+
       {notificationOpen && (
         <div
           className="notification-list"

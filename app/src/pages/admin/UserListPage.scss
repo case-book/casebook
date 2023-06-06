@@ -1,13 +1,14 @@
 .user-list-page-wrapper {
   .user-info {
-    text-transform: uppercase;
     color: var(--link-color);
     cursor: pointer;
     .name {
       font-weight: bold;
+      font-size: 14px;
     }
     .email {
       font-size: 12px;
+      margin-top: 4px;
     }
   }
   .tag-info {
@@ -23,12 +24,12 @@
     position: relative;
     .is-admin {
       position: absolute;
-      top : -12px;
-      right : -8px;
-      background-color: var(--danger-color);
-      color: var(--white-color);
+      top: -10px;
+      right: -8px;
+      background-color: var(--primary-color);
+      color: var(--primary-text-color);
       font-size: 10px;
-      padding: 2px;
+      padding: 2px 4px;
       border-radius: 2px;
     }
   }

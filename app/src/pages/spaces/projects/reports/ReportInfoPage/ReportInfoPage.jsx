@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Text, Th, THead, Tr } from '@/components';
+import { Block, Button, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -127,9 +127,10 @@ function ReportInfoPage() {
           &apos;{testrun?.name}&apos; {t('리포트')}
         </PageTitle>
         <PageContent>
-          <div className="testrun-info">
-            <div className="sub-title">{t('테스트런 정보')}</div>
-
+          <Title border={false} marginBottom={false}>
+            {t('테스트런 정보')}
+          </Title>
+          <Block>
             <div className="text-summary">
               <span className="range">
                 {t('@부터 @까지', {
@@ -147,23 +148,25 @@ function ReportInfoPage() {
               <span>{t('@명의 테스터가 테스트를 진행했습니다.', { count: testrun.testrunUsers?.length || 0 })}</span>
             </div>
             <div className="description">{testrun?.description}</div>
-          </div>
-          <div className="summary">
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('테스트 진행 및 결과')}
+          </Title>
+          <Block>
             <div className="summary-content report-metric">
-              <div className="sub-title">{t('테스트 진행 및 결과')}</div>
               <div className="boxes">
                 <div className="summary-box progress">
                   <div
                     className="progress-bar"
                     style={{
-                      height: `${(testrun.testedCount / testrun.totalTestcaseCount) * 100}%`,
+                      height: `${testrun.totalTestcaseCount ? (testrun.testedCount / testrun.totalTestcaseCount) * 100 : 0}%`,
                     }}
                   />
                   <div className="count-info">
                     <div className="label">
                       <span>{t('수행률')}</span>
                     </div>
-                    <div className="progress-percentage">{Math.round((testrun.testedCount / testrun.totalTestcaseCount) * 1000) / 10}%</div>
+                    <div className="progress-percentage">{testrun.totalTestcaseCount ? Math.round((testrun.testedCount / testrun.totalTestcaseCount) * 1000) / 10 : 0}%</div>
                     <div className="progress-count">
                       (<span>{testrun.testedCount}</span>/<span>{testrun.totalTestcaseCount}</span>)
                     </div>
@@ -173,14 +176,14 @@ function ReportInfoPage() {
                   <div
                     className="progress-bar"
                     style={{
-                      height: `${(testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 100}%`,
+                      height: `${testrun.totalTestcaseCount ? (testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 100 : 0}%`,
                     }}
                   />
                   <div className="count-info">
                     <div className="label">
                       <span>{t('테스트 성공률')}</span>
                     </div>
-                    <div className="progress-percentage">{Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10}%</div>
+                    <div className="progress-percentage">{testrun.totalTestcaseCount ? Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10 : 0}%</div>
                     <div className="progress-count">
                       (<span>{testrun.passedTestcaseCount}</span>/<span>{testrun.totalTestcaseCount}</span>)
                     </div>
@@ -188,8 +191,12 @@ function ReportInfoPage() {
                 </div>
               </div>
             </div>
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('테스터별 테스트 진행률')}
+          </Title>
+          <Block>
             <div className="summary-content user-metric">
-              <div className="sub-title">{t('테스터별 테스트 진행률')}</div>
               <div className="boxes scrollbar-sm">
                 {testerProgressList.map(testerProgress => {
                   const testedCount = testerProgress.TOTAL_COUNT - testerProgress.UNTESTED;
@@ -218,13 +225,14 @@ function ReportInfoPage() {
                 })}
               </div>
             </div>
-          </div>
-
-          <div className="testcase-result">
-            <div className="sub-title">{t('테스트케이스 테스트 결과')}</div>
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('테스트케이스 테스트 결과')}
+          </Title>
+          <Block>
             {testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
             {testcaseGroups?.length > 0 && (
-              <Table size="sm" cols={['1px', '100%']} border>
+              <Table className="table" cols={['1px', '100%']} border>
                 <THead>
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
@@ -249,7 +257,8 @@ function ReportInfoPage() {
                 </Tbody>
               </Table>
             )}
-          </div>
+          </Block>
+
           <PageButtons
             onList={() => {
               navigate(`/spaces/${spaceCode}/projects/${projectId}/reports`);

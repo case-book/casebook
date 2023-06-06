@@ -200,7 +200,7 @@ function TestrunReservationInfoPage() {
           <BlockRow className="testrun-testcases-content">
             {testrunReservation.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
             {testrunReservation.testcaseGroups?.length > 0 && (
-              <Table size="sm" cols={['1px', '100%']} border>
+              <Table cols={['1px', '100%']} border>
                 <THead>
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
@@ -229,7 +229,7 @@ function TestrunReservationInfoPage() {
                                   <Td rowSpan={d.testcases.length} className="group-info">
                                     <div className="seq-name">
                                       <div>
-                                        <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
                                           {d.seqId}
                                         </SeqId>
                                       </div>
@@ -240,7 +240,7 @@ function TestrunReservationInfoPage() {
                                 <Td>
                                   <div className="seq-name">
                                     <div>
-                                      <SeqId size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
+                                      <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
                                         {testcase.seqId}
                                       </SeqId>
                                     </div>

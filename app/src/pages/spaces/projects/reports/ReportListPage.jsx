@@ -150,10 +150,12 @@ function ReportListPage() {
         {latestTestruns?.length > 0 && (
           <ul className="report-cards">
             {latestTestruns.map(testrun => {
-              const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-              const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-              const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-              const remainPercentage = 100 - Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
+              const passedPercentage = testrun.totalTestcaseCount ? Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10 : 0;
+              const failedPercentage = testrun.totalTestcaseCount ? Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10 : 0;
+              const untestablePercentage = testrun.totalTestcaseCount ? Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10 : 0;
+              const remainPercentage = testrun.totalTestcaseCount
+                ? 100 - Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10
+                : 0;
 
               return (
                 <li key={testrun.id}>
@@ -178,90 +180,82 @@ function ReportListPage() {
                       </div>
                     </div>
                     <div className="summary-bar">
-                      {remainPercentage > 0 && (
-                        <div
-                          className="REMAINS"
-                          style={{
-                            width: `${remainPercentage}%`,
-                          }}
-                        >
-                          <div className="bg" />
-                          <div className="content">
-                            <div className="label">
-                              <span>{t('미수행')}</span>
-                            </div>
-                            <div className="percentage">
-                              <div>{remainPercentage}%</div>
-                            </div>
-                            <div className="count-and-total">
-                              ({testrun.totalTestcaseCount - testrun.passedTestcaseCount - testrun.failedTestcaseCount - testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
-                            </div>
+                      <div
+                        className="REMAINS"
+                        style={{
+                          width: `${testrun.totalTestcaseCount ? remainPercentage : 25}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('미수행')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{remainPercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.totalTestcaseCount - testrun.passedTestcaseCount - testrun.failedTestcaseCount - testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
                           </div>
                         </div>
-                      )}
-                      {passedPercentage > 0 && (
-                        <div
-                          className="PASSED"
-                          style={{
-                            width: `${passedPercentage}%`,
-                          }}
-                        >
-                          <div className="bg" />
-                          <div className="content">
-                            <div className="label">
-                              <span>{t('성공')}</span>
-                            </div>
-                            <div className="percentage">
-                              <div>{passedPercentage}%</div>
-                            </div>
-                            <div className="count-and-total">
-                              ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
-                            </div>
+                      </div>
+                      <div
+                        className="PASSED"
+                        style={{
+                          width: `${testrun.totalTestcaseCount ? passedPercentage : 25}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('성공')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{passedPercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.passedTestcaseCount}/{testrun.totalTestcaseCount})
                           </div>
                         </div>
-                      )}
-                      {failedPercentage > 0 && (
-                        <div
-                          className="FAILED"
-                          style={{
-                            width: `${failedPercentage}%`,
-                          }}
-                        >
-                          <div className="bg" />
-                          <div className="content">
-                            <div className="label">
-                              <span>{t('실패')}</span>
-                            </div>
-                            <div className="percentage">
-                              <div>{failedPercentage}%</div>
-                            </div>
-                            <div className="count-and-total">
-                              ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
-                            </div>
+                      </div>
+                      <div
+                        className="FAILED"
+                        style={{
+                          width: `${testrun.totalTestcaseCount ? failedPercentage : 25}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('실패')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{failedPercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.failedTestcaseCount}/{testrun.totalTestcaseCount})
                           </div>
                         </div>
-                      )}
-                      {untestablePercentage > 0 && (
-                        <div
-                          className="UNTESTABLE"
-                          style={{
-                            width: `${untestablePercentage}%`,
-                          }}
-                        >
-                          <div className="bg" />
-                          <div className="content">
-                            <div className="label">
-                              <span>{t('불가능')}</span>
-                            </div>
-                            <div className="percentage">
-                              <div>{untestablePercentage}%</div>
-                            </div>
-                            <div className="count-and-total">
-                              ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
-                            </div>
+                      </div>
+                      <div
+                        className="UNTESTABLE"
+                        style={{
+                          width: `${testrun.totalTestcaseCount ? untestablePercentage : 25}%`,
+                        }}
+                      >
+                        <div className="bg" />
+                        <div className="content">
+                          <div className="label">
+                            <span>{t('불가능')}</span>
+                          </div>
+                          <div className="percentage">
+                            <div>{untestablePercentage}%</div>
+                          </div>
+                          <div className="count-and-total">
+                            ({testrun.untestableTestcaseCount}/{testrun.totalTestcaseCount})
                           </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                     <div className="testrun-others">
                       <div className="time-info">
@@ -323,10 +317,17 @@ function ReportListPage() {
               <Tbody>
                 {testruns?.map(testrun => {
                   const testedCount = testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount;
-                  const progressPercentage = Math.round((testedCount / testrun.totalTestcaseCount) * 1000) / 10;
-                  const passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-                  const failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
-                  const untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+                  let progressPercentage = 0;
+                  let passedPercentage = 0;
+                  let failedPercentage = 0;
+                  let untestablePercentage = 0;
+
+                  if (testrun.totalTestcaseCount > 0) {
+                    progressPercentage = Math.round((testedCount / testrun.totalTestcaseCount) * 1000) / 10;
+                    passedPercentage = Math.round((testrun.passedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+                    failedPercentage = Math.round((testrun.failedTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+                    untestablePercentage = Math.round((testrun.untestableTestcaseCount / testrun.totalTestcaseCount) * 1000) / 10;
+                  }
 
                   return (
                     <Tr key={testrun.id}>

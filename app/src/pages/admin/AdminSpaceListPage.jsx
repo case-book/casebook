@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Page, PageContent, PageTitle, Table, Tag, Tbody, Td, Th, THead, Title, Tr } from '@/components';
+import { Page, PageContent, PageTitle, Table, Tag, Tbody, Td, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import AdminService from '@/services/AdminService';
@@ -23,14 +23,30 @@ function AdminSpaceListPage() {
   }, []);
 
   return (
-    <Page className="admin-space-list-page-wrapper">
-      <PageTitle>{t('스페이스 관리')}</PageTitle>
+    <Page className="admin-space-list-page-wrapper" list>
+      <PageTitle
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/admin',
+            text: t('관리'),
+          },
+          {
+            to: '/admin/spaces',
+            text: t('스페이스 관리'),
+          },
+        ]}
+      >
+        {t('스페이스 관리')}
+      </PageTitle>
       <PageContent>
-        <Title border={false}>{t('스페이스 목록')}</Title>
         <Table cols={['1px', '1px', '100%', '1px', '1px', '1px', '1px', '1px']} border>
           <THead>
             <Tr>
-              <Th align="center">{t('아이디')}</Th>
+              <Th align="center">ID</Th>
               <Th align="left">{t('코드')}</Th>
               <Th align="left">{t('이름')}</Th>
               <Th align="center">{t('활성화')}</Th>
@@ -46,7 +62,7 @@ function AdminSpaceListPage() {
                 <Tr key={space.id}>
                   <Td align="right">{space.id}</Td>
                   <Td>
-                    <Tag border color="white">
+                    <Tag border color="white" size="sm">
                       {space.code}
                     </Tag>
                   </Td>

@@ -52,6 +52,24 @@ const STATIC_MENUS = [
   },
 ];
 
+const ADMIN_MENUS = [
+  {
+    key: 'systems',
+    to: '/admin/systems',
+    name: '시스템 설정',
+  },
+  {
+    key: 'users',
+    to: '/admin/users',
+    name: '사용자 관리',
+  },
+  {
+    key: 'spaces',
+    to: '/admin/spaces',
+    name: '스페이스 관리',
+  },
+];
+
 const MENUS = [
   {
     key: 'dashboard',
@@ -132,4 +150,4 @@ const MENUS = [
   },
 ];
 
-export { STATIC_MENUS, MENUS };
+export { STATIC_MENUS, MENUS, ADMIN_MENUS };

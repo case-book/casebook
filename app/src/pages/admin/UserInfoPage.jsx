@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Block, Button, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
@@ -49,27 +49,31 @@ function UserInfoPage() {
     <>
       <Page className="user-info-page-wrapper">
         <PageTitle
-          links={[<Link to={`/admin/users/${userId}/edit`}>{t('편집')}</Link>]}
-          control={
-            <div>
-              <Button
-                size="sm"
-                color="danger"
-                onClick={() => {
-                  setChangePasswordPopupInfo({
-                    isOpened: true,
-                    nextPassword: '',
-                    nextPasswordConfirm: '',
-                  });
-                }}
-              >
-                {t('비밀번호 변경')}
-              </Button>
-              <Button size="sm" color="danger" onClick={onDelete}>
-                {t('사용자 삭제')}
-              </Button>
-            </div>
-          }
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/admin',
+              text: t('관리'),
+            },
+            {
+              to: '/admin/users',
+              text: t('사용자 목록'),
+            },
+            {
+              to: `/admin/users/${userId}`,
+              text: user?.name,
+            },
+          ]}
+          links={[
+            {
+              to: `/admin/users/${userId}/edit`,
+              text: t('편집'),
+              color: 'primary',
+            },
+          ]}
           onListClick={() => {
             navigate('/admin/users');
           }}
@@ -77,7 +81,9 @@ function UserInfoPage() {
           {t('사용자 정보')}
         </PageTitle>
         <PageContent>
-          <Title>{t('사용자 정보')}</Title>
+          <Title border={false} marginBottom={false}>
+            {t('사용자 정보')}
+          </Title>
           <Block>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('아이디')}</Label>
@@ -124,7 +130,9 @@ function UserInfoPage() {
               <Text>{user.activateYn ? 'Y' : 'N'}</Text>
             </BlockRow>
           </Block>
-          <Title>{t('설정 정보')}</Title>
+          <Title border={false} marginBottom={false}>
+            {t('설정 정보')}
+          </Title>
           <Block>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 로그인')}</Label>
@@ -143,12 +151,43 @@ function UserInfoPage() {
               <Text>
                 {user.spaces?.map(space => {
                   return (
-                    <Tag className="space-tag" key={space.id} border color="white">
+                    <Tag className="space-tag" key={space.id} border color="white" size="sm">
                       {space.name}
                       {space.isAdmin && <div className="is-admin">ADMIN</div>}
                     </Tag>
                   );
                 })}
+              </Text>
+            </BlockRow>
+          </Block>
+          <Title paddingBottom={false} border={false} marginBottom={false}>
+            {t('관리')}
+          </Title>
+          <Block>
+            <BlockRow>
+              <Label>{t('비밀번호 변경')}</Label>
+              <Text>
+                <Button
+                  size="sm"
+                  color="danger"
+                  onClick={() => {
+                    setChangePasswordPopupInfo({
+                      isOpened: true,
+                      nextPassword: '',
+                      nextPasswordConfirm: '',
+                    });
+                  }}
+                >
+                  {t('비밀번호 변경')}
+                </Button>
+              </Text>
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('사용자 삭제')}</Label>
+              <Text>
+                <Button size="sm" color="danger" onClick={onDelete}>
+                  {t('사용자 삭제')}
+                </Button>
               </Text>
             </BlockRow>
           </Block>

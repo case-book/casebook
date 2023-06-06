@@ -66,7 +66,7 @@ function ProjectListPage() {
       </PageTitle>
       <PageContent className="content">
         {projects?.length <= 0 && (
-          <EmptyContent fill>
+          <EmptyContent border fill>
             <div>
               <div>{t('아직 생성된 프로젝트가 없습니다.')}</div>
               <div>

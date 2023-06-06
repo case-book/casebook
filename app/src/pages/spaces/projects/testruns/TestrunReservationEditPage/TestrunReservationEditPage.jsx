@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Tag, Text, TextArea, Title } from '@/components';
+import { Block, Button, CheckBox, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -436,16 +436,6 @@ function TestrunReservationEditPage({ type }) {
                   />
                 </Text>
               </BlockRow>
-              {isEdit && (
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
-                  <Text>
-                    <Tag border className="tag" size="sm" uppercase>
-                      {testrunReservation.expired ? t('생성 완료') : t('미처리')}
-                    </Tag>
-                  </Text>
-                </BlockRow>
-              )}
             </Block>
             <PageButtons
               onCancel={() => {

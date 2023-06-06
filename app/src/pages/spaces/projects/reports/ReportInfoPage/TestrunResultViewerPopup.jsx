@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CloseIcon, EmptyContent, Liner, SeqId, TestcaseItem } from '@/components';
+import { CloseIcon, EmptyContent, Liner, SeqId, TestcaseItem, Title } from '@/components';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
         <div className="popup-content-layout">
           <div className="testcase-title">
             <div>
-              <SeqId type={ITEM_TYPE.TESTCASE} copy={false}>
+              <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE} copy={false}>
                 {testrunTestcaseGroupTestcase.seqId}
               </SeqId>
             </div>
@@ -89,9 +89,9 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                 })}
             </div>
             <div className="testrun-result-info">
-              <div className="title">
-                <span>{t('테스트 결과')}</span>
-              </div>
+              <Title className="result-title" border={false} marginBottom={false}>
+                {t('테스트 결과')}
+              </Title>
               <div className="testrun-result-content">
                 <div className="testrun-result-list">
                   <TestcaseItem
