@@ -81,9 +81,32 @@ function SystemInfoPage() {
 
   return (
     <Page className="system-info-page-wrapper">
-      <PageTitle>{t('시스템 관리')}</PageTitle>
+      <PageTitle
+        name={t('프로젝트 정보')}
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/admin',
+            text: t('관리'),
+          },
+          {
+            to: '/admin/systems',
+            text: t('시스템 관리'),
+          },
+        ]}
+        onListClick={() => {
+          navigate('/');
+        }}
+      >
+        {t('관리')}
+      </PageTitle>
       <PageContent>
-        <Title>{t('레디스 정보')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('캐시 관리')}
+        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('키 카운트')}</Label>
@@ -102,14 +125,6 @@ function SystemInfoPage() {
             </Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('레디스 초기화')}</Label>
-            <Text>
-              <Button size="sm" className="remove-button" color="danger" onClick={flushRedis}>
-                {t('레디스의 모든 정보를 삭제합니다.')}
-              </Button>
-            </Text>
-          </BlockRow>
-          <BlockRow>
             <Label minWidth={labelMinWidth}>{t('캐시 초기화')}</Label>
             <Text>
               <Button size="sm" className="remove-button" color="danger" onClick={deleteRedis}>
@@ -117,8 +132,18 @@ function SystemInfoPage() {
               </Button>
             </Text>
           </BlockRow>
+          <BlockRow>
+            <Label minWidth={labelMinWidth}>{t('레디스 초기화')}</Label>
+            <Text>
+              <Button size="sm" className="remove-button" color="danger" onClick={flushRedis}>
+                {t('레디스의 모든 정보를 삭제합니다.')}
+              </Button>
+            </Text>
+          </BlockRow>
         </Block>
-        <Title>{t('기타')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('기타')}
+        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth} tip={t('스크립트 및 서버에서 에러를 생성합니다. 발생한 에러를 인지하고, 모니터링 할 수 있는지 확인하기 위해 인위적으로 에러를 생성합니다.')}>
@@ -165,8 +190,10 @@ function SystemInfoPage() {
             </Text>
           </BlockRow>
         </Block>
-        <Title border={false}>{t('시스템 프로퍼티')}</Title>
-        <Table className="system-property-table" cols={['1px', '100%']} border size="sm">
+        <Title border={false} marginBottom={false}>
+          {t('시스템 프로퍼티')}
+        </Title>
+        <Table className="system-property-table" cols={['1px', '100%']} border>
           <THead>
             <Tr>
               <Th align="left">{t('키')}</Th>

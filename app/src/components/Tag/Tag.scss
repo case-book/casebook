@@ -7,11 +7,7 @@
   font-weight: bold;
   background-color: var(--lighter-color);
   color: var(--text-color);
-
-  &.size-xxs {
-    padding: 4px;
-    font-size: 10px;
-  }
+  box-sizing: border-box;
 
   &.size-xs {
     padding: 4px;
@@ -21,11 +17,19 @@
   &.size-sm {
     padding: 8px;
     font-size: 12px;
+    height: $sm-height;
   }
 
   &.size-md {
     padding: 10px;
     font-size: 14px;
+    height: $md-height;
+  }
+
+  &.size-lg {
+    padding: 10px;
+    font-size: 14px;
+    height: $lg-height;
   }
 
   &.border {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Page, PageContent, PageTitle, Table, Tag, Tbody, Td, Th, THead, Title, Tr } from '@/components';
+import { Page, PageContent, PageTitle, Table, Tag, Tbody, Td, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AdminService from '@/services/AdminService';
 import './UserListPage.scss';
 import { SYSTEM_ROLE } from '@/constants/constants';
@@ -24,14 +24,30 @@ function UserListPage() {
   }, []);
 
   return (
-    <Page className="user-list-page-wrapper">
-      <PageTitle>{t('사용자 관리')}</PageTitle>
+    <Page className="user-list-page-wrapper" list>
+      <PageTitle
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/admin',
+            text: t('관리'),
+          },
+          {
+            to: '/admin/users',
+            text: t('사용자 관리'),
+          },
+        ]}
+      >
+        {t('사용자 관리')}
+      </PageTitle>
       <PageContent>
-        <Title border={false}>{t('사용자 목록')}</Title>
         <Table className="applicant-list" cols={['1px', '1px', '1px', '1px', '1px', '1px', '1px', '1px', '100%']} border>
           <THead>
             <Tr>
-              <Th align="center">{t('아이디')}</Th>
+              <Th align="center">ID</Th>
               <Th align="left">{t('사용자')}</Th>
               <Th align="center">{t('언어 및 지역')}</Th>
               <Th align="center">{t('타임존')}</Th>
@@ -58,21 +74,21 @@ function UserListPage() {
                     </div>
                   </Td>
                   <Td align="center" className="tag-info">
-                    <Tag border color="white">
+                    <Tag border color="white" size="sm">
                       {user.language}
                     </Tag>
-                    <Tag border color="white">
+                    <Tag border color="white" size="sm">
                       {user.country}
                     </Tag>
                   </Td>
                   <Td align="center">{user.timezone || t('브라우저 설정')}</Td>
                   <Td align="center">
-                    <Tag border={false} color={user.systemRole === 'ROLE_ADMIN' ? 'danger' : 'gray'}>
+                    <Tag border={user.systemRole !== 'ROLE_ADMIN'} color={user.systemRole === 'ROLE_ADMIN' ? 'primary' : 'gray'} size="sm">
                       {SYSTEM_ROLE[user.systemRole]}
                     </Tag>
                   </Td>
                   <Td align="center">
-                    <Tag border={false} color={user.activeSystemRole === 'ROLE_ADMIN' ? 'danger' : 'gray'}>
+                    <Tag border={user.systemRole !== 'ROLE_ADMIN'} color={user.activeSystemRole === 'ROLE_ADMIN' ? 'primary' : 'gray'} size="sm">
                       {SYSTEM_ROLE[user.activeSystemRole]}
                     </Tag>
                   </Td>
@@ -81,9 +97,11 @@ function UserListPage() {
                   <Td className="tag-info">
                     {user.spaces?.map(space => {
                       return (
-                        <Tag className="space-tag" key={space.id} border color="white">
-                          {space.name}
-                          {space.isAdmin && <div className="is-admin">ADMIN</div>}
+                        <Tag className="space-tag" key={space.id} border color="white" size="sm">
+                          <Link to={`/spaces/${space.code}/projects`}>
+                            {space.name}
+                            {space.isAdmin && <div className="is-admin">ADMIN</div>}
+                          </Link>
                         </Tag>
                       );
                     })}

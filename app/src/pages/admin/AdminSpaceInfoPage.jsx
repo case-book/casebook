@@ -24,7 +24,31 @@ function AdminSpaceInfoPage() {
   return (
     <Page className="admin-space-info-page-wrapper">
       <PageTitle
-        links={[<Link to={`/spaces/${space.code}/edit`}>{t('편집')}</Link>]}
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/admin',
+            text: t('관리'),
+          },
+          {
+            to: '/admin/spaces',
+            text: t('스페이스 관리'),
+          },
+          {
+            to: `/admin/spaces/${spaceId}`,
+            text: space?.name,
+          },
+        ]}
+        links={[
+          {
+            to: `/spaces/${space.code}/edit`,
+            text: t('편집'),
+            color: 'primary',
+          },
+        ]}
         onListClick={() => {
           navigate('/admin/spaces');
         }}
@@ -32,7 +56,9 @@ function AdminSpaceInfoPage() {
         {t('스페이스')}
       </PageTitle>
       <PageContent>
-        <Title>{t('스페이스 정보')}</Title>
+        <Title border={false} marginBottom={false}>
+          {t('스페이스 정보')}
+        </Title>
         <Block>
           <BlockRow>
             <Label>{t('이름')}</Label>
@@ -150,7 +176,7 @@ function AdminSpaceInfoPage() {
                     <Th align="left">{t('프로젝트 명')}</Th>
                     <Th align="center">{t('상태')}</Th>
                     <Th align="center">{t('테스트케이스')}</Th>
-                    <Th align="center">{t('버그')}</Th>
+                    <Th align="center">{t('테스트런')}</Th>
                   </Tr>
                 </THead>
                 <Tbody>
@@ -161,7 +187,9 @@ function AdminSpaceInfoPage() {
                           <Link to={`/spaces/${space.code}/projects/${project.id}/info`}>{project.name}</Link>
                         </Td>
                         <Td align="center" className="activated">
-                          <Tag uppercase>{project.activated ? 'activated' : 'disabled'}</Tag>
+                          <Tag uppercase border>
+                            {project.activated ? 'activated' : 'disabled'}
+                          </Tag>
                         </Td>
                         <Td align="right" className="testcase-count">
                           <div>
@@ -170,7 +198,7 @@ function AdminSpaceInfoPage() {
                         </Td>
                         <Td align="right" className="bug-count">
                           <div>
-                            <span>{project.bugCount}</span>
+                            <span>{project.testrunCount}</span>
                           </div>
                         </Td>
                       </Tr>

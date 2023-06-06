@@ -31,64 +31,66 @@
     margin-right: 0.5rem;
     > div {
       cursor: pointer;
-
+      font-size: 14px;
       display: inline-block;
-      padding: 2px 4px;
-      &:hover {
-        border-bottom: 1px solid var(--gray-color);
+    }
+
+    &:hover {
+      .admin-menu {
+        display: block;
       }
     }
-  }
 
-  .admin-menu {
-    position: absolute;
-    white-space: nowrap;
-    list-style: none;
-    margin: 0;
-    top: 60px;
-    right: 34px;
-    background-color: white;
-    padding: 10px;
-    display: none;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-
-    &.opened {
-      display: block;
-    }
-
-    .arrow {
+    .admin-menu {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      white-space: nowrap;
+      list-style: none;
+      margin: 0;
+      top: 34px;
+      left: -46px;
+      background-color: white;
+      padding: 10px;
+      display: none;
       border: 1px solid var(--border-color);
-      border-right: none;
-      border-bottom: none;
-      top: -6px;
-      left: calc(50% - 5px);
-      transform: rotate(45deg);
-      background-color: var(--theme-color);
-    }
+      border-radius: 4px;
 
-    li {
-      cursor: pointer;
-      text-align: left;
+      &.opened {
+        display: block;
+      }
 
-      > a {
-        font-weight: normal !important;
-        color: var(--text-color);
-        padding: 5px 8px;
-        display: inline-block;
+      .arrow {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border: 1px solid var(--border-color);
+        border-right: none;
+        border-bottom: none;
+        top: -6px;
+        left: calc(50% - 5px);
+        transform: rotate(45deg);
+        background-color: var(--theme-color);
       }
-      &:last-child {
-        margin-bottom: 0;
-      }
-      &:hover {
-        text-decoration: underline;
-        background-color: var(--primary-color);
+
+      li {
+        cursor: pointer;
+        text-align: left;
 
         > a {
-          color: var(--primary-text-color);
+          font-weight: normal !important;
+          color: var(--text-color);
+          padding: 5px 8px;
+          display: inline-block;
+        }
+        &:last-child {
+          margin-bottom: 0;
+        }
+        &:hover {
+          text-decoration: underline;
+          background-color: var(--primary-color);
+
+          > a {
+            color: var(--primary-text-color);
+          }
         }
       }
     }

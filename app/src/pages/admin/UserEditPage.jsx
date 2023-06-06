@@ -35,6 +35,28 @@ function UserInfoPage() {
   return (
     <Page className="user-edit-page-wrapper">
       <PageTitle
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/admin',
+            text: t('관리'),
+          },
+          {
+            to: '/admin/users',
+            text: t('사용자 목록'),
+          },
+          {
+            to: `/admin/users/${userId}`,
+            text: user?.name,
+          },
+          {
+            to: `/admin/users/${userId}/edit`,
+            text: t('편집'),
+          },
+        ]}
         onListClick={() => {
           navigate('/admin/users');
         }}
@@ -43,7 +65,9 @@ function UserInfoPage() {
       </PageTitle>
       <PageContent>
         <Form onSubmit={onSubmit}>
-          <Title>{t('사용자 정보')}</Title>
+          <Title border={false} marginBottom={false}>
+            {t('사용자 정보')}
+          </Title>
           <Block>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('아이디')}</Label>
@@ -197,7 +221,9 @@ function UserInfoPage() {
               />
             </BlockRow>
           </Block>
-          <Title>{t('설정 정보')}</Title>
+          <Title border={false} marginBottom={false}>
+            {t('설정 정보')}
+          </Title>
           <Block>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('자동 로그인')}</Label>
@@ -216,7 +242,7 @@ function UserInfoPage() {
               <Text>
                 {user.spaces?.map(space => {
                   return (
-                    <Tag className="space-tag" key={space.id} border color="white">
+                    <Tag className="space-tag" key={space.id} border color="white" size="sm">
                       {space.name}
                       {space.isAdmin && <div className="is-admin">ADMIN</div>}
                     </Tag>

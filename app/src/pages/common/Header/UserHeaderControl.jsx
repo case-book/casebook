@@ -128,6 +128,25 @@ function UserHeaderControl({ className }) {
           >
             {t('관리')}
           </div>
+          <ul className={`admin-menu ${adminMenuOpen ? 'opened' : ''}`}>
+            <div className="arrow">
+              <div />
+            </div>
+            {ADMIN_MENUS.map(d => {
+              return (
+                <li key={d.to}>
+                  <Link
+                    to={d.to}
+                    onClick={() => {
+                      setAdminMenuOpen(false);
+                    }}
+                  >
+                    {d.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       )}
       <div className="notification-menu side-menu-item">
@@ -165,27 +184,7 @@ function UserHeaderControl({ className }) {
           </div>
         </Button>
       </div>
-      {isAdmin && (
-        <ul className={`admin-menu ${adminMenuOpen ? 'opened' : ''}`}>
-          <div className="arrow">
-            <div />
-          </div>
-          {ADMIN_MENUS.map(d => {
-            return (
-              <li key={d.to}>
-                <Link
-                  to={d.to}
-                  onClick={() => {
-                    setAdminMenuOpen(false);
-                  }}
-                >
-                  {d.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+
       {notificationOpen && (
         <div
           className="notification-list"
