@@ -36,6 +36,8 @@ public class TestrunReservationDTO extends CommonDTO {
     private Boolean selectCreatedTestcase;
     private Boolean selectUpdatedTestcase;
 
+    private List<TestrunTestcaseGroupDTO> conditionalTestcaseGroupList;
+
     public TestrunReservationDTO(TestrunReservation testrunReservation) {
         this.id = testrunReservation.getId();
         this.name = testrunReservation.getName();
@@ -60,8 +62,9 @@ public class TestrunReservationDTO extends CommonDTO {
         if (testrunReservation.getTestrun() != null) {
             this.testrun = TestrunDTO.builder().id(testrunReservation.getTestrun().getId()).build();
         }
-
     }
+
+
 
     public TestrunReservationDTO(TestrunReservation testrunReservation, boolean detail) {
         this(testrunReservation);

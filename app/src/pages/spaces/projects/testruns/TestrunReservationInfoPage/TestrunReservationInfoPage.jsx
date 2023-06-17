@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import './TestrunReservationInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
+import TestrunReservationTestcaseGroupTable from '@/pages/spaces/projects/testruns/TestrunReservationInfoPage/TestrunReservationTestcaseGroupTable';
 
 const labelMinWidth = '120px';
 
@@ -191,6 +192,7 @@ function TestrunReservationInfoPage() {
                 {testrunReservation.selectCreatedTestcase && testrunReservation.selectUpdatedTestcase ? t('예약 테스트런 생성전까지 생성/변경된 테스트케이스 자동 추가') : ''}
                 {testrunReservation.selectCreatedTestcase && !testrunReservation.selectUpdatedTestcase ? t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가') : ''}
                 {!testrunReservation.selectCreatedTestcase && testrunReservation.selectUpdatedTestcase ? t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가') : ''}
+                {!testrunReservation.selectCreatedTestcase && !testrunReservation.selectUpdatedTestcase ? 'N' : ''}
               </Text>
             </div>
           </BlockRow>
@@ -199,97 +201,24 @@ function TestrunReservationInfoPage() {
           </BlockRow>
           <BlockRow className="testrun-testcases-content">
             {testrunReservation.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
-            {testrunReservation.testcaseGroups?.length > 0 && (
-              <Table cols={['1px', '100%']} border>
-                <THead>
-                  <Tr>
-                    <Th align="left">{t('테스트케이스 그룹')}</Th>
-                    <Th align="left">{t('테스트케이스')}</Th>
-                    {testrunReservation.creationType === 'CREATE' && (
-                      <>
-                        <Th align="left">{t('테스터')}</Th>
-                        <Th align="center">{t('테스트 결과')}</Th>
-                      </>
-                    )}
-                  </Tr>
-                </THead>
-                <Tbody>
-                  {testrunReservation.testcaseGroups?.map(d => {
-                    if (d.testcases?.length > 0) {
-                      return (
-                        <React.Fragment key={d.id}>
-                          {d.testcases?.map((testcase, inx) => {
-                            const tester = project.users.find(user => {
-                              return user.userId === testcase.testerId;
-                            });
-
-                            return (
-                              <Tr key={testcase.id}>
-                                {inx === 0 && (
-                                  <Td rowSpan={d.testcases.length} className="group-info">
-                                    <div className="seq-name">
-                                      <div>
-                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                                          {d.seqId}
-                                        </SeqId>
-                                      </div>
-                                      <div>{d.name}</div>
-                                    </div>
-                                  </Td>
-                                )}
-                                <Td>
-                                  <div className="seq-name">
-                                    <div>
-                                      <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
-                                        {testcase.seqId}
-                                      </SeqId>
-                                    </div>
-                                    <div>{testcase.name}</div>
-                                  </div>
-                                </Td>
-                                {testrunReservation.creationType === 'CREATE' && (
-                                  <>
-                                    <Td align="left">
-                                      <Tag>{tester?.name}</Tag>
-                                    </Td>
-                                    <Td align="center">
-                                      <Tag className={testcase.testResult}>{TESTRUN_RESULT_CODE[testcase.testResult]}</Tag>
-                                    </Td>
-                                  </>
-                                )}
-                              </Tr>
-                            );
-                          })}
-                        </React.Fragment>
-                      );
-                    }
-
-                    return (
-                      <Tr key={d.seqId}>
-                        <Td className="group-info">
-                          <div className="seq-name">
-                            <div>
-                              <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                                {d.seqId}
-                              </SeqId>
-                            </div>
-                            <div>{d.name}</div>
-                          </div>
-                        </Td>
-                        <Td />
-                        {testrunReservation.creationType === 'CREATE' && (
-                          <>
-                            <Td />
-                            <Td />
-                          </>
-                        )}
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
-            )}
+            {testrunReservation.testcaseGroups?.length > 0 && <TestrunReservationTestcaseGroupTable testcaseGroups={testrunReservation.testcaseGroups} />}
           </BlockRow>
+          {(testrunReservation.selectCreatedTestcase || testrunReservation.selectUpdatedTestcase) && (
+            <>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>
+                  <div>
+                    {t('자동 추가 옵션에 따라 선택되는 테스트케이스')}
+                    <small className="desc">({t('중복되는 테스트케이스는 테스트런 생성 시 병합됩니다.')})</small>
+                  </div>
+                </Label>
+              </BlockRow>
+              <BlockRow className="testrun-testcases-content">
+                {testrunReservation.conditionalTestcaseGroups?.length < 1 && <Text className="no-user">{t('변경되거나, 추가된 테스트케이스가 없습니다.')}</Text>}
+                {testrunReservation.conditionalTestcaseGroups?.length > 0 && <TestrunReservationTestcaseGroupTable testcaseGroups={testrunReservation.conditionalTestcaseGroups} />}
+              </BlockRow>
+            </>
+          )}
         </Block>
         <Title paddingBottom={false} border={false} marginBottom={false}>
           {t('관리')}

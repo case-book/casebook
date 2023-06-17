@@ -69,6 +69,10 @@
       display: flex;
       > div {
         align-self: center;
+
+        .seq-id {
+          margin-right: 8px;
+        }
       }
     }
 

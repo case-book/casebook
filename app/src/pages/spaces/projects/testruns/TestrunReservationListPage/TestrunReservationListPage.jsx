@@ -102,7 +102,7 @@ function TestrunReservationListPage() {
           {t('예약 테스트런 리스트')}
         </Title>
         {testrunReservations?.length <= 0 && (
-          <EmptyContent fill>
+          <EmptyContent border fill>
             {expired && <div>{t('검색된 테스트런이 없습니다.')}</div>}
             {!expired && (
               <div>

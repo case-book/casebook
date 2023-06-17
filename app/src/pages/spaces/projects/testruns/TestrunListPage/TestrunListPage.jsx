@@ -164,7 +164,7 @@ function TestrunListPage() {
       </PageTitle>
       <PageContent className="page-content">
         {testruns?.length <= 0 && (
-          <EmptyContent fill>
+          <EmptyContent border fill>
             <div>{t('실행 중인 테스트런이 없습니다.')}</div>
             <div>
               <Button

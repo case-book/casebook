@@ -33,7 +33,7 @@ public class TestcaseDTO extends CommonDTO {
     public TestcaseDTO(Testcase testcase) {
         this.id = testcase.getId();
         this.seqId = testcase.getSeqId();
-        this.testcaseGroup = TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).build();
+        this.testcaseGroup = TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).seqId(testcase.getTestcaseGroup().getSeqId()).name(testcase.getTestcaseGroup().getName()).build();
         this.name = testcase.getName();
         this.description = testcase.getDescription();
         this.itemOrder = testcase.getItemOrder();

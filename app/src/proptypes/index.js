@@ -17,6 +17,7 @@ const TestcaseGroupPropTypes = PropTypes.shape({
   itemOrder: PropTypes.number,
   name: PropTypes.string,
   parentId: PropTypes.number,
+  creationType: PropTypes.string,
   children: PropTypes.arrayOf(
     PropTypes.shape({
       depth: PropTypes.number,
