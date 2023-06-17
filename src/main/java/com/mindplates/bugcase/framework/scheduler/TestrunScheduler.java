@@ -95,76 +95,7 @@ public class TestrunScheduler {
             }));
         }
 
-        List<TestcaseDTO> conditionalTestcaseList = new ArrayList<>();
-        Map<Long, Boolean> conditionalTestcaseIdMap = new HashMap<>();
-        if (testrunReservationDTO.getSelectCreatedTestcase() != null && testrunReservationDTO.getSelectCreatedTestcase()) {
-            List<TestcaseDTO> createdTestcaseList = testcaseService.selectTestcaseItemListByCreationTime(testrunReservationDTO.getCreationDate(), now);
-            for (TestcaseDTO testcaseDTO : createdTestcaseList) {
-                conditionalTestcaseList.add(testcaseDTO);
-                conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
-            }
-        }
-
-        if (testrunReservationDTO.getSelectUpdatedTestcase() != null && testrunReservationDTO.getSelectUpdatedTestcase()) {
-            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByLastUpdateDate(testrunReservationDTO.getCreationDate(), now);
-
-            for (TestcaseDTO testcaseDTO : updateDateTestcaseList) {
-                if (!conditionalTestcaseIdMap.containsKey(testcaseDTO.getId())) {
-                    conditionalTestcaseList.add(testcaseDTO);
-                    conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
-                }
-            }
-        }
-
-
-        if (conditionalTestcaseList.size() > 0) {
-
-            conditionalTestcaseList.forEach(testcaseDTO -> {
-                Long testcaseGroupId = testcaseDTO.getTestcaseGroup().getId();
-                Long testcaseId = testcaseDTO.getId();
-                if (!testcaseGroupIdMap.containsKey(testcaseGroupId)) {
-                    TestrunTestcaseGroupDTO testrunTestcaseGroupDTO = TestrunTestcaseGroupDTO.builder()
-                            .testrun(testrun)
-                            .testcaseGroup(testcaseDTO.getTestcaseGroup())
-                            .testcases(new ArrayList<>())
-                            .build();
-                    testcaseGroups.add(testrunTestcaseGroupDTO);
-                    testcaseGroupIdMap.put(testcaseGroupId, new ArrayList<>());
-                }
-
-                ArrayList<Long> testcaseIds = testcaseGroupIdMap.get(testcaseGroupId);
-                if (!testcaseIds.contains(testcaseId)) {
-                    TestrunTestcaseGroupDTO testcaseGroup = testcaseGroups.stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getTestcaseGroup().getId().equals(testcaseGroupId)).findFirst().orElse(null);
-                    if (testcaseGroup != null) {
-
-                        TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO = TestrunTestcaseGroupTestcaseDTO
-                                .builder()
-                                .testrunTestcaseGroup(testcaseGroup)
-                                .testcase(testcaseDTO)
-                                .build();
-
-                        testrunTestcaseGroupTestcaseDTO
-                                .setTestcaseItems(testcaseDTO.getTestcaseItems()
-                                        .stream()
-                                        .map(testcaseItemDTO -> {
-                                            return TestrunTestcaseGroupTestcaseItemDTO
-                                                    .builder()
-                                                    .testcaseTemplateItem(testcaseItemDTO.getTestcaseTemplateItem())
-                                                    .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcaseDTO)
-                                                    .type(testcaseItemDTO.getType())
-                                                    .value(testcaseItemDTO.getValue())
-                                                    .text(testcaseItemDTO.getText())
-                                                    .build();
-                                        }).collect(Collectors.toList()));
-
-                        testcaseGroup.getTestcases().add(testrunTestcaseGroupTestcaseDTO);
-                        testcaseIds.add(testcaseId);
-                    }
-                }
-            });
-        }
-
-
+        testrunService.selectConditionalTestcaseGroups(testrunReservationDTO, now, testcaseGroups, testcaseGroupIdMap, testrun);
         testrun.setTestcaseGroups(testcaseGroups);
 
         return testrun;
@@ -354,14 +285,12 @@ public class TestrunScheduler {
                     userIds.clear();
                     testrunUserList.clear();
                     while (userIds.size() < filteringUserCount) {
-                        TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
-                        userIds.add(testrunUser.getUser().getId());
-
                         currentIndex += 1;
-
                         if (currentIndex > totalTestrunUserCount - 1) {
                             currentIndex = 0;
                         }
+                        TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
+                        userIds.add(testrunUser.getUser().getId());
                     }
                 }
             }
@@ -567,7 +496,7 @@ public class TestrunScheduler {
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
             if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
-            // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
+            //if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
             }

@@ -286,7 +286,7 @@ function TestrunIterationInfoPage() {
                                   <Td rowSpan={d.testcases.length} className="group-info">
                                     <div className="seq-name">
                                       <div>
-                                        <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
                                           {d.seqId}
                                         </SeqId>
                                       </div>
@@ -297,7 +297,7 @@ function TestrunIterationInfoPage() {
                                 <Td>
                                   <div className="seq-name">
                                     <div>
-                                      <SeqId size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
+                                      <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
                                         {testcase.seqId}
                                       </SeqId>
                                     </div>

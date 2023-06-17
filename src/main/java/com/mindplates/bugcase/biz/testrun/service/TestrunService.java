@@ -146,7 +146,13 @@ public class TestrunService {
 
     public TestrunReservationDTO selectProjectTestrunReservationInfo(long testrunReservationId) {
         TestrunReservation testrunReservation = testrunReservationRepository.findById(testrunReservationId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestrunReservationDTO(testrunReservation, true);
+
+        TestrunReservationDTO testrunReservationDTO = new TestrunReservationDTO(testrunReservation, true);
+        LocalDateTime now = LocalDateTime.now();
+        List<TestrunTestcaseGroupDTO> conditionalTestcaseGroupList = this.selectConditionalTestcaseGroups(testrunReservationDTO, now, null, new HashMap<>(), null);
+        testrunReservationDTO.setConditionalTestcaseGroupList(conditionalTestcaseGroupList);
+
+        return testrunReservationDTO;
     }
 
     public TestrunIterationDTO selectProjectTestrunIterationInfo(long testrunIterationId) {
@@ -1108,6 +1114,83 @@ public class TestrunService {
         Long projectId = projectService.selectProjectId(projectToken);
         return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
     }
+
+    public List<TestrunTestcaseGroupDTO> selectConditionalTestcaseGroups (TestrunReservationDTO testrunReservationDTO, LocalDateTime now, List<TestrunTestcaseGroupDTO> pTestcaseGroups, Map<Long, ArrayList<Long>> testcaseGroupIdMap, TestrunDTO testrun) {
+
+        List<TestrunTestcaseGroupDTO> testcaseGroups = pTestcaseGroups == null ? new ArrayList<>() : pTestcaseGroups;
+
+        List<TestcaseDTO> conditionalTestcaseList = new ArrayList<>();
+        Map<Long, Boolean> conditionalTestcaseIdMap = new HashMap<>();
+        if (testrunReservationDTO.getSelectCreatedTestcase() != null && testrunReservationDTO.getSelectCreatedTestcase()) {
+            List<TestcaseDTO> createdTestcaseList = testcaseService.selectTestcaseItemListByCreationTime(testrunReservationDTO.getCreationDate(), now);
+            for (TestcaseDTO testcaseDTO : createdTestcaseList) {
+                conditionalTestcaseList.add(testcaseDTO);
+                conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
+            }
+        }
+
+        if (testrunReservationDTO.getSelectUpdatedTestcase() != null && testrunReservationDTO.getSelectUpdatedTestcase()) {
+            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByLastUpdateDate(testrunReservationDTO.getCreationDate(), now);
+
+            for (TestcaseDTO testcaseDTO : updateDateTestcaseList) {
+                if (!conditionalTestcaseIdMap.containsKey(testcaseDTO.getId())) {
+                    conditionalTestcaseList.add(testcaseDTO);
+                    conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
+                }
+            }
+        }
+
+        if (conditionalTestcaseList.size() > 0) {
+
+            conditionalTestcaseList.forEach(testcaseDTO -> {
+                Long testcaseGroupId = testcaseDTO.getTestcaseGroup().getId();
+                Long testcaseId = testcaseDTO.getId();
+                if (!testcaseGroupIdMap.containsKey(testcaseGroupId)) {
+                    TestrunTestcaseGroupDTO testrunTestcaseGroupDTO = TestrunTestcaseGroupDTO.builder()
+                            .testrun(testrun)
+                            .testcaseGroup(testcaseDTO.getTestcaseGroup())
+                            .testcases(new ArrayList<>())
+                            .build();
+                    testcaseGroups.add(testrunTestcaseGroupDTO);
+                    testcaseGroupIdMap.put(testcaseGroupId, new ArrayList<>());
+                }
+
+                ArrayList<Long> testcaseIds = testcaseGroupIdMap.get(testcaseGroupId);
+                if (!testcaseIds.contains(testcaseId)) {
+                    TestrunTestcaseGroupDTO testcaseGroup = testcaseGroups.stream().filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getTestcaseGroup().getId().equals(testcaseGroupId)).findFirst().orElse(null);
+                    if (testcaseGroup != null) {
+
+                        TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO = TestrunTestcaseGroupTestcaseDTO
+                                .builder()
+                                .testrunTestcaseGroup(testcaseGroup)
+                                .testcase(testcaseDTO)
+                                .build();
+
+                        testrunTestcaseGroupTestcaseDTO
+                                .setTestcaseItems(testcaseDTO.getTestcaseItems()
+                                        .stream()
+                                        .map(testcaseItemDTO -> {
+                                            return TestrunTestcaseGroupTestcaseItemDTO
+                                                    .builder()
+                                                    .testcaseTemplateItem(testcaseItemDTO.getTestcaseTemplateItem())
+                                                    .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcaseDTO)
+                                                    .type(testcaseItemDTO.getType())
+                                                    .value(testcaseItemDTO.getValue())
+                                                    .text(testcaseItemDTO.getText())
+                                                    .build();
+                                        }).collect(Collectors.toList()));
+
+                        testcaseGroup.getTestcases().add(testrunTestcaseGroupTestcaseDTO);
+                        testcaseIds.add(testcaseId);
+                    }
+                }
+            });
+        }
+
+        return testcaseGroups;
+
+    }
+
 
 
 }

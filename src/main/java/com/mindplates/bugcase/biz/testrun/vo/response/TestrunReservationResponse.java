@@ -32,6 +32,8 @@ public class TestrunReservationResponse {
     private Boolean selectCreatedTestcase;
     private Boolean selectUpdatedTestcase;
 
+    private List<TestrunTestcaseGroupResponse> conditionalTestcaseGroups;
+
     public TestrunReservationResponse(TestrunReservationDTO testrunReservation) {
         this.id = testrunReservation.getId();
         this.name = testrunReservation.getName();
@@ -56,6 +58,10 @@ public class TestrunReservationResponse {
         if (testrunReservation.getTestcaseGroups() != null && !testrunReservation.getTestcaseGroups().isEmpty()) {
             this.testcaseGroups = testrunReservation.getTestcaseGroups().stream().map(TestrunTestcaseGroupResponse::new).collect(Collectors.toList());
         }
+
+        this.conditionalTestcaseGroups = testrunReservation.getConditionalTestcaseGroupList().stream().map(TestrunTestcaseGroupResponse::new).collect(Collectors.toList());
+
+
     }
 
 

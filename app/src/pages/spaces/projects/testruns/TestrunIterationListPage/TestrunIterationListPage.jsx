@@ -110,7 +110,7 @@ function TestrunIterationListPage() {
           {t('반복 테스트런 리스트')}
         </Title>
         {testrunIterations?.length <= 0 && (
-          <EmptyContent fill>
+          <EmptyContent border fill>
             {expired && <div>{t('검색된 테스트런이 없습니다.')}</div>}
             {!expired && (
               <div>
