@@ -354,14 +354,12 @@ public class TestrunScheduler {
                     userIds.clear();
                     testrunUserList.clear();
                     while (userIds.size() < filteringUserCount) {
-                        TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
-                        userIds.add(testrunUser.getUser().getId());
-
                         currentIndex += 1;
-
                         if (currentIndex > totalTestrunUserCount - 1) {
                             currentIndex = 0;
                         }
+                        TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
+                        userIds.add(testrunUser.getUser().getId());
                     }
                 }
             }
@@ -567,7 +565,7 @@ public class TestrunScheduler {
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
             if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
-            // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
+            //if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
             }
