@@ -60,6 +60,9 @@ function TestRunTestcaseManager({
     if (resultInfoElement.current && resultInfoElement.current.parentNode && resultInfoElement.current.parentNode.parentNode) {
       resultInfoElement.current.parentNode.parentNode.scrollTop = 0;
     }
+
+    setComment('');
+    editor.current?.getInstance().setHTML('');
   }, [content?.id]);
 
   return (

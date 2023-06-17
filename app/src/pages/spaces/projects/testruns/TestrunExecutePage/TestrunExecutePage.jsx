@@ -393,8 +393,8 @@ function TestrunExecutePage() {
       }
 
       case 'TESTRUN-USER-JOIN': {
-        const nextParicipants = lastParicipants.current.slice(0);
-        const userExist = lastParicipants.current.find(d => d.id === data?.data?.participant.id);
+        const nextParicipants = lastParicipants.current?.slice(0);
+        const userExist = lastParicipants.current?.find(d => d.id === data?.data?.participant.id);
 
         if (!userExist) {
           nextParicipants.push(data?.data?.participant);
