@@ -70,7 +70,7 @@ function TestrunReservationInfoPage() {
       <div>{t('예약 테스트런 정보를 삭제합니다. 삭제하시겠습니까?', { name: testrunReservation.name })}</div>,
       () => {
         TestrunService.deleteTestrunReservationInfo(spaceCode, projectId, testrunReservationId, () => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations`);
+          navigate(-1);
         });
       },
       null,
@@ -203,7 +203,7 @@ function TestrunReservationInfoPage() {
             {!(testrunReservation.testcaseGroups?.length > 0) && <EmptyContent>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
             {testrunReservation.testcaseGroups?.length > 0 && <TestrunReservationTestcaseGroupTable testcaseGroups={testrunReservation.testcaseGroups} />}
           </BlockRow>
-          {(testrunReservation.selectCreatedTestcase || testrunReservation.selectUpdatedTestcase) && (
+          {!testrunReservation?.expired && (testrunReservation.selectCreatedTestcase || testrunReservation.selectUpdatedTestcase) && (
             <>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>

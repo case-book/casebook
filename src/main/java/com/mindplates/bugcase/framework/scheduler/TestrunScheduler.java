@@ -63,7 +63,6 @@ public class TestrunScheduler {
         }
         testrun.setTestrunUsers(testrunUserList);
 
-
         Map<Long, ArrayList<Long>> testcaseGroupIdMap = new HashMap<>();
 
         List<TestrunTestcaseGroupDTO> testcaseGroups = new ArrayList<>();

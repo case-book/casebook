@@ -1131,7 +1131,7 @@ public class TestrunService {
         }
 
         if (testrunReservationDTO.getSelectUpdatedTestcase() != null && testrunReservationDTO.getSelectUpdatedTestcase()) {
-            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByLastUpdateDate(testrunReservationDTO.getProject().getId(), testrunReservationDTO.getCreationDate(), now);
+            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByContentUpdateDate(testrunReservationDTO.getProject().getId(), testrunReservationDTO.getCreationDate(), now);
 
             for (TestcaseDTO testcaseDTO : updateDateTestcaseList) {
                 if (!conditionalTestcaseIdMap.containsKey(testcaseDTO.getId())) {

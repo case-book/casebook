@@ -91,7 +91,7 @@ function TestrunIterationInfoPage() {
       <div>{t('@ 반복 테스트런 및 테스트런에 입력된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { name: testrunIteration.name })}</div>,
       () => {
         TestrunService.deleteTestrunIterationInfo(spaceCode, projectId, testrunIterationId, () => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/iterations`);
+          navigate(-1);
         });
       },
       null,

@@ -58,7 +58,7 @@ function TestrunReservationTestcaseGroupTable({ testcaseGroups }) {
               <Td className="group-info">
                 <div className="seq-name">
                   <div>
-                    <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                    <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
                       {d.seqId}
                     </SeqId>
                   </div>

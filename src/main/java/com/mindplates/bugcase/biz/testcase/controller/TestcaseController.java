@@ -52,7 +52,6 @@ public class TestcaseController {
     public TestcaseGroupResponse createTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
         TestcaseGroupDTO testcaseGroupDTO = mappingUtil.convert(testcaseGroupRequest, TestcaseGroupDTO.class);
         testcaseGroupDTO.setProject(ProjectDTO.builder().id(projectId).build());
-
         TestcaseGroupDTO testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupDTO);
         return new TestcaseGroupResponse(testcaseGroup);
     }
@@ -97,7 +96,6 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 그룹 변경")
     @PutMapping("/{testcaseId}/group")
     public ResponseEntity updateTestcaseTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseTestcaseGroupChangeRequest testcaseTestcaseGroupChangeRequest) {
-
         testcaseService.updateTestcaseTestcaseGroupInfo(spaceCode, projectId, testcaseTestcaseGroupChangeRequest.getTargetId(), testcaseTestcaseGroupChangeRequest.getDestinationId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -141,19 +139,14 @@ public class TestcaseController {
     @Operation(description = "테스트케이스 변경")
     @PutMapping("/{testcaseId}")
     public TestcaseResponse updateTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
-
         Testcase testcase = testcaseUpdateRequest.buildEntity();
         return new TestcaseResponse(testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase));
-
     }
 
     @PostMapping("/{testcaseId}/images")
     public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
-
         String path = projectFileService.createImage(projectId, file);
-
         ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.TESTCASE).fileSourceId(testcaseId).build();
-
         ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
         return new ProjectFileResponse(projectFile, spaceCode, projectId);
     }

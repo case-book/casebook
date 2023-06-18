@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,8 @@ public class TestcaseDTO extends CommonDTO {
     private String testerType;
     private String testerValue;
 
+    private LocalDateTime contentUpdateDate;
+
     public TestcaseDTO(Testcase testcase) {
         this.id = testcase.getId();
         this.seqId = testcase.getSeqId();
@@ -43,6 +46,7 @@ public class TestcaseDTO extends CommonDTO {
         this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
+        this.contentUpdateDate = testcase.getContentUpdateDate();
     }
 
 

@@ -15,6 +15,7 @@ import {
   TESTRUN_ITERATION_USER_FILTER_TYPE_CODE,
 } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
+import useQueryString from '@/hooks/useQueryString';
 
 function TestrunIterationListPage() {
   const { t } = useTranslation();
@@ -23,17 +24,20 @@ function TestrunIterationListPage() {
   const navigate = useNavigate();
   const [testrunIterations, setTestrunIterations] = useState([]);
   const [project, setProject] = useState(null);
-  const [expired, setExpired] = useState(false);
+  const { query, setQuery } = useQueryString();
+  const expired = query.expired === 'Y';
 
   useEffect(() => {
     TestrunService.selectProjectTestrunIterationList(spaceCode, projectId, expired, list => {
       setTestrunIterations(list);
     });
+  }, [expired, projectId, spaceCode]);
 
+  useEffect(() => {
     ProjectService.selectProjectName(spaceCode, projectId, info => {
       setProject(info);
     });
-  }, [expired, projectId, spaceCode]);
+  }, [projectId]);
 
   return (
     <Page className="testrun-iteration-list-page-wrapper" list>
@@ -90,7 +94,9 @@ function TestrunIterationListPage() {
                 value={false}
                 checked={expired === false}
                 onChange={() => {
-                  setExpired(!expired);
+                  setQuery({
+                    expired: 'N',
+                  });
                 }}
                 label={t('반복')}
               />
@@ -100,7 +106,9 @@ function TestrunIterationListPage() {
                 value
                 checked={expired}
                 onChange={() => {
-                  setExpired(!expired);
+                  setQuery({
+                    expired: 'Y',
+                  });
                 }}
                 label={t('완료')}
               />

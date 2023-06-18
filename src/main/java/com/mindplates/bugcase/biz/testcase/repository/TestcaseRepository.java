@@ -31,7 +31,7 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
     List<Testcase> findAllByProjectIdAndCreationDateBetween(Long projectId, LocalDateTime from, LocalDateTime to);
 
-    List<Testcase> findAllByProjectIdAndLastUpdateDateBetween(Long projectId, LocalDateTime from, LocalDateTime to);
+    List<Testcase> findAllByProjectIdAndContentUpdateDateBetween(Long projectId, LocalDateTime from, LocalDateTime to);
 
 
 
