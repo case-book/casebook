@@ -60,13 +60,13 @@ public class TestcaseService {
         return mappingUtil.convert(testcaseTemplates, TestcaseTemplateDTO.class);
     }
 
-    public List<TestcaseDTO> selectTestcaseItemListByCreationTime(LocalDateTime from, LocalDateTime to) {
-        List<Testcase> testcases = testcaseRepository.findAllByCreationDateBetween(from, to);
+    public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
+        List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
         return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
     }
 
-    public List<TestcaseDTO> selectTestcaseItemListByLastUpdateDate(LocalDateTime from, LocalDateTime to) {
-        List<Testcase> testcases = testcaseRepository.findAllByLastUpdateDateBetween(from, to);
+    public List<TestcaseDTO> selectTestcaseItemListByContentUpdateDate(Long projectId, LocalDateTime from, LocalDateTime to) {
+        List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndContentUpdateDateBetween(projectId, from, to);
         return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
     }
 
@@ -403,6 +403,7 @@ public class TestcaseService {
     public TestcaseDTO updateTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setSeqId(org.getSeqId());
+        testcase.setContentUpdateDate(LocalDateTime.now());
         testcaseRepository.save(testcase);
         return mappingUtil.convert(testcase, TestcaseDTO.class);
 

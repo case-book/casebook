@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
+import { Block, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -70,7 +70,7 @@ function TestrunReservationInfoPage() {
       <div>{t('예약 테스트런 정보를 삭제합니다. 삭제하시겠습니까?', { name: testrunReservation.name })}</div>,
       () => {
         TestrunService.deleteTestrunReservationInfo(spaceCode, projectId, testrunReservationId, () => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/reservations`);
+          navigate(-1);
         });
       },
       null,
@@ -200,10 +200,10 @@ function TestrunReservationInfoPage() {
             <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
           </BlockRow>
           <BlockRow className="testrun-testcases-content">
-            {testrunReservation.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
+            {!(testrunReservation.testcaseGroups?.length > 0) && <EmptyContent>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
             {testrunReservation.testcaseGroups?.length > 0 && <TestrunReservationTestcaseGroupTable testcaseGroups={testrunReservation.testcaseGroups} />}
           </BlockRow>
-          {(testrunReservation.selectCreatedTestcase || testrunReservation.selectUpdatedTestcase) && (
+          {!testrunReservation?.expired && (testrunReservation.selectCreatedTestcase || testrunReservation.selectUpdatedTestcase) && (
             <>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>
@@ -213,8 +213,8 @@ function TestrunReservationInfoPage() {
                   </div>
                 </Label>
               </BlockRow>
-              <BlockRow className="testrun-testcases-content">
-                {testrunReservation.conditionalTestcaseGroups?.length < 1 && <Text className="no-user">{t('변경되거나, 추가된 테스트케이스가 없습니다.')}</Text>}
+              <BlockRow className="testrun-testcases-content" expand>
+                {!(testrunReservation.conditionalTestcaseGroups?.length > 0) && <EmptyContent>{t('변경되거나, 추가된 테스트케이스가 없습니다.')}</EmptyContent>}
                 {testrunReservation.conditionalTestcaseGroups?.length > 0 && <TestrunReservationTestcaseGroupTable testcaseGroups={testrunReservation.conditionalTestcaseGroups} />}
               </BlockRow>
             </>

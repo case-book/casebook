@@ -1122,7 +1122,8 @@ public class TestrunService {
         List<TestcaseDTO> conditionalTestcaseList = new ArrayList<>();
         Map<Long, Boolean> conditionalTestcaseIdMap = new HashMap<>();
         if (testrunReservationDTO.getSelectCreatedTestcase() != null && testrunReservationDTO.getSelectCreatedTestcase()) {
-            List<TestcaseDTO> createdTestcaseList = testcaseService.selectTestcaseItemListByCreationTime(testrunReservationDTO.getCreationDate(), now);
+
+            List<TestcaseDTO> createdTestcaseList = testcaseService.selectTestcaseItemListByCreationTime(testrunReservationDTO.getProject().getId(), testrunReservationDTO.getCreationDate(), now);
             for (TestcaseDTO testcaseDTO : createdTestcaseList) {
                 conditionalTestcaseList.add(testcaseDTO);
                 conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
@@ -1130,7 +1131,7 @@ public class TestrunService {
         }
 
         if (testrunReservationDTO.getSelectUpdatedTestcase() != null && testrunReservationDTO.getSelectUpdatedTestcase()) {
-            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByLastUpdateDate(testrunReservationDTO.getCreationDate(), now);
+            List<TestcaseDTO> updateDateTestcaseList = testcaseService.selectTestcaseItemListByContentUpdateDate(testrunReservationDTO.getProject().getId(), testrunReservationDTO.getCreationDate(), now);
 
             for (TestcaseDTO testcaseDTO : updateDateTestcaseList) {
                 if (!conditionalTestcaseIdMap.containsKey(testcaseDTO.getId())) {

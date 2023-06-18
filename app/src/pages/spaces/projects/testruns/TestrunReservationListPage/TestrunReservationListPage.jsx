@@ -7,6 +7,7 @@ import TestrunService from '@/services/TestrunService';
 import './TestrunReservationListPage.scss';
 import dateUtil from '@/utils/dateUtil';
 import ProjectService from '@/services/ProjectService';
+import useQueryString from '@/hooks/useQueryString';
 
 function TestrunReservationListPage() {
   const { t } = useTranslation();
@@ -15,17 +16,20 @@ function TestrunReservationListPage() {
   const navigate = useNavigate();
   const [testrunReservations, setTestrunReservations] = useState([]);
   const [project, setProject] = useState(null);
-  const [expired, setExpired] = useState(false);
+  const { query, setQuery } = useQueryString();
+  const expired = query.expired === 'Y';
 
   useEffect(() => {
     TestrunService.selectProjectTestrunReservationList(spaceCode, projectId, expired, list => {
       setTestrunReservations(list);
     });
+  }, [expired, spaceCode, projectId]);
 
+  useEffect(() => {
     ProjectService.selectProjectName(spaceCode, projectId, info => {
       setProject(info);
     });
-  }, [expired, spaceCode, projectId]);
+  }, [projectId]);
 
   return (
     <Page className="testrun-reservation-list-page-wrapper" list>
@@ -82,7 +86,9 @@ function TestrunReservationListPage() {
                 value={false}
                 checked={expired === false}
                 onChange={() => {
-                  setExpired(!expired);
+                  setQuery({
+                    expired: 'N',
+                  });
                 }}
                 label={t('예약')}
               />
@@ -92,7 +98,9 @@ function TestrunReservationListPage() {
                 value
                 checked={expired}
                 onChange={() => {
-                  setExpired(!expired);
+                  setQuery({
+                    expired: 'Y',
+                  });
                 }}
                 label={t('완료')}
               />

@@ -183,7 +183,10 @@ function TestrunListPage() {
         {testruns?.length > 0 && (
           <ul className="testrun-cards">
             {testruns.map(testrun => {
-              const progressPercentage = Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10;
+              const progressPercentage =
+                testrun.totalTestcaseCount > 0
+                  ? Math.round(((testrun.failedTestcaseCount + testrun.passedTestcaseCount + testrun.untestableTestcaseCount) / testrun.totalTestcaseCount) * 1000) / 10
+                  : 0;
               const span = dateUtil.getSpan(moment.utc(), moment.utc(testrun.endDateTime));
 
               return (
@@ -210,63 +213,72 @@ function TestrunListPage() {
                     </div>
                     <div className="description">{testrun.description}</div>
                     <div className="chart">
-                      <div className="chart-content">
-                        <PieChart
-                          data={testrun.data}
-                          legend={false}
-                          tooltip={false}
-                          activeOuterRadiusOffset={0}
-                          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                          isInteractive={false}
-                          defs={[
-                            {
-                              id: 'PROGRESS',
-                              type: 'patternLines',
-                              background: testrun?.data?.find(d => d.id === 'PROGRESS')?.color,
-                              color: 'rgba(0,0,0,0.1)',
-                              rotation: -45,
-                              lineWidth: 6,
-                              spacing: 10,
-                            },
-                            {
-                              id: 'REMAINS',
-                              type: 'patternDots',
-                              background: testrun?.data?.find(d => d.id === 'REMAINS')?.color,
-                              color: 'rgba(0,0,0,0.1)',
-                              size: 8,
-                              padding: 1,
-                              stagger: true,
-                            },
-                          ]}
-                          fill={[
-                            {
-                              match: {
-                                id: 'PASSED',
-                              },
-                              id: 'PASSED',
-                            },
-                            {
-                              match: {
-                                id: 'FAILED',
-                              },
-                              id: 'FAILED',
-                            },
-                            {
-                              match: {
-                                id: 'UNTESTED',
-                              },
-                              id: 'UNTESTED',
-                            },
-                          ]}
-                        />
-                      </div>
-                      <div className="progress-content">
-                        <div className="percentage-info">
-                          <span className="percentage">{progressPercentage}</span>
-                          <span className="symbol">%</span>
+                      {!(testrun.totalTestcaseCount > 0) && (
+                        <div className="no-testcase">
+                          <div>{t('테스트케이스가 없습니다.')}</div>
                         </div>
-                        <div className="progress-label">{t('진행')}</div>
-                      </div>
+                      )}
+                      {testrun.totalTestcaseCount > 0 && (
+                        <>
+                          <div className="chart-content">
+                            <PieChart
+                              data={testrun.data}
+                              legend={false}
+                              tooltip={false}
+                              activeOuterRadiusOffset={0}
+                              margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                              isInteractive={false}
+                              defs={[
+                                {
+                                  id: 'PROGRESS',
+                                  type: 'patternLines',
+                                  background: testrun?.data?.find(d => d.id === 'PROGRESS')?.color,
+                                  color: 'rgba(0,0,0,0.1)',
+                                  rotation: -45,
+                                  lineWidth: 6,
+                                  spacing: 10,
+                                },
+                                {
+                                  id: 'REMAINS',
+                                  type: 'patternDots',
+                                  background: testrun?.data?.find(d => d.id === 'REMAINS')?.color,
+                                  color: 'rgba(0,0,0,0.1)',
+                                  size: 8,
+                                  padding: 1,
+                                  stagger: true,
+                                },
+                              ]}
+                              fill={[
+                                {
+                                  match: {
+                                    id: 'PASSED',
+                                  },
+                                  id: 'PASSED',
+                                },
+                                {
+                                  match: {
+                                    id: 'FAILED',
+                                  },
+                                  id: 'FAILED',
+                                },
+                                {
+                                  match: {
+                                    id: 'UNTESTED',
+                                  },
+                                  id: 'UNTESTED',
+                                },
+                              ]}
+                            />
+                          </div>
+                          <div className="progress-content">
+                            <div className="percentage-info">
+                              <span className="percentage">{progressPercentage}</span>
+                              <span className="symbol">%</span>
+                            </div>
+                            <div className="progress-label">{t('진행')}</div>
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div className="testrun-others">
                       <div className="time-info">

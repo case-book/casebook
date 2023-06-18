@@ -8,6 +8,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -62,6 +63,9 @@ public class Testcase extends CommonEntity {
 
     @Column(name = "tester_value", length = ColumnsDef.CODE)
     private String testerValue;
+
+    @Column(name = "content_update_date")
+    private LocalDateTime contentUpdateDate;
 
 
 }

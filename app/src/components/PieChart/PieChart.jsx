@@ -3,12 +3,7 @@ import { ResponsivePie } from '@nivo/pie';
 import PropTypes from 'prop-types';
 import './PieChart.scss';
 
-import { useTranslation } from 'react-i18next';
-import { EmptyContent } from '@/components';
-
 function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, activeOuterRadiusOffset, margin, fill, isInteractive, cornerRadius, borderWidth, innerRadius, getArcLabel }) {
-  const { t } = useTranslation();
-
   const dataRankInfo = useMemo(() => {
     const next = data.slice(0);
     next.sort((a, b) => {
@@ -25,83 +20,80 @@ function PieChart({ data, showTopArcLabelCount, defs, onClick, legend, tooltip, 
 
   return (
     <div className="pie-chart-wrapper">
-      {data?.length < 1 && <EmptyContent>{t('데이터가 없습니다.')}</EmptyContent>}
-      {data?.length > 0 && (
-        <ResponsivePie
-          data={data}
-          margin={margin}
-          innerRadius={innerRadius}
-          padAngle={2}
-          cornerRadius={cornerRadius}
-          activeOuterRadiusOffset={activeOuterRadiusOffset}
-          borderWidth={borderWidth}
-          borderColor={{
-            from: 'color',
-            modifiers: [['darker', 0.7]],
-          }}
-          isInteractive={isInteractive}
-          enableArcLabels={false}
-          arcLinkLabelsSkipAngle={10}
-          arcLinkLabelsTextColor="#000"
-          arcLinkLabelsThickness={2}
-          arcLinkLabelsColor={{ from: 'color' }}
-          arcLinkLabel={e => {
-            let name = e.id;
-            if (getArcLabel) {
-              name = getArcLabel(e.id);
-            }
-            if (showTopArcLabelCount === Infinity) {
-              return `${name} (${e.value})`;
-            }
-
-            if (dataRankInfo[e.id] < showTopArcLabelCount) {
-              return `${name} (${e.value})`;
-            }
-
-            return '';
-          }}
-          enableArcLinkLabels={tooltip}
-          defs={defs}
-          colors={d => {
-            return d.data?.color;
-          }}
-          onClick={d => {
-            if (onClick) {
-              onClick(d);
-            }
-          }}
-          fill={fill}
-          legends={
-            legend
-              ? [
-                  {
-                    anchor: 'bottom',
-                    direction: 'row',
-                    justify: false,
-                    translateX: 0,
-                    translateY: 56,
-                    itemsSpacing: 0,
-                    itemWidth: 100,
-                    itemHeight: 18,
-                    itemTextColor: '#111',
-                    itemDirection: 'left-to-right',
-                    itemOpacity: 1,
-                    symbolSize: 18,
-                    symbolShape: 'square',
-                    effects: [
-                      {
-                        on: 'hover',
-                        style: {
-                          itemTextColor: '#000',
-                        },
-                      },
-                    ],
-                  },
-                ]
-              : undefined
+      <ResponsivePie
+        data={data}
+        margin={margin}
+        innerRadius={innerRadius}
+        padAngle={2}
+        cornerRadius={cornerRadius}
+        activeOuterRadiusOffset={activeOuterRadiusOffset}
+        borderWidth={borderWidth}
+        borderColor={{
+          from: 'color',
+          modifiers: [['darker', 0.7]],
+        }}
+        isInteractive={isInteractive}
+        enableArcLabels={false}
+        arcLinkLabelsSkipAngle={10}
+        arcLinkLabelsTextColor="#000"
+        arcLinkLabelsThickness={2}
+        arcLinkLabelsColor={{ from: 'color' }}
+        arcLinkLabel={e => {
+          let name = e.id;
+          if (getArcLabel) {
+            name = getArcLabel(e.id);
           }
-        />
-      )}
+          if (showTopArcLabelCount === Infinity) {
+            return `${name} (${e.value})`;
+          }
+
+          if (dataRankInfo[e.id] < showTopArcLabelCount) {
+            return `${name} (${e.value})`;
+          }
+
+          return '';
+        }}
+        enableArcLinkLabels={tooltip}
+        defs={defs}
+        colors={d => {
+          return d.data?.color;
+        }}
+        onClick={d => {
+          if (onClick) {
+            onClick(d);
+          }
+        }}
+        fill={fill}
+        legends={
+          legend
+            ? [
+                {
+                  anchor: 'bottom',
+                  direction: 'row',
+                  justify: false,
+                  translateX: 0,
+                  translateY: 56,
+                  itemsSpacing: 0,
+                  itemWidth: 100,
+                  itemHeight: 18,
+                  itemTextColor: '#111',
+                  itemDirection: 'left-to-right',
+                  itemOpacity: 1,
+                  symbolSize: 18,
+                  symbolShape: 'square',
+                  effects: [
+                    {
+                      on: 'hover',
+                      style: {
+                        itemTextColor: '#000',
+                      },
+                    },
+                  ],
+                },
+              ]
+            : undefined
+        }
+      />
     </div>
   );
 }
