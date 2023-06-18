@@ -142,6 +142,15 @@
           background-color: var(--lighter-color);
           border-radius: 8px;
 
+          .no-testcase {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            > div {
+              align-self: center;
+            }
+          }
+
           .chart-content {
             width: 80px;
             height: 80px;

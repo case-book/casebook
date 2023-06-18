@@ -42,7 +42,7 @@ function TestrunReservationEditPage({ type }) {
     testcaseGroups: [],
     startDateTime: (() => {
       const start = new Date();
-      start.setHours(10);
+      start.setHours(start.getHours() + 1);
       start.setMinutes(0);
       start.setSeconds(0);
       start.setMilliseconds(0);
@@ -51,8 +51,8 @@ function TestrunReservationEditPage({ type }) {
     })(),
     endDateTime: (() => {
       const end = new Date();
-      end.setDate(end.getDate() + 2);
-      end.setHours(19);
+      end.setDate(end.getDate() + 1);
+      end.setHours(end.getHours() + 1);
       end.setMinutes(0);
       end.setSeconds(0);
       end.setMilliseconds(0);

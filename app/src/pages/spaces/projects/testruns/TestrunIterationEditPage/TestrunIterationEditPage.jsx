@@ -49,7 +49,7 @@ function TestrunIterationEditPage({ type }) {
     projectId,
     reserveStartDateTime: (() => {
       const start = new Date();
-      start.setHours(10);
+      start.setHours(start.getHours() + 1);
       start.setMinutes(0);
       start.setSeconds(0);
       start.setMilliseconds(0);
@@ -58,7 +58,7 @@ function TestrunIterationEditPage({ type }) {
     })(),
     reserveEndDateTime: (() => {
       const end = new Date();
-      end.setDate(end.getDate() + 2);
+      end.setDate(end.getDate() + 90);
       end.setHours(19);
       end.setMinutes(0);
       end.setSeconds(0);
@@ -345,7 +345,7 @@ function TestrunIterationEditPage({ type }) {
                       testrunIterationTimeType: val,
                     });
                   }}
-                  label={t('주단위')}
+                  label={t('요일별 반복')}
                 />
                 <Radio
                   value="MONTHLY"
@@ -359,7 +359,7 @@ function TestrunIterationEditPage({ type }) {
                       excludeHoliday: false,
                     });
                   }}
-                  label={t('월단위')}
+                  label={t('날짜별 반복')}
                 />
                 <Radio
                   value="MONTHLY_WEEKLY"
@@ -371,7 +371,7 @@ function TestrunIterationEditPage({ type }) {
                       testrunIterationTimeType: val,
                     });
                   }}
-                  label={t('월/주단위')}
+                  label={t('주/요일별 반복')}
                 />
               </BlockRow>
 

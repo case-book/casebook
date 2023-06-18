@@ -73,15 +73,15 @@ public class TestrunIteration extends CommonEntity {
     @Column(name = "start_time")
     private LocalTime startTime;
 
-    /* 주 단위 반복 룰 */
+    /* 요일별 반복 반복 룰 */
     @Column(name = "days", length = ColumnsDef.CODE)
     private String days;
 
-    /* 월 단위 반복 룰 */
+    /* 날짜별 반복 룰 */
     @Column(name = "date")
     private Integer date; // 첫번째 워킹 데이=-2(미구현), 매월 말일=-1, 매월 1일=1, 미설정=null
 
-    /* 월/주 단위 반복 룰 */
+    /* 주/요일별 반복 룰 */
     @Column(name = "week")
     private Integer week; // 마지막주 -1
 
