@@ -1,24 +1,46 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Block, BlockRow, Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
+import useStores from '@/hooks/useStores';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelectPopup.scss';
 
 function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened, onApply }) {
   const { t } = useTranslation();
-
+  const {
+    userStore: { user },
+  } = useStores();
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
-
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
+  const [testRuns, setTestRuns] = useState({ highlightByRange: false });
 
   useEffect(() => {
     const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(testcaseGroups));
     setProjectTestcaseGroupTree(nextGroups);
+    const allTestCases = testcaseGroups?.reduce((data, current) => {
+      return data.concat(current.testcases);
+    }, []);
+    const testCaseCreationDates = allTestCases.reduce((data, current) => {
+      return data.concat(new Date(current.creationDate));
+    }, []);
+    setTestRuns({
+      ...testRuns,
+      minDate: new Date(Math.min.apply(null, testCaseCreationDates)),
+      maxDate: new Date(Math.max.apply(null, testCaseCreationDates)),
+    });
   }, [testcaseGroups]);
+
+  const isHighlighted = testcase => {
+    if (!testcase || !testcase.creationDate) {
+      return false;
+    }
+    const creationDate = new Date(testcase.creationDate);
+    return creationDate >= testRuns.minDate && creationDate <= testRuns.maxDate;
+  };
 
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(cloneDeep(selectedTestcaseGroups));
@@ -188,20 +210,59 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
           </EmptyContent>
         )}
         {projectTestcaseGroupTree?.length > 0 && (
-          <div className="testcase-select-list g-no-select">
+          <div>
             <div className="condition">
-              <Button size="sm" outline onClick={allCheck}>
-                <i className="fa-solid fa-circle-check" /> {t('전체')}
-              </Button>
+              <Title>{t('검색 옵션')}</Title>
+              <Block>
+                <BlockRow className="testrun-range-highlight-row">
+                  <CheckBox
+                    className="range-highlight-checkbox"
+                    size="sm"
+                    value={testRuns.highlightByRange}
+                    onChange={() => {
+                      setTestRuns({
+                        ...testRuns,
+                        highlightByRange: !testRuns.highlightByRange,
+                      });
+                    }}
+                    label={t('기간 내 생성된 테스트 케이스만 하이라이팅하기')}
+                  />
+                  <DateRange
+                    size="sm"
+                    country={user.country}
+                    language={user.language}
+                    startDate={testRuns.minDate.getTime()}
+                    endDate={testRuns.maxDate.getTime()}
+                    startDateKey="minDate"
+                    endDateKey="maxDate"
+                    onChange={(key, value) => {
+                      setTestRuns({
+                        ...testRuns,
+                        [key]: new Date(value),
+                      });
+                    }}
+                  />
+                </BlockRow>
+              </Block>
             </div>
-            <ul>
-              {projectTestcaseGroupTree?.map(testcaseGroup => {
-                const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-                return (
-                  <TestcaseSelectorGroup key={testcaseGroup.id} testcaseGroup={testcaseGroup} selected={selected} selectedTestcaseGroups={currentSelectedTestcaseGroups || []} onClick={onClick} />
-                );
-              })}
-            </ul>
+            <div className="testcase-select-list g-no-select">
+              <ul>
+                {projectTestcaseGroupTree?.map(testcaseGroup => {
+                  const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+                  return (
+                    <TestcaseSelectorGroup
+                      key={testcaseGroup.id}
+                      testcaseGroup={testcaseGroup}
+                      selected={selected}
+                      selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
+                      onClick={onClick}
+                      highlighted={testRuns.highlightByRange}
+                      isHighlighted={isHighlighted}
+                    />
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         )}
       </ModalBody>
