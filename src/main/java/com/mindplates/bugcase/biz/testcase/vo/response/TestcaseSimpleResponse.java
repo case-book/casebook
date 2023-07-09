@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
@@ -15,6 +16,7 @@ public class TestcaseSimpleResponse {
     private String description;
     private Integer itemOrder;
     private Boolean closed;
+    private LocalDateTime creationDate;
 
     public TestcaseSimpleResponse(TestcaseDTO testcase) {
         this.id = testcase.getId();
@@ -25,6 +27,7 @@ public class TestcaseSimpleResponse {
         this.description = testcase.getDescription();
         this.itemOrder = testcase.getItemOrder();
         this.closed = testcase.getClosed();
+        this.creationDate = testcase.getCreationDate();
     }
 
 }
