@@ -145,7 +145,7 @@ public class UserController {
         }
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(user.getId());
         List<String> roleList = Arrays.asList(user.getActiveSystemRole().toString().split(","));
-        String refreshToken = Boolean.TRUE.equals(loginRequest.getAutoLogin()) ? refreshTokenService.upsert(user.getId()).getValue() : null;
+        String refreshToken = Boolean.TRUE.equals(loginRequest.getAutoLogin()) ? refreshTokenService.create(user.getId()).getValue() : null;
         return new MyInfoResponse(user, jwtTokenProvider.createToken(Long.toString(user.getId()), roleList), refreshToken, spaces);
     }
 

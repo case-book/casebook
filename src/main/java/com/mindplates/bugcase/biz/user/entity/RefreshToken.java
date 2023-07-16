@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "refresh_token", indexes = {
-    @Index(name = "IDX_REFRESH_TOKEN_USER_ID", columnList = "user_id")
+    @Index(name = "IDX_REFRESH_TOKEN_USER_ID", columnList = "user_id"),
+    @Index(name = "IDX_REFRESH_TOKEN_USER_ID_VALUE", columnList = "user_id, value")
 })
 @Data
 @NoArgsConstructor
@@ -31,7 +32,7 @@ public class RefreshToken {
     @Column
     private String value;
 
-    @Column(name = "user_id", unique = true)
+    @Column(name = "user_id")
     private long userId;
 
     @Column(name = "expiration_date")
