@@ -2,14 +2,18 @@ package com.mindplates.bugcase.biz.testrun.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
+import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
+import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
+import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.entity.*;
@@ -62,9 +66,12 @@ public class TestrunService {
     private final FileUtil fileUtil;
     private final SlackService slackService;
     private final MessageSendService messageSendService;
+    private final ProjectRepository projectRepository;
 
+    private final TestcaseRepository testcaseRepository;
 
     private final MessageSourceAccessor messageSourceAccessor;
+    private final Random random = new Random();
     @Value("${bug-case.web-url}")
     private String webUrl;
 
@@ -233,7 +240,7 @@ public class TestrunService {
         testrun.setOpened(true);
         testrun.setClosedDate(null);
 
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
             slackService.sendTestrunReOpenMessage(project.getSlackUrl(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(), testers);
@@ -246,7 +253,6 @@ public class TestrunService {
     public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
         List<TestrunTestcaseGroupTestcaseItem> result = testrunTestcaseGroupTestcaseItemRepository.saveAll(mappingUtil.convert(testrunTestcaseGroupTestcaseItems, TestrunTestcaseGroupTestcaseItem.class));
         return result.stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
-        // return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
     }
 
     @Transactional
@@ -255,7 +261,6 @@ public class TestrunService {
         checkIsTestrunClosed(testrun);
         TestrunTestcaseGroupTestcaseItem result = testrunTestcaseGroupTestcaseItemRepository.save(mappingUtil.convert(testrunTestcaseGroupTestcaseItem, TestrunTestcaseGroupTestcaseItem.class));
         return new TestrunTestcaseGroupTestcaseItemDTO(result);
-        //return mappingUtil.convert(result, TestrunTestcaseGroupTestcaseItemDTO.class);
     }
 
     @Transactional
@@ -390,25 +395,24 @@ public class TestrunService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrun.project.id}", value = CacheConfig.PROJECT)
-    public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrun) {
+    public Long createTestrunInfo(String spaceCode, TestrunDTO testrun) {
 
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, testrun.getProject().getId());
-
+        // 프로젝트 TESTRUN SEQ 증가
+        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, testrun.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
         project.setTestrunSeq(currentTestrunSeq);
-        projectService.updateProjectInfo(spaceCode, project);
+        projectRepository.save(project);
+
+        // 테스트런 정보 생성
         testrun.setSeqId("R" + currentTestrunSeq);
-
-
         testrun.setOpened(true);
-
         int totalTestCount = testrun.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0).reduce(0, Integer::sum);
 
+        // 태그별 사용자 정보 분류
         List<TestrunUserDTO> testrunUsers = testrun.getTestrunUsers();
-
         Map<String, List<ProjectUserDTO>> tagUserMap = new HashMap<>();
-        project.getUsers().forEach((projectUserDTO -> {
-            String tagString = projectUserDTO.getTags();
+        project.getUsers().forEach((projectUser -> {
+            String tagString = projectUser.getTags();
             if (tagString != null) {
                 String[] tags = tagString.split(";");
                 if (tags.length > 0) {
@@ -419,8 +423,11 @@ public class TestrunService {
                             }
 
                             List<ProjectUserDTO> users = tagUserMap.get(tag);
-                            if (testrunUsers.stream().anyMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(projectUserDTO.getUser().getId()))) {
-                                users.add(projectUserDTO);
+                            if (testrunUsers.stream().anyMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(projectUser.getUser().getId()))) {
+                                users.add(ProjectUserDTO.builder()
+                                        .id(projectUser.getId())
+                                        .user(UserDTO.builder().id(projectUser.getUser().getId()).build())
+                                        .build());
                             }
                         }
                     });
@@ -428,23 +435,46 @@ public class TestrunService {
             }
         }));
 
-        tagUserMap.keySet().removeIf(key -> tagUserMap.get(key).size() < 1);
+        tagUserMap.keySet().removeIf(key -> tagUserMap.get(key).isEmpty());
 
-        if (testrunUsers.size() > 0) {
-            Random random = new Random();
+
+        if (!testrunUsers.isEmpty()) {
+
+
+            // 프로젝트의 모든 테스트케이스 조회 및 정리
+            List<TestcaseDTO> projectAllTestcases = testcaseService.selectProjectTestcaseList(testrun.getProject().getId());
+            Map<Long, TestcaseDTO> projectTestcaseMap = new HashMap<>();
+            projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
+
+            // 프로젝트의 모든 테스트케이스 아이템 조회 및 정리
+            List<TestcaseItemDTO> projectAllTestcaseItems = testcaseService.selectProjectTestcaseItemList(testrun.getProject().getId());
+            Map<Long, List<TestcaseItemDTO>> testcaseItemListMapByTestcaseId = new HashMap<>();
+            projectAllTestcaseItems.forEach(testcaseItem -> {
+                if (!testcaseItemListMapByTestcaseId.containsKey(testcaseItem.getTestcase().getId())) {
+                    List<TestcaseItemDTO> testcaseItemDTOS = new ArrayList<>();
+                    testcaseItemListMapByTestcaseId.put(testcaseItem.getTestcase().getId(), testcaseItemDTOS);
+                }
+
+                testcaseItemListMapByTestcaseId.get(testcaseItem.getTestcase().getId()).add(testcaseItem);
+            });
+
+            // 프로젝트의 모든 테스트케이스 템플릿 아이템 조회 및 정리
+            List<TestcaseTemplateItemDTO> projectAllTestcaseTemplateItems = testcaseService.selectProjectTestcaseTemplateItemList(testrun.getProject().getId());
+            Map<Long, TestcaseTemplateItemDTO> projectTestcaseTemplateItemMap = new HashMap<>();
+            projectAllTestcaseTemplateItems.forEach(testcaseTemplateItem -> projectTestcaseTemplateItemMap.put(testcaseTemplateItem.getId(), testcaseTemplateItem));
+
             int currentSeq = random.nextInt(testrunUsers.size());
             for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrun.getTestcaseGroups()) {
                 testrunTestcaseGroup.setTestrun(testrun);
                 if (testrunTestcaseGroup.getTestcases() != null) {
                     for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
-                        // Testcase testcase = testrunTestcaseGroupTestcase.getTestcase();
-
                         testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                        TestcaseDTO testcase = projectTestcaseMap.get(testrunTestcaseGroupTestcase.getTestcase().getId());
+                        if (testcase == null) {
+                            continue;
+                        }
 
-                        // 여기서 부터 문제
-                        TestcaseDTO testcase = testcaseService.selectTestcaseInfo(testrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
-
-                        List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
+                        List<TestcaseItemDTO> testcaseItems = testcaseItemListMapByTestcaseId.get(testcase.getId());
                         testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
                         // 테스터 입력
                         if ("tag".equals(testcase.getTesterType())) {
@@ -478,7 +508,10 @@ public class TestrunService {
                                 continue;
                             }
 
-                            TestcaseTemplateItemDTO testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
+                            TestcaseTemplateItemDTO testcaseTemplateItem = projectTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId());
+                            if (testcaseTemplateItem == null) {
+                                continue;
+                            }
 
                             if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
 
@@ -525,8 +558,7 @@ public class TestrunService {
             slackService.sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
         }
 
-        return new TestrunDTO(result, true);
-        // return mappingUtil.convert(result, TestrunDTO.class);
+        return result.getId();
     }
 
     @Transactional
@@ -586,9 +618,17 @@ public class TestrunService {
         return new TestrunIterationDTO(result, true);
     }
 
-    private List<ProjectUserDTO> getTester(ProjectDTO project, List<TestrunTestcaseGroup> testcaseGroups) {
+    private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
         return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()).map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId()).distinct().map(userId -> {
-            return project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+            ProjectUser projectUser = project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+            return ProjectUserDTO.builder()
+                    .id(projectUser.getId())
+                    .role(projectUser.getRole())
+                    .user(UserDTO.builder().id(projectUser.getUser().getId()).name(projectUser.getUser().getName()).build())
+                    .project(ProjectDTO.builder().id(projectUser.getProject().getId()).build())
+                    .tags(projectUser.getTags())
+                    .build();
+
         }).collect(Collectors.toList());
     }
 
@@ -618,7 +658,7 @@ public class TestrunService {
         List<TestrunUser> testrunUsers = targetTestrun.getTestrunUsers();
         Map<String, List<ProjectUserDTO>> tagUserMap = getTagUserMap(project, testrunUsers);
 
-        Random random = new Random();
+
         int currentSeq = -1;
         if (!testrunUsers.isEmpty()) {
             currentSeq = random.nextInt(testrunUsers.size());
@@ -1054,7 +1094,6 @@ public class TestrunService {
                 })).collect(Collectors.toList());
 
         return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
-        // return mappingUtil.convert(list, TestrunDTO.class);
 
     }
 
@@ -1115,7 +1154,7 @@ public class TestrunService {
         return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
     }
 
-    public List<TestrunTestcaseGroupDTO> selectConditionalTestcaseGroups (TestrunReservationDTO testrunReservationDTO, LocalDateTime now, List<TestrunTestcaseGroupDTO> pTestcaseGroups, Map<Long, ArrayList<Long>> testcaseGroupIdMap, TestrunDTO testrun) {
+    public List<TestrunTestcaseGroupDTO> selectConditionalTestcaseGroups(TestrunReservationDTO testrunReservationDTO, LocalDateTime now, List<TestrunTestcaseGroupDTO> pTestcaseGroups, Map<Long, ArrayList<Long>> testcaseGroupIdMap, TestrunDTO testrun) {
 
         List<TestrunTestcaseGroupDTO> testcaseGroups = pTestcaseGroups == null ? new ArrayList<>() : pTestcaseGroups;
 
@@ -1191,7 +1230,6 @@ public class TestrunService {
         return testcaseGroups;
 
     }
-
 
 
 }

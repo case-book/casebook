@@ -7,14 +7,8 @@ import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.*;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
+import com.mindplates.bugcase.biz.testcase.entity.*;
+import com.mindplates.bugcase.biz.testcase.repository.*;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
@@ -44,6 +38,8 @@ import java.util.stream.Collectors;
 public class TestcaseService {
 
     private final TestcaseTemplateRepository testcaseTemplateRepository;
+
+    private final TestcaseTemplateItemRepository testcaseTemplateItemRepository;
     private final TestcaseGroupRepository testcaseGroupRepository;
     private final TestcaseRepository testcaseRepository;
     private final TestcaseItemRepository testcaseItemRepository;
@@ -356,6 +352,50 @@ public class TestcaseService {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestcaseDTO(testcase);
     }
+
+    public List<TestcaseDTO> selectProjectTestcaseList(Long projectId) {
+
+
+        // this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
+
+
+        List<Testcase> testcases = testcaseRepository.findByProjectId(projectId);
+        return testcases.stream().map(testcase -> TestcaseDTO
+                .builder()
+                .id(testcase.getId())
+                .seqId(testcase.getSeqId())
+                .testcaseGroup(TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).build())
+                .name(testcase.getName())
+                .description(testcase.getDescription())
+                .itemOrder(testcase.getItemOrder())
+                .closed(testcase.getClosed())
+                .testcaseTemplate(TestcaseTemplateDTO.builder().id(testcase.getTestcaseTemplate().getId()).build())
+                .project(ProjectDTO.builder().id(testcase.getProject().getId()).build())
+                .testerType(testcase.getTesterType())
+                .testerValue(testcase.getTesterValue())
+                .contentUpdateDate(testcase.getContentUpdateDate())
+                .build()).collect(Collectors.toList());
+    }
+
+    public List<TestcaseItemDTO> selectProjectTestcaseItemList(Long projectId) {
+        List<TestcaseItem> testcaseItems = testcaseItemRepository.findByTestcaseProjectId(projectId);
+        return testcaseItems.stream().map(testcaseItem -> TestcaseItemDTO
+                .builder()
+                .id(testcaseItem.getId())
+                .testcaseTemplateItem(TestcaseTemplateItemDTO.builder().id(testcaseItem.getTestcaseTemplateItem().getId()).build())
+                .testcase(TestcaseDTO.builder().id(testcaseItem.getTestcase().getId()).build())
+                .type(testcaseItem.getType())
+                .value(testcaseItem.getValue())
+                .text(testcaseItem.getText())
+                .build()).collect(Collectors.toList());
+
+    }
+
+    public List<TestcaseTemplateItemDTO> selectProjectTestcaseTemplateItemList(Long projectId) {
+        List<TestcaseTemplateItem> testcaseTemplateItems = testcaseTemplateItemRepository.findByTestcaseTemplateProjectId(projectId);
+        return testcaseTemplateItems.stream().map(TestcaseTemplateItemDTO::new).collect(Collectors.toList());
+    }
+
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
