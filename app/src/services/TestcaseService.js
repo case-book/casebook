@@ -2,17 +2,6 @@ import * as request from '@/utils/request';
 
 const TestcaseService = {};
 
-TestcaseService.selectConfig = (spaceCode, projectId, successHandler, failHandler) => {
-  return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testcases/templates`,
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-  );
-};
-
 TestcaseService.createTestcaseGroup = (spaceCode, projectId, testcaseGroup, successHandler, failHandler) => {
   return request.post(
     `/api/${spaceCode}/projects/${projectId}/testcases/groups`,

@@ -4,7 +4,6 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.*;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
@@ -26,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -374,8 +372,8 @@ public class TestrunScheduler {
 
             if (now.isAfter(startDateTime)) {
                 TestrunDTO testrun = getTestrun(testrunReservation, now);
-                TestrunDTO result = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
-                testrunService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
+                Long testrunId = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
+                testrunService.updateTestrunReserveExpired(testrunReservationId, true, testrunId);
             }
         }));
 
@@ -495,7 +493,7 @@ public class TestrunScheduler {
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
             if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
-            //if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
+                //if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
             }

@@ -35,7 +35,7 @@ public class TestcaseTemplate extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_ITEM_TYPE__PROJECT"))
     private Project project;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcaseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testcaseTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<TestcaseTemplateItem> testcaseTemplateItems;
 

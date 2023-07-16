@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Data
 @Setter
-public class TestcaseGroupDTO extends CommonDTO {
+public class TestcaseGroupWithTestcaseDTO extends CommonDTO {
 
     private Long id;
     private String seqId;
@@ -23,9 +23,9 @@ public class TestcaseGroupDTO extends CommonDTO {
     private String description;
     private Integer itemOrder;
     private ProjectDTO project;
-    private List<TestcaseDTO> testcases;
+    private List<TestcaseSimpleDTO> testcases;
 
-    public TestcaseGroupDTO(TestcaseGroup testcaseGroup) {
+    public TestcaseGroupWithTestcaseDTO(TestcaseGroup testcaseGroup) {
         this.id = testcaseGroup.getId();
         this.seqId = testcaseGroup.getSeqId();
         this.parentId = testcaseGroup.getParentId();
@@ -34,7 +34,7 @@ public class TestcaseGroupDTO extends CommonDTO {
         this.description = testcaseGroup.getDescription();
         this.itemOrder = testcaseGroup.getItemOrder();
         this.project = ProjectDTO.builder().id(testcaseGroup.getProject().getId()).build();
-        this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseDTO::new).collect(Collectors.toList());
+        this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseSimpleDTO::new).collect(Collectors.toList());
     }
 
 

@@ -30,7 +30,7 @@ public class Testcase extends CommonEntity {
     @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
     private String seqId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_GROUP"))
     private TestcaseGroup testcaseGroup;
 
@@ -50,8 +50,7 @@ public class Testcase extends CommonEntity {
     @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_TEMPLATE"))
     private TestcaseTemplate testcaseTemplate;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TestcaseItem> testcaseItems;
 
     @ManyToOne(fetch = FetchType.LAZY)

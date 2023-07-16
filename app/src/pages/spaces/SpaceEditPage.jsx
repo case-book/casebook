@@ -263,7 +263,7 @@ function SpaceEditPage({ type }) {
                     className="code"
                     value={space.code}
                     placeholder="대문자 및 숫자, -, _ 기호로 코드를 입력할 수 있습니다. (최소 3자, 대문자로 시작 필수)"
-                    pattern="^([A-Z]+)([A-Z0-9_-]){2,}$"
+                    pattern="^([A-Z]+)([A-Z0-9\-_]){2,}$"
                     disabled={isEdit}
                     onChange={val =>
                       setSpace({
@@ -272,7 +272,7 @@ function SpaceEditPage({ type }) {
                       })
                     }
                     required
-                    minLength={1}
+                    minLength={3}
                   />
                 )}
                 {isEdit && <Text>{space.code}</Text>}

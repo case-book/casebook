@@ -10,13 +10,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestcaseDTO extends CommonDTO {
+public class TestcaseSimpleDTO extends CommonDTO {
 
     private Long id;
     private String seqId;
@@ -26,13 +25,12 @@ public class TestcaseDTO extends CommonDTO {
     private Integer itemOrder;
     private Boolean closed;
     private TestcaseTemplateDTO testcaseTemplate;
-    private List<TestcaseItemDTO> testcaseItems;
     private ProjectDTO project;
     private String testerType;
     private String testerValue;
     private LocalDateTime contentUpdateDate;
 
-    public TestcaseDTO(Testcase testcase) {
+    public TestcaseSimpleDTO(Testcase testcase) {
         this.id = testcase.getId();
         this.seqId = testcase.getSeqId();
         this.testcaseGroup = TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).build();
@@ -40,8 +38,7 @@ public class TestcaseDTO extends CommonDTO {
         this.description = testcase.getDescription();
         this.itemOrder = testcase.getItemOrder();
         this.closed = testcase.getClosed();
-        this.testcaseTemplate = new TestcaseTemplateDTO(testcase.getTestcaseTemplate());
-        this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
+        this.testcaseTemplate = TestcaseTemplateDTO.builder().id(testcase.getTestcaseTemplate().getId()).build();
         this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
