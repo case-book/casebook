@@ -101,16 +101,16 @@ function UserHeaderControl({ className }) {
   const logout = e => {
     e.preventDefault();
     e.stopPropagation();
-
     setUserMenuOpen(false);
-    setToken('');
     setOption('user', 'info', 'uuid', '');
     UserService.logout(
       () => {
+        setToken('');
         setUser(null);
         navigate('/');
       },
       () => {
+        setToken('');
         setUser(null);
         navigate('/');
       },

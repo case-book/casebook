@@ -28,6 +28,7 @@ import com.mindplates.bugcase.common.service.RedisService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -155,7 +156,12 @@ public class UserController {
         @RequestHeader("X-REFRESH-TOKEN") String refreshToken,
         @RequestHeader("X-AUTH-TOKEN") String accessToken
     ) {
-        long userId = Long.parseLong(jwtTokenProvider.getUserIdentifier(accessToken));
+        long userId;
+        try {
+            userId = Long.parseLong(jwtTokenProvider.getUserIdentifier(accessToken));
+        } catch (ExpiredJwtException e) {
+            userId = Long.parseLong(e.getClaims().getSubject());
+        }
         UserDTO user = userService.selectUserInfo(userId);
         List<String> roleList = Arrays.asList(user.getActiveSystemRole().toString().split(","));
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -167,8 +173,12 @@ public class UserController {
     @DeleteMapping("/logout")
     public MyInfoResponse logout(@RequestHeader(value = "X-AUTH-TOKEN", required = false) String accessToken) {
         if (StringUtils.isNotEmpty(accessToken)) {
-            String userId = jwtTokenProvider.getUserIdentifier(accessToken);
-            refreshTokenService.invalidateTokenByUserId(Long.parseLong(userId));
+            try {
+                String userId = jwtTokenProvider.getUserIdentifier(accessToken);
+                refreshTokenService.invalidateTokenByUserId(Long.parseLong(userId));
+            } catch (ExpiredJwtException e) {
+                log.info("User {} Requested Logout With Expired Token. Invalidate of Refresh Token did not proceed.", e.getClaims().getSubject());
+            }
         }
         return new MyInfoResponse(null, null, null);
     }

@@ -26,7 +26,7 @@ public class RefreshTokenService {
         refreshTokenRepository.findByUserId(userId).ifPresent(
             refreshToken -> {
                 refreshToken.setValue(null);
-                refreshToken.setExpirationDate(LocalDateTime.MIN);
+                refreshToken.setExpirationDate(null);
                 refreshTokenRepository.save(refreshToken);
             }
         );

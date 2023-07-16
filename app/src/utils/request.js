@@ -46,15 +46,78 @@ if (window.localStorage.getItem('token')) {
   axios.defaults.headers.common['X-AUTH-TOKEN'] = window.localStorage.getItem('token');
 }
 
+let isRefreshing = false;
+let subscribers = [];
+
+function subscribeTokenRefresh(cb) {
+  subscribers.push(cb);
+}
+
+function onRefreshed(token) {
+  subscribers.map(cb => cb(token));
+}
+
+const refreshAccessToken = () => {
+  return axios.get('/api/users/refresh', {
+    headers: {
+      'X-AUTH-TOKEN': window.localStorage.getItem('token'),
+      'X-REFRESH-TOKEN': window.localStorage.getItem('refreshToken'),
+    },
+  });
+};
+
+axios.interceptors.response.use(
+  req => req,
+  err => {
+    const {
+      config,
+      response: { status },
+    } = err;
+    if (config.url === '/api/users/refresh' || status !== 401) {
+      return Promise.reject(err);
+    }
+    const originalRequest = config;
+    if (window.localStorage.getItem('refreshToken') && status === 401) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        refreshAccessToken()
+          .then(response => {
+            const { data } = response;
+            isRefreshing = false;
+            onRefreshed(data.token);
+            window.localStorage.setItem('token', data.token);
+            window.localStorage.setItem('refreshToken', data.refreshToken);
+            subscribers = [];
+          })
+          .catch(() => {
+            window.localStorage.removeItem('token');
+            window.localStorage.removeItem('refreshToken');
+          });
+      }
+      return new Promise(resolve => {
+        subscribeTokenRefresh(token => {
+          axios.defaults.headers.common['X-AUTH-TOKEN'] = token;
+          originalRequest.headers['X-AUTH-TOKEN'] = token;
+          resolve(axios(originalRequest));
+        });
+      });
+    }
+    return Promise.reject(err);
+  },
+);
+
 const processSuccess = (handler, response, ref) => {
   if (typeof handler === 'function') {
     handler(response.data, ref);
   }
 };
 
-export const setToken = token => {
+export const setToken = (token, refreshToken = null) => {
   axios.defaults.headers.common['X-AUTH-TOKEN'] = token;
   window.localStorage.setItem('token', token);
+  if (refreshToken) {
+    window.localStorage.setItem('refreshToken', refreshToken);
+  }
 };
 
 const processError = (handler, error) => {
