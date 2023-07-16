@@ -3,10 +3,15 @@ import PropTypes from 'prop-types';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseSelectorGroup.scss';
 
-function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups }) {
+function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, highlighted, isHighlighted }) {
   const [opened, setOpened] = useState(true);
   const hasChild = testcaseGroup.testcases?.length > 0;
+  const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
+  const checkHighlightedTestCase = testcase => {
+    return highlighted && isHighlighted && isHighlighted(testcase);
+  };
 
+  const hasHighlightedTestCase = highlighted && testcaseGroup.testcases?.some(tc => checkHighlightedTestCase(tc));
   return (
     <div
       className="testcase-selector-group-wrapper"
@@ -15,7 +20,7 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
       }}
     >
       <div
-        className={`group-info ${selected ? 'selected' : ''}`}
+        className={`group-info ${selected ? 'selected' : ''} ${hasHighlightedTestCase ? 'highlighted' : ''}`}
         onClick={() => {
           onClick(testcaseGroup.id, null);
         }}
@@ -43,11 +48,10 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
         <div className="testcase-list">
           <ul>
             {testcaseGroup.testcases.map(testcase => {
-              const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
               const testcaseSelected = selectedTestcaseGroup?.testcases?.findIndex(i => i.testcaseId === testcase.id) > -1;
-
+              const testcaseHighlighted = checkHighlightedTestCase(testcase);
               return (
-                <li className={testcaseSelected ? 'selected' : ''} key={testcase.id}>
+                <li className={`${testcaseSelected ? 'selected' : ''} ${testcaseHighlighted ? 'highlighted' : ''}`} key={testcase.id}>
                   <div
                     className="testcase-info"
                     onClick={() => {
@@ -72,7 +76,17 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
       )}
       {testcaseGroup.children?.map(d => {
         const childrenSelected = selectedTestcaseGroups.findIndex(i => i.testcaseGroupId === d.id) > -1;
-        return <TestcaseSelectorGroup key={d.id} testcaseGroup={d} selected={childrenSelected} onClick={onClick} selectedTestcaseGroups={selectedTestcaseGroups} />;
+        return (
+          <TestcaseSelectorGroup
+            key={d.id}
+            testcaseGroup={d}
+            selected={childrenSelected}
+            onClick={onClick}
+            selectedTestcaseGroups={selectedTestcaseGroups}
+            highlighted={highlighted}
+            isHighlighted={isHighlighted}
+          />
+        );
       })}
     </div>
   );
@@ -82,6 +96,8 @@ TestcaseSelectorGroup.defaultProps = {
   testcaseGroup: {},
   selected: false,
   selectedTestcaseGroups: [],
+  highlighted: false,
+  isHighlighted: null,
 };
 
 TestcaseSelectorGroup.propTypes = {
@@ -98,6 +114,8 @@ TestcaseSelectorGroup.propTypes = {
       ),
     }),
   ),
+  highlighted: PropTypes.bool,
+  isHighlighted: PropTypes.func,
 };
 
 export default TestcaseSelectorGroup;

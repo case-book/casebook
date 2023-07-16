@@ -46,6 +46,7 @@ public class TestcaseDTO extends CommonDTO {
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
         this.contentUpdateDate = testcase.getContentUpdateDate();
+        this.creationDate = testcase.getCreationDate();
     }
 
 
