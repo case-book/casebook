@@ -31,16 +31,15 @@ function Header({ className }) {
     e.preventDefault();
     e.stopPropagation();
 
+    setToken('');
     setOption('user', 'info', 'uuid', '');
     UserService.logout(
       () => {
-        setToken('');
         setUser(null);
         navigate('/');
         setMobileMenuOpen(false);
       },
       () => {
-        setToken('');
         setUser(null);
         navigate('/');
         setMobileMenuOpen(false);

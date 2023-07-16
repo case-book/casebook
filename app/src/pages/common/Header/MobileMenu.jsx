@@ -25,16 +25,14 @@ function MobileMenu({ className, setOpen }) {
   const logout = e => {
     e.preventDefault();
     e.stopPropagation();
-
+    setToken('');
     setOption('user', 'info', 'uuid', '');
     UserService.logout(
       () => {
-        setToken('');
         setUser(null);
         navigate('/');
       },
       () => {
-        setToken('');
         setUser(null);
         navigate('/');
       },

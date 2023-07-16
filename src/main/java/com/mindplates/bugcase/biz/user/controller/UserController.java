@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -171,15 +170,7 @@ public class UserController {
 
     @Operation(description = "로그아웃")
     @DeleteMapping("/logout")
-    public MyInfoResponse logout(@RequestHeader(value = "X-AUTH-TOKEN", required = false) String accessToken) {
-        if (StringUtils.isNotEmpty(accessToken)) {
-            try {
-                String userId = jwtTokenProvider.getUserIdentifier(accessToken);
-                refreshTokenService.invalidateTokenByUserId(Long.parseLong(userId));
-            } catch (ExpiredJwtException e) {
-                log.info("User {} Requested Logout With Expired Token. Invalidate of Refresh Token did not proceed.", e.getClaims().getSubject());
-            }
-        }
+    public MyInfoResponse logout() {
         return new MyInfoResponse(null, null, null);
     }
 

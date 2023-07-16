@@ -99,6 +99,8 @@ axios.interceptors.response.use(
           window.localStorage.setItem('token', data.token);
           window.localStorage.setItem('refreshToken', data.refreshToken);
           subscribers = [];
+          originalRequest.headers['X-AUTH-TOKEN'] = data.token;
+          return axios(config);
         })
         .catch(error => {
           window.localStorage.removeItem('token');
