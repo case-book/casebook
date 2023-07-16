@@ -33,8 +33,12 @@ public class TestcaseTemplateDTO extends CommonDTO {
         this.defaultTemplate = testcaseTemplate.isDefaultTemplate();
         this.defaultTesterType = testcaseTemplate.getDefaultTesterType();
         this.defaultTesterValue = testcaseTemplate.getDefaultTesterValue();
-        this.project = ProjectDTO.builder().id(testcaseTemplate.getProject().getId()).build();
-        this.testcaseTemplateItems = testcaseTemplate.getTestcaseTemplateItems().stream().map(TestcaseTemplateItemDTO::new).collect(Collectors.toList());
+        if (testcaseTemplate.getProject() != null) {
+            this.project = ProjectDTO.builder().id(testcaseTemplate.getProject().getId()).build();
+        }
+        if (testcaseTemplate.getTestcaseTemplateItems() != null) {
+            this.testcaseTemplateItems = testcaseTemplate.getTestcaseTemplateItems().stream().map(TestcaseTemplateItemDTO::new).collect(Collectors.toList());
+        }
         this.crud = testcaseTemplate.getCrud();
 
     }

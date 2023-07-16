@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.*;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
@@ -55,11 +56,6 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
 
-    public List<TestcaseTemplateDTO> selectTestcaseTemplateItemList(Long projectId) {
-        List<TestcaseTemplate> testcaseTemplates = testcaseTemplateRepository.findAllByProjectId(projectId);
-        return mappingUtil.convert(testcaseTemplates, TestcaseTemplateDTO.class);
-    }
-
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
         return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
@@ -70,34 +66,44 @@ public class TestcaseService {
         return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
     }
 
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseGroupDTO createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroupDTO testcaseGroup) {
-
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        int groupSeq = project.getTestcaseGroupSeq() + 1;
-        project.setTestcaseGroupSeq(groupSeq);
-        testcaseGroup.setSeqId("G" + groupSeq);
-        testcaseGroup.setName(testcaseGroup.getName() + "-" + groupSeq);
-
-        if (testcaseGroup.getParentId() != null) {
-            TestcaseGroup testcaseGroupExist = testcaseGroupRepository.findByIdAndProjectId(testcaseGroup.getParentId(), projectId).orElseThrow(() -> new ServiceException("testcase.parent.group.notExist"));
-            testcaseGroup.setDepth(testcaseGroupExist.getDepth() + 1);
-        } else {
-            testcaseGroup.setDepth(0L);
+    private void deleteFile(Resource resource) {
+        try {
+            if (resource != null) {
+                Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
+            }
+        } catch (Exception e) {
+            // ignore
         }
-
-        List<TestcaseGroup> sameParentGroups = testcaseGroupRepository.findAllByProjectIdAndParentId(projectId, testcaseGroup.getParentId());
-        testcaseGroup.setItemOrder(sameParentGroups.size());
-
-        TestcaseGroup result = testcaseGroupRepository.save(mappingUtil.convert(testcaseGroup, TestcaseGroup.class));
-        projectRepository.save(project);
-        return mappingUtil.convert(result, TestcaseGroupDTO.class);
     }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public ProjectDTO updateProjectTestcaseGroupOrderInfo(String spaceCode, Long projectId, Long targetId, Long destinationId, boolean toChildren) {
+    public TestcaseGroupWithTestcaseDTO createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroupDTO testcaseGroupDTO) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int groupSeq = project.getTestcaseGroupSeq() + 1;
+        project.setTestcaseGroupSeq(groupSeq);
+        testcaseGroupDTO.setSeqId("G" + groupSeq);
+        testcaseGroupDTO.setName(testcaseGroupDTO.getName() + "-" + groupSeq);
+
+        if (testcaseGroupDTO.getParentId() != null) {
+            TestcaseGroup testcaseGroupExist = testcaseGroupRepository.findByIdAndProjectId(testcaseGroupDTO.getParentId(), projectId).orElseThrow(() -> new ServiceException("testcase.parent.group.notExist"));
+            testcaseGroupDTO.setDepth(testcaseGroupExist.getDepth() + 1);
+        } else {
+            testcaseGroupDTO.setDepth(0L);
+        }
+
+        List<TestcaseGroup> sameParentGroups = testcaseGroupRepository.findAllByProjectIdAndParentId(projectId, testcaseGroupDTO.getParentId());
+        testcaseGroupDTO.setItemOrder(sameParentGroups.size());
+
+        TestcaseGroup result = testcaseGroupRepository.save(mappingUtil.convert(testcaseGroupDTO, TestcaseGroup.class));
+        projectRepository.save(project);
+        return new TestcaseGroupWithTestcaseDTO(result);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void updateProjectTestcaseGroupOrderInfo(String spaceCode, Long projectId, Long targetId, Long destinationId, boolean toChildren) {
 
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -143,8 +149,6 @@ public class TestcaseService {
         }
 
         projectRepository.save(project);
-
-        return mappingUtil.convert(project, ProjectDTO.class);
     }
 
 
@@ -203,12 +207,7 @@ public class TestcaseService {
 
         files.forEach((projectFile -> {
             Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
-            try {
-                Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
-            } catch (Exception e) {
-                // ignore
-            }
-
+            this.deleteFile(resource);
         }));
     }
 
@@ -225,34 +224,27 @@ public class TestcaseService {
         testcaseRepository.deleteById(testcaseId);
         files.forEach((testcaseFile -> {
             Resource resource = fileUtil.loadFileIfExist(testcaseFile.getPath());
-            try {
-                if (resource != null) {
-                    Files.deleteIfExists(Paths.get(resource.getFile().getAbsolutePath()));
-                }
-            } catch (Exception e) {
-                // ignore
-            }
-
+            this.deleteFile(resource);
         }));
     }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseGroupDTO updateTestcaseGroupName(String spaceCode, Long projectId, Long groupId, String name) {
+    public TestcaseGroupWithTestcaseDTO updateTestcaseGroupName(String spaceCode, Long projectId, Long groupId, String name) {
         TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcaseGroup.setName(name);
         testcaseGroupRepository.save(testcaseGroup);
-        return mappingUtil.convert(testcaseGroup, TestcaseGroupDTO.class);
+        return new TestcaseGroupWithTestcaseDTO(testcaseGroup);
     }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseGroupDTO updateTestcaseGroupInfo(String spaceCode, Long projectId, Long groupId, String name, String description) {
+    public TestcaseGroupWithTestcaseDTO updateTestcaseGroupInfo(String spaceCode, Long projectId, Long groupId, String name, String description) {
         TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcaseGroup.setName(name);
         testcaseGroup.setDescription(description);
         testcaseGroupRepository.save(testcaseGroup);
-        return mappingUtil.convert(testcaseGroup, TestcaseGroupDTO.class);
+        return new TestcaseGroupWithTestcaseDTO(testcaseGroup);
     }
 
     @Transactional
@@ -279,7 +271,7 @@ public class TestcaseService {
                     .type(testcaseTemplateItem.getDefaultType())
                     .testcase(testcase).build();
 
-            if ("EDITOR".equals(testcaseTemplateItem.getType())) {
+            if (TestcaseItemType.EDITOR.equals(testcaseTemplateItem.getType())) {
                 testcaseItem.setText(testcaseTemplateItem.getDefaultValue());
             } else {
                 testcaseItem.setValue(testcaseTemplateItem.getDefaultValue());
@@ -303,7 +295,7 @@ public class TestcaseService {
 
         projectRepository.save(project);
         Testcase result = testcaseRepository.save(mappingUtil.convert(testcase, Testcase.class));
-        return mappingUtil.convert(result, TestcaseDTO.class);
+        return new TestcaseDTO(result);
     }
 
     @Transactional
@@ -343,59 +335,26 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseDTO updateTestcaseName(String spaceCode, Long projectId, Long testcaseId, String name) {
+    public TestcaseSimpleDTO updateTestcaseName(String spaceCode, Long projectId, Long testcaseId, String name) {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setName(name);
         testcaseRepository.save(testcase);
-        return mappingUtil.convert(testcase, TestcaseDTO.class);
+        return new TestcaseSimpleDTO(testcase);
     }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseDTO updateTestcaseNameAndDescription(String spaceCode, Long projectId, Long testcaseId, String name, String description) {
+    public TestcaseSimpleDTO updateTestcaseNameAndDescription(String spaceCode, Long projectId, Long testcaseId, String name, String description) {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setName(name);
         testcase.setDescription(description);
         testcaseRepository.save(testcase);
-        return mappingUtil.convert(testcase, TestcaseDTO.class);
+        return new TestcaseSimpleDTO(testcase);
     }
 
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        TestcaseDTO testcaseDTO = TestcaseDTO.builder()
-                .id(testcase.getId())
-                .seqId(testcase.getSeqId())
-                .name(testcase.getName())
-                .description(testcase.getDescription())
-                .itemOrder(testcase.getItemOrder())
-                .closed(testcase.getClosed())
-                .testcaseGroup(TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).build())
-                .testcaseTemplate(TestcaseTemplateDTO.builder().id(testcase.getTestcaseTemplate().getId()).build())
-                .project(ProjectDTO.builder().id(testcase.getProject().getId()).build())
-                .testerType(testcase.getTesterType())
-                .testerValue(testcase.getTesterValue())
-                .testcaseItems(testcase.getTestcaseItems().stream()
-                        .map((testcaseItem -> TestcaseItemDTO.builder().
-                                id(testcaseItem.getId())
-                                .testcase(TestcaseDTO.builder().id(testcaseItem.getTestcase().getId()).build())
-                                .value(testcaseItem.getValue())
-                                .text(testcaseItem.getText())
-                                .type(testcaseItem.getType())
-                                .testcaseTemplateItem(TestcaseTemplateItemDTO.builder()
-                                        .id(testcaseItem.getTestcaseTemplateItem().getId())
-                                        .type(testcaseItem.getTestcaseTemplateItem().getType())
-                                        .build())
-                                .build()))
-                        .collect(Collectors.toList()))
-                .build();
-
-        return testcaseDTO;
-        //return mappingUtil.convert(testcase, TestcaseDTO.class);
-    }
-
-    public TestcaseGroupDTO selectTestcaseGroupInfo(Long projectId, Long testcaseId) {
-        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(testcaseId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return mappingUtil.convert(testcaseGroup, TestcaseGroupDTO.class);
+        return new TestcaseDTO(testcase);
     }
 
     @Transactional
@@ -405,8 +364,7 @@ public class TestcaseService {
         testcase.setSeqId(org.getSeqId());
         testcase.setContentUpdateDate(LocalDateTime.now());
         testcaseRepository.save(testcase);
-        return mappingUtil.convert(testcase, TestcaseDTO.class);
-
+        return new TestcaseDTO(testcase);
     }
 
     public Long selectProjectTestcaseCount(String spaceCode, long projectId) {

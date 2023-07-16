@@ -44,11 +44,11 @@ public class TestcaseGroup extends CommonEntity {
     @Column(name = "item_order")
     private Integer itemOrder;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_GROUP__PROJECT"))
     private Project project;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<Testcase> testcases;
 

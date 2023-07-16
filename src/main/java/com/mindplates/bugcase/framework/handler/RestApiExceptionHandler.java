@@ -7,6 +7,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -63,5 +64,11 @@ public class RestApiExceptionHandler {
     public ResponseEntity<?> handleServiceException(HttpMessageNotReadableException e) {
         log.error(e.getMessage(), e);
         return response.apply(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        String message = messageSourceAccessor.getMessage("error.input.validation.failed");
+        return response.apply(HttpStatus.BAD_REQUEST, message);
     }
 }

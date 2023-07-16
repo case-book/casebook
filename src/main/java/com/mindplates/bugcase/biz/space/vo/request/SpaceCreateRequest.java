@@ -18,7 +18,7 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
     @NotNull
     @Size(min = 1)
     private String name;
-    @Pattern(message = "SPACE_NAME_REGEX", regexp = "^([A-Z]+)([A-Z0-9_-]){2,}$")
+    @Pattern(regexp = "^([A-Z]+)([A-Z0-9_-]){2,}$")
     private String code;
     private String description;
     private Boolean activated;

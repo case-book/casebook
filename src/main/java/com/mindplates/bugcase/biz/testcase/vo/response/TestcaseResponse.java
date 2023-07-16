@@ -11,7 +11,6 @@ public class TestcaseResponse {
 
     private Long id;
     private String seqId;
-
     private Long projectId;
     private Long testcaseGroupId;
     private Long testcaseTemplateId;
@@ -20,9 +19,7 @@ public class TestcaseResponse {
     private Boolean closed;
     private List<TestcaseItemResponse> testcaseItems;
     private String description;
-
     private String testerType;
-
     private String testerValue;
 
     public TestcaseResponse(TestcaseDTO testcase) {
