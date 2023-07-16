@@ -39,9 +39,12 @@
     }
   }
 
+  &.size-sm {
+    height: $sm-height;
+  }
+
   &.size-md {
     height: $md-height;
-
 
     @media (max-width: 576px) {
       height: 76px;

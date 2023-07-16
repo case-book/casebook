@@ -3,7 +3,15 @@ package com.mindplates.bugcase.framework.config;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.framework.handler.ExceptionHandlerFilter;
-import com.mindplates.bugcase.framework.security.*;
+import com.mindplates.bugcase.framework.security.CustomAccessDeniedHandler;
+import com.mindplates.bugcase.framework.security.CustomAuthenticationEntryPoint;
+import com.mindplates.bugcase.framework.security.JwtAuthenticationFilter;
+import com.mindplates.bugcase.framework.security.JwtTokenProvider;
+import com.mindplates.bugcase.framework.security.ResourceVoter;
+import com.mindplates.bugcase.framework.security.UserTokenAuthenticationFilter;
+import com.mindplates.bugcase.framework.security.UserTokenProvider;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,9 +31,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -33,7 +38,6 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     private final UserTokenProvider userTokenProvider;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -68,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.OPTIONS, "/(.*)")
                 .regexMatchers("^(?!/?api).+$")
                 .mvcMatchers("/api/configs/systems/**")
-                .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join")
+                .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh")
                 .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
                 .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
                 .mvcMatchers("/api/**/projects/**/images/**")
@@ -96,8 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().disable()
                 .addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider) , UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider) , JwtAuthenticationFilter.class);
+                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
     }
 
 

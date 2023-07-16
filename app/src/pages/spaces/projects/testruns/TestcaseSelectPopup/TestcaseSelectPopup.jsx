@@ -1,24 +1,46 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
+import useStores from '@/hooks/useStores';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelectPopup.scss';
 
 function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened, onApply }) {
   const { t } = useTranslation();
-
+  const {
+    userStore: { user },
+  } = useStores();
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
-
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
+  const [testRuns, setTestRuns] = useState({ highlightByRange: false });
 
   useEffect(() => {
     const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(testcaseGroups));
     setProjectTestcaseGroupTree(nextGroups);
+    const allTestCases = testcaseGroups?.reduce((data, current) => {
+      return data.concat(current.testcases);
+    }, []);
+    const testCaseCreationDates = allTestCases.reduce((data, current) => {
+      return data.concat(new Date(current.creationDate));
+    }, []);
+    setTestRuns({
+      ...testRuns,
+      minDate: new Date(Math.min.apply(null, testCaseCreationDates)),
+      maxDate: new Date(Math.max.apply(null, testCaseCreationDates)),
+    });
   }, [testcaseGroups]);
+
+  const isHighlighted = testcase => {
+    if (!testcase || !testcase.creationDate) {
+      return false;
+    }
+    const creationDate = new Date(testcase.creationDate);
+    return creationDate >= testRuns.minDate && creationDate <= testRuns.maxDate;
+  };
 
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(cloneDeep(selectedTestcaseGroups));
@@ -175,11 +197,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
       }}
     >
       <ModalHeader className="modal-header">
-        <span>테스트케이스</span>
-        <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
-        <Button size="sm" outline onClick={allCheck}>
-          <i className="fa-solid fa-circle-check" /> {t('모두 선택')}
-        </Button>
+        <span>테스트케이스 선택</span>
       </ModalHeader>
       <ModalBody className="modal-body">
         {projectTestcaseGroupTree && projectTestcaseGroupTree?.length < 1 && (
@@ -188,20 +206,68 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
           </EmptyContent>
         )}
         {projectTestcaseGroupTree?.length > 0 && (
-          <div className="testcase-select-list g-no-select">
-            <div className="condition">
-              <Button size="sm" outline onClick={allCheck}>
-                <i className="fa-solid fa-circle-check" /> {t('전체')}
-              </Button>
+          <div className="content">
+            <div className="testrun-range-highlight-row">
+              <div>
+                <Button size="sm" outline onClick={allCheck}>
+                  <i className="fa-solid fa-circle-check" /> {t('모두 선택')}
+                </Button>
+              </div>
+              <div>
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+              </div>
+              <div>
+                <CheckBox
+                  className="range-highlight-checkbox"
+                  size="sm"
+                  value={testRuns.highlightByRange}
+                  onChange={() => {
+                    setTestRuns({
+                      ...testRuns,
+                      highlightByRange: !testRuns.highlightByRange,
+                    });
+                  }}
+                  label={t('생성 시간으로 하이라이팅')}
+                />
+              </div>
+              <div>
+                <DateRange
+                  size="sm"
+                  country={user.country}
+                  language={user.language}
+                  startDate={testRuns.minDate.getTime()}
+                  endDate={testRuns.maxDate.getTime()}
+                  startDateKey="minDate"
+                  endDateKey="maxDate"
+                  onChange={(key, value) => {
+                    setTestRuns({
+                      ...testRuns,
+                      [key]: new Date(value),
+                    });
+                  }}
+                />
+              </div>
             </div>
-            <ul>
-              {projectTestcaseGroupTree?.map(testcaseGroup => {
-                const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-                return (
-                  <TestcaseSelectorGroup key={testcaseGroup.id} testcaseGroup={testcaseGroup} selected={selected} selectedTestcaseGroups={currentSelectedTestcaseGroups || []} onClick={onClick} />
-                );
-              })}
-            </ul>
+            <div className="testcase-select-list g-no-select">
+              <div>
+                <ul>
+                  {projectTestcaseGroupTree?.map(testcaseGroup => {
+                    const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+                    return (
+                      <TestcaseSelectorGroup
+                        key={testcaseGroup.id}
+                        testcaseGroup={testcaseGroup}
+                        selected={selected}
+                        selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
+                        onClick={onClick}
+                        highlighted={testRuns.highlightByRange}
+                        isHighlighted={isHighlighted}
+                      />
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
           </div>
         )}
       </ModalBody>

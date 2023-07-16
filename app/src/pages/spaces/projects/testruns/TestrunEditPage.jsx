@@ -389,7 +389,7 @@ function TestrunEditPage({ type }) {
                       setTestcaseSelectPopupOpened(true);
                     }}
                   >
-                    {t('테스터케이스 선택')}
+                    {t('테스트케이스 선택')}
                   </Link>
                   <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 1rem" />
                   <Button

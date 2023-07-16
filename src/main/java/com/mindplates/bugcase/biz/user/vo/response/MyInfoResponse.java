@@ -4,15 +4,13 @@ package com.mindplates.bugcase.biz.user.vo.response;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.SystemRole;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Builder
@@ -32,8 +30,9 @@ public class MyInfoResponse {
     private String country;
     private String timezone;
     private List<SpaceListResponse> spaces;
+    private String refreshToken;
 
-    public MyInfoResponse(UserDTO user, String token) {
+    public MyInfoResponse(UserDTO user, String token, String refreshToken) {
         if (user != null) {
             this.id = user.getId();
             this.uuid = user.getUuid();
@@ -45,16 +44,15 @@ public class MyInfoResponse {
             this.country = user.getCountry();
             this.timezone = user.getTimezone();
         }
-
         this.token = token;
+        this.refreshToken = refreshToken;
     }
 
-    public MyInfoResponse(UserDTO user, String token, List<SpaceDTO> spaces) {
-        this(user, token);
+    public MyInfoResponse(UserDTO user, String token, String refreshToken, List<SpaceDTO> spaces) {
+        this(user, token, refreshToken);
         if (spaces != null) {
             this.spaces = spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());
         }
-
-
     }
+
 }

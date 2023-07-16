@@ -19,7 +19,7 @@ function Login() {
   const [info, setInfo] = useState({
     email: '',
     password: '',
-    autoLogin: true,
+    autoLogin: false,
   });
 
   const getUserNotificationCount = () => {
@@ -31,7 +31,7 @@ function Login() {
   const onSubmit = e => {
     e.preventDefault();
     UserService.login(info, data => {
-      setToken(data.token);
+      setToken(data.token, data.refreshToken);
       userStore.setUser(data);
       getUserNotificationCount();
 
@@ -94,15 +94,14 @@ function Login() {
             <div className="auto-login">
               <div>
                 <CheckBox
-                  disabled
                   size="xs"
                   type="checkbox"
-                  value={info.activated}
+                  value={info.autoLogin}
                   label={t('자동 로그인')}
                   onChange={val =>
                     setInfo({
                       ...info,
-                      activated: val,
+                      autoLogin: val,
                     })
                   }
                 />
