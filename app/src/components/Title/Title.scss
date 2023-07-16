@@ -22,7 +22,7 @@
         margin-right: 2px;
         font-size: 18px;
         position: relative;
-        top : 1px;
+        top: 1px;
       }
     }
     .control {
@@ -82,26 +82,38 @@
     margin-top: 0;
   }
   &.h1 {
-    font-size: 24px;
+    .title-text {
+      font-size: 24px;
+    }
 
     @media (max-width: 768px) {
-      font-size: 20px;
+      .title-text {
+        font-size: 20px;
+      }
     }
   }
 
   &.h2 {
-    font-size: 18px;
+    .title-text {
+      font-size: 18px;
+    }
   }
 
   &.h3 {
-    font-size: 16px;
+    .title-text {
+      font-size: 16px;
+    }
   }
 
   &.h4 {
-    font-size: 14px;
+    .title-text {
+      font-size: 14px;
+    }
   }
 
   &.h5 {
-    font-size: 12px;
+    .title-text {
+      font-size: 12px;
+    }
   }
 }

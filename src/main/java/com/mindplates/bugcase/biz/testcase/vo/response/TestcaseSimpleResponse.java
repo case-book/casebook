@@ -33,6 +33,7 @@ public class TestcaseSimpleResponse {
         this.description = testcase.getDescription();
         this.itemOrder = testcase.getItemOrder();
         this.closed = testcase.getClosed();
+        this.creationDate = testcase.getCreationDate();
     }
 
     public TestcaseSimpleResponse(TestcaseSimpleDTO testcase) {
