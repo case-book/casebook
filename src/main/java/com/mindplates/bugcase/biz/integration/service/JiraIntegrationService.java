@@ -35,4 +35,9 @@ public class JiraIntegrationService {
         return new JiraIntegrationDTO(jiraIntegrationRepository.save(target));
     }
 
+    public JiraIntegrationDTO getBySpaceCode(String spaceCode) {
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new JiraIntegrationDTO(jiraIntegrationRepository.findBySpaceId(space.getId()));
+    }
+
 }

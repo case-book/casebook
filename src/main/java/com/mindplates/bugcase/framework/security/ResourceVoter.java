@@ -26,7 +26,7 @@ public class ResourceVoter extends WebExpressionVoter {
 
     public static final Pattern ADMIN_PATTERN = Pattern.compile("^/api/admin/?(.*)?");
     public static final Pattern AUTOMATION_PATTERN = Pattern.compile("^/api/automation/projects/(.*)/(testruns|testcases)/(\\d+|TC\\d+)/(.*)");
-    public static final Pattern PROJECT_SUB_PATTERN = Pattern.compile("^/api/(.*)/projects/(\\d+)/(testruns|testcases|tokens)/?(.*)?");
+    public static final Pattern PROJECT_SUB_PATTERN = Pattern.compile("^/api/(.*)/projects/(\\d+)/(testruns|testcases|tokens|jira-integration)/?(.*)?");
     public static final Pattern PROJECTS_PATTERN = Pattern.compile("^/api/(.*)/projects/?(\\d+|my)?/?(.*)?");
 
     // TODO GROUP PATTERN을 검사해야함
