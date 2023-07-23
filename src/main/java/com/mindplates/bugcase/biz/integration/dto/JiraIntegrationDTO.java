@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class JiraIntegrationDTO extends CommonDTO {
 
-    private long id;
+    private Long id;
     private String name;
     private String apiUrl;
     private String apiToken;

@@ -18,8 +18,7 @@ import lombok.Data;
 @Table(
     name = "jira_integration",
     indexes = {
-        @Index(name = "IDX_JIRA_INTEGRATION_SPACE_ID", columnList = "space_id"),
-        @Index(name = "IDX_JIRA_INTEGRATION_ID_AND_SPACE_ID", columnList = "id, space_id", unique = true)
+        @Index(name = "IDX_JIRA_INTEGRATION_SPACE_ID", columnList = " space_id", unique = true)
     }
 )
 @Entity

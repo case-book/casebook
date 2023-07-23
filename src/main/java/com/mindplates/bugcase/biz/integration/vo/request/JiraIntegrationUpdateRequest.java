@@ -1,7 +1,9 @@
 package com.mindplates.bugcase.biz.integration.vo.request;
 
 import com.mindplates.bugcase.biz.integration.dto.JiraIntegrationDTO;
+import lombok.Data;
 
+@Data
 public class JiraIntegrationUpdateRequest {
 
     private Long id;
