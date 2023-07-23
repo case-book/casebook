@@ -396,7 +396,7 @@ function TestrunExecutePage() {
         const nextParicipants = lastParicipants.current?.slice(0);
         const userExist = lastParicipants.current?.find(d => d.id === data?.data?.participant.id);
 
-        if (!userExist) {
+        if (nextParicipants && !userExist) {
           nextParicipants.push(data?.data?.participant);
           setParicipants(nextParicipants);
           lastParicipants.current = nextParicipants;

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Block, BlockRow, Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Title } from '@/components';
+import { Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
@@ -197,11 +197,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
       }}
     >
       <ModalHeader className="modal-header">
-        <span>테스트케이스</span>
-        <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
-        <Button size="sm" outline onClick={allCheck}>
-          <i className="fa-solid fa-circle-check" /> {t('모두 선택')}
-        </Button>
+        <span>테스트케이스 선택</span>
       </ModalHeader>
       <ModalBody className="modal-body">
         {projectTestcaseGroupTree && projectTestcaseGroupTree?.length < 1 && (
@@ -210,58 +206,67 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
           </EmptyContent>
         )}
         {projectTestcaseGroupTree?.length > 0 && (
-          <div>
-            <div className="condition">
-              <Title>{t('검색 옵션')}</Title>
-              <Block>
-                <BlockRow className="testrun-range-highlight-row">
-                  <CheckBox
-                    className="range-highlight-checkbox"
-                    size="sm"
-                    value={testRuns.highlightByRange}
-                    onChange={() => {
-                      setTestRuns({
-                        ...testRuns,
-                        highlightByRange: !testRuns.highlightByRange,
-                      });
-                    }}
-                    label={t('기간 내 생성된 테스트 케이스만 하이라이팅하기')}
-                  />
-                  <DateRange
-                    size="sm"
-                    country={user.country}
-                    language={user.language}
-                    startDate={testRuns.minDate.getTime()}
-                    endDate={testRuns.maxDate.getTime()}
-                    startDateKey="minDate"
-                    endDateKey="maxDate"
-                    onChange={(key, value) => {
-                      setTestRuns({
-                        ...testRuns,
-                        [key]: new Date(value),
-                      });
-                    }}
-                  />
-                </BlockRow>
-              </Block>
+          <div className="content">
+            <div className="testrun-range-highlight-row">
+              <div>
+                <Button size="sm" outline onClick={allCheck}>
+                  <i className="fa-solid fa-circle-check" /> {t('모두 선택')}
+                </Button>
+              </div>
+              <div>
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+              </div>
+              <div>
+                <CheckBox
+                  className="range-highlight-checkbox"
+                  size="sm"
+                  value={testRuns.highlightByRange}
+                  onChange={() => {
+                    setTestRuns({
+                      ...testRuns,
+                      highlightByRange: !testRuns.highlightByRange,
+                    });
+                  }}
+                  label={t('생성 시간으로 하이라이팅')}
+                />
+              </div>
+              <div>
+                <DateRange
+                  size="sm"
+                  country={user.country}
+                  language={user.language}
+                  startDate={testRuns.minDate.getTime()}
+                  endDate={testRuns.maxDate.getTime()}
+                  startDateKey="minDate"
+                  endDateKey="maxDate"
+                  onChange={(key, value) => {
+                    setTestRuns({
+                      ...testRuns,
+                      [key]: new Date(value),
+                    });
+                  }}
+                />
+              </div>
             </div>
             <div className="testcase-select-list g-no-select">
-              <ul>
-                {projectTestcaseGroupTree?.map(testcaseGroup => {
-                  const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-                  return (
-                    <TestcaseSelectorGroup
-                      key={testcaseGroup.id}
-                      testcaseGroup={testcaseGroup}
-                      selected={selected}
-                      selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
-                      onClick={onClick}
-                      highlighted={testRuns.highlightByRange}
-                      isHighlighted={isHighlighted}
-                    />
-                  );
-                })}
-              </ul>
+              <div>
+                <ul>
+                  {projectTestcaseGroupTree?.map(testcaseGroup => {
+                    const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+                    return (
+                      <TestcaseSelectorGroup
+                        key={testcaseGroup.id}
+                        testcaseGroup={testcaseGroup}
+                        selected={selected}
+                        selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
+                        onClick={onClick}
+                        highlighted={testRuns.highlightByRange}
+                        isHighlighted={isHighlighted}
+                      />
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
           </div>
         )}

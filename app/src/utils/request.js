@@ -46,15 +46,90 @@ if (window.localStorage.getItem('token')) {
   axios.defaults.headers.common['X-AUTH-TOKEN'] = window.localStorage.getItem('token');
 }
 
+let isRefreshing = false;
+let subscribers = [];
+
+function subscribeTokenRefresh(cb) {
+  subscribers.push(cb);
+}
+
+function onRefreshed(token) {
+  subscribers.map(cb => cb(token));
+}
+
+const refreshAccessToken = (accessToken, refreshToken) => {
+  return axios.get('/api/users/refresh', {
+    headers: {
+      'X-AUTH-TOKEN': accessToken,
+      'X-REFRESH-TOKEN': refreshToken,
+    },
+  });
+};
+
+axios.interceptors.response.use(
+  req => req,
+  err => {
+    const {
+      config,
+      response: { status },
+    } = err;
+
+    if (config.url === '/api/users/refresh' || status !== 401) {
+      return Promise.reject(err);
+    }
+
+    const originalRequest = config;
+    if (window.localStorage.getItem('refreshToken') && status === 401) {
+      if (isRefreshing) {
+        return new Promise(resolve => {
+          subscribeTokenRefresh(token => {
+            if (token) {
+              axios.defaults.headers.common['X-AUTH-TOKEN'] = token;
+              originalRequest.headers['X-AUTH-TOKEN'] = token;
+              resolve(axios(originalRequest));
+            }
+          });
+        });
+      }
+      isRefreshing = true;
+      return refreshAccessToken(window.localStorage.getItem('token'), window.localStorage.getItem('refreshToken'))
+        .then(response => {
+          const { data } = response;
+          onRefreshed(data.token);
+          window.localStorage.setItem('token', data.token);
+          window.localStorage.setItem('refreshToken', data.refreshToken);
+          subscribers = [];
+          originalRequest.headers['X-AUTH-TOKEN'] = data.token;
+          return axios(config);
+        })
+        .catch(error => {
+          window.localStorage.removeItem('token');
+          window.localStorage.removeItem('refreshToken');
+          onRefreshed(null);
+          rootStore.controlStore.setError(error.response.status, error.response.data.message || i18n.t('세션이 만료되었거나, 로그인되어 있지 않습니다.'), () => {
+            rootStore.userStore.clearUser();
+          });
+        })
+        .finally(() => {
+          isRefreshing = false;
+        });
+    }
+    return Promise.reject(err);
+  },
+);
+
 const processSuccess = (handler, response, ref) => {
   if (typeof handler === 'function') {
     handler(response.data, ref);
   }
 };
 
-export const setToken = token => {
+export const setToken = (token, refreshToken = null) => {
   axios.defaults.headers.common['X-AUTH-TOKEN'] = token;
   window.localStorage.setItem('token', token);
+  if (refreshToken) {
+    window.localStorage.setItem('refreshToken', refreshToken);
+  }
 };
 
 const processError = (handler, error) => {
@@ -122,7 +197,9 @@ const getAuthHeaders = (noAuth, multipart) => {
 
 // METHOD: GET
 export function get(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, message) {
-  if (showLoading !== false) processStart();
+  if (showLoading !== false) {
+    processStart();
+  }
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
@@ -148,7 +225,9 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
       if (message) {
         rootStore.controlStore.removeRequestMessage(messageId);
       }
-      if (showLoading !== false) processFinally();
+      if (showLoading !== false) {
+        processFinally();
+      }
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
       }
@@ -158,7 +237,9 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
 
 // METHOD: POST
 export function post(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart, message) {
-  if (showLoading !== false) processStart();
+  if (showLoading !== false) {
+    processStart();
+  }
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
@@ -172,8 +253,9 @@ export function post(url, data, successHandler, errorHandler, ref, noAuth, showL
   let promise;
   if (multipart) {
     promise = axios.post(url, data, getAuthHeaders(noAuth, true));
-  } else if (Array.isArray(data)) promise = axios.post(url, data, getAuthHeaders(noAuth));
-  else {
+  } else if (Array.isArray(data)) {
+    promise = axios.post(url, data, getAuthHeaders(noAuth));
+  } else {
     const [uri, unmatchedParams] = stringCompiler(url, data, true);
     promise = axios.post(uri, unmatchedParams, getAuthHeaders(noAuth));
   }
@@ -189,7 +271,9 @@ export function post(url, data, successHandler, errorHandler, ref, noAuth, showL
       if (message) {
         rootStore.controlStore.removeRequestMessage(messageId);
       }
-      if (showLoading !== false) processFinally();
+      if (showLoading !== false) {
+        processFinally();
+      }
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
       }
@@ -199,7 +283,9 @@ export function post(url, data, successHandler, errorHandler, ref, noAuth, showL
 
 // METHOD: PUT
 export function put(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, multipart, message) {
-  if (showLoading !== false) processStart();
+  if (showLoading !== false) {
+    processStart();
+  }
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
@@ -230,7 +316,9 @@ export function put(url, data, successHandler, errorHandler, ref, noAuth, showLo
       if (message) {
         rootStore.controlStore.removeRequestMessage(messageId);
       }
-      if (showLoading !== false) processFinally();
+      if (showLoading !== false) {
+        processFinally();
+      }
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
       }
@@ -240,7 +328,9 @@ export function put(url, data, successHandler, errorHandler, ref, noAuth, showLo
 
 // METHOD: DELETE
 export function del(url, data, successHandler, errorHandler, ref, noAuth, showLoading = true, message) {
-  if (showLoading !== false) processStart();
+  if (showLoading !== false) {
+    processStart();
+  }
 
   if (showLoading) {
     rootStore.controlStore.setRequestLoading(true);
@@ -263,7 +353,9 @@ export function del(url, data, successHandler, errorHandler, ref, noAuth, showLo
       if (message) {
         rootStore.controlStore.removeRequestMessage(messageId);
       }
-      if (showLoading !== false) processFinally();
+      if (showLoading !== false) {
+        processFinally();
+      }
       if (showLoading) {
         rootStore.controlStore.setRequestLoading(false);
       }

@@ -2,26 +2,22 @@ package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@NoArgsConstructor
 public class TestcaseGroupResponse {
 
     private Long id;
-
     private String seqId;
-
     private Long parentId;
-
     private Long depth;
-
     private String name;
-
     private String description;
     private Integer itemOrder;
-
     private List<TestcaseSimpleResponse> testcases;
 
     public TestcaseGroupResponse(TestcaseGroupDTO testcaseGroup) {
@@ -37,5 +33,6 @@ public class TestcaseGroupResponse {
         }
 
     }
+
 
 }

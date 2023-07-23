@@ -46,7 +46,7 @@ public class ProjectDTO extends CommonDTO {
         this.token = project.getToken();
         this.creationDate = project.getCreationDate();
         if (detail && project.getSpace() != null) {
-            this.space = SpaceDTO.builder().id(project.getSpace().getId()).name(project.getSpace().getName()).build();
+            this.space = SpaceDTO.builder().id(project.getSpace().getId()).build();
         }
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
         this.testcaseSeq = project.getTestcaseSeq();

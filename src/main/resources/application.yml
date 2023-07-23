@@ -41,6 +41,7 @@ spring:
   jwt:
     secret: CHANGE_THIS_SECRET
     expireMinutes: 1440
+    refreshExpireMinutes: 20160
 server:
   port: 8080
   error:

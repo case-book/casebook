@@ -76,19 +76,21 @@ public class TestrunController {
 
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
-    public TestrunListResponse createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
+    public ResponseEntity<HttpStatus> createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
 
         if (testrun.getTestrunUsers().isEmpty()) {
             throw new ServiceException("error.no.testrun.users");
         }
-        TestrunDTO createdTestrun = testrunService.createTestrunInfo(spaceCode, testrun);
+        Long testrunId = testrunService.createTestrunInfo(spaceCode, testrun);
 
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
-        createdTestrunData.addData("testrun", createdTestrun);
+        // createdTestrunData.addData("testrun", createdTestrun);
+        createdTestrunData.addData("testrunId", testrunId);
         messageSendService.sendTo("projects/" + projectId, createdTestrunData);
 
-        return new TestrunListResponse(createdTestrun);
+        // return new TestrunListResponse(createdTestrun);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "예약 테스트런 생성")
