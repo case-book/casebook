@@ -55,3 +55,5 @@ application.pid
 /app/npm-debug.log*
 /app/yarn-debug.log*
 /app/yarn-error.log*
+
+/agent
