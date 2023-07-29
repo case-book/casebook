@@ -5,7 +5,7 @@
   flex-direction: column;
   max-width: $max-page-width;
   margin: 0 auto 40px;
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - 140px);
   border-radius: 10px;
   display: flex;
   overflow: visible;
@@ -68,6 +68,7 @@
     background-color: var(--theme-color);
     border-radius: 0;
     border: none;
+    min-height: calc(100vh - 100px);
   }
 
   &.colored {

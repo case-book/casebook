@@ -24,9 +24,33 @@ CASEBOOK
 ## 추가 설정
 * TBD
 ## 개발 환경 구성
+케이스북은 오픈 소스 프로젝트로 관심이 있는 개발자 누구나 참여할 수 있습니다. 기여하고 싶은 개발자라면 누구나 개발에 참여할 수 있습니다.
+개발에 참여하기 위해 아래와 같은 방법으로 개발 환경을 구성할 수 있습니다.
+
 ### 프론트 환경 구성
 프론트 개발 환경 구성을 위해 먼저 node (>16)을 설치합니다.
 프론트 코드는 app 폴더 하위에 구성되어 있습니다. 먼저 app 폴더로 이동 후 관련 패키지를 설치합니다.
 ```agsl
 app] npm install
 ```
+※ 에디터로 사용하는 toast-ui/react-editor 라이브러리가 올바르게 설치되지 않는 경우, 아래 명령어로 의존성 검사를 제외하고 설치합니다.
+```agsl
+app] npm install --legacy-peer-deps
+```
+아래 명령어를 통해 프로젝트를 실행합니다.
+```agsl
+app] npm start
+```
+### ESLINT 및 PRETTIER 설정
+사용하시는 IDE를 이용하여, ESLINT 및 PRETTIER가 동작하도록 설정합니다. 해당 설정들이 코드 변경 시 자동으로 변경되도록 설정하는 것을 권장드립니다.
+ - IntelliJ
+   - https://www.jetbrains.com/help/idea/eslint.html#ws_js_linters_eslint_install
+   - https://www.jetbrains.com/help/idea/prettier.html
+ - VSCODE
+   - https://www.digitalocean.com/community/tutorials/how-to-format-code-with-prettier-in-visual-studio-code
+   - https://www.digitalocean.com/community/tutorials/linting-and-formatting-with-eslint-in-vs-code
+
+### 백엔드 환경 구성
+
+
+## 릴리즈
