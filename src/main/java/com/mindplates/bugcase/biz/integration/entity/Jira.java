@@ -16,13 +16,13 @@ import lombok.Data;
 
 @Data
 @Table(
-    name = "jira_integration",
+    name = "jira",
     indexes = {
-        @Index(name = "IDX_JIRA_INTEGRATION_SPACE_ID", columnList = " space_id", unique = true)
+        @Index(name = "IDX_JIRA_SPACE_ID", columnList = " space_id", unique = true)
     }
 )
 @Entity
-public class JiraIntegration extends CommonEntity {
+public class Jira extends CommonEntity {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -38,15 +38,15 @@ public class JiraIntegration extends CommonEntity {
     @JoinColumn(name = "space_id")
     private Space space;
 
-    public void update(JiraIntegration jiraIntegration) {
-        if (!Objects.isNull(jiraIntegration.getName())) {
-            this.name = jiraIntegration.getName();
+    public void update(Jira jira) {
+        if (!Objects.isNull(jira.getName())) {
+            this.name = jira.getName();
         }
-        if (!Objects.isNull(jiraIntegration.getApiUrl())) {
-            this.apiUrl = jiraIntegration.getApiUrl();
+        if (!Objects.isNull(jira.getApiUrl())) {
+            this.apiUrl = jira.getApiUrl();
         }
-        if (!Objects.isNull(jiraIntegration.getApiToken())) {
-            this.apiUrl = jiraIntegration.getApiToken();
+        if (!Objects.isNull(jira.getApiToken())) {
+            this.apiUrl = jira.getApiToken();
         }
     }
 }

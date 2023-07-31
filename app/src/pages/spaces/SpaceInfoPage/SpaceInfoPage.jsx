@@ -50,6 +50,12 @@ function SpaceInfoPage() {
     getSpaceInfo();
   }, [spaceCode]);
 
+  useEffect(() => {
+    if (accessible) {
+      SpaceService.getIntegrationInfo(spaceCode, res => setSpace({ ...space, integration: { ...res } }));
+    }
+  }, [accessible]);
+
   return (
     <Page className="space-info-page-wrapper">
       {accessible === false && <InaccessibleContent space={space} onRefresh={getSpaceInfo} />}

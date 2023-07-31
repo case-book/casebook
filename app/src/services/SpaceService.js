@@ -154,4 +154,26 @@ SpaceService.withdrawSpace = (spaceCode, successHandler, failHandler) => {
   );
 };
 
+SpaceService.updateJiraIntegration = (spaceCode, data, successHandler, failHandler) => {
+  return request.put(
+    `/api/spaces/${spaceCode}/integrations/jira`,
+    data,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+SpaceService.getIntegrationInfo = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/integrations`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default SpaceService;

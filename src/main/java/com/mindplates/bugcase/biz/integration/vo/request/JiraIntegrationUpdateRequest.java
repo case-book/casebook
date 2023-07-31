@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.integration.vo.request;
 
-import com.mindplates.bugcase.biz.integration.dto.JiraIntegrationDTO;
+import com.mindplates.bugcase.biz.integration.dto.JiraDTO;
 import lombok.Data;
 
 @Data
@@ -11,8 +11,8 @@ public class JiraIntegrationUpdateRequest {
     private String apiUrl;
     private String apiToken;
 
-    public JiraIntegrationDTO toDTO() {
-        return JiraIntegrationDTO.builder()
+    public JiraDTO toDTO() {
+        return JiraDTO.builder()
             .id(this.id)
             .name(this.name)
             .apiUrl(this.apiUrl)

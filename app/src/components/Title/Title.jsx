@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import './Title.scss';
 import { Liner } from '@/components';
 
-function Title({ className, children, type, control, border, paddingBottom, marginBottom, colored }) {
+function Title({ className, children, type, control, border, paddingBottom, marginBottom, colored, icon }) {
   return (
     <div className={`title-wrapper ${type} ${className} ${border ? 'border' : ''} ${colored ? 'colored' : ''} ${paddingBottom ? 'padding-bottom' : ''} ${marginBottom ? 'margin-bottom' : ''}`}>
       <div className="title-content">
         <div className="title-text">
-          <i className="fa-brands fa-readme" /> {children}
+          {icon || <i className="fa-brands fa-readme" />} {children}
         </div>
         {control && (
           <div className="control">
@@ -31,6 +31,7 @@ Title.defaultProps = {
   paddingBottom: true,
   marginBottom: true,
   colored: false,
+  icon: null,
 };
 
 Title.propTypes = {
@@ -42,6 +43,7 @@ Title.propTypes = {
   paddingBottom: PropTypes.bool,
   marginBottom: PropTypes.bool,
   colored: PropTypes.bool,
+  icon: PropTypes.node,
 };
 
 export default Title;

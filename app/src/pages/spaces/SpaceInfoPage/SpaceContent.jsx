@@ -212,6 +212,21 @@ function SpaceContent({ space, onRefresh }) {
         <Block>
           <MemberCardManager users={users} />
         </Block>
+        <Title icon={<i className="fa-brands fa-jira" />}>{t('Jira Integration')}</Title>
+        <Block>
+          <BlockRow>
+            <Label>{t('이름')}</Label>
+            <Text>{space.integration && space.integration.jira.name ? space.integration.jira.name : 'N/A'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('API URL')}</Label>
+            <Text>{space.integration && space.integration.jira.apiUrl ? space.integration.jira.apiUrl : 'N/A'}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label>{t('API Token')}</Label>
+            <Text>{space.integration && space.integration.jira.apiToken ? space.integration.jira.apiToken : 'N/A'}</Text>
+          </BlockRow>
+        </Block>
         {isAdmin && space?.admin && (
           <>
             <Title
