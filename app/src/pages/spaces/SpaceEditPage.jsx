@@ -44,13 +44,14 @@ import {
   MESSAGE_CATEGORY,
 } from '@/constants/constants';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
-import HolidayEditPopup from '@/pages/spaces/HolidayEditPopup';
-import PropTypes from 'prop-types';
 import './SpaceEditPage.scss';
 import dateUtil from '@/utils/dateUtil';
 import moment from 'moment';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
+import HolidayEditPopup from '@/pages/spaces/HolidayEditPopup';
+import PropTypes from 'prop-types';
+import JiraIntegrationEditPopup from '@/pages/spaces/JiraIntegrationEditPopup';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
@@ -87,6 +88,14 @@ function SpaceEditPage({ type }) {
     month: null,
     week: null,
     day: null,
+  });
+
+  const [jiraIntegrationPopupInfo, setJiraIntegrationPopupInfo] = useState({
+    id: null,
+    name: null,
+    apiUrl: null,
+    apiToken: null,
+    isOpened: false,
   });
 
   const isEdit = useMemo(() => {
@@ -131,7 +140,10 @@ function SpaceEditPage({ type }) {
         });
       } else if (spaceCode && isEdit) {
         SpaceService.selectSpaceInfo(spaceCode, info => {
-          setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone) });
+          setSpace({
+            ...info,
+            timeZone: zoneList.find(d => d.value === info.timeZone),
+          });
         });
       }
     });
@@ -413,7 +425,43 @@ function SpaceEditPage({ type }) {
                 </Block>
               </>
             )}
-
+            {isEdit && (
+              <>
+                <Title
+                  icon={<i className="fa-brands fa-jira" />}
+                  control={
+                    <Button
+                      size="xs"
+                      color="primary"
+                      onClick={() => {
+                        setJiraIntegrationPopupInfo({
+                          ...jiraIntegrationPopupInfo,
+                          isOpened: true,
+                        });
+                      }}
+                    >
+                      {t('수정')}
+                    </Button>
+                  }
+                >
+                  {t('Jira Integration')}
+                </Title>
+                <Block>
+                  <BlockRow>
+                    <Label>{t('이름')}</Label>
+                    <Text>{space.integration && space.integration.jira.name ? space.integration.jira.name : 'N/A'}</Text>
+                  </BlockRow>
+                  <BlockRow>
+                    <Label>{t('API URL')}</Label>
+                    <Text>{space.integration && space.integration.jira.apiUrl ? space.integration.jira.apiUrl : 'N/A'}</Text>
+                  </BlockRow>
+                  <BlockRow>
+                    <Label>{t('API Token')}</Label>
+                    <Text>{space.integration && space.integration.jira.apiToken ? space.integration.jira.apiToken : 'N/A'}</Text>
+                  </BlockRow>
+                </Block>
+              </>
+            )}
             <Title
               control={
                 <Button
@@ -562,6 +610,18 @@ function SpaceEditPage({ type }) {
             setSpace({
               ...space,
               holidays: nextHolidays,
+            });
+          }}
+        />
+      )}
+      {jiraIntegrationPopupInfo.isOpened && (
+        <JiraIntegrationEditPopup
+          setOpened={() => {
+            setJiraIntegrationPopupInfo({ isOpened: false });
+          }}
+          onApply={info => {
+            SpaceService.updateJiraIntegration(space.code, info, () => {
+              navigate(`/spaces/${spaceCode}/info`);
             });
           }}
         />

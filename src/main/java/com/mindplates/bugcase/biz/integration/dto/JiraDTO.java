@@ -1,8 +1,9 @@
 package com.mindplates.bugcase.biz.integration.dto;
 
-import com.mindplates.bugcase.biz.integration.entity.JiraIntegration;
+import com.mindplates.bugcase.biz.integration.entity.Jira;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class JiraIntegrationDTO extends CommonDTO {
+public class JiraDTO extends CommonDTO {
 
     private Long id;
     private String name;
@@ -20,12 +21,14 @@ public class JiraIntegrationDTO extends CommonDTO {
     private String apiToken;
     private SpaceDTO space;
 
-    public JiraIntegrationDTO(JiraIntegration jiraIntegration) {
-        this.id = jiraIntegration.getId();
-        this.name = jiraIntegration.getName();
-        this.apiUrl = jiraIntegration.getApiUrl();
-        this.apiToken = jiraIntegration.getApiToken();
-        this.space = new SpaceDTO(jiraIntegration.getSpace());
+    public JiraDTO(Jira jira) {
+        if (!Objects.isNull(jira)) {
+            this.id = jira.getId();
+            this.name = jira.getName();
+            this.apiUrl = jira.getApiUrl();
+            this.apiToken = jira.getApiToken();
+            this.space = new SpaceDTO(jira.getSpace());
+        }
     }
 
 }
