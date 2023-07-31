@@ -15,21 +15,29 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -102,7 +110,16 @@ public class SpaceController {
     @GetMapping("/{spaceCode}")
     public SpaceResponse selectSpaceInfo(@PathVariable String spaceCode) {
         SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
-        List<ProjectDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceInfo.getId());
+
+        Long userId = SessionUtil.getUserId();
+
+        List<ProjectDTO> spaceProjectList;
+        if (userId != null && spaceInfo.getUsers().stream().anyMatch(spaceUser -> spaceUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(spaceUser.getRole()))) {
+            spaceProjectList = projectService.selectSpaceProjectList(spaceInfo.getId());
+        } else {
+            spaceProjectList = projectService.selectSpaceMyProjectList(spaceInfo.getCode(), userId);
+        }
+
         return new SpaceResponse(spaceInfo, SessionUtil.getUserId(), spaceProjectList);
     }
 
