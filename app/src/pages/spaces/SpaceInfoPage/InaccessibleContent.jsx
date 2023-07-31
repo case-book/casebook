@@ -8,7 +8,7 @@ import './InaccessibleContent.scss';
 import { useTranslation } from 'react-i18next';
 
 function InaccessibleContent({ space, onRefresh }) {
-  const { id } = useParams();
+  const { spaceCode } = useParams();
   const { t } = useTranslation();
 
   const [message, setMessage] = useState('');
@@ -18,19 +18,19 @@ function InaccessibleContent({ space, onRefresh }) {
   }, [space?.id]);
 
   const onJoin = () => {
-    SpaceService.createSpaceApplicant(id, { message }, () => {
+    SpaceService.createSpaceApplicant(spaceCode, { message }, () => {
       onRefresh();
     });
   };
 
   const onCancelJoin = () => {
-    SpaceService.deleteSpaceApplicant(id, () => {
+    SpaceService.deleteSpaceApplicant(spaceCode, () => {
       onRefresh();
     });
   };
 
   const onRequestAgain = () => {
-    SpaceService.createSpaceApplicant(id, { message }, () => {
+    SpaceService.createSpaceApplicant(spaceCode, { message }, () => {
       onRefresh();
     });
   };
@@ -84,11 +84,7 @@ function InaccessibleContent({ space, onRefresh }) {
                   <div className="space-admin-list">
                     <ul>
                       {space.admins.map(admin => {
-                        return (
-                          <li key={admin.id}>
-                            <Tag color="white">{admin.email}</Tag>
-                          </li>
-                        );
+                        return <li key={admin.id}>{admin.email}</li>;
                       })}
                     </ul>
                   </div>
