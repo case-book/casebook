@@ -1,8 +1,11 @@
 package com.mindplates.bugcase.framework.config;
 
+import java.time.Duration;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
@@ -26,6 +29,7 @@ public class RestTemplateConfig {
     private Integer port;
 
     @Bean
+    @Primary
     public RestTemplate restTemplate() {
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -44,5 +48,11 @@ public class RestTemplateConfig {
 
     }
 
+    @Bean
+    public RestTemplate jiraRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+            .setConnectTimeout(Duration.ofSeconds(300))
+            .build();
+    }
 
 }
