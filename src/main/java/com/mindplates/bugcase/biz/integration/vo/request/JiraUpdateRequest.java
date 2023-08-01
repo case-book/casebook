@@ -4,7 +4,7 @@ import com.mindplates.bugcase.biz.integration.dto.JiraDTO;
 import lombok.Data;
 
 @Data
-public class JiraIntegrationUpdateRequest {
+public class JiraUpdateRequest {
 
     private Long id;
     private String name;

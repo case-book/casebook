@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.integration.entity;
 
-import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -16,37 +16,33 @@ import lombok.Data;
 
 @Data
 @Table(
-    name = "jira",
+    name = "jira_project",
     indexes = {
-        @Index(name = "IDX_JIRA_SPACE_ID", columnList = "space_id", unique = true)
+        @Index(name = "IDX_JIRA_PROJECT_PROJECT_ID", columnList = "project_id", unique = true)
     }
 )
 @Entity
-public class Jira extends CommonEntity {
+public class JiraProject extends CommonEntity {
 
     @Id
     @Column(nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
-    private String name;
+    private String jiraProjectKey;
     @Column
-    private String apiUrl;
-    @Column
-    private String apiToken;
+    private String jiraProjectName;
     @OneToOne
-    @JoinColumn(name = "space_id")
-    private Space space;
+    @JoinColumn(name = "project_id")
+    private Project project;
 
-    public void update(Jira jira) {
-        if (!Objects.isNull(jira.getName())) {
-            this.name = jira.getName();
+    public void update(JiraProject jiraProject) {
+        if (!Objects.isNull(jiraProject.getJiraProjectKey())) {
+            this.jiraProjectKey = jiraProject.getJiraProjectKey();
         }
-        if (!Objects.isNull(jira.getApiUrl())) {
-            this.apiUrl = jira.getApiUrl();
-        }
-        if (!Objects.isNull(jira.getApiToken())) {
-            this.apiUrl = jira.getApiToken();
+        if (!Objects.isNull(jiraProject.getJiraProjectName())) {
+            this.jiraProjectName = jiraProject.getJiraProjectName();
         }
     }
+
 }
