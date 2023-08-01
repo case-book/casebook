@@ -155,4 +155,26 @@ ProjectService.deleteProjectToken = (spaceCode, projectId, projectTokenId, succe
   );
 };
 
+ProjectService.getIntegrationInfo = (spaceCode, projectId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/integrations`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ProjectService.updateJiraProjectIntegration = (spaceCode, projectId, data, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/integrations/jira`,
+    { ...data },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ProjectService;

@@ -176,4 +176,15 @@ SpaceService.getIntegrationInfo = (spaceCode, successHandler, failHandler) => {
   );
 };
 
+SpaceService.getJiraProjects = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/integrations/jira/projects`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default SpaceService;

@@ -76,6 +76,7 @@ function SpaceEditPage({ type }) {
     holidays: country === 'KR' ? cloneDeep(DEFAULT_HOLIDAY.KR) : cloneDeep(DEFAULT_HOLIDAY.US),
   });
 
+  const [integration, setIntegration] = useState();
   const [timeZoneList, setTimeZoneList] = useState([]);
 
   const [holidayPopupInfo, setHolidayPopupInfo] = useState({
@@ -145,6 +146,7 @@ function SpaceEditPage({ type }) {
             timeZone: zoneList.find(d => d.value === info.timeZone),
           });
         });
+        SpaceService.getIntegrationInfo(spaceCode, res => setIntegration({ ...res }));
       }
     });
   }, [type, spaceCode]);
@@ -449,15 +451,15 @@ function SpaceEditPage({ type }) {
                 <Block>
                   <BlockRow>
                     <Label>{t('이름')}</Label>
-                    <Text>{space.integration && space.integration.jira.name ? space.integration.jira.name : 'N/A'}</Text>
+                    <Text>{integration?.jira.name ? integration.jira.name : 'N/A'}</Text>
                   </BlockRow>
                   <BlockRow>
                     <Label>{t('API URL')}</Label>
-                    <Text>{space.integration && space.integration.jira.apiUrl ? space.integration.jira.apiUrl : 'N/A'}</Text>
+                    <Text>{integration?.jira.apiUrl ? integration.jira.apiUrl : 'N/A'}</Text>
                   </BlockRow>
                   <BlockRow>
                     <Label>{t('API Token')}</Label>
-                    <Text>{space.integration && space.integration.jira.apiToken ? space.integration.jira.apiToken : 'N/A'}</Text>
+                    <Text>{integration?.jira.apiToken ? integration.jira.apiToken : 'N/A'}</Text>
                   </BlockRow>
                 </Block>
               </>
@@ -616,12 +618,13 @@ function SpaceEditPage({ type }) {
       )}
       {jiraIntegrationPopupInfo.isOpened && (
         <JiraIntegrationEditPopup
+          data={integration?.jira || {}}
           setOpened={() => {
             setJiraIntegrationPopupInfo({ isOpened: false });
           }}
           onApply={info => {
             SpaceService.updateJiraIntegration(space.code, info, () => {
-              navigate(`/spaces/${spaceCode}/info`);
+              SpaceService.getIntegrationInfo(spaceCode, res => setIntegration({ ...res }));
             });
           }}
         />
