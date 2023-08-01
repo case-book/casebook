@@ -35,6 +35,7 @@ import './ProjectInfoPage.scss';
 import useStores from '@/hooks/useStores';
 import TokenDialog from '@/pages/common/Header/TokenDialog';
 import SpaceService from '@/services/SpaceService';
+import JiraProjectIntegrationEditPopup from '@/pages/spaces/JiraProjectIntegrationEditPopup';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -47,6 +48,7 @@ function ProjectInfoPage() {
   const [project, setProject] = useState(null);
   const [projectTokenList, setProjectTokenList] = useState([]);
   const [tagUserMap, setTagUserMap] = useState({});
+  const [integration, setIntegration] = useState(null);
   const [templateViewerPopupInfo, setTemplateViewerPopupInfo] = useState({
     opened: false,
     testcaseTemplate: null,
@@ -61,6 +63,7 @@ function ProjectInfoPage() {
     lastAccess: '',
     enabled: true,
   });
+  const [jiraProjectPopupOpened, setJiraProjectTokenPopupOpened] = useState(false);
 
   useEffect(() => {
     SpaceService.selectSpaceInfo(spaceCode, info => {
@@ -112,6 +115,8 @@ function ProjectInfoPage() {
     ProjectService.getProjectTokenList(spaceCode, projectId, tokens => {
       setProjectTokenList(tokens);
     });
+
+    ProjectService.getIntegrationInfo(spaceCode, projectId, res => setIntegration({ ...res }));
   }, [projectId]);
 
   const onDelete = () => {
@@ -266,6 +271,32 @@ function ProjectInfoPage() {
                 setUpdateTokenPopupOpened(true);
               }}
             />
+          </Block>
+          <Title
+            icon={<i className="fa-brands fa-jira" />}
+            control={
+              <Button
+                size="xs"
+                color="primary"
+                onClick={() => {
+                  setJiraProjectTokenPopupOpened(true);
+                }}
+              >
+                {t('Jira Project 설정 변경')}
+              </Button>
+            }
+          >
+            {t('Jira Project')}
+          </Title>
+          <Block>
+            <BlockRow>
+              <Label>{t('Jira Project 이름')}</Label>
+              <Text>{integration?.jiraProject.name ? integration.jiraProject.name : 'N/A'}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('Jira Project Key')}</Label>
+              <Text>{integration?.jiraProject.key ? integration.jiraProject.key : 'N/A'}</Text>
+            </BlockRow>
           </Block>
           <Title marginBottom={false}>{t('알림 설정')}</Title>
           <Block>
@@ -435,6 +466,20 @@ function ProjectInfoPage() {
             updateProjectToken(id, name, enabled);
           }}
           token={updateTokenPopupInfo}
+        />
+      )}
+      {jiraProjectPopupOpened && (
+        <JiraProjectIntegrationEditPopup
+          spaceCode={spaceCode}
+          data={integration?.jiraProject}
+          setOpened={() => {
+            setJiraProjectTokenPopupOpened(false);
+          }}
+          onApply={info => {
+            ProjectService.updateJiraProjectIntegration(spaceCode, projectId, info, () => {
+              ProjectService.getIntegrationInfo(spaceCode, projectId, res => setIntegration({ ...res }));
+            });
+          }}
         />
       )}
     </>

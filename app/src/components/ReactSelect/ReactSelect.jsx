@@ -4,7 +4,7 @@ import Select from 'react-select';
 import './ReactSelect.scss';
 import { useTranslation } from 'react-i18next';
 
-function ReactSelect({ minWidth, value, onChange, options, size, defaultValue }) {
+function ReactSelect({ minWidth, value, onChange, options, size, defaultValue, searchable, maxMenuHeight }) {
   const { t } = useTranslation();
   return (
     <Select
@@ -23,7 +23,9 @@ function ReactSelect({ minWidth, value, onChange, options, size, defaultValue })
           minWidth,
         }),
       }}
+      isSearchable={searchable}
       defaultValue={defaultValue}
+      maxMenuHeight={maxMenuHeight}
     />
   );
 }
@@ -35,11 +37,15 @@ ReactSelect.defaultProps = {
   onChange: null,
   options: [],
   defaultValue: '',
+  searchable: false,
+  maxMenuHeight: null,
 };
 
 ReactSelect.propTypes = {
   minWidth: PropTypes.string,
+  searchable: PropTypes.bool,
   size: PropTypes.string,
+  maxMenuHeight: PropTypes.number,
   value: PropTypes.shape({
     value: PropTypes.string,
     label: PropTypes.string,

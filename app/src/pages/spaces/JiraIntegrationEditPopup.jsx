@@ -99,14 +99,9 @@ JiraIntegrationEditPopup.defaultProps = {
 
 JiraIntegrationEditPopup.propTypes = {
   data: PropTypes.shape({
-    id: PropTypes.number,
-    holidayType: PropTypes.string,
-    index: PropTypes.number,
-    date: PropTypes.string,
+    apiUrl: PropTypes.string,
     name: PropTypes.string,
-    month: PropTypes.number,
-    week: PropTypes.number,
-    day: PropTypes.number,
+    apiToken: PropTypes.string,
   }),
   setOpened: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired,

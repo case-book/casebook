@@ -46,7 +46,7 @@ public class Jira extends CommonEntity {
             this.apiUrl = jira.getApiUrl();
         }
         if (!Objects.isNull(jira.getApiToken())) {
-            this.apiUrl = jira.getApiToken();
+            this.apiToken = jira.getApiToken();
         }
     }
 }

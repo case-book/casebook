@@ -493,5 +493,9 @@
   "API Token": "API Token",
   "API URL": "API URL",
   "수정": "수정",
-  "설정 변경": "설정 변경"
+  "설정 변경": "설정 변경",
+  "Jira Project 이름": "Jira Project 이름",
+  "Jira Project Key": "Jira Project Key",
+  "Jira Project 설정 변경": "Jira Project 설정 변경",
+  "Jira Project": "Jira Project"
 }
