@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, Page, PageButtons, PageContent, PageTitle, Radio, Table, Tag, Tbody, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -27,6 +27,8 @@ function ReportInfoPage() {
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [testerProgressList, setTesterProgressList] = useState([]);
+
+  const [scrollable, setScrollable] = useState(false);
 
   const { query, setQuery } = useQueryString();
 
@@ -226,13 +228,40 @@ function ReportInfoPage() {
               </div>
             </div>
           </Block>
-          <Title border={false} marginBottom={false}>
+          <Title
+            border={false}
+            marginBottom={false}
+            control={
+              <div>
+                <Radio
+                  type="inline"
+                  size="xs"
+                  value={false}
+                  checked={scrollable}
+                  onChange={() => {
+                    setScrollable(true);
+                  }}
+                  label={<i className="fa-solid fa-toilet-paper" />}
+                />
+                <Radio
+                  type="inline"
+                  size="xs"
+                  value
+                  checked={!scrollable}
+                  onChange={() => {
+                    setScrollable(false);
+                  }}
+                  label={<i className="fa-solid fa-toilet-paper-slash" />}
+                />
+              </div>
+            }
+          >
             {t('테스트케이스 테스트 결과')}
           </Title>
-          <Block>
+          <Block scroll={scrollable} maxHeight="600px" border>
             {testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
             {testcaseGroups?.length > 0 && (
-              <Table className="table" cols={['1px', '100%']} border>
+              <Table className="table" cols={['1px', '100%']} sticky>
                 <THead>
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
