@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Block.scss';
 
-function Block({ className, children, border, scroll, maxHeight }) {
+function Block({ className, children, border, scroll, maxHeight, minHeight }) {
   return (
     <div
       className={`block-wrapper ${className} ${scroll && 'scroll'} ${border ? 'border' : ''}`}
       style={{
         maxHeight: scroll ? maxHeight : null,
+        minHeight: scroll ? minHeight : null,
       }}
     >
       {children}
@@ -21,6 +22,7 @@ Block.defaultProps = {
   children: '',
   scroll: false,
   maxHeight: 'auto',
+  minHeight: 'auto',
 };
 
 Block.propTypes = {
@@ -29,6 +31,7 @@ Block.propTypes = {
   border: PropTypes.bool,
   scroll: PropTypes.bool,
   maxHeight: PropTypes.string,
+  minHeight: PropTypes.string,
 };
 
 export default Block;
