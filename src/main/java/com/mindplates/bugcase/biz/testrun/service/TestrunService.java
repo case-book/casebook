@@ -218,6 +218,7 @@ public class TestrunService {
 
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
 
+        testrunCommentRepository.deleteByTestrunId(testrunId);
         testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
         testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
@@ -226,6 +227,7 @@ public class TestrunService {
         testrunUserRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupRepository.deleteByTestrunId(testrunId);
         testrunRepository.deleteById(testrunId);
+
 
         files.forEach((projectFile -> {
             Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
