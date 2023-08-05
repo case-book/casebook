@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +34,10 @@ public class TestrunComment extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "testrun_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_COMMENT__TESTRUN"))
     private Testrun testrun;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_COMMENT__USER"))
+    private User user;
 
     @Column(columnDefinition = "text", name = "comment")
     private String comment;

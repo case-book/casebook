@@ -1,0 +1,25 @@
+.block-wrapper {
+  position: relative;
+  border-radius: 4px;
+  margin: 0 0.5rem;
+
+  &.border {
+    border: 1px solid var(--border-color);
+  }
+
+  &.scroll {
+    overflow-y: auto;
+  }
+
+  @media (max-width: 768px) {
+    margin: 0 0.25rem;
+  }
+
+  .block-row-wrapper {
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+
+}

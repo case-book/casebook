@@ -17,6 +17,8 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 // import { getBaseURL } from '@/utils/configUtil';
 import useStores from '@/hooks/useStores';
 import TestrunTestcaseListViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunTestcaseListViewerPopup';
+import { getBaseURL } from '@/utils/configUtil';
+import { CommentList } from '@/assets';
 
 function ReportInfoPage() {
   const { t } = useTranslation();
@@ -42,6 +44,8 @@ function ReportInfoPage() {
   const editor = useRef(null);
 
   const [comment, setComment] = useState('');
+
+  const [testrunCommentList, setTestrunCommentList] = useState([]);
 
   const { groupId: testrunTestcaseGroupId, id: testrunTestcaseGroupTestcaseId } = query;
 
@@ -80,7 +84,11 @@ function ReportInfoPage() {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
       TestrunService.selectTestrunInfo(spaceCode, projectId, reportId, data => {
-        setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), testedCount: data.passedTestcaseCount + data.failedTestcaseCount + data.untestableTestcaseCount });
+        setTestrun({
+          ...data,
+          startTime: dateUtil.getHourMinuteTime(data.startTime),
+          testedCount: data.passedTestcaseCount + data.failedTestcaseCount + data.untestableTestcaseCount,
+        });
 
         const tester = {};
 
@@ -114,6 +122,10 @@ function ReportInfoPage() {
         );
       });
     });
+
+    TestrunService.selectTestrunCommentList(spaceCode, projectId, reportId, list => {
+      setTestrunCommentList(list);
+    });
   }, [projectId, reportId]);
 
   const onOpened = () => {
@@ -140,14 +152,40 @@ function ReportInfoPage() {
     });
   };
 
-  const onClickUserTestResultCount = (e, userId, status) => {
+  const onClickUserTestResultCount = (e, pUserId, status) => {
     e.preventDefault();
     setTestcaseViewerInfo({
       opened: true,
       status,
-      userId,
+      userId: pUserId,
     });
   };
+
+  const createComment = text => {
+    TestrunService.createTestrunComment(spaceCode, projectId, reportId, text, data => {
+      const nextTestrunCommentList = testrunCommentList.slice(0);
+      nextTestrunCommentList.push(data);
+      setTestrunCommentList(nextTestrunCommentList);
+    });
+  };
+
+  const createTestrunImage = (name, size, pType, file) => {
+    return TestrunService.createImage(spaceCode, projectId, reportId, name, size, pType, file);
+  };
+
+  const deleteComment = commentId => {
+    TestrunService.deleteTestrunComment(spaceCode, projectId, reportId, commentId, () => {
+      const nextTestrunCommentList = testrunCommentList.slice(0);
+      const inx = nextTestrunCommentList.findIndex(d => d.id === commentId);
+      if (inx > -1) {
+        nextTestrunCommentList.splice(inx, 1);
+      }
+      setTestrunCommentList(nextTestrunCommentList);
+    });
+  };
+
+  // 반응형
+  // 댓글 추가
 
   return (
     <>
@@ -203,7 +241,7 @@ function ReportInfoPage() {
                 {t('테스트 결과 요약')}
               </Title>
               <Block>
-                <div className="summary-content-content report-metric">
+                <div className="summary-content report-metric">
                   <div className="result-summary">
                     <div>
                       <div className="label">{t('수행률')}</div>
@@ -395,62 +433,64 @@ function ReportInfoPage() {
               <Title border={false} marginBottom={false}>
                 {t('테스트런 코멘트')}
               </Title>
-              <Block className="editor-block">
-                <div className="comment-editor">
-                  <Editor
-                    key={theme}
-                    ref={editor}
-                    theme={theme === 'DARK' ? 'dark' : 'white'}
-                    placeholder="내용을 입력해주세요."
-                    previewStyle="vertical"
-                    height="160px"
-                    initialEditType="wysiwyg"
-                    plugins={[colorSyntax]}
-                    autofocus={false}
-                    toolbarItems={[
-                      ['heading', 'bold', 'italic', 'strike'],
-                      ['hr', 'quote'],
-                      ['ul', 'ol', 'task', 'indent', 'outdent'],
-                      ['table', 'image', 'link'],
-                      ['code', 'codeblock'],
-                    ]}
-                    /* hooks={{
-                        addImageBlobHook: async (blob, callback) => {
-                          const result = await createTestrunImage(content.id, blob.name, blob.size, blob.type, blob);
-                          callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
-                        },
-                      }} */
-                    initialValue={comment || ''}
-                    onChange={() => {
-                      setComment(editor.current?.getInstance()?.getHTML());
+              <Block className="editor-block scrollbar-sm">
+                <div className="scroller">
+                  <CommentList onDeleteComment={deleteComment} comments={testrunCommentList} />
+                </div>
+              </Block>
+              <Block className="comment-editor">
+                <Editor
+                  key={theme}
+                  ref={editor}
+                  theme={theme === 'DARK' ? 'dark' : 'white'}
+                  placeholder={t('내용을 입력해주세요.')}
+                  previewStyle="vertical"
+                  height="160px"
+                  initialEditType="wysiwyg"
+                  plugins={[colorSyntax]}
+                  autofocus={false}
+                  toolbarItems={[
+                    ['heading', 'bold', 'italic', 'strike'],
+                    ['hr', 'quote'],
+                    ['ul', 'ol', 'task', 'indent', 'outdent'],
+                    ['table', 'image', 'link'],
+                    ['code', 'codeblock'],
+                  ]}
+                  hooks={{
+                    addImageBlobHook: async (blob, callback) => {
+                      const result = await createTestrunImage(blob.name, blob.size, blob.type, blob);
+                      callback(`${getBaseURL()}/api/${spaceCode}/projects/${projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
+                    },
+                  }}
+                  initialValue={comment || ''}
+                  onChange={() => {
+                    setComment(editor.current?.getInstance()?.getHTML());
+                  }}
+                />
+                <div className="buttons">
+                  <Button
+                    outline
+                    onClick={() => {
+                      setComment('');
+                      editor.current?.getInstance().setHTML('');
                     }}
-                  />
-                  <div className="buttons">
-                    <Button
-                      outline
-                      onClick={() => {
+                    size="sm"
+                  >
+                    {t('취소')}
+                  </Button>
+                  <Button
+                    outline
+                    size="sm"
+                    onClick={() => {
+                      if (comment) {
+                        createComment(comment);
                         setComment('');
                         editor.current?.getInstance().setHTML('');
-                      }}
-                      size="sm"
-                    >
-                      {t('취소')}
-                    </Button>
-                    <Button
-                      outline
-                      size="sm"
-                      onClick={() => {
-                        if (comment) {
-                          /* onSaveComment(null, comment, () => {
-                              setComment('');
-                              editor.current?.getInstance().setHTML('');
-                            }); */
-                        }
-                      }}
-                    >
-                      {t('코멘트 추가')}
-                    </Button>
-                  </div>
+                      }
+                    }}
+                  >
+                    {t('코멘트 추가')}
+                  </Button>
                 </div>
               </Block>
             </div>

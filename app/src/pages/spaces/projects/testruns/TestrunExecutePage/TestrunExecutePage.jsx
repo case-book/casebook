@@ -292,7 +292,7 @@ function TestrunExecutePage() {
   };
 
   const onChangeComment = (pId, comment, handler) => {
-    TestrunService.updateTestrunComment(
+    TestrunService.updateTestrunTestcaseComment(
       spaceCode,
       projectId,
       testrunId,
@@ -321,7 +321,7 @@ function TestrunExecutePage() {
   };
 
   const onDeleteComment = pId => {
-    TestrunService.deleteTestrunComment(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, pId, () => {
+    TestrunService.deleteTestrunTestcaseComment(spaceCode, projectId, testrunId, content.testrunTestcaseGroupId, content.id, pId, () => {
       const nextContent = { ...content };
       const nextComments = nextContent.comments.slice(0);
 
