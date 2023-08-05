@@ -20,6 +20,9 @@ import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.config.CacheConfig;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +31,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -108,13 +107,17 @@ public class SpaceService {
             if ("D".equals(spaceUser.getCrud())) {
                 spaceInfo.getUsers().removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
                 spaceInfo.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
-                notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(), "관리자에 의해 '" + spaceInfo.getName() + "'" + " 스페이스에서 제외되었습니다.", "/spaces/" + spaceInfo.getCode() + "/info");
+                notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(),
+                    "관리자에 의해 '" + spaceInfo.getName() + "'" + " 스페이스에서 제외되었습니다.", "/spaces/" + spaceInfo.getCode() + "/info");
             } else if ("U".equals(spaceUser.getCrud())) {
-                SpaceUserDTO updateUser = spaceInfo.getUsers().stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId()))).findAny().orElse(null);
+                SpaceUserDTO updateUser = spaceInfo.getUsers().stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId())))
+                    .findAny().orElse(null);
 
                 if (updateUser != null) {
                     if (!updateUser.getRole().equals(spaceUser.getRole())) {
-                        notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(), "관리자에 의해 '" + spaceInfo.getName() + "'" + " 스페이스의 권한(" + spaceUser.getRole() + ")이 변경되었습니다.", "/spaces/" + spaceInfo.getCode() + "/info");
+                        notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(),
+                            "관리자에 의해 '" + spaceInfo.getName() + "'" + " 스페이스의 권한(" + spaceUser.getRole() + ")이 변경되었습니다.",
+                            "/spaces/" + spaceInfo.getCode() + "/info");
                     }
                     updateUser.setRole(spaceUser.getRole());
                 }
@@ -170,16 +173,13 @@ public class SpaceService {
 
     public List<SpaceUserDTO> selectSpaceUserList(String spaceCode, String query) {
         if (StringUtils.isNotBlank(query)) {
-            List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);
+            List<SpaceUser> spaceUserList = spaceUserRepository
+                .findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);
             return spaceUserList.stream().map(SpaceUserDTO::new).collect(Collectors.toList());
         }
 
         List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCode(spaceCode);
         return spaceUserList.stream().map(SpaceUserDTO::new).collect(Collectors.toList());
-    }
-
-    public boolean selectIsSpaceMember(Long spaceId, Long userId) {
-        return spaceUserRepository.existsBySpaceIdAndUserId(spaceId, userId);
     }
 
     public boolean selectIsSpaceAdmin(Long spaceId, Long userId) {
@@ -199,7 +199,9 @@ public class SpaceService {
     public SpaceDTO createOrUpdateSpaceApplicantInfo(String spaceCode, SpaceApplicantDTO spaceApplicant) {
         SecurityUser user = SessionUtil.getSecurityUser();
         SpaceDTO space = this.selectSpaceInfo(spaceApplicant.getSpace().getCode());
-        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId())).findAny().orElse(null);
+        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(
+            applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId()))
+            .findAny().orElse(null);
 
         if (targetApplicant == null) {
             targetApplicant = spaceApplicant;
@@ -211,19 +213,22 @@ public class SpaceService {
 
         // 자동 참여 옵션이 켜진 스페이스
         if (space.isAllowAutoJoin()) {
-            if (targetApplicant.getApprovalStatusCode() == null || targetApplicant.getApprovalStatusCode() != null && !ApprovalStatusCode.APPROVAL.equals(targetApplicant.getApprovalStatusCode())) {
+            if (targetApplicant.getApprovalStatusCode() == null || targetApplicant.getApprovalStatusCode() != null && !ApprovalStatusCode.APPROVAL
+                .equals(targetApplicant.getApprovalStatusCode())) {
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
 
                 if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(spaceApplicant.getUser().getId()))) {
                     notificationService.createSpaceSelfJoinNotificationInfo(space, user.getUsername());
-                    space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
+                    space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build())
+                        .role(UserRoleCode.USER).build());
                 }
             }
 
         } else {
             if (ApprovalStatusCode.APPROVAL.equals(targetApplicant.getApprovalStatusCode())) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST, "already.member");
-            } else if (ApprovalStatusCode.REQUEST.equals(targetApplicant.getApprovalStatusCode()) || ApprovalStatusCode.REQUEST_AGAIN.equals(targetApplicant.getApprovalStatusCode())) {
+            } else if (ApprovalStatusCode.REQUEST.equals(targetApplicant.getApprovalStatusCode()) || ApprovalStatusCode.REQUEST_AGAIN
+                .equals(targetApplicant.getApprovalStatusCode())) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST, "already.requested");
             } else if (ApprovalStatusCode.REJECTED.equals(targetApplicant.getApprovalStatusCode())) {
                 notificationService.createSpaceJoinAgainRequestNotificationInfo(space, user.getUsername());
@@ -256,14 +261,17 @@ public class SpaceService {
 
         SecurityUser user = SessionUtil.getSecurityUser();
         SpaceDTO space = this.selectSpaceInfo(spaceCode);
-        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getId().equals(applicantId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getId().equals(applicantId)).findAny()
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (approve) {
             targetApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
 
             if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(targetApplicant.getUser().getId()))) {
                 notificationService.createSpaceJoinResultNotificationInfo(space, user.getUsername(), targetApplicant.getUser().getId(), true);
-                space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
+                space.getUsers().add(
+                    SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER)
+                        .build());
             }
 
 
@@ -281,13 +289,15 @@ public class SpaceService {
     @Transactional
     public void deleteSpaceUser(String spaceCode, Long userId) {
         SpaceDTO space = this.selectSpaceInfo(spaceCode);
-        boolean isSpaceAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRoleCode.ADMIN)));
+        boolean isSpaceAdmin = space.getUsers().stream()
+            .anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRoleCode.ADMIN)));
         SecurityUser user = SessionUtil.getSecurityUser();
         if (!(user.getId().equals(userId) || isSpaceAdmin)) {
             throw new ServiceException(HttpStatus.FORBIDDEN);
         }
 
-        UserDTO targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny().map(spaceUser -> spaceUser.getUser()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        UserDTO targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny()
+            .map(spaceUser -> spaceUser.getUser()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
         space.getUsers().removeIf((spaceUser -> spaceUser.getUser().getId().equals(userId)));
