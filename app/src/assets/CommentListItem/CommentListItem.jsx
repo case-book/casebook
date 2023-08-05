@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Block.scss';
+import './CommentListItem.scss';
 
-function Block({ className, children, border, scroll, maxHeight, minHeight }) {
+function CommentListItem({ className, children, border, scroll, maxHeight, minHeight }) {
   return (
     <div
       className={`block-wrapper ${className} ${scroll && 'scroll'} ${border ? 'border' : ''}`}
@@ -16,7 +16,7 @@ function Block({ className, children, border, scroll, maxHeight, minHeight }) {
   );
 }
 
-Block.defaultProps = {
+CommentListItem.defaultProps = {
   className: '',
   border: false,
   children: '',
@@ -25,7 +25,7 @@ Block.defaultProps = {
   minHeight: 'auto',
 };
 
-Block.propTypes = {
+CommentListItem.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
   border: PropTypes.bool,
@@ -34,4 +34,4 @@ Block.propTypes = {
   minHeight: PropTypes.string,
 };
 
-export default Block;
+export default CommentListItem;

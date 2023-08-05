@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CloseIcon, EmptyContent, Liner, SeqId, TestcaseItem, Title } from '@/components';
+import { CloseIcon, SeqId, TestcaseItem, Title } from '@/components';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
 import { useTranslation } from 'react-i18next';
 import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import { DEFAULT_TESTRUN_RESULT_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE } from '@/constants/constants';
-import { Viewer } from '@toast-ui/react-editor';
-import dateUtil from '@/utils/dateUtil';
 import './TestrunResultViewerPopup.scss';
+import { CommentList } from '@/assets';
 
 function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGroupTestcase, setOpened }) {
   const { t } = useTranslation();
@@ -151,34 +150,8 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                     })}
                 </div>
                 <div className="testrun-testcase-comments">
-                  <div className="text">코멘트</div>
-                  <div className="comment-list">
-                    {(!testrunTestcaseGroupTestcase.comments || testrunTestcaseGroupTestcase.comments.length < 1) && (
-                      <EmptyContent minHeight="auto" className="empty-comments">
-                        <div>{t('코멘트가 없습니다.')}</div>
-                      </EmptyContent>
-                    )}
-                    {testrunTestcaseGroupTestcase.comments?.length > 0 && (
-                      <ul>
-                        {testrunTestcaseGroupTestcase.comments?.map(info => {
-                          return (
-                            <li key={info.id} className="comment">
-                              <div className="comment-content">
-                                <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={info.comment || '<span className="none-text">&nbsp;</span>'} />
-                              </div>
-                              <div className="comment-user-info">
-                                <div>{dateUtil.getDateString(info.lastUpdateDate)}</div>
-                                <div>
-                                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
-                                </div>
-                                <div>{users.find(u => u.userId === info.userId)?.name || ''}</div>
-                              </div>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
+                  <div className="text">{t('코멘트')}</div>
+                  <CommentList comments={testrunTestcaseGroupTestcase.comments} />
                 </div>
               </div>
             </div>

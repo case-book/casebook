@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Table.scss';
 
-function Table({ className, children, cols, border, size }) {
+function Table({ className, children, cols, border, size, sticky }) {
   return (
-    <table className={`table-wrapper ${className} ${border ? 'table-border' : ''} size-${size}`}>
+    <table className={`table-wrapper ${className} ${border ? 'table-border' : ''} size-${size} ${sticky ? 'sticky-header' : ''}`}>
       {cols && cols?.length > 0 && (
         <colgroup>
           {cols.map((value, inx) => {
@@ -25,6 +25,7 @@ Table.defaultProps = {
   cols: [],
   border: false,
   size: 'md',
+  sticky: false,
 };
 
 Table.propTypes = {
@@ -33,6 +34,7 @@ Table.propTypes = {
   cols: PropTypes.arrayOf(PropTypes.string),
   border: PropTypes.bool,
   size: PropTypes.string,
+  sticky: PropTypes.bool,
 };
 
 export default Table;

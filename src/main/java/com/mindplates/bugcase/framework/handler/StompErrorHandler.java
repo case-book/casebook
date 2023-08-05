@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.framework.handler;
 
 import com.mindplates.bugcase.common.exception.ServiceException;
+import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageDeliveryException;
@@ -9,8 +10,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
-
-import java.nio.charset.StandardCharsets;
 
 @Component
 @Slf4j
@@ -22,12 +21,12 @@ public class StompErrorHandler extends StompSubProtocolErrorHandler {
 
     @Override
     public Message<byte[]> handleClientMessageProcessingError(Message<byte[]> clientMessage, Throwable ex) {
-        log.error(ex.getMessage(), ex);
         Throwable exception = new MessageDeliveryException(ex.getMessage());
         if (exception instanceof MessageDeliveryException) {
             return handleUnauthorizedException(clientMessage, exception);
         }
 
+        log.error(ex.getMessage(), ex);
         return super.handleClientMessageProcessingError(clientMessage, ex);
     }
 

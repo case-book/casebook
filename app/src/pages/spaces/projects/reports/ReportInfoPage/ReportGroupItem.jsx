@@ -5,10 +5,23 @@ import { SeqId, Td, Tr } from '@/components';
 import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import './ReportGroupItem.scss';
 
-function ReportGroupItem({ users, testcaseGroup, parentGroupName, onNameClick }) {
+function ReportGroupItem({ users, testcaseGroup, parentGroupName, status, userId, onNameClick }) {
+  const list =
+    testcaseGroup.testcases?.filter(testcase => {
+      if (!status && !userId) {
+        return true;
+      }
+
+      if (status && userId) {
+        return testcase.testerId === userId && testcase.testResult === status;
+      }
+
+      return testcase.testerId === userId || testcase.testResult === status;
+    }) || [];
+
   return (
     <>
-      {(!testcaseGroup.testcases || testcaseGroup.testcases?.length < 1) && (
+      {(!list || list.length < 1) && (
         <Tr className="report-group-item-wrapper">
           <Td className="group-info">
             {parentGroupName}
@@ -21,8 +34,8 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, onNameClick })
         </Tr>
       )}
 
-      {testcaseGroup.testcases?.length > 0 &&
-        testcaseGroup.testcases?.map((testcase, inx) => {
+      {list.length > 0 &&
+        list?.map((testcase, inx) => {
           const tester = users.find(user => {
             return user.userId === testcase.testerId;
           });
@@ -30,7 +43,7 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, onNameClick })
           return (
             <Tr className="report-group-item-wrapper" key={testcase.id}>
               {inx === 0 && (
-                <Td rowSpan={testcaseGroup.testcases.length} className="group-info">
+                <Td rowSpan={list.length} className="group-info">
                   {parentGroupName}
                   {parentGroupName ? ' > ' : ''}
                   {testcaseGroup.name}
@@ -80,6 +93,8 @@ ReportGroupItem.defaultProps = {
   testcaseGroup: {},
   parentGroupName: '',
   users: [],
+  status: null,
+  userId: null,
 };
 
 ReportGroupItem.propTypes = {
@@ -91,6 +106,8 @@ ReportGroupItem.propTypes = {
     }),
   ),
   onNameClick: PropTypes.func.isRequired,
+  status: PropTypes.string,
+  userId: PropTypes.number,
 };
 
 export default ReportGroupItem;
