@@ -28,7 +28,6 @@ public class TestrunCommentResponse {
         if (testrunCommentDTO.getUser() != null) {
             this.user = SimpleUserResponse.builder().id(testrunCommentDTO.getUser().getId()).name(testrunCommentDTO.getUser().getName()).email(testrunCommentDTO.getUser().getEmail()).build();
         }
-
         this.creationDate = testrunCommentDTO.getCreationDate();
         this.lastUpdateDate = testrunCommentDTO.getLastUpdateDate();
     }

@@ -20,8 +20,8 @@ function CommentList({ className, comments, onDeleteComment }) {
 
   return (
     <div className={`comment-list-wrapper ${className}`}>
-      {comments?.length < 1 && (
-        <EmptyContent minHeight="auto" className="empty-comments">
+      {(!comments || comments?.length < 1) && (
+        <EmptyContent minHeight="auto" className="empty-comments" border>
           <div>{t('코멘트가 없습니다.')}</div>
         </EmptyContent>
       )}
@@ -39,7 +39,7 @@ function CommentList({ className, comments, onDeleteComment }) {
                     <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   </div>
                   <div>{comment.user?.name}</div>
-                  {comment.user?.id === userId && (
+                  {onDeleteComment && comment.user?.id === userId && (
                     <>
                       <div>
                         <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
@@ -72,6 +72,7 @@ function CommentList({ className, comments, onDeleteComment }) {
 CommentList.defaultProps = {
   className: '',
   comments: [],
+  onDeleteComment: null,
 };
 
 CommentList.propTypes = {
@@ -81,7 +82,7 @@ CommentList.propTypes = {
       id: PropTypes.number,
     }),
   ),
-  onDeleteComment: PropTypes.func.isRequired,
+  onDeleteComment: PropTypes.func,
 };
 
 export default CommentList;

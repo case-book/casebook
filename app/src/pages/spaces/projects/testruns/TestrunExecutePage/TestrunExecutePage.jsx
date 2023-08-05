@@ -633,7 +633,6 @@ function TestrunExecutePage() {
                     id: u.userId,
                   };
                 })}
-                user={user}
                 createTestrunImage={createTestrunImage}
               />
             )
