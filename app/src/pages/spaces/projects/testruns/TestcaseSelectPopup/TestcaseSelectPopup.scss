@@ -1,8 +1,10 @@
 .testcase-select-popup-wrapper {
   height: 100%;
+
   > div {
     height: calc(100% - 80px);
   }
+
   .modal-body {
     position: relative;
     padding-top: 16px !important;
@@ -20,11 +22,27 @@
       display: flex;
       flex-grow: 0;
       margin-bottom: 16px;
+
       > div {
         align-self: center;
       }
+
       .range-highlight-checkbox {
         margin-right: 1rem;
+      }
+    }
+
+    .search {
+      display: flex;
+      flex-grow: 0;
+      margin-bottom: 16px;
+
+      > div {
+        align-self: center;
+        &:nth-child(3) {
+          flex-grow: 1;
+          margin-right: 8px;
+        }
       }
     }
 
@@ -33,6 +51,7 @@
       padding: 0.5rem;
       flex-grow: 1;
       position: relative;
+
       > div {
         position: absolute;
         top: 0;
@@ -40,6 +59,7 @@
         right: 0;
         bottom: 0;
         overflow-y: auto;
+
         > ul {
           list-style: none;
           padding: 0;
