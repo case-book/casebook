@@ -4,36 +4,13 @@ import PropTypes from 'prop-types';
 import { SeqId, Td, Tr } from '@/components';
 import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import './ReportGroupItem.scss';
+import testcaseUtil from '@/utils/testcaseUtil';
 
 function ReportGroupItem({ users, testcaseGroup, parentGroupName, status, userId, onNameClick }) {
-  const list =
-    testcaseGroup.testcases?.filter(testcase => {
-      if (!status && !userId) {
-        return true;
-      }
-
-      if (status && userId) {
-        return testcase.testerId === userId && testcase.testResult === status;
-      }
-
-      return testcase.testerId === userId || testcase.testResult === status;
-    }) || [];
+  const list = testcaseUtil.getFilteredTestcaseList(testcaseGroup.testcases, status, userId) || [];
 
   return (
     <>
-      {(!list || list.length < 1) && (
-        <Tr className="report-group-item-wrapper">
-          <Td className="group-info">
-            {parentGroupName}
-            {parentGroupName ? ' > ' : ''}
-            {testcaseGroup.name}
-          </Td>
-          <Td />
-          <Td />
-          <Td />
-        </Tr>
-      )}
-
       {list.length > 0 &&
         list?.map((testcase, inx) => {
           const tester = users.find(user => {
@@ -78,8 +55,10 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, status, userId
         return (
           <ReportGroupItem
             key={child.id}
-            testcaseGroup={child}
             users={users}
+            testcaseGroup={child}
+            status={status}
+            userId={userId}
             parentGroupName={parentGroupName ? `${parentGroupName} > ${testcaseGroup.name}` : testcaseGroup.name}
             onNameClick={onNameClick}
           />

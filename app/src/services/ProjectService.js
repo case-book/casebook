@@ -32,7 +32,7 @@ ProjectService.selectMyProjectList = (spaceCode, successHandler, failHandler, lo
   );
 };
 
-ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler) => {
+ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}`,
     null,
@@ -40,6 +40,9 @@ ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHa
       successHandler(res);
     },
     failHandler,
+    null,
+    null,
+    loading,
   );
 };
 

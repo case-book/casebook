@@ -23,11 +23,20 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
     type: '',
   });
 
+  const onKeyDown = e => {
+    if (e.keyCode === 27) {
+      setOpened(false);
+    }
+  };
+
   useEffect(() => {
     const body = document.querySelector('body');
     body.classList.add('stop-scroll');
 
+    document.addEventListener('keydown', onKeyDown);
+
     return () => {
+      document.removeEventListener('keydown', onKeyDown);
       body.classList.remove('stop-scroll');
     };
   }, []);

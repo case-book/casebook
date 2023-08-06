@@ -7,18 +7,17 @@ import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
 import { MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
-import './ReportInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import useQueryString from '@/hooks/useQueryString';
 import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
 import { Editor } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-// import { getBaseURL } from '@/utils/configUtil';
 import useStores from '@/hooks/useStores';
 import TestrunTestcaseListViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunTestcaseListViewerPopup';
 import { getBaseURL } from '@/utils/configUtil';
 import { CommentList } from '@/assets';
+import './ReportInfoPage.scss';
 
 function ReportInfoPage() {
   const { t } = useTranslation();
@@ -81,51 +80,64 @@ function ReportInfoPage() {
   }, [testcaseGroups, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId]);
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-      TestrunService.selectTestrunInfo(spaceCode, projectId, reportId, data => {
-        setTestrun({
-          ...data,
-          startTime: dateUtil.getHourMinuteTime(data.startTime),
-          testedCount: data.passedTestcaseCount + data.failedTestcaseCount + data.untestableTestcaseCount,
-        });
-
-        const tester = {};
-
-        data.testcaseGroups?.forEach(testcaseGroup => {
-          testcaseGroup.testcases?.forEach(testcase => {
-            if (!tester[testcase.testerId]) {
-              const user = info.users.find(u => u.userId === testcase.testerId);
-              tester[testcase.testerId] = {
-                userId: testcase.testerId,
-                name: user?.name,
-                PASSED: 0,
-                FAILED: 0,
-                UNTESTED: 0,
-                UNTESTABLE: 0,
-                TOTAL_COUNT: 0,
-              };
-            }
-
-            tester[testcase.testerId][testcase.testResult] += 1;
-            tester[testcase.testerId].TOTAL_COUNT += 1;
+    ProjectService.selectProjectInfo(
+      spaceCode,
+      projectId,
+      info => {
+        setProject(info);
+        TestrunService.selectTestrunInfo(spaceCode, projectId, reportId, data => {
+          setTestrun({
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            testedCount: data.passedTestcaseCount + data.failedTestcaseCount + data.untestableTestcaseCount,
           });
+
+          const tester = {};
+
+          data.testcaseGroups?.forEach(testcaseGroup => {
+            testcaseGroup.testcases?.forEach(testcase => {
+              if (!tester[testcase.testerId]) {
+                const user = info.users.find(u => u.userId === testcase.testerId);
+                tester[testcase.testerId] = {
+                  userId: testcase.testerId,
+                  name: user?.name,
+                  PASSED: 0,
+                  FAILED: 0,
+                  UNTESTED: 0,
+                  UNTESTABLE: 0,
+                  TOTAL_COUNT: 0,
+                };
+              }
+
+              tester[testcase.testerId][testcase.testResult] += 1;
+              tester[testcase.testerId].TOTAL_COUNT += 1;
+            });
+          });
+
+          const groups = testcaseUtil.getTestcaseTreeData(data.testcaseGroups, 'testcaseGroupId');
+          setTestcaseGroups(groups);
+
+          setTesterProgressList(
+            Object.values(tester).sort((a, b) => {
+              return b.UNTESTED / b.TOTAL_COUNT - a.UNTESTED / a.TOTAL_COUNT;
+            }),
+          );
         });
+      },
+      null,
+      false,
+    );
 
-        const groups = testcaseUtil.getTestcaseTreeData(data.testcaseGroups, 'testcaseGroupId');
-        setTestcaseGroups(groups);
-
-        setTesterProgressList(
-          Object.values(tester).sort((a, b) => {
-            return b.UNTESTED / b.TOTAL_COUNT - a.UNTESTED / a.TOTAL_COUNT;
-          }),
-        );
-      });
-    });
-
-    TestrunService.selectTestrunCommentList(spaceCode, projectId, reportId, list => {
-      setTestrunCommentList(list);
-    });
+    TestrunService.selectTestrunCommentList(
+      spaceCode,
+      projectId,
+      reportId,
+      list => {
+        setTestrunCommentList(list);
+      },
+      null,
+      false,
+    );
   }, [projectId, reportId]);
 
   const onOpened = () => {
@@ -184,9 +196,6 @@ function ReportInfoPage() {
     });
   };
 
-  // 반응형
-  // 댓글 추가
-
   return (
     <>
       <Page className="report-info-page-wrapper">
@@ -216,7 +225,7 @@ function ReportInfoPage() {
                       <span className="range">
                         {t('@부터 @까지', {
                           from: dateUtil.getDateString(testrun.startDateTime),
-                          to: dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate),
+                          to: dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate || testrun.endDateTime),
                         })}
                       </span>
                       {testrun.testrunUsers?.map(d => {
@@ -520,6 +529,7 @@ function ReportInfoPage() {
           }}
           userId={testcaseViewerInfo.userId}
           status={testcaseViewerInfo.status}
+          resultViewOpened={popupInfo.opened}
         />
       )}
       {popupInfo.opened && (

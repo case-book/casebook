@@ -1,14 +1,33 @@
-import React from 'react';
-import { Block, Liner, Modal, ModalBody, ModalHeader, Table, Tag, Tbody, Th, THead, Tr } from '@/components';
+import React, { useEffect, useMemo } from 'react';
+import { Block, EmptyContent, Liner, Modal, ModalBody, ModalHeader, Table, Tag, Tbody, Th, THead, Tr } from '@/components';
 import PropTypes from 'prop-types';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import './TestrunTestcaseListViewerPopup.scss';
 import ReportGroupItem from '@/pages/spaces/projects/reports/ReportInfoPage/ReportGroupItem';
+import testcaseUtil from '@/utils/testcaseUtil';
+import './TestrunTestcaseListViewerPopup.scss';
 
-function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, setOpened, userId, status }) {
+function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, setOpened, userId, status, resultViewOpened }) {
   const { t } = useTranslation();
+
+  const list = useMemo(() => {
+    return testcaseUtil.getFilteredTestcaseGroupList(testcaseGroups, status, userId);
+  }, [testcaseGroups, status, userId]);
+
+  const onKeyDown = e => {
+    if (e.keyCode === 27 && !resultViewOpened) {
+      setOpened(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [resultViewOpened]);
 
   return (
     <Modal
@@ -48,37 +67,19 @@ function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, se
       </ModalHeader>
       <ModalBody className="modal-body">
         <Block border className="block" scroll>
-          <Table className="table" cols={['1px', '100%']} sticky>
-            <THead>
-              <Tr>
-                <Th align="left">{t('테스트케이스 그룹')}</Th>
-                <Th align="left">{t('테스트케이스')}</Th>
-                <Th align="left">{t('테스터')}</Th>
-                <Th align="center">{t('테스트 결과')}</Th>
-              </Tr>
-            </THead>
-            <Tbody>
-              {testcaseGroups
-                .filter(testcaseGroup => {
-                  if (!(testcaseGroup.testcases?.length > 0)) {
-                    return false;
-                  }
-
-                  if (!status && !userId) {
-                    return true;
-                  }
-
-                  if (status && userId) {
-                    return testcaseGroup.testcases?.some(testcase => {
-                      return testcase.testerId === userId && testcase.testResult === status;
-                    });
-                  }
-
-                  return testcaseGroup.testcases?.some(testcase => {
-                    return testcase.testerId === userId || testcase.testResult === status;
-                  });
-                })
-                .map(testcaseGroup => {
+          {!list || (list?.length < 1 && <EmptyContent minHeight="398px">{t('데이터가 없습니다.')}</EmptyContent>)}
+          {list?.length > 0 && (
+            <Table className="table" cols={['1px', '100%']} sticky>
+              <THead>
+                <Tr>
+                  <Th align="left">{t('테스트케이스 그룹')}</Th>
+                  <Th align="left">{t('테스트케이스')}</Th>
+                  <Th align="left">{t('테스터')}</Th>
+                  <Th align="center">{t('테스트 결과')}</Th>
+                </Tr>
+              </THead>
+              <Tbody>
+                {list.map(testcaseGroup => {
                   return (
                     <ReportGroupItem
                       key={testcaseGroup.id}
@@ -88,13 +89,13 @@ function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, se
                       userId={userId}
                       onNameClick={(groupId, id) => {
                         onItemClick({ groupId, id });
-                        // setQuery({ groupId, id });
                       }}
                     />
                   );
                 })}
-            </Tbody>
-          </Table>
+              </Tbody>
+            </Table>
+          )}
         </Block>
       </ModalBody>
     </Modal>
@@ -106,6 +107,7 @@ TestrunTestcaseListViewerPopup.defaultProps = {
   users: [],
   userId: null,
   status: null,
+  resultViewOpened: false,
 };
 
 TestrunTestcaseListViewerPopup.propTypes = {
@@ -119,6 +121,7 @@ TestrunTestcaseListViewerPopup.propTypes = {
   setOpened: PropTypes.func.isRequired,
   userId: PropTypes.number,
   status: PropTypes.string,
+  resultViewOpened: PropTypes.bool,
 };
 
 export default observer(TestrunTestcaseListViewerPopup);
