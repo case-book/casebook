@@ -24,7 +24,8 @@ function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
     const maxDepth = Math.max(...depths);
 
     for (let i = maxDepth; i >= 0; i -= 1) {
-      const targetDepthGroups = groups.filter(d => d.depth === i);
+      const targetDepthGroups = groups.filter(group => group.depth === i);
+
       if (i === 0) {
         nextGroups = nextGroups.concat(targetDepthGroups);
       } else {
@@ -48,8 +49,15 @@ function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
   return nextGroups;
 }
 
+function getFilteredTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' } = {}) {
+  return targetGroups
+    .map(group => ({ ...group, testcases: group.testcases && group.testcases.filter(testcase => (!testcaseName ? true : testcase.name.includes(testcaseName))) }))
+    .filter(group => group.name.includes(groupName));
+}
+
 const testcaseUtil = {
   getTestcaseTreeData,
+  getFilteredTestcaseGroups,
 };
 
 export default testcaseUtil;

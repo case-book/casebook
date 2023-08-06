@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Search } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
@@ -17,9 +17,12 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
   const [testRuns, setTestRuns] = useState({ highlightByRange: false });
+  const [testcaseName, setTestcaseName] = useState('');
+
+  const searchedTestcaseGroups = testcaseUtil.getFilteredTestcaseGroups(testcaseGroups, { testcaseName });
 
   useEffect(() => {
-    const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(testcaseGroups));
+    const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(searchedTestcaseGroups), 'id');
     setProjectTestcaseGroupTree(nextGroups);
     const allTestCases = testcaseGroups?.reduce((data, current) => {
       return data.concat(current.testcases);
@@ -32,7 +35,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
       minDate: new Date(Math.min.apply(null, testCaseCreationDates)),
       maxDate: new Date(Math.max.apply(null, testCaseCreationDates)),
     });
-  }, [testcaseGroups]);
+  }, [testcaseGroups, testcaseName]);
 
   const isHighlighted = testcase => {
     if (!testcase || !testcase.creationDate) {
@@ -65,6 +68,25 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
     }
   }, [currentSelectedTestcaseGroups, testcaseGroups]);
 
+  const checkAllSearchedGroups = useCallback(() => {
+    if (currentSelectedTestcaseGroups.length > 0) {
+      setCurrentSelectedTestcaseGroups([]);
+    } else {
+      setCurrentSelectedTestcaseGroups(
+        searchedTestcaseGroups?.map(d => {
+          return {
+            testcaseGroupId: d.id,
+            testcases: d.testcases?.map(item => {
+              return {
+                testcaseId: item.id,
+              };
+            }),
+          };
+        }),
+      );
+    }
+  }, [currentSelectedTestcaseGroups, searchedTestcaseGroups]);
+
   const removeParentId = (list, parentId) => {
     const targetGroupIds = testcaseGroups.filter(d => d.parentId === parentId).map(d => d.id);
 
@@ -80,10 +102,10 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   };
 
   const addChildGroup = (list, parentId) => {
-    const targetGroupIds = testcaseGroups.filter(d => d.parentId === parentId).map(d => d.id);
+    const targetGroupIds = searchedTestcaseGroups.filter(d => d.parentId === parentId).map(d => d.id);
     for (let i = 0; i < targetGroupIds.length; i += 1) {
       if (!list.find(d => d.testcaseGroupId === targetGroupIds[i])) {
-        const testcaseGroupInfo = testcaseGroups.find(d => d.id === targetGroupIds[i]);
+        const testcaseGroupInfo = searchedTestcaseGroups.find(d => d.id === targetGroupIds[i]);
         list.push({
           testcaseGroupId: targetGroupIds[i],
           testcases:
@@ -126,11 +148,11 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
 
     if (isGroup) {
       if (selectedGroupIndex > -1) {
-        const testcaseGroupInfo = testcaseGroups.find(d => d.id === testcaseGroupId);
+        const testcaseGroupInfo = searchedTestcaseGroups.find(d => d.id === testcaseGroupId);
         nextCurrentSelectedTestcaseGroups.splice(selectedGroupIndex, 1);
         removeParentId(nextCurrentSelectedTestcaseGroups, testcaseGroupInfo.id);
       } else {
-        const testcaseGroupInfo = testcaseGroups.find(d => d.id === testcaseGroupId);
+        const testcaseGroupInfo = searchedTestcaseGroups.find(d => d.id === testcaseGroupId);
 
         let parentGroupId = testcaseGroupInfo.parentId;
         while (parentGroupId) {
@@ -143,7 +165,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
           }
 
           // eslint-disable-next-line no-loop-func
-          const parentGroup = testcaseGroups.find(d => d.id === parentGroupId);
+          const parentGroup = searchedTestcaseGroups.find(d => d.id === parentGroupId);
           parentGroupId = parentGroup?.parentId;
         }
 
@@ -247,6 +269,32 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
                   }}
                 />
               </div>
+            </div>
+            <div className="search">
+              <div>
+                <Button size="sm" outline onClick={checkAllSearchedGroups}>
+                  <i className="fa-solid fa-circle-check" /> {t('검색 결과')}
+                </Button>
+              </div>
+              <div>
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+              </div>
+              <Search
+                value={testcaseName}
+                placeholder={t('테스트케이스 이름을 입력해주세요.')}
+                onSearch={value => {
+                  setTestcaseName(value);
+                }}
+              />
+              <Button
+                color="primary"
+                outline
+                onClick={() => {
+                  // TODO: 검색 버튼 클릭 시 검색 기능 추가
+                }}
+              >
+                {t('검색')}
+              </Button>
             </div>
             <div className="testcase-select-list g-no-select">
               <div>
