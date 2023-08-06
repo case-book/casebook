@@ -5,6 +5,17 @@
   &.table-border {
     border: 1px solid var(--border-color);
   }
+
+  &.sticky-header {
+    border-collapse: separate;
+    border-spacing: 0;
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+    }
+  }
 }
 
 .block-wrapper {
