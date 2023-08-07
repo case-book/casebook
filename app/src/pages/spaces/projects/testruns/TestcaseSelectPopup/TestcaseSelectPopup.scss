@@ -32,19 +32,7 @@
       }
     }
 
-    .search {
-      display: flex;
-      flex-grow: 0;
-      margin-bottom: 16px;
 
-      > div {
-        align-self: center;
-        &:nth-child(3) {
-          flex-grow: 1;
-          margin-right: 8px;
-        }
-      }
-    }
 
     .testcase-select-list {
       border: 1px solid var(--border-color);
