@@ -19,7 +19,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   const [testRuns, setTestRuns] = useState({ highlightByRange: false });
   const [testcaseName, setTestcaseName] = useState('');
 
-  const searchedTestcaseGroups = testcaseUtil.getFilteredTestcaseGroups(testcaseGroups, { testcaseName });
+  const searchedTestcaseGroups = testcaseUtil.searchTestcaseGroups(testcaseGroups, { testcaseName }) || [];
 
   useEffect(() => {
     const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(searchedTestcaseGroups), 'id');

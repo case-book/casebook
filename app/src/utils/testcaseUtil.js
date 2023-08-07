@@ -99,7 +99,7 @@ function getFilteredTestcaseList(list, status, userId) {
   });
 }
 
-function getFilteredTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' } = {}) {
+function searchTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' } = {}) {
   return targetGroups
     .map(group => ({ ...group, testcases: group.testcases && group.testcases.filter(testcase => (!testcaseName ? true : testcase.name.includes(testcaseName))) }))
     .filter(group => group.name.includes(groupName));
@@ -109,7 +109,7 @@ const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
   getFilteredTestcaseList,
-  getFilteredTestcaseGroups,
+  searchTestcaseGroups,
 };
 
 export default testcaseUtil;
