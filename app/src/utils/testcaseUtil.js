@@ -54,6 +54,7 @@ function getSummary(parentName, target, list) {
     list.push({
       name: currentName,
       testcaseGroupId: d.testcaseGroupId,
+      parentId: d.parentId,
       count: d.testcases?.length,
     });
 
