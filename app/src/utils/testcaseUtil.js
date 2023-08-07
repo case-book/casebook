@@ -48,6 +48,38 @@ function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
   return nextGroups;
 }
 
+function getSummary(parentName, target, list) {
+  target.forEach(d => {
+    const currentName = parentName ? `${parentName} > ${d.name}` : d.name;
+    list.push({
+      name: currentName,
+      testcaseGroupId: d.testcaseGroupId,
+      count: d.testcases?.length,
+    });
+
+    if (d.children?.length > 0) {
+      getSummary(currentName, d.children, list);
+    }
+  });
+}
+
+function getSelectedTestcaseGroupSummary(selectedTestcaseGroups, testcaseGroups) {
+  const nextSelectedTestcaseGroups = cloneDeep(selectedTestcaseGroups);
+  nextSelectedTestcaseGroups.forEach(testcaseGroup => {
+    const targetTestcaseGroups = testcaseGroup;
+    const originalTestcaseGroup = testcaseGroups.find(e => e.id === testcaseGroup.testcaseGroupId);
+    targetTestcaseGroups.depth = originalTestcaseGroup.depth;
+    targetTestcaseGroups.itemOrder = originalTestcaseGroup.itemOrder;
+    targetTestcaseGroups.parentId = originalTestcaseGroup.parentId;
+    targetTestcaseGroups.name = originalTestcaseGroup.name;
+  });
+
+  const list = getTestcaseTreeData(nextSelectedTestcaseGroups, 'testcaseGroupId');
+  const result = [];
+  getSummary('', list, result);
+  return result;
+}
+
 function getFilteredTestcaseGroupList(list, status, userId) {
   return list.filter(testcaseGroup => {
     if (!(testcaseGroup.testcases?.length > 0) && !(testcaseGroup.children?.length > 0)) {
@@ -110,6 +142,8 @@ const testcaseUtil = {
   getFilteredTestcaseGroupList,
   getFilteredTestcaseList,
   searchTestcaseGroups,
+  getSummary,
+  getSelectedTestcaseGroupSummary,
 };
 
 export default testcaseUtil;
