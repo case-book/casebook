@@ -35,6 +35,7 @@ module.exports = {
           ['@/', './src/'],
           ['@/images', './src/images'],
           ['@/vendor', './src/vendor'],
+          ['@/assets', './src/assets'],
           ['@/components', './src/components'],
           ['@/pages', './src/pages'],
           ['@/stores', './src/stores'],

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Button.scss';
 
 import ReactTooltip from 'react-tooltip';
 
-function Button(props) {
+const Button = forwardRef((props, forwardedRef) => {
   const { className, type, size, outline, children, shadow, color, rounded, onClick, disabled, tip } = props;
 
   useEffect(() => {
@@ -13,6 +13,7 @@ function Button(props) {
 
   return (
     <button
+      ref={forwardedRef}
       type={type}
       className={`g-no-select btn-wrapper btn${outline ? '-outline' : ''} btn-${color ? `${color}` : ''} btn-${size} ${className} ${disabled ? 'disabled' : ''} ${shadow ? '' : 'shadow-none'} ${
         rounded ? 'rounded' : ''
@@ -25,7 +26,7 @@ function Button(props) {
       {children}
     </button>
   );
-}
+});
 
 Button.defaultProps = {
   className: '',

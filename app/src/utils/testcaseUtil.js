@@ -49,6 +49,57 @@ function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
   return nextGroups;
 }
 
+function getFilteredTestcaseGroupList(list, status, userId) {
+  return list.filter(testcaseGroup => {
+    if (!(testcaseGroup.testcases?.length > 0) && !(testcaseGroup.children?.length > 0)) {
+      return false;
+    }
+
+    if (!status && !userId) {
+      return true;
+    }
+
+    let hasFilteredTestcase = false;
+
+    if (status && userId) {
+      hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
+        return testcase.testerId === userId && testcase.testResult === status;
+      });
+    } else {
+      hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
+        return testcase.testerId === userId || testcase.testResult === status;
+      });
+    }
+
+    if (hasFilteredTestcase) {
+      return true;
+    }
+
+    if (testcaseGroup.children?.length > 0) {
+      const chidrenList = getFilteredTestcaseGroupList(testcaseGroup.children, status, userId);
+      if (chidrenList?.length > 0) {
+        return true;
+      }
+    }
+
+    return false;
+  });
+}
+
+function getFilteredTestcaseList(list, status, userId) {
+  return list?.filter(testcase => {
+    if (!status && !userId) {
+      return true;
+    }
+
+    if (status && userId) {
+      return testcase.testerId === userId && testcase.testResult === status;
+    }
+
+    return testcase.testerId === userId || testcase.testResult === status;
+  });
+}
+
 function getFilteredTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' } = {}) {
   return targetGroups
     .map(group => ({ ...group, testcases: group.testcases && group.testcases.filter(testcase => (!testcaseName ? true : testcase.name.includes(testcaseName))) }))
@@ -57,6 +108,8 @@ function getFilteredTestcaseGroups(targetGroups, { groupName = '', testcaseName 
 
 const testcaseUtil = {
   getTestcaseTreeData,
+  getFilteredTestcaseGroupList,
+  getFilteredTestcaseList,
   getFilteredTestcaseGroups,
 };
 

@@ -1,0 +1,49 @@
+.testrun-testcase-list-viewer-popup-wrapper {
+  .modal-title {
+    display: flex;
+    > div {
+      align-self: center;
+    }
+
+    .status {
+      &.PASSED {
+        background-color: var(--success-color);
+        color: var(--white-color);
+      }
+
+      &.FAILED {
+        background-color: var(--danger-color);
+        color: var(--white-color);
+      }
+
+      &.UNTESTABLE,
+      &.UNTESTED {
+        background-color: var(--gray-color);
+        color: var(--white-color);
+      }
+    }
+  }
+  .modal-body {
+    padding: 1rem !important;
+
+    .table {
+      margin-top: 0;
+
+      tr {
+        td {
+          border-bottom: 1px solid var(--border-color);
+          border-right: 1px solid var(--border-color);
+          &:last-child {
+            border-right: none;
+          }
+        }
+      }
+    }
+
+    .block {
+      margin: 0 !important;
+      min-height: 400px !important;
+      max-height: 400px !important;
+    }
+  }
+}

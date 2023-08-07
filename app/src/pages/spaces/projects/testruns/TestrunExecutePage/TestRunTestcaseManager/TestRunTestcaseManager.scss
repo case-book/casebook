@@ -311,52 +311,10 @@
           margin-bottom: 0.5rem;
         }
 
-        .comment-list {
-          .empty-comments {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-size: 14px;
-          }
-          > ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            > li.comment {
-              padding: 1px 1rem 10px;
-              box-sizing: border-box;
-              border: 1px solid var(--border-light-color);
-              margin-bottom: 1rem;
-              border-radius: 2px;
-
-              .comment-content {
-                .toastui-editor-contents {
-                  font-family: NanumSquareNeo, sans-serif;
-                }
-              }
-
-              .comment-user-info {
-                display: flex;
-                font-size: 12px;
-                color: $gray-600;
-
-                > div {
-                  &:first-child {
-                    flex-grow: 1;
-                    text-align: right;
-                  }
-                }
-              }
-
-              a {
-                color: $danger;
-              }
-            }
-          }
-        }
-
         .comment-editor {
+          margin-top: 10px;
           .buttons {
-            margin-top: 1rem;
+            margin-top: 10px;
             text-align: right;
             button {
               margin-left: 0.5rem;

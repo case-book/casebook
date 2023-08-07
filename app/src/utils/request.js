@@ -206,7 +206,7 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
   }
 
   const messageId = (performance && performance.now && performance.now()) || Date.now();
-  if (message) {
+  if (showLoading && message) {
     rootStore.controlStore.addRequestMessage(messageId, message);
   }
 
@@ -222,7 +222,7 @@ export function get(url, data, successHandler, errorHandler, ref, noAuth, showLo
       processError(errorHandler, error);
     })
     .finally(() => {
-      if (message) {
+      if (showLoading && message) {
         rootStore.controlStore.removeRequestMessage(messageId);
       }
       if (showLoading !== false) {

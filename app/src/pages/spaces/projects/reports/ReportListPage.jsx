@@ -265,9 +265,11 @@ function ReportListPage() {
                         <span className="label">{t('테스트 기간')}</span>
                         {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
                         <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
-                          {(testrun.startDateTime || testrun.closedDate) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
-                          {testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}</span>}
-                          {!testrun.startDateTime && testrun.closedDate && <span>{dateUtil.getDateString(testrun.closedDate)}</span>}
+                          {(testrun.startDateTime || testrun.closedDate || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
+                          {testrun.startDateTime && (testrun.closedDate || testrun.endDateTime) && (
+                            <span>{dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate || testrun.endDateTime)}</span>
+                          )}
+                          {!testrun.startDateTime && (testrun.closedDate || testrun.endDateTime) && <span>{dateUtil.getDateString(testrun.closedDate || testrun.endDateTime)}</span>}
                         </div>
                       </div>
                     </div>
@@ -371,7 +373,7 @@ function ReportListPage() {
                         </div>
                       </Td>
                       <Td className="date">
-                        {dateUtil.getDateString(testrun.startDateTime)} ~ {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate)}
+                        {dateUtil.getDateString(testrun.startDateTime)} ~ {dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate || testrun.endDateTime)}
                       </Td>
                       <Td align="center">
                         <Button

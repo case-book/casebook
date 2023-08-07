@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import './CommonDialog.scss';
 function MessageDialog({ className, category, title, message, okHandler, okText }) {
   const { t } = useTranslation();
   const { controlStore } = useStores();
+  const buttonElement = useRef(null);
 
   const onKeyDown = e => {
     if (e.keyCode === 13 || e.keyCode === 27) {
@@ -18,6 +19,9 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
+    if (buttonElement.current) {
+      buttonElement.current.focus();
+    }
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
@@ -48,6 +52,7 @@ function MessageDialog({ className, category, title, message, okHandler, okText 
       </ModalBody>
       <ModalFooter>
         <Button
+          ref={buttonElement}
           outline
           onClick={() => {
             controlStore.setMessage(null);
