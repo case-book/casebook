@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader, Search } from '@/components';
+import { Button, DateRange, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
 import useStores from '@/hooks/useStores';
+import moment from 'moment/moment';
+import dateUtil from '@/utils/dateUtil';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelectPopup.scss';
 
@@ -16,7 +18,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   } = useStores();
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
-  const [testRuns, setTestRuns] = useState({ highlightByRange: false });
+  const [testRuns, setTestRuns] = useState({ minDate: null, maxDate: null });
   const [testcaseName, setTestcaseName] = useState('');
 
   const searchedTestcaseGroups = testcaseUtil.searchTestcaseGroups(testcaseGroups, { testcaseName }) || [];
@@ -28,22 +30,16 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
       return data.concat(current.testcases);
     }, []);
     const testCaseCreationDates = allTestCases.reduce((data, current) => {
-      return data.concat(new Date(current.creationDate));
+      return data.concat(dateUtil.getLocalDate(current.creationDate).valueOf());
     }, []);
+
+    // console.log(moment(Math.max.apply(null, testCaseCreationDates)));
     setTestRuns({
       ...testRuns,
-      minDate: new Date(Math.min.apply(null, testCaseCreationDates)),
-      maxDate: new Date(Math.max.apply(null, testCaseCreationDates)),
+      minDate: moment(Math.min.apply(null, testCaseCreationDates)),
+      maxDate: moment(Math.max.apply(null, testCaseCreationDates)),
     });
-  }, [testcaseGroups, testcaseName]);
-
-  const isHighlighted = testcase => {
-    if (!testcase || !testcase.creationDate) {
-      return false;
-    }
-    const creationDate = new Date(testcase.creationDate);
-    return creationDate >= testRuns.minDate && creationDate <= testRuns.maxDate;
-  };
+  }, [testcaseGroups]);
 
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(cloneDeep(selectedTestcaseGroups));
@@ -219,7 +215,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
       }}
     >
       <ModalHeader className="modal-header">
-        <span>테스트케이스 선택</span>
+        <span>{t('테스트케이스 선택')}</span>
       </ModalHeader>
       <ModalBody className="modal-body">
         {projectTestcaseGroupTree && projectTestcaseGroupTree?.length < 1 && (
@@ -234,44 +230,6 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
                 <Button size="sm" outline onClick={allCheck}>
                   <i className="fa-solid fa-circle-check" /> {t('모두 선택')}
                 </Button>
-              </div>
-              <div>
-                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
-              </div>
-              <div>
-                <CheckBox
-                  className="range-highlight-checkbox"
-                  size="sm"
-                  value={testRuns.highlightByRange}
-                  onChange={() => {
-                    setTestRuns({
-                      ...testRuns,
-                      highlightByRange: !testRuns.highlightByRange,
-                    });
-                  }}
-                  label={t('생성 시간으로 하이라이팅')}
-                />
-              </div>
-              <div>
-                <DateRange
-                  size="sm"
-                  country={user.country}
-                  language={user.language}
-                  startDate={testRuns.minDate.getTime()}
-                  endDate={testRuns.maxDate.getTime()}
-                  startDateKey="minDate"
-                  endDateKey="maxDate"
-                  onChange={(key, value) => {
-                    setTestRuns({
-                      ...testRuns,
-                      [key]: new Date(value),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-            <div className="search">
-              <div>
                 <Button size="sm" outline onClick={checkAllSearchedGroups}>
                   <i className="fa-solid fa-circle-check" /> {t('검색 결과')}
                 </Button>
@@ -279,40 +237,70 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
               <div>
                 <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
               </div>
-              <Search
-                value={testcaseName}
-                placeholder={t('테스트케이스 이름을 입력해주세요.')}
-                onSearch={value => {
-                  setTestcaseName(value);
-                }}
-              />
-              <Button
-                color="primary"
-                outline
-                onClick={() => {
-                  // TODO: 검색 버튼 클릭 시 검색 기능 추가
-                }}
-              >
-                {t('검색')}
-              </Button>
+              <div>
+                <Button
+                  rounded
+                  size="sm"
+                  onClick={() => {
+                    setTestcaseName('');
+                    setTestRuns({
+                      minDate: null,
+                      maxDate: null,
+                    });
+                  }}
+                >
+                  <i className="fa-solid fa-filter" />
+                </Button>
+              </div>
+
+              <div>
+                <DateRange
+                  size="sm"
+                  country={user.country}
+                  language={user.language}
+                  startDate={testRuns.minDate?.valueOf()}
+                  endDate={testRuns.maxDate?.valueOf()}
+                  startDateKey="minDate"
+                  endDateKey="maxDate"
+                  onChange={(key, value) => {
+                    setTestRuns({
+                      ...testRuns,
+                      [key]: moment(value),
+                    });
+                  }}
+                />
+              </div>
+              <Input value={testcaseName} size="sm" placeholder={t('테스트케이스 이름을 입력해주세요.')} onChange={value => setTestcaseName(value)} />
             </div>
+
             <div className="testcase-select-list g-no-select">
               <div>
                 <ul>
-                  {projectTestcaseGroupTree?.map(testcaseGroup => {
-                    const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-                    return (
-                      <TestcaseSelectorGroup
-                        key={testcaseGroup.id}
-                        testcaseGroup={testcaseGroup}
-                        selected={selected}
-                        selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
-                        onClick={onClick}
-                        highlighted={testRuns.highlightByRange}
-                        isHighlighted={isHighlighted}
-                      />
-                    );
-                  })}
+                  {projectTestcaseGroupTree
+                    ?.filter(testcaseGroup => testcaseUtil.isGroupFilterdByName(testcaseGroup, testcaseName))
+                    ?.filter(testcaseGroup => testcaseUtil.isGroupFilterdByRange(testcaseGroup, testRuns.minDate, testRuns.maxDate))
+                    .map(testcaseGroup => {
+                      const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+                      const filteredTestcaseGroup = {
+                        ...testcaseGroup,
+                        testcases: testcaseGroup.testcases
+                          .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, testcaseName))
+                          .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, testRuns.minDate, testRuns.maxDate)),
+                      };
+
+                      return (
+                        <TestcaseSelectorGroup
+                          key={testcaseGroup.id}
+                          testcaseGroup={filteredTestcaseGroup}
+                          selected={selected}
+                          selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
+                          onClick={onClick}
+                          testcaseName={testcaseName}
+                          minDate={testRuns.minDate}
+                          maxDate={testRuns.maxDate}
+                        />
+                      );
+                    })}
                 </ul>
               </div>
             </div>

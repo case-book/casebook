@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash';
+import dateUtil from '@/utils/dateUtil';
 
 function sort(list) {
   list.sort((a, b) => {
@@ -139,6 +140,105 @@ function searchTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' 
     .filter(group => group.name.includes(groupName));
 }
 
+function isGroupFilterdByRange(targetGroup, minDate, maxDate) {
+  if (!minDate && !maxDate) {
+    return true;
+  }
+
+  const testcaseFiltered = targetGroup.testcases?.some(testcase => {
+    if (!testcase || !testcase.creationDate) {
+      return false;
+    }
+    const creationDate = dateUtil.getLocalDate(testcase.creationDate);
+    if (minDate && maxDate) {
+      return creationDate.isSameOrAfter(minDate) && creationDate.isSameOrBefore(maxDate);
+    }
+
+    if (minDate) {
+      return creationDate.isSameOrAfter(minDate);
+    }
+
+    if (maxDate) {
+      return creationDate.isSameOrBefore(maxDate);
+    }
+
+    return false;
+  });
+
+  if (testcaseFiltered) {
+    return true;
+  }
+
+  if (targetGroup.children?.length > 0) {
+    return targetGroup.children.some(group => {
+      return isGroupFilterdByRange(group, minDate, maxDate);
+    });
+  }
+
+  return false;
+}
+
+function isFilteredTestcaseByRange(testcase, minDate, maxDate) {
+  if (!testcase || !testcase.creationDate) {
+    return false;
+  }
+
+  if (!minDate && !maxDate) {
+    return true;
+  }
+
+  const creationDate = dateUtil.getLocalDate(testcase.creationDate);
+  if (minDate && maxDate) {
+    return creationDate.isSameOrAfter(minDate) && creationDate.isSameOrBefore(maxDate);
+  }
+
+  if (minDate) {
+    return creationDate.isSameOrAfter(minDate);
+  }
+
+  if (maxDate) {
+    return creationDate.isSameOrBefore(maxDate);
+  }
+
+  return false;
+}
+
+function isGroupFilterdByName(targetGroup, name) {
+  if (!name) {
+    return true;
+  }
+
+  if (targetGroup.name.indexOf(name) > -1) {
+    return true;
+  }
+
+  const testcaseFiltered = targetGroup.testcases?.some(testcase => {
+    return testcase.name.indexOf(name) > -1;
+  });
+
+  if (testcaseFiltered) {
+    return true;
+  }
+
+  if (targetGroup.children?.length > 0) {
+    return targetGroup.children.some(group => {
+      return isGroupFilterdByName(group, name);
+    });
+  }
+
+  return false;
+}
+
+function isFilteredTestcaseByName(testcase, name) {
+  console.log(testcase.name, name);
+  if (testcase.name.indexOf(name) > -1) {
+    console.log(testcase.name, name);
+    return true;
+  }
+
+  return false;
+}
+
 const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
@@ -146,6 +246,10 @@ const testcaseUtil = {
   searchTestcaseGroups,
   getSummary,
   getSelectedTestcaseGroupSummary,
+  isGroupFilterdByRange,
+  isFilteredTestcaseByRange,
+  isGroupFilterdByName,
+  isFilteredTestcaseByName,
 };
 
 export default testcaseUtil;
