@@ -442,11 +442,12 @@ function TestrunEditPage({ type }) {
                 {selectedTestcaseGroupSummary?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
                 {selectedTestcaseGroupSummary?.length > 0 && (
                   <Block className="summary-list" scroll maxHeight="600px" border>
-                    <Table cols={['', '200px']} sticky>
+                    <Table cols={['', '200px', '100px']} sticky>
                       <THead>
                         <Tr>
                           <Th align="left">{t('테스트케이스 그룹')}</Th>
                           <Th align="right">{t('선택 테스트케이스')}</Th>
+                          <Th />
                         </Tr>
                       </THead>
                       <Tbody>
@@ -455,6 +456,31 @@ function TestrunEditPage({ type }) {
                             <Tr key={summary.testcaseGroupId}>
                               <Td>{summary.name}</Td>
                               <Td align="right">{t('@ 테스트케이스', { count: summary.count })}</Td>
+                              <Td align="center">
+                                <Button
+                                  outline
+                                  color="danger"
+                                  size="xs"
+                                  onClick={() => {
+                                    const nextTestcaseGroups = testrun.testcaseGroups.slice(0);
+                                    const index = nextTestcaseGroups.findIndex(d => d.testcaseGroupId === summary.testcaseGroupId);
+
+                                    if (index > -1) {
+                                      const hasChild = selectedTestcaseGroupSummary.some(d => d.parentId && d.parentId === summary.testcaseGroupId);
+                                      if (hasChild) {
+                                        nextTestcaseGroups[index].testcases = [];
+                                      } else {
+                                        nextTestcaseGroups.splice(index, 1);
+                                      }
+
+                                      onChangeTestrun('testcaseGroups', nextTestcaseGroups);
+                                      setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(nextTestcaseGroups, project.testcaseGroups));
+                                    }
+                                  }}
+                                >
+                                  {t('삭제')}
+                                </Button>
+                              </Td>
                             </Tr>
                           );
                         })}
@@ -494,6 +520,7 @@ function TestrunEditPage({ type }) {
           setOpened={setTestcaseSelectPopupOpened}
           onApply={selectedTestcaseGroups => {
             setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroups, project.testcaseGroups));
+
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
           }}
         />
