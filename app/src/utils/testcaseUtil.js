@@ -134,13 +134,7 @@ function getFilteredTestcaseList(list, status, userId) {
   });
 }
 
-function searchTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' } = {}) {
-  return targetGroups
-    .map(group => ({ ...group, testcases: group.testcases && group.testcases.filter(testcase => (!testcaseName ? true : testcase.name.includes(testcaseName))) }))
-    .filter(group => group.name.includes(groupName));
-}
-
-function isGroupFilterdByRange(targetGroup, minDate, maxDate) {
+function isGroupFilteredByRange(targetGroup, minDate, maxDate) {
   if (!minDate && !maxDate) {
     return true;
   }
@@ -171,7 +165,7 @@ function isGroupFilterdByRange(targetGroup, minDate, maxDate) {
 
   if (targetGroup.children?.length > 0) {
     return targetGroup.children.some(group => {
-      return isGroupFilterdByRange(group, minDate, maxDate);
+      return isGroupFilteredByRange(group, minDate, maxDate);
     });
   }
 
@@ -203,7 +197,7 @@ function isFilteredTestcaseByRange(testcase, minDate, maxDate) {
   return false;
 }
 
-function isGroupFilterdByName(targetGroup, name) {
+function isGroupFilteredByName(targetGroup, name) {
   if (!name) {
     return true;
   }
@@ -222,7 +216,7 @@ function isGroupFilterdByName(targetGroup, name) {
 
   if (targetGroup.children?.length > 0) {
     return targetGroup.children.some(group => {
-      return isGroupFilterdByName(group, name);
+      return isGroupFilteredByName(group, name);
     });
   }
 
@@ -230,9 +224,7 @@ function isGroupFilterdByName(targetGroup, name) {
 }
 
 function isFilteredTestcaseByName(testcase, name) {
-  console.log(testcase.name, name);
   if (testcase.name.indexOf(name) > -1) {
-    console.log(testcase.name, name);
     return true;
   }
 
@@ -243,12 +235,11 @@ const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
   getFilteredTestcaseList,
-  searchTestcaseGroups,
   getSummary,
   getSelectedTestcaseGroupSummary,
-  isGroupFilterdByRange,
+  isGroupFilteredByRange,
   isFilteredTestcaseByRange,
-  isGroupFilterdByName,
+  isGroupFilteredByName,
   isFilteredTestcaseByName,
 };
 

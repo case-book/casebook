@@ -3,13 +3,16 @@
 
   > div {
     height: calc(100% - 80px);
+    display: flex;
+    flex-direction: column;
   }
 
   .modal-body {
     position: relative;
     padding-top: 16px !important;
     overflow-y: hidden !important;
-    height: 100%;
+    max-height: none !important;
+    flex-grow: 1;
 
     .content {
       display: flex;
@@ -18,10 +21,28 @@
       overflow-y: hidden;
     }
 
-    .testrun-range-highlight-row {
+    .testrun-filter {
       display: flex;
       flex-grow: 0;
       margin-bottom: 16px;
+
+      .icon {
+        margin-right: 0.5rem;
+      }
+
+      .filter-button {
+        margin-right: 0.5rem;
+      }
+
+      .date-range {
+        margin-right: 0.5rem;
+
+        .fill-button {
+          margin-right: 0;
+          border-color: transparent;
+
+        }
+      }
 
       > div {
         align-self: center;
@@ -31,8 +52,6 @@
         margin-right: 1rem;
       }
     }
-
-
 
     .testcase-select-list {
       border: 1px solid var(--border-color);
