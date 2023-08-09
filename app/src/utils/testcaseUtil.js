@@ -1,4 +1,5 @@
 import { cloneDeep } from 'lodash';
+import dateUtil from '@/utils/dateUtil';
 
 function sort(list) {
   list.sort((a, b) => {
@@ -47,6 +48,39 @@ function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
 
   sort(nextGroups);
   return nextGroups;
+}
+
+function getSummary(parentName, target, list) {
+  target.forEach(d => {
+    const currentName = parentName ? `${parentName} > ${d.name}` : d.name;
+    list.push({
+      name: currentName,
+      testcaseGroupId: d.testcaseGroupId,
+      parentId: d.parentId,
+      count: d.testcases?.length,
+    });
+
+    if (d.children?.length > 0) {
+      getSummary(currentName, d.children, list);
+    }
+  });
+}
+
+function getSelectedTestcaseGroupSummary(selectedTestcaseGroups, testcaseGroups) {
+  const nextSelectedTestcaseGroups = cloneDeep(selectedTestcaseGroups);
+  nextSelectedTestcaseGroups.forEach(testcaseGroup => {
+    const targetTestcaseGroups = testcaseGroup;
+    const originalTestcaseGroup = testcaseGroups.find(e => e.id === testcaseGroup.testcaseGroupId);
+    targetTestcaseGroups.depth = originalTestcaseGroup.depth;
+    targetTestcaseGroups.itemOrder = originalTestcaseGroup.itemOrder;
+    targetTestcaseGroups.parentId = originalTestcaseGroup.parentId;
+    targetTestcaseGroups.name = originalTestcaseGroup.name;
+  });
+
+  const list = getTestcaseTreeData(nextSelectedTestcaseGroups, 'testcaseGroupId');
+  const result = [];
+  getSummary('', list, result);
+  return result;
 }
 
 function getFilteredTestcaseGroupList(list, status, userId) {
@@ -100,17 +134,113 @@ function getFilteredTestcaseList(list, status, userId) {
   });
 }
 
-function searchTestcaseGroups(targetGroups, { groupName = '', testcaseName = '' } = {}) {
-  return targetGroups
-    .map(group => ({ ...group, testcases: group.testcases && group.testcases.filter(testcase => (!testcaseName ? true : testcase.name.includes(testcaseName))) }))
-    .filter(group => group.name.includes(groupName));
+function isGroupFilteredByRange(targetGroup, minDate, maxDate) {
+  if (!minDate && !maxDate) {
+    return true;
+  }
+
+  const testcaseFiltered = targetGroup.testcases?.some(testcase => {
+    if (!testcase || !testcase.creationDate) {
+      return false;
+    }
+    const creationDate = dateUtil.getLocalDate(testcase.creationDate);
+    if (minDate && maxDate) {
+      return creationDate.isSameOrAfter(minDate) && creationDate.isSameOrBefore(maxDate);
+    }
+
+    if (minDate) {
+      return creationDate.isSameOrAfter(minDate);
+    }
+
+    if (maxDate) {
+      return creationDate.isSameOrBefore(maxDate);
+    }
+
+    return false;
+  });
+
+  if (testcaseFiltered) {
+    return true;
+  }
+
+  if (targetGroup.children?.length > 0) {
+    return targetGroup.children.some(group => {
+      return isGroupFilteredByRange(group, minDate, maxDate);
+    });
+  }
+
+  return false;
+}
+
+function isFilteredTestcaseByRange(testcase, minDate, maxDate) {
+  if (!testcase || !testcase.creationDate) {
+    return false;
+  }
+
+  if (!minDate && !maxDate) {
+    return true;
+  }
+
+  const creationDate = dateUtil.getLocalDate(testcase.creationDate);
+  if (minDate && maxDate) {
+    return creationDate.isSameOrAfter(minDate) && creationDate.isSameOrBefore(maxDate);
+  }
+
+  if (minDate) {
+    return creationDate.isSameOrAfter(minDate);
+  }
+
+  if (maxDate) {
+    return creationDate.isSameOrBefore(maxDate);
+  }
+
+  return false;
+}
+
+function isGroupFilteredByName(targetGroup, name) {
+  if (!name) {
+    return true;
+  }
+
+  if (targetGroup.name.indexOf(name) > -1) {
+    return true;
+  }
+
+  const testcaseFiltered = targetGroup.testcases?.some(testcase => {
+    return testcase.name.indexOf(name) > -1;
+  });
+
+  if (testcaseFiltered) {
+    return true;
+  }
+
+  if (targetGroup.children?.length > 0) {
+    return targetGroup.children.some(group => {
+      return isGroupFilteredByName(group, name);
+    });
+  }
+
+  return false;
+}
+
+function isFilteredTestcaseByName(testcase, name) {
+  if (testcase.name.indexOf(name) > -1) {
+    return true;
+  }
+
+  return false;
 }
 
 const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
   getFilteredTestcaseList,
-  searchTestcaseGroups,
+  getSummary,
+  getSelectedTestcaseGroupSummary,
+  isGroupFilteredByRange,
+  isFilteredTestcaseByRange,
+  isGroupFilteredByName,
+  isFilteredTestcaseByName,
 };
 
 export default testcaseUtil;
