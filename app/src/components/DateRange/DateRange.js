@@ -9,41 +9,77 @@ import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomIn
 import dateUtil from '@/utils/dateUtil';
 import Liner from '@/components/Liner/Liner';
 import './DateRange.scss';
+import { Button } from '@/components';
 
 registerLocale('ko', ko);
 registerLocale('en', en);
 
-function DateRange({ className, language, startDate, endDate, outline, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey }) {
+function DateRange({ className, language, startDate, endDate, outline, onChange, size, showTimeSelect, showTimeSelectOnly, startDateKey, endDateKey, nullable, control }) {
   return (
     <div className={`date-range-wrapper ${className} size-${size} ${outline ? 'outline' : ''}`}>
       <div>
-        <DatePicker
-          className="date-picker start-date-picker"
-          selected={startDate ? new Date(startDate) : null}
-          showTimeSelect={showTimeSelect}
-          showTimeSelectOnly={showTimeSelectOnly}
-          onChange={date => {
-            onChange(startDateKey, date.getTime());
-          }}
-          locale={language}
-          customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hoursMinutes' : 'full'].picker}
-        />
+        <div>
+          <DatePicker
+            className="date-picker start-date-picker"
+            selected={startDate ? new Date(startDate) : null}
+            showTimeSelect={showTimeSelect}
+            showTimeSelectOnly={showTimeSelectOnly}
+            onChange={date => {
+              onChange(startDateKey, date.getTime());
+            }}
+            locale={language}
+            customInput={<DateCustomInput />}
+            dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hoursMinutes' : 'full'].picker}
+          />
+        </div>
+        {nullable && (
+          <div>
+            <Button
+              className="clear-button"
+              size="xs"
+              rounded
+              outline={false}
+              onClick={() => {
+                onChange(startDateKey, null);
+              }}
+            >
+              <i className="fa-solid fa-xmark" />
+            </Button>
+          </div>
+        )}
       </div>
       <Liner className="dash" width="10px" height="1px" display="inline-block" color="black" margin="0 0.75rem 0 0.5rem" />
       <div>
-        <DatePicker
-          className="date-picker end-date-picker"
-          selected={endDate ? new Date(endDate) : null}
-          showTimeSelect={showTimeSelect}
-          showTimeSelectOnly={showTimeSelectOnly}
-          onChange={date => {
-            onChange(endDateKey, date.getTime());
-          }}
-          locale={language}
-          customInput={<DateCustomInput />}
-          dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][showTimeSelectOnly ? 'hoursMinutes' : 'full'].picker}
-        />
+        <div>
+          <DatePicker
+            className="date-picker end-date-picker"
+            selected={endDate ? new Date(endDate) : null}
+            showTimeSelect={showTimeSelect}
+            showTimeSelectOnly={showTimeSelectOnly}
+            onChange={date => {
+              onChange(endDateKey, date.getTime());
+            }}
+            locale={language}
+            customInput={<DateCustomInput />}
+            dateFormat={DATE_FORMATS[dateUtil.getUserLocale()][dateUtil.getEndDateFormat(new Date(startDate), new Date(endDate))].picker}
+          />
+        </div>
+        {nullable && (
+          <div>
+            <Button
+              className="clear-button"
+              size="xs"
+              rounded
+              outline={false}
+              onClick={() => {
+                onChange(endDateKey, null);
+              }}
+            >
+              <i className="fa-solid fa-xmark" />
+            </Button>
+          </div>
+        )}
+        {control && control}
       </div>
     </div>
   );
@@ -63,6 +99,8 @@ DateRange.defaultProps = {
   endDate: null,
   onChange: null,
   outline: true,
+  nullable: false,
+  control: null,
 };
 
 DateRange.propTypes = {
@@ -77,4 +115,6 @@ DateRange.propTypes = {
   startDateKey: PropTypes.string,
   endDateKey: PropTypes.string,
   outline: PropTypes.bool,
+  nullable: PropTypes.bool,
+  control: PropTypes.node,
 };

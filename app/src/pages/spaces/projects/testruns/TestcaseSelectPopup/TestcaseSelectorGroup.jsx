@@ -71,29 +71,30 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
           </ul>
         </div>
       )}
-      {testcaseGroup.children?.map(d => {
-        const childrenSelected = selectedTestcaseGroups.findIndex(i => i.testcaseGroupId === d.id) > -1;
+      {opened &&
+        testcaseGroup.children?.map(d => {
+          const childrenSelected = selectedTestcaseGroups.findIndex(i => i.testcaseGroupId === d.id) > -1;
 
-        const filteredTestcaseGroup = {
-          ...d,
-          testcases: d.testcases
-            .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, testcaseName))
-            .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate)),
-        };
+          const filteredTestcaseGroup = {
+            ...d,
+            testcases: d.testcases
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, testcaseName))
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate)),
+          };
 
-        return (
-          <TestcaseSelectorGroup
-            key={d.id}
-            testcaseGroup={filteredTestcaseGroup}
-            selected={childrenSelected}
-            onClick={onClick}
-            selectedTestcaseGroups={selectedTestcaseGroups}
-            testcaseName={testcaseName}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
-        );
-      })}
+          return (
+            <TestcaseSelectorGroup
+              key={d.id}
+              testcaseGroup={filteredTestcaseGroup}
+              selected={childrenSelected}
+              onClick={onClick}
+              selectedTestcaseGroups={selectedTestcaseGroups}
+              testcaseName={testcaseName}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
+          );
+        })}
     </div>
   );
 }

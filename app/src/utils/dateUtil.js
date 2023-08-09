@@ -24,35 +24,30 @@ function getDateString(val, format) {
     .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
 }
 
-function getEndDateString(startVal, endVal, format) {
+function getEndDateFormat(startVal, endVal) {
   const start = moment.utc(startVal);
   const end = moment.utc(endVal);
 
   if (start.year() === end.year() && start.month() === end.month() && start.date() === end.date()) {
-    return moment
-      .utc(endVal)
-      .local()
-      .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.hoursMinutes].moment);
+    return DATE_FORMATS_TYPES.hoursMinutes;
   }
 
   if (start.year() === end.year() && start.month() === end.month()) {
-    return moment
-      .utc(endVal)
-      .local()
-      .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.daysHoursMinutes].moment);
+    return DATE_FORMATS_TYPES.daysHoursMinutes;
   }
 
   if (start.year() === end.year()) {
-    return moment
-      .utc(endVal)
-      .local()
-      .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.monthsDaysHoursMinutes].moment);
+    return DATE_FORMATS_TYPES.monthsDaysHoursMinutes;
   }
 
+  return DATE_FORMATS_TYPES.full;
+}
+
+function getEndDateString(startVal, endVal, format) {
   return moment
     .utc(endVal)
     .local()
-    .format(DATE_FORMATS[getUserLocale()][format || DATE_FORMATS_TYPES.full].moment);
+    .format(DATE_FORMATS[getUserLocale()][format || getEndDateFormat(startVal, endVal)].moment);
 }
 
 function getLocalDateISOString(val) {
@@ -202,6 +197,7 @@ const dateUtil = {
   isSameYear,
   getHourMinute,
   getHourMinuteTime,
+  getEndDateFormat,
 };
 
 export default dateUtil;

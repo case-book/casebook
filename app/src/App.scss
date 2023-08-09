@@ -30,6 +30,7 @@
 
         .logo-icon {
           margin-right: 0.5rem;
+          line-height: 0;
         }
 
         > div {
@@ -50,7 +51,7 @@
         right: 0;
         margin-bottom: 1rem;
         > div:first-child {
-          margin-bottom: 0.5rem;
+          margin-bottom: 1rem;
         }
       }
     }

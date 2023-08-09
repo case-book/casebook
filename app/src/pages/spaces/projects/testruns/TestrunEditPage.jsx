@@ -5,6 +5,7 @@ import {
   CheckBox,
   CloseIcon,
   DateRange,
+  EmptyContent,
   Form,
   Input,
   Label,
@@ -447,7 +448,7 @@ function TestrunEditPage({ type }) {
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth} />
-                {selectedTestcaseGroupSummary?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
+                {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
                 {selectedTestcaseGroupSummary?.length > 0 && (
                   <Block className="summary-list" scroll maxHeight="600px" border>
                     <Table cols={['', '200px', '100px']} sticky>
