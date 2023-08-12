@@ -548,7 +548,7 @@ public class TestrunService {
                             currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random);
                         } else {
                             // 존재하는 테스트케이스에 테스터가 삭제된 경우 신규 테스터 할당
-                            currentSeq = testrunTestcaseGroupTestcase.reAssignTester(project, testrunUsers, currentSeq, random);
+                            currentSeq = testrunTestcaseGroupTestcase.reAssignTester(project, testcase, testrunUsers, currentSeq, random);
                             currentSeq = testcase.assignTester(testrunTestcaseGroupTestcase, testrunUsers, random, currentSeq);
                         }
                     }

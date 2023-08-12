@@ -155,25 +155,24 @@ public class Testrun extends CommonEntity {
 
     public void updateTestcaseGroups(List<TestrunTestcaseGroup> testcaseGroups) {
         // 삭제된 테스트런 테스트케이스 그룹 제거
-        this.testcaseGroups.removeIf(
-            (testrunTestcaseGroup -> testcaseGroups
-                .stream()
-                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
-                .noneMatch(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId()))));
+        this.testcaseGroups.removeIf(testrunTestcaseGroup -> testcaseGroups
+            .stream()
+            .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
+            .noneMatch(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())));
 
         // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
         for (TestrunTestcaseGroup testcaseGroup : this.testcaseGroups) {
             TestrunTestcaseGroup updateTestrunTestcaseGroup = testcaseGroups
                 .stream()
-                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
-                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
+                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
 
             if (testcaseGroup.getTestcases() != null) {
                 testcaseGroup.getTestcases().removeIf(testcase -> {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                            .noneMatch(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId().equals(testcase.getId()));
                     }
                     return true;
                 });

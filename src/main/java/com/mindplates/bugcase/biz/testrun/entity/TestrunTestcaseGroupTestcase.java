@@ -117,13 +117,13 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         return currentSeq;
     }
 
-    public int reAssignTester(Project project, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
+    public int reAssignTester(Project project, Testcase testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         boolean removedUser = testrunUsers.stream()
             .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(this.tester != null ? this.tester.getId() : null));
         if (removedUser) {
             if (!testrunUsers.isEmpty()) {
-                currentSeq = assignByType(tagUserMap, random, testrunUsers, this.testcase, currentSeq);
+                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
             } else {
                 this.tester = null;
             }
