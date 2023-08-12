@@ -115,7 +115,7 @@ public class Project extends CommonEntity {
     }
 
     @JsonIgnore
-    public boolean isSlackMessageEnabled() {
+    public boolean isSlackAlarmEnabled() {
         return this.enableTestrunAlarm && slackUrl != null && slackUrl.length() > 0;
     }
 

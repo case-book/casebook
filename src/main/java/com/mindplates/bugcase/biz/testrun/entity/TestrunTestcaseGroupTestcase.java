@@ -34,6 +34,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.util.CollectionUtils;
 
 @Entity
 @Builder
@@ -78,37 +79,39 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         List<TestcaseItem> items = testcase.getTestcaseItems();
         this.testResult = TestResultCode.UNTESTED;
         if (!testrunUsers.isEmpty()) {
-            currentSeq = assignByType(tagUserMap, random, testrunUsers, currentSeq);
+            currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
         }
-        for (TestcaseItem testcaseItem : items) {
-            if (testcaseItem.getValue() == null) {
-                continue;
-            }
-            TestcaseTemplateItem testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
-            if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
-                TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem.builder()
-                    .testcaseTemplateItem(testcaseTemplateItem)
-                    .testrunTestcaseGroupTestcase(this)
-                    .type("value")
-                    .build();
-                if (!testrunUsers.isEmpty()) {
-                    if ("RND".equals(testcaseItem.getValue())) {
-                        int userIndex = random.nextInt(testrunUsers.size());
-                        testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
-                    } else if ("SEQ".equals(testcaseItem.getValue())) {
-                        if (currentSeq > testrunUsers.size() - 1) {
-                            currentSeq = 0;
+        if (!CollectionUtils.isEmpty(items)) {
+            for (TestcaseItem testcaseItem : items) {
+                if (testcaseItem.getValue() == null) {
+                    continue;
+                }
+                TestcaseTemplateItem testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
+                if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
+                    TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem.builder()
+                        .testcaseTemplateItem(testcaseTemplateItem)
+                        .testrunTestcaseGroupTestcase(this)
+                        .type("value")
+                        .build();
+                    if (!testrunUsers.isEmpty()) {
+                        if ("RND".equals(testcaseItem.getValue())) {
+                            int userIndex = random.nextInt(testrunUsers.size());
+                            testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
+                        } else if ("SEQ".equals(testcaseItem.getValue())) {
+                            if (currentSeq > testrunUsers.size() - 1) {
+                                currentSeq = 0;
+                            }
+                            testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
+                            currentSeq++;
+                        } else {
+                            testrunTestcaseGroupTestcaseItem.setValue(testcaseItem.getValue());
                         }
-                        testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
-                        currentSeq++;
-                    } else {
-                        testrunTestcaseGroupTestcaseItem.setValue(testcaseItem.getValue());
                     }
+                    if (this.testcaseItems == null) {
+                        this.testcaseItems = new ArrayList<>();
+                    }
+                    this.testcaseItems.add(testrunTestcaseGroupTestcaseItem);
                 }
-                if (this.testcaseItems == null) {
-                    this.testcaseItems = new ArrayList<>();
-                }
-                this.testcaseItems.add(testrunTestcaseGroupTestcaseItem);
             }
         }
         return currentSeq;
@@ -120,7 +123,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
             .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(this.tester != null ? this.tester.getId() : null));
         if (removedUser) {
             if (!testrunUsers.isEmpty()) {
-                currentSeq = assignByType(tagUserMap, random, testrunUsers, currentSeq);
+                currentSeq = assignByType(tagUserMap, random, testrunUsers, this.testcase, currentSeq);
             } else {
                 this.tester = null;
             }
@@ -128,7 +131,8 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         return currentSeq;
     }
 
-    private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, int currentSeq) {
+    private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, Testcase testcase,
+        int currentSeq) {
         // 테스터 입력
         if ("tag".equals(testcase.getTesterType())) {
             if (tagUserMap.containsKey(testcase.getTesterValue())) {
