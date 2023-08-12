@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseSelectorGroup.scss';
+import moment from 'moment/moment';
+import testcaseUtil from '@/utils/testcaseUtil';
 
-function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, highlighted, isHighlighted }) {
+function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate }) {
   const [opened, setOpened] = useState(true);
   const hasChild = testcaseGroup.testcases?.length > 0;
   const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
-  const checkHighlightedTestCase = testcase => {
-    return highlighted && isHighlighted && isHighlighted(testcase);
-  };
 
-  const hasHighlightedTestCase = highlighted && testcaseGroup.testcases?.some(tc => checkHighlightedTestCase(tc));
   return (
     <div
       className="testcase-selector-group-wrapper"
@@ -20,7 +18,7 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
       }}
     >
       <div
-        className={`group-info ${selected ? 'selected' : ''} ${hasHighlightedTestCase ? 'highlighted' : ''}`}
+        className={`group-info ${selected ? 'selected' : ''}`}
         onClick={() => {
           onClick(testcaseGroup.id, null);
         }}
@@ -49,9 +47,8 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
           <ul>
             {testcaseGroup.testcases.map(testcase => {
               const testcaseSelected = selectedTestcaseGroup?.testcases?.findIndex(i => i.testcaseId === testcase.id) > -1;
-              const testcaseHighlighted = checkHighlightedTestCase(testcase);
               return (
-                <li className={`${testcaseSelected ? 'selected' : ''} ${testcaseHighlighted ? 'highlighted' : ''}`} key={testcase.id}>
+                <li className={`${testcaseSelected ? 'selected' : ''}`} key={testcase.id}>
                   <div
                     className="testcase-info"
                     onClick={() => {
@@ -74,20 +71,30 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
           </ul>
         </div>
       )}
-      {testcaseGroup.children?.map(d => {
-        const childrenSelected = selectedTestcaseGroups.findIndex(i => i.testcaseGroupId === d.id) > -1;
-        return (
-          <TestcaseSelectorGroup
-            key={d.id}
-            testcaseGroup={d}
-            selected={childrenSelected}
-            onClick={onClick}
-            selectedTestcaseGroups={selectedTestcaseGroups}
-            highlighted={highlighted}
-            isHighlighted={isHighlighted}
-          />
-        );
-      })}
+      {opened &&
+        testcaseGroup.children?.map(d => {
+          const childrenSelected = selectedTestcaseGroups.findIndex(i => i.testcaseGroupId === d.id) > -1;
+
+          const filteredTestcaseGroup = {
+            ...d,
+            testcases: d.testcases
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, testcaseName))
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate)),
+          };
+
+          return (
+            <TestcaseSelectorGroup
+              key={d.id}
+              testcaseGroup={filteredTestcaseGroup}
+              selected={childrenSelected}
+              onClick={onClick}
+              selectedTestcaseGroups={selectedTestcaseGroups}
+              testcaseName={testcaseName}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
+          );
+        })}
     </div>
   );
 }
@@ -96,8 +103,9 @@ TestcaseSelectorGroup.defaultProps = {
   testcaseGroup: {},
   selected: false,
   selectedTestcaseGroups: [],
-  highlighted: false,
-  isHighlighted: null,
+  testcaseName: '',
+  minDate: null,
+  maxDate: null,
 };
 
 TestcaseSelectorGroup.propTypes = {
@@ -114,8 +122,9 @@ TestcaseSelectorGroup.propTypes = {
       ),
     }),
   ),
-  highlighted: PropTypes.bool,
-  isHighlighted: PropTypes.func,
+  testcaseName: PropTypes.string,
+  minDate: PropTypes.instanceOf(moment),
+  maxDate: PropTypes.instanceOf(moment),
 };
 
 export default TestcaseSelectorGroup;

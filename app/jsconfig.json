@@ -5,6 +5,7 @@
       "@/*": ["./*"],
       "@/images": ["./images"],
       "@/vendor": ["./vendor"],
+      "@/assets": ["./assets"],
       "@/components": ["./components"],
       "@/pages": ["./pages"],
       "@/stores": ["./stores"],

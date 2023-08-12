@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Button, CheckBox, DateRange, EmptyContent, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, DateRange, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
 import useStores from '@/hooks/useStores';
+import moment from 'moment/moment';
+import dateUtil from '@/utils/dateUtil';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelectPopup.scss';
 
@@ -16,54 +18,44 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   } = useStores();
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
-  const [testRuns, setTestRuns] = useState({ highlightByRange: false });
+  const [filterCondition, setFilterCondition] = useState({ name: '', minDate: null, maxDate: null });
+  const [range, setRange] = useState({});
 
   useEffect(() => {
-    const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(testcaseGroups));
+    const nextGroups = testcaseUtil.getTestcaseTreeData(cloneDeep(testcaseGroups), 'id');
     setProjectTestcaseGroupTree(nextGroups);
     const allTestCases = testcaseGroups?.reduce((data, current) => {
       return data.concat(current.testcases);
     }, []);
     const testCaseCreationDates = allTestCases.reduce((data, current) => {
-      return data.concat(new Date(current.creationDate));
+      return data.concat(dateUtil.getLocalDate(current.creationDate).valueOf());
     }, []);
-    setTestRuns({
-      ...testRuns,
-      minDate: new Date(Math.min.apply(null, testCaseCreationDates)),
-      maxDate: new Date(Math.max.apply(null, testCaseCreationDates)),
+
+    const min = moment(Math.min(...testCaseCreationDates));
+    min.set('minute', 0);
+    min.set('second', 0);
+    min.set('millisecond', 0);
+    const max = moment(Math.max(...testCaseCreationDates));
+    max.set('hour', max.get('hour') + 1);
+    max.set('minute', 0);
+    max.set('second', 0);
+    max.set('millisecond', 0);
+
+    setFilterCondition({
+      name: '',
+      minDate: null,
+      maxDate: null,
+    });
+
+    setRange({
+      minDate: min,
+      maxDate: max,
     });
   }, [testcaseGroups]);
-
-  const isHighlighted = testcase => {
-    if (!testcase || !testcase.creationDate) {
-      return false;
-    }
-    const creationDate = new Date(testcase.creationDate);
-    return creationDate >= testRuns.minDate && creationDate <= testRuns.maxDate;
-  };
 
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(cloneDeep(selectedTestcaseGroups));
   }, [selectedTestcaseGroups]);
-
-  const allCheck = useCallback(() => {
-    if (currentSelectedTestcaseGroups.length > 0) {
-      setCurrentSelectedTestcaseGroups([]);
-    } else {
-      setCurrentSelectedTestcaseGroups(
-        testcaseGroups?.map(d => {
-          return {
-            testcaseGroupId: d.id,
-            testcases: d.testcases?.map(item => {
-              return {
-                testcaseId: item.id,
-              };
-            }),
-          };
-        }),
-      );
-    }
-  }, [currentSelectedTestcaseGroups, testcaseGroups]);
 
   const removeParentId = (list, parentId) => {
     const targetGroupIds = testcaseGroups.filter(d => d.parentId === parentId).map(d => d.id);
@@ -134,7 +126,6 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
 
         let parentGroupId = testcaseGroupInfo.parentId;
         while (parentGroupId) {
-          // eslint-disable-next-line no-loop-func
           if (!nextCurrentSelectedTestcaseGroups.find(d => d.testcaseGroupId === parentGroupId)) {
             nextCurrentSelectedTestcaseGroups.push({
               testcaseGroupId: parentGroupId,
@@ -142,7 +133,6 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
             });
           }
 
-          // eslint-disable-next-line no-loop-func
           const parentGroup = testcaseGroups.find(d => d.id === parentGroupId);
           parentGroupId = parentGroup?.parentId;
         }
@@ -185,6 +175,43 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
     setCurrentSelectedTestcaseGroups(nextCurrentSelectedTestcaseGroups);
   };
 
+  const filteredProjectTestcaseGroupTree = useMemo(() => {
+    return projectTestcaseGroupTree
+      ?.filter(testcaseGroup => testcaseUtil.isGroupFilteredByName(testcaseGroup, filterCondition.name))
+      ?.filter(testcaseGroup => testcaseUtil.isGroupFilteredByRange(testcaseGroup, filterCondition.minDate, filterCondition.maxDate))
+      .map(testcaseGroup => {
+        return {
+          ...testcaseGroup,
+          testcases: testcaseGroup.testcases
+            .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, filterCondition.name))
+            .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, filterCondition.minDate, filterCondition.maxDate)),
+        };
+      });
+  }, [projectTestcaseGroupTree, filterCondition]);
+
+  const allCheck = useCallback(() => {
+    if (currentSelectedTestcaseGroups.length > 0) {
+      setCurrentSelectedTestcaseGroups([]);
+    } else {
+      setCurrentSelectedTestcaseGroups(
+        testcaseGroups?.map(d => {
+          return {
+            testcaseGroupId: d.id,
+            testcases: d.testcases?.map(item => {
+              return {
+                testcaseId: item.id,
+              };
+            }),
+          };
+        }),
+      );
+    }
+  }, [currentSelectedTestcaseGroups, testcaseGroups]);
+
+  const filtered = useMemo(() => {
+    return Object.values(filterCondition).some(d => d);
+  }, [filterCondition]);
+
   return (
     <Modal
       size="xl"
@@ -197,7 +224,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
       }}
     >
       <ModalHeader className="modal-header">
-        <span>테스트케이스 선택</span>
+        <span>{t('테스트케이스 선택')}</span>
       </ModalHeader>
       <ModalBody className="modal-body">
         {projectTestcaseGroupTree && projectTestcaseGroupTree?.length < 1 && (
@@ -207,52 +234,89 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
         )}
         {projectTestcaseGroupTree?.length > 0 && (
           <div className="content">
-            <div className="testrun-range-highlight-row">
+            <div className="testrun-filter">
               <div>
-                <Button size="sm" outline onClick={allCheck}>
-                  <i className="fa-solid fa-circle-check" /> {t('모두 선택')}
+                <Button size="sm" outline onClick={allCheck} disabled={filtered}>
+                  <i className="fa-solid fa-circle-check" /> ALL
                 </Button>
               </div>
               <div>
-                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 1rem" />
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
               </div>
               <div>
-                <CheckBox
-                  className="range-highlight-checkbox"
+                <Button
+                  className="filter-button"
+                  rounded
                   size="sm"
-                  value={testRuns.highlightByRange}
-                  onChange={() => {
-                    setTestRuns({
-                      ...testRuns,
-                      highlightByRange: !testRuns.highlightByRange,
+                  color={filtered ? 'primary' : 'white'}
+                  onClick={() => {
+                    setFilterCondition({
+                      name: '',
+                      minDate: null,
+                      maxDate: null,
                     });
                   }}
-                  label={t('생성 시간으로 하이라이팅')}
-                />
+                >
+                  <i className="fa-solid fa-filter" />
+                </Button>
               </div>
               <div>
                 <DateRange
+                  className="date-range"
                   size="sm"
                   country={user.country}
                   language={user.language}
-                  startDate={testRuns.minDate.getTime()}
-                  endDate={testRuns.maxDate.getTime()}
+                  startDate={filterCondition.minDate?.valueOf()}
+                  endDate={filterCondition.maxDate?.valueOf()}
                   startDateKey="minDate"
                   endDateKey="maxDate"
                   onChange={(key, value) => {
-                    setTestRuns({
-                      ...testRuns,
-                      [key]: new Date(value),
+                    setFilterCondition({
+                      ...filterCondition,
+                      [key]: value ? moment(value) : value,
                     });
                   }}
+                  nullable
+                  control={
+                    <Button
+                      className="fill-button"
+                      rounded
+                      size="xs"
+                      shadow={false}
+                      onClick={() => {
+                        setFilterCondition({
+                          ...filterCondition,
+                          minDate: range.minDate,
+                          maxDate: range.maxDate,
+                        });
+                      }}
+                    >
+                      <i className="fa-solid fa-fill-drip" />
+                    </Button>
+                  }
                 />
               </div>
+              <div className="icon">
+                <i className="fa-solid fa-font" />
+              </div>
+              <Input
+                value={filterCondition.name}
+                size="sm"
+                placeholder={t('테스트케이스 및 그룹 이름')}
+                onChange={value => {
+                  setFilterCondition({
+                    ...filterCondition,
+                    name: value,
+                  });
+                }}
+              />
             </div>
             <div className="testcase-select-list g-no-select">
               <div>
                 <ul>
-                  {projectTestcaseGroupTree?.map(testcaseGroup => {
+                  {filteredProjectTestcaseGroupTree.map(testcaseGroup => {
                     const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
+
                     return (
                       <TestcaseSelectorGroup
                         key={testcaseGroup.id}
@@ -260,8 +324,9 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
                         selected={selected}
                         selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
                         onClick={onClick}
-                        highlighted={testRuns.highlightByRange}
-                        isHighlighted={isHighlighted}
+                        testcaseName={filterCondition.name}
+                        minDate={filterCondition.minDate}
+                        maxDate={filterCondition.maxDate}
                       />
                     );
                   })}

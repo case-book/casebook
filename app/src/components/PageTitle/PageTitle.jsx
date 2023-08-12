@@ -20,7 +20,7 @@ function PageTitle({ className, name, children, links, control, onListClick, bre
             }}
           >
             <span>
-              <i className="fa-solid fa-circle-up" />
+              <i className="fa-solid fa-chevron-up" />
             </span>
           </div>
         )}
