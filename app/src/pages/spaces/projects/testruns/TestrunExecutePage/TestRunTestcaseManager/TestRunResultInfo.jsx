@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, CloseIcon, EmptyContent, Liner, TestcaseItem } from '@/components';
+import { Button, CloseIcon, TestcaseItem } from '@/components';
 import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -11,10 +11,9 @@ import useStores from '@/hooks/useStores';
 import { DEFAULT_TESTRUN_RESULT_ITEM, DEFAULT_TESTRUN_TESTER_ITEM } from '@/constants/constants';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
-import { Editor, Viewer } from '@toast-ui/react-editor';
-import dateUtil from '@/utils/dateUtil';
-import { Link } from 'react-router-dom';
+import { Editor } from '@toast-ui/react-editor';
 import { useTranslation } from 'react-i18next';
+import { CommentList } from '@/assets';
 
 function TestRunTestcaseManager({
   content,
@@ -23,7 +22,6 @@ function TestRunTestcaseManager({
   createTestrunImage,
 
   onSaveComment,
-  user,
   onDeleteComment,
 
   resultLayoutPosition,
@@ -158,53 +156,8 @@ function TestRunTestcaseManager({
               })}
           </div>
           <div className="testrun-testcase-comments">
-            <div className="text">코멘트</div>
-            <div className="comment-list">
-              {(!content.comments || content.comments.length < 1) && (
-                <EmptyContent minHeight="auto" className="empty-comments">
-                  <div>{t('코멘트가 없습니다.')}</div>
-                </EmptyContent>
-              )}
-              {content.comments?.length > 0 && (
-                <ul>
-                  {content.comments?.map(info => {
-                    return (
-                      <li key={info.id} className="comment">
-                        <div className="comment-content">
-                          <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={info.comment || '<span className="none-text">&nbsp;</span>'} />
-                        </div>
-                        <div className="comment-user-info">
-                          <div>{dateUtil.getDateString(info.lastUpdateDate)}</div>
-                          <div>
-                            <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
-                          </div>
-                          <div>{users.find(u => u.userId === info.userId)?.name || ''}</div>
-                          {user?.id === info.userId && (
-                            <div>
-                              <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
-                            </div>
-                          )}
-                          {user?.id === info.userId && (
-                            <div>
-                              <Link
-                                to="#1"
-                                onClick={e => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  onDeleteComment(info.id);
-                                }}
-                              >
-                                삭제
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
+            <div className="text">{t('코멘트')}</div>
+            <CommentList comments={content.comments} onDeleteComment={onDeleteComment} />
             <div className="comment-editor">
               <Editor
                 key={theme}

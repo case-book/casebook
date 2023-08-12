@@ -76,11 +76,11 @@
         align-self: center;
 
         &:first-child {
-          padding: 0.75rem 0.75rem 0.75rem 1rem;
+          padding: 0.5rem 0.25rem 0.5rem 1rem;
         }
 
         &:last-child {
-          padding: 0 1rem 0 0;
+          padding: 0 0.5rem 0 0;
 
           svg {
             &:hover {
@@ -141,5 +141,19 @@
     background-color: var(--lighter-color);
     border-radius: 8px;
     padding: 0.75rem;
+  }
+
+  .summary-list {
+    width: 100%;
+    margin: 0;
+    > table {
+      margin-top: 0;
+
+      tbody {
+        td {
+          border-bottom: 1px solid var(--border-light-color);
+        }
+      }
+    }
   }
 }

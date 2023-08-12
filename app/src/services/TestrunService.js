@@ -335,7 +335,7 @@ TestrunService.updateTestrunTester = (spaceCode, projectId, testrunId, testrunTe
   );
 };
 
-TestrunService.updateTestrunComment = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, comment, successHandler, failHandler, loading = true) => {
+TestrunService.updateTestrunTestcaseComment = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, comment, successHandler, failHandler, loading = true) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,
     comment,
@@ -359,7 +359,7 @@ TestrunService.createImage = (spaceCode, projectId, testrunId, name, size, type,
   return request.post(`/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/images`, formData, null, null, null, null, null, true);
 };
 
-TestrunService.deleteTestrunComment = (
+TestrunService.deleteTestrunTestcaseComment = (
   spaceCode,
   projectId,
   testrunId,
@@ -372,6 +372,49 @@ TestrunService.deleteTestrunComment = (
 ) => {
   return request.del(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments/${testrunTestcaseGroupTestcaseCommentId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.selectTestrunCommentList = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('테스트런 코멘트 목록을 불러오고 있습니다.'),
+  );
+};
+
+TestrunService.createTestrunComment = (spaceCode, projectId, testrunId, comment, successHandler, failHandler, loading = true) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments`,
+    { comment },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.deleteTestrunComment = (spaceCode, projectId, testrunId, commentId, successHandler, failHandler, loading = true) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments/${commentId}`,
     null,
     res => {
       successHandler(res);

@@ -176,7 +176,7 @@ function Common() {
   };
 
   useEffect(() => {
-    if (user?.id && projectId) {
+    if (user?.id) {
       addTopic(`/sub/users/${user?.id}`);
       addMessageHandler('Common', onCommonMessage);
     }

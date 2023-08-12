@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import './CommonDialog.scss';
 function ErrorDialog({ className, title, message, handler }) {
   const { t } = useTranslation();
   const { controlStore } = useStores();
+  const buttonElement = useRef(null);
 
   const onKeyDown = e => {
     if (e.keyCode === 13 || e.keyCode === 27) {
@@ -17,6 +18,10 @@ function ErrorDialog({ className, title, message, handler }) {
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown);
+    if (buttonElement.current) {
+      buttonElement.current.focus();
+    }
+
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
@@ -44,6 +49,7 @@ function ErrorDialog({ className, title, message, handler }) {
       </ModalBody>
       <ModalFooter>
         <Button
+          ref={buttonElement}
           color="primary"
           onClick={() => {
             controlStore.setError(null);

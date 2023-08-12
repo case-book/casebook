@@ -3,10 +3,13 @@ package com.mindplates.bugcase.biz.testcase.dto;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import lombok.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @NoArgsConstructor
@@ -34,7 +37,11 @@ public class TestcaseGroupWithTestcaseDTO extends CommonDTO {
         this.description = testcaseGroup.getDescription();
         this.itemOrder = testcaseGroup.getItemOrder();
         this.project = ProjectDTO.builder().id(testcaseGroup.getProject().getId()).build();
-        this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseSimpleDTO::new).collect(Collectors.toList());
+        if (testcaseGroup.getTestcases() != null) {
+            this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseSimpleDTO::new)
+                .collect(Collectors.toList());
+        }
+
     }
 
 

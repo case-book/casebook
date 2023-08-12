@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.mindplates'
-version = 'v1.3.4'
+version = 'v1.3.5'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -122,17 +122,17 @@ task prepareRelease {
 
 task npmInstallApp(type: Exec) {
     doFirst {
-        println "npm install"
+        println "npm install --legacy-peer-deps"
     }
     workingDir "$appDir"
     inputs.dir "$appDir"
     group = BasePlugin.BUILD_GROUP
     if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
         commandLine "npm.cmd", "audit", "fix"
-        commandLine 'npm.cmd', 'install'
+        commandLine 'npm.cmd', 'install', "--legacy-peer-deps"
     } else {
         commandLine "npm", "audit", "fix"
-        commandLine 'npm', 'install'
+        commandLine 'npm', 'install', "--legacy-peer-deps"
     }
 }
 

@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
+import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class TestrunTestcaseGroupTestcaseCommentResponse {
     private Long id;
     private Long testrunTestcaseGroupTestcaseId;
     private String comment;
-    private Long userId;
+    private SimpleUserResponse user;
     private LocalDateTime creationDate;
     private LocalDateTime lastUpdateDate;
 
@@ -25,7 +26,9 @@ public class TestrunTestcaseGroupTestcaseCommentResponse {
         this.id = testrunTestcaseGroupTestcaseComment.getId();
         this.testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseComment.getTestrunTestcaseGroupTestcase().getId();
         this.comment = testrunTestcaseGroupTestcaseComment.getComment();
-        this.userId = testrunTestcaseGroupTestcaseComment.getCreatedBy();
+        if (testrunTestcaseGroupTestcaseComment.getUser() != null) {
+            this.user = SimpleUserResponse.builder().id(testrunTestcaseGroupTestcaseComment.getUser().getId()).name(testrunTestcaseGroupTestcaseComment.getUser().getName()).email(testrunTestcaseGroupTestcaseComment.getUser().getEmail()).build();
+        }
         this.creationDate = testrunTestcaseGroupTestcaseComment.getCreationDate();
         this.lastUpdateDate = testrunTestcaseGroupTestcaseComment.getLastUpdateDate();
     }
