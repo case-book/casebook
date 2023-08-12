@@ -1,5 +1,8 @@
 package com.mindplates.bugcase.biz.integration.service;
 
+import com.mindplates.bugcase.biz.integration.dto.JiraAgileBoardDTO;
+import com.mindplates.bugcase.biz.integration.dto.JiraAgileDTO;
+import com.mindplates.bugcase.biz.integration.dto.JiraAgileSprintDTO;
 import com.mindplates.bugcase.biz.integration.dto.JiraProjectDTO;
 import java.net.URI;
 import java.util.List;
@@ -17,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class JiraClient {
 
     private static final String SERVER_REST_API_PREFIX = "/rest/api/2";
+    private static final String AGILE_REST_API_PREFIX = "/rest/agile/1.0";
     private final RestTemplate jiraRestTemplate;
 
     public JiraClient(@Qualifier("jiraRestTemplate") RestTemplate jiraRestTemplate) {
@@ -57,6 +61,47 @@ public class JiraClient {
                 new ParameterizedTypeReference<JiraProjectDTO>() {
                 }
             ).getBody();
+    }
+
+    public JiraAgileDTO<List<JiraAgileBoardDTO>> findBoardsByProjectId(String jiraApiUrl, String apiToken, String projectIdOrKey, int startAt) {
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+            .uri(URI.create(jiraApiUrl))
+            .path(AGILE_REST_API_PREFIX + "/board")
+            .queryParam("projectKeyOrId", projectIdOrKey)
+            .queryParam("startAt", startAt)
+            .build();
+
+        HttpEntity<List<JiraAgileBoardDTO>> request = new HttpEntity<>(addBearerTokenHeader(apiToken));
+
+        return jiraRestTemplate
+            .exchange(
+                uriComponents.toUriString(),
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<JiraAgileDTO<List<JiraAgileBoardDTO>>>() {
+                }
+            )
+            .getBody();
+    }
+
+    public JiraAgileDTO<List<JiraAgileSprintDTO>> findSprintsByBoardId(String jiraApiUrl, String apiToken, String boardId, int startAt) {
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+            .uri(URI.create(jiraApiUrl))
+            .path(AGILE_REST_API_PREFIX + "/board/" + boardId + "/sprint")
+            .queryParam("startAt", startAt)
+            .build();
+
+        HttpEntity<List<JiraAgileSprintDTO>> request = new HttpEntity<>(addBearerTokenHeader(apiToken));
+
+        return jiraRestTemplate
+            .exchange(
+                uriComponents.toUriString(),
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<JiraAgileDTO<List<JiraAgileSprintDTO>>>() {
+                }
+            )
+            .getBody();
     }
 
     private HttpHeaders addBearerTokenHeader(String apiToken) {

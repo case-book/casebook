@@ -1,11 +1,15 @@
 package com.mindplates.bugcase.biz.integration.service;
 
+import com.mindplates.bugcase.biz.integration.dto.JiraAgileBoardDTO;
+import com.mindplates.bugcase.biz.integration.dto.JiraAgileDTO;
+import com.mindplates.bugcase.biz.integration.dto.JiraAgileSprintDTO;
 import com.mindplates.bugcase.biz.integration.dto.JiraDTO;
 import com.mindplates.bugcase.biz.integration.dto.JiraProjectDTO;
 import com.mindplates.bugcase.biz.integration.entity.Jira;
 import com.mindplates.bugcase.biz.integration.entity.JiraProject;
 import com.mindplates.bugcase.biz.integration.repository.JiraProjectRepository;
 import com.mindplates.bugcase.biz.integration.repository.JiraRepository;
+import com.mindplates.bugcase.biz.integration.repository.JiraSprintRepository;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.space.entity.Space;
@@ -30,6 +34,7 @@ public class JiraService {
     private final JiraClient jiraClient;
     private final ProjectRepository projectRepository;
     private final JiraProjectRepository jiraProjectRepository;
+    private final JiraSprintRepository jiraSprintRepository;
 
     @Transactional
     public JiraDTO upsertJiraIntegrationInfo(String spaceCode, JiraDTO jiraInfo) {
@@ -79,4 +84,32 @@ public class JiraService {
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return jiraProjectRepository.findByProjectId(project.getId()).map(JiraProjectDTO::new).orElse(null);
     }
+
+    public JiraAgileDTO<List<JiraAgileBoardDTO>> getJiraBoardsByProjectId(String spaceCode, long projectId, int startAt) {
+        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Jira jira = jiraRepository.findBySpaceId(project.getSpace().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        JiraProject jiraProject = jiraProjectRepository.findByProjectId(project.getId())
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return jiraClient.findBoardsByProjectId(jira.getApiUrl(), jira.getApiToken(), jiraProject.getJiraProjectKey(), startAt);
+    }
+
+    public JiraAgileDTO<List<JiraAgileSprintDTO>> getJiraSprintsByProjectId(String spaceCode, long projectId, String boardId, int startAt) {
+        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Jira jira = jiraRepository.findBySpaceId(project.getSpace().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return jiraClient.findSprintsByBoardId(jira.getApiUrl(), jira.getApiToken(), boardId, startAt);
+    }
+
+    @Transactional
+    public void deleteBySpaceId(long spaceId) {
+        jiraSprintRepository.deleteBySpaceId(spaceId);
+        jiraProjectRepository.deleteBySpaceId(spaceId);
+        jiraRepository.deleteBySpaceId(spaceId);
+    }
+
+    @Transactional
+    public void deleteByProjectId(long projectId) {
+        jiraSprintRepository.deleteByProjectId(projectId);
+        jiraProjectRepository.deleteByProjectId(projectId);
+    }
+
 }

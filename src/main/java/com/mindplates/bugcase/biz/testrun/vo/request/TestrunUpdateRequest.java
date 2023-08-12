@@ -30,6 +30,7 @@ public class TestrunUpdateRequest {
     private LocalDateTime startTime;
     private int durationHours;
     private boolean deadlineClose;
+    private TestrunJiraSprintRequest jiraSprintRequest;
 
     public TestrunDTO buildEntity() {
 
@@ -49,17 +50,17 @@ public class TestrunUpdateRequest {
                 .build();
 
         if (testrunUsers != null) {
-            List<TestrunUserDTO> users = testrunUsers.stream().map((testrunUserRequest) -> TestrunUserDTO.builder().id(testrunUserRequest.getId()).user(UserDTO.builder().id(testrunUserRequest.getUserId()).build()).testrun(testrun).build()).collect(Collectors.toList());
+            List<TestrunUserDTO> users = testrunUsers.stream().map(testrunUserRequest -> TestrunUserDTO.builder().id(testrunUserRequest.getId()).user(UserDTO.builder().id(testrunUserRequest.getUserId()).build()).testrun(testrun).build()).collect(Collectors.toList());
 
             testrun.setTestrunUsers(users);
         }
 
         if (testcaseGroups != null) {
-            List<TestrunTestcaseGroupDTO> groups = testcaseGroups.stream().map((testrunTestcaseGroupRequest) -> {
+            List<TestrunTestcaseGroupDTO> groups = testcaseGroups.stream().map(testrunTestcaseGroupRequest -> {
                 TestrunTestcaseGroupDTO testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getId()).testrun(testrun).testcaseGroup(TestcaseGroupDTO.builder().id(testrunTestcaseGroupRequest.getTestcaseGroupId()).build()).testrun(testrun).build();
 
                 if (testrunTestcaseGroupRequest.getTestcases() != null) {
-                    List<TestrunTestcaseGroupTestcaseDTO> testcases = testrunTestcaseGroupRequest.getTestcases().stream().map((testrunTestcaseGroupTestcaseRequest) -> TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getId()).testrunTestcaseGroup(testrunTestcaseGroup).testcase(TestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getTestcaseId()).build()).build()).collect(Collectors.toList());
+                    List<TestrunTestcaseGroupTestcaseDTO> testcases = testrunTestcaseGroupRequest.getTestcases().stream().map(testrunTestcaseGroupTestcaseRequest -> TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getId()).testrunTestcaseGroup(testrunTestcaseGroup).testcase(TestcaseDTO.builder().id(testrunTestcaseGroupTestcaseRequest.getTestcaseId()).build()).build()).collect(Collectors.toList());
 
                     testrunTestcaseGroup.setTestcases(testcases);
                 }

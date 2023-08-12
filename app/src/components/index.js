@@ -41,6 +41,7 @@ import Row from './Layout/Row';
 import Col from './Layout/Col';
 import Table from './Table/Table';
 import Tbody from './Table/Tbody';
+import Tfoot from './Table/Tfoot';
 import Tr from './Table/Tr';
 import Td from './Table/Td';
 import SocketClient from './SocketClient/SocketClient';
@@ -59,6 +60,7 @@ import TokenList from './TokenList/TokenList';
 import Info from './Info/Info';
 import Version from './Version/Version';
 import Search from './Search/Search';
+import PrevNext from './PrevNext/PrevNext';
 
 export {
   Selector,
@@ -103,6 +105,7 @@ export {
   Row,
   Table,
   Tbody,
+  Tfoot,
   Tr,
   Td,
   SocketClient,
@@ -122,4 +125,5 @@ export {
   Info,
   Version,
   Search,
+  PrevNext,
 };

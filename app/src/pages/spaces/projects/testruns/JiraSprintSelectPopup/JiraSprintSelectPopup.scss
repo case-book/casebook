@@ -1,0 +1,18 @@
+.jira-sprint-select-popup-wrapper{
+  .modal-body {
+    min-height: 400px;
+
+    table {
+      tbody {
+        tr {
+          cursor: pointer;
+        }
+      }
+      tfoot {
+        tr:last-child{
+          border-bottom: none
+        }
+      }
+    }
+  }
+}

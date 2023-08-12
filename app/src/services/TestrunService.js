@@ -383,4 +383,32 @@ TestrunService.deleteTestrunComment = (
   );
 };
 
+TestrunService.selectJiraProjectBoards = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/integrations/jira/boards`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
+TestrunService.selectJiraProjectSprints = (spaceCode, projectId, boardId, startAt, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/integrations/jira/boards/${boardId}/sprints`,
+    { startAt },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 export default TestrunService;
