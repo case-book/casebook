@@ -9,12 +9,12 @@ import lombok.Data;
 
 @Data
 public class ProjectReleaseCreateRequest {
+
     private String name;
     private String description;
-    private Long projectId;
     private List<Long> testcaseIds;
 
-    public ProjectReleaseDTO toDTO() {
+    public ProjectReleaseDTO toDTO(long projectId) {
         return ProjectReleaseDTO.builder()
             .name(name)
             .description(description)

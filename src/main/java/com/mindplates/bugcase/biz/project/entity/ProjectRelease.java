@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.project.entity;
 
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
@@ -16,11 +15,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Builder
-@Table(name = "release")
+@Table(name = "project_release")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectRelease extends CommonEntity {
