@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, DateRange, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Button, DateRange, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, TestcaseSelector } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
@@ -8,7 +8,6 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import useStores from '@/hooks/useStores';
 import moment from 'moment/moment';
 import dateUtil from '@/utils/dateUtil';
-import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelectPopup.scss';
 
 function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened, onApply }) {
@@ -311,28 +310,12 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
                 }}
               />
             </div>
-            <div className="testcase-select-list g-no-select">
-              <div>
-                <ul>
-                  {filteredProjectTestcaseGroupTree.map(testcaseGroup => {
-                    const selected = (currentSelectedTestcaseGroups || []).findIndex(d => d.testcaseGroupId === testcaseGroup.id) > -1;
-
-                    return (
-                      <TestcaseSelectorGroup
-                        key={testcaseGroup.id}
-                        testcaseGroup={testcaseGroup}
-                        selected={selected}
-                        selectedTestcaseGroups={currentSelectedTestcaseGroups || []}
-                        onClick={onClick}
-                        testcaseName={filterCondition.name}
-                        minDate={filterCondition.minDate}
-                        maxDate={filterCondition.maxDate}
-                      />
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
+            <TestcaseSelector
+              filteredProjectTestcaseGroupTree={filteredProjectTestcaseGroupTree}
+              currentSelectedTestcaseGroups={currentSelectedTestcaseGroups}
+              filterCondition={filterCondition}
+              onClick={onClick}
+            />
           </div>
         )}
       </ModalBody>

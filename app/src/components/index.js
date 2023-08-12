@@ -59,6 +59,8 @@ import TokenList from './TokenList/TokenList';
 import Info from './Info/Info';
 import Version from './Version/Version';
 import Search from './Search/Search';
+import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
+import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
 
 export {
   Selector,
@@ -122,4 +124,6 @@ export {
   Info,
   Version,
   Search,
+  TestcaseSelector,
+  TestcaseSelectorGroup,
 };
