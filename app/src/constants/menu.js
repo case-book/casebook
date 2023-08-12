@@ -132,7 +132,17 @@ const MENUS = [
       },
     ],
   },
-
+  {
+    key: 'releases',
+    to: '/releases',
+    icon: <i className="fa-solid fa-code-branch" />,
+    color: '#f13030',
+    name: i18n.t('릴리즈'),
+    admin: false,
+    pc: true,
+    login: true,
+    project: true,
+  },
   {
     key: 'reports',
     to: '/reports',

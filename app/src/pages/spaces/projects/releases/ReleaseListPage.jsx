@@ -47,6 +47,14 @@ function ReleaseListPage() {
             text: t('릴리즈 목록'),
           },
         ]}
+        links={[
+          {
+            to: `/spaces/${spaceCode}/projects/${projectId}/releases/new`,
+            text: t('릴리즈'),
+            color: 'primary',
+            icon: <i className="fa-solid fa-plus" />,
+          },
+        ]}
       >
         {t('릴리즈')}
       </PageTitle>
