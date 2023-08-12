@@ -11,8 +11,6 @@ import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -36,7 +34,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.springframework.util.CollectionUtils;
 
 @Entity
 @Builder
@@ -77,7 +74,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
 
 
     public int assignTester(Project project, Testcase testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
-        Map<String, List<ProjectUser>> tagUserMap = getTagUserMap(project.getUsers(), testrunUsers);
+        Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         List<TestcaseItem> items = testcase.getTestcaseItems();
         this.testResult = TestResultCode.UNTESTED;
         if (!testrunUsers.isEmpty()) {
@@ -118,7 +115,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
     }
 
     public int reAssignTester(Project project, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
-        Map<String, List<ProjectUser>> tagUserMap = getTagUserMap(project.getUsers(), testrunUsers);
+        Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         boolean removedUser = testrunUsers.stream()
             .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(this.tester != null ? this.tester.getId() : null));
         if (removedUser) {
@@ -159,31 +156,31 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         return currentSeq;
     }
 
-    private Map<String, List<ProjectUser>> getTagUserMap(List<ProjectUser> projectUsers, List<TestrunUser> testrunUsers) {
-        Map<String, List<ProjectUser>> tagUserMap = new HashMap<>();
-        projectUsers.forEach((projectUserDTO -> {
-            String tagString = projectUserDTO.getTags();
-            if (tagString != null) {
-                String[] tags = tagString.split(";");
-                if (tags.length > 0) {
-                    Arrays.stream(tags).forEach(tag -> {
-                        if (tag.length() > 0) {
-                            if (!tagUserMap.containsKey(tag)) {
-                                tagUserMap.put(tag, new ArrayList<>());
-                            }
-                            List<ProjectUser> users = tagUserMap.get(tag);
-                            if (testrunUsers.stream().anyMatch(
-                                testrunUser -> testrunUser.getUser().getId()
-                                    .equals(projectUserDTO.getUser().getId()))) {
-                                users.add(projectUserDTO);
-                            }
-                        }
-                    });
-                }
-            }
-        }));
-        tagUserMap.keySet().removeIf(key -> CollectionUtils.isEmpty(tagUserMap.get(key)));
-        return tagUserMap;
-    }
+    public int addTestCaseItem(TestcaseTemplateItem testcaseTemplateItem, TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase,
+        TestcaseItem testcaseItem, Random random, List<TestrunUser> testrunUsers, int currentSeq) {
+        if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
 
+            TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem
+                .builder().testcaseTemplateItem(testcaseTemplateItem)
+                .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase)
+                .type("value").build();
+            if ("RND".equals(testcaseItem.getValue())) {
+                int userIndex = random.nextInt(testrunUsers.size());
+                testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(userIndex).getUser().getId().toString());
+            } else if ("SEQ".equals(testcaseItem.getValue())) {
+                if (currentSeq > testrunUsers.size() - 1) {
+                    currentSeq = 0;
+                }
+                testrunTestcaseGroupTestcaseItem.setValue(testrunUsers.get(currentSeq).getUser().getId().toString());
+                currentSeq++;
+            } else {
+                testrunTestcaseGroupTestcaseItem.setValue(testcaseItem.getValue());
+            }
+            if (testrunTestcaseGroupTestcase.getTestcaseItems() == null) {
+                testrunTestcaseGroupTestcase.setTestcaseItems(new ArrayList<>());
+            }
+            testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
+        }
+        return currentSeq;
+    }
 }

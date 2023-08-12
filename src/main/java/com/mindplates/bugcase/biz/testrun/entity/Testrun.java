@@ -2,6 +2,9 @@ package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
@@ -10,7 +13,9 @@ import com.mindplates.bugcase.common.exception.ServiceException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,6 +36,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 
 @Entity
 @Builder
@@ -247,5 +253,61 @@ public class Testrun extends CommonEntity {
             .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
                 .stream()
                 .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())));
+    }
+
+    public void initializeCreateInfo(Project project, int currentTestrunSeq) {
+        this.project = project;
+        this.seqId = "R" + currentTestrunSeq;
+        this.opened = true;
+        this.totalTestcaseCount = calculateTotalTestcaseCount();
+        this.passedTestcaseCount = 0;
+        this.failedTestcaseCount = 0;
+        this.untestableTestcaseCount = 0;
+        if (!CollectionUtils.isEmpty(this.testrunUsers)) {
+            this.testrunUsers.forEach(testrunUser -> testrunUser.setTestrun(this));
+        }
+        if (!CollectionUtils.isEmpty(this.testcaseGroups)) {
+            this.testcaseGroups.forEach(testrunTestcaseGroup -> {
+                testrunTestcaseGroup.setTestrun(this);
+                if (!CollectionUtils.isEmpty(testrunTestcaseGroup.getTestcases())) {
+                    testrunTestcaseGroup.getTestcases()
+                        .forEach(testrunTestcaseGroupTestcase -> {
+                            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                            if (!CollectionUtils.isEmpty(testrunTestcaseGroupTestcase.getTestcaseItems())) {
+                                testrunTestcaseGroupTestcase.getTestcaseItems()
+                                    .forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem
+                                        .setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
+                            }
+                        });
+                }
+            });
+        }
+    }
+
+    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap,
+        Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, Random random) {
+        int currentSeq = random.nextInt(testrunUsers.size());
+        for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
+            if (testrunTestcaseGroup.getTestcases() != null) {
+                for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
+                    Testcase testcase = projectTestcaseMap.get(testrunTestcaseGroupTestcase.getTestcase().getId());
+                    if (testcase == null) {
+                        continue;
+                    }
+                    List<TestcaseItem> testcaseItems = idTestcaseItemListMap.get(testcase.getId());
+                    testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
+                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random);
+                    for (TestcaseItem testcaseItem : testcaseItems) {
+                        if (testcaseItem.getValue() == null || Objects
+                            .isNull(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId()))) {
+                            continue;
+                        }
+                        TestcaseTemplateItem testcaseTemplateItem = idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId());
+                        currentSeq = testrunTestcaseGroupTestcase
+                            .addTestCaseItem(testcaseTemplateItem, testrunTestcaseGroupTestcase, testcaseItem, random, testrunUsers, currentSeq);
+                    }
+                }
+            }
+        }
     }
 }
