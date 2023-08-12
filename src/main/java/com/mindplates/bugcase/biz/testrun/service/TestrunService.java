@@ -31,6 +31,7 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunParticipantRedisRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
@@ -93,7 +94,6 @@ public class TestrunService {
     private final MessageSendService messageSendService;
     private final ProjectRepository projectRepository;
     private final TestrunCommentRepository testrunCommentRepository;
-    private final UserRepository userRepository;
     private final Random random = new Random();
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
@@ -194,12 +194,6 @@ public class TestrunService {
         TestrunIteration testrunIteration = testrunIterationRepository.findById(testrunIterationId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestrunIterationDTO(testrunIteration, true);
-    }
-
-    public TestrunDTO selectProjectTestrunInfo(long projectId, long testrunSeqNumber) {
-        Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestrunDTO(testrun, true);
     }
 
     @Transactional
@@ -582,11 +576,6 @@ public class TestrunService {
 
         TestrunReservation result = testrunReservationRepository.save(targetTestrunReservation);
         return new TestrunReservationDTO(result);
-    }
-
-    @Transactional
-    public void updateTestrunIterationCursor(Long testrunIterationId, Integer filteringUserCursor, List<Long> currentFilteringUserIds) {
-        testrunIterationRepository.updateTestrunIterationUserCursor(testrunIterationId, filteringUserCursor, currentFilteringUserIds);
     }
 
     @Transactional
