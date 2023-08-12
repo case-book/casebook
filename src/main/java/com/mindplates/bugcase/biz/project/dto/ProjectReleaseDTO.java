@@ -1,0 +1,27 @@
+package com.mindplates.bugcase.biz.project.dto;
+
+import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+@AllArgsConstructor
+public class ProjectReleaseDTO extends CommonDTO {
+    private Long id;
+    private String name;
+    private String description;
+    private ProjectDTO project;
+    private List<TestcaseDTO> testcases;
+    public ProjectReleaseDTO(ProjectRelease projectRelease) {
+        this.id = projectRelease.getId();
+        this.name = projectRelease.getName();
+        this.description = projectRelease.getDescription();
+        this.project = ProjectDTO.builder().id(projectRelease.getProject().getId()).build();
+        this.testcases = projectRelease.getTestcases().stream().map(TestcaseDTO::new).collect(java.util.stream.Collectors.toList());
+    }
+}

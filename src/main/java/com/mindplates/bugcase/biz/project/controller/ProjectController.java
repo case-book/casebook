@@ -1,35 +1,54 @@
 package com.mindplates.bugcase.biz.project.controller;
 
+import com.mindplates.bugcase.biz.project.service.ProjectReleaseService;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectTokenDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.service.ProjectTokenService;
 import com.mindplates.bugcase.biz.project.vo.request.CreateProjectTokenRequest;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
+import com.mindplates.bugcase.biz.project.vo.request.ProjectReleaseCreateRequest;
 import com.mindplates.bugcase.biz.project.vo.request.UpdateProjectTokenRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectReleaseResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectTokenResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
+
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -42,6 +61,8 @@ public class ProjectController {
     private final ProjectTokenService projectTokenService;
 
     private final ProjectFileService projectFileService;
+
+    private final ProjectReleaseService projectReleaseService;
 
     private final FileUtil fileUtil;
 
@@ -186,5 +207,19 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "릴리즈 조회")
+    @GetMapping("/{id}/releases/{releaseId}")
+    public ProjectReleaseResponse getRelease(
+        @PathVariable long releaseId
+    ) {
+        ProjectReleaseDTO projectReleaseDTO = projectReleaseService.selectRelease(releaseId);
+        return new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId());
+    }
 
+    @Operation(description = "릴리즈 생성")
+    @PostMapping("/{id}/releases")
+    public ProjectReleaseResponse createRelease(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
+        ProjectReleaseDTO projectReleaseDTO = projectReleaseCreateRequest.toDTO();
+        return new ProjectReleaseResponse(projectReleaseService.createRelease(projectReleaseDTO), SessionUtil.getUserId());
+    }
 }
