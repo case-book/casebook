@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Message, ProjectBugInfoPage, ProjectDashBoardPage, ProjectEditPage, ProjectInfoPage, ProjectTestcaseInfoPage, SpaceProjectListPage } from '@/pages';
+import { Message, ProjectBugInfoPage, ProjectDashBoardPage, ProjectEditPage, ProjectInfoPage, ProjectTestcaseInfoPage, ReleaseListPage, SpaceProjectListPage } from '@/pages';
 import TestrunsRoutes from '@/pages/spaces/projects/testruns';
 import ReportsRoutes from '@/pages/spaces/projects/reports';
 
@@ -15,6 +15,7 @@ function ProjectsRoutes() {
       <Route path="/:projectId/testruns/*" element={<TestrunsRoutes />} />
       <Route path="/:projectId/bugs" element={<ProjectBugInfoPage />} />
       <Route path="/:projectId/reports/*" element={<ReportsRoutes />} />
+      <Route path="/:projectId/releases" element={<ReleaseListPage />} />
       <Route path="/" element={<SpaceProjectListPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>
