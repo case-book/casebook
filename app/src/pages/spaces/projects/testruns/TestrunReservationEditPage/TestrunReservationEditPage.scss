@@ -1,9 +1,11 @@
 .testrun-reservation-edit-page-wrapper {
   .testrun-users-type-row,
   .testrun-selection-type-row,
-  .testrun-range-type-row {
+  .testrun-range-type-row,
+  .testrun-jira-integration-row {
     > div {
       padding-bottom: 0;
+
       a {
         font-weight: bold;
         display: inline-block;
@@ -26,11 +28,14 @@
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
       margin-bottom: 1rem;
       font-size: 14px;
+
       > div {
         align-self: center;
+
         &:first-child {
           padding: 0.75rem 0.75rem 0.75rem 1rem;
         }
+
         &:last-child {
           padding: 0 1rem 0 0;
 
@@ -58,11 +63,14 @@
       box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
       margin-bottom: 1rem;
       font-size: 14px;
+
       > div {
         align-self: center;
+
         &:first-child {
           padding: 0.75rem 0.75rem 0.75rem 1rem;
           position: relative;
+
           .badge {
             font-family: Rowdies, NanumSquareNeo, sans-serif;
             font-size: 13px;
@@ -76,6 +84,7 @@
             height: 22px;
             border-radius: 50%;
             justify-content: center;
+
             > span {
               align-self: center;
             }

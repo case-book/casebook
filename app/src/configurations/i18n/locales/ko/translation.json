@@ -505,5 +505,14 @@
   "Jira Project 이름": "Jira Project 이름",
   "Jira Project Key": "Jira Project Key",
   "Jira Project 설정 변경": "Jira Project 설정 변경",
-  "Jira Project": "Jira Project"
+  "Jira Project": "Jira Project",
+  "Jira 스프린트": "Jira 스프린트",
+  "Jira 보드": "Jira 보드",
+  "Jira Sprint 선택": "Jira Sprint 선택",
+  "Jira 스프린트 목록": "Jira 스프린트 목록",
+  "시작 시각": "시작 시작",
+  "종료 시각": "종료 시각",
+  "스프린트 골": "스프린트 골",
+  "Jira 프로젝트에 Board 가 존재하지 않습니다.": "Jira 프로젝트에 Board 가 존재하지 않습니다.",
+  "선택한 Sprint 를 테스트런 정보에 입력하시겠습니까?": "선택한 Sprint 를 테스트런 정보에 입력하시겠습니까?"
 }

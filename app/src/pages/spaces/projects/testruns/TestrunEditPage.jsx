@@ -15,6 +15,7 @@ import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
+import JiraSprintSelectPopup from '@/pages/spaces/projects/testruns/JiraSprintSelectPopup/JiraSprintSelectPopup';
 
 const labelMinWidth = '120px';
 
@@ -33,6 +34,8 @@ function TestrunEditPage({ type }) {
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [project, setProject] = useState(null);
+
+  const [jiraSprintSelectPopupOpened, setJiraSprintSelectPopupOpened] = useState(false);
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -128,7 +131,12 @@ function TestrunEditPage({ type }) {
         });
       } else {
         TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
-          setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+          setTestrun({
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            startDateTime: dateUtil.getTime(data.startDateTime),
+            endDateTime: dateUtil.getTime(data.endDateTime),
+          });
         });
       }
     });
@@ -426,6 +434,26 @@ function TestrunEditPage({ type }) {
                 )}
               </BlockRow>
             </Block>
+            {isEdit && (
+              <Block>
+                <BlockRow className="testrun-jira-integration-row">
+                  <Label minWidth={labelMinWidth}>{t('Jira 스프린트')}</Label>
+                  <Text>
+                    <Link
+                      to="/"
+                      onClick={e => {
+                        e.preventDefault();
+                        setJiraSprintSelectPopupOpened(true);
+                      }}
+                    >
+                      {t('Jira Sprint 선택')}
+                    </Link>
+                    <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 1rem" />
+                    {testrun.jiraSprint?.name || t('선택된 Sprint가 없습니다.')}
+                  </Text>
+                </BlockRow>
+              </Block>
+            )}
             <PageButtons
               onCancel={() => {
                 navigate(-1);
@@ -456,6 +484,16 @@ function TestrunEditPage({ type }) {
           setOpened={setTestcaseSelectPopupOpened}
           onApply={selectedTestcaseGroups => {
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
+          }}
+        />
+      )}
+      {isEdit && jiraSprintSelectPopupOpened && (
+        <JiraSprintSelectPopup
+          spaceCode={spaceCode}
+          projectId={projectId}
+          setOpened={setJiraSprintSelectPopupOpened}
+          onApply={selectedJiraSprint => {
+            onChangeTestrun('jiraSprint', selectedJiraSprint);
           }}
         />
       )}
