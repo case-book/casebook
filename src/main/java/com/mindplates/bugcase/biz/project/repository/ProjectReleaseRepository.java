@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProjectReleaseRepository extends JpaRepository<ProjectRelease, Long> {
 
-    List<ProjectRelease> findByProjectId(long projectId);
+    List<ProjectRelease> findByProjectIdOrderByCreationDateDesc(long projectId);
 }

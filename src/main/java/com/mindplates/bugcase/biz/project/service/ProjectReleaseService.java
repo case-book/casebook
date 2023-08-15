@@ -19,9 +19,16 @@ public class ProjectReleaseService {
     private final MappingUtil mappingUtil;
     private final ProjectReleaseRepository projectReleaseRepository;
 
+    public ProjectReleaseDTO selectProjectRelease(long releaseId) {
+        return projectReleaseRepository
+            .findById(releaseId)
+            .map(ProjectReleaseDTO::new)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
+
     public List<ProjectReleaseDTO> selectProjectReleases(long projectId) {
         return projectReleaseRepository
-            .findByProjectId(projectId)
+            .findByProjectIdOrderByCreationDateDesc(projectId)
             .stream()
             .map(ProjectReleaseDTO::new)
             .collect(Collectors.toList());

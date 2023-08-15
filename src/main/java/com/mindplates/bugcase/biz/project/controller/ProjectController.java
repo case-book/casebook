@@ -211,9 +211,20 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "프로젝트의 특정 릴리즈 조회")
+    @GetMapping("/{id}/releases/{releaseId}")
+    public ProjectReleaseResponse getRelease(
+        @PathVariable long releaseId
+    ) {
+
+        ProjectReleaseDTO projectReleaseDTO = projectReleaseService.selectProjectRelease(releaseId);
+        return new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId());
+    }
+
+
     @Operation(description = "프로젝트의 릴리즈 목록 조회")
     @GetMapping("/{id}/releases")
-    public List<ProjectReleaseResponse> getRelease(
+    public List<ProjectReleaseResponse> getReleases(
         @PathVariable long id
     ) {
         List<ProjectReleaseDTO> projectReleaseDTOs = projectReleaseService.selectProjectReleases(id);
