@@ -25,7 +25,8 @@ function getTestcaseTreeData(targetGroups, groupIdFieldName = 'id') {
     const maxDepth = Math.max(...depths);
 
     for (let i = maxDepth; i >= 0; i -= 1) {
-      const targetDepthGroups = groups.filter(d => d.depth === i);
+      const targetDepthGroups = groups.filter(group => group.depth === i);
+
       if (i === 0) {
         nextGroups = nextGroups.concat(targetDepthGroups);
       } else {
