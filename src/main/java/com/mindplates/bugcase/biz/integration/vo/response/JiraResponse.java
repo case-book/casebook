@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.integration.vo.response;
 
 import com.mindplates.bugcase.biz.integration.dto.JiraDTO;
+import com.mindplates.bugcase.biz.integration.entity.JiraType;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ public class JiraResponse {
     private String name;
     private String apiUrl;
     private String apiToken;
+    private JiraType type;
     private LocalDateTime creationDate;
     private LocalDateTime lastUpdateDate;
 
@@ -27,6 +29,7 @@ public class JiraResponse {
         this.apiToken = jiraDTO.getApiToken();
         this.creationDate = jiraDTO.getCreationDate();
         this.lastUpdateDate = jiraDTO.getLastUpdateDate();
+        this.type = jiraDTO.getType();
     }
 
 }

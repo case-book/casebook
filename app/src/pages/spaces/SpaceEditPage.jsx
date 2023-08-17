@@ -461,6 +461,10 @@ function SpaceEditPage({ type }) {
                     <Label>{t('API Token')}</Label>
                     <Text>{integration?.jira.apiToken ? integration.jira.apiToken : 'N/A'}</Text>
                   </BlockRow>
+                  <BlockRow>
+                    <Label>{t('Type')}</Label>
+                    <Text>{integration?.jira.type ? integration.jira.type : 'N/A'}</Text>
+                  </BlockRow>
                 </Block>
               </>
             )}

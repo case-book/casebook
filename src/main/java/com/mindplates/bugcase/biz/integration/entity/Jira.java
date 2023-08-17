@@ -5,6 +5,8 @@ import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +14,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -33,10 +36,14 @@ public class Jira extends CommonEntity {
     @Column
     private String apiUrl;
     @Column
+    @Size(max = 1024)
     private String apiToken;
     @OneToOne
     @JoinColumn(name = "space_id")
     private Space space;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private JiraType type;
 
     public void update(Jira jira) {
         if (!Objects.isNull(jira.getName())) {
@@ -45,8 +52,11 @@ public class Jira extends CommonEntity {
         if (!Objects.isNull(jira.getApiUrl())) {
             this.apiUrl = jira.getApiUrl();
         }
-        if (!Objects.isNull(jira.getApiToken())) {
+        if (!Objects.isNull(jira.getApiToken()) && !jira.getApiToken().contains("*")) {
             this.apiToken = jira.getApiToken();
+        }
+        if (!Objects.isNull(jira.getType())) {
+            this.type = jira.getType();
         }
     }
 }

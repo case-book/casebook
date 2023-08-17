@@ -57,7 +57,7 @@ public class JiraService {
     public List<JiraProjectDTO> getJiraProjectsBySpaceCode(String spaceCode) {
         Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Jira jira = jiraRepository.findBySpaceId(space.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return jiraClient.getProjects(jira.getApiUrl(), jira.getApiToken());
+        return jiraClient.getProjects(jira);
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class JiraService {
     public JiraProjectDTO getJiraProjectBySpaceCodeAndProjectIdAndJiraProjectKey(String spaceCode, long projectId, String jiraProjectKey) {
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Jira jira = jiraRepository.findBySpaceId(project.getSpace().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return jiraClient.findProjectByIdOrKey(jira.getApiUrl(), jira.getApiToken(), jiraProjectKey);
+        return jiraClient.findProjectByIdOrKey(jira, jiraProjectKey);
     }
 
     public JiraProjectDTO getJiraProjectIntegrationBySpaceCodeAndProjectId(String spaceCode, long projectId) {
@@ -90,13 +90,13 @@ public class JiraService {
         Jira jira = jiraRepository.findBySpaceId(project.getSpace().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         JiraProject jiraProject = jiraProjectRepository.findByProjectId(project.getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return jiraClient.findBoardsByProjectId(jira.getApiUrl(), jira.getApiToken(), jiraProject.getJiraProjectKey(), startAt);
+        return jiraClient.findBoardsByProjectId(jira, jiraProject.getJiraProjectKey(), startAt);
     }
 
     public JiraAgileDTO<List<JiraAgileSprintDTO>> getJiraSprintsByProjectId(String spaceCode, long projectId, String boardId, int startAt) {
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Jira jira = jiraRepository.findBySpaceId(project.getSpace().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return jiraClient.findSprintsByBoardId(jira.getApiUrl(), jira.getApiToken(), boardId, startAt);
+        return jiraClient.findSprintsByBoardId(jira, boardId, startAt);
     }
 
     @Transactional

@@ -4,6 +4,8 @@ import com.mindplates.bugcase.biz.integration.dto.JiraAgileBoardDTO;
 import com.mindplates.bugcase.biz.integration.dto.JiraAgileDTO;
 import com.mindplates.bugcase.biz.integration.dto.JiraAgileSprintDTO;
 import com.mindplates.bugcase.biz.integration.dto.JiraProjectDTO;
+import com.mindplates.bugcase.biz.integration.entity.Jira;
+import com.mindplates.bugcase.biz.integration.entity.JiraType;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,13 +29,13 @@ public class JiraClient {
         this.jiraRestTemplate = jiraRestTemplate;
     }
 
-    public List<JiraProjectDTO> getProjects(String jiraApiUrl, String apiToken) {
+    public List<JiraProjectDTO> getProjects(Jira jira) {
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
-            .uri(URI.create(jiraApiUrl))
+            .uri(URI.create(jira.getApiUrl()))
             .path(SERVER_REST_API_PREFIX + "/project")
             .build();
 
-        HttpEntity<List<JiraProjectDTO>> request = new HttpEntity<>(addBearerTokenHeader(apiToken));
+        HttpEntity<List<JiraProjectDTO>> request = new HttpEntity<>(addBearerTokenHeader(jira));
 
         return jiraRestTemplate
             .exchange(
@@ -45,33 +47,15 @@ public class JiraClient {
             ).getBody();
     }
 
-    public JiraProjectDTO findProjectByIdOrKey(String jiraApiUrl, String apiToken, String idOrKey) {
+    public JiraAgileDTO<List<JiraAgileBoardDTO>> findBoardsByProjectId(Jira jira, String projectIdOrKey, int startAt) {
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
-            .uri(URI.create(jiraApiUrl))
-            .path(SERVER_REST_API_PREFIX + "/project/" + idOrKey)
-            .build();
-
-        HttpEntity<JiraProjectDTO> request = new HttpEntity<>(addBearerTokenHeader(apiToken));
-
-        return jiraRestTemplate
-            .exchange(
-                uriComponents.toUriString(),
-                HttpMethod.GET,
-                request,
-                new ParameterizedTypeReference<JiraProjectDTO>() {
-                }
-            ).getBody();
-    }
-
-    public JiraAgileDTO<List<JiraAgileBoardDTO>> findBoardsByProjectId(String jiraApiUrl, String apiToken, String projectIdOrKey, int startAt) {
-        UriComponents uriComponents = UriComponentsBuilder.newInstance()
-            .uri(URI.create(jiraApiUrl))
+            .uri(URI.create(jira.getApiUrl()))
             .path(AGILE_REST_API_PREFIX + "/board")
             .queryParam("projectKeyOrId", projectIdOrKey)
             .queryParam("startAt", startAt)
             .build();
 
-        HttpEntity<List<JiraAgileBoardDTO>> request = new HttpEntity<>(addBearerTokenHeader(apiToken));
+        HttpEntity<List<JiraAgileBoardDTO>> request = new HttpEntity<>(addBearerTokenHeader(jira));
 
         return jiraRestTemplate
             .exchange(
@@ -84,14 +68,32 @@ public class JiraClient {
             .getBody();
     }
 
-    public JiraAgileDTO<List<JiraAgileSprintDTO>> findSprintsByBoardId(String jiraApiUrl, String apiToken, String boardId, int startAt) {
+    public JiraProjectDTO findProjectByIdOrKey(Jira jira, String idOrKey) {
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
-            .uri(URI.create(jiraApiUrl))
+            .uri(URI.create(jira.getApiUrl()))
+            .path(SERVER_REST_API_PREFIX + "/project/" + idOrKey)
+            .build();
+
+        HttpEntity<JiraProjectDTO> request = new HttpEntity<>(addBearerTokenHeader(jira));
+
+        return jiraRestTemplate
+            .exchange(
+                uriComponents.toUriString(),
+                HttpMethod.GET,
+                request,
+                new ParameterizedTypeReference<JiraProjectDTO>() {
+                }
+            ).getBody();
+    }
+
+    public JiraAgileDTO<List<JiraAgileSprintDTO>> findSprintsByBoardId(Jira jira, String boardId, int startAt) {
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+            .uri(URI.create(jira.getApiUrl()))
             .path(AGILE_REST_API_PREFIX + "/board/" + boardId + "/sprint")
             .queryParam("startAt", startAt)
             .build();
 
-        HttpEntity<List<JiraAgileSprintDTO>> request = new HttpEntity<>(addBearerTokenHeader(apiToken));
+        HttpEntity<List<JiraAgileSprintDTO>> request = new HttpEntity<>(addBearerTokenHeader(jira));
 
         return jiraRestTemplate
             .exchange(
@@ -104,9 +106,14 @@ public class JiraClient {
             .getBody();
     }
 
-    private HttpHeaders addBearerTokenHeader(String apiToken) {
+    private HttpHeaders addBearerTokenHeader(Jira jira) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + apiToken);
+        if (JiraType.JIRA_CLOUD.equals(jira.getType())) {
+            httpHeaders.add("Authorization", "Basic " + jira.getApiToken());
+            return httpHeaders;
+        } else {
+            httpHeaders.add("Authorization", "Bearer " + jira.getApiToken());
+        }
         return httpHeaders;
     }
 

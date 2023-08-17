@@ -226,6 +226,10 @@ function SpaceContent({ space, onRefresh }) {
             <Label>{t('API Token')}</Label>
             <Text>{space.integration && space.integration.jira.apiToken ? space.integration.jira.apiToken : 'N/A'}</Text>
           </BlockRow>
+          <BlockRow>
+            <Label>{t('TYPE')}</Label>
+            <Text>{space.integration && space.integration.jira.type ? space.integration.jira.type : 'N/A'}</Text>
+          </BlockRow>
         </Block>
         {isAdmin && space?.admin && (
           <>

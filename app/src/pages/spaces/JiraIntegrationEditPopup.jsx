@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 
 const labelMinWidth = '100px';
+
+const JIRA_TYPE = ['JIRA_CLOUD', 'JIRA_SERVER'];
 
 function JiraIntegrationEditPopup({ data, setOpened, onApply }) {
   const { t } = useTranslation();
@@ -81,6 +83,24 @@ function JiraIntegrationEditPopup({ data, setOpened, onApply }) {
                 required
                 minLength={1}
               />
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} required>
+                {t('TYPE')}
+              </Label>
+              {JIRA_TYPE.map(type => (
+                <Radio
+                  key={type}
+                  label={t(type)}
+                  checked={info.type === type}
+                  onChange={() =>
+                    setInfo({
+                      ...info,
+                      type,
+                    })
+                  }
+                />
+              ))}
             </BlockRow>
           </Block>
         </ModalBody>
