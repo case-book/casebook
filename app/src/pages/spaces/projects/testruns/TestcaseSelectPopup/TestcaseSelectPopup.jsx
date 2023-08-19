@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, DateRange, EmptyContent, Input, Liner, Modal, ModalBody, ModalFooter, ModalHeader, TestcaseSelector } from '@/components';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Button, EmptyContent, Modal, ModalBody, ModalFooter, ModalHeader, TestcaseSelector, TestcaseSelectorFilter } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
@@ -75,10 +75,6 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
     }
   }, [currentSelectedTestcaseGroups, testcaseGroups]);
 
-  const filtered = useMemo(() => {
-    return Object.values(filterCondition).some(d => d);
-  }, [filterCondition]);
-
   return (
     <Modal
       size="xl"
@@ -101,83 +97,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
         )}
         {projectTestcaseGroupTree?.length > 0 && (
           <div className="content">
-            <div className="testrun-filter">
-              <div>
-                <Button size="sm" outline onClick={allCheck} disabled={filtered}>
-                  <i className="fa-solid fa-circle-check" /> ALL
-                </Button>
-              </div>
-              <div>
-                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
-              </div>
-              <div>
-                <Button
-                  className="filter-button"
-                  rounded
-                  size="sm"
-                  color={filtered ? 'primary' : 'white'}
-                  onClick={() => {
-                    setFilterCondition({
-                      name: '',
-                      minDate: null,
-                      maxDate: null,
-                    });
-                  }}
-                >
-                  <i className="fa-solid fa-filter" />
-                </Button>
-              </div>
-              <div>
-                <DateRange
-                  className="date-range"
-                  size="sm"
-                  country={user.country}
-                  language={user.language}
-                  startDate={filterCondition.minDate?.valueOf()}
-                  endDate={filterCondition.maxDate?.valueOf()}
-                  startDateKey="minDate"
-                  endDateKey="maxDate"
-                  onChange={(key, value) => {
-                    setFilterCondition({
-                      ...filterCondition,
-                      [key]: value ? moment(value) : value,
-                    });
-                  }}
-                  nullable
-                  control={
-                    <Button
-                      className="fill-button"
-                      rounded
-                      size="xs"
-                      shadow={false}
-                      onClick={() => {
-                        setFilterCondition({
-                          ...filterCondition,
-                          minDate: range.minDate,
-                          maxDate: range.maxDate,
-                        });
-                      }}
-                    >
-                      <i className="fa-solid fa-fill-drip" />
-                    </Button>
-                  }
-                />
-              </div>
-              <div className="icon">
-                <i className="fa-solid fa-font" />
-              </div>
-              <Input
-                value={filterCondition.name}
-                size="sm"
-                placeholder={t('테스트케이스 및 그룹 이름')}
-                onChange={value => {
-                  setFilterCondition({
-                    ...filterCondition,
-                    name: value,
-                  });
-                }}
-              />
-            </div>
+            <TestcaseSelectorFilter filter={filterCondition} onChange={setFilterCondition} onAllCheck={allCheck} dateRange={range} country={user.country} language={user.language} />
             <TestcaseSelector
               testcaseGroups={testcaseGroups}
               currentSelectedTestcaseGroups={currentSelectedTestcaseGroups}

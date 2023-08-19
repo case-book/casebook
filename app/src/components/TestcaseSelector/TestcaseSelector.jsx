@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
+import './TestcaseSelector.scss';
 
-function TestcaseSelector({ testcaseGroups, currentSelectedTestcaseGroups, filterCondition, onChange }) {
+function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGroups, filterCondition, onChange }) {
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
 
   useEffect(() => {
@@ -146,7 +147,7 @@ function TestcaseSelector({ testcaseGroups, currentSelectedTestcaseGroups, filte
   }, [projectTestcaseGroupTree, filterCondition]);
 
   return (
-    <div className="testcase-select-list g-no-select">
+    <div className={`testcase-selector-wrapper g-no-select ${className}`}>
       <div>
         <ul>
           {filteredProjectTestcaseGroupTree.map(testcaseGroup => {
@@ -172,6 +173,7 @@ function TestcaseSelector({ testcaseGroups, currentSelectedTestcaseGroups, filte
 }
 
 TestcaseSelector.propTypes = {
+  className: PropTypes.string,
   testcaseGroups: PropTypes.array.isRequired,
   currentSelectedTestcaseGroups: PropTypes.array.isRequired,
   filterCondition: PropTypes.object,
@@ -179,6 +181,7 @@ TestcaseSelector.propTypes = {
 };
 
 TestcaseSelector.defaultProps = {
+  className: '',
   filterCondition: {},
 };
 

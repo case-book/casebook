@@ -1,0 +1,30 @@
+.testcase-selector-filter-wrapper {
+  display: flex;
+  flex-grow: 0;
+  margin-bottom: 16px;
+
+  .icon {
+    margin-right: 0.5rem;
+  }
+
+  .filter-button {
+    margin-right: 0.5rem;
+  }
+
+  .date-range {
+    margin-right: 0.5rem;
+
+    .fill-button {
+      margin-right: 0;
+      border-color: transparent;
+    }
+  }
+
+  > div {
+    align-self: center;
+  }
+
+  .range-highlight-checkbox {
+    margin-right: 1rem;
+  }
+}

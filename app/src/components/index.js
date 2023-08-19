@@ -61,6 +61,7 @@ import Version from './Version/Version';
 import Search from './Search/Search';
 import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
 import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
+import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
 
 export {
   Selector,
@@ -126,4 +127,5 @@ export {
   Search,
   TestcaseSelector,
   TestcaseSelectorGroup,
+  TestcaseSelectorFilter,
 };
