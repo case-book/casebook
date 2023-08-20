@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Block, BlockRow, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, TestcaseSelector, Text, TextArea, Title } from '@/components';
+import { Block, BlockRow, EmptyContent, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
+import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import PropTypes from 'prop-types';
+import testcaseUtil from '@/utils/testcaseUtil';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -15,6 +18,7 @@ function ReleaseEditPage({ type }) {
   const [project, setProject] = useState(null);
   const [release, setRelease] = useState({});
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
+  const [isTestcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -38,6 +42,11 @@ function ReleaseEditPage({ type }) {
       navigate(-1);
     });
   };
+
+  const selectedTestcaseGroupSummary = useMemo(
+    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups),
+    [project?.testcaseGroups, currentSelectedTestcaseGroups],
+  );
 
   return (
     <Page>
@@ -113,7 +122,23 @@ function ReleaseEditPage({ type }) {
             </BlockRow>
             <BlockRow>
               <Label minWidth={LABEL_MIN_WIDTH}>{t('테스트케이스')}</Label>
-              <TestcaseSelector testcaseGroups={project?.testcaseGroups ?? []} currentSelectedTestcaseGroups={currentSelectedTestcaseGroups} onChange={setCurrentSelectedTestcaseGroups} />
+              <Text>
+                <Link
+                  to="/"
+                  onClick={e => {
+                    e.preventDefault();
+                    setTestcaseSelectPopupOpened(true);
+                  }}
+                >
+                  {t('테스트케이스 선택')}
+                </Link>
+              </Text>
+            </BlockRow>
+            <BlockRow>
+              <Block>
+                {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+                {selectedTestcaseGroupSummary?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
+              </Block>
             </BlockRow>
           </Block>
           <PageButtons
@@ -126,6 +151,14 @@ function ReleaseEditPage({ type }) {
           />
         </Form>
       </PageContent>
+      {isTestcaseSelectPopupOpened && (
+        <TestcaseSelectPopup
+          testcaseGroups={project?.testcaseGroups}
+          selectedTestcaseGroups={currentSelectedTestcaseGroups}
+          onApply={setCurrentSelectedTestcaseGroups}
+          setOpened={setTestcaseSelectPopupOpened}
+        />
+      )}
     </Page>
   );
 }

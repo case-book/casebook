@@ -62,6 +62,7 @@ import Search from './Search/Search';
 import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
 import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
 import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
+import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary';
 
 export {
   Selector,
@@ -128,4 +129,5 @@ export {
   TestcaseSelector,
   TestcaseSelectorGroup,
   TestcaseSelectorFilter,
+  TestcaseSelectorSummary,
 };

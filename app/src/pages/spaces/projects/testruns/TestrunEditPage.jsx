@@ -14,15 +14,10 @@ import {
   PageButtons,
   PageContent,
   PageTitle,
-  Table,
-  Tbody,
-  Td,
+  TestcaseSelectorSummary,
   Text,
   TextArea,
-  Th,
-  THead,
   Title,
-  Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -443,50 +438,24 @@ function TestrunEditPage({ type }) {
                 {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
                 {selectedTestcaseGroupSummary?.length > 0 && (
                   <Block className="summary-list" scroll maxHeight="600px" border>
-                    <Table cols={['', '200px', '100px']} sticky>
-                      <THead>
-                        <Tr>
-                          <Th align="left">{t('테스트케이스 그룹')}</Th>
-                          <Th align="right">{t('선택 테스트케이스')}</Th>
-                          <Th />
-                        </Tr>
-                      </THead>
-                      <Tbody>
-                        {selectedTestcaseGroupSummary.map(summary => {
-                          return (
-                            <Tr key={summary.testcaseGroupId}>
-                              <Td>{summary.name}</Td>
-                              <Td align="right">{t('@ 테스트케이스', { count: summary.count })}</Td>
-                              <Td align="center">
-                                <Button
-                                  outline
-                                  color="danger"
-                                  size="xs"
-                                  onClick={() => {
-                                    const nextTestcaseGroups = testrun.testcaseGroups.slice(0);
-                                    const index = nextTestcaseGroups.findIndex(d => d.testcaseGroupId === summary.testcaseGroupId);
+                    <TestcaseSelectorSummary
+                      selectedTestcaseGroupSummary={selectedTestcaseGroupSummary}
+                      onDeleteGroup={testcaseGroupId => {
+                        const nextTestcaseGroups = testrun.testcaseGroups.slice(0);
+                        const index = nextTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroupId);
+                        if (index < 0) return;
 
-                                    if (index > -1) {
-                                      const hasChild = selectedTestcaseGroupSummary.some(d => d.parentId && d.parentId === summary.testcaseGroupId);
-                                      if (hasChild) {
-                                        nextTestcaseGroups[index].testcases = [];
-                                      } else {
-                                        nextTestcaseGroups.splice(index, 1);
-                                      }
+                        const hasChild = selectedTestcaseGroupSummary.some(d => d.parentId && d.parentId === testcaseGroupId);
+                        if (hasChild) {
+                          nextTestcaseGroups[index].testcases = [];
+                        } else {
+                          nextTestcaseGroups.splice(index, 1);
+                        }
 
-                                      onChangeTestrun('testcaseGroups', nextTestcaseGroups);
-                                      setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(nextTestcaseGroups, project.testcaseGroups));
-                                    }
-                                  }}
-                                >
-                                  {t('삭제')}
-                                </Button>
-                              </Td>
-                            </Tr>
-                          );
-                        })}
-                      </Tbody>
-                    </Table>
+                        onChangeTestrun('testcaseGroups', nextTestcaseGroups);
+                        setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(nextTestcaseGroups, project.testcaseGroups));
+                      }}
+                    />
                   </Block>
                 )}
               </BlockRow>
