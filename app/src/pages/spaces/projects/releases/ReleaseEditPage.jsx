@@ -135,10 +135,9 @@ function ReleaseEditPage({ type }) {
               </Text>
             </BlockRow>
             <BlockRow>
-              <Block>
-                {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
-                {selectedTestcaseGroupSummary?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
-              </Block>
+              <Label minWidth={LABEL_MIN_WIDTH} />
+              {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+              {selectedTestcaseGroupSummary?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
             </BlockRow>
           </Block>
           <PageButtons

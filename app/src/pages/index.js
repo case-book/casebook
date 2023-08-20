@@ -45,6 +45,7 @@ import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIt
 
 import ReleaseListPage from './spaces/projects/releases/ReleaseListPage';
 import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
+import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
 
 export {
   ProjectDashBoardPage,
@@ -86,4 +87,5 @@ export {
   AdminIndexInfoPage,
   ReleaseListPage,
   ReleaseEditPage,
+  ReleaseInfoPage,
 };

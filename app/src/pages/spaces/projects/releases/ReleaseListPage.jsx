@@ -1,6 +1,6 @@
-import { EmptyContent, Page, PageContent, PageTitle, THead, Table, Tbody, Th, Title, Tr, Td } from '@/components';
+import { EmptyContent, Page, PageContent, PageTitle, Title, Card, CardHeader, CardContent, Button } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import React, { useState, useEffect } from 'react';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
@@ -8,6 +8,7 @@ import './ReleaseListPage.scss';
 
 function ReleaseListPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { spaceCode, projectId } = useParams();
   const [project, setProject] = useState(null);
   const [releases, setReleases] = useState([]);
@@ -62,23 +63,27 @@ function ReleaseListPage() {
         <Title>{t('릴리즈')}</Title>
         {releases.length <= 0 && <EmptyContent fill>{t('조회된 릴리즈가 없습니다.')}</EmptyContent>}
         {releases.length > 0 && (
-          <div>
-            <Table>
-              <THead>
-                <Tr>
-                  <Th>{t('릴리즈 이름')}</Th>
-                  <Th>{t('테스트케이스 히스토리')}</Th>
-                </Tr>
-              </THead>
-              <Tbody>
-                {releases.map(release => (
-                  <Tr key={release.id}>
-                    <Td>{release.name}</Td>
-                    <Td>test</Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
+          <div className="release-cards">
+            {releases.map(release => (
+              <Card key={release.id} shadow border className="release-card" point>
+                <CardHeader
+                  className="release-card-header"
+                  control={
+                    <div className="release-card-header-control">
+                      <Button rounded onClick={() => navigate(`${release.id}/edit`)}>
+                        <i className="fa-solid fa-play" />
+                      </Button>
+                      <Button rounded onClick={() => navigate(`${release.id}`)}>
+                        <i className="fa-solid fa-gear" />
+                      </Button>
+                    </div>
+                  }
+                >
+                  {release.name}
+                </CardHeader>
+                <CardContent>{release.description ?? t('테스트런 설명이 없습니다.')}</CardContent>
+              </Card>
+            ))}
           </div>
         )}
       </PageContent>
