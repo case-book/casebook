@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { TestcaseGroupPropTypes } from '@/proptypes';
+import { TestcaseGroupPropTypes, SelectedTestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseSelectorGroup.scss';
 import moment from 'moment/moment';
 import testcaseUtil from '@/utils/testcaseUtil';
@@ -112,16 +112,7 @@ TestcaseSelectorGroup.propTypes = {
   testcaseGroup: TestcaseGroupPropTypes,
   selected: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
-  selectedTestcaseGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      testcaseGroupId: PropTypes.number,
-      testcases: PropTypes.arrayOf(
-        PropTypes.shape({
-          testcaseId: PropTypes.number,
-        }),
-      ),
-    }),
-  ),
+  selectedTestcaseGroups: SelectedTestcaseGroupPropTypes,
   testcaseName: PropTypes.string,
   minDate: PropTypes.instanceOf(moment),
   maxDate: PropTypes.instanceOf(moment),

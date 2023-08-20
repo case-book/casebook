@@ -4,6 +4,7 @@ import { Button, DateRange, Input, Liner } from '@/components';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import './TestcaseSelectorFilter.scss';
+import { TestcaseSelectorFilterPropTypes } from '@/proptypes';
 
 function TestcaseSelectorFilter({ className, filter, onChange, onAllCheck, dateRange, country, language }) {
   const { t } = useTranslation();
@@ -104,15 +105,8 @@ TestcaseSelectorFilter.defaultProps = {
 
 TestcaseSelectorFilter.propTypes = {
   className: PropTypes.string,
-  filter: PropTypes.shape({
-    name: PropTypes.string,
-    // eslint-disable-next-line react/forbid-prop-types
-    minDate: PropTypes.object,
-    // eslint-disable-next-line react/forbid-prop-types
-    maxDate: PropTypes.object,
-  }).isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  dateRange: PropTypes.object.isRequired,
+  filter: TestcaseSelectorFilterPropTypes.isRequired,
+  dateRange: PropTypes.shape({ minDate: PropTypes.instanceOf(moment()), maxDate: PropTypes.instanceOf(moment()) }).isRequired,
   onChange: PropTypes.func.isRequired,
   onAllCheck: PropTypes.func,
   country: PropTypes.string,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Table, Tbody, Td, Th, THead, Tr } from '@/components';
 import PropTypes from 'prop-types';
+import { SelectedTestcaseGroupPropTypes } from '@/proptypes';
 import { useTranslation } from 'react-i18next';
 
 function TestcaseSelectorSummary({ className, selectedTestcaseGroupSummary, onDeleteGroup }) {
@@ -43,8 +44,7 @@ TestcaseSelectorSummary.defaultProps = {
 
 TestcaseSelectorSummary.propTypes = {
   className: PropTypes.string,
-  // eslint-disable-next-line react/forbid-prop-types
-  selectedTestcaseGroupSummary: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectedTestcaseGroupSummary: SelectedTestcaseGroupPropTypes.isRequired,
   onDeleteGroup: PropTypes.func,
 };
 

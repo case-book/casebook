@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 const NullableNumber = PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([null])]);
 
@@ -182,6 +183,23 @@ const TestrunReservationPropTypes = PropTypes.shape({
 
 const ColorPropTypes = PropTypes.oneOf([undefined, 'black', 'white', 'primary', 'danger']);
 
+const TestcaseSelectorFilterPropTypes = PropTypes.shape({
+  name: PropTypes.string,
+  minDate: PropTypes.instanceOf(moment()),
+  maxDate: PropTypes.instanceOf(moment()),
+});
+
+const SelectedTestcaseGroupPropTypes = PropTypes.arrayOf(
+  PropTypes.shape({
+    testcaseGroupId: PropTypes.number,
+    testcases: PropTypes.arrayOf(
+      PropTypes.shape({
+        testcaseId: PropTypes.number,
+      }),
+    ),
+  }),
+);
+
 export {
   NullableNumber,
   NullableString,
@@ -194,4 +212,6 @@ export {
   TestrunPropTypes,
   TestrunReservationPropTypes,
   ColorPropTypes,
+  TestcaseSelectorFilterPropTypes,
+  SelectedTestcaseGroupPropTypes,
 };

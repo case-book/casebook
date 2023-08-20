@@ -74,8 +74,8 @@ function ReleaseEditPage({ type }) {
             text: t('릴리즈 목록'),
           },
           {
-            to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/new`,
-            text: isEdit ? t('편집') : t('생성'),
+            to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/releases/new`,
+            text: isEdit ? `${t('편집')}` : t('생성'),
           },
         ]}
       >

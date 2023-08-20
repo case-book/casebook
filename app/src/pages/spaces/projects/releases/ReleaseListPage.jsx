@@ -70,7 +70,7 @@ function ReleaseListPage() {
                   className="release-card-header"
                   control={
                     <div className="release-card-header-control">
-                      <Button rounded onClick={() => navigate(`${release.id}/edit`)}>
+                      <Button rounded onClick={() => navigate(`./../testruns/new?releaseId=${release.id}`)}>
                         <i className="fa-solid fa-play" />
                       </Button>
                       <Button rounded onClick={() => navigate(`${release.id}`)}>
@@ -81,7 +81,7 @@ function ReleaseListPage() {
                 >
                   {release.name}
                 </CardHeader>
-                <CardContent>{release.description ?? t('테스트런 설명이 없습니다.')}</CardContent>
+                <CardContent>{release.description ?? t('릴리즈 설명이 없습니다.')}</CardContent>
               </Card>
             ))}
           </div>

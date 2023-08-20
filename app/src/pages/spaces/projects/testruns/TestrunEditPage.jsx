@@ -20,7 +20,7 @@ import {
   Title,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
@@ -35,12 +35,15 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
+import ReleaseService from '@/services/ReleaseService';
 
 const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
+  const [searchParams] = useSearchParams();
+  const releaseId = searchParams.get('releaseId') ?? null;
 
   const {
     userStore: { user },
@@ -95,7 +98,10 @@ function TestrunEditPage({ type }) {
     deadlineClose: true,
   });
 
-  const [selectedTestcaseGroupSummary, setSelectedTestcaseGroupSummary] = useState([]);
+  const selectedTestcaseGroupSummary = useMemo(() => {
+    if (!testrun?.testcaseGroups || !project?.testcaseGroups) return [];
+    return testcaseUtil.getSelectedTestcaseGroupSummary(testrun.testcaseGroups, project.testcaseGroups);
+  }, [testrun?.testcaseGroups, project?.testcaseGroups]);
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -128,41 +134,54 @@ function TestrunEditPage({ type }) {
       testcaseGroups: initSelectedGroups,
     };
     setTestrun(nextTestrun);
-    setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(initSelectedGroups, project.testcaseGroups));
   };
 
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
-      if (!isEdit) {
-        const initSelectedGroups = info.testcaseGroups?.map(d => {
-          return {
-            testcaseGroupId: d.id,
-            testcases: d.testcases?.map(item => {
-              return {
-                testcaseId: item.id,
-              };
-            }),
-          };
-        });
-
-        setTestrun({
-          ...testrun,
-          testrunUsers: info.users?.map(d => {
-            return { userId: d.userId, email: d.email, name: d.name };
-          }),
-          testcaseGroups: initSelectedGroups,
-        });
-
-        setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(initSelectedGroups, info.testcaseGroups));
-      } else {
+      if (isEdit) {
         TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
           setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
-          setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(data.testcaseGroups, info.testcaseGroups));
         });
+        return;
       }
+
+      const initSelectedGroups = info.testcaseGroups?.map(d => {
+        return {
+          testcaseGroupId: d.id,
+          testcases: d.testcases?.map(item => {
+            return {
+              testcaseId: item.id,
+            };
+          }),
+        };
+      });
+
+      setTestrun({
+        ...testrun,
+        testrunUsers: info.users?.map(d => {
+          return { userId: d.userId, email: d.email, name: d.name };
+        }),
+        testcaseGroups: initSelectedGroups,
+      });
     });
-  }, [type, projectId, testrunId]);
+  }, [isEdit, projectId, testrunId]);
+
+  useEffect(() => {
+    if (isEdit || !releaseId || !project?.testcaseGroups) return;
+
+    ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
+      const nextTestcaseGroups = project.testcaseGroups
+        .map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === data.id) }))
+        .filter(group => group.testcases.length > 0);
+      setTestrun(prev => ({
+        ...prev,
+        name: data.name,
+        description: data.description,
+        testcaseGroups: nextTestcaseGroups,
+      }));
+    });
+  }, [isEdit, spaceCode, projectId, releaseId, project?.testcaseGroups]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -453,7 +472,6 @@ function TestrunEditPage({ type }) {
                         }
 
                         onChangeTestrun('testcaseGroups', nextTestcaseGroups);
-                        setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(nextTestcaseGroups, project.testcaseGroups));
                       }}
                     />
                   </Block>
@@ -489,8 +507,6 @@ function TestrunEditPage({ type }) {
           selectedUsers={testrun.testrunUsers}
           setOpened={setTestcaseSelectPopupOpened}
           onApply={selectedTestcaseGroups => {
-            setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroups, project.testcaseGroups));
-
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
           }}
         />

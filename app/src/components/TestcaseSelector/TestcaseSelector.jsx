@@ -1,7 +1,7 @@
-/* eslint-disable react/forbid-prop-types */
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
+import { TestcaseSelectorFilterPropTypes, TestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelector.scss';
@@ -174,9 +174,18 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
 
 TestcaseSelector.propTypes = {
   className: PropTypes.string,
-  testcaseGroups: PropTypes.array.isRequired,
-  currentSelectedTestcaseGroups: PropTypes.array.isRequired,
-  filterCondition: PropTypes.object,
+  currentSelectedTestcaseGroups: PropTypes.arrayOf(
+    PropTypes.shape({
+      testcaseGroupId: PropTypes.number,
+      testcases: PropTypes.arrayOf(
+        PropTypes.shape({
+          testcaseId: PropTypes.number,
+        }),
+      ),
+    }),
+  ).isRequired,
+  testcaseGroups: TestcaseGroupPropTypes.isRequired,
+  filterCondition: TestcaseSelectorFilterPropTypes,
   onChange: PropTypes.func.isRequired,
 };
 
