@@ -23,9 +23,7 @@ public class TestcaseItemDTO extends CommonDTO {
 
     public TestcaseItemDTO(TestcaseItem testcaseItem) {
         this.id = testcaseItem.getId();
-        if (testcaseItem.getTestcaseTemplateItem() != null) {
-            this.testcaseTemplateItem = TestcaseTemplateItemDTO.builder().id(testcaseItem.getTestcaseTemplateItem().getId()).build();
-        }
+        this.testcaseTemplateItem = TestcaseTemplateItemDTO.builder().id(testcaseItem.getTestcaseTemplateItem().getId()).build();
         this.testcase = TestcaseDTO.builder().id(testcaseItem.getTestcase().getId()).build();
         this.type = testcaseItem.getType();
         this.value = testcaseItem.getValue();
