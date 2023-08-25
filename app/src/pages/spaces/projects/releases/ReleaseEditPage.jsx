@@ -37,16 +37,20 @@ function ReleaseEditPage({ type }) {
   const handleSubmit = e => {
     e.preventDefault();
 
-    const testcaseIds = currentSelectedTestcaseGroups.flatMap(group => group.testcases.map(testcase => testcase.id));
+    const testcaseIds = currentSelectedTestcaseGroups.flatMap(group => group.testcases.map(testcase => testcase.testcaseId));
     ReleaseService.createRelease(spaceCode, projectId, { ...release, testcaseIds }, () => {
       navigate(-1);
     });
   };
 
-  const selectedTestcaseGroupSummary = useMemo(
-    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups),
-    [project?.testcaseGroups, currentSelectedTestcaseGroups],
+  const selectedTestcaseGroup = useMemo(
+    () =>
+      testcaseUtil.getSelectionFromTestcaseGroups(
+        (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === +releaseId) })),
+      ),
+    [project?.testcaseGroups, releaseId],
   );
+  const selectedTestcaseGroupSummary = useMemo(() => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups), [selectedTestcaseGroup, project?.testcaseGroups]);
 
   return (
     <Page>

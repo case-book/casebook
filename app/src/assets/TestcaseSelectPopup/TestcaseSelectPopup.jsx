@@ -3,7 +3,7 @@ import { Button, EmptyContent, Modal, ModalBody, ModalFooter, ModalHeader, Testc
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { TestcaseGroupPropTypes } from '@/proptypes';
+import { TestcaseGroupPropTypes, SelectedTestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
 import useStores from '@/hooks/useStores';
 import moment from 'moment/moment';
@@ -137,16 +137,7 @@ TestcaseSelectPopup.defaultProps = {
 
 TestcaseSelectPopup.propTypes = {
   testcaseGroups: PropTypes.arrayOf(TestcaseGroupPropTypes),
-  selectedTestcaseGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      testcaseGroupId: PropTypes.number,
-      testcases: PropTypes.arrayOf(
-        PropTypes.shape({
-          testcaseId: PropTypes.number,
-        }),
-      ),
-    }),
-  ),
+  selectedTestcaseGroups: SelectedTestcaseGroupPropTypes,
   setOpened: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired,
 };

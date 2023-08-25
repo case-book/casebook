@@ -25,10 +25,14 @@ function ReleaseInfoPage() {
     });
   }, [spaceCode, projectId]);
 
-  const selectedTestcaseGroupSummary = useMemo(
-    () => (release?.testcase ? testcaseUtil.getSelectedTestcaseGroupSummary(release?.testcases, project?.testcaseGroups) : []),
-    [project?.testcaseGroups, release?.testcases],
+  const selectedTestcaseGroup = useMemo(
+    () =>
+      testcaseUtil.getSelectionFromTestcaseGroups(
+        (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === +releaseId) })),
+      ),
+    [project?.testcaseGroups, releaseId],
   );
+  const selectedTestcaseGroupSummary = useMemo(() => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups), [selectedTestcaseGroup, project?.testcaseGroups]);
 
   return (
     <Page>
@@ -85,8 +89,8 @@ function ReleaseInfoPage() {
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('테스트케이스')}</Label>
-            {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
-            {selectedTestcaseGroupSummary?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
+            {release?.testcases?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+            {release?.testcases?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
           </BlockRow>
         </Block>
       </PageContent>

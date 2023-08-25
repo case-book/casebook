@@ -231,6 +231,19 @@ function isFilteredTestcaseByName(testcase, name) {
   return false;
 }
 
+function getSelectionFromTestcaseGroups(testcaseGroups) {
+  return testcaseGroups?.map(d => {
+    return {
+      testcaseGroupId: d.id,
+      testcases: d.testcases?.map(item => {
+        return {
+          testcaseId: item.id,
+        };
+      }),
+    };
+  });
+}
+
 const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
@@ -241,6 +254,7 @@ const testcaseUtil = {
   isFilteredTestcaseByRange,
   isGroupFilteredByName,
   isFilteredTestcaseByName,
+  getSelectionFromTestcaseGroups,
 };
 
 export default testcaseUtil;

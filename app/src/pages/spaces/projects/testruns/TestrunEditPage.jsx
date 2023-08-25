@@ -171,9 +171,9 @@ function TestrunEditPage({ type }) {
     if (isEdit || !releaseId || !project?.testcaseGroups) return;
 
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
-      const nextTestcaseGroups = project.testcaseGroups
-        .map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === data.id) }))
-        .filter(group => group.testcases.length > 0);
+      const nextTestcaseGroups = testcaseUtil.getSelectionFromTestcaseGroups(
+        project.testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === data.id) })),
+      );
       setTestrun(prev => ({
         ...prev,
         name: data.name,
