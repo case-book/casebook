@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.project.vo.request;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class ProjectReleaseCreateRequest {
             .name(name)
             .description(description)
             .project(ProjectDTO.builder().id(projectId).build())
-            .testcases(testcaseIds.stream().map(id -> TestcaseDTO.builder().id(id).build()).collect(Collectors.toList()))
+            .testcases(testcaseIds.stream().map(id -> TestcaseSimpleDTO.builder().id(id).build()).collect(Collectors.toList()))
             .build();
     }
 }

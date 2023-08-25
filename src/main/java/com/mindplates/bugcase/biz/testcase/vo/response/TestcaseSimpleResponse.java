@@ -14,6 +14,7 @@ public class TestcaseSimpleResponse {
     private String seqId;
     private Long testcaseGroupId;
     private Long testcaseTemplateId;
+    private Long projectReleaseId;
     private String name;
     private String description;
     private Integer itemOrder;
@@ -28,6 +29,9 @@ public class TestcaseSimpleResponse {
         }
         if (testcase.getTestcaseTemplate() != null) {
             this.testcaseTemplateId = testcase.getTestcaseTemplate().getId();
+        }
+        if (testcase.getProjectRelease() != null) {
+            this.projectReleaseId = testcase.getProjectRelease().getId();
         }
         this.name = testcase.getName();
         this.description = testcase.getDescription();
@@ -44,6 +48,9 @@ public class TestcaseSimpleResponse {
         }
         if (testcase.getTestcaseTemplate() != null) {
             this.testcaseTemplateId = testcase.getTestcaseTemplate().getId();
+        }
+        if (testcase.getProjectRelease() != null) {
+            this.projectReleaseId = testcase.getProjectRelease().getId();
         }
         this.name = testcase.getName();
         this.description = testcase.getDescription();
