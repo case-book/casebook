@@ -236,19 +236,20 @@ public class ProjectController {
 
     @Operation(description = "릴리즈 생성")
     @PostMapping("/{id}/releases")
-    public ProjectReleaseResponse createProjectRelease(@PathVariable Long id,
+    public ProjectReleaseResponse createProjectRelease(@PathVariable String spaceCode, @PathVariable Long id,
         @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
         ProjectReleaseDTO projectReleaseDTO = projectReleaseCreateRequest.toDTO(id);
-        return new ProjectReleaseResponse(projectReleaseService.createProjectRelease(projectReleaseDTO), SessionUtil.getUserId());
+        return new ProjectReleaseResponse(projectReleaseService.createProjectRelease(spaceCode, id, projectReleaseDTO), SessionUtil.getUserId());
     }
 
     @Operation(description = "릴리즈 수정")
     @PutMapping("/{id}/releases/{releaseId}")
-    public ProjectReleaseResponse updateProjectRelease(@PathVariable long id,
+    public ProjectReleaseResponse updateProjectRelease(@PathVariable String spaceCode, @PathVariable long id,
         @PathVariable long releaseId,
         @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
         ProjectReleaseDTO projectReleaseDTO = projectReleaseCreateRequest.toDTO(id);
-        return new ProjectReleaseResponse(projectReleaseService.updateProjectRelease(releaseId, projectReleaseDTO), SessionUtil.getUserId());
+        return new ProjectReleaseResponse(projectReleaseService.updateProjectRelease(spaceCode, id, releaseId, projectReleaseDTO),
+            SessionUtil.getUserId());
     }
 
     @Operation(description = "릴리즈 삭제")

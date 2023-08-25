@@ -1,8 +1,10 @@
 package com.mindplates.bugcase.biz.project.entity;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,7 +34,7 @@ public class ProjectRelease extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 128)
+    @Column(name = "name", unique = true, nullable = false, length = 128)
     private String name;
 
     @Column(name = "description", length = 512)
@@ -45,4 +47,28 @@ public class ProjectRelease extends CommonEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "projectRelease")
     @Column
     private List<Testcase> testcases;
+
+    public ProjectRelease(ProjectReleaseDTO projectReleaseDTO) {
+        setName(projectReleaseDTO.getName());
+        setDescription(projectReleaseDTO.getDescription());
+        setProject(Project.builder().id(projectReleaseDTO.getProject().getId()).build());
+        setTestcases(projectReleaseDTO
+            .getTestcases()
+            .stream()
+            .map(testcaseDTO -> Testcase.builder().id(testcaseDTO.getId()).projectRelease(this).build())
+            .collect(Collectors.toList())
+        );
+    }
+
+    public ProjectRelease update(ProjectReleaseDTO projectReleaseDTO) {
+        setName(projectReleaseDTO.getName());
+        setDescription(projectReleaseDTO.getDescription());
+        setTestcases(projectReleaseDTO
+            .getTestcases()
+            .stream()
+            .map(testcaseDTO -> Testcase.builder().id(testcaseDTO.getId()).projectRelease(this).build())
+            .collect(Collectors.toList())
+        );
+        return this;
+    }
 }

@@ -3,21 +3,21 @@ package com.mindplates.bugcase.biz.project.service;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
 public class ProjectReleaseService {
 
-    private final MappingUtil mappingUtil;
     private final ProjectReleaseRepository projectReleaseRepository;
+    private final TestcaseService testcaseService;
 
     public ProjectReleaseDTO selectProjectRelease(long releaseId) {
         return projectReleaseRepository
@@ -34,21 +34,27 @@ public class ProjectReleaseService {
             .collect(Collectors.toList());
     }
 
-    public ProjectReleaseDTO createProjectRelease(ProjectReleaseDTO projectReleaseDTO) {
-        return new ProjectReleaseDTO(projectReleaseRepository.save(mappingUtil.convert(projectReleaseDTO, ProjectRelease.class)));
+    @Transactional
+    public ProjectReleaseDTO createProjectRelease(String spaceCode, long projectId, ProjectReleaseDTO projectReleaseDTO) {
+        ProjectRelease projectRelease = projectReleaseRepository.save(new ProjectRelease(projectReleaseDTO));
+        projectReleaseDTO.getTestcases().forEach(testcaseDTO -> {
+            testcaseService.updateProjectRelease(spaceCode, projectId, testcaseDTO.getId(), projectRelease.getId());
+        });
+        return new ProjectReleaseDTO(projectRelease);
     }
 
-    public ProjectReleaseDTO updateProjectRelease(long releaseId, ProjectReleaseDTO projectReleaseDTO) {
-        ProjectRelease projectRelease = projectReleaseRepository.findById(releaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        projectRelease.setName(projectReleaseDTO.getName());
-        projectRelease.setDescription(projectReleaseDTO.getDescription());
-        projectRelease.setTestcases(projectReleaseDTO
-            .getTestcases()
-            .stream()
-            .map(testcaseDTO -> mappingUtil.convert(testcaseDTO, Testcase.class))
-            .collect(Collectors.toList())
+    @Transactional
+    public ProjectReleaseDTO updateProjectRelease(String spaceCode, long projectId, long releaseId, ProjectReleaseDTO projectReleaseDTO) {
+        ProjectRelease projectRelease = projectReleaseRepository.save(
+            projectReleaseRepository
+                .findById(releaseId)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND))
+                .update(projectReleaseDTO)
         );
-        return new ProjectReleaseDTO(projectReleaseRepository.save(projectRelease));
+        projectReleaseDTO.getTestcases().forEach(testcaseDTO -> {
+            testcaseService.updateProjectRelease(spaceCode, projectId, testcaseDTO.getId(), projectRelease.getId());
+        });
+        return new ProjectReleaseDTO(projectRelease);
     }
 
     public void deleteProjectRelease(long releaseId) {
