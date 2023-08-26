@@ -8,6 +8,7 @@ import com.mindplates.bugcase.common.exception.ServiceException;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +37,15 @@ public class ProjectReleaseService {
 
     @Transactional
     public ProjectReleaseDTO createProjectRelease(String spaceCode, long projectId, ProjectReleaseDTO projectReleaseDTO) {
-        ProjectRelease projectRelease = projectReleaseRepository.save(new ProjectRelease(projectReleaseDTO));
-        projectReleaseDTO.getTestcases().forEach(testcaseDTO -> {
-            testcaseService.updateProjectRelease(spaceCode, projectId, testcaseDTO.getId(), projectRelease.getId());
-        });
-        return new ProjectReleaseDTO(projectRelease);
+        try {
+            ProjectRelease projectRelease = projectReleaseRepository.save(new ProjectRelease(projectReleaseDTO));
+            projectReleaseDTO.getTestcases().forEach(testcaseDTO -> {
+                testcaseService.updateProjectRelease(spaceCode, projectId, testcaseDTO.getId(), projectRelease.getId());
+            });
+            return new ProjectReleaseDTO(projectRelease);
+        } catch (DataIntegrityViolationException e) {
+            throw new ServiceException(HttpStatus.CONFLICT, "release.name.duplicated");
+        }
     }
 
     @Transactional
