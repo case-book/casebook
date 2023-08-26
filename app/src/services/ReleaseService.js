@@ -44,4 +44,15 @@ ReleaseService.createRelease = (spaceCode, projectId, release, successHandler, f
   );
 };
 
+ReleaseService.updateRelease = (spaceCode, projectId, releaseId, release, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/releases/${releaseId}`,
+    release,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ReleaseService;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Block, BlockRow, EmptyContent, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -24,6 +24,27 @@ function ReleaseEditPage({ type }) {
     return type === 'edit';
   }, [type]);
 
+  const handleSubmit = e => {
+    e.preventDefault();
+    const testcaseIds = currentSelectedTestcaseGroups.flatMap(group => group.testcases.map(testcase => testcase.testcaseId));
+    if (!isEdit) {
+      ReleaseService.createRelease(spaceCode, projectId, { ...release, testcaseIds }, () => {
+        navigate(-1);
+      });
+      return;
+    }
+    ReleaseService.updateRelease(spaceCode, projectId, releaseId, { ...release, testcaseIds }, () => {
+      navigate(-1);
+    });
+  };
+
+  const selectAllTestcase = () => setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(project?.testcaseGroups ?? []));
+
+  const selectedTestcaseGroupSummary = useMemo(
+    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups),
+    [currentSelectedTestcaseGroups, project?.testcaseGroups],
+  );
+
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
@@ -34,23 +55,13 @@ function ReleaseEditPage({ type }) {
       });
   }, [spaceCode, projectId, isEdit]);
 
-  const handleSubmit = e => {
-    e.preventDefault();
-
-    const testcaseIds = currentSelectedTestcaseGroups.flatMap(group => group.testcases.map(testcase => testcase.testcaseId));
-    ReleaseService.createRelease(spaceCode, projectId, { ...release, testcaseIds }, () => {
-      navigate(-1);
-    });
-  };
-
-  const selectedTestcaseGroup = useMemo(
-    () =>
+  useEffect(() => {
+    setCurrentSelectedTestcaseGroups(
       testcaseUtil.getSelectionFromTestcaseGroups(
         (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === +releaseId) })),
       ),
-    [project?.testcaseGroups, releaseId],
-  );
-  const selectedTestcaseGroupSummary = useMemo(() => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups), [selectedTestcaseGroup, project?.testcaseGroups]);
+    );
+  }, [project?.testcaseGroups, releaseId]);
 
   return (
     <Page>
@@ -136,6 +147,16 @@ function ReleaseEditPage({ type }) {
                 >
                   {t('테스트케이스 선택')}
                 </Link>
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 1rem" />
+                <Button
+                  outline
+                  size="sm"
+                  onClick={() => {
+                    selectAllTestcase();
+                  }}
+                >
+                  {t('모든 테스트케이스 추가')}
+                </Button>
               </Text>
             </BlockRow>
             <BlockRow>

@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import testcaseUtil from '@/utils/testcaseUtil';
+import './ReleaseInfoPage.scss';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -35,7 +36,7 @@ function ReleaseInfoPage() {
   const selectedTestcaseGroupSummary = useMemo(() => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups), [selectedTestcaseGroup, project?.testcaseGroups]);
 
   return (
-    <Page>
+    <Page className="release-info-page-wrapper">
       <PageTitle
         breadcrumbs={[
           { to: '/', text: t('HOME') },
@@ -85,10 +86,12 @@ function ReleaseInfoPage() {
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('설명')}</Label>
-            <Text>{release.description}</Text>
+            <Text>{release.description ?? t('릴리즈 설명이 없습니다.')}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={LABEL_MIN_WIDTH}>{t('테스트케이스')}</Label>
+            <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="start" className="testcase-label">
+              {t('테스트케이스')}
+            </Label>
             {release?.testcases?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
             {release?.testcases?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
           </BlockRow>
