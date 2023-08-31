@@ -1,12 +1,11 @@
 package com.mindplates.bugcase.common.message.vo;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Data
@@ -27,13 +26,6 @@ public class MessageData {
             this.data = new HashMap<>();
         }
         data.put(key, value);
-    }
-
-    public void removeData(String key) {
-        if (data != null) {
-            data.remove(key);
-        }
-
     }
 
 }

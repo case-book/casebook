@@ -21,17 +21,16 @@ import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -40,7 +39,6 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectFileService projectFileService;
     private final TestrunService testrunService;
-
     private final TestcaseService testcaseService;
     private final TestcaseItemRepository testcaseItemRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
@@ -48,7 +46,10 @@ public class ProjectService {
     private final ProjectTokenRepository projectTokenRepository;
     private final MappingUtil mappingUtil;
 
-    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService, @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository, TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository, ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService) {
+    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
+        @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
+        TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
+        ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
@@ -96,16 +97,17 @@ public class ProjectService {
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public ProjectDTO selectProjectName(String spaceCode, Long projectId) {
-        Project project = projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Project project = projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new ProjectDTO(project, true);
     }
 
 
     public Long selectProjectId(String token) {
-        ProjectToken projectToken = projectTokenRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
+        ProjectToken projectToken = projectTokenRepository.findByToken(token)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
         return projectToken.getProject().getId();
     }
-
 
 
     public boolean existByName(String spaceCode, String name) {
@@ -139,7 +141,8 @@ public class ProjectService {
         projectInfo.setTestcaseGroupSeq(0);
 
         // 기본 어드민 유저로 사용자 추가
-        ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
+        ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN)
+            .build();
         projectInfo.setUsers(Collections.singletonList(projectUser));
         return new ProjectDTO(projectRepository.save(mappingUtil.convert(projectInfo, Project.class)), true);
     }
@@ -166,49 +169,19 @@ public class ProjectService {
             projectInfo.setTestcaseSeq(updateProjectInfo.getTestcaseSeq());
         }
 
-        projectInfo.setTestcaseTemplates(updateProjectInfo.getTestcaseTemplates().stream().filter((testcaseTemplate -> !"D".equals(testcaseTemplate.getCrud()))).map(testcaseTemplate -> {
-            testcaseTemplate.getTestcaseTemplateItems().stream().filter(TestcaseTemplateItemDTO::isDeleted).forEach(testcaseTemplateItem -> {
-                testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
-                testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
-            });
+        projectInfo.setTestcaseTemplates(
+            updateProjectInfo.getTestcaseTemplates().stream().filter((testcaseTemplate -> !"D".equals(testcaseTemplate.getCrud())))
+                .map(testcaseTemplate -> {
+                    testcaseTemplate.getTestcaseTemplateItems().stream().filter(TestcaseTemplateItemDTO::isDeleted).forEach(testcaseTemplateItem -> {
+                        testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
+                        testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
+                    });
 
-            testcaseTemplate.setTestcaseTemplateItems(testcaseTemplate.getTestcaseTemplateItems().stream().filter(testcaseTemplateItem -> !testcaseTemplateItem.isDeleted()).collect(Collectors.toList()));
-            return testcaseTemplate;
-        }).collect(Collectors.toList()));
-
-        /*
-        updateProjectInfo.getTestcaseTemplates().forEach((testcaseTemplate -> {
-            if ("D".equals(testcaseTemplate.getCrud())) {
-                projectInfo.getTestcaseTemplates().removeIf((currentTestcaseTemplate -> currentTestcaseTemplate.getId().equals(testcaseTemplate.getId())));
-            } else if (testcaseTemplate.getId() == null) {
-                TestcaseTemplateDTO currentTestcaseTemplate = mappingUtil.convert(testcaseTemplate, TestcaseTemplateDTO.class);
-                projectInfo.getTestcaseTemplates().add(currentTestcaseTemplate);
-            } else {
-                Optional<TestcaseTemplateDTO> targetTestcaseTemplate = projectInfo.getTestcaseTemplates().stream().filter((currentTestcaseTemplate -> currentTestcaseTemplate.getId().equals(testcaseTemplate.getId()))).findFirst();
-                targetTestcaseTemplate.ifPresent(testcaseTemplate::merge);
-                testcaseTemplate.getTestcaseTemplateItems().forEach((testcaseTemplateItem -> {
-                    if (testcaseTemplateItem.isDeleted()) {
-                        if (targetTestcaseTemplate.isPresent()) {
-                            targetTestcaseTemplate.get().getTestcaseTemplateItems().removeIf((currentTestcaseTemplateItem -> currentTestcaseTemplateItem.getId().equals(testcaseTemplateItem.getId())));
-                            testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
-                            testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
-                        }
-                    } else if (testcaseTemplateItem.getId() == null) {
-                        TestcaseTemplateItemDTO currentTestcaseTemplateItem = mappingUtil.convert(testcaseTemplateItem, TestcaseTemplateItemDTO.class);
-                        targetTestcaseTemplate.ifPresent(testcaseTemplateDTO -> testcaseTemplateDTO.getTestcaseTemplateItems().add(currentTestcaseTemplateItem));
-                    } else {
-                        if (targetTestcaseTemplate.isPresent()) {
-                            Optional<TestcaseTemplateItemDTO> targetTestcaseTemplateItem = targetTestcaseTemplate.get().getTestcaseTemplateItems().stream().filter((currentTestcaseTemplateItem -> currentTestcaseTemplateItem.getId().equals(testcaseTemplateItem.getId()))).findFirst();
-                            if (targetTestcaseTemplateItem.isPresent()) {
-                                testcaseTemplateItem.merge(targetTestcaseTemplateItem.get());
-                            }
-                        }
-                    }
-                }));
-            }
-        }));
-
-         */
+                    testcaseTemplate.setTestcaseTemplateItems(
+                        testcaseTemplate.getTestcaseTemplateItems().stream().filter(testcaseTemplateItem -> !testcaseTemplateItem.isDeleted())
+                            .collect(Collectors.toList()));
+                    return testcaseTemplate;
+                }).collect(Collectors.toList()));
 
         AtomicBoolean foundDefaultTemplate = new AtomicBoolean(false);
         projectInfo.getTestcaseTemplates().forEach((testcaseTemplate -> {
@@ -224,7 +197,9 @@ public class ProjectService {
             projectInfo.getTestcaseTemplates().get(0).setDefaultTemplate(true);
         }
 
-        projectInfo.setUsers(updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D")).collect(Collectors.toList()));
+        projectInfo.setUsers(
+            updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D"))
+                .collect(Collectors.toList()));
         Project updateResult = mappingUtil.convert(projectInfo, Project.class);
         return new ProjectDTO(projectRepository.save(updateResult), true);
 
@@ -233,14 +208,9 @@ public class ProjectService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
-
         projectFileService.deleteProjectFile(project.getId());
         List<TestrunDTO> testruns = testrunService.selectProjectAllTestrunList(spaceCode, project.getId());
-
-        testruns.forEach((testrunDTO -> {
-            testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId());
-        }));
-
+        testruns.forEach((testrunDTO -> testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId())));
         projectRepository.delete(mappingUtil.convert(project, Project.class));
     }
 
@@ -253,7 +223,6 @@ public class ProjectService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectUser(String spaceCode, Long projectId, Long userId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        // ProjectUser user = project.getUsers().stream().filter(projectUser -> projectUser.getUser().getId().equals(userId)).findFirst().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         project.getUsers().removeIf((projectUser -> projectUser.getUser().getId().equals(userId)));
         long adminCount = project.getUsers().stream().filter((projectUser -> projectUser.getRole().equals(UserRoleCode.ADMIN))).count();
         if (adminCount < 1L) {

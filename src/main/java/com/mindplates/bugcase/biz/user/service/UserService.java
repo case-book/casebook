@@ -7,14 +7,13 @@ import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.EncryptUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -148,28 +147,6 @@ public class UserService {
         }
 
         return null;
-    }
-
-    @Transactional
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-
-    public boolean auth(Long userId, String password) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return false;
-        }
-
-        String salt = user.getSalt();
-        byte[] saltBytes = new java.math.BigInteger(salt, 16).toByteArray();
-        String encryptedText = encryptUtil.getEncrypt(password, saltBytes);
-
-        return user.getPassword().equals(encryptedText);
-    }
-
-    public User selectUserByUuid(String uuid) {
-        return userRepository.findByUuid(uuid).orElse(null);
     }
 
     public List<UserDTO> selectUserList() {

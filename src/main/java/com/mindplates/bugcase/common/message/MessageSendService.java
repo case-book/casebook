@@ -11,32 +11,18 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MessageSendService {
 
-    final private MessageBroker messageBroker;
+    private final MessageBroker messageBroker;
 
     public void sendTo(String topic, MessageData messageData) {
         try {
             messageBroker.pubMessage(MessageInfo.builder()
-                    .topicUrl(topic)
-                    .data(messageData)
-                    .build());
+                .topicUrl(topic)
+                .data(messageData)
+                .build());
         } catch (Exception e) {
             // ignore
         }
 
     }
-
-    public void sendToUser(String topic, Long targetUserId, MessageData messageData) {
-        try {
-            messageBroker.pubMessage(MessageInfo.builder()
-                    .topicUrl(topic)
-                    .targetUserId(targetUserId)
-                    .data(messageData)
-                    .build());
-        } catch (Exception e) {
-            // ignore
-        }
-
-    }
-
 
 }

@@ -1,21 +1,40 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Entity
 @Builder
 @Table(name = "testrun_reservation", indexes = {@Index(name = "IDX_TESTRUN_PROJECT_ID", columnList = "project_id"),
-        @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,end_date_time,id")})
+    @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,end_date_time,id")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -75,4 +94,117 @@ public class TestrunReservation extends CommonEntity {
     @Column(name = "select_updated_testcase")
     private Boolean selectUpdatedTestcase;
 
+    public void updateTestcaseCount() {
+        int testcaseGroupCountResult = 0;
+        int testcaseCountResult = 0;
+        if (this.testcaseGroups != null) {
+            testcaseGroupCountResult += this.testcaseGroups.size();
+            for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
+                testrunTestcaseGroup.setTestrunReservation(this);
+                if (testrunTestcaseGroup.getTestcases() != null) {
+                    testcaseCountResult += testrunTestcaseGroup.getTestcases().size();
+                    for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
+                        testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                    }
+                }
+            }
+        }
+        this.testcaseGroupCount = testcaseGroupCountResult;
+        this.testcaseCount = testcaseCountResult;
+    }
+
+    public void updateInfo(TestrunReservationDTO testrunReservation) {
+        this.expired = false;
+        this.name = testrunReservation.getName();
+        this.description = testrunReservation.getDescription();
+        this.startDateTime = testrunReservation.getStartDateTime();
+        this.endDateTime = testrunReservation.getEndDateTime();
+        this.deadlineClose = testrunReservation.getDeadlineClose();
+    }
+
+    public void updateTestrunUsers(List<TestrunUser> newTestrunUsers) {
+        // 삭제된 테스터 제거
+        this.testrunUsers.removeIf(testrunUser -> newTestrunUsers
+            .stream()
+            .noneMatch(newTestrunUser -> newTestrunUser.getUser().getId().equals(testrunUser.getUser().getId())));
+
+        // 추가된 테스터 추가
+        this.testrunUsers.addAll(
+            newTestrunUsers
+                .stream()
+                .filter(newTestrunUser -> this.testrunUsers
+                    .stream()
+                    .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(newTestrunUser.getUser().getId())))
+                .map(newTestrunUser -> TestrunUser.builder()
+                    .user(User.builder().id(newTestrunUser.getUser().getId()).build())
+                    .testrunReservation(this)
+                    .build())
+                .collect(Collectors.toList()));
+    }
+
+    public void updateTestcaseGroups(List<TestrunTestcaseGroup> newTestcaseGroups) {
+        // 삭제된 테스트런 테스트케이스 그룹 제거
+        this.testcaseGroups.removeIf(
+            (testrunTestcaseGroup -> newTestcaseGroups.stream()
+                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
+                .noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId()
+                    .equals(testrunTestcaseGroup.getId())))));
+
+        // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
+        for (TestrunTestcaseGroup testcaseGroup : this.testcaseGroups) {
+            TestrunTestcaseGroup updateTestrunTestcaseGroup = newTestcaseGroups
+                .stream()
+                .filter(newTestrunTestcaseGroup -> newTestrunTestcaseGroup.getId() != null)
+                .filter(newTestrunTestcaseGroup -> newTestrunTestcaseGroup.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+            if (testcaseGroup.getTestcases() != null) {
+                testcaseGroup.getTestcases().removeIf(testcase -> {
+                    if (updateTestrunTestcaseGroup != null) {
+                        return updateTestrunTestcaseGroup.getTestcases()
+                            .stream()
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                    }
+                    return true;
+                });
+            }
+        }
+
+        // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
+        if (newTestcaseGroups != null) {
+
+            newTestcaseGroups.stream()
+                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
+                .forEach(testrunTestcaseGroupDTO -> {
+                    TestrunTestcaseGroup targetTestcaseGroup = this.testcaseGroups.stream().filter(
+                        testrunTestcaseGroup -> testrunTestcaseGroup.getId()
+                            .equals(testrunTestcaseGroupDTO.getId())).findAny().orElse(null);
+
+                    if (targetTestcaseGroup != null
+                        && testrunTestcaseGroupDTO.getTestcases() != null) {
+                        testrunTestcaseGroupDTO.getTestcases()
+                            .stream()
+                            .filter(newTestrunTestcaseGroup -> newTestrunTestcaseGroup.getId() == null)
+                            .forEach(newTestrunTestcaseGroup -> {
+                                newTestrunTestcaseGroup.setTestrunTestcaseGroup(targetTestcaseGroup);
+                                targetTestcaseGroup.getTestcases().add(newTestrunTestcaseGroup);
+                            });
+                    }
+                });
+
+            // 추가된 테스트런 테스트케이스 그룹 추가
+            newTestcaseGroups.stream()
+                .filter(newTestrunTestCaseGroup -> newTestrunTestCaseGroup.getId() == null)
+                .forEach(newTestrunTestCaseGroup -> {
+                    newTestrunTestCaseGroup.setTestrunReservation(this);
+                    this.testcaseGroups.add(newTestrunTestCaseGroup);
+                });
+        }
+    }
+
+    public void updateTestcaseAndGroupCount() {
+        this.testcaseGroupCount = this.testcaseGroups.size();
+        this.testcaseCount = this.testcaseGroups
+            .stream()
+            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
+            .reduce(0, Integer::sum);
+    }
 }
