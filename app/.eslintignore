@@ -1,7 +1,0 @@
-/node_modules/**
-reportWebVitals.js
-setupTests.js
-craco.config.js
-src/stories/**
-src/vendor/**
-
