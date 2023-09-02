@@ -73,7 +73,7 @@ public class Testcase extends CommonEntity {
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_release_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
+    @JoinColumn(name = "project_release_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT_RELEASE"))
     private ProjectRelease projectRelease;
 
     @Column(name = "tester_type", length = ColumnsDef.CODE)

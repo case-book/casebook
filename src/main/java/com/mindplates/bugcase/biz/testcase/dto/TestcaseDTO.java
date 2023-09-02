@@ -44,7 +44,9 @@ public class TestcaseDTO extends CommonDTO {
         this.testcaseTemplate = new TestcaseTemplateDTO(testcase.getTestcaseTemplate());
         this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
         this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
-        this.projectRelease = ProjectReleaseDTO.builder().id(testcase.getProjectRelease().getId()).build();
+        if (testcase.getProjectRelease() != null) {
+            this.projectRelease = ProjectReleaseDTO.builder().id(testcase.getProjectRelease().getId()).build();
+        }
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
         this.contentUpdateDate = testcase.getContentUpdateDate();

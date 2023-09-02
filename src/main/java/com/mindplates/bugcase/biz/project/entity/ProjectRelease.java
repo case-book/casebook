@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,29 +45,32 @@ public class ProjectRelease extends CommonEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "projectRelease")
-    @Column
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "projectRelease", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+        CascadeType.REFRESH})
     private List<Testcase> testcases;
 
-    public ProjectRelease(ProjectReleaseDTO projectReleaseDTO) {
+    public ProjectRelease(ProjectReleaseDTO projectReleaseDTO, List<Testcase> testcases) {
         setName(projectReleaseDTO.getName());
         setDescription(projectReleaseDTO.getDescription());
         setProject(Project.builder().id(projectReleaseDTO.getProject().getId()).build());
-        setTestcases(projectReleaseDTO
-            .getTestcases()
-            .stream()
-            .map(testcaseDTO -> Testcase.builder().id(testcaseDTO.getId()).projectRelease(this).build())
+        setTestcases(testcases.stream()
+            .map(testcase -> {
+                testcase.setProjectRelease(this);
+                return testcase;
+            })
             .collect(Collectors.toList())
         );
     }
 
-    public ProjectRelease update(ProjectReleaseDTO projectReleaseDTO) {
+    public ProjectRelease update(ProjectReleaseDTO projectReleaseDTO, List<Testcase> testcases) {
         setName(projectReleaseDTO.getName());
         setDescription(projectReleaseDTO.getDescription());
-        setTestcases(projectReleaseDTO
-            .getTestcases()
-            .stream()
-            .map(testcaseDTO -> Testcase.builder().id(testcaseDTO.getId()).projectRelease(this).build())
+        this.testcases.forEach(testcase -> testcase.setProjectRelease(null));
+        setTestcases(testcases.stream()
+            .map(testcase -> {
+                testcase.setProjectRelease(this);
+                return testcase;
+            })
             .collect(Collectors.toList())
         );
         return this;
