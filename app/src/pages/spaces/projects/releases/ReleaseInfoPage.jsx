@@ -20,11 +20,12 @@ function ReleaseInfoPage() {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
-
+  }, [spaceCode, projectId]);
+  useEffect(() => {
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, info => {
       setRelease(info);
     });
-  }, [spaceCode, projectId]);
+  }, [spaceCode, projectId, releaseId]);
 
   const selectedTestcaseGroup = useMemo(
     () =>
@@ -33,7 +34,10 @@ function ReleaseInfoPage() {
       ),
     [project?.testcaseGroups, releaseId],
   );
-  const selectedTestcaseGroupSummary = useMemo(() => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups), [selectedTestcaseGroup, project?.testcaseGroups]);
+  const selectedTestcaseGroupSummary = useMemo(
+    () => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups).filter(group => group.count > 0),
+    [selectedTestcaseGroup, project?.testcaseGroups],
+  );
 
   return (
     <Page className="release-info-page-wrapper">

@@ -27,6 +27,7 @@ function ReleaseEditPage({ type }) {
   const handleSubmit = e => {
     e.preventDefault();
     const testcaseIds = currentSelectedTestcaseGroups.flatMap(group => group.testcases.map(testcase => testcase.testcaseId));
+
     if (!isEdit) {
       ReleaseService.createRelease(spaceCode, projectId, { ...release, testcaseIds }, () => {
         navigate(-1);
@@ -41,7 +42,7 @@ function ReleaseEditPage({ type }) {
   const selectAllTestcase = () => setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(project?.testcaseGroups ?? []));
 
   const selectedTestcaseGroupSummary = useMemo(
-    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups),
+    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups).filter(group => group.count > 0),
     [currentSelectedTestcaseGroups, project?.testcaseGroups],
   );
 
@@ -49,11 +50,13 @@ function ReleaseEditPage({ type }) {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
-    if (isEdit)
-      ReleaseService.selectRelease(spaceCode, projectId, releaseId, info => {
-        setRelease(info);
-      });
-  }, [spaceCode, projectId, isEdit]);
+  }, [spaceCode, projectId]);
+  useEffect(() => {
+    if (!isEdit) return;
+    ReleaseService.selectRelease(spaceCode, projectId, releaseId, info => {
+      setRelease(info);
+    });
+  }, [spaceCode, projectId, releaseId, isEdit]);
 
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(
@@ -178,7 +181,7 @@ function ReleaseEditPage({ type }) {
       {isTestcaseSelectPopupOpened && (
         <TestcaseSelectPopup
           testcaseGroups={project?.testcaseGroups}
-          selectedTestcaseGroups={currentSelectedTestcaseGroups}
+          selectedTestcaseGroups={currentSelectedTestcaseGroups.filter(group => group.testcases.length > 0)}
           onApply={setCurrentSelectedTestcaseGroups}
           setOpened={setTestcaseSelectPopupOpened}
         />
