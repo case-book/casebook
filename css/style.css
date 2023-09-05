@@ -244,8 +244,8 @@ h1 {
 .header-back.one {
 
   background-color: white;
-  _background: url('../img/header_one.png') 50% 0 no-repeat;
-  _background: url('../img/header_one.png') 50% 0 no-repeat, linear-gradient(to right, #3c3c3d, #313232);
+  _background: url('../img/header_one-1.png') 50% 0 no-repeat;
+  _background: url('../img/header_one-1.png') 50% 0 no-repeat, linear-gradient(to right, #3c3c3d, #313232);
 }
 
 
