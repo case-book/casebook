@@ -319,11 +319,10 @@ h1 {
   height: 470px;
   width: 100%;
 }
-.header-back.one {
 
+.header-back.one {
   background-color: white;
-  _background: url('../img/header_one-1.png') 50% 0 no-repeat;
-  _background: url('../img/header_one-1.png') 50% 0 no-repeat, linear-gradient(to right, #3c3c3d, #313232);
+  background: url('../img/iphone.png') 90% 50% no-repeat, url('../img/macbook.png') 70% 0 no-repeat;
 }
 
 
@@ -372,6 +371,7 @@ h1 {
 
 .carousel-caption p {
   color: #282828;
+  background-color: white;
   padding: 10px;
   border-radius: 5px;
   text-align: justify;
@@ -380,7 +380,7 @@ h1 {
 /* Declare heights because of positioning of img element */
 .carousel .item {
   height: 470px;
-  background-color: #777;
+  background-color: white;
 }
 .carousel-inner > .item > img {
   position: absolute;
@@ -1570,7 +1570,7 @@ h1.showcase > span .showcase-icon-2 {
   }
 
   .carousel-caption p {
-    background-color: rgba(0,0,0,0.5);
+
     padding: 10px;
     border-radius: 5px;
     display: inline-block;
