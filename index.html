@@ -117,7 +117,7 @@
             <p lang="ko">테스트런의 진행 상황, 종료 시의 결과 보고를 슬랙을 통해 안내하여 빠른 피드백이 가능하며, HTTP API Endpoint 및 javascript SDK 를 통해 e2e script 작성 또는 API 테스트 이후의 결과를 실시간으로 테스트런에 반영할 수 있습니다.</p>
             <p lang="en">You can add performance information of various software through interworking with Telegraf, including metrics of basic scouter, and combine them to form tens of thousands of combinations of dashboards.</p>
             <span class='icon connect'>
-                <i class="fa fa-plug" aria-hidden="true"></i>
+                <i class="fa fa-bell" aria-hidden="true"></i>
             </span>
         </div>
     </div>
@@ -126,32 +126,73 @@
 <section  class="container features">
     <div class="row">
         <div class="col-lg-12 text-center">
-            <div class="navy-line"></div>
-            <h1 class="main-text" lang="ko"><span class="green">케이스북은</span><br/>테스트케이스를 웹을 통해 최적화된 형태로 관리하고,<br/> 추적하기 위한 <span class="green">테스트케이스 관리 소프트웨어</span>입니다.<br/> </h1>
+            <h1 class="main-text" lang="ko"><span class="emphasis">케이스북은</span><br/>테스트케이스를 웹을 통해 최적화된 형태로 관리하고,<br/> 추적하기 위한 <span class="emphasis">테스트케이스 관리 소프트웨어</span>입니다.<br/> </h1>
             <h1 class="main-text" lang="en">TBD</h1>
-            <p lang="ko">지금 바로 테스트케이스를 만들고, 실행하고, 자동화해보세요.</p>
+            <p lang="ko" class="msg"><span>지금 바로 테스트케이스를 만들고, 실행하고, 자동화해보세요.</span></p>
             <p lang="en">TBD</p>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3 text-center wow fadeInLeft feature-text">
+        <div class="wow zoomIn casebook-images first">
             <div>
-                <i class="fa fa-clipboard features-icon"></i>
+                <div>
+                    <img src="img/casebook-dashboard.png" alt="dashboard" class="casebook-img img-1">
+                </div>
+                <div>
+                    <img src="img/casebook-projects-light.png" alt="dashboard" class="casebook-img img-2">
+                </div>
+                <div>
+                    <img src="img/casebook-respot-detail.png" alt="dashboard" class="casebook-img img-3">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="wow zoomIn casebook-images">
+            <div>
+                <div><img src="img/casebook-resport-list.png" alt="dashboard" class="casebook-img img-4">
+                </div>
+                <div>
+                    <img src="img/casebook-project-dark.png" alt="dashboard" class="casebook-img img-5">
+
+                </div>
+                <div>
+                <img src="img/casebook-testrun.png" alt="dashboard" class="casebook-img img-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 text-center wow fadeInLeft feature-text">
+            <div>
+                <div class='feature-text-icon'>
+                    <span><i class="fa fa-clipboard"></i></span>
+                </div>
                 <h2 lang="ko">테스트케이스 관리</h2>
                 <h2 lang="en">Testcase Management</h2>
                 <p lang="ko">테스트케이스 그룹을 통한 유사한 테스트케이스들의 통합 관리와, 프로젝트 구성원들이 자유롭게 커스터마이징 가능한 테스트케이스 템플릿을 통해 원하는 유형의 테스트 케이스를 작성할 수 있습니다.</p>
                 <p lang="en">TBD</p>
             </div>
         </div>
-        <div class="col-md-6 text-center  wow zoomIn">
-            <img src="img/feature0.png" alt="dashboard" class="img-responsive">
-        </div>
-        <div class="col-md-3 text-center wow fadeInRight feature-text">
+        <div class="col-md-4 text-center wow fadeInRight feature-text">
             <div>
-                <i class="fa fa-retweet features-icon"></i>
-                <h2 lang="ko">테스트케이스 실행</h2>
+                <div class='feature-text-icon'>
+                    <span><i class="fa fa-retweet"></i></span>
+                </div>
+                <h2 lang="ko">테스트 수행</h2>
                 <h2 lang="en">Testcase Execution</h2>
                 <p lang="ko">테스트케이스의 실행 단위가 되는 테스트런을 생성하거나, 예약 테스트런 / 반복 테스트런 기능을 통해 업무 일정 또는 주기적인 테스트를 일일히 고민하지 않아도 간편하게 실행시켜줍니다.</p>
+                <p lang="en">TBD</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center wow fadeInRight feature-text">
+            <div>
+                <div class='feature-text-icon'>
+                    <span><i class="fa fa-flag" aria-hidden="true"></i></span>
+                </div>
+                <h2 lang="ko">테스트 결과 리포팅</h2>
+                <h2 lang="en">Testcase Execution</h2>
+                <p lang="ko">테스트 결과를 일목요연하게 정리할 수 있습니다. 전체 테스트 결과와 테스터별 요약 정보를 제공하여, 전체 혹은 테스터별 수행 결과를 확인하고, 문제점을 쉽게 파악할 수 있습니다.</p>
                 <p lang="en">TBD</p>
             </div>
         </div>
@@ -226,7 +267,6 @@
     <div class="container">
         <div class="row m-b-lg">
             <div class="col-lg-12 text-center">
-                <div class="navy-line"></div>
                 <h1 >Showcase</h1>
                 <p lang="ko">주요 기능을 간략하게 소개하는 영상입니다</p>
                 <p lang="en">Video that briefly introduces the key functions.</p>
@@ -242,7 +282,7 @@
     <div class="container">
         <div class="row m-b-lg">
             <div class="col-lg-12 text-center">
-                <div class="navy-line"></div>
+
                 <h1 lang="ko">설치 및 사용 가이드</h1>
                 <h1 lang="en">Guide</h1>
                 <div class="scouter-img">
@@ -261,7 +301,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
-                <div class="navy-line"></div>
+
                 <h1 lang="ko">Release Summary</h1>
                 <p lang="ko">케이스북의 간략한 릴리즈 정보입니다</p>
                 <h1 lang="en">Latest Release</h1>
@@ -319,7 +359,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 text-center">
-                <div class="navy-line"></div>
+
                 <h1>GITHUB</h1>
                 <div class="git-hub">
                     <i class="fa fa-github"></i>
