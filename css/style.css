@@ -1299,6 +1299,13 @@ section.comments {
 .vertical-timeline-content .btn {
   float: right;
 }
+
+.vertical-timeline-content h2,
+.vertical-timeline-content p {
+  color: #333;
+}
+
+
 #vertical-timeline.light-timeline:before {
   background: #e7eaec;
 }
@@ -1420,9 +1427,26 @@ section.comments {
   float: left;
   font-weight: 500;
 }
+
 .vertical-date small {
-  color: #003F87;
-  font-weight: 400;
+  color: white;
+  font-weight: 700;
+}
+
+.vertical-date small a {
+  background-color: white;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.vertical-date small a > span {
+  display: inline-block;
+  padding: 0px 4px 1px;
+  border-bottom: 1px solid #337ab7;
 }
 .vertical-timeline-content::before {
   content: '';
@@ -1437,6 +1461,7 @@ section.comments {
 
   .vertical-timeline-content h2 {
     font-size: 18px;
+    font-weight: bold;
   }
   .vertical-timeline-content p {
     font-size: 13px;
@@ -1487,25 +1512,46 @@ section.comments {
   }
 }
 
+h1.showcase {
+
+}
+
+h1.showcase > span {
+  display: inline-block;
+  padding: 10px;
+  background-color: #ffc600;
+  color: #000;
+  border-radius: 0 10px 0 10px;
+  font-weight: bold;
+  position: relative;
+}
+
+h1.showcase > span .showcase-icon-1 {
+  position: absolute;
+  top : -20px;
+  right : -20px;
+  color: #FC4C4E;
+}
+
+h1.showcase > span .showcase-icon-2 {
+  position: absolute;
+  top : -40px;
+  left : -40px;
+  color: #FC4C4E;
+
+}
+
 
 .demo-video {
-  width: 800px;
-  height: 460px;
   border: 1px solid #333;
+  margin: 0 auto;
+  line-height: 0;
 }
 
-@media (max-width: 1000px) {
-  .demo-video {
-    width: 600px;
-    height: 360px;
-  }
-}
-
-@media (max-width: 700px) {
-  .demo-video {
-    width: 400px;
-    height: 240px;
-  }
+.demo-video video {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 10px;
 }
 
 @media (max-width: 500px) {
