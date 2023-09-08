@@ -268,7 +268,7 @@ h1 {
 .feature-text > div .feature-text-icon > span {
   background-color: #1428a0;
   color: white;
-  font-size: 16px;
+  font-size: 20px;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -593,14 +593,32 @@ h1 {
 }
 
 .features-block {
-  margin-top: 40px;
+
 }
 .features-text {
 
 }
+
+.feature-hr {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+img.border {
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
 .features small {
   color: #1428a0;
+  font-weight: bold;
 }
+
+.features .features-text p {
+  text-align: justify;
+  word-break: break-all;
+}
+
 .features h2 {
   font-size: 18px;
   margin-top: 5px;
@@ -1230,6 +1248,7 @@ section.comments {
 .gh-star {
   text-align: center;
   padding-bottom: 30px;
+  margin-top: 10px;
 }
 .comments-avatar {
   margin-top: 25px;
@@ -1592,5 +1611,8 @@ h1.showcase > span .showcase-icon-2 {
     padding: 5px;
 
   }
+}
 
+h1.github {
+  font-weight: bold;
 }
