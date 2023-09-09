@@ -69,7 +69,12 @@ function ReleaseInfoPage() {
             text: release?.name,
           },
         ]}
-        control={<Button onClick={() => navigate('edit')}>{t('편집')}</Button>}
+        control={
+          <div>
+            <Button onClick={() => navigate(`./../../testruns/new?releaseId=${release.id}`)}>{t('새 테스트런')}</Button>
+            <Button onClick={() => navigate('edit')}>{t('편집')}</Button>
+          </div>
+        }
       >
         {t('새 릴리즈')}
       </PageTitle>

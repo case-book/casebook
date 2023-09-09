@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { TestcaseTemplatePropTypes } from '@/proptypes';
+import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import { Button, Input, Selector, SeqId, Tag, TestcaseItem, TextArea } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -106,8 +106,8 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
           </SeqId>
           <div className="case-release">
             {!isEdit && (
-              <Tag size="md" color="secondary">
-                {releases.find(d => d.id === content.projectReleaseId)?.name ?? t('릴리즈 없음')}
+              <Tag size="sm" color="secondary">
+                {releases.find(release => release.id === content.projectReleaseId)?.name ?? t('릴리즈 없음')}
               </Tag>
             )}
             {isEdit && (
@@ -286,8 +286,7 @@ TestcaseManager.propTypes = {
   setContent: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  releases: PropTypes.arrayOf(PropTypes.object),
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
   users: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,

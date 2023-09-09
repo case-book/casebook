@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager/TestcaseManager';
 import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
 import { ITEM_TYPE } from '@/constants/constants';
-import { TestcaseTemplatePropTypes } from '@/proptypes';
+import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
 import { useTranslation } from 'react-i18next';
@@ -116,6 +116,7 @@ function ContentManager({
                 setIsEdit(false);
               });
             }}
+            releases={releases}
             onCancel={onCancel}
             getPopupContent={getPopupContent}
             onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
@@ -159,8 +160,7 @@ ContentManager.propTypes = {
     testerType: PropTypes.string,
     testerValue: PropTypes.string,
   }),
-  // eslint-disable-next-line react/forbid-prop-types
-  releases: PropTypes.arrayOf(PropTypes.object),
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   loading: PropTypes.bool,
   setContentChanged: PropTypes.func.isRequired,

@@ -200,6 +200,13 @@ const SelectedTestcaseGroupPropTypes = PropTypes.arrayOf(
   }),
 );
 
+const ProjectReleasePropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+  description: PropTypes.string,
+  testcases: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number })),
+});
+
 export {
   NullableNumber,
   NullableString,
@@ -214,4 +221,5 @@ export {
   ColorPropTypes,
   TestcaseSelectorFilterPropTypes,
   SelectedTestcaseGroupPropTypes,
+  ProjectReleasePropTypes,
 };
