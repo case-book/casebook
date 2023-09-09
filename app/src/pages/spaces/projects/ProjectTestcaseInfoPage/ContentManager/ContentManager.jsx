@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 function ContentManager({
   type,
   content: originalContent,
+  releases,
   testcaseTemplates,
   loading,
   setContentChanged,
@@ -76,6 +77,7 @@ function ContentManager({
                   onSaveTestcase(popupContent);
                 }}
                 onCancel={onCancel}
+                releases={releases}
                 users={users}
                 createTestcaseImage={createTestcaseImage}
                 tags={tags}
@@ -96,6 +98,7 @@ function ContentManager({
               });
             }}
             onCancel={onCancel}
+            releases={releases}
             users={users}
             createTestcaseImage={createTestcaseImage}
             tags={tags}
@@ -126,6 +129,7 @@ function ContentManager({
 ContentManager.defaultProps = {
   type: null,
   content: null,
+  releases: [],
   testcaseTemplates: [],
   loading: false,
   users: [],
@@ -155,6 +159,8 @@ ContentManager.propTypes = {
     testerType: PropTypes.string,
     testerValue: PropTypes.string,
   }),
+  // eslint-disable-next-line react/forbid-prop-types
+  releases: PropTypes.arrayOf(PropTypes.object),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   loading: PropTypes.bool,
   setContentChanged: PropTypes.func.isRequired,
