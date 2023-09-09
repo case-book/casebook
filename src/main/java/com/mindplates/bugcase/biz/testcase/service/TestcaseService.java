@@ -385,7 +385,7 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseSimpleDTO updateProjectRelease(String spaceCode, Long projectId, Long testcaseId, Long releaseId) {
+    public TestcaseSimpleDTO updateTestcaseRelease(String spaceCode, Long projectId, Long testcaseId, Long releaseId) {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setProjectRelease(ProjectRelease.builder().id(releaseId).build());
         testcaseRepository.save(testcase);
