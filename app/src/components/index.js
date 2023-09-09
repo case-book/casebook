@@ -63,6 +63,7 @@ import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
 import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
 import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
 import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary';
+import MultiSelector from './MultiSelector/MultiSelector';
 
 export {
   Selector,
@@ -130,4 +131,5 @@ export {
   TestcaseSelectorGroup,
   TestcaseSelectorFilter,
   TestcaseSelectorSummary,
+  MultiSelector,
 };

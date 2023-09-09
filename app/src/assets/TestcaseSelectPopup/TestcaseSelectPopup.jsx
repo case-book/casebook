@@ -9,15 +9,17 @@ import useStores from '@/hooks/useStores';
 import moment from 'moment/moment';
 import dateUtil from '@/utils/dateUtil';
 import './TestcaseSelectPopup.scss';
+import ReleaseService from '@/services/ReleaseService';
 
 function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened, onApply }) {
   const { t } = useTranslation();
   const {
     userStore: { user },
+    contextStore: { spaceCode, projectId },
   } = useStores();
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
-  const [filterCondition, setFilterCondition] = useState({ name: '', minDate: null, maxDate: null });
+  const [filterCondition, setFilterCondition] = useState({ name: '', minDate: null, maxDate: null, releases: [] });
   const [range, setRange] = useState({});
 
   useEffect(() => {
@@ -40,17 +42,15 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
     max.set('second', 0);
     max.set('millisecond', 0);
 
-    setFilterCondition({
-      name: '',
-      minDate: null,
-      maxDate: null,
-    });
+    ReleaseService.selectReleaseList(spaceCode, projectId).then(res =>
+      setFilterCondition({ name: '', minDate: null, maxDate: null, releases: res.data.map(({ id, name }) => ({ key: id, value: name, selected: false })) }),
+    );
 
     setRange({
       minDate: min,
       maxDate: max,
     });
-  }, [testcaseGroups]);
+  }, [testcaseGroups, spaceCode, projectId]);
 
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(cloneDeep(selectedTestcaseGroups));

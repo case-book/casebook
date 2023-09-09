@@ -1,7 +1,15 @@
 .testcase-selector-filter-wrapper {
   display: flex;
-  flex-grow: 0;
+  flex-direction: column;
+
+  gap: 8px;
   margin-bottom: 16px;
+
+  .filter-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
 
   .icon {
     margin-right: 0.5rem;
