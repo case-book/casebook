@@ -4,14 +4,16 @@ import { Button, DateRange, Input, Liner, MultiSelector } from '@/components';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import './TestcaseSelectorFilter.scss';
-import { TestcaseSelectorFilterPropTypes } from '@/proptypes';
+import { ProjectReleasePropTypes, TestcaseSelectorFilterPropTypes } from '@/proptypes';
 
-function TestcaseSelectorFilter({ className, filter, onChange, onAllCheck, dateRange, country, language }) {
+function TestcaseSelectorFilter({ className, filter, releases, onChange, onAllCheck, dateRange, country, language }) {
   const { t } = useTranslation();
 
   const filtered = useMemo(() => {
-    return Object.values(filter).some(d => d);
+    return Object.values(filter).some(d => d && (d.length === undefined || d.length > 0));
   }, [filter]);
+
+  const items = useMemo(() => releases.map(({ id, name }) => ({ key: id, value: name })), [releases]);
 
   return (
     <div className={`testcase-selector-filter-wrapper ${className}`}>
@@ -37,7 +39,7 @@ function TestcaseSelectorFilter({ className, filter, onChange, onAllCheck, dateR
                 name: '',
                 minDate: null,
                 maxDate: null,
-                releases: filter.releases.map(release => ({ ...release, selected: false })),
+                releases: [],
               });
             }}
           >
@@ -101,10 +103,10 @@ function TestcaseSelectorFilter({ className, filter, onChange, onAllCheck, dateR
           minWidth="100%"
           maxWidth="100%"
           placeholder={t('릴리즈 선택')}
-          items={filter.releases}
-          value={filter.releases.filter(release => release.selected)}
+          items={items}
+          value={filter.releases}
           onChange={value => {
-            onChange({ ...filter, releases: filter.releases.map(release => ({ ...release, selected: value.includes(release.key) })) });
+            onChange({ ...filter, releases: items.filter(({ key }) => value.includes(key)) });
           }}
         />
       </div>
@@ -122,6 +124,7 @@ TestcaseSelectorFilter.defaultProps = {
 TestcaseSelectorFilter.propTypes = {
   className: PropTypes.string,
   filter: TestcaseSelectorFilterPropTypes.isRequired,
+  releases: ProjectReleasePropTypes.isRequired,
   dateRange: PropTypes.shape({ minDate: PropTypes.instanceOf(moment()), maxDate: PropTypes.instanceOf(moment()) }).isRequired,
   onChange: PropTypes.func.isRequired,
   onAllCheck: PropTypes.func,

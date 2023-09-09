@@ -20,6 +20,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
   const [filterCondition, setFilterCondition] = useState({ name: '', minDate: null, maxDate: null, releases: [] });
+  const [releases, setReleases] = useState([]);
   const [range, setRange] = useState({});
 
   useEffect(() => {
@@ -42,9 +43,9 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
     max.set('second', 0);
     max.set('millisecond', 0);
 
-    ReleaseService.selectReleaseList(spaceCode, projectId).then(res =>
-      setFilterCondition({ name: '', minDate: null, maxDate: null, releases: res.data.map(({ id, name }) => ({ key: id, value: name, selected: false })) }),
-    );
+    setFilterCondition({ name: '', minDate: null, maxDate: null, releases: [] });
+
+    ReleaseService.selectReleaseList(spaceCode, projectId).then(res => setReleases(res.data));
 
     setRange({
       minDate: min,
@@ -97,7 +98,15 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
         )}
         {projectTestcaseGroupTree?.length > 0 && (
           <div className="content">
-            <TestcaseSelectorFilter filter={filterCondition} onChange={setFilterCondition} onAllCheck={allCheck} dateRange={range} country={user.country} language={user.language} />
+            <TestcaseSelectorFilter
+              filter={filterCondition}
+              releases={releases}
+              onChange={setFilterCondition}
+              onAllCheck={allCheck}
+              dateRange={range}
+              country={user.country}
+              language={user.language}
+            />
             <TestcaseSelector
               testcaseGroups={testcaseGroups}
               currentSelectedTestcaseGroups={currentSelectedTestcaseGroups}
