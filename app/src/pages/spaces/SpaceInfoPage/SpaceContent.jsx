@@ -212,7 +212,7 @@ function SpaceContent({ space, onRefresh }) {
         <Block>
           <MemberCardManager users={users} />
         </Block>
-        {isAdmin && space?.admin && (
+        {(isAdmin || space?.admin) && (
           <>
             <Title
               control={statusOptions.map(option => {
