@@ -10,6 +10,11 @@ import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import lombok.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,32 +22,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.CollectionUtils;
 
 @Entity
 @Builder
 @Table(name = "testrun", indexes = {@Index(name = "IDX_TESTRUN_PROJECT_ID", columnList = "project_id"),
-    @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,end_date_time,id"),
-    @Index(name = "IDX_TESTRUN_PROJECT_ID_START_DATE_TIME_ID", columnList = "project_id,start_date_time,id")})
+        @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,end_date_time,id"),
+        @Index(name = "IDX_TESTRUN_PROJECT_ID_START_DATE_TIME_ID", columnList = "project_id,start_date_time,id")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -135,44 +120,44 @@ public class Testrun extends CommonEntity {
     public void updateTestrunUsers(List<TestrunUser> testrunUsers) {
         // 삭제된 테스트 제거
         this.testrunUsers.removeIf(testrunUser -> testrunUsers
-            .stream()
-            .noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())));
+                .stream()
+                .noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())));
         // 추가된 테스터 추가
         this.testrunUsers.addAll(
-            testrunUsers
-                .stream()
-                .filter(testrunUserDTO -> this.testrunUsers
-                    .stream()
-                    .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId())))
-                .map(testrunUserDTO -> TestrunUser.builder()
-                    .user(User.builder()
-                        .id(testrunUserDTO.getUser().getId())
-                        .build())
-                    .testrun(this)
-                    .build())
-                .collect(Collectors.toList()));
+                testrunUsers
+                        .stream()
+                        .filter(testrunUserDTO -> this.testrunUsers
+                                .stream()
+                                .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId())))
+                        .map(testrunUserDTO -> TestrunUser.builder()
+                                .user(User.builder()
+                                        .id(testrunUserDTO.getUser().getId())
+                                        .build())
+                                .testrun(this)
+                                .build())
+                        .collect(Collectors.toList()));
     }
 
     public void updateTestcaseGroups(List<TestrunTestcaseGroup> testcaseGroups) {
         // 삭제된 테스트런 테스트케이스 그룹 제거
         this.testcaseGroups.removeIf(testrunTestcaseGroup -> testcaseGroups
-            .stream()
-            .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
-            .noneMatch(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())));
+                .stream()
+                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
+                .noneMatch(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())));
 
         // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
         for (TestrunTestcaseGroup testcaseGroup : this.testcaseGroups) {
             TestrunTestcaseGroup updateTestrunTestcaseGroup = testcaseGroups
-                .stream()
-                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
-                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+                    .stream()
+                    .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
+                    .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
 
             if (testcaseGroup.getTestcases() != null) {
                 testcaseGroup.getTestcases().removeIf(testcase -> {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
-                            .stream()
-                            .noneMatch(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId().equals(testcase.getId()));
+                                .stream()
+                                .noneMatch(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId().equals(testcase.getId()));
                     }
                     return true;
                 });
@@ -181,32 +166,32 @@ public class Testrun extends CommonEntity {
 
         // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
         testcaseGroups.stream()
-            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
-            .forEach(testrunTestcaseGroup -> {
-                TestrunTestcaseGroup targetTestcaseGroup = this.testcaseGroups
-                    .stream()
-                    .filter(ttg -> ttg.getId().equals(testrunTestcaseGroup.getId()))
-                    .findAny()
-                    .orElse(null);
+                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
+                .forEach(testrunTestcaseGroup -> {
+                    TestrunTestcaseGroup targetTestcaseGroup = this.testcaseGroups
+                            .stream()
+                            .filter(ttg -> ttg.getId().equals(testrunTestcaseGroup.getId()))
+                            .findAny()
+                            .orElse(null);
 
-                if (targetTestcaseGroup != null && testrunTestcaseGroup.getTestcases() != null) {
-                    testrunTestcaseGroup.getTestcases()
-                        .stream()
-                        .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId() == null)
-                        .forEach(testrunTestcaseGroupTestcase -> {
-                            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
-                            targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
-                        });
-                }
-            });
+                    if (targetTestcaseGroup != null && testrunTestcaseGroup.getTestcases() != null) {
+                        testrunTestcaseGroup.getTestcases()
+                                .stream()
+                                .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId() == null)
+                                .forEach(testrunTestcaseGroupTestcase -> {
+                                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
+                                    targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+                                });
+                    }
+                });
 
         // 추가된 테스트런 테스트케이스 그룹 추가
         testcaseGroups.stream()
-            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() == null)
-            .forEach(testrunTestcaseGroup -> {
-                testrunTestcaseGroup.setTestrun(this);
-                this.testcaseGroups.add(testrunTestcaseGroup);
-            });
+                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() == null)
+                .forEach(testrunTestcaseGroup -> {
+                    testrunTestcaseGroup.setTestrun(this);
+                    this.testcaseGroups.add(testrunTestcaseGroup);
+                });
     }
 
     public void updateResult(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, TestResultCode testResultCode) {
@@ -242,16 +227,16 @@ public class Testrun extends CommonEntity {
 
     public int calculateTotalTestcaseCount() {
         return this.testcaseGroups.stream()
-            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
-            .reduce(0, Integer::sum);
+                .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
+                .reduce(0, Integer::sum);
     }
 
     public boolean containsTester(Long userId) {
         return testcaseGroups
-            .stream()
-            .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
                 .stream()
-                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())));
+                .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
+                        .stream()
+                        .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())));
     }
 
     public void initializeCreateInfo(Project project, int currentTestrunSeq) {
@@ -270,21 +255,21 @@ public class Testrun extends CommonEntity {
                 testrunTestcaseGroup.setTestrun(this);
                 if (!CollectionUtils.isEmpty(testrunTestcaseGroup.getTestcases())) {
                     testrunTestcaseGroup.getTestcases()
-                        .forEach(testrunTestcaseGroupTestcase -> {
-                            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
-                            if (!CollectionUtils.isEmpty(testrunTestcaseGroupTestcase.getTestcaseItems())) {
-                                testrunTestcaseGroupTestcase.getTestcaseItems()
-                                    .forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem
-                                        .setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
-                            }
-                        });
+                            .forEach(testrunTestcaseGroupTestcase -> {
+                                testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                                if (!CollectionUtils.isEmpty(testrunTestcaseGroupTestcase.getTestcaseItems())) {
+                                    testrunTestcaseGroupTestcase.getTestcaseItems()
+                                            .forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem
+                                                    .setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
+                                }
+                            });
                 }
             });
         }
     }
 
     public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap,
-        Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, Random random) {
+                                               Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, Random random) {
         int currentSeq = random.nextInt(testrunUsers.size());
         for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
             if (testrunTestcaseGroup.getTestcases() != null) {
@@ -296,15 +281,18 @@ public class Testrun extends CommonEntity {
                     List<TestcaseItem> testcaseItems = idTestcaseItemListMap.get(testcase.getId());
                     testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
                     currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random);
-                    for (TestcaseItem testcaseItem : testcaseItems) {
-                        if (testcaseItem.getValue() == null || Objects
-                            .isNull(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId()))) {
-                            continue;
+                    if (testcaseItems != null) {
+                        for (TestcaseItem testcaseItem : testcaseItems) {
+                            if (testcaseItem.getValue() == null || Objects
+                                    .isNull(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId()))) {
+                                continue;
+                            }
+                            TestcaseTemplateItem testcaseTemplateItem = idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId());
+                            currentSeq = testrunTestcaseGroupTestcase
+                                    .addTestCaseItem(testcaseTemplateItem, testrunTestcaseGroupTestcase, testcaseItem, random, testrunUsers, currentSeq);
                         }
-                        TestcaseTemplateItem testcaseTemplateItem = idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId());
-                        currentSeq = testrunTestcaseGroupTestcase
-                            .addTestCaseItem(testcaseTemplateItem, testrunTestcaseGroupTestcase, testcaseItem, random, testrunUsers, currentSeq);
                     }
+
                 }
             }
         }
