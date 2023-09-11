@@ -78,10 +78,20 @@ public class SpaceService {
         spaceRepository.deleteById(space.getId());
     }
 
+    public boolean existByCode(String code) {
+        Long count = spaceRepository.countByCode(code);
+        return count > 0;
+    }
+
 
     @CacheEvict(key = "#createSpaceInfo.code", value = CacheConfig.SPACE)
     @Transactional
     public SpaceDTO createSpaceInfo(SpaceDTO createSpaceInfo, Long userId) {
+
+        if (existByCode(createSpaceInfo.getCode())) {
+            throw new ServiceException("error.space.code.duplicated");
+        }
+
         Space spaceInfo = mappingUtil.convert(createSpaceInfo, Space.class);
         SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
         spaceInfo.setUsers(Arrays.asList(spaceUser));
