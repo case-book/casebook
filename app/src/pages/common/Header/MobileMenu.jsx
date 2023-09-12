@@ -13,7 +13,7 @@ import UserService from '@/services/UserService';
 
 function MobileMenu({ className, setOpen }) {
   const {
-    userStore: { isLogin, setUser },
+    userStore: { isLogin, setUser, setNotificationCount },
     contextStore: { spaceCode, projectId, isProjectSelected },
   } = useStores();
 
@@ -31,6 +31,7 @@ function MobileMenu({ className, setOpen }) {
     UserService.logout(
       () => {
         setUser(null);
+        setNotificationCount(0);
         navigate('/');
       },
       () => {
