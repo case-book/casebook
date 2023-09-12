@@ -87,6 +87,31 @@
         }
       }
     }
+
+    hr.creator-info-hr {
+      background: var(--border-light-color);
+    }
+
+    .creator-info {
+      padding: 8px;
+      font-size: 12px;
+      float: right;
+
+      table {
+        td {
+          &:first-child {
+            text-align: right;
+            color: var(--gray-color);
+            padding-right: 4px;
+          }
+
+          &:nth-child(2) {
+            font-weight: bold;
+          }
+        }
+      }
+
+    }
   }
 
   &.is-edit {
