@@ -23,6 +23,10 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Query("DELETE FROM Testcase t WHERE t.id = :id")
     void deleteById(@Param("id") Long id);
 
+    @Modifying
+    @Query("DELETE FROM Testcase t WHERE t.testcaseTemplate.id = :id")
+    void deleteByTestcaseTemplateId(@Param("id") Long id);
+
     Optional<Testcase> findByIdAndProjectId(Long id, Long projectId);
 
     List<Testcase> findByProjectId(Long projectId);

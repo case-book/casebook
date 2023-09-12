@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './ProjectEditPage.scss';
-import { Block, Button, Card, CardContent, CardHeader, CheckBox, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Tag, Text, TextArea, Title } from '@/components';
+import { Block, Button, Card, CardContent, CardHeader, CheckBox, EmptyContent, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Tag, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -199,6 +199,46 @@ function ProjectEditPage({ type }) {
     });
   };
 
+  const checkUserRole = () => {
+    if (isAdmin) {
+      updateProject();
+    } else {
+      const currentUser = project.users.find(user => user.userId === userStore.user?.id);
+
+      if (currentUser.crud !== 'D' && currentUser.role === 'USER') {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 권한 경고'),
+          <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 변경할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          () => {
+            updateProject();
+          },
+          null,
+          t('확인'),
+        );
+        return true;
+      }
+
+      if (currentUser.crud === 'D') {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('프로젝트 권한 경고'),
+          <div>{t('프로젝트 사용자에서 현재 사용자가 제외되었습니다. 저장 후 더 이상 프로젝트에 접근할 수 없습니다. 계속 하시겠습니까?')}</div>,
+          () => {
+            updateProject();
+          },
+          null,
+          t('확인'),
+        );
+        return true;
+      }
+
+      updateProject();
+    }
+
+    return false;
+  };
+
   const onSubmit = e => {
     e.preventDefault();
 
@@ -218,40 +258,23 @@ function ProjectEditPage({ type }) {
         return;
       }
 
-      if (isAdmin) {
-        updateProject();
-      } else {
-        const currentUser = project.users.find(user => user.userId === userStore.user?.id);
-        if (currentUser.crud !== 'D' && currentUser.role === 'USER') {
-          dialogUtil.setConfirm(
-            MESSAGE_CATEGORY.WARNING,
-            t('프로젝트 권한 경고'),
-            <div>{t('현재 사용자의 권한이 사용자 권한으로 설정되었습니다. 저장 후 더 이상 프로젝트를 정보를 변경할 수 없습니다. 계속 하시겠습니까?')}</div>,
-            () => {
-              updateProject();
-            },
-            null,
-            t('확인'),
-          );
-          return;
-        }
-
-        if (currentUser.crud === 'D') {
-          dialogUtil.setConfirm(
-            MESSAGE_CATEGORY.WARNING,
-            t('프로젝트 권한 경고'),
-            <div>{t('프로젝트 사용자에서 현재 사용자가 제외되었습니다. 저장 후 더 이상 프로젝트에 접근할 수 없습니다. 계속 하시겠습니까?')}</div>,
-            () => {
-              updateProject();
-            },
-            null,
-            t('확인'),
-          );
-          return;
-        }
-
-        updateProject();
+      if (project.testcaseTemplates?.filter(d => d.crud === 'D').length > 0) {
+        dialogUtil.setConfirm(
+          MESSAGE_CATEGORY.WARNING,
+          t('테스트케이스 템플릿 삭제 경고'),
+          <div>
+            {t('테스트케이스 템플릿이 삭제됩니다. 삭제하려는 테스트케이스 템플릿을 사용하는 모든 테스트케이스 및 예약, 반복 테스트런의 테스트케이스 정보가 함께 삭제됩니다. 계속 하시겠습니까?')}
+          </div>,
+          () => {
+            return checkUserRole();
+          },
+          null,
+          t('확인'),
+        );
+        return;
       }
+
+      checkUserRole();
     }
   };
 
@@ -501,64 +524,67 @@ function ProjectEditPage({ type }) {
                   {t('테스트케이스 템플릿')}
                 </Title>
                 <Block>
-                  <ul className="template-list">
-                    {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
-                      return (
-                        <li key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
-                          <Card border className="testcase-template" point>
-                            <CardHeader className="name">
-                              {!testcaseTemplate.id && (
-                                <div className="new-mark">
-                                  <Tag className="tag">NEW</Tag>
-                                </div>
-                              )}
+                  {!(project?.testcaseTemplates?.filter(d => d.crud !== 'D').length > 0) && <EmptyContent border>{t('테스트케이스 템플릿이 없습니다.')}</EmptyContent>}
+                  {project?.testcaseTemplates?.length > 0 && (
+                    <ul className="template-list">
+                      {project?.testcaseTemplates?.map((testcaseTemplate, inx) => {
+                        return (
+                          <li key={inx} className={`${testcaseTemplate.crud === 'D' ? 'hidden' : ''} `}>
+                            <Card border className="testcase-template" point>
+                              <CardHeader className="name">
+                                {!testcaseTemplate.id && (
+                                  <div className="new-mark">
+                                    <Tag className="tag">NEW</Tag>
+                                  </div>
+                                )}
 
-                              <div>
-                                <span
-                                  className="name-info"
-                                  onClick={() => {
-                                    setTemplateEditorPopupInfo({
-                                      opened: true,
-                                      inx,
-                                      testcaseTemplate,
-                                    });
-                                  }}
-                                >
-                                  <span className="name-text">{testcaseTemplate.name}</span>
-                                  <span className="control-button">
-                                    <Button
-                                      rounded
-                                      size="xs"
-                                      color="danger"
-                                      onClick={e => {
-                                        e.stopPropagation();
-                                        removeTestcaseTemplateItem(inx);
-                                      }}
-                                    >
-                                      <i className="fa-solid fa-trash" />
-                                    </Button>
+                                <div>
+                                  <span
+                                    className="name-info"
+                                    onClick={() => {
+                                      setTemplateEditorPopupInfo({
+                                        opened: true,
+                                        inx,
+                                        testcaseTemplate,
+                                      });
+                                    }}
+                                  >
+                                    <span className="name-text">{testcaseTemplate.name}</span>
+                                    <span className="control-button">
+                                      <Button
+                                        rounded
+                                        size="xs"
+                                        color="danger"
+                                        onClick={e => {
+                                          e.stopPropagation();
+                                          removeTestcaseTemplateItem(inx);
+                                        }}
+                                      >
+                                        <i className="fa-solid fa-trash" />
+                                      </Button>
+                                    </span>
                                   </span>
-                                </span>
-                              </div>
-                              {testcaseTemplate.defaultTemplate && (
-                                <div className="default">
-                                  <span>DEFAULT</span>
                                 </div>
-                              )}
-                            </CardHeader>
-                            <CardContent className="testcase-template-content">
-                              <div className="item-count">
-                                <span className="count">
-                                  <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
-                                </span>
-                                <span className="count-label">{t('아이템')}</span>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                                {testcaseTemplate.defaultTemplate && (
+                                  <div className="default">
+                                    <span>DEFAULT</span>
+                                  </div>
+                                )}
+                              </CardHeader>
+                              <CardContent className="testcase-template-content">
+                                <div className="item-count">
+                                  <span className="count">
+                                    <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
+                                  </span>
+                                  <span className="count-label">{t('아이템')}</span>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </Block>
                 <Title
                   control={
