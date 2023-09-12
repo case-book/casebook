@@ -85,10 +85,25 @@ function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setCon
         t('템플릿 변경 알림'),
         <div>{t('테스트케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
         () => {
+          const selectedTemplate = testcaseTemplates.find(d => d.id === testcaseTemplateId);
+
+          const nextTestcaseItems = [];
+          selectedTemplate.testcaseTemplateItems
+            .filter(d => d.defaultValue != null)
+            .forEach(d => {
+              nextTestcaseItems.push({
+                testcaseId: content.id,
+                testcaseTemplateItemId: d.id,
+                type: d.type === 'EDITOR' ? 'text' : 'value',
+                text: d.type === 'EDITOR' ? d.defaultValue : undefined,
+                value: d.type !== 'EDITOR' ? d.defaultValue : undefined,
+              });
+            });
+
           setContent({
             ...content,
             testcaseTemplateId,
-            testcaseItems: [],
+            testcaseItems: nextTestcaseItems,
           });
         },
         null,
