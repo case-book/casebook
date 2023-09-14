@@ -27,6 +27,8 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupReposit
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
+import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
@@ -69,6 +71,7 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
+    private final UserRepository userRepository;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -148,8 +151,8 @@ public class TestcaseService {
 
         } else {
             List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(
-                testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
-                    destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId())))
+                    testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
+                        destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId())))
                 .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(0);
@@ -384,7 +387,10 @@ public class TestcaseService {
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestcaseDTO(testcase);
+        User createdUser = userRepository.findById(testcase.getCreatedBy()).orElse(null);
+        User lastUpdatedUser = userRepository.findById(testcase.getLastUpdatedBy()).orElse(null);
+
+        return new TestcaseDTO(testcase, createdUser, lastUpdatedUser);
     }
 
     public List<TestcaseDTO> selectProjectTestcaseList(Long projectId) {

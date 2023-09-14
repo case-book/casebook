@@ -232,10 +232,10 @@ function TestcaseNavigator({
           const elementRect = focusElement.getClientRects();
 
           if (scrollerRect?.length > 0 && elementRect?.length > 0) {
-            scroller.current.scrollTop = elementRect[0].y - scrollerRect[0].y - 16;
+            scroller.current.scrollTop = scroller.current.scrollTop + elementRect[0].y - scrollerRect[0].y - 16;
           }
         }
-      }, 400);
+      }, 200);
     }
   }, [selectedItemInfo.time]);
 
@@ -365,7 +365,7 @@ function TestcaseNavigator({
               <Button
                 size="xs"
                 onClick={() => {
-                  addTestcaseGroup(false);
+                  addTestcaseGroup(true);
                 }}
                 color="white"
               >
@@ -377,7 +377,7 @@ function TestcaseNavigator({
               className="add-testcase-button"
               size="xs"
               onClick={() => {
-                addTestcase(false);
+                addTestcase(true);
               }}
               disabled={!selectedItemInfo.type}
               color="white"
