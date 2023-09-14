@@ -12,4 +12,7 @@ public interface TestrunParticipantRedisRepository extends CrudRepository<Testru
 
     List<TestrunParticipant> findAllByTestrunIdAndUserId(Long testrunId, Long userId);
 
+    List<TestrunParticipant> findAllByUserIdAndSessionId(Long userId, String sessionId);
+
+
 }

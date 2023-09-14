@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -642,18 +643,24 @@ public class TestrunService {
         return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
     }
 
-    @Transactional
-    public TestrunParticipantDTO createTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, UserDTO user) {
-        TestrunParticipant participant = TestrunParticipant.builder().id(spaceCode + "-" + spaceCode + "-" + testrunId + "-" + user.getId())
-            .spaceCode(spaceCode).projectId(projectId)
-            .testrunId(testrunId).userId(user.getId()).userName(user.getName()).userEmail(user.getEmail()).build();
-
-        return new TestrunParticipantDTO(testrunParticipantRedisRepository.save(participant));
+    private String getParticipantId(String spaceCode, Long projectId, Long testrunId, Long userId, String sessionId) {
+        return spaceCode + "-" + projectId + "-" + testrunId + "-" + userId + "-" + sessionId;
     }
 
     @Transactional
-    public void deleteTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, Long userId) {
-        testrunParticipantRedisRepository.deleteById((spaceCode + "-" + projectId + "-" + testrunId + "-" + userId));
+    public TestrunParticipantDTO createTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, UserDTO user, String sessionId) {
+        TestrunParticipant participant = TestrunParticipant.builder()
+            .id(getParticipantId(spaceCode, projectId, testrunId, user.getId(), sessionId))
+            .spaceCode(spaceCode)
+            .projectId(projectId)
+            .testrunId(testrunId)
+            .sessionId(sessionId)
+            .userId(user.getId())
+            .userName(user.getName())
+            .userEmail(user.getEmail())
+            .build();
+
+        return new TestrunParticipantDTO(testrunParticipantRedisRepository.save(participant));
     }
 
     @Transactional
@@ -669,8 +676,23 @@ public class TestrunService {
         return testrunParticipants.stream().map(TestrunParticipantDTO::new).collect(Collectors.toList());
     }
 
-    public List<TestrunParticipantDTO> selectTestrunParticipantList(Long testrunId, Long userId) {
+    public TestrunParticipantDTO selectTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, Long userId, String sessionId) {
+        Optional<TestrunParticipant> testrunParticipant = testrunParticipantRedisRepository.findById(
+            getParticipantId(spaceCode, projectId, testrunId, userId, sessionId));
+        if (testrunParticipant.isPresent()) {
+            return new TestrunParticipantDTO(testrunParticipant.get());
+        }
+        return null;
+
+    }
+
+    public boolean isExistParticipant(Long testrunId, Long userId) {
         List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository.findAllByTestrunIdAndUserId(testrunId, userId);
+        return testrunParticipants.size() > 0;
+    }
+
+    public List<TestrunParticipantDTO> selectTestrunParticipantList(Long userId, String sessionId) {
+        List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository.findAllByUserIdAndSessionId(userId, sessionId);
         return testrunParticipants.stream().map(TestrunParticipantDTO::new).collect(Collectors.toList());
     }
 
