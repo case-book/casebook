@@ -430,6 +430,7 @@ public class TestrunService {
                 }
             }
 
+            testrun.getTestrunUsers().removeIf((testrunUser -> testrunUser.getUser().getId().equals(testerId)));
             testrunRepository.save(testrun);
         }
 
