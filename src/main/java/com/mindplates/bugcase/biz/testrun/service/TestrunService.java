@@ -414,7 +414,7 @@ public class TestrunService {
         } else if (target.equals(TesterChangeTargetCode.ALL)) {
             for (TestrunTestcaseGroup testcaseGroup : testrun.getTestcaseGroups()) {
                 for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
-                    if (testcase.getTester().getId().equals(testerId)) {
+                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && testcase.getTester().getId().equals(testerId)) {
                         int index = random.nextInt(userIds.size());
                         testcase.setTester(User.builder().id(userIds.get(index)).build());
 
@@ -423,7 +423,9 @@ public class TestrunService {
                             .map(projectUserDTO -> projectUserDTO.getUser().getName())
                             .findAny().orElse("");
 
-                        slackService.sendTestrunTesterRandomChangeMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, targetId,
+                        slackService.sendTestrunTesterRandomChangeMessage(project.getSlackUrl(),
+                            spaceCode, projectId, testrunId,
+                            testcase.getId(),
                             testrun.getName(),
                             testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
                     }
