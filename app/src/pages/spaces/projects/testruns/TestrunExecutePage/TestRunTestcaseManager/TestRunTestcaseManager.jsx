@@ -27,6 +27,7 @@ function TestRunTestcaseManager({
   user,
   onDeleteComment,
   onSaveResult,
+  onRandomTester,
   onSaveTester,
   setWide,
 }) {
@@ -267,6 +268,7 @@ function TestRunTestcaseManager({
                 resultLayoutPosition={resultLayoutPosition}
                 onChangeTestResult={onChangeTestResult}
                 onChangeTester={onChangeTester}
+                onRandomTester={onRandomTester}
                 onChangeTestcaseItem={onChangeTestcaseItem}
                 resultPopupOpened={resultPopupOpened}
                 setResultPopupOpened={setResultPopupOpened}
@@ -328,6 +330,7 @@ TestRunTestcaseManager.defaultProps = {
   onDeleteComment: null,
   onSaveResult: null,
   onSaveTester: null,
+  onRandomTester: null,
   onSaveTestResultItem: null,
   setWide: null,
 };
@@ -390,6 +393,7 @@ TestRunTestcaseManager.propTypes = {
   onDeleteComment: PropTypes.func,
   onSaveResult: PropTypes.func,
   onSaveTester: PropTypes.func,
+  onRandomTester: PropTypes.func,
   onSaveTestResultItem: PropTypes.func,
   setWide: PropTypes.func,
 };

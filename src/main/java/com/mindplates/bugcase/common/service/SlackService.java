@@ -113,4 +113,13 @@ public class SlackService {
         sendText(slackUrl, message.toString());
     }
 
+    public void sendTestrunTesterRandomChangeMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, Long testrunTestcaseGroupTestcaseId, String testrunName, String testcaseName, String beforeUserName, String afterUserName, String reason) {
+        StringBuilder message = new StringBuilder();
+        String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId + "?id=" + testrunTestcaseGroupTestcaseId + "&type=case";
+        message.append(messageSourceAccessor.getMessage("testrun.tester.random.changed", new Object[]{testrunName, testrunUrl, testcaseName, reason, beforeUserName, afterUserName}));
+
+
+        sendText(slackUrl, message.toString());
+    }
+
 }

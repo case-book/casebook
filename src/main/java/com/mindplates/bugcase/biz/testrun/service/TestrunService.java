@@ -48,6 +48,7 @@ import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
+import com.mindplates.bugcase.common.code.TesterChangeTargetCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
@@ -364,6 +365,74 @@ public class TestrunService {
         }
         testrunTestcaseGroupTestcase.setTestResult(testResultCode);
         return done;
+    }
+
+    @Transactional
+    public void updateTestrunTestcaseTesterRandom(String spaceCode, long projectId, long testrunId, Long testerId, Long targetId,
+        TesterChangeTargetCode target, String reason) {
+
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        checkIsTestrunClosed(testrun);
+
+        List<Long> userIds = new ArrayList<>();
+        testrun.getTestrunUsers().forEach((testrunUser -> {
+            if (!testrunUser.getUser().getId().equals(testerId)) {
+                userIds.add(testrunUser.getUser().getId());
+            }
+        }));
+
+        if (userIds.size() < 1) {
+            throw new ServiceException("error.no.rest.tester");
+        }
+
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+
+        String beforeUserName = project.getUsers()
+            .stream()
+            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))
+            .map(projectUserDTO -> projectUserDTO.getUser().getName())
+            .findAny().orElse("");
+
+        if (target.equals(TesterChangeTargetCode.ONE)) {
+
+            int index = random.nextInt(userIds.size());
+            TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(targetId)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            testrunTestcaseGroupTestcase.setTester(User.builder().id(userIds.get(index)).build());
+
+            if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
+                String afterUserName = project.getUsers().stream()
+                    .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
+                    .map(projectUserDTO -> projectUserDTO.getUser().getName())
+                    .findAny().orElse("");
+
+                slackService.sendTestrunTesterRandomChangeMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, targetId,
+                    testrun.getName(),
+                    testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+            }
+            testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+        } else if (target.equals(TesterChangeTargetCode.ALL)) {
+            for (TestrunTestcaseGroup testcaseGroup : testrun.getTestcaseGroups()) {
+                for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
+                    if (testcase.getTester().getId().equals(testerId)) {
+                        int index = random.nextInt(userIds.size());
+                        testcase.setTester(User.builder().id(userIds.get(index)).build());
+
+                        String afterUserName = project.getUsers().stream()
+                            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
+                            .map(projectUserDTO -> projectUserDTO.getUser().getName())
+                            .findAny().orElse("");
+
+                        slackService.sendTestrunTesterRandomChangeMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, targetId,
+                            testrun.getName(),
+                            testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                    }
+                }
+            }
+
+            testrunRepository.save(testrun);
+        }
+
     }
 
     @Transactional
