@@ -63,6 +63,17 @@
         }
       }
     }
+
+    .user-selector {
+      display: flex;
+      &:first-child {
+        flex-grow: 1;
+      }
+
+      button:last-child {
+        margin-left: 8px;
+      }
+    }
   }
 
   &.size-1 {

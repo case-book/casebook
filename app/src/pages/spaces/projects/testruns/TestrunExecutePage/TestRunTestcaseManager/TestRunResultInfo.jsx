@@ -20,13 +20,12 @@ function TestRunTestcaseManager({
   testcaseTemplates,
   users,
   createTestrunImage,
-
   onSaveComment,
   onDeleteComment,
-
   resultLayoutPosition,
   onChangeTestResult,
   onChangeTester,
+  onRandomTester,
   onChangeTestcaseItem,
   resultPopupOpened,
   setResultPopupOpened,
@@ -121,6 +120,7 @@ function TestRunTestcaseManager({
               caseContentElement={caseContentElement}
               openTooltipInfo={openTooltipInfo}
               onChangeTestcaseItem={onChangeTester}
+              onRandomTester={onRandomTester}
             />
           </div>
           <div className="testrun-result-list is-edit">
@@ -228,6 +228,7 @@ TestRunTestcaseManager.defaultProps = {
   onSaveComment: null,
   user: null,
   onDeleteComment: null,
+  onRandomTester: null,
 };
 
 TestRunTestcaseManager.propTypes = {
@@ -285,7 +286,7 @@ TestRunTestcaseManager.propTypes = {
     id: PropTypes.number,
   }),
   onDeleteComment: PropTypes.func,
-
+  onRandomTester: PropTypes.func,
   resultLayoutPosition: PropTypes.string.isRequired,
   onChangeTestResult: PropTypes.func.isRequired,
   onChangeTester: PropTypes.func.isRequired,
