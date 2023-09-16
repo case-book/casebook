@@ -5,7 +5,7 @@ import './TestcaseSelectorGroup.scss';
 import moment from 'moment/moment';
 import testcaseUtil from '@/utils/testcaseUtil';
 
-function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate }) {
+function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate, releases }) {
   const [opened, setOpened] = useState(true);
   const hasChild = testcaseGroup.testcases?.length > 0;
   const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
@@ -79,7 +79,8 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
             ...d,
             testcases: d.testcases
               .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, testcaseName))
-              .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate)),
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate))
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByRelease(testcase, releases)),
           };
 
           return (
@@ -92,6 +93,7 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
               testcaseName={testcaseName}
               minDate={minDate}
               maxDate={maxDate}
+              releases={releases}
             />
           );
         })}
@@ -106,6 +108,7 @@ TestcaseSelectorGroup.defaultProps = {
   testcaseName: '',
   minDate: null,
   maxDate: null,
+  releases: [],
 };
 
 TestcaseSelectorGroup.propTypes = {
@@ -116,6 +119,7 @@ TestcaseSelectorGroup.propTypes = {
   testcaseName: PropTypes.string,
   minDate: PropTypes.instanceOf(moment),
   maxDate: PropTypes.instanceOf(moment),
+  releases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.string, value: PropTypes.string })),
 };
 
 export default TestcaseSelectorGroup;

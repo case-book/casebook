@@ -29,11 +29,14 @@
         flex: 0 0 auto;
         max-height: calc(100% - 4px);
       }
-      .placeholder {
-        display: block;
-        padding: 0 4px;
-      }
     }
+  }
+
+  .placeholder {
+    display: block;
+    padding: 0 4px;
+    color: #6c757d;
+    font-size: 12px;
   }
 
   &.size-xs {
@@ -44,6 +47,9 @@
         font-size: 8px;
       }
     }
+    .placeholder {
+      font-size: 10px;
+    }
   }
 
   &.size-sm {
@@ -53,6 +59,9 @@
       .selector-selected-text > div {
         font-size: 10px;
       }
+    }
+    .placeholder {
+      font-size: 12px;
     }
   }
 

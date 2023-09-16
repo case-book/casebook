@@ -13,7 +13,7 @@ function TestcaseSelectorFilter({ className, filter, releases, onChange, onAllCh
     return Object.values(filter).some(d => d && (d.length === undefined || d.length > 0));
   }, [filter]);
 
-  const items = useMemo(() => releases.map(({ id, name }) => ({ key: id, value: name })), [releases]);
+  const items = useMemo(() => [{ key: null, value: t('릴리즈 없음') }, ...releases.map(({ id, name }) => ({ key: id, value: name }))], [releases]);
 
   return (
     <div className={`testcase-selector-filter-wrapper ${className}`}>
@@ -124,7 +124,7 @@ TestcaseSelectorFilter.defaultProps = {
 TestcaseSelectorFilter.propTypes = {
   className: PropTypes.string,
   filter: TestcaseSelectorFilterPropTypes.isRequired,
-  releases: ProjectReleasePropTypes.isRequired,
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes).isRequired,
   dateRange: PropTypes.shape({ minDate: PropTypes.instanceOf(moment()), maxDate: PropTypes.instanceOf(moment()) }).isRequired,
   onChange: PropTypes.func.isRequired,
   onAllCheck: PropTypes.func,

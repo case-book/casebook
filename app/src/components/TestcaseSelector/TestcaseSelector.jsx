@@ -141,7 +141,8 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
           ...testcaseGroup,
           testcases: testcaseGroup.testcases
             .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, filterCondition.name))
-            .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, filterCondition.minDate, filterCondition.maxDate)),
+            .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, filterCondition.minDate, filterCondition.maxDate))
+            .filter(testcase => testcaseUtil.isFilteredTestcaseByRelease(testcase, filterCondition.releases)),
         };
       });
   }, [projectTestcaseGroupTree, filterCondition]);
@@ -163,6 +164,7 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
                 testcaseName={filterCondition.name}
                 minDate={filterCondition.minDate}
                 maxDate={filterCondition.maxDate}
+                releases={filterCondition.releases}
               />
             );
           })}
@@ -184,7 +186,7 @@ TestcaseSelector.propTypes = {
       ),
     }),
   ).isRequired,
-  testcaseGroups: TestcaseGroupPropTypes.isRequired,
+  testcaseGroups: PropTypes.arrayOf(TestcaseGroupPropTypes).isRequired,
   filterCondition: TestcaseSelectorFilterPropTypes,
   onChange: PropTypes.func.isRequired,
 };

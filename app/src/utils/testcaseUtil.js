@@ -244,6 +244,11 @@ function getSelectionFromTestcaseGroups(testcaseGroups) {
   });
 }
 
+function isFilteredTestcaseByRelease(testcase, releases) {
+  if (!releases || releases.length === 0) return true;
+  return releases.some(release => release.key === testcase.projectReleaseId);
+}
+
 const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
@@ -255,6 +260,7 @@ const testcaseUtil = {
   isGroupFilteredByName,
   isFilteredTestcaseByName,
   getSelectionFromTestcaseGroups,
+  isFilteredTestcaseByRelease,
 };
 
 export default testcaseUtil;

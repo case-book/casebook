@@ -42,7 +42,7 @@ function ReleaseEditPage({ type }) {
   const selectAllTestcase = () => setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(project?.testcaseGroups ?? []));
 
   const selectedTestcaseGroupSummary = useMemo(
-    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups).filter(group => group.count > 0),
+    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups),
     [currentSelectedTestcaseGroups, project?.testcaseGroups],
   );
 
@@ -181,7 +181,7 @@ function ReleaseEditPage({ type }) {
       {isTestcaseSelectPopupOpened && (
         <TestcaseSelectPopup
           testcaseGroups={project?.testcaseGroups}
-          selectedTestcaseGroups={currentSelectedTestcaseGroups.filter(group => group.testcases.length > 0)}
+          selectedTestcaseGroups={currentSelectedTestcaseGroups}
           onApply={setCurrentSelectedTestcaseGroups}
           setOpened={setTestcaseSelectPopupOpened}
         />

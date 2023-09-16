@@ -187,7 +187,7 @@ const TestcaseSelectorFilterPropTypes = PropTypes.shape({
   name: PropTypes.string,
   minDate: PropTypes.instanceOf(moment()),
   maxDate: PropTypes.instanceOf(moment()),
-  releases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.number, value: PropTypes.string, selected: PropTypes.bool })),
+  releases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.number, value: PropTypes.oneOf(PropTypes.string, PropTypes.number) })),
 });
 
 const SelectedTestcaseGroupPropTypes = PropTypes.arrayOf(
