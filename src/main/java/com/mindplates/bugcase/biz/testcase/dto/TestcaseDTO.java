@@ -1,17 +1,17 @@
 package com.mindplates.bugcase.biz.testcase.dto;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -29,7 +29,6 @@ public class TestcaseDTO extends CommonDTO {
     private TestcaseTemplateDTO testcaseTemplate;
     private List<TestcaseItemDTO> testcaseItems;
     private ProjectDTO project;
-    private ProjectReleaseDTO projectRelease;
     private String testerType;
     private String testerValue;
     private LocalDateTime contentUpdateDate;
@@ -47,9 +46,6 @@ public class TestcaseDTO extends CommonDTO {
         this.testcaseTemplate = new TestcaseTemplateDTO(testcase.getTestcaseTemplate());
         this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
         this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
-        if (testcase.getProjectRelease() != null) {
-            this.projectRelease = ProjectReleaseDTO.builder().id(testcase.getProjectRelease().getId()).build();
-        }
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
         this.contentUpdateDate = testcase.getContentUpdateDate();
