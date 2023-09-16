@@ -1,6 +1,8 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
+import com.mindplates.bugcase.common.code.TestResultCode;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,6 +42,9 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
 
     Optional<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
         Long projectId, Long testrunId, String seqId);
+
+    List<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunIdAndAndTestResult(Long testrunId, TestResultCode testResultCode);
+
 
 }
 

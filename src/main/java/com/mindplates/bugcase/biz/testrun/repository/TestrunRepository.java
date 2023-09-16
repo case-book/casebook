@@ -48,5 +48,7 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
         "                                                                                  AND t.project.id = :projectId ))) ")
     List<Long> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
 
+    List<Testrun> findAllByOpenedTrueAndEndDateTimeNotNull();
+
 }
 
