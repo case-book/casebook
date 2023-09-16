@@ -56,6 +56,9 @@ function ReleaseListPage() {
             icon: <i className="fa-solid fa-plus" />,
           },
         ]}
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects`);
+        }}
       >
         {t('릴리즈')}
       </PageTitle>
@@ -81,7 +84,11 @@ function ReleaseListPage() {
                 >
                   {release.name}
                 </CardHeader>
-                <CardContent>{release.description ?? t('릴리즈 설명이 없습니다.')}</CardContent>
+                <CardContent>
+                  <div className="description">
+                    <div>{release.description ?? t('릴리즈 설명이 없습니다.')}</div>
+                  </div>
+                </CardContent>
               </Card>
             ))}
           </div>

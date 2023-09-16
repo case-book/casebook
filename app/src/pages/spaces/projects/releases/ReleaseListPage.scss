@@ -22,5 +22,15 @@
       display: flex;
       gap: 0 5px;
     }
+    .description {
+      background-color: var(--lighter-color);
+      padding: 0 10px;
+      font-size: 12px;
+      height: 40px;
+      display: flex;
+      > div {
+        align-self: center;
+      }
+    }
   }
 }

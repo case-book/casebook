@@ -71,10 +71,15 @@ function ReleaseInfoPage() {
         ]}
         control={
           <div>
-            <Button onClick={() => navigate(`./../../testruns/new?releaseId=${release.id}`)}>{t('새 테스트런')}</Button>
-            <Button onClick={() => navigate('edit')}>{t('편집')}</Button>
+            <Button onClick={() => navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new?releaseId=${release.id}`)}>{t('새 테스트런')}</Button>
+            <Button onClick={() => navigate('edit')} color="black">
+              {t('편집')}
+            </Button>
           </div>
         }
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
+        }}
       >
         {t('새 릴리즈')}
       </PageTitle>

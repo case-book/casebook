@@ -96,6 +96,9 @@ function ReleaseEditPage({ type }) {
             text: isEdit ? `${t('편집')}` : t('생성'),
           },
         ]}
+        onListClick={() => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
+        }}
       >
         {t('새 릴리즈')}
       </PageTitle>
