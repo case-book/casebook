@@ -252,6 +252,11 @@ function UserHeaderControl({ className }) {
                 <div />
               </div>
               <ul>
+                <li className="user-info">
+                  <div className="name">{user.name}</div>
+                  <div className="email">{user.email}</div>
+                  <hr />
+                </li>
                 <li>
                   <Link
                     to="/users/my"
