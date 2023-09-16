@@ -81,7 +81,7 @@ function ReleaseInfoPage() {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
         }}
       >
-        {t('새 릴리즈')}
+        {t('릴리즈')}
       </PageTitle>
       <PageContent>
         <Title border={false} marginBottom={false}>
