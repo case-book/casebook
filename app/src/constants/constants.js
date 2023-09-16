@@ -556,6 +556,32 @@ for (let i = 1; i <= 31; i += 1) {
   });
 }
 
+const TESTER_CHANGE_REASONS = [
+  {
+    key: 'SITUATION',
+    value: i18n.t('테스트 대상 부적절'),
+  },
+  {
+    key: 'ABSENT',
+    value: i18n.t('부재중'),
+  },
+  {
+    key: 'ETC',
+    value: i18n.t('기타'),
+  },
+];
+
+const TESTER_CHANGE_TARGETS = [
+  {
+    key: 'ONE',
+    value: i18n.t('선택된 테스트케이스만'),
+  },
+  {
+    key: 'ALL',
+    value: i18n.t('테스터의 모든 테스트케이스'),
+  },
+];
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -583,4 +609,6 @@ export {
   TESTRUN_ITERATION_USER_FILTER_TYPE_CODE,
   TESTRUN_ITERATION_MONTHLY_DATES,
   TESTRUN_ITERATION_USER_FILTER_SELECT_RULE,
+  TESTER_CHANGE_REASONS,
+  TESTER_CHANGE_TARGETS,
 };

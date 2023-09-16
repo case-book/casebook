@@ -6,7 +6,6 @@ import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -32,24 +31,19 @@ public class WebSocketEventListener {
         Map<String, Object> attributes = headerAccessor.getSessionAttributes();
         if (attributes != null) {
             String userIdString = (String) attributes.get("USER-ID");
+            String sessionId = headerAccessor.getSessionId();
             if (userIdString != null) {
-                Long userId = Long.parseLong((String) attributes.get("USER-ID"));
-                String workCode = (String) attributes.get("WORK-CODE");
-                if (workCode != null && workCode.equals("TESTRUN-SYNC")) {
-                    Long testrunId = Long.parseLong((String) attributes.get("TESTRUN-ID"));
-                    List<TestrunParticipantDTO> participants = testrunService.selectTestrunParticipantList(testrunId, userId);
+                Long userId = Long.parseLong(userIdString);
+                List<TestrunParticipantDTO> participants = testrunService.selectTestrunParticipantList(userId, sessionId);
 
-                    Optional<TestrunParticipantDTO> currentParticipant = participants.stream().filter((testrunParticipantDTO -> testrunParticipantDTO.getUserId().equals(userId))).findFirst();
-                    if (currentParticipant.isPresent()) {
-                        testrunService.deleteTestrunParticipantInfo(currentParticipant.get());
-                    }
-                    participants.forEach((participant) -> {
-
+                for (TestrunParticipantDTO participant : participants) {
+                    testrunService.deleteTestrunParticipantInfo(participant);
+                    boolean isExist = testrunService.isExistParticipant(participant.getTestrunId(), participant.getUserId());
+                    if (!isExist) {
                         MessageData participantData = MessageData.builder().type("TESTRUN-USER-LEAVE").build();
                         participantData.addData("participant", participant);
                         messageSendService.sendTo("projects/" + participant.getProjectId() + "/testruns/" + participant.getTestrunId(), participantData);
-                    });
-
+                    }
                 }
             }
 

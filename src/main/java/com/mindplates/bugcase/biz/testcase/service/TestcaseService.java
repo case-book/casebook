@@ -1,5 +1,24 @@
 package com.mindplates.bugcase.biz.testcase.service;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
@@ -28,28 +47,15 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupReposit
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
+import com.mindplates.bugcase.biz.user.entity.User;
+import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -69,6 +75,7 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
+    private final UserRepository userRepository;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -136,7 +143,7 @@ public class TestcaseService {
                 .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(1);
-            sameChildList.forEach((testcaseGroup) -> {
+            sameChildList.forEach(testcaseGroup -> {
                 if (!testcaseGroup.getId().equals(targetGroup.getId())) {
                     testcaseGroup.setItemOrder(inx.getAndIncrement());
                 }
@@ -148,12 +155,13 @@ public class TestcaseService {
 
         } else {
             List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(
-                testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
-                    destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId())))
-                .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
+            testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
+                destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId()))
+            )
+            .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(0);
-            sameParentList.forEach((testcaseGroup) -> {
+            sameParentList.forEach(testcaseGroup -> {
 
                 if (!testcaseGroup.getId().equals(targetGroup.getId())) {
                     testcaseGroup.setItemOrder(inx.getAndIncrement());
@@ -209,12 +217,10 @@ public class TestcaseService {
         List<Long> deleteGroupIds = new ArrayList<>();
         List<Long> deleteTestcaseIds = new ArrayList<>();
 
-        for (long depth : deletedTargets.keySet()) {
-            List<TestcaseGroup> list = deletedTargets.get(depth);
-            list.stream().forEach((testcaseGroup -> deleteGroupIds.add(testcaseGroup.getId())));
-            list.stream().forEach((testcaseGroup -> {
-                testcaseGroup.getTestcases().forEach(testcase -> deleteTestcaseIds.add(testcase.getId()));
-            }));
+        for (Entry<Long, List<TestcaseGroup>> entry : deletedTargets.entrySet()) {
+            List<TestcaseGroup> list = entry.getValue();
+            list.forEach(testcaseGroup -> deleteGroupIds.add(testcaseGroup.getId()));
+            list.forEach(testcaseGroup -> testcaseGroup.getTestcases().forEach(testcase -> deleteTestcaseIds.add(testcase.getId())));
         }
 
         List<ProjectFile> files = projectFileRepository
@@ -395,13 +401,13 @@ public class TestcaseService {
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestcaseDTO(testcase);
+        User createdUser = userRepository.findById(testcase.getCreatedBy()).orElse(null);
+        User lastUpdatedUser = userRepository.findById(testcase.getLastUpdatedBy()).orElse(null);
+
+        return new TestcaseDTO(testcase, createdUser, lastUpdatedUser);
     }
 
     public List<TestcaseDTO> selectProjectTestcaseList(Long projectId) {
-
-        // this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
-
         List<Testcase> testcases = testcaseRepository.findByProjectId(projectId);
         return testcases.stream().map(testcase -> TestcaseDTO
             .builder()

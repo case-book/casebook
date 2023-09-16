@@ -11,6 +11,7 @@ import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
 import { DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
+import dateUtil from '@/utils/dateUtil';
 
 function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags }) {
   const {
@@ -85,10 +86,25 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
         t('템플릿 변경 알림'),
         <div>{t('테스트케이스 템플릿을 변경하면, 현재 이 테스트케이스에 작성된 테스트케이스의 컨텐츠가 모두 초기화됩니다. 계속하시겠습니까?')}</div>,
         () => {
+          const selectedTemplate = testcaseTemplates.find(d => d.id === testcaseTemplateId);
+
+          const nextTestcaseItems = [];
+          selectedTemplate.testcaseTemplateItems
+            .filter(d => d.defaultValue != null)
+            .forEach(d => {
+              nextTestcaseItems.push({
+                testcaseId: content.id,
+                testcaseTemplateItemId: d.id,
+                type: d.type === 'EDITOR' ? 'text' : 'value',
+                text: d.type === 'EDITOR' ? d.defaultValue : undefined,
+                value: d.type !== 'EDITOR' ? d.defaultValue : undefined,
+              });
+            });
+
           setContent({
             ...content,
             testcaseTemplateId,
-            testcaseItems: [],
+            testcaseItems: nextTestcaseItems,
           });
         },
         null,
@@ -229,7 +245,10 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             testcaseTemplateItem={{
               ...DEFAULT_TESTRUN_TESTER_ITEM,
             }}
-            testcaseItem={{ type: content.testerType, value: content.testerValue }}
+            testcaseItem={{
+              type: content.testerType,
+              value: content.testerValue,
+            }}
             content={content}
             theme={theme}
             createImage={createTestcaseImage}
@@ -243,6 +262,23 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             }}
             size="sm"
           />
+        </div>
+        <hr className="creator-info-hr" />
+        <div className="creator-info">
+          <table>
+            <tbody>
+              <tr>
+                <td>{t('생성')}</td>
+                <td>{content.createdUserName}</td>
+                <td>{dateUtil.getDateString(content.creationDate)}</td>
+              </tr>
+              <tr>
+                <td>{t('마지막 변경')}</td>
+                <td>{content.createdUserName}</td>
+                <td>{dateUtil.getDateString(content.creationDate)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -279,6 +315,10 @@ TestcaseManager.propTypes = {
     ),
     testerType: PropTypes.string,
     testerValue: PropTypes.string,
+    createdUserName: PropTypes.string,
+    lastUpdatedUserName: PropTypes.string,
+    creationDate: PropTypes.string,
+    lastUpdateDate: PropTypes.string,
   }),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   isEdit: PropTypes.bool.isRequired,

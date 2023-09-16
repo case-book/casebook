@@ -107,10 +107,12 @@ function SideControl({ className }) {
     UserService.logout(
       () => {
         setUser(null);
+        setNotificationCount(0);
         navigate('/');
       },
       () => {
         setUser(null);
+        setNotificationCount(0);
         navigate('/');
       },
     );

@@ -14,7 +14,7 @@ import { ADMIN_MENUS } from '@/constants/menu';
 
 function UserHeaderControl({ className }) {
   const {
-    userStore: { isAdmin, setUser, notificationCount, setNotificationCount },
+    userStore: { isAdmin, user, setUser, notificationCount, setNotificationCount },
   } = useStores();
 
   const navigate = useNavigate();
@@ -108,6 +108,7 @@ function UserHeaderControl({ className }) {
     UserService.logout(
       () => {
         setUser(null);
+        setNotificationCount(0);
         navigate('/');
       },
       () => {
@@ -149,42 +150,45 @@ function UserHeaderControl({ className }) {
           </ul>
         </div>
       )}
-      <div className="notification-menu side-menu-item">
-        <Button
-          outline
-          rounded
-          className={notificationChangeEffect ? 'effect' : ''}
-          color={notificationOpen ? 'primary' : 'white'}
-          onClick={e => {
-            e.preventDefault();
-            openUserNotificationPopup(true);
-          }}
-        >
-          {notificationCount > 0 && (
-            <span className="notification-count">
-              <span>{notificationCount > 9 ? '9+' : notificationCount}</span>
-            </span>
-          )}
-          <i className="fa-solid fa-bell" />
-        </Button>
-      </div>
-      <div className="user-menu side-menu-item">
-        <Button
-          outline
-          rounded
-          color={userMenuOpen ? 'primary' : 'white'}
-          onClick={e => {
-            e.preventDefault();
-            setUserMenuOpen(true);
-          }}
-        >
-          {isAdmin && <div className="admin-flag">ADMIN</div>}
-          <div className="icon">
-            <i className="fa-solid fa-skull" />
+      {user?.id && (
+        <>
+          <div className="notification-menu side-menu-item">
+            <Button
+              outline
+              rounded
+              className={notificationChangeEffect ? 'effect' : ''}
+              color={notificationOpen ? 'primary' : 'white'}
+              onClick={e => {
+                e.preventDefault();
+                openUserNotificationPopup(true);
+              }}
+            >
+              {notificationCount > 0 && (
+                <span className="notification-count">
+                  <span>{notificationCount > 9 ? '9+' : notificationCount}</span>
+                </span>
+              )}
+              <i className="fa-solid fa-bell" />
+            </Button>
           </div>
-        </Button>
-      </div>
-
+          <div className="user-menu side-menu-item">
+            <Button
+              outline
+              rounded
+              color={userMenuOpen ? 'primary' : 'white'}
+              onClick={e => {
+                e.preventDefault();
+                setUserMenuOpen(true);
+              }}
+            >
+              {isAdmin && <div className="admin-flag">ADMIN</div>}
+              <div className="icon">
+                <i className="fa-solid fa-skull" />
+              </div>
+            </Button>
+          </div>
+        </>
+      )}
       {notificationOpen && (
         <div
           className="notification-list"
