@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
@@ -118,6 +119,14 @@ public class TestcaseController {
         return new TestcaseSimpleResponse(result);
     }
 
+    @Operation(description = "테스트케이스 복사")
+    @PostMapping("/{testcaseId}/copy")
+    public TestcaseSimpleResponse copyTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId)
+        throws JsonProcessingException {
+        TestcaseDTO result = testcaseService.copyTestcaseInfo(spaceCode, projectId, testcaseId, targetType, targetId);
+        return new TestcaseSimpleResponse(result);
+    }
+
 
     @Operation(description = "테스트케이스 위치 변경")
     @PutMapping("/{testcaseId}/order")
@@ -164,7 +173,7 @@ public class TestcaseController {
     @PutMapping("/{testcaseId}")
     public TestcaseResponse updateTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
         @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
-        Testcase testcase = testcaseUpdateRequest.buildEntity();
+        TestcaseDTO testcase = testcaseUpdateRequest.buildEntity();
         return new TestcaseResponse(testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase));
     }
 

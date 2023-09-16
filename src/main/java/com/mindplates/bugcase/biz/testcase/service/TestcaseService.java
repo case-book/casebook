@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -76,6 +78,7 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final UserRepository userRepository;
+    private final ObjectMapper mapper;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -335,6 +338,35 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseDTO copyTestcaseInfo(String spaceCode, Long projectId, Long testcaseId, String targetType, Long targetId )
+        throws JsonProcessingException {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int testcaseSeq = project.getTestcaseSeq() + 1;
+        project.setTestcaseSeq(testcaseSeq);
+
+        Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseDTO copiedTestcase = new TestcaseDTO(testcase);
+        copiedTestcase.setId(null);
+        copiedTestcase.setSeqId("TC" + testcaseSeq);
+        copiedTestcase.setName("COPY OF " + testcase.getName());
+        if (targetType.equals("case")) {
+            Testcase targetTestcase = testcaseRepository.findById(targetId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            copiedTestcase.setTestcaseGroup(TestcaseGroupDTO.builder().id(targetTestcase.getTestcaseGroup().getId()).build());
+        }
+
+        if (copiedTestcase.getTestcaseItems() != null) {
+            for (TestcaseItemDTO testcaseItem : copiedTestcase.getTestcaseItems()) {
+                testcaseItem.setId(null);
+                testcaseItem.setTestcase(copiedTestcase);
+            }
+        }
+        projectRepository.save(project);
+        Testcase result = testcaseRepository.save(mappingUtil.convert(copiedTestcase, Testcase.class));
+        return new TestcaseDTO(result);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void updateTestcaseTestcaseGroupInfo(String spaceCode, Long projectId, Long targetTestcaseId, Long destinationGroupId) {
 
         Testcase targetTestcase = testcaseRepository.findById(targetTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -448,12 +480,12 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseDTO updateTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
+    public TestcaseDTO updateTestcaseInfo(String spaceCode, Long projectId, TestcaseDTO testcase) {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setSeqId(org.getSeqId());
         testcase.setContentUpdateDate(LocalDateTime.now());
-        testcaseRepository.save(testcase);
-        return new TestcaseDTO(testcase);
+        testcaseRepository.save(mappingUtil.convert(testcase, Testcase.class));
+        return testcase;
     }
 
     public Long selectProjectTestcaseCount(String spaceCode, long projectId) {

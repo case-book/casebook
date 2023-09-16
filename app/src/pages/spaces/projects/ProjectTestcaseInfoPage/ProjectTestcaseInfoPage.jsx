@@ -254,6 +254,13 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
+  const copyTestcase = (sourceType, sourceId, targetType, targetId) => {
+    console.log(sourceType, sourceId, targetType, targetId);
+    TestcaseService.copyTestcase(spaceCode, projectId, sourceId, targetType, targetId, info => {
+      console.log(info);
+    });
+  };
+
   const onPositionChange = changeInfo => {
     if (changeInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && changeInfo.destinationType === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, changeInfo, () => {
@@ -459,6 +466,7 @@ function ProjectTestcaseInfoPage() {
               setMin={setMin}
               countSummary={countSummary}
               contentChanged={contentChanged}
+              copyTestcase={copyTestcase}
             />
           }
           right={

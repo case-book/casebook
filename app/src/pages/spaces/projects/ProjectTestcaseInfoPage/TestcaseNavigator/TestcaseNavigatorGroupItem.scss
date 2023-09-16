@@ -358,6 +358,10 @@ li.testcase-group-item-wrapper {
           }
         }
       }
+
+      &.copied {
+        outline: 2px dashed var(--gray-color);
+      }
     }
   }
 }

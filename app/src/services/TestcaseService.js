@@ -30,6 +30,20 @@ TestcaseService.createTestcase = (spaceCode, projectId, testcaseGroupId, testcas
   );
 };
 
+TestcaseService.copyTestcase = (spaceCode, projectId, sourceId, targetType, targetId, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${sourceId}/copy?targetType=${targetType}&targetId=${targetId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 TestcaseService.updateTestcaseGroupOrders = (spaceCode, projectId, testcaseGroupOrderChangeRequest, successHandler, failHandler) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testcases/orders`,
