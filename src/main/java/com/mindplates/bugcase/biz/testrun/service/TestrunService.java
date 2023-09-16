@@ -268,7 +268,7 @@ public class TestrunService {
         testrun.setOpened(true);
         testrun.setClosedDate(null);
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        if (project.isSlackAlarmEnabled()) {
+        if (project.isSlackAlarmEnabled() && project.getSlackUrl() != null) {
             List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
             slackService.sendTestrunReOpenMessage(project.getSlackUrl(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(),
                 testers);
@@ -536,7 +536,7 @@ public class TestrunService {
         }
 
         Testrun result = testrunRepository.save(testrun);
-        if (project.isSlackAlarmEnabled()) {
+        if (project.isSlackAlarmEnabled() && project.getSlackUrl() != null) {
             List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
             slackService
                 .sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
@@ -875,6 +875,17 @@ public class TestrunService {
         } else {
             throw new ServiceException(HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public List<TestrunDTO> selectOpenedTestrunList() {
+        List<Testrun> list = testrunRepository.findAllByOpenedTrueAndEndDateTimeNotNull();
+        return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
+    }
+
+    public List<TestrunTestcaseGroupTestcaseDTO> selectUntestedTestrunTestcaseGroupTestcaseList(Long testrunId) {
+        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestrunTestcaseGroupTestrunIdAndAndTestResult(
+            testrunId, TestResultCode.UNTESTED);
+        return list.stream().map(TestrunTestcaseGroupTestcaseDTO::new).collect(Collectors.toList());
     }
 
 }

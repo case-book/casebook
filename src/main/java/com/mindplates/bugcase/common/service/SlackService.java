@@ -5,18 +5,20 @@ import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.vo.SlackMessage;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SlackService {
+
     private final HttpRequestUtil httpRequestUtil;
 
     private final MessageSourceAccessor messageSourceAccessor;
@@ -26,7 +28,8 @@ public class SlackService {
 
     public boolean sendText(String url, String message) {
         try {
-            httpRequestUtil.sendPost(url, SlackMessage.builder().username("CASEBOOK").icon_url(webUrl + "/logo192.png").text(message).build(), String.class);
+            httpRequestUtil.sendPost(url, SlackMessage.builder().username("CASEBOOK").icon_url(webUrl + "/logo192.png").text(message).build(),
+                String.class);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return false;
@@ -49,17 +52,17 @@ public class SlackService {
 
         float passedPercentage = 0;
         if (totalCount > 0) {
-            passedPercentage = Math.round(((float)testrun.getPassedTestcaseCount() / totalCount) * 1000) / 10f;
+            passedPercentage = Math.round(((float) testrun.getPassedTestcaseCount() / totalCount) * 1000) / 10f;
         }
 
         float failedPercentage = 0;
         if (totalCount > 0) {
-            failedPercentage = Math.round(((float)testrun.getFailedTestcaseCount() / totalCount) * 1000) / 10f;
+            failedPercentage = Math.round(((float) testrun.getFailedTestcaseCount() / totalCount) * 1000) / 10f;
         }
 
         float untestablePercentage = 0;
         if (totalCount > 0) {
-            untestablePercentage = Math.round(((float)testrun.getUntestableTestcaseCount() / totalCount) * 1000) / 10f;
+            untestablePercentage = Math.round(((float) testrun.getUntestableTestcaseCount() / totalCount) * 1000) / 10f;
         }
 
         float untestedPercentage = 0;
@@ -67,57 +70,91 @@ public class SlackService {
             untestedPercentage = Math.round(((totalCount - totalTestedCount) / totalCount) * 1000) / 10f;
         }
 
-        message.append(messageSourceAccessor.getMessage("testrun.report.summary.progress", new Object[]{testedPercentage, totalTestedCount, totalCount}));
-        message.append(messageSourceAccessor.getMessage("testrun.report.summary.passed", new Object[]{passedPercentage, testrun.getPassedTestcaseCount(), totalCount}));
-        message.append(messageSourceAccessor.getMessage("testrun.report.summary.failed", new Object[]{failedPercentage, testrun.getFailedTestcaseCount(), totalCount}));
-        message.append(messageSourceAccessor.getMessage("testrun.report.summary.untestable", new Object[]{untestablePercentage, testrun.getUntestableTestcaseCount(), totalCount}));
-        message.append(messageSourceAccessor.getMessage("testrun.report.summary.untested", new Object[]{untestedPercentage, (totalCount - totalTestedCount), totalCount}));
+        message.append(
+            messageSourceAccessor.getMessage("testrun.report.summary.progress", new Object[]{testedPercentage, totalTestedCount, totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.passed",
+            new Object[]{passedPercentage, testrun.getPassedTestcaseCount(), totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.failed",
+            new Object[]{failedPercentage, testrun.getFailedTestcaseCount(), totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.untestable",
+            new Object[]{untestablePercentage, testrun.getUntestableTestcaseCount(), totalCount}));
+        message.append(messageSourceAccessor.getMessage("testrun.report.summary.untested",
+            new Object[]{untestedPercentage, (totalCount - totalTestedCount), totalCount}));
         message.append(messageSourceAccessor.getMessage("testrun.report.link", new Object[]{reportUrl}));
         this.sendText(slackUrl, message.toString());
     }
 
-    public void sendTestrunStartMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, String testrunName, List<ProjectUserDTO> testers) {
+    public void sendTestrunStartMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, String testrunName,
+        List<ProjectUserDTO> testers) {
         StringBuilder message = new StringBuilder();
         String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId;
         message.append(messageSourceAccessor.getMessage("testrun.created", new Object[]{testrunName, testrunUrl}));
 
         if (testers != null && !testers.isEmpty()) {
             for (ProjectUserDTO projectUserDTO : testers) {
-                message.append(messageSourceAccessor.getMessage("testrun.user.link", new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
+                message.append(messageSourceAccessor.getMessage("testrun.user.link",
+                    new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
             }
         }
 
         sendText(slackUrl, message.toString());
     }
 
-    public void sendTestrunReOpenMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, String testrunName, List<ProjectUserDTO> testers) {
+    public void sendTestrunReOpenMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, String testrunName,
+        List<ProjectUserDTO> testers) {
         StringBuilder message = new StringBuilder();
         String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId;
         message.append(messageSourceAccessor.getMessage("testrun.reopened", new Object[]{testrunName, testrunUrl}));
 
         if (testers != null && !testers.isEmpty()) {
             for (ProjectUserDTO projectUserDTO : testers) {
-                message.append(messageSourceAccessor.getMessage("testrun.user.link", new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
+                message.append(messageSourceAccessor.getMessage("testrun.user.link",
+                    new Object[]{testrunUrl + "?tester=" + projectUserDTO.getUser().getId(), projectUserDTO.getUser().getName()}));
             }
         }
 
         sendText(slackUrl, message.toString());
     }
 
-    public void sendTestrunTesterChangeMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, Long testrunTestcaseGroupTestcaseId, String testrunName, String testcaseName, String beforeUserName, String afterUserName) {
+    public void sendTestrunTesterChangeMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, Long testrunTestcaseGroupTestcaseId,
+        String testrunName, String testcaseName, String beforeUserName, String afterUserName) {
         StringBuilder message = new StringBuilder();
-        String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId + "?id=" + testrunTestcaseGroupTestcaseId + "&type=case";
-        message.append(messageSourceAccessor.getMessage("testrun.tester.changed", new Object[]{testrunName, testrunUrl, testcaseName, beforeUserName, afterUserName}));
-
+        String testrunUrl =
+            webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId + "?id=" + testrunTestcaseGroupTestcaseId
+                + "&type=case";
+        message.append(messageSourceAccessor.getMessage("testrun.tester.changed",
+            new Object[]{testrunName, testrunUrl, testcaseName, beforeUserName, afterUserName}));
 
         sendText(slackUrl, message.toString());
     }
 
-    public void sendTestrunTesterRandomChangeMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId, Long testrunTestcaseGroupTestcaseId, String testrunName, String testcaseName, String beforeUserName, String afterUserName, String reason) {
+    public void sendTestrunTesterRandomChangeMessage(String slackUrl, String spaceCode, Long projectId, Long testrunId,
+        Long testrunTestcaseGroupTestcaseId, String testrunName, String testcaseName, String beforeUserName, String afterUserName, String reason) {
         StringBuilder message = new StringBuilder();
-        String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId + "?id=" + testrunTestcaseGroupTestcaseId + "&type=case";
-        message.append(messageSourceAccessor.getMessage("testrun.tester.random.changed", new Object[]{testrunName, testrunUrl, testcaseName, reason, beforeUserName, afterUserName}));
+        String testrunUrl =
+            webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId + "?id=" + testrunTestcaseGroupTestcaseId
+                + "&type=case";
+        message.append(messageSourceAccessor.getMessage("testrun.tester.random.changed",
+            new Object[]{testrunName, testrunUrl, testcaseName, reason, beforeUserName, afterUserName}));
 
+        sendText(slackUrl, message.toString());
+    }
+
+    public void sendTestrunRemainInfo(String slackUrl, String spaceCode, Long projectId, String messageCode, Long testrunId, String testrunName,
+        List<ProjectUserDTO> testers, Map<Long, Integer> remainInfo) {
+        StringBuilder message = new StringBuilder();
+        String testrunUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/testruns/" + testrunId;
+        message.append(messageSourceAccessor.getMessage(messageCode, new Object[]{testrunName, testrunUrl}));
+        message.append(messageSourceAccessor.getMessage("testrun.not.tested.tester"));
+
+        remainInfo.forEach((testerId, count) -> {
+            Optional<ProjectUserDTO> projectUser = testers.stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))).findAny();
+            String testerName = "";
+            if (projectUser.isPresent()) {
+                testerName = projectUser.get().getUser().getName();
+            }
+            message.append(messageSourceAccessor.getMessage("testrun.user.link.count", new Object[]{testrunUrl + "?tester=" + testerId, testerName, count}));
+        });
 
         sendText(slackUrl, message.toString());
     }
