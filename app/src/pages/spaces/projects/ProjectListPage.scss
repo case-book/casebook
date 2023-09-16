@@ -298,6 +298,11 @@
                   }
                 }
 
+                &.releases:hover {
+                  background-color: #f13030;
+                  transition: all 0.3s;
+                }
+
                 &.reports:hover {
                   background-color: #a4c9d8;
                   transition: all 0.3s;

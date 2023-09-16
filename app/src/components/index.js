@@ -59,6 +59,11 @@ import TokenList from './TokenList/TokenList';
 import Info from './Info/Info';
 import Version from './Version/Version';
 import Search from './Search/Search';
+import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
+import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
+import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
+import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary';
+import MultiSelector from './MultiSelector/MultiSelector';
 
 export {
   Selector,
@@ -122,4 +127,9 @@ export {
   Info,
   Version,
   Search,
+  TestcaseSelector,
+  TestcaseSelectorGroup,
+  TestcaseSelectorFilter,
+  TestcaseSelectorSummary,
+  MultiSelector,
 };

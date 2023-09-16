@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import copyText from 'copy-to-clipboard';
 import './SeqId.scss';
 
-function TestcaseManager({ className, children, type, size, copy }) {
+function SeqId({ className, children, type, size, copy }) {
   const { t } = useTranslation();
 
   const [copied, setCopied] = useState(false);
@@ -48,14 +48,14 @@ function TestcaseManager({ className, children, type, size, copy }) {
   );
 }
 
-TestcaseManager.defaultProps = {
+SeqId.defaultProps = {
   className: null,
   children: null,
   copy: true,
   size: 'md',
 };
 
-TestcaseManager.propTypes = {
+SeqId.propTypes = {
   className: PropTypes.string,
   children: PropTypes.string,
   type: PropTypes.oneOf(['case', 'group', 'testrun']).isRequired,
@@ -63,4 +63,4 @@ TestcaseManager.propTypes = {
   size: PropTypes.string,
 };
 
-export default TestcaseManager;
+export default SeqId;
