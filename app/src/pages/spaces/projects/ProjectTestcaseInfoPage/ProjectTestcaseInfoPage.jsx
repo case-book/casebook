@@ -6,7 +6,6 @@ import { FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
-import ReleaseService from '@/services/ReleaseService';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
@@ -22,7 +21,6 @@ function ProjectTestcaseInfoPage() {
   const [tags, setTags] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
-  const [releases, setReleases] = useState([]);
   const { query, setQuery: setSelectedItemInfo } = useQueryString();
 
   const selectedItemInfo = useMemo(() => {
@@ -89,11 +87,6 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
-  const getReleases = () =>
-    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
-      setReleases(list);
-    });
-
   const [min, setMin] = useState(false);
 
   const [countSummary, setCountSummary] = useState({
@@ -104,7 +97,6 @@ function ProjectTestcaseInfoPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     getProject();
-    getReleases();
   }, [spaceCode, projectId]);
 
   const findGroup = (id, groups) => {
@@ -468,7 +460,6 @@ function ProjectTestcaseInfoPage() {
               type={selectedItemInfo?.type}
               content={content}
               addTestcase={addTestcase}
-              releases={releases}
               testcaseTemplates={project?.testcaseTemplates}
               loading={contentLoading}
               setContentChanged={setContentChanged}

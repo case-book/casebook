@@ -231,24 +231,6 @@ function isFilteredTestcaseByName(testcase, name) {
   return false;
 }
 
-function getSelectionFromTestcaseGroups(testcaseGroups) {
-  return testcaseGroups?.map(d => {
-    return {
-      testcaseGroupId: d.id,
-      testcases: d.testcases?.map(item => {
-        return {
-          testcaseId: item.id,
-        };
-      }),
-    };
-  });
-}
-
-function isFilteredTestcaseByRelease(testcase, releases) {
-  if (!releases || releases.length === 0) return true;
-  return releases.some(release => release.key === testcase.projectReleaseId);
-}
-
 const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
@@ -259,8 +241,6 @@ const testcaseUtil = {
   isFilteredTestcaseByRange,
   isGroupFilteredByName,
   isFilteredTestcaseByName,
-  getSelectionFromTestcaseGroups,
-  isFilteredTestcaseByRelease,
 };
 
 export default testcaseUtil;

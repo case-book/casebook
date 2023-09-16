@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Input, Selector, SeqId, Tag, TestcaseItem, TextArea } from '@/components';
+import { TestcaseTemplatePropTypes } from '@/proptypes';
+import { Button, Input, Selector, SeqId, TestcaseItem, TextArea } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -13,18 +13,13 @@ import { DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/cons
 import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 
-function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags }) {
+function TestcaseManager({ content, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags }) {
   const {
     themeStore: { theme },
   } = useStores();
 
   const { t } = useTranslation();
   const { testcaseItems } = content;
-
-  const [openTooltipInfo, setOpenTooltipInfo] = useState({
-    inx: null,
-    type: '',
-  });
 
   const caseContentElement = useRef(null);
 
@@ -38,6 +33,11 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
       [field]: value,
     });
   };
+
+  const [openTooltipInfo, setOpenTooltipInfo] = useState({
+    inx: null,
+    type: '',
+  });
 
   const onChangeTestcaseItem = (testcaseTemplateItemId, type, field, value) => {
     const nextTestcaseItems = testcaseItems.slice(0);
@@ -115,93 +115,66 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
 
   return (
     <div className={`testcase-manager-wrapper ${isEdit ? 'is-edit' : ''}`}>
-      <div className="testcase-header">
-        <div className="testcase-basic-info">
+      <div className="testcase-title">
+        <div className="text">
           <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
             {content.seqId}
           </SeqId>
-          <div className="case-release">
-            {!isEdit && (
-              <Tag size="sm" color="secondary">
-                {releases.find(release => release.id === content.projectReleaseId)?.name ?? t('릴리즈 없음')}
-              </Tag>
-            )}
-            {isEdit && (
-              <Selector
-                size="md"
-                minWidth="130px"
-                value={releases.find(d => d.id === content.projectReleaseId)?.id ?? null}
-                items={[
-                  { key: null, value: t('릴리즈 없음') },
-                  ...releases.map(release => ({
-                    key: release.id,
-                    value: release.name,
-                  })),
-                ]}
-                onChange={val => onChangeContent('projectReleaseId', val)}
-              />
-            )}
-          </div>
-          <div className="type-input">
-            <Selector
-              className="selector"
-              size="md"
-              items={testcaseTemplates?.map(d => {
-                return {
-                  key: d.id,
-                  value: d.name,
-                };
-              })}
-              value={testcaseTemplate?.id}
-              onChange={onChangeTestcaseTemplate}
-            />
-          </div>
-        </div>
-        <div className="testcase-title">
-          <div className="text">
-            {isEdit && (
-              <div className="title-input">
-                <div className="name-input">
-                  <Input
-                    value={content.name}
-                    size="md"
-                    onChange={val => {
-                      onChangeContent('name', val);
-                    }}
-                    required
-                    minLength={1}
-                  />
-                </div>
+          {isEdit && (
+            <div className="title-input">
+              <div className="type-input">
+                <Selector
+                  className="selector"
+                  size="md"
+                  items={testcaseTemplates?.map(d => {
+                    return {
+                      key: d.id,
+                      value: d.name,
+                    };
+                  })}
+                  value={testcaseTemplate?.id}
+                  onChange={onChangeTestcaseTemplate}
+                />
               </div>
-            )}
-            {!isEdit && <div className="name">{content.name}</div>}
-          </div>
-          <div className="title-button">
-            {!isEdit && (
-              <Button
-                size="md"
-                color="primary"
-                onClick={() => {
-                  setIsEdit(true);
-                }}
-              >
-                {t('변경')}
+              <div className="name-input">
+                <Input
+                  value={content.name}
+                  size="md"
+                  onChange={val => {
+                    onChangeContent('name', val);
+                  }}
+                  required
+                  minLength={1}
+                />
+              </div>
+            </div>
+          )}
+          {!isEdit && <div className="name">{content.name}</div>}
+        </div>
+        <div className="title-button">
+          {!isEdit && (
+            <Button
+              size="md"
+              color="primary"
+              onClick={() => {
+                setIsEdit(true);
+              }}
+            >
+              {t('변경')}
+            </Button>
+          )}
+          {isEdit && (
+            <>
+              <Button size="md" color="white" onClick={onCancel}>
+                {t('취소')}
               </Button>
-            )}
-            {isEdit && (
-              <>
-                <Button size="md" color="white" onClick={onCancel}>
-                  {t('취소')}
-                </Button>
-                <Button size="md" color="primary" onClick={onSave}>
-                  {t('저장')}
-                </Button>
-              </>
-            )}
-          </div>
+              <Button size="md" color="primary" onClick={onSave}>
+                {t('저장')}
+              </Button>
+            </>
+          )}
         </div>
       </div>
-
       <div className="title-liner" />
       <div className="case-content" ref={caseContentElement}>
         <div className="case-description">
@@ -210,7 +183,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             <TextArea size="sm" placeholder={t('테스트케이스에 대한 설명을 입력해주세요.')} value={content.description || ''} rows={4} onChange={onChangeTestcaseTemplateDescription} autoHeight />
           )}
         </div>
-
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
           .sort((a, b) => a.itemOrder - b.itemOrder)
@@ -288,7 +260,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
 TestcaseManager.defaultProps = {
   content: null,
   testcaseTemplates: [],
-  releases: [],
   users: [],
   tags: [],
 };
@@ -299,7 +270,6 @@ TestcaseManager.propTypes = {
     seqId: PropTypes.string,
     testcaseGroupId: PropTypes.number,
     testcaseTemplateId: PropTypes.number,
-    projectReleaseId: PropTypes.number,
     name: PropTypes.string,
     description: PropTypes.string,
     itemOrder: PropTypes.number,
@@ -326,7 +296,6 @@ TestcaseManager.propTypes = {
   setContent: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
-  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
   users: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
