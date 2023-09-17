@@ -246,6 +246,52 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
+  const copyTestcase = (sourceType, sourceId, targetType, targetId) => {
+    if (sourceType === 'case') {
+      TestcaseService.copyTestcase(spaceCode, projectId, sourceId, targetType, targetId, info => {
+        const nextProject = { ...project };
+        const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === info.testcaseGroupId);
+        if (!nextTestcaseGroup.testcases) {
+          nextTestcaseGroup.testcases = [];
+        }
+
+        nextTestcaseGroup.testcases.forEach(testcase => {
+          const next = testcase;
+          if (next.itemOrder >= info.itemOrder) {
+            next.itemOrder += 1;
+          }
+        });
+
+        nextTestcaseGroup.testcases.push(info);
+        setProject(nextProject);
+
+        if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP) {
+          setContent({ ...nextTestcaseGroup });
+        }
+
+        setSelectedItemInfo({
+          id: info.id,
+          type: ITEM_TYPE.TESTCASE,
+          time: Date.now(),
+        });
+      });
+    } else if (sourceType === 'group') {
+      TestcaseService.copyTestcaseGroup(spaceCode, projectId, sourceId, targetType, targetId, info => {
+        const nextProject = { ...project };
+        const nextTestcaseGroups = nextProject.testcaseGroups?.slice(0) || [];
+        nextTestcaseGroups.push(info);
+        nextProject.testcaseGroups = nextTestcaseGroups;
+        setProject(nextProject);
+
+        setSelectedItemInfo({
+          id: info.id,
+          type: ITEM_TYPE.TESTCASE_GROUP,
+          time: Date.now(),
+        });
+      });
+    }
+  };
+
   const onPositionChange = changeInfo => {
     if (changeInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && changeInfo.destinationType === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, changeInfo, () => {
@@ -434,45 +480,48 @@ function ProjectTestcaseInfoPage() {
         {t('테스트케이스')}
       </PageTitle>
       <PageContent className="page-content">
-        <FlexibleLayout
-          layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
-          min={min}
-          left={
-            <TestcaseNavigator
-              testcaseGroups={testcaseGroups}
-              addTestcaseGroup={addTestcaseGroup}
-              addTestcase={addTestcase}
-              onPositionChange={onPositionChange}
-              onChangeTestcaseGroupName={onChangeTestcaseGroupName}
-              selectedItemInfo={selectedItemInfo}
-              onSelect={setSelectedItemInfo}
-              onDelete={onDeleteTestcaseGroup}
-              min={min}
-              setMin={setMin}
-              countSummary={countSummary}
-              contentChanged={contentChanged}
-            />
-          }
-          right={
-            <ContentManager
-              getPopupContent={getPopupContent}
-              popupContent={popupContent}
-              type={selectedItemInfo?.type}
-              content={content}
-              addTestcase={addTestcase}
-              testcaseTemplates={project?.testcaseTemplates}
-              loading={contentLoading}
-              setContentChanged={setContentChanged}
-              onSaveTestcase={onSaveTestcase}
-              onSaveTestcaseGroup={onSaveTestcaseGroup}
-              users={projectUsers}
-              createTestcaseImage={createTestcaseImage}
-              onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
-              setPopupContent={setPopupContent}
-              tags={tags}
-            />
-          }
-        />
+        {project?.testcaseTemplates && (
+          <FlexibleLayout
+            layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
+            min={min}
+            left={
+              <TestcaseNavigator
+                testcaseGroups={testcaseGroups}
+                addTestcaseGroup={addTestcaseGroup}
+                addTestcase={addTestcase}
+                onPositionChange={onPositionChange}
+                onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+                selectedItemInfo={selectedItemInfo}
+                onSelect={setSelectedItemInfo}
+                onDelete={onDeleteTestcaseGroup}
+                min={min}
+                setMin={setMin}
+                countSummary={countSummary}
+                contentChanged={contentChanged}
+                copyTestcase={copyTestcase}
+              />
+            }
+            right={
+              <ContentManager
+                getPopupContent={getPopupContent}
+                popupContent={popupContent}
+                type={selectedItemInfo?.type}
+                content={content}
+                addTestcase={addTestcase}
+                testcaseTemplates={project?.testcaseTemplates}
+                loading={contentLoading}
+                setContentChanged={setContentChanged}
+                onSaveTestcase={onSaveTestcase}
+                onSaveTestcaseGroup={onSaveTestcaseGroup}
+                users={projectUsers}
+                createTestcaseImage={createTestcaseImage}
+                onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
+                setPopupContent={setPopupContent}
+                tags={tags}
+              />
+            }
+          />
+        )}
       </PageContent>
     </Page>
   );

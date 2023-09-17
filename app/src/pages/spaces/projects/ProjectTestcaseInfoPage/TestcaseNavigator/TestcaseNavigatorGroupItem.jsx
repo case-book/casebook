@@ -26,6 +26,7 @@ function TestcaseNavigatorGroupItem({
   showTestResult,
   watcherInfo,
   enableDrag,
+  copyInfo,
 }) {
   const [treeOpen, setTreeOpen] = useState(false);
 
@@ -71,6 +72,7 @@ function TestcaseNavigatorGroupItem({
           ${dragInfo.toChildren ? 'to-children' : ''} 
           ${contextMenuInfo.type === ITEM_TYPE.TESTCASE_GROUP && contextMenuInfo.id === group.id ? 'context-menu-target' : ''}
           ${editInfo.type === ITEM_TYPE.TESTCASE_GROUP && editInfo.id === group.id ? 'name-editing' : ''}
+          ${copyInfo.type === ITEM_TYPE.TESTCASE_GROUP && copyInfo.id === group.id ? 'copied' : ''}
           `}
           onClick={() => {
             onSelect({ id: group.id, type: ITEM_TYPE.TESTCASE_GROUP });
@@ -243,6 +245,8 @@ function TestcaseNavigatorGroupItem({
                         ${contextMenuInfo.type === ITEM_TYPE.TESTCASE && contextMenuInfo.id === testcase.id ? 'context-menu-target' : ''}
                         ${editInfo.type === ITEM_TYPE.TESTCASE && editInfo.id === testcase.id ? 'name-editing' : ''}
                         ${selectedItemInfo.type === ITEM_TYPE.TESTCASE && testcase.id === selectedItemInfo.id ? 'selected' : ''}
+                        ${copyInfo.type === ITEM_TYPE.TESTCASE && testcase.id === copyInfo.id ? 'copied' : ''}
+                        
                         `}
                       onClick={e => {
                         e.stopPropagation();
@@ -454,6 +458,7 @@ function TestcaseNavigatorGroupItem({
                   setting={setting}
                   showTestResult={showTestResult}
                   watcherInfo={watcherInfo}
+                  copyInfo={copyInfo}
                 />
               );
             })}
@@ -488,6 +493,7 @@ TestcaseNavigatorGroupItem.defaultProps = {
   showTestResult: false,
   enableDrag: true,
   watcherInfo: null,
+  copyInfo: null,
 };
 
 TestcaseNavigatorGroupItem.propTypes = {
@@ -536,6 +542,11 @@ TestcaseNavigatorGroupItem.propTypes = {
       userId: PropTypes.number,
       userEmail: PropTypes.string,
     }),
+  }),
+  copyInfo: PropTypes.shape({
+    type: PropTypes.string,
+    id: PropTypes.number,
+    name: PropTypes.string,
   }),
 };
 

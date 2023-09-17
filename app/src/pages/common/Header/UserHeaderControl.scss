@@ -250,7 +250,7 @@
       margin: 0 auto;
 
       > div {
-        width: 110px;
+        min-width: 110px;
         position: absolute;
         top: 65px;
         right: -35px;
@@ -299,6 +299,23 @@
 
           li {
             line-height: 100%;
+
+            &.user-info {
+              padding: 0.5rem 1rem;
+
+              .name {
+                margin-bottom: 4px;
+              }
+              .email {
+                font-size: 12px;
+              }
+
+              hr {
+                background-color: var(--border-light-color);
+                margin-bottom: 0;
+                margin-top: 0.75rem;
+              }
+            }
 
             a {
               color: var(--text-color);
