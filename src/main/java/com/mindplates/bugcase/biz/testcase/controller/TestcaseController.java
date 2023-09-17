@@ -11,39 +11,22 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupWithTestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseCreateRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupNameChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupOrderChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupUpdateRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseNameChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseNameDescriptionChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseOrderChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseReleaseChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseTestcaseGroupChangeRequest;
-import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseUpdateRequest;
+import com.mindplates.bugcase.biz.testcase.vo.request.*;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.UUID;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -57,8 +40,7 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
-    public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId,
-        @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
+    public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
         TestcaseGroupDTO testcaseGroupDTO = mappingUtil.convert(testcaseGroupRequest, TestcaseGroupDTO.class);
         testcaseGroupDTO.setProject(ProjectDTO.builder().id(projectId).build());
         TestcaseGroupWithTestcaseDTO testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupDTO);
@@ -67,38 +49,29 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 그룹 이름 변경")
     @PutMapping("/groups/{groupId}/name")
-    public TestcaseGroupResponse updateTestcaseGroupName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId,
-        @Valid @RequestBody TestcaseGroupNameChangeRequest testcaseGroupNameChangeRequest) {
-        TestcaseGroupWithTestcaseDTO testcaseGroup = testcaseService
-            .updateTestcaseGroupName(spaceCode, projectId, groupId, testcaseGroupNameChangeRequest.getName());
+    public TestcaseGroupResponse updateTestcaseGroupName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupNameChangeRequest testcaseGroupNameChangeRequest) {
+        TestcaseGroupWithTestcaseDTO testcaseGroup = testcaseService.updateTestcaseGroupName(spaceCode, projectId, groupId, testcaseGroupNameChangeRequest.getName());
         return mappingUtil.convert(testcaseGroup, TestcaseGroupResponse.class);
     }
 
     @Operation(description = "테스트케이스 그룹 정보 변경")
     @PutMapping("/groups/{groupId}")
-    public TestcaseGroupResponse updateTestcaseGroupInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId,
-        @Valid @RequestBody TestcaseGroupUpdateRequest testcaseGroupUpdateRequest) {
-        TestcaseGroupWithTestcaseDTO testcaseGroup = testcaseService
-            .updateTestcaseGroupInfo(spaceCode, projectId, groupId, testcaseGroupUpdateRequest.getName(),
-                testcaseGroupUpdateRequest.getDescription());
+    public TestcaseGroupResponse updateTestcaseGroupInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseGroupUpdateRequest testcaseGroupUpdateRequest) {
+        TestcaseGroupWithTestcaseDTO testcaseGroup = testcaseService.updateTestcaseGroupInfo(spaceCode, projectId, groupId, testcaseGroupUpdateRequest.getName(), testcaseGroupUpdateRequest.getDescription());
         return mappingUtil.convert(testcaseGroup, TestcaseGroupResponse.class);
     }
 
     @Operation(description = "테스트케이스 그룹 위치 변경")
     @PutMapping("/orders")
-    public ResponseEntity<HttpStatus> updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId,
-        @Valid @RequestBody TestcaseGroupOrderChangeRequest testcaseGroupOrderChangeRequest) {
-        testcaseService.updateProjectTestcaseGroupOrderInfo(spaceCode, projectId, testcaseGroupOrderChangeRequest.getTargetId(),
-            testcaseGroupOrderChangeRequest.getDestinationId(), testcaseGroupOrderChangeRequest.isToChildren());
+    public ResponseEntity<HttpStatus> updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupOrderChangeRequest testcaseGroupOrderChangeRequest) {
+        testcaseService.updateProjectTestcaseGroupOrderInfo(spaceCode, projectId, testcaseGroupOrderChangeRequest.getTargetId(), testcaseGroupOrderChangeRequest.getDestinationId(), testcaseGroupOrderChangeRequest.isToChildren());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트케이스 그룹 변경")
     @PutMapping("/{testcaseId}/group")
-    public ResponseEntity<HttpStatus> updateTestcaseTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId,
-        @PathVariable Long testcaseId, @Valid @RequestBody TestcaseTestcaseGroupChangeRequest testcaseTestcaseGroupChangeRequest) {
-        testcaseService.updateTestcaseTestcaseGroupInfo(spaceCode, projectId, testcaseTestcaseGroupChangeRequest.getTargetId(),
-            testcaseTestcaseGroupChangeRequest.getDestinationId());
+    public ResponseEntity<HttpStatus> updateTestcaseTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseTestcaseGroupChangeRequest testcaseTestcaseGroupChangeRequest) {
+        testcaseService.updateTestcaseTestcaseGroupInfo(spaceCode, projectId, testcaseTestcaseGroupChangeRequest.getTargetId(), testcaseTestcaseGroupChangeRequest.getDestinationId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -111,29 +84,18 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 생성")
     @PostMapping("/groups/{groupId}/cases")
-    public TestcaseSimpleResponse createTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId,
-        @Valid @RequestBody TestcaseCreateRequest testcaseCreateRequest) {
+    public TestcaseSimpleResponse createTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long groupId, @Valid @RequestBody TestcaseCreateRequest testcaseCreateRequest) {
         TestcaseDTO testcaseDTO = mappingUtil.convert(testcaseCreateRequest, TestcaseDTO.class);
         testcaseDTO.setTestcaseGroup(TestcaseGroupDTO.builder().id(groupId).build());
         TestcaseDTO result = testcaseService.createTestcaseInfo(spaceCode, projectId, testcaseDTO);
         return new TestcaseSimpleResponse(result);
     }
 
-    @Operation(description = "테스트케이스 복사")
-    @PostMapping("/{testcaseId}/copy")
-    public TestcaseSimpleResponse copyTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId)
-        throws JsonProcessingException {
-        TestcaseDTO result = testcaseService.copyTestcaseInfo(spaceCode, projectId, testcaseId, targetType, targetId);
-        return new TestcaseSimpleResponse(result);
-    }
-
 
     @Operation(description = "테스트케이스 위치 변경")
     @PutMapping("/{testcaseId}/order")
-    public ResponseEntity<HttpStatus> updateTestcaseOrder(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
-        @Valid @RequestBody TestcaseOrderChangeRequest testcaseOrderChangeRequest) {
-        testcaseService
-            .updateTestcaseOrderInfo(spaceCode, projectId, testcaseOrderChangeRequest.getTargetId(), testcaseOrderChangeRequest.getDestinationId());
+    public ResponseEntity<HttpStatus> updateTestcaseOrder(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseOrderChangeRequest testcaseOrderChangeRequest) {
+        testcaseService.updateTestcaseOrderInfo(spaceCode, projectId, testcaseOrderChangeRequest.getTargetId(), testcaseOrderChangeRequest.getDestinationId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -146,19 +108,15 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 이름 변경")
     @PutMapping("/{testcaseId}/name")
-    public TestcaseSimpleResponse updateTestcaseName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
-        @Valid @RequestBody TestcaseNameChangeRequest testcaseNameChangeRequest) {
+    public TestcaseSimpleResponse updateTestcaseName(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameChangeRequest testcaseNameChangeRequest) {
         TestcaseSimpleDTO testcase = testcaseService.updateTestcaseName(spaceCode, projectId, testcaseId, testcaseNameChangeRequest.getName());
         return new TestcaseSimpleResponse(testcase);
     }
 
     @Operation(description = "테스트케이스 이름 및 설명 변경")
     @PutMapping("/{testcaseId}/info")
-    public TestcaseSimpleResponse updateTestcaseNameAndDescription(@PathVariable String spaceCode, @PathVariable Long projectId,
-        @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameDescriptionChangeRequest testcaseNameDescriptionChangeRequest) {
-        TestcaseSimpleDTO testcase = testcaseService
-            .updateTestcaseNameAndDescription(spaceCode, projectId, testcaseId, testcaseNameDescriptionChangeRequest.getName(),
-                testcaseNameDescriptionChangeRequest.getDescription());
+    public TestcaseSimpleResponse updateTestcaseNameAndDescription(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseNameDescriptionChangeRequest testcaseNameDescriptionChangeRequest) {
+        TestcaseSimpleDTO testcase = testcaseService.updateTestcaseNameAndDescription(spaceCode, projectId, testcaseId, testcaseNameDescriptionChangeRequest.getName(), testcaseNameDescriptionChangeRequest.getDescription());
         return new TestcaseSimpleResponse(testcase);
     }
 
@@ -171,29 +129,32 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 변경")
     @PutMapping("/{testcaseId}")
-    public TestcaseResponse updateTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
-        @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
-        TestcaseDTO testcase = testcaseUpdateRequest.buildEntity();
+    public TestcaseResponse updateTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @Valid @RequestBody TestcaseUpdateRequest testcaseUpdateRequest) {
+        Testcase testcase = testcaseUpdateRequest.buildEntity();
         return new TestcaseResponse(testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase));
     }
 
     @PostMapping("/{testcaseId}/images")
-    public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
-        @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size,
-        @RequestParam("type") String type) {
+    public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
         String path = projectFileService.createImage(projectId, file);
-        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type)
-            .path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.TESTCASE).fileSourceId(testcaseId).build();
+        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.TESTCASE).fileSourceId(testcaseId).build();
         ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
         return new ProjectFileResponse(projectFile, spaceCode, projectId);
     }
 
-    @Operation(description = "테스트케이스 릴리즈 변경")
-    @PutMapping("/{testcaseId}/release")
-    public TestcaseSimpleResponse updateTestcaseRelease(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
-        @Valid @RequestBody TestcaseReleaseChangeRequest testcaseReleaseChangeRequest) {
-        TestcaseSimpleDTO testcase = testcaseService
-            .updateTestcaseRelease(spaceCode, projectId, testcaseId, testcaseReleaseChangeRequest.getProjectReleaseId());
-        return new TestcaseSimpleResponse(testcase);
+    @Operation(description = "테스트케이스 복사")
+    @PostMapping("/{testcaseId}/copy")
+    public TestcaseSimpleResponse copyTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
+        TestcaseDTO result = testcaseService.copyTestcaseInfo(spaceCode, projectId, testcaseId, targetType, targetId);
+        return new TestcaseSimpleResponse(result);
     }
+
+    @Operation(description = "테스트케이스 그룹 복사")
+    @PostMapping("/groups/{testcaseGroupId}/copy")
+    public TestcaseGroupResponse copyTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseGroupId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
+        TestcaseGroupDTO result = testcaseService.copyTestcaseGroupInfo(spaceCode, projectId, testcaseGroupId, targetType, targetId);
+        return new TestcaseGroupResponse(result);
+    }
+
+
 }

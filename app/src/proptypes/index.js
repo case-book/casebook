@@ -1,15 +1,14 @@
 import PropTypes from 'prop-types';
-import moment from 'moment';
 
 const NullableNumber = PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf([null])]);
 
 const NullableString = PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])]);
 
 const KeyValuePropTypes = PropTypes.arrayOf(
-  PropTypes.shape({
-    key: PropTypes.string,
-    value: PropTypes.string,
-  }),
+    PropTypes.shape({
+      key: PropTypes.string,
+      value: PropTypes.string,
+    }),
 );
 
 const TestcaseGroupPropTypes = PropTypes.shape({
@@ -20,13 +19,13 @@ const TestcaseGroupPropTypes = PropTypes.shape({
   parentId: PropTypes.number,
   creationType: PropTypes.string,
   children: PropTypes.arrayOf(
-    PropTypes.shape({
-      depth: PropTypes.number,
-      id: PropTypes.number,
-      itemOrder: PropTypes.number,
-      name: PropTypes.string,
-      parentId: PropTypes.number,
-    }),
+      PropTypes.shape({
+        depth: PropTypes.number,
+        id: PropTypes.number,
+        itemOrder: PropTypes.number,
+        name: PropTypes.string,
+        parentId: PropTypes.number,
+      }),
   ),
 });
 
@@ -38,29 +37,29 @@ const TestcaseTemplateEditPropTypes = PropTypes.shape({
   name: PropTypes.string,
   spaceName: PropTypes.string,
   testcaseTemplates: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      testcaseTemplateItems: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.number,
-          itemOrder: PropTypes.number,
-          label: PropTypes.string,
-          options: PropTypes.arrayOf(PropTypes.string),
-          size: PropTypes.number,
-          type: PropTypes.string,
-          editable: PropTypes.bool,
-        }),
-      ),
-    }),
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        testcaseTemplateItems: PropTypes.arrayOf(
+            PropTypes.shape({
+              id: PropTypes.number,
+              itemOrder: PropTypes.number,
+              label: PropTypes.string,
+              options: PropTypes.arrayOf(PropTypes.string),
+              size: PropTypes.number,
+              type: PropTypes.string,
+              editable: PropTypes.bool,
+            }),
+        ),
+      }),
   ),
   testcases: PropTypes.arrayOf(
-    PropTypes.shape({
-      closed: PropTypes.bool,
-      id: PropTypes.number,
-      itemOrder: PropTypes.number,
-      name: PropTypes.string,
-    }),
+      PropTypes.shape({
+        closed: PropTypes.bool,
+        id: PropTypes.number,
+        itemOrder: PropTypes.number,
+        name: PropTypes.string,
+      }),
   ),
   token: PropTypes.string,
   duration: PropTypes.number,
@@ -71,15 +70,15 @@ const TestcaseTemplatePropTypes = PropTypes.shape({
   defaultTemplate: PropTypes.bool,
   name: PropTypes.string,
   testcaseTemplateItems: PropTypes.arrayOf(
-    PropTypes.shape({
-      category: PropTypes.string,
-      id: PropTypes.number,
-      itemOrder: PropTypes.number,
-      label: PropTypes.string,
-      options: PropTypes.arrayOf(PropTypes.string),
-      size: PropTypes.number,
-      type: PropTypes.string,
-    }),
+      PropTypes.shape({
+        category: PropTypes.string,
+        id: PropTypes.number,
+        itemOrder: PropTypes.number,
+        label: PropTypes.string,
+        options: PropTypes.arrayOf(PropTypes.string),
+        size: PropTypes.number,
+        type: PropTypes.string,
+      }),
   ),
 });
 
@@ -130,25 +129,25 @@ const SpacePropTypes = PropTypes.shape({
   allowAutoJoin: PropTypes.bool,
   token: PropTypes.string,
   users: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      email: PropTypes.string,
-    }),
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        email: PropTypes.string,
+      }),
   ),
   admins: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      email: PropTypes.string,
-    }),
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        email: PropTypes.string,
+      }),
   ),
   applicants: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      userName: PropTypes.string,
-      userEmail: PropTypes.string,
-    }),
+      PropTypes.shape({
+        id: PropTypes.number,
+        userName: PropTypes.string,
+        userEmail: PropTypes.string,
+      }),
   ),
   applicant: PropTypes.shape({}),
 });
@@ -183,31 +182,6 @@ const TestrunReservationPropTypes = PropTypes.shape({
 
 const ColorPropTypes = PropTypes.oneOf([undefined, 'black', 'white', 'primary', 'danger']);
 
-const TestcaseSelectorFilterPropTypes = PropTypes.shape({
-  name: PropTypes.string,
-  minDate: PropTypes.instanceOf(moment()),
-  maxDate: PropTypes.instanceOf(moment()),
-  releases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.number, value: PropTypes.oneOf([PropTypes.string, PropTypes.number]) })),
-});
-
-const SelectedTestcaseGroupPropTypes = PropTypes.arrayOf(
-  PropTypes.shape({
-    testcaseGroupId: PropTypes.number,
-    testcases: PropTypes.arrayOf(
-      PropTypes.shape({
-        testcaseId: PropTypes.number,
-      }),
-    ),
-  }),
-);
-
-const ProjectReleasePropTypes = PropTypes.shape({
-  id: PropTypes.number,
-  name: PropTypes.string,
-  description: PropTypes.string,
-  testcases: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number })),
-});
-
 export {
   NullableNumber,
   NullableString,
@@ -220,7 +194,4 @@ export {
   TestrunPropTypes,
   TestrunReservationPropTypes,
   ColorPropTypes,
-  TestcaseSelectorFilterPropTypes,
-  SelectedTestcaseGroupPropTypes,
-  ProjectReleasePropTypes,
 };

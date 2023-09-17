@@ -1,30 +1,8 @@
 package com.mindplates.bugcase.biz.testcase.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
-import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
@@ -56,8 +34,24 @@ import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -78,7 +72,6 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final UserRepository userRepository;
-    private final ObjectMapper mapper;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -158,10 +151,9 @@ public class TestcaseService {
 
         } else {
             List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(
-            testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
-                destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId()))
-            )
-            .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
+                    testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
+                        destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId())))
+                .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(0);
             sameParentList.forEach(testcaseGroup -> {
@@ -338,35 +330,6 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseDTO copyTestcaseInfo(String spaceCode, Long projectId, Long testcaseId, String targetType, Long targetId )
-        throws JsonProcessingException {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        int testcaseSeq = project.getTestcaseSeq() + 1;
-        project.setTestcaseSeq(testcaseSeq);
-
-        Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        TestcaseDTO copiedTestcase = new TestcaseDTO(testcase);
-        copiedTestcase.setId(null);
-        copiedTestcase.setSeqId("TC" + testcaseSeq);
-        copiedTestcase.setName("COPY OF " + testcase.getName());
-        if (targetType.equals("case")) {
-            Testcase targetTestcase = testcaseRepository.findById(targetId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-            copiedTestcase.setTestcaseGroup(TestcaseGroupDTO.builder().id(targetTestcase.getTestcaseGroup().getId()).build());
-        }
-
-        if (copiedTestcase.getTestcaseItems() != null) {
-            for (TestcaseItemDTO testcaseItem : copiedTestcase.getTestcaseItems()) {
-                testcaseItem.setId(null);
-                testcaseItem.setTestcase(copiedTestcase);
-            }
-        }
-        projectRepository.save(project);
-        Testcase result = testcaseRepository.save(mappingUtil.convert(copiedTestcase, Testcase.class));
-        return new TestcaseDTO(result);
-    }
-
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void updateTestcaseTestcaseGroupInfo(String spaceCode, Long projectId, Long targetTestcaseId, Long destinationGroupId) {
 
         Testcase targetTestcase = testcaseRepository.findById(targetTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -421,15 +384,6 @@ public class TestcaseService {
         return new TestcaseSimpleDTO(testcase);
     }
 
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseSimpleDTO updateTestcaseRelease(String spaceCode, Long projectId, Long testcaseId, Long releaseId) {
-        Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        testcase.setProjectRelease(ProjectRelease.builder().id(releaseId).build());
-        testcaseRepository.save(testcase);
-        return new TestcaseSimpleDTO(testcase);
-    }
-
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -480,12 +434,12 @@ public class TestcaseService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public TestcaseDTO updateTestcaseInfo(String spaceCode, Long projectId, TestcaseDTO testcase) {
+    public TestcaseDTO updateTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setSeqId(org.getSeqId());
         testcase.setContentUpdateDate(LocalDateTime.now());
-        testcaseRepository.save(mappingUtil.convert(testcase, Testcase.class));
-        return testcase;
+        testcaseRepository.save(testcase);
+        return new TestcaseDTO(testcase);
     }
 
     public Long selectProjectTestcaseCount(String spaceCode, long projectId) {
@@ -494,6 +448,100 @@ public class TestcaseService {
 
     public Long selectProjectTestcaseCount(Long spaceId, long projectId) {
         return testcaseRepository.countByProjectSpaceIdAndProjectId(spaceId, projectId);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseGroupDTO copyTestcaseGroupInfo(String spaceCode, Long projectId, Long testcaseGroupId, String targetType, Long targetId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int testcaseSeq = project.getTestcaseSeq();
+        int testcaseGroupSeq = project.getTestcaseGroupSeq() + 1;
+
+        project.setTestcaseGroupSeq(testcaseGroupSeq);
+
+        TestcaseGroup sourceTestcaseGroup = testcaseGroupRepository.findById(testcaseGroupId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseGroupDTO copiedTestcaseGroup = new TestcaseGroupDTO(sourceTestcaseGroup);
+        copiedTestcaseGroup.setId(null);
+        copiedTestcaseGroup.setSeqId("G" + testcaseGroupSeq);
+        copiedTestcaseGroup.setName("COPY OF " + sourceTestcaseGroup.getName());
+
+        if (copiedTestcaseGroup.getTestcases() != null) {
+            for (TestcaseDTO testcase : copiedTestcaseGroup.getTestcases()) {
+                testcaseSeq += 1;
+                testcase.setId(null);
+                testcase.setSeqId("TC" + testcaseSeq);
+                testcase.setTestcaseGroup(copiedTestcaseGroup);
+                if (testcase.getTestcaseItems() != null) {
+                    for (TestcaseItemDTO testcaseItem : testcase.getTestcaseItems()) {
+                        testcaseItem.setId(null);
+                        testcaseItem.setTestcase(testcase);
+                    }
+                }
+            }
+        }
+
+        project.setTestcaseSeq(testcaseSeq);
+
+        TestcaseGroup targetTestcaseGroup = null;
+        if (targetType.equals("case")) {
+            Testcase targetTestcase = testcaseRepository.findById(targetId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            targetTestcaseGroup = targetTestcase.getTestcaseGroup();
+        } else {
+            targetTestcaseGroup = testcaseGroupRepository.findById(targetId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        }
+
+        copiedTestcaseGroup.setParentId(targetTestcaseGroup.getId());
+        copiedTestcaseGroup.setDepth(targetTestcaseGroup.getDepth() + 1);
+        Integer maxItemOrder = testcaseGroupRepository.selectParentTestcaseGroupMaxItemOrder(targetTestcaseGroup.getId());
+        copiedTestcaseGroup.setItemOrder(maxItemOrder);
+
+        projectRepository.save(project);
+        TestcaseGroup result = testcaseGroupRepository.save(mappingUtil.convert(copiedTestcaseGroup, TestcaseGroup.class));
+        return new TestcaseGroupDTO(result);
+
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseDTO copyTestcaseInfo(String spaceCode, Long projectId, Long testcaseId, String targetType, Long targetId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int testcaseSeq = project.getTestcaseSeq() + 1;
+        project.setTestcaseSeq(testcaseSeq);
+
+        Testcase sourceTestcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseDTO copiedTestcase = new TestcaseDTO(sourceTestcase);
+        copiedTestcase.setId(null);
+        copiedTestcase.setSeqId("TC" + testcaseSeq);
+        copiedTestcase.setName("COPY OF " + sourceTestcase.getName());
+        if (targetType.equals("case")) {
+            Testcase targetTestcase = testcaseRepository.findById(targetId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            copiedTestcase.setTestcaseGroup(TestcaseGroupDTO.builder().id(targetTestcase.getTestcaseGroup().getId()).build());
+            copiedTestcase.setItemOrder(targetTestcase.getItemOrder() + 1);
+
+            TestcaseGroup targetTestcaseGroup = targetTestcase.getTestcaseGroup();
+            targetTestcaseGroup.getTestcases().stream().forEach(testcase -> {
+                if (testcase.getItemOrder() >= copiedTestcase.getItemOrder()) {
+                    testcase.setItemOrder(testcase.getItemOrder() + 1);
+                }
+            });
+            testcaseGroupRepository.save(targetTestcaseGroup);
+        } else if (targetType.equals("group")) {
+            TestcaseGroup targetTestcaseGroup = testcaseGroupRepository.findById(targetId)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            copiedTestcase.setTestcaseGroup(TestcaseGroupDTO.builder().id(targetTestcaseGroup.getId()).build());
+            copiedTestcase.setItemOrder(targetTestcaseGroup.getTestcases().size() + 1);
+        }
+
+        if (copiedTestcase.getTestcaseItems() != null) {
+            for (TestcaseItemDTO testcaseItem : copiedTestcase.getTestcaseItems()) {
+                testcaseItem.setId(null);
+                testcaseItem.setTestcase(copiedTestcase);
+            }
+        }
+        projectRepository.save(project);
+        Testcase result = testcaseRepository.save(mappingUtil.convert(copiedTestcase, Testcase.class));
+        return new TestcaseDTO(result);
     }
 
 

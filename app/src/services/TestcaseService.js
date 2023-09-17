@@ -44,6 +44,20 @@ TestcaseService.copyTestcase = (spaceCode, projectId, sourceId, targetType, targ
   );
 };
 
+TestcaseService.copyTestcaseGroup = (spaceCode, projectId, sourceId, targetType, targetId, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testcases/groups/${sourceId}/copy?targetType=${targetType}&targetId=${targetId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 TestcaseService.updateTestcaseGroupOrders = (spaceCode, projectId, testcaseGroupOrderChangeRequest, successHandler, failHandler) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testcases/orders`,
@@ -206,19 +220,6 @@ TestcaseService.createImage = (spaceCode, projectId, testcaseId, name, size, typ
   formData.append('type', type);
 
   return request.post(`/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/images`, formData, null, null, null, null, null, true);
-};
-
-TestcaseService.updateTestcaseRelease = (spaceCode, projectId, testcaseId, releaseId, successHandler) => {
-  return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/release`,
-    { releaseId },
-    res => {
-      successHandler(res);
-    },
-    null,
-    null,
-    false,
-  );
 };
 
 export default TestcaseService;

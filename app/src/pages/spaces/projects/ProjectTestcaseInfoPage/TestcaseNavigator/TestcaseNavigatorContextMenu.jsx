@@ -63,6 +63,16 @@ function TestcaseNavigatorContextMenu({ onClearContextMenu, contextMenuInfo, onC
               {t('복사')}
             </li>
           )}
+          {onCopy && copyInfo?.id && (
+            <li
+              onClick={() => {
+                onCopy(null, null, null);
+                onClearContextMenu();
+              }}
+            >
+              {t('복사 선택 취소')}
+            </li>
+          )}
           {copyInfo?.id && (
             <li
               onClick={() => {

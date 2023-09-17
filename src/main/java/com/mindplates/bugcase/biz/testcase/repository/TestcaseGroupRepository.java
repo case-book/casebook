@@ -22,6 +22,9 @@ public interface TestcaseGroupRepository extends JpaRepository<TestcaseGroup, Lo
     @Query("DELETE FROM TestcaseGroup tg WHERE tg.id IN (:ids)")
     void deleteByIds(@Param("ids") List<Long> ids);
 
+    @Query(value = "SELECT MAX(tg.itemOrder) FROM TestcaseGroup tg WHERE tg.parentId = :parentId")
+    Integer selectParentTestcaseGroupMaxItemOrder(Long parentId);
+
 
 }
 

@@ -14,13 +14,18 @@ import {
   PageButtons,
   PageContent,
   PageTitle,
-  TestcaseSelectorSummary,
+  Table,
+  Tbody,
+  Td,
   Text,
   TextArea,
+  Th,
+  THead,
   Title,
+  Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
@@ -28,22 +33,19 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
+import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
-import ReleaseService from '@/services/ReleaseService';
 
 const labelMinWidth = '120px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
   const { projectId, spaceCode, testrunId } = useParams();
-  const [searchParams] = useSearchParams();
-  const releaseId = searchParams.get('releaseId') ?? null;
 
   const {
     userStore: { user },
@@ -98,10 +100,7 @@ function TestrunEditPage({ type }) {
     deadlineClose: true,
   });
 
-  const selectedTestcaseGroupSummary = useMemo(() => {
-    if (!testrun?.testcaseGroups || !project?.testcaseGroups) return [];
-    return testcaseUtil.getSelectedTestcaseGroupSummary(testrun.testcaseGroups, project.testcaseGroups);
-  }, [testrun?.testcaseGroups, project?.testcaseGroups]);
+  const [selectedTestcaseGroupSummary, setSelectedTestcaseGroupSummary] = useState([]);
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -134,54 +133,41 @@ function TestrunEditPage({ type }) {
       testcaseGroups: initSelectedGroups,
     };
     setTestrun(nextTestrun);
+    setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(initSelectedGroups, project.testcaseGroups));
   };
 
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
-      if (isEdit) {
+      if (!isEdit) {
+        const initSelectedGroups = info.testcaseGroups?.map(d => {
+          return {
+            testcaseGroupId: d.id,
+            testcases: d.testcases?.map(item => {
+              return {
+                testcaseId: item.id,
+              };
+            }),
+          };
+        });
+
+        setTestrun({
+          ...testrun,
+          testrunUsers: info.users?.map(d => {
+            return { userId: d.userId, email: d.email, name: d.name };
+          }),
+          testcaseGroups: initSelectedGroups,
+        });
+
+        setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(initSelectedGroups, info.testcaseGroups));
+      } else {
         TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
           setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+          setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(data.testcaseGroups, info.testcaseGroups));
         });
-        return;
       }
-
-      const initSelectedGroups = info.testcaseGroups?.map(d => {
-        return {
-          testcaseGroupId: d.id,
-          testcases: d.testcases?.map(item => {
-            return {
-              testcaseId: item.id,
-            };
-          }),
-        };
-      });
-
-      setTestrun({
-        ...testrun,
-        testrunUsers: info.users?.map(d => {
-          return { userId: d.userId, email: d.email, name: d.name };
-        }),
-        testcaseGroups: initSelectedGroups,
-      });
     });
-  }, [isEdit, projectId, testrunId]);
-
-  useEffect(() => {
-    if (isEdit || !releaseId || !project?.testcaseGroups) return;
-
-    ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
-      const nextTestcaseGroups = testcaseUtil.getSelectionFromTestcaseGroups(
-        project.testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === data.id) })),
-      );
-      setTestrun(prev => ({
-        ...prev,
-        name: data.name,
-        description: data.description,
-        testcaseGroups: nextTestcaseGroups,
-      }));
-    });
-  }, [isEdit, spaceCode, projectId, releaseId, project?.testcaseGroups]);
+  }, [type, projectId, testrunId]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -457,23 +443,50 @@ function TestrunEditPage({ type }) {
                 {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
                 {selectedTestcaseGroupSummary?.length > 0 && (
                   <Block className="summary-list" scroll maxHeight="600px" border>
-                    <TestcaseSelectorSummary
-                      selectedTestcaseGroupSummary={selectedTestcaseGroupSummary}
-                      onDeleteGroup={testcaseGroupId => {
-                        const nextTestcaseGroups = testrun.testcaseGroups.slice(0);
-                        const index = nextTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroupId);
-                        if (index < 0) return;
+                    <Table cols={['', '200px', '100px']} sticky>
+                      <THead>
+                        <Tr>
+                          <Th align="left">{t('테스트케이스 그룹')}</Th>
+                          <Th align="right">{t('선택 테스트케이스')}</Th>
+                          <Th />
+                        </Tr>
+                      </THead>
+                      <Tbody>
+                        {selectedTestcaseGroupSummary.map(summary => {
+                          return (
+                            <Tr key={summary.testcaseGroupId}>
+                              <Td>{summary.name}</Td>
+                              <Td align="right">{t('@ 테스트케이스', { count: summary.count })}</Td>
+                              <Td align="center">
+                                <Button
+                                  outline
+                                  color="danger"
+                                  size="xs"
+                                  onClick={() => {
+                                    const nextTestcaseGroups = testrun.testcaseGroups.slice(0);
+                                    const index = nextTestcaseGroups.findIndex(d => d.testcaseGroupId === summary.testcaseGroupId);
 
-                        const hasChild = selectedTestcaseGroupSummary.some(d => d.parentId && d.parentId === testcaseGroupId);
-                        if (hasChild) {
-                          nextTestcaseGroups[index].testcases = [];
-                        } else {
-                          nextTestcaseGroups.splice(index, 1);
-                        }
+                                    if (index > -1) {
+                                      const hasChild = selectedTestcaseGroupSummary.some(d => d.parentId && d.parentId === summary.testcaseGroupId);
+                                      if (hasChild) {
+                                        nextTestcaseGroups[index].testcases = [];
+                                      } else {
+                                        nextTestcaseGroups.splice(index, 1);
+                                      }
 
-                        onChangeTestrun('testcaseGroups', nextTestcaseGroups);
-                      }}
-                    />
+                                      onChangeTestrun('testcaseGroups', nextTestcaseGroups);
+                                      setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(nextTestcaseGroups, project.testcaseGroups));
+                                    }
+                                  }}
+                                >
+                                  {t('삭제')}
+                                </Button>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
                   </Block>
                 )}
               </BlockRow>
@@ -507,6 +520,8 @@ function TestrunEditPage({ type }) {
           selectedUsers={testrun.testrunUsers}
           setOpened={setTestcaseSelectPopupOpened}
           onApply={selectedTestcaseGroups => {
+            setSelectedTestcaseGroupSummary(testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroups, project.testcaseGroups));
+
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
           }}
         />
