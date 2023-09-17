@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, TokenList, Tr } from '@/components';
+import { Block, Button, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, TokenList, Tr, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
@@ -83,47 +83,69 @@ function MyInfoPage() {
   return (
     <>
       <Page className="my-info-page-wrapper">
-        <PageTitle>{t('내 정보')}</PageTitle>
+        <PageTitle
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/users/my',
+              text: t('내 정보'),
+            },
+          ]}
+          onListClick={() => {
+            navigate('/');
+          }}
+        >
+          {t('내 정보')}
+        </PageTitle>
         <PageContent>
-          <Title>{t('내 정보')}</Title>
-          <Block>
-            <BlockRow>
-              <Label>{t('이름')}</Label>
-              <Text>{user?.name}</Text>
-            </BlockRow>
-            <BlockRow>
-              <Label>{t('이메일')}</Label>
-              <Text>{user?.email}</Text>
-            </BlockRow>
-            {user?.systemRole === 'ROLE_ADMIN' && (
-              <BlockRow>
-                <Label>{t('시스템 권한')}</Label>
-                <Text>{SYSTEM_ROLE[user?.systemRole]}</Text>
-              </BlockRow>
-            )}
-            {user?.systemRole === 'ROLE_ADMIN' && (
-              <BlockRow>
-                <Label>{t('적용 권한')}</Label>
-                <Text>{SYSTEM_ROLE[user?.activeSystemRole]}</Text>
-              </BlockRow>
-            )}
-            <BlockRow>
-              <Label>{t('언어 및 지역')}</Label>
-              <Text>
-                {LANGUAGES[user?.language] || user?.language} / {COUNTRIES[user?.country] || user?.country}
-              </Text>
-            </BlockRow>
-            <BlockRow>
-              <Label>{t('타임존')}</Label>
-              {user?.timezone && <Text className="timezone">{user?.timezone}</Text>}
-              {!user?.timezone && (
-                <Text className="timezone">
-                  <span>{moment.tz.guess()}</span>
-                  <Tag className="browser">BROWSER</Tag>
-                </Text>
-              )}
-            </BlockRow>
-          </Block>
+          <div className="my-info-content">
+            <div>
+              <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={160} />
+            </div>
+            <div>
+              <Block>
+                <BlockRow>
+                  <Label>{t('이름')}</Label>
+                  <Text>{user?.name}</Text>
+                </BlockRow>
+                <BlockRow>
+                  <Label>{t('이메일')}</Label>
+                  <Text>{user?.email}</Text>
+                </BlockRow>
+                {user?.systemRole === 'ROLE_ADMIN' && (
+                  <BlockRow>
+                    <Label>{t('시스템 권한')}</Label>
+                    <Text>{SYSTEM_ROLE[user?.systemRole]}</Text>
+                  </BlockRow>
+                )}
+                {user?.systemRole === 'ROLE_ADMIN' && (
+                  <BlockRow>
+                    <Label>{t('적용 권한')}</Label>
+                    <Text>{SYSTEM_ROLE[user?.activeSystemRole]}</Text>
+                  </BlockRow>
+                )}
+                <BlockRow>
+                  <Label>{t('언어 및 지역')}</Label>
+                  <Text>
+                    {LANGUAGES[user?.language] || user?.language} / {COUNTRIES[user?.country] || user?.country}
+                  </Text>
+                </BlockRow>
+                <BlockRow>
+                  <Label>{t('타임존')}</Label>
+                  {user?.timezone && <Text className="timezone">{user?.timezone}</Text>}
+                  {!user?.timezone && (
+                    <Text className="timezone">
+                      <span>{moment.tz.guess()}</span>
+                      <Tag className="browser">BROWSER</Tag>
+                    </Text>
+                  )}
+                </BlockRow>
+              </Block>
+            </div>
+          </div>
           <Title
             control={
               <Button

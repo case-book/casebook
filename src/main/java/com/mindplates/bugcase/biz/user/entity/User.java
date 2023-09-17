@@ -81,4 +81,7 @@ public class User extends CommonEntity {
     @Column(name = "last_seen")
     private LocalDateTime lastSeen;
 
+    @Column(name = "avatar_info", length = ColumnsDef.TEXT)
+    private String avatarInfo;
+
 }

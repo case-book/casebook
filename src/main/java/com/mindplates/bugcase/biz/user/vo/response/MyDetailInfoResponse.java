@@ -33,6 +33,7 @@ public class MyDetailInfoResponse {
     private String timezone;
     private SystemRole systemRole;
     private List<SpaceListResponse> spaces;
+    private String avatarInfo;
 
     public MyDetailInfoResponse(UserDTO user) {
         if (user != null) {
@@ -48,6 +49,7 @@ public class MyDetailInfoResponse {
             this.autoLogin = user.getAutoLogin();
             this.timezone = user.getTimezone();
             this.systemRole = user.getSystemRole();
+            this.avatarInfo = user.getAvatarInfo();
         }
     }
 

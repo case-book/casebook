@@ -20,6 +20,7 @@ export default class UserStore {
     spaces: null,
     country: initCountry,
     language: initLanguage,
+    avatarInfo: null,
   };
 
   notificationCount = 0;

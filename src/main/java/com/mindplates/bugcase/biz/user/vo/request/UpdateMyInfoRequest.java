@@ -19,8 +19,9 @@ public class UpdateMyInfoRequest {
     private String country;
     private String timezone;
     private SystemRole activeSystemRole;
+    private String avatarInfo;
 
     public UserDTO toDTO() {
-        return UserDTO.builder().name(name).country(country).language(language).timezone(timezone).activeSystemRole(activeSystemRole).build();
+        return UserDTO.builder().name(name).country(country).language(language).timezone(timezone).activeSystemRole(activeSystemRole).avatarInfo(avatarInfo).build();
     }
 }

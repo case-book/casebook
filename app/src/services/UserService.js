@@ -34,6 +34,13 @@ UserService.getMyDetailInfo = (successHandler, failHandler) => {
     '/api/users/my/detail',
     {},
     res => {
+      if (res.avatarInfo) {
+        try {
+          res.avatarInfo = JSON.parse(res.avatarInfo);
+        } catch (e) {
+          //
+        }
+      }
       successHandler(res);
     },
     failHandler,
@@ -100,6 +107,13 @@ UserService.login = (info, successHandler, failHandler) => {
     '/api/users/login',
     info,
     res => {
+      if (res.avatarInfo) {
+        try {
+          res.avatarInfo = JSON.parse(res.avatarInfo);
+        } catch (e) {
+          //
+        }
+      }
       successHandler(res);
     },
     failHandler,
@@ -116,6 +130,13 @@ UserService.join = (info, successHandler, failHandler) => {
     '/api/users/join',
     info,
     res => {
+      if (res.avatarInfo) {
+        try {
+          res.avatarInfo = JSON.parse(res.avatarInfo);
+        } catch (e) {
+          //
+        }
+      }
       successHandler(res);
     },
     failHandler,
