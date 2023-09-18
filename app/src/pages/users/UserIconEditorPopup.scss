@@ -1,0 +1,128 @@
+.user-icon-editor-popup-wrapper {
+
+  > div {
+    min-width: 1064px !important;
+    max-width: 1064px !important;
+
+    @media (max-width: 1200px) {
+      min-width: 954px !important;
+      max-width: 954px !important;
+      margin: 0 auto !important;
+    }
+
+    @media (max-width: 1100px) {
+      min-width: 844px !important;
+      max-width: 844px !important;
+      margin: 0 auto !important;
+    }
+
+    @media (max-width: 1000px) {
+      min-width: 734px !important;
+      max-width: 734px !important;
+      margin: 0 auto !important;
+    }
+
+    @media (max-width: 800px) {
+      min-width: 624px !important;
+      max-width: 624px !important;
+      margin: 0 auto !important;
+    }
+
+    @media (max-width: 700px) {
+      min-width: 514px !important;
+      max-width: 514px !important;
+      margin: 0 auto !important;
+    }
+
+    @media (max-width: 600px) {
+      min-width: auto !important;
+      max-width: none !important;
+      width: calc(100% - 40px) !important;
+      margin: 0 20px !important;
+    }
+
+
+  }
+  .current-avatar {
+    text-align: center;
+    margin-bottom: 20px;
+
+    .avatar-case {
+      display: inline-block;
+      background-color: var(--light-color);
+      line-height: 0;
+    }
+
+    img {
+      border-radius: 50%;
+      border-radius: 2px;
+    }
+  }
+  .menu {
+    width: 100%;
+    overflow: auto;
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+    scrollbar-width: thin;
+    padding: 8px;
+    margin-bottom: 10px;
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #f8f8f8;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #d4d4d4;
+    }
+
+    ul {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      white-space: nowrap;
+
+      > li {
+        display: inline-block;
+        padding: 4px 8px;
+        text-transform: capitalize;
+        cursor: pointer;
+        margin-right: 4px;
+        &:last-child {
+          margin-right: 0;
+        }
+        &.selected {
+          background-color: var(--yellow-color);
+          color: black;
+          border-radius: 8px;
+        }
+      }
+    }
+  }
+
+  .property-content {
+    height: 330px;
+    overflow-y: auto;
+    .styles,
+    .options {
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        line-height: 0;
+        > li {
+          display: inline-block;
+          cursor: pointer;
+          line-height: 0;
+
+          img {
+            border-radius: 2px;
+            background-color: var(--light-color);
+            margin-right: 10px;
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+  }
+}

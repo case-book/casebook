@@ -31,6 +31,7 @@ public class MyInfoResponse {
     private String timezone;
     private List<SpaceListResponse> spaces;
     private String refreshToken;
+    private String avatarInfo;
 
     public MyInfoResponse(UserDTO user, String token, String refreshToken) {
         if (user != null) {
@@ -43,6 +44,7 @@ public class MyInfoResponse {
             this.language = user.getLanguage();
             this.country = user.getCountry();
             this.timezone = user.getTimezone();
+            this.avatarInfo = user.getAvatarInfo();
         }
         this.token = token;
         this.refreshToken = refreshToken;

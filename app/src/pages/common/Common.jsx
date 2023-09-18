@@ -205,11 +205,11 @@ function Common() {
           }}
           onMessage={onMessage}
           onConnect={() => {
-            console.log('onConnect');
+            console.log('CONNECT');
             // setConnectTried(true);
           }}
           onDisconnect={() => {
-            console.log('onDisconnect');
+            console.log('DISCONNECT');
             // setConnectTried(true);
           }}
           setRef={client => {

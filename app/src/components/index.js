@@ -59,6 +59,7 @@ import TokenList from './TokenList/TokenList';
 import Info from './Info/Info';
 import Version from './Version/Version';
 import Search from './Search/Search';
+import UserAvatar from './UserAvatar/UserAvatar';
 
 export {
   Selector,
@@ -122,4 +123,5 @@ export {
   Info,
   Version,
   Search,
+  UserAvatar,
 };

@@ -76,6 +76,7 @@ public class UserService {
         targetUser.setLanguage(user.getLanguage());
         targetUser.setCountry(user.getCountry());
         targetUser.setTimezone(user.getTimezone());
+        targetUser.setAvatarInfo(user.getAvatarInfo());
         if (targetUser.getSystemRole().equals(SystemRole.ROLE_ADMIN)) {
             targetUser.setActiveSystemRole(user.getActiveSystemRole());
         }

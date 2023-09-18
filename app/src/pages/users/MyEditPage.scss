@@ -1,4 +1,4 @@
-.my-info-page-wrapper {
+.my-edit-page-wrapper {
   .my-info-content {
     display: flex;
     padding: 0 0.5rem;
@@ -16,23 +16,20 @@
       display: block;
     }
 
+    > div:first-child {
+      text-align: center;
+    }
+
     > div:last-child {
       flex-grow: 1;
     }
 
     .user-icon {
-      _border: 1px solid var(--border-color);
       background-color: var(--light-color);
       border-radius: 4px;
       img {
         border-radius: 4px;
       }
-    }
-  }
-  .timezone {
-    text-transform: uppercase;
-    .browser {
-      margin-left: 0.5rem;
     }
   }
 }

@@ -20,6 +20,7 @@ export default class UserStore {
     spaces: null,
     country: initCountry,
     language: initLanguage,
+    avatarInfo: null,
   };
 
   notificationCount = 0;
@@ -42,6 +43,7 @@ export default class UserStore {
       removeSpace: action,
       setNotificationCount: action,
       setLocale: action,
+      setAvatarInfo: action,
     });
   }
 
@@ -56,6 +58,13 @@ export default class UserStore {
       ...this.user,
       language,
       country,
+    };
+  };
+
+  setAvatarInfo = avatarInfo => {
+    this.user = {
+      ...this.user,
+      avatarInfo,
     };
   };
 
