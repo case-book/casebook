@@ -53,12 +53,7 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
       <CardHeader className="user-name">
         <div className="user-card-content">
           <div>
-            {spaceUser?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={spaceUser?.avatarInfo} size={48} />}
-            {!spaceUser?.avatarInfo && (
-              <div className="icon">
-                <i className="fa-solid fa-skull" />
-              </div>
-            )}
+            <UserAvatar avatarInfo={spaceUser?.avatarInfo} size={48} rounded fill />
           </div>
           <div className="user-text-info">
             <div className="name-content">
@@ -244,12 +239,7 @@ MemberCardManager.propTypes = {
     crud: PropTypes.string,
     role: PropTypes.string,
     tags: PropTypes.string,
-    avatarInfo: PropTypes.shape({
-      type: PropTypes.string,
-      options: PropTypes.shape({
-        [PropTypes.string]: PropTypes.string,
-      }),
-    }),
+    avatarInfo: PropTypes.string,
   }),
   onChangeUserRole: PropTypes.func,
   onUndoRemovalUser: PropTypes.func,

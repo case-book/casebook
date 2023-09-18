@@ -100,14 +100,6 @@
     align-self: center;
     position: relative;
 
-    .user-icon {
-      background-color: var(--light-color);
-      border-radius: 50%;
-      img {
-        border-radius: 50%;
-      }
-    }
-
     .admin-flag {
       position: absolute;
       font-size: 10px;
@@ -319,27 +311,6 @@
                   align-self: center;
                   &:first-child {
                     margin-right: 8px;
-                  }
-                }
-
-                .user-icon {
-                  background-color: var(--light-color);
-                  border-radius: 50%;
-                  img {
-                    border-radius: 50%;
-                  }
-                }
-
-                .icon {
-                  display: inline-flex;
-                  width: 60px;
-                  height: 60px;
-                  background-color: var(--light-color);
-                  border-radius: 50%;
-                  justify-content: center;
-                  i {
-                    align-self: center;
-                    font-size: 30px;
                   }
                 }
 

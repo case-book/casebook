@@ -165,7 +165,7 @@ function TestRunTestcaseManager({
                 theme={theme === 'DARK' ? 'dark' : 'white'}
                 placeholder="내용을 입력해주세요."
                 previewStyle="vertical"
-                height="160px"
+                height="200px"
                 initialEditType="wysiwyg"
                 plugins={[colorSyntax]}
                 autofocus={false}
