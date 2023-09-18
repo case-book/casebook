@@ -103,8 +103,7 @@ public class TestrunService {
     private final Random random = new Random();
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
-        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase);
     }
 
@@ -468,6 +467,8 @@ public class TestrunService {
         TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         checkIsTestrunClosed(testrun);
+        User currentUser = userRepository.findById(SessionUtil.getUserId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testrunTestcaseGroupTestcaseComment.setUser(new UserDTO(currentUser));
         TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository
             .save(mappingUtil.convert(testrunTestcaseGroupTestcaseComment, TestrunTestcaseGroupTestcaseComment.class));
         return new TestrunTestcaseGroupTestcaseCommentDTO(comment);

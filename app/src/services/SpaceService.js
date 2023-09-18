@@ -1,6 +1,5 @@
 import * as request from '@/utils/request';
 import i18n from 'i18next';
-import { convertSpace } from '@/utils/spaceUtil';
 
 const SpaceService = {};
 
@@ -50,7 +49,7 @@ SpaceService.selectSpaceInfo = (spaceCode, successHandler, failHandler) => {
     `/api/spaces/${spaceCode}`,
     null,
     res => {
-      successHandler(convertSpace(res));
+      successHandler(res);
     },
     failHandler,
   );

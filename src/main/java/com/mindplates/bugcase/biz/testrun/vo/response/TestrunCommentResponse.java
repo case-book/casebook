@@ -26,7 +26,7 @@ public class TestrunCommentResponse {
         this.testrunId = testrunCommentDTO.getTestrun().getId();
         this.comment = testrunCommentDTO.getComment();
         if (testrunCommentDTO.getUser() != null) {
-            this.user = SimpleUserResponse.builder().id(testrunCommentDTO.getUser().getId()).name(testrunCommentDTO.getUser().getName()).email(testrunCommentDTO.getUser().getEmail()).build();
+            this.user = SimpleUserResponse.builder().id(testrunCommentDTO.getUser().getId()).name(testrunCommentDTO.getUser().getName()).email(testrunCommentDTO.getUser().getEmail()).avatarInfo(testrunCommentDTO.getUser().getAvatarInfo()).build();
         }
         this.creationDate = testrunCommentDTO.getCreationDate();
         this.lastUpdateDate = testrunCommentDTO.getLastUpdateDate();

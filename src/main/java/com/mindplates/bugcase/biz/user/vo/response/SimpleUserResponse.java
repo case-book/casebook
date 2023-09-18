@@ -15,10 +15,12 @@ public class SimpleUserResponse {
     private Long id;
     private String email;
     private String name;
+    private String avatarInfo;
 
     public SimpleUserResponse(UserDTO user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
+        this.avatarInfo = user.getAvatarInfo();
     }
 }

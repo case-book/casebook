@@ -1,4 +1,29 @@
 .user-avatar-wrapper {
   display: inline-block;
   line-height: 0;
+
+  &.rounded {
+    border-radius: 50%;
+    > img {
+      border-radius: 50%;
+    }
+  }
+
+  &.fill {
+    background-color: var(--light-color);
+  }
+
+  img {
+    line-height: 0;
+  }
+
+  .empty-icon {
+    display: inline-flex;
+    border-radius: 50%;
+    justify-content: center;
+    i {
+      align-self: center;
+      line-height: 0;
+    }
+  }
 }

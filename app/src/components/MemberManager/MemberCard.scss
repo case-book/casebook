@@ -16,27 +16,7 @@
         &:first-child {
           flex-grow: 0;
           margin-right: 8px;
-
-          .user-icon {
-            background-color: var(--light-color);
-            border-radius: 50%;
-            img {
-              border-radius: 50%;
-            }
-          }
-
-          .icon {
-            display: inline-flex;
-            width: 48px;
-            height: 48px;
-            background-color: var(--light-color);
-            border-radius: 50%;
-            justify-content: center;
-            i {
-              align-self: center;
-              font-size: 24px;
-            }
-          }
+          line-height: 0;
         }
 
         &.user-text-info {
@@ -44,7 +24,7 @@
 
           .name-content {
             display: flex;
-            height: 26px;
+            min-height: 26px;
 
             .name-text {
               align-self: center;

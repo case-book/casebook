@@ -58,11 +58,15 @@ const schemas = {
   // thumbs,
 };
 
-function UserAvatar({ className, size, avatarInfo }) {
+function UserAvatar({ className, size, avatarInfo, rounded, fill }) {
   const avatar = useMemo(() => {
-    if (avatarInfo?.type) {
-      return createAvatar(schemas[avatarInfo.type], {
-        ...avatarInfo.options,
+    let jsonAvatarInfo = avatarInfo;
+    if (typeof avatarInfo === 'string') {
+      jsonAvatarInfo = JSON.parse(avatarInfo);
+    }
+    if (jsonAvatarInfo?.type) {
+      return createAvatar(schemas[jsonAvatarInfo.type], {
+        ...jsonAvatarInfo.options,
         size,
       }).toDataUriSync();
     }
@@ -70,9 +74,13 @@ function UserAvatar({ className, size, avatarInfo }) {
   }, [avatarInfo]);
 
   return (
-    <div className={`user-avatar-wrapper ${className}`}>
+    <div className={`user-avatar-wrapper ${className} ${rounded ? 'rounded' : ''} ${fill ? 'fill' : ''}`}>
       {avatar && <img src={avatar} alt="avator" />}
-      {!avatar && <div>NO</div>}
+      {!avatar && (
+        <div style={{ width: `${size}px`, height: `${size}px`, fontSize: `${size ? size / 2 - 2 : 16}px` }} className="empty-icon">
+          <i className="fa-solid fa-skull" />
+        </div>
+      )}
     </div>
   );
 }
@@ -81,17 +89,16 @@ UserAvatar.defaultProps = {
   className: '',
   avatarInfo: null,
   size: 100,
+  rounded: false,
+  fill: false,
 };
 
 UserAvatar.propTypes = {
   className: PropTypes.string,
   size: PropTypes.number,
-  avatarInfo: PropTypes.shape({
-    type: PropTypes.string,
-    options: PropTypes.shape({
-      [PropTypes.string]: PropTypes.string,
-    }),
-  }),
+  avatarInfo: PropTypes.string,
+  rounded: PropTypes.bool,
+  fill: PropTypes.bool,
 };
 
 export default UserAvatar;

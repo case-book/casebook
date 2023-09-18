@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
+import { Button, FlexibleLayout, Page, PageContent, PageTitle, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -583,11 +583,16 @@ function TestrunExecutePage() {
             <div className="participants">
               <ul>
                 {paricipants.map(paricipant => {
+                  const paricipantUser = project.users?.find(d => d.userId === paricipant.userId);
+
                   return (
                     <li key={paricipant.id} data-tip={paricipant.userName}>
-                      <div className="user-email-char">
-                        <span>{paricipant.userEmail?.substring(0, 1)}</span>
-                      </div>
+                      {paricipantUser?.avatarInfo && <UserAvatar avatarInfo={paricipantUser?.avatarInfo} size={36} rounded fill />}
+                      {!paricipantUser?.avatarInfo && (
+                        <div className="user-email-char">
+                          <span>{paricipant.userEmail?.substring(0, 1)}</span>
+                        </div>
+                      )}
                     </li>
                   );
                 })}
