@@ -4,7 +4,7 @@ import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
-import { Button, Loader } from '@/components';
+import { Button, Loader, UserAvatar } from '@/components';
 import { setOption } from '@/utils/storageUtil';
 import { useTranslation } from 'react-i18next';
 import { setToken } from '@/utils/request';
@@ -172,20 +172,36 @@ function UserHeaderControl({ className }) {
             </Button>
           </div>
           <div className="user-menu side-menu-item">
-            <Button
-              outline
-              rounded
-              color={userMenuOpen ? 'primary' : 'white'}
-              onClick={e => {
-                e.preventDefault();
-                setUserMenuOpen(true);
-              }}
-            >
-              {isAdmin && <div className="admin-flag">ADMIN</div>}
-              <div className="icon">
-                <i className="fa-solid fa-skull" />
-              </div>
-            </Button>
+            {user?.avatarInfo && (
+              <Button
+                outline={false}
+                rounded
+                color="transparent"
+                onClick={e => {
+                  e.preventDefault();
+                  setUserMenuOpen(true);
+                }}
+              >
+                {isAdmin && <div className="admin-flag">ADMIN</div>}
+                <UserAvatar className="user-icon" avatarInfo={user.avatarInfo} size={34} />
+              </Button>
+            )}
+            {!user?.avatarInfo && (
+              <Button
+                outline
+                rounded
+                color={userMenuOpen ? 'primary' : 'white'}
+                onClick={e => {
+                  e.preventDefault();
+                  setUserMenuOpen(true);
+                }}
+              >
+                {isAdmin && <div className="admin-flag">ADMIN</div>}
+                <div className="icon">
+                  <i className="fa-solid fa-skull" />
+                </div>
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -253,8 +269,21 @@ function UserHeaderControl({ className }) {
               </div>
               <ul>
                 <li className="user-info">
-                  <div className="name">{user.name}</div>
-                  <div className="email">{user.email}</div>
+                  <div>
+                    <div>
+                      {user?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={user.avatarInfo} size={60} />}
+                      {!user?.avatarInfo && (
+                        <div className="icon">
+                          <i className="fa-solid fa-skull" />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <div className="name">{user.name}</div>
+                      <div className="email">{user.email}</div>
+                    </div>
+                  </div>
+
                   <hr />
                 </li>
                 <li>

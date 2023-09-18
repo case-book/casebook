@@ -10,33 +10,87 @@
     padding-right: 1rem;
     padding-bottom: 0;
 
-    > div {
+    .user-card-content {
+      display: flex;
       > div {
-        display: flex;
-        div {
-          align-self: center;
-        }
-        div:first-child {
-          flex-grow: 1;
-        }
+        &:first-child {
+          flex-grow: 0;
+          margin-right: 8px;
 
-        .role {
-          display: inline-flex;
-          text-align: right;
-
-          .tag {
-            font-weight: normal;
-          }
-
-          &.ADMIN {
-            > div {
+          .user-icon {
+            background-color: var(--light-color);
+            border-radius: 50%;
+            img {
+              border-radius: 50%;
             }
           }
 
-          button {
-            margin-left: 4px;
+          .icon {
+            display: inline-flex;
+            width: 48px;
+            height: 48px;
+            background-color: var(--light-color);
+            border-radius: 50%;
+            justify-content: center;
+            i {
+              align-self: center;
+              font-size: 24px;
+            }
           }
         }
+
+        &.user-text-info {
+          flex-grow: 1;
+
+          .name-content {
+            display: flex;
+            height: 26px;
+
+            .name-text {
+              align-self: center;
+            }
+          }
+
+          > div:first-child {
+            display: flex;
+          }
+
+          div:first-child {
+            flex-grow: 1;
+          }
+
+          .email {
+
+            font-size: 12px;
+            font-weight: normal;
+          }
+
+          .role {
+            display: inline-flex;
+            text-align: right;
+            > div {
+              align-self: center;
+            }
+
+            .tag {
+              font-weight: normal;
+            }
+
+            &.ADMIN {
+              > div {
+              }
+            }
+
+            button {
+              margin-left: 4px;
+            }
+          }
+        }
+      }
+    }
+
+    > div {
+      > div {
       }
     }
   }
@@ -45,10 +99,7 @@
     > div {
       padding-top: 0;
     }
-    .email {
-      margin-top: 5px;
-      font-size: 12px;
-    }
+
 
     .tag-info {
       display: flex;
@@ -66,6 +117,7 @@
         .no-tags {
           color: $gray-500;
           font-size: 12px;
+          padding-top: 8px;
         }
 
         .tag {

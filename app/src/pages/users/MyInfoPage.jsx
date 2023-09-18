@@ -103,7 +103,8 @@ function MyInfoPage() {
         <PageContent>
           <div className="my-info-content">
             <div>
-              <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={160} />
+              {user?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={128} />}
+              {!user?.avatarInfo && <div className="user-empty-icon" />}
             </div>
             <div>
               <Block>
@@ -199,11 +200,25 @@ function MyInfoPage() {
               </Tbody>
             </Table>
           </Block>
+          <Title paddingBottom={false} border={false} marginBottom={false}>
+            {t('관리')}
+          </Title>
+          <Block>
+            <BlockRow>
+              <Label>{t('비밀번호 변경')}</Label>
+              <Text>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    navigate('/users/my/password');
+                  }}
+                >
+                  {t('비밀번호 변경')}
+                </Button>
+              </Text>
+            </BlockRow>
+          </Block>
           <PageButtons
-            onDelete={() => {
-              navigate('/users/my/password');
-            }}
-            onDeleteText={t('비밀번호 변경')}
             onBack={() => {
               navigate(-1);
             }}

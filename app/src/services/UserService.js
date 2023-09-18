@@ -1,5 +1,6 @@
 import * as request from '@/utils/request';
 import i18n from 'i18next';
+import { convertUser } from '@/utils/userUtil';
 
 const UserService = {};
 
@@ -8,7 +9,7 @@ UserService.getMyInfo = (successHandler, failHandler) => {
     '/api/users/my',
     {},
     res => {
-      successHandler(res);
+      successHandler(convertUser(res));
     },
     failHandler,
     null,
@@ -34,14 +35,7 @@ UserService.getMyDetailInfo = (successHandler, failHandler) => {
     '/api/users/my/detail',
     {},
     res => {
-      if (res.avatarInfo) {
-        try {
-          res.avatarInfo = JSON.parse(res.avatarInfo);
-        } catch (e) {
-          //
-        }
-      }
-      successHandler(res);
+      successHandler(convertUser(res));
     },
     failHandler,
   );
@@ -52,7 +46,7 @@ UserService.updateMyInfo = (info, successHandler, failHandler) => {
     '/api/users/my',
     info,
     res => {
-      successHandler(res);
+      successHandler(convertUser(res));
     },
     failHandler,
   );
@@ -107,14 +101,7 @@ UserService.login = (info, successHandler, failHandler) => {
     '/api/users/login',
     info,
     res => {
-      if (res.avatarInfo) {
-        try {
-          res.avatarInfo = JSON.parse(res.avatarInfo);
-        } catch (e) {
-          //
-        }
-      }
-      successHandler(res);
+      successHandler(convertUser(res));
     },
     failHandler,
     null,
@@ -130,14 +117,7 @@ UserService.join = (info, successHandler, failHandler) => {
     '/api/users/join',
     info,
     res => {
-      if (res.avatarInfo) {
-        try {
-          res.avatarInfo = JSON.parse(res.avatarInfo);
-        } catch (e) {
-          //
-        }
-      }
-      successHandler(res);
+      successHandler(convertUser(res));
     },
     failHandler,
   );

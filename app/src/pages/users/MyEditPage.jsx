@@ -15,7 +15,7 @@ function MyEditPage() {
   const { t } = useTranslation();
 
   const {
-    userStore: { setLocale },
+    userStore: { setLocale, setAvatarInfo },
   } = useStores();
 
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ function MyEditPage() {
     nextUser.avatarInfo = JSON.stringify(nextUser.avatarInfo);
     UserService.updateMyInfo(nextUser, () => {
       i18n.changeLanguage(user.language);
+      setAvatarInfo(user.avatarInfo);
       setLocale(user.language, user.country);
       navigate('/users/my');
     });
@@ -68,7 +69,8 @@ function MyEditPage() {
         <Form onSubmit={onSubmit}>
           <div className="my-info-content">
             <div>
-              <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={160} />
+              {user?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={128} />}
+              {!user?.avatarInfo && <div className="user-empty-icon" />}
               <div>
                 <Button
                   outline

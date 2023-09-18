@@ -21,8 +21,17 @@ function getUserText(users, type, value) {
   return '';
 }
 
-function dummy() {
-  return null;
+function convertUser(info) {
+  const result = { ...info };
+  if (info.avatarInfo) {
+    try {
+      result.avatarInfo = JSON.parse(result.avatarInfo);
+    } catch (e) {
+      //
+    }
+  }
+
+  return result;
 }
 
-export { getUserText, dummy };
+export { getUserText, convertUser };
