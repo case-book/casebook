@@ -6,6 +6,10 @@
   border-radius: 2px;
   font-weight: lighter;
 
+  .value {
+    white-space: nowrap;
+  }
+
   &.outline {
     border: 1px solid var(--input-border-color);
   }
@@ -20,6 +24,15 @@
 
   > div {
     align-self: center;
+    display: flex;
+    > div {
+      align-self: center;
+
+      .clear-button {
+        border-color: transparent;
+        box-shadow: none;
+      }
+    }
 
     @media (max-width: 768px) {
       flex: 1 1 0;
@@ -39,12 +52,19 @@
     }
   }
 
+  &.size-xs {
+    height: $xs-height;
+    font-size: $xs-font-size;
+  }
+
   &.size-sm {
     height: $sm-height;
+    font-size: $sm-font-size;
   }
 
   &.size-md {
     height: $md-height;
+    font-size: $md-font-size;
 
     @media (max-width: 576px) {
       height: 76px;

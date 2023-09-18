@@ -1,12 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './TestcaseItem.scss';
-import { CheckBox, Input, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector } from '@/components';
+import { Button, CheckBox, Input, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector } from '@/components';
 import { getUserText } from '@/utils/userUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { useTranslation } from 'react-i18next';
+import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
 
 function TestcaseItem({
   isEdit,
@@ -17,6 +19,7 @@ function TestcaseItem({
   content,
   theme,
   onChangeTestcaseItem,
+  onRandomTester,
   setOpenTooltipInfo,
   caseContentElement,
   openTooltipInfo,
@@ -29,6 +32,12 @@ function TestcaseItem({
   tags,
 }) {
   const editor = useRef(null);
+  const { t } = useTranslation();
+  const [opened, setOpened] = useState(false);
+
+  const onUserRandomChange = () => {
+    setOpened(true);
+  };
 
   return (
     <div key={testcaseTemplateItem.id} className={`testcase-item-wrapper size-${testcaseTemplateItem?.size}`}>
@@ -147,17 +156,24 @@ function TestcaseItem({
                   </div>
                 )}
                 {isEdit && (
-                  <UserSelector
-                    size={size}
-                    users={users}
-                    tags={tags}
-                    type={testcaseItem.type}
-                    value={testcaseItem.value}
-                    selectUserOnly={selectUserOnly}
-                    onChange={(typeValue, val) => {
-                      onChangeTestcaseItem(testcaseTemplateItem.id, typeValue, 'value', val, testcaseTemplateItem.type);
-                    }}
-                  />
+                  <div className="user-selector">
+                    <UserSelector
+                      size={size}
+                      users={users}
+                      tags={tags}
+                      type={testcaseItem.type}
+                      value={testcaseItem.value}
+                      selectUserOnly={selectUserOnly}
+                      onChange={(typeValue, val) => {
+                        onChangeTestcaseItem(testcaseTemplateItem.id, typeValue, 'value', val, testcaseTemplateItem.type);
+                      }}
+                    />
+                    {onRandomTester && (
+                      <Button type="submit" tip={t('테스터 랜덤 변경')} size={size} onClick={onUserRandomChange} rounded>
+                        <i className="fa-solid fa-dice" />
+                      </Button>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -205,6 +221,7 @@ function TestcaseItem({
           </div>
         </div>
       </div>
+      {opened && <UserRandomChangeDialog setOpened={setOpened} currentUser={users.find(d => d.userId === testcaseItem.value)} onChange={onRandomTester} targetId={content.id} />}
     </div>
   );
 }
@@ -228,6 +245,7 @@ TestcaseItem.defaultProps = {
   isTestResult: false,
   isTestResultItem: false,
   tags: [],
+  onRandomTester: null,
 };
 
 TestcaseItem.propTypes = {
@@ -273,6 +291,7 @@ TestcaseItem.propTypes = {
   isTestResult: PropTypes.bool,
   isTestResultItem: PropTypes.bool,
   tags: PropTypes.arrayOf(PropTypes.string),
+  onRandomTester: PropTypes.func,
 };
 
 export default TestcaseItem;

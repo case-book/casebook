@@ -35,6 +35,7 @@ public class UserDTO extends CommonEntity {
     private String loginToken;
     private String timezone;
     private LocalDateTime lastSeen;
+    private String avatarInfo;
 
     public UserDTO(User user) {
         this.id = user.getId();
@@ -57,6 +58,7 @@ public class UserDTO extends CommonEntity {
         this.loginToken = user.getLoginToken();
         this.timezone = user.getTimezone();
         this.lastSeen = user.getLastSeen();
+        this.avatarInfo = user.getAvatarInfo();
     }
 
 }

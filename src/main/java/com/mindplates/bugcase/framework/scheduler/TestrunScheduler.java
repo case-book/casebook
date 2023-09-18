@@ -1,30 +1,41 @@
 package com.mindplates.bugcase.framework.scheduler;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
-import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
-import com.mindplates.bugcase.biz.testrun.dto.*;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
+import com.mindplates.bugcase.common.service.SlackService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
@@ -33,29 +44,31 @@ public class TestrunScheduler {
 
     private final TestrunService testrunService;
 
-    private final TestcaseService testcaseService;
-
     private final SpaceService spaceService;
+
+    private final ProjectService projectService;
+
+    private final SlackService slackService;
 
     private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
         TestrunDTO testrun = TestrunDTO
-                .builder()
-                .name(testrunReservationDTO.getName())
-                .description(testrunReservationDTO.getDescription())
-                .project(ProjectDTO.builder().id(testrunReservationDTO.getProject().getId()).build())
-                .startDateTime(testrunReservationDTO.getStartDateTime())
-                .endDateTime(testrunReservationDTO.getEndDateTime())
-                .deadlineClose(testrunReservationDTO.getDeadlineClose())
-                .build();
+            .builder()
+            .name(testrunReservationDTO.getName())
+            .description(testrunReservationDTO.getDescription())
+            .project(ProjectDTO.builder().id(testrunReservationDTO.getProject().getId()).build())
+            .startDateTime(testrunReservationDTO.getStartDateTime())
+            .endDateTime(testrunReservationDTO.getEndDateTime())
+            .deadlineClose(testrunReservationDTO.getDeadlineClose())
+            .build();
 
         List<TestrunUserDTO> testrunUserList = new ArrayList<>();
         if (testrunReservationDTO.getTestrunUsers() != null) {
             for (TestrunUserDTO testrunUser : testrunReservationDTO.getTestrunUsers()) {
                 testrunUserList.add(TestrunUserDTO
-                        .builder()
-                        .testrun(testrun)
-                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                        .build()
+                    .builder()
+                    .testrun(testrun)
+                    .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                    .build()
                 );
             }
         }
@@ -69,19 +82,18 @@ public class TestrunScheduler {
             testrunReservationDTO.getTestcaseGroups().forEach((testrunTestcaseGroupDTO -> {
                 ArrayList<Long> testcaseIds = new ArrayList<>();
                 TestrunTestcaseGroupDTO testcaseGroup = TestrunTestcaseGroupDTO
-                        .builder()
-                        .testrun(testrun)
-                        .testcaseGroup(testrunTestcaseGroupDTO.getTestcaseGroup())
-                        .build();
-
+                    .builder()
+                    .testrun(testrun)
+                    .testcaseGroup(testrunTestcaseGroupDTO.getTestcaseGroup())
+                    .build();
 
                 List<TestrunTestcaseGroupTestcaseDTO> testrunTestcaseGroupTestcaseList = new ArrayList<>();
                 for (TestrunTestcaseGroupTestcaseDTO testcase : testrunTestcaseGroupDTO.getTestcases()) {
                     testrunTestcaseGroupTestcaseList.add(TestrunTestcaseGroupTestcaseDTO
-                            .builder()
-                            .testcase(testcase.getTestcase())
-                            .testrunTestcaseGroup(testcaseGroup)
-                            .build());
+                        .builder()
+                        .testcase(testcase.getTestcase())
+                        .testrunTestcaseGroup(testcaseGroup)
+                        .build());
                     testcaseIds.add(testcase.getTestcase().getId());
                 }
 
@@ -99,16 +111,17 @@ public class TestrunScheduler {
     }
 
     private TestrunDTO getTestrun(TestrunIterationDTO testrunIterationDTO, LocalDateTime startDateTime, int currentMonth, int currentWeek) {
-        SpaceDTO space = SpaceDTO.builder().id(testrunIterationDTO.getProject().getSpace().getId()).code(testrunIterationDTO.getProject().getSpace().getCode()).build();
+        SpaceDTO space = SpaceDTO.builder().id(testrunIterationDTO.getProject().getSpace().getId())
+            .code(testrunIterationDTO.getProject().getSpace().getCode()).build();
         TestrunDTO testrun = TestrunDTO
-                .builder()
-                .name(testrunIterationDTO.getName())
-                .description(testrunIterationDTO.getDescription())
-                .project(ProjectDTO.builder().id(testrunIterationDTO.getProject().getId()).space(space).build())
-                .startDateTime(startDateTime)
-                .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
-                .deadlineClose(testrunIterationDTO.getDeadlineClose())
-                .build();
+            .builder()
+            .name(testrunIterationDTO.getName())
+            .description(testrunIterationDTO.getDescription())
+            .project(ProjectDTO.builder().id(testrunIterationDTO.getProject().getId()).space(space).build())
+            .startDateTime(startDateTime)
+            .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
+            .deadlineClose(testrunIterationDTO.getDeadlineClose())
+            .build();
 
         List<TestrunUserDTO> testrunUserList = new ArrayList<>();
         boolean isRandom = !TestrunIterationUserFilterSelectRuleCode.SEQ.equals(testrunIterationDTO.getTestrunIterationUserFilterSelectRule());
@@ -125,13 +138,14 @@ public class TestrunScheduler {
             if (isRandom) {
                 while (testrunUserList.size() < filteringUserCount) {
                     int userIndex = random.nextInt(testrunIterationDTO.getTestrunUsers().size());
-                    if (testrunUserList.stream().noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
+                    if (testrunUserList.stream().noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId()
+                        .equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
                         TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(userIndex);
                         testrunUserList.add(TestrunUserDTO
-                                .builder()
-                                .testrun(testrun)
-                                .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                                .build());
+                            .builder()
+                            .testrun(testrun)
+                            .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                            .build());
                     }
                 }
             } else {
@@ -147,10 +161,10 @@ public class TestrunScheduler {
                 while (testrunUserList.size() < filteringUserCount) {
                     TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
                     testrunUserList.add(TestrunUserDTO
-                            .builder()
-                            .testrun(testrun)
-                            .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                            .build());
+                        .builder()
+                        .testrun(testrun)
+                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                        .build());
 
                     currentIndex += 1;
 
@@ -163,7 +177,8 @@ public class TestrunScheduler {
             }
 
 
-        } else if (TestrunIterationUserFilterTypeCode.WEEKLY.equals(testrunIterationDTO.getTestrunIterationUserFilterType()) || TestrunIterationUserFilterTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationUserFilterType())) {
+        } else if (TestrunIterationUserFilterTypeCode.WEEKLY.equals(testrunIterationDTO.getTestrunIterationUserFilterType())
+            || TestrunIterationUserFilterTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationUserFilterType())) {
 
             boolean needChange = false;
             if (TestrunIterationUserFilterTypeCode.WEEKLY.equals(testrunIterationDTO.getTestrunIterationUserFilterType())) {
@@ -196,13 +211,15 @@ public class TestrunScheduler {
             }
 
             // 없는 사용자 번호 제거
-            userIds.removeIf((userId) -> testrunIterationDTO.getTestrunUsers().stream().noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId)));
+            userIds.removeIf((userId) -> testrunIterationDTO.getTestrunUsers().stream()
+                .noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId)));
 
             if (userIds.size() < filteringUserCount) {
                 if (isRandom) {
                     while (userIds.size() < filteringUserCount) {
                         int userIndex = random.nextInt(testrunIterationDTO.getTestrunUsers().size());
-                        if (userIds.stream().noneMatch(userId -> userId.equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
+                        if (userIds.stream()
+                            .noneMatch(userId -> userId.equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
                             TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(userIndex);
                             userIds.add(testrunUser.getUser().getId());
                         }
@@ -216,7 +233,8 @@ public class TestrunScheduler {
                     int currentIndex = 0;
                     if (lastUserId != null) {
                         Long finalLastUserId = lastUserId;
-                        TestrunUserDTO lastUser = testrunIterationDTO.getTestrunUsers().stream().filter((testrunUserDTO -> finalLastUserId.equals(testrunUserDTO.getUser().getId()))).findFirst().orElse(null);
+                        TestrunUserDTO lastUser = testrunIterationDTO.getTestrunUsers().stream()
+                            .filter((testrunUserDTO -> finalLastUserId.equals(testrunUserDTO.getUser().getId()))).findFirst().orElse(null);
                         if (lastUser != null) {
                             currentIndex = testrunIterationDTO.getTestrunUsers().indexOf(lastUser);
                         }
@@ -229,10 +247,10 @@ public class TestrunScheduler {
                     while (userIds.size() < filteringUserCount) {
                         TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(currentIndex);
                         testrunUserList.add(TestrunUserDTO
-                                .builder()
-                                .testrun(testrun)
-                                .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                                .build());
+                            .builder()
+                            .testrun(testrun)
+                            .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                            .build());
                         userIds.add(testrunUser.getUser().getId());
 
                         currentIndex += 1;
@@ -248,14 +266,14 @@ public class TestrunScheduler {
                 }
             }
 
-
             if (!isFirst && needChange) {
                 if (isRandom) {
                     userIds.clear();
                     testrunUserList.clear();
                     while (userIds.size() < filteringUserCount) {
                         int userIndex = random.nextInt(testrunIterationDTO.getTestrunUsers().size());
-                        if (userIds.stream().noneMatch(userId -> userId.equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
+                        if (userIds.stream()
+                            .noneMatch(userId -> userId.equals(testrunIterationDTO.getTestrunUsers().get(userIndex).getUser().getId()))) {
                             TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().get(userIndex);
                             userIds.add(testrunUser.getUser().getId());
                         }
@@ -269,7 +287,8 @@ public class TestrunScheduler {
                     int currentIndex = 0;
                     if (lastUserId != null) {
                         Long finalLastUserId = lastUserId;
-                        TestrunUserDTO lastUser = testrunIterationDTO.getTestrunUsers().stream().filter((testrunUserDTO -> finalLastUserId.equals(testrunUserDTO.getUser().getId()))).findFirst().orElse(null);
+                        TestrunUserDTO lastUser = testrunIterationDTO.getTestrunUsers().stream()
+                            .filter((testrunUserDTO -> finalLastUserId.equals(testrunUserDTO.getUser().getId()))).findFirst().orElse(null);
                         if (lastUser != null) {
                             currentIndex = testrunIterationDTO.getTestrunUsers().indexOf(lastUser);
                         }
@@ -295,13 +314,14 @@ public class TestrunScheduler {
             testrunIterationDTO.setCurrentFilteringUserIds(userIds);
 
             userIds.stream().forEach(userId -> {
-                TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().stream().filter(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId)).findFirst().orElse(null);
+                TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().stream()
+                    .filter(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId)).findFirst().orElse(null);
                 if (testrunUser != null) {
                     testrunUserList.add(TestrunUserDTO
-                            .builder()
-                            .testrun(testrun)
-                            .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                            .build());
+                        .builder()
+                        .testrun(testrun)
+                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                        .build());
                 }
             });
 
@@ -312,16 +332,15 @@ public class TestrunScheduler {
             if (testrunIterationDTO.getTestrunUsers() != null) {
                 for (TestrunUserDTO testrunUser : testrunIterationDTO.getTestrunUsers()) {
                     testrunUserList.add(TestrunUserDTO
-                            .builder()
-                            .testrun(testrun)
-                            .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                            .build()
+                        .builder()
+                        .testrun(testrun)
+                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                        .build()
                     );
                 }
             }
 
         }
-
 
         testrun.setTestrunUsers(testrunUserList);
 
@@ -330,19 +349,18 @@ public class TestrunScheduler {
         if (testrunIterationDTO.getTestcaseGroups() != null) {
             testrunIterationDTO.getTestcaseGroups().forEach((testrunTestcaseGroupDTO -> {
                 TestrunTestcaseGroupDTO testcaseGroup = TestrunTestcaseGroupDTO
-                        .builder()
-                        .testrun(testrun)
-                        .testcaseGroup(testrunTestcaseGroupDTO.getTestcaseGroup())
-                        .build();
-
+                    .builder()
+                    .testrun(testrun)
+                    .testcaseGroup(testrunTestcaseGroupDTO.getTestcaseGroup())
+                    .build();
 
                 List<TestrunTestcaseGroupTestcaseDTO> testrunTestcaseGroupTestcaseList = new ArrayList<>();
                 for (TestrunTestcaseGroupTestcaseDTO testcase : testrunTestcaseGroupDTO.getTestcases()) {
                     testrunTestcaseGroupTestcaseList.add(TestrunTestcaseGroupTestcaseDTO
-                            .builder()
-                            .testcase(testcase.getTestcase())
-                            .testrunTestcaseGroup(testcaseGroup)
-                            .build());
+                        .builder()
+                        .testcase(testcase.getTestcase())
+                        .testrunTestcaseGroup(testcaseGroup)
+                        .build());
                 }
 
                 testcaseGroup.setTestcases(testrunTestcaseGroupTestcaseList);
@@ -377,7 +395,6 @@ public class TestrunScheduler {
             }
         }));
 
-
         // 반복 테스트런
         List<TestrunIterationDTO> testrunIterationList = testrunService.selectTestrunIterationList();
         testrunIterationList.forEach((testrunIterationDTO -> {
@@ -406,12 +423,13 @@ public class TestrunScheduler {
 
             // 주단위 반복인데, 요일이 맞지 않는 경우, 스킵
             if (TestrunIterationTimeTypeCode.WEEKLY.equals(testrunIterationDTO.getTestrunIterationTimeType())
-                    && testrunIterationDTO.getDays().charAt(zonedNow.getDayOfWeek().getValue() - 1) != '1') {
+                && testrunIterationDTO.getDays().charAt(zonedNow.getDayOfWeek().getValue() - 1) != '1') {
                 return;
             }
 
             // 월 단위 반복이고, -2, -1이 아니고, 현재 일자와 맞지 않는 경우, 스킵
-            if (TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType()) && testrunIterationDTO.getDate() != dayOfMonth && testrunIterationDTO.getDate() > 0) {
+            if (TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType())
+                && testrunIterationDTO.getDate() != dayOfMonth && testrunIterationDTO.getDate() > 0) {
                 return;
             }
 
@@ -431,13 +449,15 @@ public class TestrunScheduler {
             int lastDate = startDateOfMonth.lengthOfMonth();
 
             // 월 단위 반복이고, -1인 경우인데, 마지막 일자랑 같지 않다면 스킵
-            if (TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType()) && testrunIterationDTO.getDate() == -1 && currentDate != lastDate) {
+            if (TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType()) && testrunIterationDTO.getDate() == -1
+                && currentDate != lastDate) {
                 return;
             }
 
             boolean isHoliday = holidays.stream().anyMatch((holidayDTO -> {
 
-                if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType()) || HolidayTypeCode.SPECIFIED_DATE.equals(holidayDTO.getHolidayType())) {
+                if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType()) || HolidayTypeCode.SPECIFIED_DATE.equals(
+                    holidayDTO.getHolidayType())) {
                     String holiday = null;
                     if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType())) {
                         holiday = nowYear + holidayDTO.getDate();
@@ -454,13 +474,12 @@ public class TestrunScheduler {
                         return false;
                     }
 
-
                     // 마지막주의 경우, 현재 주 값이랑 달의 마지막 날짜의 주 값이랑 동일한 경우 참
                     // 마지막인 경우, 요일이 같고, 달의 마지막 날짜까지 해당 요일이 없는 경우 참
                     if (!((week == currentWeek)
-                            || (week == 6 && lastWeek == currentWeek)
-                            || (week == 7 && day == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
-                            || ((week >= 8 && week <= 11) && (day == currentDay) && (weekTimes == (week - 7)))
+                        || (week == 6 && lastWeek == currentWeek)
+                        || (week == 7 && day == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
+                        || ((week >= 8 && week <= 11) && (day == currentDay) && (weekTimes == (week - 7)))
                     )) {
                         return false;
                     }
@@ -473,18 +492,21 @@ public class TestrunScheduler {
 
             // TODO 첫번째 워킹데이 (-2), 말일 -1 처리
             // MONTHLY의 첫번째 워킹데이가 아니고, 휴일 제외 설정이 되어 있는데, 휴일인 경우, 스킵
-            if (!(TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType()) && testrunIterationDTO.getDate() == -2)
-                    && testrunIterationDTO.getExcludeHoliday() != null && testrunIterationDTO.getExcludeHoliday()
-                    && isHoliday) {
+            if (!(TestrunIterationTimeTypeCode.MONTHLY.equals(testrunIterationDTO.getTestrunIterationTimeType())
+                && testrunIterationDTO.getDate() == -2)
+                && testrunIterationDTO.getExcludeHoliday() != null && testrunIterationDTO.getExcludeHoliday()
+                && isHoliday) {
                 return;
             }
 
             // 월/주 설정인데, 주와 요일 설정이 맞지 않는다면, 스킵
             if (TestrunIterationTimeTypeCode.MONTHLY_WEEKLY.equals(testrunIterationDTO.getTestrunIterationTimeType())
-                    && !((testrunIterationDTO.getWeek() == currentWeek)
-                    || (testrunIterationDTO.getWeek() == 6 && lastWeek == currentWeek)
-                    || (testrunIterationDTO.getWeek() == 7 && testrunIterationDTO.getDay() == currentDay && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
-                    || ((testrunIterationDTO.getWeek() >= 8 && testrunIterationDTO.getWeek() <= 11) && (testrunIterationDTO.getDay() == currentDay) && (weekTimes == (testrunIterationDTO.getWeek() - 7)))
+                && !((testrunIterationDTO.getWeek() == currentWeek)
+                || (testrunIterationDTO.getWeek() == 6 && lastWeek == currentWeek)
+                || (testrunIterationDTO.getWeek() == 7 && testrunIterationDTO.getDay() == currentDay
+                && (endDateOfMonth.getDayOfMonth() - zonedNow.getDayOfMonth()) < 7)
+                || ((testrunIterationDTO.getWeek() >= 8 && testrunIterationDTO.getWeek() <= 11) && (testrunIterationDTO.getDay() == currentDay) && (
+                weekTimes == (testrunIterationDTO.getWeek() - 7)))
             )) {
                 return;
             }
@@ -492,7 +514,8 @@ public class TestrunScheduler {
             // String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
-            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
+            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(
+                reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 //if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
@@ -511,8 +534,81 @@ public class TestrunScheduler {
         LocalDateTime now = LocalDateTime.now();
         List<TestrunDTO> testrunList = testrunService.selectDeadlineTestrunList(now);
         testrunList.forEach((testrunDTO -> {
-            testrunService.updateProjectTestrunStatusClosed(testrunDTO.getProject().getSpace().getCode(), testrunDTO.getProject().getId(), testrunDTO.getId());
+            testrunService.updateProjectTestrunStatusClosed(testrunDTO.getProject().getSpace().getCode(), testrunDTO.getProject().getId(),
+                testrunDTO.getId());
         }));
+    }
+
+    private boolean isSameTimeUntilMinute(LocalDateTime time1, LocalDateTime time2) {
+        if (time1 == null || time2 == null) {
+            return false;
+        }
+
+        return time1.getYear() == time2.getYear()
+            && time1.getMonthValue() == time2.getMonthValue()
+            && time1.getDayOfMonth() == time2.getDayOfMonth()
+            && time1.getHour() == time2.getHour()
+            && time1.getMinute() == time2.getMinute();
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    public void testrunNotificationScheduler() {
+        LocalDateTime now = LocalDateTime.now();
+        List<TestrunDTO> testrunList = testrunService.selectOpenedTestrunList();
+
+        // 절반이 수행된 테스트런 알림 발송
+        testrunList.forEach((testrunDTO -> {
+
+            LocalDateTime last30 = testrunDTO.getEndDateTime().minusMinutes(30);
+            LocalDateTime last60 = testrunDTO.getEndDateTime().minusMinutes(60);
+            LocalDateTime halfTime = null;
+            if (testrunDTO.getStartDateTime() != null) {
+                long spanMinutes = ChronoUnit.MINUTES.between(testrunDTO.getStartDateTime(), testrunDTO.getEndDateTime());
+                halfTime = testrunDTO.getStartDateTime().plusMinutes(spanMinutes / 2);
+            }
+
+            if (isSameTimeUntilMinute(now, last30) || isSameTimeUntilMinute(now, last60) || isSameTimeUntilMinute(now, halfTime)) {
+                String spaceCode = testrunDTO.getProject().getSpace().getCode();
+                Long projectId = testrunDTO.getProject().getId();
+                ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+
+                if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
+                    Map<Long, Integer> userRemainCount = new HashMap<>();
+                    List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectUntestedTestrunTestcaseGroupTestcaseList(
+                        testrunDTO.getId());
+                    for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO : list) {
+                        Long testerId = testrunTestcaseGroupTestcaseDTO.getTester().getId();
+                        if (userRemainCount.containsKey(testerId)) {
+                            userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
+                        } else {
+                            userRemainCount.put(testerId, 1);
+                        }
+                    }
+
+                    String messageCode = "";
+                    if (isSameTimeUntilMinute(now, last30)) {
+                        messageCode = "testrun.30m.left";
+                    } else if (isSameTimeUntilMinute(now, last60)) {
+                        messageCode = "testrun.60m.left";
+                    } else {
+                        messageCode = "testrun.half.time.left";
+                    }
+
+                    slackService.sendTestrunRemainInfo(project.getSlackUrl(),
+                        spaceCode,
+                        projectId,
+                        messageCode,
+                        testrunDTO.getId(),
+                        testrunDTO.getName(),
+                        project.getUsers(),
+                        userRemainCount);
+                }
+
+            }
+
+
+        }));
+
 
     }
 }

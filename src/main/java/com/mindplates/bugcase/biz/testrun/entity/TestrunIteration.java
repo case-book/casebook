@@ -1,25 +1,45 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.framework.converter.LongListConverter;
-import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
 @Table(name = "testrun_iteration", indexes = {@Index(name = "IDX_TESTRUN_PROJECT_ID", columnList = "project_id"),
-        @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,reserve_end_date_time,id")})
+    @Index(name = "IDX_TESTRUN_PROJECT_ID_END_DATE_TIME_ID", columnList = "project_id,reserve_end_date_time,id")})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -121,4 +141,100 @@ public class TestrunIteration extends CommonEntity {
     private Integer testcaseCount;
 
 
+    public void updateInfo(TestrunIterationDTO testrunIteration) {
+        this.expired = false;
+        this.name = testrunIteration.getName();
+        this.description = testrunIteration.getDescription();
+        this.reserveStartDateTime = testrunIteration.getReserveStartDateTime();
+        this.reserveEndDateTime = testrunIteration.getReserveEndDateTime();
+        this.testrunIterationTimeType = testrunIteration.getTestrunIterationTimeType();
+        this.excludeHoliday = testrunIteration.getExcludeHoliday();
+        this.durationHours = testrunIteration.getDurationHours();
+        this.deadlineClose = testrunIteration.getDeadlineClose();
+        this.startTime = testrunIteration.getStartTime();
+        this.days = testrunIteration.getDays();
+        this.date = testrunIteration.getDate();
+        this.week = testrunIteration.getWeek();
+        this.day = testrunIteration.getDay();
+        this.testrunIterationUserFilterType = testrunIteration.getTestrunIterationUserFilterType();
+        this.testrunIterationUserFilterSelectRule = testrunIteration.getTestrunIterationUserFilterSelectRule();
+        this.filteringUserCount = testrunIteration.getFilteringUserCount();
+        this.testcaseGroupCount = testrunIteration.getTestcaseGroupCount();
+        this.testcaseCount = testrunIteration.getTestcaseCount();
+    }
+
+    public void updateTester(List<TestrunUserDTO> testrunUsers) {
+        // 삭제된 테스터 제거
+        this.testrunUsers.removeIf(testrunUser -> testrunUsers
+            .stream()
+            .noneMatch(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(testrunUser.getUser().getId())));
+
+        // 추가된 테스터 추가
+        this.testrunUsers.addAll(testrunUsers
+            .stream()
+            .filter(testrunUserDTO -> testrunUsers
+                .stream()
+                .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId())))
+            .map(testrunUserDTO -> TestrunUser.builder()
+                .user(User.builder().id(testrunUserDTO.getUser().getId()).build())
+                .testrunIteration(this)
+                .build())
+            .collect(Collectors.toList()));
+    }
+
+    public void removeDeletedTestcaseGroup(TestrunIteration newTestrunIteration) {
+        this.testcaseGroups.removeIf(testrunTestcaseGroup -> newTestrunIteration.getTestcaseGroups().stream()
+            .filter(ttg -> ttg.getId() != null)
+            .noneMatch((ttg -> ttg.getId().equals(testrunTestcaseGroup.getId()))));
+
+        // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
+        for (TestrunTestcaseGroup testcaseGroup : newTestrunIteration.getTestcaseGroups()) {
+            TestrunTestcaseGroup updateTestrunTestcaseGroup = newTestrunIteration.getTestcaseGroups()
+                .stream()
+                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
+                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId()))
+                .findAny()
+                .orElse(null);
+
+            if (testcaseGroup.getTestcases() != null) {
+                testcaseGroup.getTestcases().removeIf(testcase -> {
+                    if (updateTestrunTestcaseGroup != null) {
+                        return updateTestrunTestcaseGroup.getTestcases()
+                            .stream()
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                    }
+                    return true;
+                });
+            }
+        }
+    }
+
+    public void addTestcase(TestrunIteration newTestrunIteration) {
+        newTestrunIteration.getTestcaseGroups().stream()
+            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
+            .forEach(ttg -> {
+                TestrunTestcaseGroup targetTestcaseGroup = newTestrunIteration
+                    .getTestcaseGroups().stream().filter(
+                        testrunTestcaseGroup -> testrunTestcaseGroup.getId()
+                            .equals(ttg.getId())).findAny().orElse(null);
+
+                if (targetTestcaseGroup != null && ttg.getTestcases() != null) {
+                    ttg.getTestcases()
+                        .stream()
+                        .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId() == null)
+                        .forEach(testrunTestcaseGroupTestcase -> {
+                            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
+                            targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+                        });
+                }
+            });
+
+        // 추가된 테스트런 테스트케이스 그룹 추가
+        newTestrunIteration.getTestcaseGroups().stream()
+            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() == null)
+            .forEach(testrunTestcaseGroup -> {
+                testrunTestcaseGroup.setTestrunIteration(this);
+                this.testcaseGroups.add(testrunTestcaseGroup);
+            });
+    }
 }

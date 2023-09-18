@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Button, Card, CardContent, CardHeader, Input, Tag } from '@/components';
+import { Button, Card, CardContent, CardHeader, Input, Tag, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './MemberCard.scss';
@@ -51,67 +51,85 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
       }
     >
       <CardHeader className="user-name">
-        <div>
-          {spaceUser.crud === 'D' && <span className="deleted-text">DELETED</span>}
-          <div className="name-text">{spaceUser.name}</div>
-          {showRole && !edit && (
-            <div className={`role ${spaceUser.role}`}>
-              <Tag className="tag" border>
-                <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
-                {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
-              </Tag>
+        <div className="user-card-content">
+          <div>
+            {spaceUser?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={spaceUser?.avatarInfo} size={48} />}
+            {!spaceUser?.avatarInfo && (
+              <div className="icon">
+                <i className="fa-solid fa-skull" />
+              </div>
+            )}
+          </div>
+          <div className="user-text-info">
+            <div className="name-content">
+              {spaceUser.crud === 'D' && <span className="deleted-text">DELETED</span>}
+              <div className="name-text">{spaceUser.name}</div>
+              {showRole && !edit && (
+                <div className={`role ${spaceUser.role}`}>
+                  <div>
+                    <Tag className="tag" border>
+                      <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
+                      {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
+                    </Tag>
+                  </div>
+                </div>
+              )}
+              {showRole && edit && (
+                <div className={`role ${spaceUser.role}`}>
+                  <div>
+                    {spaceUser.crud !== 'D' && (
+                      <Tag className="tag" border>
+                        <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
+                        {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
+                      </Tag>
+                    )}
+                    {onChangeUserRole && spaceUser.crud !== 'D' && (
+                      <Button
+                        size="xs"
+                        rounded
+                        color="primary"
+                        onClick={() => {
+                          onChangeUserRole(spaceUser.userId, 'role', spaceUser.role === 'ADMIN' ? 'USER' : 'ADMIN');
+                        }}
+                      >
+                        <i className="fa-solid fa-arrow-right-arrow-left" />
+                      </Button>
+                    )}
+                    {onUndoRemovalUser && spaceUser.crud === 'D' && (
+                      <Button
+                        size="xs"
+                        rounded
+                        color="danger"
+                        onClick={() => {
+                          onUndoRemovalUser(spaceUser.userId);
+                        }}
+                      >
+                        <i className="fa-solid fa-rotate-left" />
+                      </Button>
+                    )}
+                    {onRemoveUser && spaceUser.crud !== 'D' && (
+                      <Button
+                        size="xs"
+                        rounded
+                        color="danger"
+                        onClick={() => {
+                          onRemoveUser(spaceUser.userId);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash-can" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-          {showRole && edit && (
-            <div className={`role ${spaceUser.role}`}>
-              {spaceUser.crud !== 'D' && (
-                <Tag className="tag" border>
-                  <span className="icon">{spaceUser.role === 'ADMIN' ? <i className="fa-solid fa-crown" /> : <i className="fa-solid fa-user" />}</span>{' '}
-                  {spaceUser.role === 'ADMIN' ? t('관리자') : t('사용자')}
-                </Tag>
-              )}
-              {onChangeUserRole && spaceUser.crud !== 'D' && (
-                <Button
-                  size="xs"
-                  rounded
-                  color="primary"
-                  onClick={() => {
-                    onChangeUserRole(spaceUser.userId, 'role', spaceUser.role === 'ADMIN' ? 'USER' : 'ADMIN');
-                  }}
-                >
-                  <i className="fa-solid fa-arrow-right-arrow-left" />
-                </Button>
-              )}
-              {onUndoRemovalUser && spaceUser.crud === 'D' && (
-                <Button
-                  size="xs"
-                  rounded
-                  color="danger"
-                  onClick={() => {
-                    onUndoRemovalUser(spaceUser.userId);
-                  }}
-                >
-                  <i className="fa-solid fa-rotate-left" />
-                </Button>
-              )}
-              {onRemoveUser && spaceUser.crud !== 'D' && (
-                <Button
-                  size="xs"
-                  rounded
-                  color="danger"
-                  onClick={() => {
-                    onRemoveUser(spaceUser.userId);
-                  }}
-                >
-                  <i className="fa-solid fa-trash-can" />
-                </Button>
-              )}
+            <div>
+              <div className="email">{spaceUser.email}</div>
             </div>
-          )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="user-info">
-        <div className="email">{spaceUser.email}</div>
         {tags && (
           <div className="tag-info">
             <div className="tags scrollbar-sm">
@@ -226,6 +244,12 @@ MemberCardManager.propTypes = {
     crud: PropTypes.string,
     role: PropTypes.string,
     tags: PropTypes.string,
+    avatarInfo: PropTypes.shape({
+      type: PropTypes.string,
+      options: PropTypes.shape({
+        [PropTypes.string]: PropTypes.string,
+      }),
+    }),
   }),
   onChangeUserRole: PropTypes.func,
   onUndoRemovalUser: PropTypes.func,

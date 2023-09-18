@@ -17,6 +17,7 @@ public class TestrunParticipantDTO {
     private String spaceCode;
     private Long projectId;
     private Long testrunId;
+    private String sessionId;
     private Long userId;
     private String userEmail;
     private String userName;
@@ -26,6 +27,7 @@ public class TestrunParticipantDTO {
         this.id = testrunParticipant.getId();
         this.spaceCode = testrunParticipant.getSpaceCode();
         this.projectId = testrunParticipant.getProjectId();
+        this.sessionId = testrunParticipant.getSessionId();
         this.testrunId = testrunParticipant.getTestrunId();
         this.userId = testrunParticipant.getUserId();
         this.userEmail = testrunParticipant.getUserEmail();

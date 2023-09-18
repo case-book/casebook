@@ -1,5 +1,6 @@
 import * as request from '@/utils/request';
 import i18n from 'i18next';
+import { convertSpace } from '@/utils/spaceUtil';
 
 const SpaceService = {};
 
@@ -44,12 +45,12 @@ SpaceService.selectMySpaceList = (query, successHandler, failHandler) => {
   );
 };
 
-SpaceService.selectSpaceInfo = (spaceId, successHandler, failHandler) => {
+SpaceService.selectSpaceInfo = (spaceCode, successHandler, failHandler) => {
   return request.get(
-    `/api/spaces/${spaceId}`,
+    `/api/spaces/${spaceCode}`,
     null,
     res => {
-      successHandler(res);
+      successHandler(convertSpace(res));
     },
     failHandler,
   );

@@ -1,0 +1,35 @@
+.my-edit-page-wrapper {
+  .my-info-content {
+    display: flex;
+    padding: 0 0.5rem;
+    margin-bottom: 20px;
+
+    .user-empty-icon {
+      display: inline-flex;
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      background-color: var(--light-color);
+    }
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+
+    > div:first-child {
+      text-align: center;
+    }
+
+    > div:last-child {
+      flex-grow: 1;
+    }
+
+    .user-icon {
+      background-color: var(--light-color);
+      border-radius: 4px;
+      img {
+        border-radius: 4px;
+      }
+    }
+  }
+}

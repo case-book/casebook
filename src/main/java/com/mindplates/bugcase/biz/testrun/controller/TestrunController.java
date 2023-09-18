@@ -21,6 +21,7 @@ import com.mindplates.bugcase.biz.testrun.vo.request.TestrunResultItemsRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunResultRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTestcaseGroupTestcaseCommentRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTestcaseGroupTestcaseItemRequest;
+import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTesterRandomChangeRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTesterRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunUpdateRequest;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunCommentResponse;
@@ -80,7 +81,8 @@ public class TestrunController {
 
     @Operation(description = "종료된 테스트런 목록 조회")
     @GetMapping("/closed")
-    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
+    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId,
+        @RequestParam(value = "start") LocalDateTime start,
         @RequestParam(value = "end") LocalDateTime end) {
         List<TestrunDTO> testruns = testrunService.selectClosedProjectTestrunList(spaceCode, projectId, start, end);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
@@ -95,21 +97,24 @@ public class TestrunController {
 
     @Operation(description = "예약 테스트런 목록 조회")
     @GetMapping("/reservations")
-    public List<TestrunReservationListResponse> selectTestrunReservationList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "expired") Boolean expired) {
+    public List<TestrunReservationListResponse> selectTestrunReservationList(@PathVariable String spaceCode, @PathVariable long projectId,
+        @RequestParam(value = "expired") Boolean expired) {
         List<TestrunReservationDTO> testrunReservationList = testrunService.selectProjectReserveTestrunList(spaceCode, projectId, expired);
         return testrunReservationList.stream().map(TestrunReservationListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "반복 테스트런 목록 조회")
     @GetMapping("/iterations")
-    public List<TestrunIterationListResponse> selectTestrunIterationList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "expired") Boolean expired) {
+    public List<TestrunIterationListResponse> selectTestrunIterationList(@PathVariable String spaceCode, @PathVariable long projectId,
+        @RequestParam(value = "expired") Boolean expired) {
         List<TestrunIterationDTO> testrunIterationList = testrunService.selectProjectTestrunIterationList(spaceCode, projectId, expired);
         return testrunIterationList.stream().map(TestrunIterationListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
-    public ResponseEntity<HttpStatus> createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
+    public ResponseEntity<HttpStatus> createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @Valid @RequestBody TestrunCreateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
 
         if (testrun.getTestrunUsers().isEmpty()) {
@@ -143,7 +148,8 @@ public class TestrunController {
 
     @Operation(description = "반복 테스트런 생성")
     @PostMapping("/iterations")
-    public TestrunIterationListResponse createTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunIterationRequest testrunIterationRequest) {
+    public TestrunIterationListResponse createTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @Valid @RequestBody TestrunIterationRequest testrunIterationRequest) {
 
         if (!testrunIterationRequest.getProjectId().equals(projectId)) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -157,7 +163,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 변경")
     @PutMapping("/{testrunId}")
-    public TestrunListResponse updateTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunUpdateRequest testrunRequest) {
+    public TestrunListResponse updateTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @Valid @RequestBody TestrunUpdateRequest testrunRequest) {
         TestrunDTO testrun = testrunRequest.buildEntity();
         return new TestrunListResponse(testrunService.updateTestrunInfo(spaceCode, testrun));
     }
@@ -173,10 +180,12 @@ public class TestrunController {
 
     @Operation(description = "반복 테스트런 변경")
     @PutMapping("/iterations/{testrunId}")
-    public ResponseEntity<HttpStatus> updateTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunIterationRequest testrunIterationRequest) {
+    public ResponseEntity<HttpStatus> updateTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @Valid @RequestBody TestrunIterationRequest testrunIterationRequest) {
         TestrunIterationDTO testrunIterationDTO = testrunIterationRequest.buildEntity();
 
-        int testcaseCount = testrunIterationDTO.getTestcaseGroups().stream().map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
+        int testcaseCount = testrunIterationDTO.getTestcaseGroups().stream()
+            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
             .reduce(0, Integer::sum);
 
         if (testcaseCount < 1) {
@@ -196,14 +205,16 @@ public class TestrunController {
 
     @Operation(description = "예약 테스트런 상세 조회")
     @GetMapping("/reservations/{testrunReservationId}")
-    public TestrunReservationResponse selectTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {
+    public TestrunReservationResponse selectTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunReservationId) {
         TestrunReservationDTO testrunReservation = testrunService.selectProjectTestrunReservationInfo(testrunReservationId);
         return new TestrunReservationResponse(testrunReservation);
     }
 
     @Operation(description = "반복 테스트런 상세 조회")
     @GetMapping("/iterations/{testrunIterationId}")
-    public TestrunIterationResponse selectTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunIterationId) {
+    public TestrunIterationResponse selectTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunIterationId) {
         TestrunIterationDTO testrunIteration = testrunService.selectProjectTestrunIterationInfo(testrunIterationId);
         return new TestrunIterationResponse(testrunIteration);
     }
@@ -218,35 +229,40 @@ public class TestrunController {
 
     @Operation(description = "예약 테스트런 삭제")
     @DeleteMapping("/reservations/{testrunReservationId}")
-    public ResponseEntity<HttpStatus> deleteTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {
+    public ResponseEntity<HttpStatus> deleteTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunReservationId) {
         testrunService.deleteProjectTestrunReservationInfo(spaceCode, projectId, testrunReservationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "반복 테스트런 삭제")
     @DeleteMapping("/iterations/{testrunIterationId}")
-    public ResponseEntity<HttpStatus> deleteTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunIterationId) {
+    public ResponseEntity<HttpStatus> deleteTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunIterationId) {
         testrunService.deleteProjectTestrunIterationInfo(spaceCode, projectId, testrunIterationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 닫기")
     @PutMapping("/{testrunId}/status/closed")
-    public ResponseEntity<HttpStatus> updateTestrunClosed(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+    public ResponseEntity<HttpStatus> updateTestrunClosed(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId) {
         testrunService.updateProjectTestrunStatusClosed(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 열기")
     @PutMapping("/{testrunId}/status/opened")
-    public ResponseEntity<HttpStatus> updateTestrunOpened(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+    public ResponseEntity<HttpStatus> updateTestrunOpened(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId) {
         testrunService.updateProjectTestrunStatusOpened(spaceCode, projectId, testrunId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 테스트케이스 상세 조회")
     @GetMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId,
+    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId,
         @PathVariable long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
@@ -254,27 +270,34 @@ public class TestrunController {
 
     @Operation(description = "테스트런 결과 아이템 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+    public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId,
         @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
         List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.toDTO();
-        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
+        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(
+            testrunTestcaseGroupTestcaseItems);
         return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "테스트런 결과 아이템 입력 (단건)")
     @PutMapping("/{testrunId}/testcases/{testrunTestcaseGroupTestcaseId}/items/{testcaseTemplateItemId}")
-    public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @PathVariable long testcaseTemplateItemId, @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
+    public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId,
+        @PathVariable long testcaseTemplateItemId,
+        @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItems = testrunTestcaseGroupTestcaseItemRequest.toDTO();
-        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(testrunId, testrunTestcaseGroupTestcaseItems);
+        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(testrunId,
+            testrunTestcaseGroupTestcaseItems);
         return new TestrunTestcaseGroupTestcaseItemResponse(testrunTestcaseGroupTestcaseItemList);
     }
 
     @Operation(description = "테스트런 결과 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
-    public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId,
+    public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @PathVariable long testrunTestcaseGroupTestcaseId,
         @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
-        TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
+        TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId,
+            testrunResultRequest.getTestResult());
 
         MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
         participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);
@@ -291,23 +314,43 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 테스터 변경")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/tester")
-    public ResponseEntity<HttpStatus> updateTestrunTestcaseResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTester(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId,
         @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
-        testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunTesterRequest.getTesterId());
+        testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId,
+            testrunTesterRequest.getTesterId());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "테스트런 테스트케이스 테스터 랜덤 변경")
+    @PutMapping("/{testrunId}/tester/random")
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
+        testrunService.updateTestrunTestcaseTesterRandom(
+            spaceCode,
+            projectId,
+            testrunId,
+            testrunTesterRandomChangeRequest.getTesterId(),
+            testrunTesterRandomChangeRequest.getTargetId(),
+            testrunTesterRandomChangeRequest.getTarget(),
+            testrunTesterRandomChangeRequest.getReason()
+        );
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 테스트케이스 코멘트 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
-    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId,
         @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
-        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentRequest.toDTO());
+        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunId,
+            testrunTestcaseGroupTestcaseCommentRequest.toDTO());
         return new TestrunTestcaseGroupTestcaseCommentResponse(result);
     }
 
     @Operation(description = "테스트런 테스트케이스 코멘트 삭제")
     @DeleteMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
-    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId,
         @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
         testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -322,19 +365,22 @@ public class TestrunController {
 
     @Operation(description = "프로젝트 테스트런 히스토리 조회")
     @GetMapping("/history")
-    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
+    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId,
+        @RequestParam(value = "start") LocalDateTime start,
         @RequestParam(value = "end") LocalDateTime end) {
         List<TestrunDTO> testruns = testrunService.selectProjectTestrunHistoryList(spaceCode, projectId, start, end);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
     @PostMapping("/{testrunId}/images")
-    public ProjectFileResponse createTestrunImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testrunId, @RequestParam("file") MultipartFile file,
+    public ProjectFileResponse createTestrunImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testrunId,
+        @RequestParam("file") MultipartFile file,
         @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
 
         String path = projectFileService.createImage(projectId, file);
 
-        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString())
+        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type)
+            .path(path).uuid(UUID.randomUUID().toString())
             .fileSourceType(FileSourceTypeCode.TESTRUN).fileSourceId(testrunId).build();
 
         ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
@@ -353,14 +399,16 @@ public class TestrunController {
 
     @Operation(description = "테스트런 코멘트 목록 조회")
     @GetMapping("/{testrunId}/comments")
-    public List<TestrunCommentResponse> selectTestrunCommentList(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+    public List<TestrunCommentResponse> selectTestrunCommentList(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId) {
         List<TestrunCommentDTO> testrunCommentList = testrunService.selectTestrunCommentList(projectId, testrunId);
         return testrunCommentList.stream().map(TestrunCommentResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "테스트런 코멘트 삭제")
     @DeleteMapping("/{testrunId}/comments/{commentId}")
-    public ResponseEntity<HttpStatus> deleteTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long commentId) {
+    public ResponseEntity<HttpStatus> deleteTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @PathVariable long commentId) {
         testrunService.deleteTestrunCommentInfo(projectId, testrunId, commentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

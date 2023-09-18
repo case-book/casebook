@@ -4,11 +4,14 @@ import com.mindplates.bugcase.biz.notification.dto.NotificationDTO;
 import com.mindplates.bugcase.biz.notification.entity.Notification;
 import com.mindplates.bugcase.biz.notification.repository.NotificationRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
-import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,25 +20,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @AllArgsConstructor
 @Slf4j
 public class NotificationService {
 
+    public static final String NEW_NOTIFICATION = "NEW-NOTIFICATION";
+    public static final String USERS_PREFIX = "users/";
+    public static final String SPACE_MESSAGE_PREFIX = " 스페이스에 사용자 '";
     private final NotificationRepository notificationRepository;
-
-    private final UserRepository userRepository;
-
     private final MessageSendService messageSendService;
 
     public List<NotificationDTO> selectUserNotificationList(Long userId, int pageNo, int pageSize) {
         Pageable pageInfo = PageRequest.of(pageNo, pageSize, Sort.by("creationDate").descending());
-        return notificationRepository.findAllByUserIdOrderByCreationDateDesc(userId, pageInfo).stream().map((NotificationDTO::new)).collect(Collectors.toList());
+        return notificationRepository.findAllByUserIdOrderByCreationDateDesc(userId, pageInfo).stream().map((NotificationDTO::new))
+            .collect(Collectors.toList());
     }
 
     public Long selectUserNotificationCount(Long userId, LocalDateTime lastSeen, int pageSize) {
@@ -43,28 +42,27 @@ public class NotificationService {
             return notificationRepository.countByUserId(userId);
         } else {
             Pageable pageInfo = PageRequest.of(0, pageSize, Sort.by("creationDate").descending());
-            return Long.parseLong(Integer.toString(notificationRepository.findAllByUserIdAndCreationDateAfterOrderByCreationDateDesc(userId, lastSeen, pageInfo).size()));
+            return Long.parseLong(Integer
+                .toString(notificationRepository.findAllByUserIdAndCreationDateAfterOrderByCreationDateDesc(userId, lastSeen, pageInfo).size()));
         }
     }
 
     @Transactional
     public void createNotificationInfoToSpaceAdmins(SpaceDTO space, String message) {
-
-        List<Notification> notifications = new ArrayList();
+        List<Notification> notifications = new ArrayList<>();
         space.getUsers().stream().filter((spaceUser -> UserRoleCode.ADMIN.equals(spaceUser.getRole()))).forEach((adminUser -> {
 
-            MessageData messageData = MessageData.builder().type("NEW-NOTIFICATION").build();
-            messageSendService.sendTo("users/" + adminUser.getUser().getId(), messageData);
+            MessageData messageData = MessageData.builder().type(NEW_NOTIFICATION).build();
+            messageSendService.sendTo(USERS_PREFIX + adminUser.getUser().getId(), messageData);
 
             notifications.add(Notification.builder()
-                    .message(message)
-                    .target(NotificationTargetCode.SPACE)
-                    .targetId(space.getId())
-                    .userId(adminUser.getUser().getId())
-                    .url("/spaces/" + space.getCode() + "/info")
-                    .build());
+                .message(message)
+                .target(NotificationTargetCode.SPACE)
+                .targetId(space.getId())
+                .userId(adminUser.getUser().getId())
+                .url("/spaces/" + space.getCode() + "/info")
+                .build());
         }));
-
 
         notificationRepository.saveAll(notifications);
     }
@@ -76,22 +74,22 @@ public class NotificationService {
         messageSendService.sendTo("users/" + userId, messageData);
 
         notificationRepository.save(Notification.builder()
-                .message(message)
-                .target(targetCode)
-                .targetId(targetId)
-                .userId(userId)
-                .url(url)
-                .build());
+            .message(message)
+            .target(targetCode)
+            .targetId(targetId)
+            .userId(userId)
+            .url(url)
+            .build());
     }
 
     @Transactional
     public void createSpaceJoinRequestCancelNotificationInfo(SpaceDTO space, String userName) {
-        this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 참여 신청을 취소하였습니다.");
+        this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + SPACE_MESSAGE_PREFIX + userName + "'님이 참여 신청을 취소하였습니다.");
     }
 
     @Transactional
     public void createSpaceSelfJoinNotificationInfo(SpaceDTO space, String userName) {
-        this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님이 자동 참여하였습니다.");
+        this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + SPACE_MESSAGE_PREFIX + userName + "'님이 자동 참여하였습니다.");
     }
 
     @Transactional
@@ -101,18 +99,19 @@ public class NotificationService {
             status = "승인";
         }
 
-        this.createNotificationInfoToSpaceAdmins(space, "'" + space.getName() + "'" + " 스페이스에 사용자 '" + userName + "'님의 참여 요청이 " + status + " 되었습니다.");
+        this.createNotificationInfoToSpaceAdmins(space,
+            "'" + space.getName() + "'" + SPACE_MESSAGE_PREFIX + userName + "'님의 참여 요청이 " + status + " 되었습니다.");
 
         MessageData messageData = MessageData.builder().type("NEW-NOTIFICATION").build();
         messageSendService.sendTo("users/" + applicantUserId, messageData);
 
         notificationRepository.save(Notification.builder()
-                .message("'" + space.getName() + "'" + " 스페이스 참여 요청이 " + status + " 되었습니다.")
-                .target(NotificationTargetCode.SPACE)
-                .targetId(space.getId())
-                .userId(applicantUserId)
-                .url("/spaces/" + space.getCode() + "/info")
-                .build());
+            .message("'" + space.getName() + "'" + " 스페이스 참여 요청이 " + status + " 되었습니다.")
+            .target(NotificationTargetCode.SPACE)
+            .targetId(space.getId())
+            .userId(applicantUserId)
+            .url("/spaces/" + space.getCode() + "/info")
+            .build());
 
     }
 

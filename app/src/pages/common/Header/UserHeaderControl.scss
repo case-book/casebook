@@ -100,6 +100,14 @@
     align-self: center;
     position: relative;
 
+    .user-icon {
+      background-color: var(--light-color);
+      border-radius: 50%;
+      img {
+        border-radius: 50%;
+      }
+    }
+
     .admin-flag {
       position: absolute;
       font-size: 10px;
@@ -250,7 +258,7 @@
       margin: 0 auto;
 
       > div {
-        width: 110px;
+        min-width: 110px;
         position: absolute;
         top: 65px;
         right: -35px;
@@ -299,11 +307,62 @@
 
           li {
             line-height: 100%;
+            padding: 0 1rem;
+
+            &.user-info {
+              padding: 0.5rem 1rem;
+
+              > div {
+                display: flex;
+
+                > div {
+                  align-self: center;
+                  &:first-child {
+                    margin-right: 8px;
+                  }
+                }
+
+                .user-icon {
+                  background-color: var(--light-color);
+                  border-radius: 50%;
+                  img {
+                    border-radius: 50%;
+                  }
+                }
+
+                .icon {
+                  display: inline-flex;
+                  width: 60px;
+                  height: 60px;
+                  background-color: var(--light-color);
+                  border-radius: 50%;
+                  justify-content: center;
+                  i {
+                    align-self: center;
+                    font-size: 30px;
+                  }
+                }
+
+                .name {
+                  margin-bottom: 4px;
+                  font-weight: bold;
+                }
+                .email {
+                  font-size: 12px;
+                }
+              }
+
+              hr {
+                background-color: var(--border-light-color);
+                margin-bottom: 0;
+                margin-top: 0.75rem;
+              }
+            }
 
             a {
               color: var(--text-color);
               text-decoration: none;
-              padding: 0.5rem 1rem;
+              padding: 0.5rem 0.5rem;
               display: inline-block;
               width: 100%;
 

@@ -22,6 +22,8 @@ public class TestrunParticipant {
     @Indexed
     private Long testrunId;
     @Indexed
+    private String sessionId;
+    @Indexed
     private Long userId;
     private String userEmail;
     private String userName;

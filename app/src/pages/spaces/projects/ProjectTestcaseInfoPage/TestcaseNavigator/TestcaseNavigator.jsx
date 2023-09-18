@@ -32,6 +32,7 @@ function TestcaseNavigator({
   showTestResult,
   watcherInfo,
   enableDrag,
+  copyTestcase,
 }) {
   const { t } = useTranslation();
   const scroller = useRef(null);
@@ -64,6 +65,12 @@ function TestcaseNavigator({
     id: null,
     x: null,
     y: null,
+    name: '',
+  });
+
+  const [copyInfo, setCopyInfo] = useState({
+    type: null,
+    id: null,
     name: '',
   });
 
@@ -211,6 +218,18 @@ function TestcaseNavigator({
     }
   };
 
+  const onCopy = (type, id, name) => {
+    setCopyInfo({
+      type,
+      id,
+      name,
+    });
+  };
+
+  const onPaste = (type, id) => {
+    copyTestcase(copyInfo.type, copyInfo.id, type, id);
+  };
+
   const clearEditing = () => {
     setEditInfo({ type: null, id: null, clickTime: null, name: '', clickId: null });
   };
@@ -232,10 +251,10 @@ function TestcaseNavigator({
           const elementRect = focusElement.getClientRects();
 
           if (scrollerRect?.length > 0 && elementRect?.length > 0) {
-            scroller.current.scrollTop = elementRect[0].y - scrollerRect[0].y - 16;
+            scroller.current.scrollTop = scroller.current.scrollTop + elementRect[0].y - scrollerRect[0].y - 16;
           }
         }
-      }, 400);
+      }, 200);
     }
   }, [selectedItemInfo.time]);
 
@@ -365,7 +384,7 @@ function TestcaseNavigator({
               <Button
                 size="xs"
                 onClick={() => {
-                  addTestcaseGroup(false);
+                  addTestcaseGroup(true);
                 }}
                 color="white"
               >
@@ -377,7 +396,7 @@ function TestcaseNavigator({
               className="add-testcase-button"
               size="xs"
               onClick={() => {
-                addTestcase(false);
+                addTestcase(true);
               }}
               disabled={!selectedItemInfo.type}
               color="white"
@@ -464,6 +483,7 @@ function TestcaseNavigator({
                     setting={setting}
                     showTestResult={showTestResult}
                     watcherInfo={watcherInfo}
+                    copyInfo={copyInfo}
                   />
                 );
               })}
@@ -498,7 +518,17 @@ function TestcaseNavigator({
           />
         </div>
       )}
-      {onDelete && <TestcaseNavigatorContextMenu onDelete={onDelete} onClearContextMenu={onClearContextMenu} onClickGroupName={onClickGroupName} contextMenuInfo={contextMenuInfo} />}
+      {onDelete && (
+        <TestcaseNavigatorContextMenu
+          onDelete={onDelete}
+          onClearContextMenu={onClearContextMenu}
+          onClickGroupName={onClickGroupName}
+          contextMenuInfo={contextMenuInfo}
+          onCopy={onCopy}
+          copyInfo={copyInfo}
+          onPaste={onPaste}
+        />
+      )}
     </div>
   );
 }
@@ -528,6 +558,7 @@ TestcaseNavigator.defaultProps = {
   showTestResult: false,
   enableDrag: true,
   watcherInfo: {},
+  copyTestcase: null,
 };
 
 TestcaseNavigator.propTypes = {
@@ -568,6 +599,7 @@ TestcaseNavigator.propTypes = {
       userEmail: PropTypes.string,
     }),
   }),
+  copyTestcase: PropTypes.func,
 };
 
 export default TestcaseNavigator;

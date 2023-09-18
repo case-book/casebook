@@ -382,6 +382,13 @@ function TestrunExecutePage() {
     });
   };
 
+  const onRandomTester = (userId, targetId, target, reason) => {
+    TestrunService.updateTestrunTesterRandom(spaceCode, projectId, testrunId, userId, targetId, target, reason, () => {
+      getTestcase(Number(targetId), true);
+      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('테스트 변경 완료'), t('테스터가 변경되었습니다.'));
+    });
+  };
+
   const onMessage = info => {
     const { data } = info;
 
@@ -625,6 +632,7 @@ function TestrunExecutePage() {
                 onSaveTestResultItem={onSaveTestResultItem}
                 onSaveResult={onSaveTestResult}
                 onSaveTester={onSaveTester}
+                onRandomTester={onRandomTester}
                 onSaveComment={onChangeComment}
                 onDeleteComment={onDeleteComment}
                 users={project?.users.map(u => {

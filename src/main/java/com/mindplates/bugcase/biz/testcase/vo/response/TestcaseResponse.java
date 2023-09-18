@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 import java.util.List;
@@ -21,6 +22,10 @@ public class TestcaseResponse {
     private String description;
     private String testerType;
     private String testerValue;
+    private String createdUserName;
+    private String lastUpdatedUserName;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
 
     public TestcaseResponse(TestcaseDTO testcase) {
         this.id = testcase.getId();
@@ -35,6 +40,10 @@ public class TestcaseResponse {
         this.description = testcase.getDescription();
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
+        this.createdUserName = testcase.getCreatedUserName();
+        this.lastUpdatedUserName = testcase.getLastUpdatedUserName();
+        this.creationDate = testcase.getCreationDate();
+        this.lastUpdateDate = testcase.getLastUpdateDate();
     }
 
 }

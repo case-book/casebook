@@ -15,7 +15,7 @@ import SideControl from '@/pages/common/Header/SideControl';
 
 function Header({ className }) {
   const {
-    userStore: { isLogin, setUser },
+    userStore: { isLogin, setUser, setNotificationCount },
     themeStore: { theme },
   } = useStores();
 
@@ -36,6 +36,7 @@ function Header({ className }) {
     UserService.logout(
       () => {
         setUser(null);
+        setNotificationCount(0);
         navigate('/');
         setMobileMenuOpen(false);
       },

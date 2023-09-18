@@ -278,45 +278,48 @@ function ProjectInfoPage() {
               <Text>{project?.enableTestrunAlarm ? 'Y' : 'N'}</Text>
             </BlockRow>
           </Block>
-          <Title marginBottom={false}>{t('테스트케이스 템플릿')}</Title>
+          <Title marginBottom>{t('테스트케이스 템플릿')}</Title>
           <Block>
-            <ul className="template-list">
-              {project?.testcaseTemplates?.map(testcaseTemplate => {
-                return (
-                  <li key={testcaseTemplate.id}>
-                    <Card border className="testcase-template" point>
-                      <CardHeader className="name">
-                        <div>
-                          <span
-                            onClick={() => {
-                              setTemplateViewerPopupInfo({
-                                opened: true,
-                                testcaseTemplate,
-                              });
-                            }}
-                          >
-                            {testcaseTemplate.name}
-                          </span>
-                        </div>
-                        {testcaseTemplate.defaultTemplate && (
-                          <div className="default">
-                            <span>DEFAULT</span>
+            {!(project?.testcaseTemplates?.filter(d => d.crud !== 'D').length > 0) && <EmptyContent border>{t('테스트케이스 템플릿이 없습니다.')}</EmptyContent>}
+            {project?.testcaseTemplates?.length > 0 && (
+              <ul className="template-list">
+                {project?.testcaseTemplates?.map(testcaseTemplate => {
+                  return (
+                    <li key={testcaseTemplate.id}>
+                      <Card border className="testcase-template" point>
+                        <CardHeader className="name">
+                          <div>
+                            <span
+                              onClick={() => {
+                                setTemplateViewerPopupInfo({
+                                  opened: true,
+                                  testcaseTemplate,
+                                });
+                              }}
+                            >
+                              {testcaseTemplate.name}
+                            </span>
                           </div>
-                        )}
-                      </CardHeader>
-                      <CardContent className="testcase-template-content">
-                        <div className="item-count">
-                          <span className="count">
-                            <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
-                          </span>
-                          <span className="count-label">{t('아이템')}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </li>
-                );
-              })}
-            </ul>
+                          {testcaseTemplate.defaultTemplate && (
+                            <div className="default">
+                              <span>DEFAULT</span>
+                            </div>
+                          )}
+                        </CardHeader>
+                        <CardContent className="testcase-template-content">
+                          <div className="item-count">
+                            <span className="count">
+                              <span>{testcaseTemplate.testcaseTemplateItems?.length}</span>
+                            </span>
+                            <span className="count-label">{t('아이템')}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </Block>
           <Title marginBottom={false}>{t('프로젝트 사용자')}</Title>
           <Block>
@@ -327,7 +330,7 @@ function ProjectInfoPage() {
           </Title>
           <Block>
             {Object.keys(tagUserMap).length < 1 && (
-              <EmptyContent className="empty-content" border>
+              <EmptyContent border>
                 <div>{t('태그가 설정된 사용자가 없습니다.')}</div>
               </EmptyContent>
             )}

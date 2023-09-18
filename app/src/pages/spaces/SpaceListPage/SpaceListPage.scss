@@ -16,6 +16,7 @@
 
     .search {
       display: flex;
+      margin-bottom: 10px;
 
       @media (max-width: 1024px) {
         display: none;
@@ -108,6 +109,7 @@
     margin-top: 10px;
     text-align: right;
     display: flex;
+    display: none;
     > div {
       align-self: center;
       &:first-child {

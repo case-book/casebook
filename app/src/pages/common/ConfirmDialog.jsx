@@ -61,10 +61,14 @@ function ConfirmDialog({ className, category, title, message, okHandler, noHandl
         <Button
           color={okColor}
           onClick={() => {
+            let result = false;
             if (okHandler) {
-              okHandler();
+              result = okHandler();
             }
-            controlStore.setConfirm(null);
+
+            if (!result) {
+              controlStore.setConfirm(null);
+            }
           }}
         >
           {okText || t('확인')}

@@ -5,11 +5,14 @@ import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
 import com.mindplates.bugcase.common.code.UserRoleCode;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -57,6 +60,7 @@ public class ProjectResponse {
                             .email(projectUser.getUser().getEmail())
                             .name(projectUser.getUser().getName())
                             .tags(projectUser.getTags())
+                            .avatarInfo(projectUser.getUser().getAvatarInfo())
                             .build()).collect(Collectors.toList());
         }
 

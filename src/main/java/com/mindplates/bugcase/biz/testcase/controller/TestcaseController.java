@@ -141,5 +141,19 @@ public class TestcaseController {
         return new ProjectFileResponse(projectFile, spaceCode, projectId);
     }
 
+    @Operation(description = "테스트케이스 복사")
+    @PostMapping("/{testcaseId}/copy")
+    public TestcaseSimpleResponse copyTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
+        TestcaseDTO result = testcaseService.copyTestcaseInfo(spaceCode, projectId, testcaseId, targetType, targetId);
+        return new TestcaseSimpleResponse(result);
+    }
+
+    @Operation(description = "테스트케이스 그룹 복사")
+    @PostMapping("/groups/{testcaseGroupId}/copy")
+    public TestcaseGroupResponse copyTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseGroupId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
+        TestcaseGroupDTO result = testcaseService.copyTestcaseGroupInfo(spaceCode, projectId, testcaseGroupId, targetType, targetId);
+        return new TestcaseGroupResponse(result);
+    }
+
 
 }

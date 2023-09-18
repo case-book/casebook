@@ -335,6 +335,22 @@ TestrunService.updateTestrunTester = (spaceCode, projectId, testrunId, testrunTe
   );
 };
 
+TestrunService.updateTestrunTesterRandom = (spaceCode, projectId, testrunId, testerId, targetId, target, reason, successHandler, failHandler, loading = true) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/tester/random`,
+    { testerId, targetId, target, reason },
+    res => {
+      if (successHandler) {
+        successHandler(res);
+      }
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 TestrunService.updateTestrunTestcaseComment = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, comment, successHandler, failHandler, loading = true) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,

@@ -18,8 +18,8 @@ public class SimpleMemberResponse {
     private UserRoleCode role;
     private String email;
     private String name;
-
     private String tags;
+    private String avatarInfo;
 
     public SimpleMemberResponse(SpaceUserDTO spaceUser) {
         this.id = spaceUser.getId();
@@ -27,5 +27,6 @@ public class SimpleMemberResponse {
         this.role = spaceUser.getRole();
         this.email = spaceUser.getUser().getEmail();
         this.name = spaceUser.getUser().getName();
+        this.avatarInfo = spaceUser.getUser().getAvatarInfo();
     }
 }
