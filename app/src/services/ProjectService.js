@@ -1,6 +1,5 @@
 import * as request from '@/utils/request';
 import i18n from 'i18next';
-import { convertProject } from '@/utils/projectUtil';
 
 const ProjectService = {};
 
@@ -38,7 +37,7 @@ ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHa
     `/api/${spaceCode}/projects/${projectId}`,
     null,
     res => {
-      successHandler(convertProject(res));
+      successHandler(res);
     },
     failHandler,
     null,

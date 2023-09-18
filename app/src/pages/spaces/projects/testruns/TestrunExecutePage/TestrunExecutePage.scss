@@ -8,6 +8,9 @@
 
   .page-title {
     display: flex;
+    > div {
+      align-self: center;
+    }
 
     .testrun-title-content {
       align-self: center;
@@ -43,14 +46,15 @@
             li {
               display: inline-block;
               margin-right: 0.5rem;
+              vertical-align: top;
 
               .user-email-char {
                 display: inline-flex;
                 justify-content: center;
                 text-transform: uppercase;
                 background-color: var(--point-backgroup-color);
-                width: 24px;
-                height: 24px;
+                width: 36px;
+                height: 36px;
                 border-radius: 50%;
                 font-weight: bold;
                 > span {

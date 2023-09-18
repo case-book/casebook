@@ -103,8 +103,7 @@ function MyInfoPage() {
         <PageContent>
           <div className="my-info-content">
             <div>
-              {user?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={128} />}
-              {!user?.avatarInfo && <div className="user-empty-icon" />}
+              <UserAvatar avatarInfo={user?.avatarInfo} size={128} fill />
             </div>
             <div>
               <Block>

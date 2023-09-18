@@ -172,36 +172,18 @@ function UserHeaderControl({ className }) {
             </Button>
           </div>
           <div className="user-menu side-menu-item">
-            {user?.avatarInfo && (
-              <Button
-                outline={false}
-                rounded
-                color="transparent"
-                onClick={e => {
-                  e.preventDefault();
-                  setUserMenuOpen(true);
-                }}
-              >
-                {isAdmin && <div className="admin-flag">ADMIN</div>}
-                <UserAvatar className="user-icon" avatarInfo={user.avatarInfo} size={34} />
-              </Button>
-            )}
-            {!user?.avatarInfo && (
-              <Button
-                outline
-                rounded
-                color={userMenuOpen ? 'primary' : 'white'}
-                onClick={e => {
-                  e.preventDefault();
-                  setUserMenuOpen(true);
-                }}
-              >
-                {isAdmin && <div className="admin-flag">ADMIN</div>}
-                <div className="icon">
-                  <i className="fa-solid fa-skull" />
-                </div>
-              </Button>
-            )}
+            <Button
+              outline={!user.avatarInfo}
+              rounded
+              color={user.avatarInfo ? 'transparent' : 'white'}
+              onClick={e => {
+                e.preventDefault();
+                setUserMenuOpen(true);
+              }}
+            >
+              {isAdmin && <div className="admin-flag">ADMIN</div>}
+              <UserAvatar avatarInfo={user.avatarInfo} size={34} rounded />
+            </Button>
           </div>
         </>
       )}

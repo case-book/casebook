@@ -387,8 +387,14 @@ public class TestcaseService {
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        User createdUser = userRepository.findById(testcase.getCreatedBy()).orElse(null);
-        User lastUpdatedUser = userRepository.findById(testcase.getLastUpdatedBy()).orElse(null);
+        User createdUser = null;
+        if (testcase.getCreatedBy() != null) {
+            createdUser = userRepository.findById(testcase.getCreatedBy()).orElse(null);
+        }
+        User lastUpdatedUser = null;
+        if (testcase.getLastUpdatedBy() != null) {
+            lastUpdatedUser = userRepository.findById(testcase.getLastUpdatedBy()).orElse(null);
+        }
 
         return new TestcaseDTO(testcase, createdUser, lastUpdatedUser);
     }

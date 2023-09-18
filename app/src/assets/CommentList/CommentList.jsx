@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './CommentList.scss';
-import { EmptyContent, Liner } from '@/components';
+import { EmptyContent, Liner, UserAvatar } from '@/components';
 import { Viewer } from '@toast-ui/react-editor';
 import dateUtil from '@/utils/dateUtil';
 import { Link } from 'react-router-dom';
@@ -30,14 +30,21 @@ function CommentList({ className, comments, onDeleteComment }) {
           {comments.map(comment => {
             return (
               <li key={comment.id}>
-                <div className="comment-content">
-                  <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={comment.comment || '<span className="none-text">&nbsp;</span>'} />
+                <div>
+                  <div className="writer">
+                    <UserAvatar className="user-icon" avatarInfo={comment.user?.avatarInfo} size={36} fill rounded />
+                  </div>
+                  <div className="comment-content">
+                    <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={comment.comment || '<span className="none-text">&nbsp;</span>'} />
+                  </div>
                 </div>
+
                 <div className="comment-user-info">
                   <div>{dateUtil.getDateString(comment.lastUpdateDate)}</div>
                   <div>
                     <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   </div>
+
                   <div>{comment.user?.name}</div>
                   {onDeleteComment && comment.user?.id === userId && (
                     <>

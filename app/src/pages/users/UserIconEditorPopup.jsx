@@ -70,12 +70,19 @@ function UserIconEditorPopup({ className, data, setOpened, onChange }) {
   const [tab, setTab] = useState('type');
 
   const [avatarInfo, setAvatarInfo] = useState(
-    data
-      ? { ...data }
-      : {
-          type: 'adventurer',
-          options: {},
-        },
+    (() => {
+      if (data && typeof data === 'string') {
+        return JSON.parse(data);
+      }
+      if (data && typeof data === 'object') {
+        return { ...data };
+      }
+
+      return {
+        type: 'adventurer',
+        options: {},
+      };
+    })(),
   );
 
   useEffect(() => {
@@ -264,7 +271,7 @@ function UserIconEditorPopup({ className, data, setOpened, onChange }) {
           ref={buttonElement}
           color="primary"
           onClick={() => {
-            onChange(avatarInfo);
+            onChange(JSON.stringify(avatarInfo));
             setOpened(false);
           }}
         >
@@ -285,12 +292,7 @@ UserIconEditorPopup.propTypes = {
   className: PropTypes.string,
   setOpened: PropTypes.func,
   onChange: PropTypes.func.isRequired,
-  data: PropTypes.shape({
-    type: PropTypes.string,
-    options: PropTypes.shape({
-      [PropTypes.string]: PropTypes.string,
-    }),
-  }),
+  data: PropTypes.string,
 };
 
 export default UserIconEditorPopup;

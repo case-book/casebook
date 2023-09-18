@@ -33,7 +33,6 @@ function MyEditPage() {
     e.preventDefault();
 
     const nextUser = { ...user };
-    nextUser.avatarInfo = JSON.stringify(nextUser.avatarInfo);
     UserService.updateMyInfo(nextUser, () => {
       i18n.changeLanguage(user.language);
       setAvatarInfo(user.avatarInfo);
@@ -69,8 +68,7 @@ function MyEditPage() {
         <Form onSubmit={onSubmit}>
           <div className="my-info-content">
             <div>
-              {user?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={user?.avatarInfo} size={128} />}
-              {!user?.avatarInfo && <div className="user-empty-icon" />}
+              <UserAvatar avatarInfo={user?.avatarInfo} size={128} fill />
               <div>
                 <Button
                   outline

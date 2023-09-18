@@ -43,7 +43,7 @@ public class TestrunUpdateRequest {
                 .opened(opened)
                 .days(days)
                 .excludeHoliday(excludeHoliday)
-                .startTime(startTime.toLocalTime())
+                .startTime(startTime != null ? startTime.toLocalTime() : null)
                 .durationHours(durationHours)
                 .deadlineClose(deadlineClose)
                 .build();

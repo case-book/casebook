@@ -24,7 +24,7 @@ public class TestrunCommentDTO extends CommonDTO {
         this.comment = testrunComment.getComment();
         this.testrun = TestrunDTO.builder().id(testrunComment.getTestrun().getId()).build();
         if (testrunComment.getUser() != null) {
-            this.user = UserDTO.builder().id(testrunComment.getUser().getId()).name(testrunComment.getUser().getName()).email(testrunComment.getUser().getEmail()).build();
+            this.user = UserDTO.builder().id(testrunComment.getUser().getId()).name(testrunComment.getUser().getName()).email(testrunComment.getUser().getEmail()).avatarInfo(testrunComment.getUser().getAvatarInfo()).build();
         }
         this.creationDate = testrunComment.getCreationDate();
         this.lastUpdateDate = testrunComment.getLastUpdateDate();
