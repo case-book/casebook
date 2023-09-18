@@ -32,7 +32,7 @@ function CommentList({ className, comments, onDeleteComment }) {
               <li key={comment.id}>
                 <div>
                   <div className="writer">
-                    <UserAvatar className="user-icon" avatarInfo={comment.user?.avatarInfo} size={48} fill rounded />
+                    <UserAvatar className="user-icon" avatarInfo={comment.user?.avatarInfo} size={36} fill rounded />
                   </div>
                   <div className="comment-content">
                     <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={comment.comment || '<span className="none-text">&nbsp;</span>'} />
