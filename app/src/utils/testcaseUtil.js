@@ -83,13 +83,13 @@ function getSelectedTestcaseGroupSummary(selectedTestcaseGroups, testcaseGroups)
   return result;
 }
 
-function getFilteredTestcaseGroupList(list, status, userId) {
+function getFilteredTestcaseGroupList(list, status, userId, hasComment = false) {
   return list.filter(testcaseGroup => {
     if (!(testcaseGroup.testcases?.length > 0) && !(testcaseGroup.children?.length > 0)) {
       return false;
     }
 
-    if (!status && !userId) {
+    if (!status && !userId && !hasComment) {
       return true;
     }
 
@@ -97,10 +97,24 @@ function getFilteredTestcaseGroupList(list, status, userId) {
 
     if (status && userId) {
       hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
+        if (hasComment) {
+          return testcase.testerId === userId && testcase.testResult === status && testcase.comments?.length > 0;
+        }
+
         return testcase.testerId === userId && testcase.testResult === status;
+      });
+    } else if (!status && !userId) {
+      hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
+        if (hasComment) {
+          return testcase.comments?.length > 0;
+        }
+        return false;
       });
     } else {
       hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
+        if (hasComment) {
+          return (testcase.testerId === userId || testcase.testResult === status) && testcase.comments?.length > 0;
+        }
         return testcase.testerId === userId || testcase.testResult === status;
       });
     }
@@ -120,14 +134,30 @@ function getFilteredTestcaseGroupList(list, status, userId) {
   });
 }
 
-function getFilteredTestcaseList(list, status, userId) {
+function getFilteredTestcaseList(list, status, userId, hasComment = false) {
   return list?.filter(testcase => {
-    if (!status && !userId) {
+    if (!status && !userId && !hasComment) {
       return true;
     }
 
     if (status && userId) {
+      if (hasComment) {
+        return testcase.testerId === userId && testcase.testResult === status && testcase.comments?.length > 0;
+      }
+
       return testcase.testerId === userId && testcase.testResult === status;
+    }
+
+    if (!status && !userId) {
+      if (hasComment) {
+        return testcase.comments?.length > 0;
+      }
+
+      return true;
+    }
+
+    if (hasComment) {
+      return (testcase.testerId === userId || testcase.testResult === status) && testcase.comments?.length > 0;
     }
 
     return testcase.testerId === userId || testcase.testResult === status;

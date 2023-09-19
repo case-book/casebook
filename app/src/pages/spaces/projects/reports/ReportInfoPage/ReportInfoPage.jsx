@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Block, Button, Page, PageContent, PageTitle, Tag, Title } from '@/components';
+import { Block, Button, Page, PageContent, PageTitle, Tag, Title, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -52,6 +52,7 @@ function ReportInfoPage() {
     opened: false,
     status: null,
     userId: null,
+    hasComment: false,
   });
 
   const [popupInfo, setPopupInfo] = useState({
@@ -86,8 +87,47 @@ function ReportInfoPage() {
       info => {
         setProject(info);
         TestrunService.selectTestrunInfo(spaceCode, projectId, reportId, data => {
+          let passedTestcaseHasCommentCount = 0;
+          let failedTestcaseHasCommentCount = 0;
+          let untestableTestcaseHasCommentCount = 0;
+          let totalTestcaseHasCommentCount = 0;
+          let untestedTestcaseHasCommentCount = 0;
+
+          if (data.testcaseGroups) {
+            data.testcaseGroups.forEach(group => {
+              if (group.testcases) {
+                group.testcases.forEach(testcase => {
+                  if (testcase.testResult === 'PASSED' && testcase.comments?.length > 0) {
+                    passedTestcaseHasCommentCount += 1;
+                  }
+
+                  if (testcase.testResult === 'FAILED' && testcase.comments?.length > 0) {
+                    failedTestcaseHasCommentCount += 1;
+                  }
+
+                  if (testcase.testResult === 'UNTESTABLE' && testcase.comments?.length > 0) {
+                    untestableTestcaseHasCommentCount += 1;
+                  }
+
+                  if (testcase.testResult === 'UNTESTED' && testcase.comments?.length > 0) {
+                    untestedTestcaseHasCommentCount += 1;
+                  }
+
+                  if (testcase.comments?.length > 0) {
+                    totalTestcaseHasCommentCount += 1;
+                  }
+                });
+              }
+            });
+          }
+
           setTestrun({
             ...data,
+            passedTestcaseHasCommentCount,
+            failedTestcaseHasCommentCount,
+            untestableTestcaseHasCommentCount,
+            untestedTestcaseHasCommentCount,
+            totalTestcaseHasCommentCount,
             startTime: dateUtil.getHourMinuteTime(data.startTime),
             testedCount: data.passedTestcaseCount + data.failedTestcaseCount + data.untestableTestcaseCount,
           });
@@ -101,6 +141,7 @@ function ReportInfoPage() {
                 tester[testcase.testerId] = {
                   userId: testcase.testerId,
                   name: user?.name,
+                  avatarInfo: user?.avatarInfo,
                   PASSED: 0,
                   FAILED: 0,
                   UNTESTED: 0,
@@ -155,12 +196,13 @@ function ReportInfoPage() {
     );
   };
 
-  const onClickTestResultCount = (e, status) => {
+  const onClickTestResultCount = (e, status, hasComment) => {
     e.preventDefault();
     setTestcaseViewerInfo({
       opened: true,
       status,
       userId: null,
+      hasComment,
     });
   };
 
@@ -246,7 +288,7 @@ function ReportInfoPage() {
                   </div>
                 </div>
               </Block>
-              <Title border={false} marginBottom={false}>
+              <Title border={false} marginBottom={false} paddingBottom={false}>
                 {t('테스트 결과 요약')}
               </Title>
               <Block>
@@ -294,13 +336,10 @@ function ReportInfoPage() {
 
                       return (
                         <div className="summary-box tester" key={testerProgress.name}>
-                          <div
-                            className="progress-bar"
-                            style={{
-                              height: `${testedPercentage}%`,
-                            }}
-                          />
                           <div className="count-info">
+                            <div className="user-icon">
+                              <UserAvatar avatarInfo={testerProgress.avatarInfo} size={36} rounded fill outline />
+                            </div>
                             <div className="label">
                               <Link
                                 to="/"
@@ -310,6 +349,13 @@ function ReportInfoPage() {
                               >
                                 {testerProgress.name}
                               </Link>
+                            </div>
+                            <div className="progress-bar">
+                              <div
+                                style={{
+                                  width: `${testedPercentage}%`,
+                                }}
+                              />
                             </div>
                             <div className="progress-percentage">{testedPercentage}%</div>
                             <div className="progress-count">
@@ -367,71 +413,126 @@ function ReportInfoPage() {
                 <div className="testrun-result-count scrollbar-sm">
                   <div>
                     <div>{t('전체')}</div>
-                    <div>
+                    <div className="count">
                       <Link
                         className="ALL"
                         to="/"
                         onClick={e => {
-                          onClickTestResultCount(e, null);
+                          onClickTestResultCount(e, null, false);
                         }}
                       >
                         {testrun.totalTestcaseCount}
                       </Link>
                     </div>
+                    <div className="has-comment">
+                      <Link
+                        className="ALL"
+                        to="/"
+                        onClick={e => {
+                          onClickTestResultCount(e, null, true);
+                        }}
+                      >
+                        {t('@ 코멘트', { count: testrun.totalTestcaseHasCommentCount })}
+                      </Link>
+                    </div>
                   </div>
                   <div>
                     <div>{TESTRUN_RESULT_CODE.PASSED}</div>
-                    <div>
+                    <div className="count">
                       <Link
                         className="PASSED"
                         to="/"
                         onClick={e => {
-                          onClickTestResultCount(e, 'PASSED');
+                          onClickTestResultCount(e, 'PASSED', false);
                         }}
                       >
                         {testrun.passedTestcaseCount}
                       </Link>
                     </div>
+                    <div className="has-comment">
+                      <Link
+                        className="ALL"
+                        to="/"
+                        onClick={e => {
+                          onClickTestResultCount(e, 'PASSED', true);
+                        }}
+                      >
+                        {t('@ 코멘트', { count: testrun.passedTestcaseHasCommentCount })}
+                      </Link>
+                    </div>
                   </div>
                   <div>
                     <div>{TESTRUN_RESULT_CODE.FAILED}</div>
-                    <div>
+                    <div className="count">
                       <Link
                         className="FAILED"
                         to="/"
                         onClick={e => {
-                          onClickTestResultCount(e, 'FAILED');
+                          onClickTestResultCount(e, 'FAILED', false);
                         }}
                       >
                         {testrun.failedTestcaseCount}
                       </Link>
                     </div>
+                    <div className="has-comment">
+                      <Link
+                        className="ALL"
+                        to="/"
+                        onClick={e => {
+                          onClickTestResultCount(e, 'FAILED', true);
+                        }}
+                      >
+                        {t('@ 코멘트', { count: testrun.failedTestcaseHasCommentCount })}
+                      </Link>
+                    </div>
                   </div>
                   <div>
                     <div>{TESTRUN_RESULT_CODE.UNTESTABLE}</div>
-                    <div>
+                    <div className="count">
                       <Link
                         className="UNTESTABLE"
                         to="/"
                         onClick={e => {
-                          onClickTestResultCount(e, 'UNTESTABLE');
+                          onClickTestResultCount(e, 'UNTESTABLE', false);
                         }}
                       >
                         {testrun.untestableTestcaseCount}
                       </Link>
                     </div>
+                    <div className="has-comment">
+                      <Link
+                        className="ALL"
+                        to="/"
+                        onClick={e => {
+                          onClickTestResultCount(e, 'UNTESTABLE', true);
+                        }}
+                      >
+                        {t('@ 코멘트', { count: testrun.untestableTestcaseHasCommentCount })}
+                      </Link>
+                    </div>
                   </div>
                   <div>
                     <div>{TESTRUN_RESULT_CODE.UNTESTED}</div>
-                    <div>
+                    <div className="count">
                       <Link
                         className="UNTESTED"
                         to="/"
                         onClick={e => {
-                          onClickTestResultCount(e, 'UNTESTED');
+                          onClickTestResultCount(e, 'UNTESTED', false);
                         }}
                       >
                         {!Number.isNaN(testrun.totalTestcaseCount - testrun.testedCount) ? testrun.totalTestcaseCount - testrun.testedCount : ''}
+                      </Link>
+                    </div>
+                    <div className="has-comment">
+                      <Link
+                        className="ALL"
+                        to="/"
+                        onClick={e => {
+                          onClickTestResultCount(e, 'UNTESTED', true);
+                        }}
+                      >
+                        {t('@ 코멘트', { count: testrun.untestedTestcaseHasCommentCount })}
                       </Link>
                     </div>
                   </div>
@@ -529,6 +630,7 @@ function ReportInfoPage() {
           }}
           userId={testcaseViewerInfo.userId}
           status={testcaseViewerInfo.status}
+          hasComment={testcaseViewerInfo.hasComment}
           resultViewOpened={popupInfo.opened}
         />
       )}

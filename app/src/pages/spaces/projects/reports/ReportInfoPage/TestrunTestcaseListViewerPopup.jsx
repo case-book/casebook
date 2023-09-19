@@ -8,12 +8,12 @@ import ReportGroupItem from '@/pages/spaces/projects/reports/ReportInfoPage/Repo
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunTestcaseListViewerPopup.scss';
 
-function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, setOpened, userId, status, resultViewOpened }) {
+function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, setOpened, userId, status, resultViewOpened, hasComment }) {
   const { t } = useTranslation();
 
   const list = useMemo(() => {
-    return testcaseUtil.getFilteredTestcaseGroupList(testcaseGroups, status, userId);
-  }, [testcaseGroups, status, userId]);
+    return testcaseUtil.getFilteredTestcaseGroupList(testcaseGroups, status, userId, hasComment);
+  }, [testcaseGroups, status, userId, hasComment]);
 
   const onKeyDown = e => {
     if (e.keyCode === 27 && !resultViewOpened) {
@@ -87,6 +87,7 @@ function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, se
                       testcaseGroup={testcaseGroup}
                       status={status}
                       userId={userId}
+                      hasComment={hasComment}
                       onNameClick={(groupId, id) => {
                         onItemClick({ groupId, id });
                       }}
@@ -108,6 +109,7 @@ TestrunTestcaseListViewerPopup.defaultProps = {
   userId: null,
   status: null,
   resultViewOpened: false,
+  hasComment: false,
 };
 
 TestrunTestcaseListViewerPopup.propTypes = {
@@ -122,6 +124,7 @@ TestrunTestcaseListViewerPopup.propTypes = {
   userId: PropTypes.number,
   status: PropTypes.string,
   resultViewOpened: PropTypes.bool,
+  hasComment: PropTypes.bool,
 };
 
 export default observer(TestrunTestcaseListViewerPopup);

@@ -58,7 +58,7 @@ const schemas = {
   // thumbs,
 };
 
-function UserAvatar({ className, size, avatarInfo, rounded, fill }) {
+function UserAvatar({ className, size, avatarInfo, rounded, fill, outline }) {
   const avatar = useMemo(() => {
     let jsonAvatarInfo = avatarInfo;
     if (typeof avatarInfo === 'string') {
@@ -74,7 +74,7 @@ function UserAvatar({ className, size, avatarInfo, rounded, fill }) {
   }, [avatarInfo]);
 
   return (
-    <div className={`user-avatar-wrapper ${className} ${rounded ? 'rounded' : ''} ${fill ? 'fill' : ''}`}>
+    <div className={`user-avatar-wrapper ${className} ${rounded ? 'rounded' : ''} ${fill ? 'fill' : ''} ${outline ? 'outline' : ''}`}>
       {avatar && <img src={avatar} alt="avator" />}
       {!avatar && (
         <div style={{ width: `${size}px`, height: `${size}px`, fontSize: `${size ? size / 2 - 2 : 16}px` }} className="empty-icon">
@@ -91,6 +91,7 @@ UserAvatar.defaultProps = {
   size: 100,
   rounded: false,
   fill: false,
+  outline: false,
 };
 
 UserAvatar.propTypes = {
@@ -99,6 +100,7 @@ UserAvatar.propTypes = {
   avatarInfo: PropTypes.string,
   rounded: PropTypes.bool,
   fill: PropTypes.bool,
+  outline: PropTypes.bool,
 };
 
 export default UserAvatar;
