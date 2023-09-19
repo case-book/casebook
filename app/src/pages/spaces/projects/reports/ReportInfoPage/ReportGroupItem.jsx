@@ -6,8 +6,8 @@ import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import './ReportGroupItem.scss';
 import testcaseUtil from '@/utils/testcaseUtil';
 
-function ReportGroupItem({ users, testcaseGroup, parentGroupName, status, userId, onNameClick }) {
-  const list = testcaseUtil.getFilteredTestcaseList(testcaseGroup.testcases, status, userId) || [];
+function ReportGroupItem({ users, testcaseGroup, parentGroupName, status, userId, onNameClick, hasComment }) {
+  const list = testcaseUtil.getFilteredTestcaseList(testcaseGroup.testcases, status, userId, hasComment) || [];
 
   return (
     <>
@@ -61,6 +61,7 @@ function ReportGroupItem({ users, testcaseGroup, parentGroupName, status, userId
             userId={userId}
             parentGroupName={parentGroupName ? `${parentGroupName} > ${testcaseGroup.name}` : testcaseGroup.name}
             onNameClick={onNameClick}
+            hasComment={hasComment}
           />
         );
       })}
@@ -74,6 +75,7 @@ ReportGroupItem.defaultProps = {
   users: [],
   status: null,
   userId: null,
+  hasComment: false,
 };
 
 ReportGroupItem.propTypes = {
@@ -87,6 +89,7 @@ ReportGroupItem.propTypes = {
   onNameClick: PropTypes.func.isRequired,
   status: PropTypes.string,
   userId: PropTypes.number,
+  hasComment: PropTypes.bool,
 };
 
 export default ReportGroupItem;
