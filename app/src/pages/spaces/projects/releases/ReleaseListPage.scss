@@ -1,0 +1,36 @@
+.release-list-page-wrapper {
+  .release-cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: minmax(130px, auto);
+    flex-wrap: wrap;
+    gap: 10px;
+
+    position: relative;
+    pointer-events: none;
+
+    .release-card-header {
+      border-bottom: 1px solid #e2e2e2;
+    }
+    .release-card-header-control {
+      position: absolute;
+      top: 8px;
+      right: 16px;
+      pointer-events: all;
+
+      display: flex;
+      gap: 0 5px;
+    }
+    .description {
+      background-color: var(--lighter-color);
+      padding: 0 10px;
+      font-size: 12px;
+      height: 40px;
+      display: flex;
+      > div {
+        align-self: center;
+      }
+    }
+  }
+}

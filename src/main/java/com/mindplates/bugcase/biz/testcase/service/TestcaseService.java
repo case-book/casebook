@@ -1,8 +1,28 @@
 package com.mindplates.bugcase.biz.testcase.service;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
+import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
@@ -34,24 +54,8 @@ import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -151,9 +155,10 @@ public class TestcaseService {
 
         } else {
             List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(
-                    testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
-                        destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId())))
-                .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
+            testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
+                destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId()))
+            )
+            .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(0);
             sameParentList.forEach(testcaseGroup -> {
@@ -380,6 +385,15 @@ public class TestcaseService {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setName(name);
         testcase.setDescription(description);
+        testcaseRepository.save(testcase);
+        return new TestcaseSimpleDTO(testcase);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseSimpleDTO updateTestcaseRelease(String spaceCode, Long projectId, Long testcaseId, Long releaseId) {
+        Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        testcase.setProjectRelease(ProjectRelease.builder().id(releaseId).build());
         testcaseRepository.save(testcase);
         return new TestcaseSimpleDTO(testcase);
     }

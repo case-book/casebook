@@ -43,12 +43,11 @@ public class ProjectResponse {
         this.token = project.getToken();
         this.activated = project.isActivated();
         this.creationDate = project.getCreationDate();
-        this.spaceName = project.getSpace().getName();
         this.slackUrl = project.getSlackUrl();
         this.enableTestrunAlarm = project.isEnableTestrunAlarm();
 
-        if (userId != null && project.getUsers().stream().anyMatch(projectUser -> projectUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(projectUser.getRole()))) {
-            this.isAdmin = true;
+        if (project.getSpace() != null) {
+            this.spaceName = project.getSpace().getName();
         }
 
         if (project.getUsers() != null) {
@@ -62,6 +61,11 @@ public class ProjectResponse {
                             .tags(projectUser.getTags())
                             .avatarInfo(projectUser.getUser().getAvatarInfo())
                             .build()).collect(Collectors.toList());
+
+            if (userId != null && project.getUsers().stream()
+                .anyMatch(projectUser -> projectUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(projectUser.getRole()))) {
+                this.isAdmin = true;
+            }
         }
 
         if (project.getTestcaseTemplates() != null && !project.getTestcaseTemplates().isEmpty()) {
