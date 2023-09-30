@@ -258,7 +258,7 @@ public class ProjectController {
 
     @Operation(description = "릴리즈 삭제")
     @DeleteMapping("/{id}/releases/{releaseId}")
-    public void deleteProjectRelease(@PathVariable long releaseId) {
-        projectReleaseService.deleteProjectRelease(releaseId);
+    public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable long releaseId) {
+        projectReleaseService.deleteProjectRelease(spaceCode, id, releaseId);
     }
 }

@@ -9,6 +9,7 @@ import { getBaseURL } from '@/utils/configUtil';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
+import { ProjectReleasePropTypes } from '@/proptypes';
 
 function TestcaseItem({
   isEdit,
@@ -30,6 +31,7 @@ function TestcaseItem({
   isTestResult,
   isTestResultItem,
   tags,
+  releases,
 }) {
   const editor = useRef(null);
   const { t } = useTranslation();
@@ -218,6 +220,32 @@ function TestcaseItem({
                 )}
               </div>
             )}
+            {testcaseTemplateItem.type === 'RELEASE' && (
+              <div className="case-release">
+                {!isEdit && (
+                  <Tag size="sm" color="secondary">
+                    {releases.find(release => release.id === content.projectReleaseId)?.name ?? t('릴리즈 없음')}
+                  </Tag>
+                )}
+                {isEdit && (
+                  <Selector
+                    size="md"
+                    minWidth="130px"
+                    value={releases.find(d => d.id === content.projectReleaseId)?.id ?? null}
+                    items={[
+                      { key: null, value: t('릴리즈 없음') },
+                      ...releases.map(release => ({
+                        key: release.id,
+                        value: release.name,
+                      })),
+                    ]}
+                    onChange={val => {
+                      onChangeTestcaseItem(val);
+                    }}
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -246,6 +274,7 @@ TestcaseItem.defaultProps = {
   isTestResultItem: false,
   tags: [],
   onRandomTester: null,
+  releases: [],
 };
 
 TestcaseItem.propTypes = {
@@ -266,6 +295,7 @@ TestcaseItem.propTypes = {
   }),
   content: PropTypes.shape({
     id: PropTypes.number,
+    projectReleaseId: PropTypes.number,
   }),
   theme: PropTypes.string,
   createImage: PropTypes.func,
@@ -292,6 +322,7 @@ TestcaseItem.propTypes = {
   isTestResultItem: PropTypes.bool,
   tags: PropTypes.arrayOf(PropTypes.string),
   onRandomTester: PropTypes.func,
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
 };
 
 export default TestcaseItem;

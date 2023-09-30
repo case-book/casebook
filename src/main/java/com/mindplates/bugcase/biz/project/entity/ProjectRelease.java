@@ -35,7 +35,7 @@ public class ProjectRelease extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false, length = 128)
+    @Column(name = "name", nullable = false, length = 128)
     private String name;
 
     @Column(name = "description", length = 512)
@@ -45,8 +45,7 @@ public class ProjectRelease extends CommonEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "projectRelease", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-        CascadeType.REFRESH})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "projectRelease")
     private List<Testcase> testcases;
 
     public ProjectRelease(ProjectReleaseDTO projectReleaseDTO, List<Testcase> testcases) {

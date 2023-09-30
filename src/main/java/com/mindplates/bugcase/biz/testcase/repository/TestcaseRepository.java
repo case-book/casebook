@@ -26,6 +26,10 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Query("DELETE FROM Testcase t WHERE t.testcaseTemplate.id = :id")
     void deleteByTestcaseTemplateId(@Param("id") Long id);
 
+    @Modifying
+    @Query("UPDATE Testcase t SET t.projectRelease.id = NULL WHERE t.projectRelease.id = :id")
+    void updateProjectReleaseIdByProjectReleaseId(@Param("id") Long id);
+
     Optional<Testcase> findByIdAndProjectId(Long id, Long projectId);
 
     List<Testcase> findByProjectId(Long projectId);

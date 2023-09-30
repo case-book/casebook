@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
@@ -13,7 +14,6 @@ import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
@@ -24,18 +24,17 @@ import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Service
 public class ProjectService {
@@ -49,7 +48,7 @@ public class ProjectService {
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
-    private final TestcaseRepository testcaseRepository;
+    private final ProjectReleaseService projectReleaseService;
 
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
     private final MappingUtil mappingUtil;
@@ -57,7 +56,7 @@ public class ProjectService {
     public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
                           @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
                           TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
-                          ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService, TestcaseRepository testcaseRepository, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository) {
+                          ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService, ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
@@ -68,7 +67,7 @@ public class ProjectService {
         this.projectUserRepository = projectUserRepository;
         this.mappingUtil = mappingUtil;
         this.testcaseService = testcaseService;
-        this.testcaseRepository = testcaseRepository;
+        this.projectReleaseService = projectReleaseService;
         this.testrunTestcaseGroupTestcaseRepository = testrunTestcaseGroupTestcaseRepository;
     }
 
@@ -88,6 +87,11 @@ public class ProjectService {
             Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceId, project.getId());
             return new ProjectDTO(project, testrunCount, testcaseCount);
         })).collect(Collectors.toList());
+    }
+
+    public List<ProjectDTO> selectSpaceProjectDetailList(Long spaceId) {
+        List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
+        return projectList.stream().map((project -> new ProjectDTO(project, true))).collect(Collectors.toList());
     }
 
     public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
@@ -231,6 +235,7 @@ public class ProjectService {
         projectInfo.setUsers(
                 updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D"))
                         .collect(Collectors.toList()));
+
         Project updateResult = mappingUtil.convert(projectInfo, Project.class);
         return new ProjectDTO(projectRepository.save(updateResult), true);
 
@@ -240,6 +245,9 @@ public class ProjectService {
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
         projectFileService.deleteProjectFile(project.getId());
+        for (ProjectReleaseDTO projectRelease : project.getProjectReleases()) {
+            projectReleaseService.deleteProjectRelease(spaceCode, project.getId(), projectRelease.getId());
+        }
         List<TestrunDTO> testruns = testrunService.selectProjectAllTestrunList(spaceCode, project.getId());
         testruns.forEach((testrunDTO -> testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId())));
         projectRepository.delete(mappingUtil.convert(project, Project.class));

@@ -24,7 +24,7 @@ public class ProjectReleaseDTO extends CommonDTO {
         this.id = projectRelease.getId();
         this.name = projectRelease.getName();
         this.description = projectRelease.getDescription();
-        this.project = new ProjectDTO(projectRelease.getProject(), false);
+        this.project = ProjectDTO.builder().id(projectRelease.getProject().getId()).build();
         this.testcases = projectRelease.getTestcases().stream().map(TestcaseSimpleDTO::new).collect(Collectors.toList());
     }
 }

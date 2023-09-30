@@ -75,7 +75,10 @@ public class ProjectReleaseService {
         return new ProjectReleaseDTO(projectRelease);
     }
 
-    public void deleteProjectRelease(long releaseId) {
+    @Transactional
+    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+    public void deleteProjectRelease(String spaceCode, long projectId, long releaseId) {
+        testcaseRepository.updateProjectReleaseIdByProjectReleaseId(releaseId);
         projectReleaseRepository.deleteById(releaseId);
     }
 }

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Input, Selector, SeqId, Tag, TestcaseItem, TextArea } from '@/components';
+import { Button, Input, Selector, SeqId, TestcaseItem, TextArea } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -9,7 +9,7 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 import './TestcaseManager.scss';
 import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
-import { DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
+import { DEFAULT_TESTRUN_RELEASE_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 
@@ -120,42 +120,22 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
           <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
             {content.seqId}
           </SeqId>
-          <div className="case-release">
-            {!isEdit && (
-              <Tag size="sm" color="secondary">
-                {releases.find(release => release.id === content.projectReleaseId)?.name ?? t('릴리즈 없음')}
-              </Tag>
-            )}
-            {isEdit && (
+          {isEdit && (
+            <div className="type-input">
               <Selector
+                className="selector"
                 size="md"
-                minWidth="130px"
-                value={releases.find(d => d.id === content.projectReleaseId)?.id ?? null}
-                items={[
-                  { key: null, value: t('릴리즈 없음') },
-                  ...releases.map(release => ({
-                    key: release.id,
-                    value: release.name,
-                  })),
-                ]}
-                onChange={val => onChangeContent('projectReleaseId', val)}
+                items={testcaseTemplates?.map(d => {
+                  return {
+                    key: d.id,
+                    value: d.name,
+                  };
+                })}
+                value={testcaseTemplate?.id}
+                onChange={onChangeTestcaseTemplate}
               />
-            )}
-          </div>
-          <div className="type-input">
-            <Selector
-              className="selector"
-              size="md"
-              items={testcaseTemplates?.map(d => {
-                return {
-                  key: d.id,
-                  value: d.name,
-                };
-              })}
-              value={testcaseTemplate?.id}
-              onChange={onChangeTestcaseTemplate}
-            />
-          </div>
+            </div>
+          )}
         </div>
         <div className="testcase-title">
           <div className="text">
@@ -235,10 +215,35 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                 inx={inx}
                 onChangeTestcaseItem={onChangeTestcaseItem}
                 size="sm"
+                releases={releases}
               />
             );
           })}
         <div>
+          <TestcaseItem
+            isEdit={isEdit}
+            type={isEdit}
+            testcaseTemplateItem={{
+              ...DEFAULT_TESTRUN_RELEASE_ITEM,
+            }}
+            testcaseItem={{
+              type: content.testerType,
+              value: content.testerValue,
+            }}
+            content={content}
+            theme={theme}
+            createImage={createTestcaseImage}
+            users={users}
+            tags={tags}
+            setOpenTooltipInfo={setOpenTooltipInfo}
+            caseContentElement={caseContentElement}
+            openTooltipInfo={openTooltipInfo}
+            onChangeTestcaseItem={projectReleaseId => {
+              onChangeContent('projectReleaseId', projectReleaseId);
+            }}
+            size="sm"
+            releases={releases}
+          />
           <TestcaseItem
             isEdit={isEdit}
             type={isEdit}
@@ -261,6 +266,7 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
               onChangeTestcaseTester(typeValue, val);
             }}
             size="sm"
+            releases={releases}
           />
         </div>
         <hr className="creator-info-hr" />
