@@ -26,7 +26,7 @@ public class TestcaseUpdateRequest {
     private Long projectReleaseId;
 
     public Testcase buildEntity() {
-        return Testcase.builder()
+        Testcase testcase = Testcase.builder()
             .id(id)
             .project(Project.builder().id(projectId).build())
             .testcaseGroup(TestcaseGroup.builder().id(testcaseGroupId).build())
@@ -38,7 +38,13 @@ public class TestcaseUpdateRequest {
             .testcaseItems(testcaseItems.stream().map(TestcaseItemRequest::buildEntity).collect(Collectors.toList()))
             .testerType(testerType)
             .testerValue(testerValue)
-            .projectRelease(ProjectRelease.builder().id(projectReleaseId).build())
+
             .build();
+
+        if (projectReleaseId != null) {
+            testcase.setProjectRelease(ProjectRelease.builder().id(projectReleaseId).build());
+        }
+
+        return testcase;
     }
 }
