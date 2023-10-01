@@ -116,13 +116,13 @@ function ReleaseInfoPage() {
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('설명')}</Label>
-            <Text>{release.description}</Text>
+            <Text whiteSpace="pre-wrap">{release.description}</Text>
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('테스트케이스')}</Label>
           </BlockRow>
           <BlockRow className="release-testcases-content">
-            {selectedTestcaseGroup.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+            {selectedTestcaseGroup.length < 1 && <EmptyContent border>{t('릴리스에 해당하는 테스트케이스가 없습니다.')}</EmptyContent>}
             {selectedTestcaseGroup?.length > 0 && (
               <Table cols={['1px', '100%']} border>
                 <THead>
