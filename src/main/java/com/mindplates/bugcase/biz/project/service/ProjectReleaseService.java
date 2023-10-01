@@ -31,9 +31,9 @@ public class ProjectReleaseService {
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
-    public List<ProjectReleaseDTO> selectProjectReleases(long projectId) {
+    public List<ProjectReleaseDTO> selectProjectReleases(String spaceCode, long projectId) {
         return projectReleaseRepository
-            .findByProjectIdOrderByCreationDateDesc(projectId)
+            .findByProjectIdOrderByNameDesc(projectId)
             .stream()
             .map(ProjectReleaseDTO::new)
             .collect(Collectors.toList());
@@ -78,7 +78,7 @@ public class ProjectReleaseService {
     @Transactional
     @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
     public void deleteProjectRelease(String spaceCode, long projectId, long releaseId) {
-        testcaseRepository.updateProjectReleaseIdByProjectReleaseId(releaseId);
+        testcaseRepository.updateProjectReleaseIdNullByProjectReleaseId(releaseId);
         projectReleaseRepository.deleteById(releaseId);
     }
 }

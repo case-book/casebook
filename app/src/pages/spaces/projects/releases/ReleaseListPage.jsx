@@ -1,10 +1,12 @@
-import { EmptyContent, Page, PageContent, PageTitle, Title, Card, CardHeader, CardContent, Button } from '@/components';
+import { Button, Card, CardContent, CardHeader, EmptyContent, Page, PageContent, PageTitle, Table, Tbody, Td, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router';
-import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import React, { useEffect, useState } from 'react';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import './ReleaseListPage.scss';
+import { Link } from 'react-router-dom';
+import dateUtil from '@/utils/dateUtil';
 
 function ReleaseListPage() {
   const { t } = useTranslation();
@@ -23,8 +25,10 @@ function ReleaseListPage() {
   }, [spaceCode, projectId]);
 
   return (
-    <Page className="release-list-page-wrapper">
+    <Page className="release-list-page-wrapper" list>
       <PageTitle
+        borderBottom={false}
+        marginBottom={false}
         breadcrumbs={[
           { to: '/', text: t('HOME') },
           {
@@ -45,13 +49,13 @@ function ReleaseListPage() {
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/releases`,
-            text: t('릴리즈 목록'),
+            text: t('릴리스 목록'),
           },
         ]}
         links={[
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/releases/new`,
-            text: t('릴리즈'),
+            text: t('릴리스'),
             color: 'primary',
             icon: <i className="fa-solid fa-plus" />,
           },
@@ -60,11 +64,64 @@ function ReleaseListPage() {
           navigate(`/spaces/${spaceCode}/projects`);
         }}
       >
-        {t('릴리즈')}
+        {t('릴리스')}
       </PageTitle>
-      <PageContent>
-        <Title>{t('릴리즈')}</Title>
-        {releases.length <= 0 && <EmptyContent fill>{t('조회된 릴리즈가 없습니다.')}</EmptyContent>}
+      <PageContent className="page-content">
+        {releases.length <= 0 && (
+          <EmptyContent border fill>
+            <div>
+              <div>{t('조회된 릴리스가 없습니다.')}</div>
+              <div>
+                <Button
+                  outline
+                  color="primary"
+                  onClick={() => {
+                    navigate(`/spaces/${spaceCode}/projects/${projectId}/releases/new`);
+                  }}
+                >
+                  <i className="fa-solid fa-plus" /> {t('릴리스 생성')}
+                </Button>
+              </div>
+            </div>
+          </EmptyContent>
+        )}
+        {releases?.length > 0 && (
+          <div className="release-table">
+            <Table cols={['240px', '120px', '240px', '']}>
+              <THead>
+                <Tr>
+                  <Th align="left">{t('이름')}</Th>
+                  <Th align="right">{t('테스트케이스')}</Th>
+                  <Th align="left" className="creation-date">
+                    {t('생성 일시')}
+                  </Th>
+                  <Th align="left" className="description">
+                    {t('설명')}
+                  </Th>
+                </Tr>
+              </THead>
+              <Tbody>
+                {releases?.map(release => {
+                  return (
+                    <Tr key={release.id}>
+                      <Td className="name">
+                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/releases/${release.id}`}>{release.name}</Link>
+                      </Td>
+
+                      <Td align="right">{release.testcases?.length || 0}</Td>
+                      <Td className="creation-date" align="center">
+                        {dateUtil.getDateString(release.creationDate)}
+                      </Td>
+                      <Td align="left" className="description">
+                        {release.description}
+                      </Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </div>
+        )}
         {releases.length > 0 && (
           <div className="release-cards">
             {releases.map(release => (
@@ -86,7 +143,7 @@ function ReleaseListPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="description">
-                    <div>{release.description ?? t('릴리즈 설명이 없습니다.')}</div>
+                    <div>{release.description ?? t('릴리스 설명이 없습니다.')}</div>
                   </div>
                 </CardContent>
               </Card>

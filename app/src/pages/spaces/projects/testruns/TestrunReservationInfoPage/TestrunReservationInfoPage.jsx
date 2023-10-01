@@ -128,9 +128,6 @@ function TestrunReservationInfoPage() {
         {t('예약 테스트런')}
       </PageTitle>
       <PageContent>
-        <Title border={false} marginBottom={false}>
-          {t('테스트런 정보')}
-        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>

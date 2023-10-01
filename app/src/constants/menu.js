@@ -137,7 +137,7 @@ const MENUS = [
     to: '/releases',
     icon: <i className="fa-solid fa-code-branch" />,
     color: '#f13030',
-    name: i18n.t('릴리즈'),
+    name: i18n.t('릴리스'),
     admin: false,
     pc: true,
     login: true,

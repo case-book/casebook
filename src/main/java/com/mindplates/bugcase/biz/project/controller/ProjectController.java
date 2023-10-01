@@ -211,7 +211,7 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(description = "프로젝트의 특정 릴리즈 조회")
+    @Operation(description = "프로젝트의 특정 릴리스 조회")
     @GetMapping("/{id}/releases/{releaseId}")
     public ProjectReleaseResponse getRelease(
         @PathVariable long releaseId
@@ -222,19 +222,17 @@ public class ProjectController {
     }
 
 
-    @Operation(description = "프로젝트의 릴리즈 목록 조회")
+    @Operation(description = "프로젝트의 릴리스 목록 조회")
     @GetMapping("/{id}/releases")
-    public List<ProjectReleaseResponse> getReleases(
-        @PathVariable long id
-    ) {
-        List<ProjectReleaseDTO> projectReleaseDTOs = projectReleaseService.selectProjectReleases(id);
+    public List<ProjectReleaseResponse> getReleases(@PathVariable String spaceCode, @PathVariable long id) {
+        List<ProjectReleaseDTO> projectReleaseDTOs = projectReleaseService.selectProjectReleases(spaceCode, id);
         return projectReleaseDTOs
             .stream()
             .map(projectReleaseDTO -> new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId()))
             .collect(Collectors.toList());
     }
 
-    @Operation(description = "릴리즈 생성")
+    @Operation(description = "릴리스 생성")
     @PostMapping("/{id}/releases")
     public ProjectReleaseResponse createProjectRelease(
         @PathVariable String spaceCode,
@@ -244,7 +242,7 @@ public class ProjectController {
         return new ProjectReleaseResponse(projectReleaseService.createProjectRelease(spaceCode, id, projectReleaseDTO), SessionUtil.getUserId());
     }
 
-    @Operation(description = "릴리즈 수정")
+    @Operation(description = "릴리스 수정")
     @PutMapping("/{id}/releases/{releaseId}")
     public ProjectReleaseResponse updateProjectRelease(
         @PathVariable String spaceCode,
@@ -256,7 +254,7 @@ public class ProjectController {
             SessionUtil.getUserId());
     }
 
-    @Operation(description = "릴리즈 삭제")
+    @Operation(description = "릴리스 삭제")
     @DeleteMapping("/{id}/releases/{releaseId}")
     public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable long releaseId) {
         projectReleaseService.deleteProjectRelease(spaceCode, id, releaseId);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -189,9 +189,6 @@ function TestrunInfoPage() {
         {t('테스트런')}
       </PageTitle>
       <PageContent>
-        <Title border={false} marginBottom={false}>
-          {t('테스트런 정보')}
-        </Title>
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
@@ -325,13 +322,9 @@ function TestrunInfoPage() {
           onBack={() => {
             navigate(-1);
           }}
-          onEdit={
-            project?.admin
-              ? () => {
-                  navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
-                }
-              : null
-          }
+          onEdit={() => {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
+          }}
           onCancelIcon=""
         />
       </PageContent>

@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Label, Page, PageContent, PageTitle, TestcaseSelectorSummary, Text, Title } from '@/components';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Block, BlockRow, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './ReleaseInfoPage.scss';
+import dialogUtil from '@/utils/dialogUtil';
+import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -34,10 +36,23 @@ function ReleaseInfoPage() {
       ),
     [project?.testcaseGroups, releaseId],
   );
-  const selectedTestcaseGroupSummary = useMemo(
-    () => testcaseUtil.getSelectedTestcaseGroupSummary(selectedTestcaseGroup, project?.testcaseGroups).filter(group => group.count > 0),
-    [selectedTestcaseGroup, project?.testcaseGroups],
-  );
+
+  const onDelete = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('릴리스 삭제'),
+      <div>{t('@ 릴리스 및 해당 릴리스가 할당된 테스트케이스의 릴리스 정보가 모두 초기화됩니다. 삭제하시겠습니까?', { name: release.name })}</div>,
+      () => {
+        ReleaseService.deleteRelease(spaceCode, projectId, releaseId, () => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
+        });
+      },
+      null,
+      t('삭제'),
+      null,
+      'danger',
+    );
+  };
 
   return (
     <Page className="release-info-page-wrapper">
@@ -62,7 +77,7 @@ function ReleaseInfoPage() {
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/releases`,
-            text: t('릴리즈 목록'),
+            text: t('릴리스 목록'),
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}`,
@@ -71,8 +86,14 @@ function ReleaseInfoPage() {
         ]}
         control={
           <div>
-            <Button onClick={() => navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new?releaseId=${release.id}`)}>{t('새 테스트런')}</Button>
-            <Button onClick={() => navigate('edit')} color="black">
+            <Button size="sm" color="danger" onClick={onDelete}>
+              {t('릴리스 삭제')}
+            </Button>
+            <Liner display="inline-block" width="1px" height="10px" margin="0 10px 0 0" />
+            <Button onClick={() => navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new?releaseId=${release.id}`)} color="primary">
+              {t('새 테스트런')}
+            </Button>
+            <Button onClick={() => navigate('edit')} color="primary">
               {t('편집')}
             </Button>
           </div>
@@ -81,35 +102,107 @@ function ReleaseInfoPage() {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
         }}
       >
-        {t('릴리즈')}
+        {t('릴리스')}
       </PageTitle>
       <PageContent>
-        <Title border={false} marginBottom={false}>
-          {t('릴리즈 정보')}
-        </Title>
         <Block>
+          <BlockRow>
+            <Label minWidth={LABEL_MIN_WIDTH}>{t('이름')}</Label>
+            <Text>{release.name}</Text>
+          </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('프로젝트')}</Label>
             <Text>{project?.name}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={LABEL_MIN_WIDTH} required>
-              {t('이름')}
-            </Label>
-            <Text>{release.name}</Text>
-          </BlockRow>
-          <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('설명')}</Label>
-            <Text>{release.description ?? t('릴리즈 설명이 없습니다.')}</Text>
+            <Text>{release.description}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="start" className="testcase-label">
-              {t('테스트케이스')}
-            </Label>
-            {release?.testcases?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
-            {release?.testcases?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
+            <Label minWidth={LABEL_MIN_WIDTH}>{t('테스트케이스')}</Label>
+          </BlockRow>
+          <BlockRow className="release-testcases-content">
+            {selectedTestcaseGroup.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+            {selectedTestcaseGroup?.length > 0 && (
+              <Table cols={['1px', '100%']} border>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('테스트케이스 그룹')}</Th>
+                    <Th align="left">{t('테스트케이스')}</Th>
+                    <Th align="left">{t('릴리스')}</Th>
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {selectedTestcaseGroup?.map(d => {
+                    if (d.testcases?.length > 0) {
+                      return (
+                        <React.Fragment key={d.testcaseGroupId}>
+                          {d.testcases?.map((testcase, inx) => {
+                            return (
+                              <Tr key={testcase.id}>
+                                {inx === 0 && (
+                                  <Td rowSpan={d.testcases.length} className="group-info">
+                                    <div className="seq-name">
+                                      <div>
+                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                          {d.seqId}
+                                        </SeqId>
+                                      </div>
+                                      <div>{d.name}</div>
+                                    </div>
+                                  </Td>
+                                )}
+                                <Td>
+                                  <div className="seq-name">
+                                    <div>
+                                      <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
+                                        {testcase.seqId}
+                                      </SeqId>
+                                    </div>
+                                    <div>{testcase.name}</div>
+                                  </div>
+                                </Td>
+                                <Td>
+                                  <Tag border>{release.name}</Tag>
+                                </Td>
+                              </Tr>
+                            );
+                          })}
+                        </React.Fragment>
+                      );
+                    }
+
+                    return (
+                      <Tr key={d.seqId}>
+                        <Td className="group-info">
+                          <div className="seq-name">
+                            <div>
+                              <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                {d.seqId}
+                              </SeqId>
+                            </div>
+                            <div>{d.name}</div>
+                          </div>
+                        </Td>
+                        <Td />
+                        <Td />
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            )}
           </BlockRow>
         </Block>
+        <PageButtons
+          onBack={() => {
+            navigate(-1);
+          }}
+          onEdit={() => {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}/edit`);
+          }}
+          onCancelIcon=""
+        />
       </PageContent>
     </Page>
   );

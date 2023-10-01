@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Block, BlockRow, Button, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import PropTypes from 'prop-types';
 import testcaseUtil from '@/utils/testcaseUtil';
+import './ReleaseEditPage.scss';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -67,7 +68,7 @@ function ReleaseEditPage({ type }) {
   }, [project?.testcaseGroups, releaseId]);
 
   return (
-    <Page>
+    <Page className="release-edit-page">
       <PageTitle
         breadcrumbs={[
           { to: '/', text: t('HOME') },
@@ -89,7 +90,7 @@ function ReleaseEditPage({ type }) {
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/releases`,
-            text: t('릴리즈 목록'),
+            text: t('릴리스 목록'),
           },
           {
             to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/releases/new`,
@@ -100,12 +101,12 @@ function ReleaseEditPage({ type }) {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
         }}
       >
-        {isEdit ? t('릴리즈') : t('새 릴리즈')}
+        {isEdit ? t('릴리스') : t('새 릴리스')}
       </PageTitle>
       <PageContent>
         <Form onSubmit={handleSubmit}>
           <Title border={false} marginBottom={false}>
-            {t('릴리즈 정보')}
+            {t('릴리스 정보')}
           </Title>
           <Block>
             <BlockRow>
@@ -168,7 +169,11 @@ function ReleaseEditPage({ type }) {
             <BlockRow>
               <Label minWidth={LABEL_MIN_WIDTH} />
               {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
-              {selectedTestcaseGroupSummary?.length > 0 && <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />}
+              {selectedTestcaseGroupSummary?.length > 0 && (
+                <Block className="summary-list" scroll maxHeight="600px" border>
+                  <TestcaseSelectorSummary selectedTestcaseGroupSummary={selectedTestcaseGroupSummary} />
+                </Block>
+              )}
             </BlockRow>
           </Block>
           <PageButtons

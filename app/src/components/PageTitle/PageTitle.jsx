@@ -6,11 +6,11 @@ import './PageTitle.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components';
 
-function PageTitle({ className, name, children, links, control, onListClick, breadcrumbs }) {
+function PageTitle({ className, name, children, links, control, onListClick, breadcrumbs, collapse, borderBottom, marginBottom }) {
   const navigate = useNavigate();
 
   return (
-    <div className={`page-title-wrapper g-no-select ${className}`}>
+    <div className={`page-title-wrapper g-no-select ${className} ${collapse ? 'collapse' : ''} ${borderBottom ? 'border-bottom' : ''} ${marginBottom ? 'margin-bottom' : ''}`}>
       <div>
         {onListClick && (
           <div
@@ -75,6 +75,9 @@ PageTitle.defaultProps = {
   control: null,
   onListClick: null,
   breadcrumbs: [],
+  collapse: false,
+  borderBottom: true,
+  marginBottom: true,
 };
 
 PageTitle.propTypes = {
@@ -95,6 +98,9 @@ PageTitle.propTypes = {
       text: PropTypes.string,
     }),
   ),
+  collapse: PropTypes.bool,
+  borderBottom: PropTypes.bool,
+  marginBottom: PropTypes.bool,
 };
 
 export default observer(PageTitle);

@@ -31,7 +31,7 @@ function ProjectListPage() {
   return (
     <Page className="project-list-page-wrapper" list>
       <PageTitle
-        className="page-title"
+        collapse
         breadcrumbs={[
           {
             to: '/',
@@ -71,8 +71,8 @@ function ProjectListPage() {
               <div>{t('아직 생성된 프로젝트가 없습니다.')}</div>
               <div>
                 <Button
-                  size="lg"
                   outline
+                  color="primary"
                   onClick={() => {
                     navigate(`/spaces/${spaceCode}/projects/new`);
                   }}

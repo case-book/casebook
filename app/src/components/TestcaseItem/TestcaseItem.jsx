@@ -224,7 +224,7 @@ function TestcaseItem({
               <div className="case-release">
                 {!isEdit && (
                   <Tag size="sm" color="secondary">
-                    {releases.find(release => release.id === content.projectReleaseId)?.name ?? t('릴리즈 없음')}
+                    {releases.find(release => release.id === content.projectReleaseId)?.name ?? t('릴리스 없음')}
                   </Tag>
                 )}
                 {isEdit && (
@@ -233,7 +233,7 @@ function TestcaseItem({
                     minWidth="130px"
                     value={releases.find(d => d.id === content.projectReleaseId)?.id ?? null}
                     items={[
-                      { key: null, value: t('릴리즈 없음') },
+                      { key: null, value: t('릴리스 없음') },
                       ...releases.map(release => ({
                         key: release.id,
                         value: release.name,

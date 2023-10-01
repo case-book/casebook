@@ -125,7 +125,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                         {testcase.seqId}
                       </SeqId>
                       <Tag size="sm" color="secondary">
-                        {releases.find(release => release.id === testcase.projectReleaseId)?.name ?? t('릴리즈 없음')}
+                        {releases.find(release => release.id === testcase.projectReleaseId)?.name ?? t('릴리스 없음')}
                       </Tag>
                       <div className="name">
                         {editInfo.id !== testcase.id && <span>{testcase.name}</span>}

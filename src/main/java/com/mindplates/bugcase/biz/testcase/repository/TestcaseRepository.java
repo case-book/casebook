@@ -28,7 +28,7 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
     @Modifying
     @Query("UPDATE Testcase t SET t.projectRelease.id = NULL WHERE t.projectRelease.id = :id")
-    void updateProjectReleaseIdByProjectReleaseId(@Param("id") Long id);
+    void updateProjectReleaseIdNullByProjectReleaseId(@Param("id") Long id);
 
     Optional<Testcase> findByIdAndProjectId(Long id, Long projectId);
 

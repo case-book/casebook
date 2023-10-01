@@ -14,7 +14,7 @@ ReleaseService.selectRelease = (spaceCode, projectId, releaseId, successHandler,
     null,
     null,
     loading,
-    i18n.t('릴리즈 정보를 가져오고 있습니다.'),
+    i18n.t('릴리스 정보를 가져오고 있습니다.'),
   );
 };
 
@@ -29,7 +29,7 @@ ReleaseService.selectReleaseList = (spaceCode, projectId, successHandler, failHa
     null,
     null,
     loading,
-    i18n.t('프로젝트의 릴리즈 목록을 가져오고 있습니다.'),
+    i18n.t('프로젝트의 릴리스 목록을 가져오고 있습니다.'),
   );
 };
 
@@ -48,6 +48,17 @@ ReleaseService.updateRelease = (spaceCode, projectId, releaseId, release, succes
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/releases/${releaseId}`,
     release,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ReleaseService.deleteRelease = (spaceCode, projectId, releaseId, successHandler, failHandler) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/releases/${releaseId}`,
+    null,
     res => {
       successHandler(res);
     },

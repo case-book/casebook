@@ -194,7 +194,7 @@ public class TestcaseController {
     }
 
 
-    @Operation(description = "테스트케이스 릴리즈 변경")
+    @Operation(description = "테스트케이스 릴리스 변경")
     @PutMapping("/{testcaseId}/release")
     public TestcaseSimpleResponse updateTestcaseRelease(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
         @Valid @RequestBody TestcaseReleaseChangeRequest testcaseReleaseChangeRequest) {

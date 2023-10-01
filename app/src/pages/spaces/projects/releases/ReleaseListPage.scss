@@ -1,4 +1,39 @@
 .release-list-page-wrapper {
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  .release-table {
+    width: 100%;
+    overflow: auto;
+    > table {
+      width: 100%;
+      table-layout: fixed;
+
+      .name {
+        font-family: MartianMono, monospace;
+      }
+
+      .description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        @media (max-width: 768px) {
+          display: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        colgroup {
+          col:nth-child(3) {
+            width: 100% !important;
+          }
+        }
+      }
+    }
+  }
+
   .release-cards {
     width: 100%;
     display: grid;
@@ -6,6 +41,7 @@
     grid-auto-rows: minmax(130px, auto);
     flex-wrap: wrap;
     gap: 10px;
+    display: none;
 
     position: relative;
     pointer-events: none;

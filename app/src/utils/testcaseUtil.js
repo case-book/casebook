@@ -262,16 +262,20 @@ function isFilteredTestcaseByName(testcase, name) {
 }
 
 function getSelectionFromTestcaseGroups(testcaseGroups) {
-  return testcaseGroups?.map(d => {
-    return {
-      testcaseGroupId: d.id,
-      testcases: d.testcases?.map(item => {
-        return {
-          testcaseId: item.id,
-        };
-      }),
-    };
-  });
+  return testcaseGroups
+    ?.map(d => {
+      return {
+        testcaseGroupId: d.id,
+        ...d,
+        testcases: d.testcases?.map(item => {
+          return {
+            ...item,
+            testcaseId: item.id,
+          };
+        }),
+      };
+    })
+    .filter(d => d.testcases?.length > 0);
 }
 
 function isFilteredTestcaseByRelease(testcase, releases) {

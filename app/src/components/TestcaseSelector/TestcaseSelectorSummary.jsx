@@ -8,7 +8,7 @@ function TestcaseSelectorSummary({ className, selectedTestcaseGroupSummary, onDe
   const { t } = useTranslation();
 
   return (
-    <Table className={`testcase-selector-summary ${className}`} cols={['', '200px', '100px']} sticky>
+    <Table className={`testcase-selector-summary ${className}`} cols={onDeleteGroup ? ['', '200px', '100px'] : ['', '200px']} sticky>
       <THead>
         <Tr>
           <Th align="left">{t('테스트케이스 그룹')}</Th>
