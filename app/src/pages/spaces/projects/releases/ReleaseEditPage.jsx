@@ -62,7 +62,7 @@ function ReleaseEditPage({ type }) {
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(
       testcaseUtil.getSelectionFromTestcaseGroups(
-        (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === +releaseId) })),
+        (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId))) })),
       ),
     );
   }, [project?.testcaseGroups, releaseId]);

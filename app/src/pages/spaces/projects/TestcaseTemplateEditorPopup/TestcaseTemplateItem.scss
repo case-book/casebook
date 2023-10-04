@@ -39,6 +39,21 @@
     }
   }
 
+  &.fixed {
+    > div {
+      background-color: var(--light-color);
+      background-image: none;
+    }
+  }
+
+  .fixed-badge,
+  .editable-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 10px;
+  }
+
   > div {
     width: 100%;
     position: relative;

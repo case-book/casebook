@@ -58,7 +58,6 @@ function ContentManager({
             <div>{t('아이템을 선택해주세요.')}</div>
           </EmptyContent>
         )}
-
         {popupContent && (
           <div
             className="testcase-editor-popup"

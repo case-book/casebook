@@ -12,6 +12,7 @@ import dialogUtil from '@/utils/dialogUtil';
 import { DEFAULT_TESTRUN_RELEASE_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
+import TestcaseReleaseItem from '@/components/TestcaseItem/TestcaseReleaseItem';
 
 function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags }) {
   const {
@@ -201,7 +202,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
               <TestcaseItem
                 key={inx}
                 isEdit={isEdit}
-                type={isEdit}
                 testcaseTemplateItem={testcaseTemplateItem}
                 testcaseItem={testcaseItem}
                 content={content}
@@ -219,34 +219,34 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
               />
             );
           })}
+        <hr className="info-hr" />
         <div>
-          <TestcaseItem
+          <TestcaseReleaseItem
             isEdit={isEdit}
-            type={isEdit}
             testcaseTemplateItem={{
               ...DEFAULT_TESTRUN_RELEASE_ITEM,
             }}
-            testcaseItem={{
-              type: content.testerType,
-              value: content.testerValue,
-            }}
             content={content}
-            theme={theme}
-            createImage={createTestcaseImage}
-            users={users}
-            tags={tags}
             setOpenTooltipInfo={setOpenTooltipInfo}
             caseContentElement={caseContentElement}
             openTooltipInfo={openTooltipInfo}
-            onChangeTestcaseItem={projectReleaseId => {
-              onChangeContent('projectReleaseId', projectReleaseId);
-            }}
-            size="sm"
             releases={releases}
+            onAdd={id => {
+              const nextProjectReleaseIds = (content.projectReleaseIds || []).slice(0);
+              nextProjectReleaseIds.push(id);
+              onChangeContent('projectReleaseIds', nextProjectReleaseIds);
+            }}
+            onRemove={id => {
+              const nextProjectReleaseIds = (content.projectReleaseIds || []).slice(0);
+              const index = nextProjectReleaseIds.findIndex(nextProjectReleaseId => nextProjectReleaseId === id);
+              if (index > -1) {
+                nextProjectReleaseIds.splice(index, 1);
+              }
+              onChangeContent('projectReleaseIds', nextProjectReleaseIds);
+            }}
           />
           <TestcaseItem
             isEdit={isEdit}
-            type={isEdit}
             testcaseTemplateItem={{
               ...DEFAULT_TESTRUN_TESTER_ITEM,
             }}
@@ -269,7 +269,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             releases={releases}
           />
         </div>
-        <hr className="creator-info-hr" />
         <div className="creator-info">
           <table>
             <tbody>
@@ -305,7 +304,7 @@ TestcaseManager.propTypes = {
     seqId: PropTypes.string,
     testcaseGroupId: PropTypes.number,
     testcaseTemplateId: PropTypes.number,
-    projectReleaseId: PropTypes.number,
+    projectReleaseIds: PropTypes.arrayOf(PropTypes.number),
     name: PropTypes.string,
     description: PropTypes.string,
     itemOrder: PropTypes.number,

@@ -4,6 +4,8 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectReleaseId;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +25,7 @@ public class TestcaseUpdateRequest {
     private List<TestcaseItemRequest> testcaseItems;
     private String testerType;
     private String testerValue;
-    private Long projectReleaseId;
+    private List<Long> projectReleaseIds;
 
     public Testcase buildEntity() {
         Testcase testcase = Testcase.builder()
@@ -38,11 +40,17 @@ public class TestcaseUpdateRequest {
             .testcaseItems(testcaseItems.stream().map(TestcaseItemRequest::buildEntity).collect(Collectors.toList()))
             .testerType(testerType)
             .testerValue(testerValue)
-
             .build();
 
-        if (projectReleaseId != null) {
-            testcase.setProjectRelease(ProjectRelease.builder().id(projectReleaseId).build());
+        if (projectReleaseIds != null) {
+            testcase.setTestcaseProjectReleases(
+                projectReleaseIds.stream()
+                    .map(projectReleaseId -> TestcaseProjectRelease.builder()
+                        .testcase(Testcase.builder().id(testcase.getId()).build())
+                        .projectRelease(ProjectRelease.builder().id(projectReleaseId).build())
+                        .build())
+                    .collect(Collectors.toList())
+            );
         }
 
         return testcase;

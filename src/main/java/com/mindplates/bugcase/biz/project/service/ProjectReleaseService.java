@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectReleaseService {
 
     private final ProjectReleaseRepository projectReleaseRepository;
+    private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
     private final TestcaseRepository testcaseRepository;
 
     public ProjectReleaseDTO selectProjectRelease(long releaseId) {
@@ -49,7 +51,8 @@ public class ProjectReleaseService {
             .collect(Collectors.toList())
         );
         try {
-            ProjectRelease projectRelease = projectReleaseRepository.save(new ProjectRelease(projectReleaseDTO, testcases));
+            ProjectRelease projectReleaseA = new ProjectRelease(projectReleaseDTO, testcases);
+            ProjectRelease projectRelease = projectReleaseRepository.save(projectReleaseA);
             return new ProjectReleaseDTO(projectRelease);
         } catch (DataIntegrityViolationException e) {
             throw new ServiceException(HttpStatus.CONFLICT, "release.name.duplicated");
@@ -78,7 +81,7 @@ public class ProjectReleaseService {
     @Transactional
     @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
     public void deleteProjectRelease(String spaceCode, long projectId, long releaseId) {
-        testcaseRepository.updateProjectReleaseIdNullByProjectReleaseId(releaseId);
+        testcaseProjectReleaseRepository.deleteByProjectReleaseId(releaseId);
         projectReleaseRepository.deleteById(releaseId);
     }
 }

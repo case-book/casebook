@@ -218,7 +218,6 @@ function TestRunTestcaseManager({
                 return (
                   <TestcaseItem
                     key={inx}
-                    type={false}
                     isEdit={false}
                     testcaseTemplateItem={testcaseTemplateItem}
                     testcaseItem={testcaseItem}
