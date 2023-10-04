@@ -112,6 +112,7 @@ function TestcaseSelectPopup({ testcaseGroups, selectedTestcaseGroups, setOpened
               currentSelectedTestcaseGroups={currentSelectedTestcaseGroups}
               filterCondition={filterCondition}
               onChange={setCurrentSelectedTestcaseGroups}
+              releases={releases}
             />
           </div>
         )}

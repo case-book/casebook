@@ -57,6 +57,8 @@ function TestrunEditPage({ type }) {
 
   const [project, setProject] = useState(null);
 
+  const [releases, setReleases] = useState([]);
+
   const [testrun, setTestrun] = useState({
     seqId: '',
     name: '',
@@ -170,10 +172,15 @@ function TestrunEditPage({ type }) {
   useEffect(() => {
     if (isEdit || !releaseId || !project?.testcaseGroups) return;
 
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+      setReleases(list);
+    });
+
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
       const nextTestcaseGroups = testcaseUtil.getSelectionFromTestcaseGroups(
-        project.testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === data.id) })),
+        project.testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))) })),
       );
+
       setTestrun(prev => ({
         ...prev,
         name: data.name,
@@ -509,6 +516,7 @@ function TestrunEditPage({ type }) {
           onApply={selectedTestcaseGroups => {
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
           }}
+          releases={releases}
         />
       )}
     </>

@@ -125,7 +125,7 @@ TestcaseSelectorFilter.propTypes = {
   className: PropTypes.string,
   filter: TestcaseSelectorFilterPropTypes.isRequired,
   releases: PropTypes.arrayOf(ProjectReleasePropTypes).isRequired,
-  dateRange: PropTypes.shape({ minDate: PropTypes.instanceOf(moment()), maxDate: PropTypes.instanceOf(moment()) }).isRequired,
+  dateRange: PropTypes.shape({ minDate: PropTypes.instanceOf(moment), maxDate: PropTypes.instanceOf(moment) }).isRequired,
   onChange: PropTypes.func.isRequired,
   onAllCheck: PropTypes.func,
   country: PropTypes.string,

@@ -280,7 +280,7 @@ function getSelectionFromTestcaseGroups(testcaseGroups) {
 
 function isFilteredTestcaseByRelease(testcase, releases) {
   if (!releases || releases.length === 0) return true;
-  return releases.some(release => release.key === testcase.projectReleaseId);
+  return releases.some(release => testcase.projectReleaseIds.includes(release.key)) || (testcase.projectReleaseIds?.length < 1 && releases.filter(d => d.key === null).length > 0);
 }
 
 const testcaseUtil = {

@@ -215,7 +215,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                 inx={inx}
                 onChangeTestcaseItem={onChangeTestcaseItem}
                 size="sm"
-                releases={releases}
               />
             );
           })}
@@ -266,7 +265,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
               onChangeTestcaseTester(typeValue, val);
             }}
             size="sm"
-            releases={releases}
           />
         </div>
         <div className="creator-info">

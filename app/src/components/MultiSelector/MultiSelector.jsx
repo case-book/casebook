@@ -143,8 +143,12 @@ MultiSelector.propTypes = {
       value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     }),
   ),
-  value: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
-
+  value: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.number,
+      value: PropTypes.string,
+    }),
+  ),
   size: PropTypes.string,
   separator: PropTypes.bool,
   minWidth: PropTypes.string,

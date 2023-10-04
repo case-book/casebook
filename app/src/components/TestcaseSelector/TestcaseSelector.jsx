@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { TestcaseSelectorFilterPropTypes, TestcaseGroupPropTypes } from '@/proptypes';
+import { ProjectReleasePropTypes, TestcaseGroupPropTypes, TestcaseSelectorFilterPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseSelectorGroup from './TestcaseSelectorGroup';
 import './TestcaseSelector.scss';
 
-function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGroups, filterCondition, onChange }) {
+function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGroups, filterCondition, onChange, releases }) {
   const [projectTestcaseGroupTree, setProjectTestcaseGroupTree] = useState([]);
 
   useEffect(() => {
@@ -164,7 +164,8 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
                 testcaseName={filterCondition.name}
                 minDate={filterCondition.minDate}
                 maxDate={filterCondition.maxDate}
-                releases={filterCondition.releases}
+                filteredReleases={filterCondition.releases}
+                releases={releases}
               />
             );
           })}
@@ -173,6 +174,12 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
     </div>
   );
 }
+
+TestcaseSelector.defaultProps = {
+  className: '',
+  filterCondition: {},
+  releases: [],
+};
 
 TestcaseSelector.propTypes = {
   className: PropTypes.string,
@@ -189,11 +196,7 @@ TestcaseSelector.propTypes = {
   testcaseGroups: PropTypes.arrayOf(TestcaseGroupPropTypes).isRequired,
   filterCondition: TestcaseSelectorFilterPropTypes,
   onChange: PropTypes.func.isRequired,
-};
-
-TestcaseSelector.defaultProps = {
-  className: '',
-  filterCondition: {},
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
 };
 
 export default TestcaseSelector;

@@ -185,8 +185,8 @@ const ColorPropTypes = PropTypes.oneOf([undefined, 'black', 'white', 'primary', 
 
 const TestcaseSelectorFilterPropTypes = PropTypes.shape({
   name: PropTypes.string,
-  minDate: PropTypes.instanceOf(moment()),
-  maxDate: PropTypes.instanceOf(moment()),
+  minDate: PropTypes.instanceOf(moment),
+  maxDate: PropTypes.instanceOf(moment),
   releases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.number, value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) })),
 });
 

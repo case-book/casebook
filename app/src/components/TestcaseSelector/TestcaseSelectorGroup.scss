@@ -87,6 +87,19 @@
             &:nth-child(2) {
               margin-right: 0.25rem;
             }
+
+            &:nth-child(3) {
+              flex-grow: 1;
+            }
+
+            &:nth-child(4) {
+              > div {
+                margin-right: 8px;
+                &:last-child {
+                  margin-right: 0;
+                }
+              }
+            }
           }
         }
       }
