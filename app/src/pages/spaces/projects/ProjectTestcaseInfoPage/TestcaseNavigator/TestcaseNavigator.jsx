@@ -78,6 +78,13 @@ function TestcaseNavigator({
 
   const [setting, setSetting] = useState(() => {
     const storageSetting = getOption('testcase', 'testcase-group-layout', 'setting') || {};
+    if (storageSetting?.testcaseColumns?.closed) {
+      delete storageSetting?.testcaseColumns?.closed;
+    }
+
+    if (storageSetting?.testcaseGroupColumns?.testcase) {
+      delete storageSetting?.testcaseGroupColumns?.testcase;
+    }
 
     return {
       show: false,
@@ -89,11 +96,6 @@ function TestcaseNavigator({
         itemOrder: {
           show: false,
           name: t('순서'),
-        },
-
-        testcase: {
-          show: true,
-          name: t('테스트케이스'),
         },
         testcaseCount: {
           show: false,
@@ -109,10 +111,6 @@ function TestcaseNavigator({
         itemOrder: {
           show: false,
           name: t('순서'),
-        },
-        closed: {
-          show: false,
-          name: t('종료'),
         },
         ...storageSetting?.testcaseColumns,
       },

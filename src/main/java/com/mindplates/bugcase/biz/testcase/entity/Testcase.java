@@ -77,9 +77,8 @@ public class Testcase extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_release_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT_RELEASE"))
-    private ProjectRelease projectRelease;
+    @OneToMany(mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true )
+    private List<TestcaseProjectRelease> testcaseProjectReleases;
 
     @Column(name = "tester_type", length = ColumnsDef.CODE)
     private String testerType;
@@ -126,5 +125,45 @@ public class Testcase extends CommonEntity {
         }
 
         return currentSeq;
+    }
+
+    public Testcase update(Testcase testcase) {
+        this.testcaseGroup = testcase.getTestcaseGroup();
+        this.name = testcase.getName();
+        this.description = testcase.getDescription();
+        this.itemOrder = testcase.getItemOrder();
+        this.closed = testcase.getClosed();
+        this.testcaseTemplate = testcase.getTestcaseTemplate();
+        this.testcaseItems = testcase.getTestcaseItems();
+        this.testerType = testcase.getTesterType();
+        this.testerValue = testcase.getTesterValue();
+        this.contentUpdateDate = LocalDateTime.now();
+
+
+
+        this.testcaseProjectReleases.removeIf(testcaseProjectRelease ->
+                testcase.getTestcaseProjectReleases()
+                    .stream()
+                    .noneMatch(testcaseProjectRelease1 ->
+                        testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId())
+                            && testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())));
+
+        for (TestcaseProjectRelease nextTestcaseProjectRelease : testcase.getTestcaseProjectReleases()) {
+            if (this.testcaseProjectReleases
+                .stream()
+                .noneMatch(testcaseProjectRelease ->
+                    testcaseProjectRelease.getProjectRelease().getId().equals(nextTestcaseProjectRelease.getProjectRelease().getId())
+                        && testcaseProjectRelease.getTestcase().getId().equals(nextTestcaseProjectRelease.getTestcase().getId()))) {
+                this.testcaseProjectReleases.add(TestcaseProjectRelease.builder()
+                    .projectRelease(ProjectRelease.builder().id(nextTestcaseProjectRelease.getProjectRelease().getId()).build())
+                    .testcase(this)
+                    .build());
+            }
+
+        }
+
+        return this;
+
+
     }
 }

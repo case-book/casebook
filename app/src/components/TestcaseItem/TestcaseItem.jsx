@@ -25,7 +25,7 @@ function TestcaseItem({
   caseContentElement,
   openTooltipInfo,
   inx,
-  type,
+
   size,
   selectUserOnly,
   isTestResult,
@@ -50,7 +50,7 @@ function TestcaseItem({
           caseContentElement={caseContentElement}
           openTooltipInfo={openTooltipInfo}
           inx={inx}
-          type={type}
+          showType={isEdit}
         />
         <div className={`value ${testcaseTemplateItem.type}`}>
           <div>

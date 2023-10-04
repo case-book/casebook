@@ -100,8 +100,9 @@
       }
     }
 
-    hr.creator-info-hr {
-      background: var(--border-light-color);
+    hr.info-hr {
+      background: transparent;
+      border-bottom: 1px dashed var(--border-light-color);
     }
 
     .creator-info {
@@ -122,7 +123,6 @@
           }
         }
       }
-
     }
   }
 

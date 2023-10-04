@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
@@ -33,8 +34,8 @@ public class ProjectResponse {
     private List<SimpleMemberResponse> users;
     private String slackUrl;
     private boolean enableTestrunAlarm;
-
     private boolean isAdmin = false;
+    private List<ProjectReleaseResponse> projectReleases;
 
     public ProjectResponse(ProjectDTO project, Long userId) {
         this.id = project.getId();
@@ -75,5 +76,16 @@ public class ProjectResponse {
         if (project.getTestcaseGroups() != null && !project.getTestcaseGroups().isEmpty()) {
             this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
         }
+
+        if (project.getProjectReleases() != null) {
+            this.projectReleases = project.getProjectReleases()
+                .stream()
+                .map(projectReleaseDTO -> ProjectReleaseResponse.builder()
+                    .id(projectReleaseDTO.getId())
+                    .name(projectReleaseDTO.getName())
+                    .build())
+                .collect(Collectors.toList());
+        }
+
     }
 }

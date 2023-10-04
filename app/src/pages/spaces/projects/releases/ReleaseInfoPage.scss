@@ -21,5 +21,15 @@
         align-self: center;
       }
     }
+
+    .releases {
+      > div {
+        margin-right: 8px;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
   }
 }

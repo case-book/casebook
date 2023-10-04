@@ -29,7 +29,7 @@ public class TestcaseDTO extends CommonDTO {
     private TestcaseTemplateDTO testcaseTemplate;
     private List<TestcaseItemDTO> testcaseItems;
     private ProjectDTO project;
-    private ProjectReleaseDTO projectRelease;
+    private List<ProjectReleaseDTO> projectReleases;
     private String testerType;
     private String testerValue;
     private LocalDateTime contentUpdateDate;
@@ -47,8 +47,12 @@ public class TestcaseDTO extends CommonDTO {
         this.testcaseTemplate = new TestcaseTemplateDTO(testcase.getTestcaseTemplate());
         this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
         this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
-        if (testcase.getProjectRelease() != null) {
-            this.projectRelease = ProjectReleaseDTO.builder().id(testcase.getProjectRelease().getId()).build();
+        if (testcase.getTestcaseProjectReleases() != null) {
+            this.projectReleases = testcase.getTestcaseProjectReleases()
+                .stream()
+                .map(testcaseProjectRelease -> new ProjectReleaseDTO(testcaseProjectRelease.getProjectRelease()))
+                .distinct()
+                .collect(Collectors.toList());
         }
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
@@ -70,8 +74,12 @@ public class TestcaseDTO extends CommonDTO {
         this.testcaseTemplate = new TestcaseTemplateDTO(testcase.getTestcaseTemplate());
         this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
         this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
-        if (testcase.getProjectRelease() != null) {
-            this.projectRelease = ProjectReleaseDTO.builder().id(testcase.getProjectRelease().getId()).build();
+        if (testcase.getTestcaseProjectReleases() != null) {
+            this.projectReleases = testcase.getTestcaseProjectReleases()
+                .stream()
+                .map(testcaseProjectRelease -> new ProjectReleaseDTO(testcaseProjectRelease.getProjectRelease()))
+                .distinct()
+                .collect(Collectors.toList());
         }
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();

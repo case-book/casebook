@@ -59,7 +59,6 @@ const DEFAULT_TESTRUN_TESTER_ITEM = {
 };
 
 const DEFAULT_TESTRUN_RELEASE_ITEM = {
-  type: 'RELEASE',
   label: i18n.t('릴리스'),
   size: 6,
 };

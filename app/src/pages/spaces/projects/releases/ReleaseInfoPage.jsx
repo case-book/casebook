@@ -16,10 +16,16 @@ function ReleaseInfoPage() {
   const { spaceCode, projectId, releaseId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [releaseNameMap, setReleaseNameMap] = useState({});
   const [release, setRelease] = useState({});
 
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+      const nextReleaseNameMap = {};
+      info.projectReleases.forEach(projectRelease => {
+        nextReleaseNameMap[projectRelease.id] = projectRelease.name;
+      });
+      setReleaseNameMap(nextReleaseNameMap);
       setProject(info);
     });
   }, [spaceCode, projectId]);
@@ -32,9 +38,12 @@ function ReleaseInfoPage() {
   const selectedTestcaseGroup = useMemo(
     () =>
       testcaseUtil.getSelectionFromTestcaseGroups(
-        (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseId === +releaseId) })),
+        (project?.testcaseGroups ?? []).map(group => ({
+          ...group,
+          testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId))),
+        })),
       ),
-    [project?.testcaseGroups, releaseId],
+    [project, releaseId],
   );
 
   const onDelete = () => {
@@ -124,7 +133,7 @@ function ReleaseInfoPage() {
           <BlockRow className="release-testcases-content">
             {selectedTestcaseGroup.length < 1 && <EmptyContent border>{t('릴리스에 해당하는 테스트케이스가 없습니다.')}</EmptyContent>}
             {selectedTestcaseGroup?.length > 0 && (
-              <Table cols={['1px', '100%']} border>
+              <Table cols={['1px', '100%', '1px']} border>
                 <THead>
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
@@ -162,8 +171,16 @@ function ReleaseInfoPage() {
                                     <div>{testcase.name}</div>
                                   </div>
                                 </Td>
-                                <Td>
-                                  <Tag border>{release.name}</Tag>
+                                <Td className="releases">
+                                  {testcase.projectReleaseIds
+                                    .sort((a, b) => b - a)
+                                    .map(projectReleaseId => {
+                                      return (
+                                        <Tag key={projectReleaseId} border bold>
+                                          {releaseNameMap[projectReleaseId]}
+                                        </Tag>
+                                      );
+                                    })}
                                 </Td>
                               </Tr>
                             );

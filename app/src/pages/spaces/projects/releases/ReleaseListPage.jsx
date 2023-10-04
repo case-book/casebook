@@ -92,7 +92,7 @@ function ReleaseListPage() {
                 <Tr>
                   <Th align="left">{t('이름')}</Th>
                   <Th align="right">{t('테스트케이스')}</Th>
-                  <Th align="left" className="creation-date">
+                  <Th align="center" className="creation-date">
                     {t('생성 일시')}
                   </Th>
                   <Th align="left" className="description">

@@ -199,7 +199,7 @@ public class TestcaseController {
     public TestcaseSimpleResponse updateTestcaseRelease(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
         @Valid @RequestBody TestcaseReleaseChangeRequest testcaseReleaseChangeRequest) {
         TestcaseSimpleDTO testcase = testcaseService
-            .updateTestcaseRelease(spaceCode, projectId, testcaseId, testcaseReleaseChangeRequest.getProjectReleaseId());
+            .createTestcaseRelease(spaceCode, projectId, testcaseId, testcaseReleaseChangeRequest.getProjectReleaseId());
         return new TestcaseSimpleResponse(testcase);
     }
 }

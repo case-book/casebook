@@ -14,7 +14,7 @@ public class TestcaseResponse {
     private Long projectId;
     private Long testcaseGroupId;
     private Long testcaseTemplateId;
-    private Long projectReleaseId;
+    private List<Long> projectReleaseIds;
     private String name;
     private Integer itemOrder;
     private Boolean closed;
@@ -33,8 +33,12 @@ public class TestcaseResponse {
         this.seqId = testcase.getSeqId();
         this.testcaseGroupId = testcase.getTestcaseGroup().getId();
         this.testcaseTemplateId = testcase.getTestcaseTemplate().getId();
-        if (testcase.getProjectRelease() != null) {
-            this.projectReleaseId = testcase.getProjectRelease().getId();
+        if (testcase.getProjectReleases() != null) {
+            this.projectReleaseIds = testcase.getProjectReleases()
+                .stream()
+                .map(projectReleaseDTO -> projectReleaseDTO.getId())
+                .distinct()
+                .collect(Collectors.toList());
         }
         this.name = testcase.getName();
         this.itemOrder = testcase.getItemOrder();

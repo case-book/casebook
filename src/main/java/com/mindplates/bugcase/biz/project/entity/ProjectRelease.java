@@ -2,8 +2,12 @@ package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectReleaseId;
 import com.mindplates.bugcase.common.entity.CommonEntity;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -45,33 +49,54 @@ public class ProjectRelease extends CommonEntity {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "projectRelease")
-    private List<Testcase> testcases;
+    @OneToMany(mappedBy = "projectRelease", cascade = CascadeType.ALL)
+    private List<TestcaseProjectRelease> testcaseProjectReleases;
 
     public ProjectRelease(ProjectReleaseDTO projectReleaseDTO, List<Testcase> testcases) {
         setName(projectReleaseDTO.getName());
         setDescription(projectReleaseDTO.getDescription());
         setProject(Project.builder().id(projectReleaseDTO.getProject().getId()).build());
-        setTestcases(testcases.stream()
-            .map(testcase -> {
-                testcase.setProjectRelease(this);
-                return testcase;
-            })
-            .collect(Collectors.toList())
-        );
+
+        setTestcaseProjectReleases(testcases.stream()
+            .map(testcase -> TestcaseProjectRelease.builder()
+                .testcase(testcase)
+                .projectRelease(this)
+                .build())
+            .collect(Collectors.toList()));
     }
 
     public ProjectRelease update(ProjectReleaseDTO projectReleaseDTO, List<Testcase> testcases) {
+        Map<Long, Boolean> testcaseIds = new HashMap<>();
+        testcases.forEach((testcase -> {
+            testcaseIds.put(testcase.getId(), true);
+        }));
+
+
         setName(projectReleaseDTO.getName());
         setDescription(projectReleaseDTO.getDescription());
-        this.testcases.forEach(testcase -> testcase.setProjectRelease(null));
-        setTestcases(testcases.stream()
-            .map(testcase -> {
-                testcase.setProjectRelease(this);
-                return testcase;
-            })
-            .collect(Collectors.toList())
-        );
+        // 선택에서 제외된 테스트케이스 릴리스 삭제
+        testcaseProjectReleases
+            .removeIf(testcaseProjectRelease -> testcaseProjectRelease
+                .getProjectRelease()
+                .getId()
+                .equals(this.id) &&
+                testcaseIds.get(testcaseProjectRelease.getTestcase().getId()) == null);
+
+        for (Testcase testcase : testcases) {
+            if (testcaseProjectReleases
+                .stream()
+                .noneMatch(testcaseProjectRelease ->
+                    testcaseProjectRelease.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId())
+                        && testcaseProjectRelease.getTestcase().getId().equals(testcase.getId()))) {
+                testcaseProjectReleases.add(TestcaseProjectRelease.builder()
+                        .projectRelease(this)
+                        .testcase(testcase)
+                    .build());
+            }
+
+        }
+
+
         return this;
     }
 }
