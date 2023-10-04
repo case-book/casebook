@@ -31,7 +31,7 @@
           .release-list {
             flex-grow: 1;
             padding-top: 5px;
-            padding-left: 3px;
+
             > div {
               margin-right: 3px;
               &:last-child {
@@ -43,9 +43,9 @@
           &.is-edit {
             .release-list {
               padding-top: 3px;
+              padding-left: 3px;
             }
           }
-
         }
 
         .release-selector {

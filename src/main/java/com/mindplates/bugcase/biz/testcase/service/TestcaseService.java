@@ -234,6 +234,7 @@ public class TestcaseService {
         testrunTestcaseGroupTestcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testrunTestcaseGroupRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testcaseProjectReleaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
 
@@ -254,6 +255,7 @@ public class TestcaseService {
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseId(testcaseId);
         testrunTestcaseGroupTestcaseRepository.deleteByTestcaseId(testcaseId);
         testcaseItemRepository.deleteByTestcaseId(testcaseId);
+        testcaseProjectReleaseRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
         files.forEach((testcaseFile -> {
             Resource resource = fileUtil.loadFileIfExist(testcaseFile.getPath());
