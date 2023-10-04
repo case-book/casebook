@@ -25,7 +25,6 @@ function TestcaseItem({
   caseContentElement,
   openTooltipInfo,
   inx,
-
   size,
   selectUserOnly,
   isTestResult,

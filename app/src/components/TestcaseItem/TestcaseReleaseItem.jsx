@@ -74,28 +74,30 @@ function TestcaseReleaseItem({ isEdit, testcaseTemplateItem, content, onChangeTe
           <div>
             <div className={`case-release ${isEdit ? 'is-edit' : ''}`}>
               <div className="release-list">
-                {content.projectReleaseIds
-                  ?.sort((a, b) => b - a)
-                  .map(projectReleaseId => {
-                    return (
-                      <Tag
-                        key={projectReleaseId}
-                        border
-                        bold
-                        onRemove={
-                          isEdit
-                            ? () => {
-                                if (onRemove) {
-                                  onRemove(projectReleaseId);
+                {!(content.projectReleaseIds?.length > 0) && <div className="no-release">{t('릴리즈가 없습니다.')}</div>}
+                {content.projectReleaseIds?.length > 0 &&
+                  content.projectReleaseIds
+                    ?.sort((a, b) => b - a)
+                    .map(projectReleaseId => {
+                      return (
+                        <Tag
+                          key={projectReleaseId}
+                          border
+                          bold
+                          onRemove={
+                            isEdit
+                              ? () => {
+                                  if (onRemove) {
+                                    onRemove(projectReleaseId);
+                                  }
                                 }
-                              }
-                            : null
-                        }
-                      >
-                        {releaseNameMap[projectReleaseId]}
-                      </Tag>
-                    );
-                  })}
+                              : null
+                          }
+                        >
+                          {releaseNameMap[projectReleaseId]}
+                        </Tag>
+                      );
+                    })}
               </div>
               {isEdit && (
                 <div>

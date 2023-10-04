@@ -38,12 +38,22 @@
                 margin-right: 0;
               }
             }
+
+            .no-release {
+              padding-top: 3px;
+              padding-left: 0;
+              color: var(--gray-color);
+            }
           }
 
           &.is-edit {
             .release-list {
               padding-top: 3px;
               padding-left: 3px;
+
+              .no-release {
+                padding-left: 8px;
+              }
             }
           }
         }

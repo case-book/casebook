@@ -28,7 +28,7 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
     if (opened) {
       document.addEventListener('mousedown', handleOutsideClick);
 
-      if (parentElement.current) {
+      if (parentElement?.current) {
         const elementRect = parentElement.current.getClientRects();
         if (elementRect.length > 0) {
           const tooltipRect = tooltip.current.getClientRects();

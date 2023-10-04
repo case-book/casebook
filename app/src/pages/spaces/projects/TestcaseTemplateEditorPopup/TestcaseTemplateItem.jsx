@@ -20,8 +20,8 @@ function TestcaseTemplateItem({ className, testcaseTemplateItem, inx, selected, 
     <li
       key={inx}
       className={`testcase-template-item-wrapper ${className} ${testcaseTemplateItem.crud === 'D' ? 'hidden' : ''} ${testcaseTemplateItem.editable ? 'editable' : 'uneditable'} ${
-        editor && selected ? 'selected' : ''
-      }`}
+        testcaseTemplateItem.fixed ? 'fixed' : ''
+      } ${editor && selected ? 'selected' : ''}`}
       style={{ width: `calc(${(testcaseTemplateItem.size / 12) * 100}%)` }}
       onClick={onClick}
     >
@@ -113,6 +113,8 @@ function TestcaseTemplateItem({ className, testcaseTemplateItem, inx, selected, 
           )}
         </div>
         <div className="item-info">{t(testcaseTemplateItem.label)}</div>
+        {testcaseTemplateItem.fixed && <div className="fixed-badge">{t('고정 아이템')}</div>}
+        {!testcaseTemplateItem.fixed && !testcaseTemplateItem.editable && <div className="editable-badge">{t('필수 아이템')}</div>}
       </div>
     </li>
   );
@@ -142,6 +144,7 @@ TestcaseTemplateItem.propTypes = {
     description: PropTypes.string,
     example: PropTypes.string,
     editable: PropTypes.bool,
+    fixed: PropTypes.bool,
   }),
   selected: PropTypes.bool,
   onClick: PropTypes.func,
