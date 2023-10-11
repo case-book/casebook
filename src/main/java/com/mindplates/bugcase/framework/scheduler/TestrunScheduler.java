@@ -371,7 +371,7 @@ public class TestrunScheduler {
         testrun.setTestcaseGroups(testcaseGroups);
 
         // testrunService.updateTestrunIterationCursor(testrunIterationDTO.getId(), testrunIterationDTO.getFilteringUserCursor(), testrunIterationDTO.getCurrentFilteringUserIds());
-        testrunService.updateTestrunIterationInfo(space.getCode(), testrunIterationDTO);
+        testrunService.updateTestrunIterationInfo(space.getCode(), testrunIterationDTO, true);
 
         return testrun;
     }
@@ -514,9 +514,8 @@ public class TestrunScheduler {
             // String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
-            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(
-                reserveEndDateTime)) && nowStartTime.equals(startTime)) {
-                //if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
+            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
+                // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
             }

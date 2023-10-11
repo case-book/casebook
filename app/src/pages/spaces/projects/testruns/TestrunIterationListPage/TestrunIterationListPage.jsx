@@ -184,7 +184,7 @@ function TestrunIterationListPage() {
                           })}
                         {testrunIteration.testrunIterationTimeType === 'WEEKLY' && (
                           <Tag className={`day ${testrunIteration.excludeHoliday ? 'selected' : ''}`} uppercase border color="transparent">
-                            {testrunIteration.excludeHoliday ? t('휴일 포함') : t('휴일 제외')}
+                            {testrunIteration.excludeHoliday ? t('휴일 제외') : t('휴일 포함')}
                           </Tag>
                         )}
                         {testrunIteration.testrunIterationTimeType === 'MONTHLY' && (

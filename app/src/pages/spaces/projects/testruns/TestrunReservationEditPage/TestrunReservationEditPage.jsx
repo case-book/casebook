@@ -137,6 +137,11 @@ function TestrunReservationEditPage({ type }) {
       return;
     }
 
+    if (!testrunReservation.testrunUsers || testrunReservation.testrunUsers?.length < 1) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스터 없음', '테스트런에 포함된 테스터가 없습니다.');
+      return;
+    }
+
     if (isEdit) {
       TestrunService.updateProjectTestrunReservationInfo(
         spaceCode,

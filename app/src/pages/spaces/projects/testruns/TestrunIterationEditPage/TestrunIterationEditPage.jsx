@@ -162,6 +162,11 @@ function TestrunIterationEditPage({ type }) {
       return;
     }
 
+    if (!testrunIteration.testrunUsers || testrunIteration.testrunUsers?.length < 1) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스터 없음', '테스트런에 포함된 테스터가 없습니다.');
+      return;
+    }
+
     if (isEdit) {
       TestrunService.updateProjectTestrunIterationInfo(
         spaceCode,
@@ -214,7 +219,7 @@ function TestrunIterationEditPage({ type }) {
 
   const testrunUserCountList = useMemo(() => {
     const list = [];
-    for (let i = 1; i <= testrunIteration.testrunUsers.length; i += 1) {
+    for (let i = 1; i <= testrunIteration.testrunUsers?.length; i += 1) {
       list.push(i);
     }
     return list;
