@@ -9,6 +9,10 @@
     }
   }
 
+  &.outline {
+    outline: 1px solid var(--border-light-color);
+  }
+
   &.fill {
     background-color: var(--light-color);
   }

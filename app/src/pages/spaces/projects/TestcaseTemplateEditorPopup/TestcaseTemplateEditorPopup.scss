@@ -92,6 +92,11 @@
 
             .layout {
               flex-grow: 1;
+
+              hr.info-hr {
+                background: transparent;
+                border-bottom: 1px dashed var(--border-light-color);
+              }
             }
 
             ul {

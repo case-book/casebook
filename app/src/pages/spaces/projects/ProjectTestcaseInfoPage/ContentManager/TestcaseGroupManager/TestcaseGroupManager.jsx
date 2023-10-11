@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, EmptyContent, Input, SeqId, TextArea } from '@/components';
+import { Button, EmptyContent, Input, SeqId, Tag, TextArea } from '@/components';
 import PropTypes from 'prop-types';
 import { ITEM_TYPE } from '@/constants/constants';
 import './TestcaseGroupManager.scss';
+import { ProjectReleasePropTypes } from '@/proptypes';
 
-function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent }) {
+function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel, content, setContent, addTestcase, onChangeTestcaseNameAndDescription, getPopupContent, releases }) {
   const { t } = useTranslation();
 
   const [editInfo, setEditInfo] = useState({
@@ -123,6 +124,9 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
                       <SeqId className="seq-id" type={ITEM_TYPE.TESTCASE}>
                         {testcase.seqId}
                       </SeqId>
+                      <Tag size="sm" color="secondary">
+                        {releases.find(release => release.id === testcase.projectReleaseId)?.name ?? t('릴리스 없음')}
+                      </Tag>
                       <div className="name">
                         {editInfo.id !== testcase.id && <span>{testcase.name}</span>}
                         {editInfo.id === testcase.id && (
@@ -243,6 +247,7 @@ function TestcaseGroupManager({ isEdit, setIsEdit, onSaveTestcaseGroup, onCancel
 
 TestcaseGroupManager.defaultProps = {
   content: {},
+  releases: [],
 };
 
 TestcaseGroupManager.propTypes = {
@@ -282,6 +287,7 @@ TestcaseGroupManager.propTypes = {
       }),
     ),
   }),
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
   setContent: PropTypes.func.isRequired,
   addTestcase: PropTypes.func.isRequired,
   onChangeTestcaseNameAndDescription: PropTypes.func.isRequired,

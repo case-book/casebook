@@ -11,6 +11,7 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class TestrunIterationRequest {
     private Long id;
     private String name;
     private String description;
+    @NotEmpty
     private List<TestrunUserRequest> testrunUsers;
     private List<TestrunTestcaseGroupRequest> testcaseGroups;
     private Long projectId;

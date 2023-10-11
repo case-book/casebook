@@ -16,12 +16,14 @@ public class TestrunUserResponse {
     private Long userId;
     private String name;
     private String email;
+    private String avatarInfo;
 
     public TestrunUserResponse(TestrunUserDTO testrunUser) {
         this.id = testrunUser.getId();
         this.userId = testrunUser.getUser().getId();
         this.name = testrunUser.getUser().getName();
         this.email = testrunUser.getUser().getEmail();
+        this.avatarInfo = testrunUser.getUser().getAvatarInfo();
     }
 
 

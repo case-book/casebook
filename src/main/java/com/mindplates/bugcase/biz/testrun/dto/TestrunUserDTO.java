@@ -23,7 +23,7 @@ public class TestrunUserDTO extends CommonDTO {
 
     public TestrunUserDTO(TestrunUser testrunUser) {
         this.id = testrunUser.getId();
-        this.user = UserDTO.builder().id(testrunUser.getUser().getId()).email(testrunUser.getUser().getEmail()).name(testrunUser.getUser().getName()).build();
+        this.user = UserDTO.builder().id(testrunUser.getUser().getId()).email(testrunUser.getUser().getEmail()).name(testrunUser.getUser().getName()).avatarInfo(testrunUser.getUser().getAvatarInfo()).build();
     }
 
 }

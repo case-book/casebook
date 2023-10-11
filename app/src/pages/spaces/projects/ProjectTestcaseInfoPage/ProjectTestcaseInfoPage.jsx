@@ -6,6 +6,7 @@ import { FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
+import ReleaseService from '@/services/ReleaseService';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
 import './ProjectTestcaseInfoPage.scss';
@@ -21,6 +22,7 @@ function ProjectTestcaseInfoPage() {
   const [tags, setTags] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
+  const [releases, setReleases] = useState([]);
   const { query, setQuery: setSelectedItemInfo } = useQueryString();
 
   const selectedItemInfo = useMemo(() => {
@@ -87,6 +89,11 @@ function ProjectTestcaseInfoPage() {
     });
   };
 
+  const getReleases = () =>
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+      setReleases(list);
+    });
+
   const [min, setMin] = useState(false);
 
   const [countSummary, setCountSummary] = useState({
@@ -97,6 +104,7 @@ function ProjectTestcaseInfoPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     getProject();
+    getReleases();
   }, [spaceCode, projectId]);
 
   const findGroup = (id, groups) => {
@@ -481,46 +489,47 @@ function ProjectTestcaseInfoPage() {
       </PageTitle>
       <PageContent className="page-content">
         {project?.testcaseTemplates && (
-          <FlexibleLayout
-            layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
-            min={min}
-            left={
-              <TestcaseNavigator
-                testcaseGroups={testcaseGroups}
-                addTestcaseGroup={addTestcaseGroup}
-                addTestcase={addTestcase}
-                onPositionChange={onPositionChange}
-                onChangeTestcaseGroupName={onChangeTestcaseGroupName}
-                selectedItemInfo={selectedItemInfo}
-                onSelect={setSelectedItemInfo}
-                onDelete={onDeleteTestcaseGroup}
-                min={min}
-                setMin={setMin}
-                countSummary={countSummary}
-                contentChanged={contentChanged}
-                copyTestcase={copyTestcase}
-              />
-            }
-            right={
-              <ContentManager
-                getPopupContent={getPopupContent}
-                popupContent={popupContent}
-                type={selectedItemInfo?.type}
-                content={content}
-                addTestcase={addTestcase}
-                testcaseTemplates={project?.testcaseTemplates}
-                loading={contentLoading}
-                setContentChanged={setContentChanged}
-                onSaveTestcase={onSaveTestcase}
-                onSaveTestcaseGroup={onSaveTestcaseGroup}
-                users={projectUsers}
-                createTestcaseImage={createTestcaseImage}
-                onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
-                setPopupContent={setPopupContent}
-                tags={tags}
-              />
-            }
-          />
+        <FlexibleLayout
+          layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
+          min={min}
+          left={
+            <TestcaseNavigator
+              testcaseGroups={testcaseGroups}
+              addTestcaseGroup={addTestcaseGroup}
+              addTestcase={addTestcase}
+              onPositionChange={onPositionChange}
+              onChangeTestcaseGroupName={onChangeTestcaseGroupName}
+              selectedItemInfo={selectedItemInfo}
+              onSelect={setSelectedItemInfo}
+              onDelete={onDeleteTestcaseGroup}
+              min={min}
+              setMin={setMin}
+              countSummary={countSummary}
+              contentChanged={contentChanged}
+              copyTestcase={copyTestcase}
+            />
+          }
+          right={
+            <ContentManager
+              getPopupContent={getPopupContent}
+              popupContent={popupContent}
+              type={selectedItemInfo?.type}
+              content={content}
+              addTestcase={addTestcase}
+              releases={releases}
+              testcaseTemplates={project?.testcaseTemplates}
+              loading={contentLoading}
+              setContentChanged={setContentChanged}
+              onSaveTestcase={onSaveTestcase}
+              onSaveTestcaseGroup={onSaveTestcaseGroup}
+              users={projectUsers}
+              createTestcaseImage={createTestcaseImage}
+              onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
+              setPopupContent={setPopupContent}
+              tags={tags}
+            />
+          }
+        />
         )}
       </PageContent>
     </Page>

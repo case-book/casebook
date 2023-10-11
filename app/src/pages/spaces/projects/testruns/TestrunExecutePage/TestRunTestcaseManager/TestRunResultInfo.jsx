@@ -133,7 +133,6 @@ function TestRunTestcaseManager({
                   <TestcaseItem
                     selectUserOnly
                     size="sm"
-                    type={false}
                     key={inx}
                     isEdit
                     testcaseTemplateItem={{

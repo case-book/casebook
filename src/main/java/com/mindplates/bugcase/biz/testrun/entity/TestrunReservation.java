@@ -132,7 +132,7 @@ public class TestrunReservation extends CommonEntity {
         this.testrunUsers.addAll(
             newTestrunUsers
                 .stream()
-                .filter(newTestrunUser -> this.testrunUsers
+                .filter(newTestrunUser -> this.testrunUsers.size() < 1 || this.testrunUsers
                     .stream()
                     .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(newTestrunUser.getUser().getId())))
                 .map(newTestrunUser -> TestrunUser.builder()

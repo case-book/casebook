@@ -192,7 +192,7 @@ public class TestrunController {
             throw new ServiceException("testrun.reservation.testcase.empty");
         }
 
-        testrunService.updateTestrunIterationInfo(spaceCode, testrunIterationDTO);
+        testrunService.updateTestrunIterationInfo(spaceCode, testrunIterationDTO, false);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

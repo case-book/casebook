@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.testcase.service;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
+import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
@@ -16,10 +17,13 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectReleaseId;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateItemRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
@@ -43,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -72,6 +77,7 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final UserRepository userRepository;
+    private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -152,7 +158,8 @@ public class TestcaseService {
         } else {
             List<TestcaseGroup> sameParentList = testcaseGroups.stream().filter(
                     testcaseGroup -> (destinationGroup.getParentId() == null && testcaseGroup.getParentId() == null) || (
-                        destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId())))
+                        destinationGroup.getParentId() != null && destinationGroup.getParentId().equals(testcaseGroup.getParentId()))
+                )
                 .sorted(Comparator.comparingInt(TestcaseGroup::getItemOrder)).collect(Collectors.toList());
 
             AtomicInteger inx = new AtomicInteger(0);
@@ -227,6 +234,7 @@ public class TestcaseService {
         testrunTestcaseGroupTestcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testrunTestcaseGroupRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseItemRepository.deleteByTestcaseGroupIds(deleteGroupIds);
+        testcaseProjectReleaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseRepository.deleteByTestcaseGroupIds(deleteGroupIds);
         testcaseGroupRepository.deleteByIds(deleteGroupIds);
 
@@ -247,6 +255,7 @@ public class TestcaseService {
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseId(testcaseId);
         testrunTestcaseGroupTestcaseRepository.deleteByTestcaseId(testcaseId);
         testcaseItemRepository.deleteByTestcaseId(testcaseId);
+        testcaseProjectReleaseRepository.deleteByTestcaseId(testcaseId);
         testcaseRepository.deleteById(testcaseId);
         files.forEach((testcaseFile -> {
             Resource resource = fileUtil.loadFileIfExist(testcaseFile.getPath());
@@ -381,6 +390,30 @@ public class TestcaseService {
         testcase.setName(name);
         testcase.setDescription(description);
         testcaseRepository.save(testcase);
+        return new TestcaseSimpleDTO(testcase);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseSimpleDTO createTestcaseRelease(String spaceCode, Long projectId, Long testcaseId, Long releaseId) {
+        Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Optional<TestcaseProjectRelease> testcaseProjectRelease = testcaseProjectReleaseRepository.findById(
+            TestcaseProjectReleaseId.builder().testcase(testcaseId).projectRelease(releaseId).build());
+        if (!testcaseProjectRelease.isPresent()) {
+            TestcaseProjectRelease newTestcaseProjectRelease = TestcaseProjectRelease
+                .builder()
+                .testcase(Testcase.builder().id(testcaseId).build())
+                .projectRelease(ProjectRelease.builder().id(releaseId).build())
+                .build();
+
+            if (testcase.getTestcaseProjectReleases() == null) {
+                testcase.setTestcaseProjectReleases(new ArrayList<>());
+            }
+
+            testcase.getTestcaseProjectReleases().add(newTestcaseProjectRelease);
+            testcaseRepository.save(testcase);
+        }
+
         return new TestcaseSimpleDTO(testcase);
     }
 

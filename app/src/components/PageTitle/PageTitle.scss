@@ -2,11 +2,33 @@
   height: 80px;
   position: relative;
 
+  &.collapse {
+    height: 60px;
+
+    .links {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    .page-title-info {
+      margin-bottom: 8px;
+    }
+
+    > div {
+      > div {
+        &.icon {
+          > span {
+            margin-bottom: 4px;
+          }
+        }
+      }
+    }
+  }
+
   .page-name {
     position: absolute;
     top: -20px;
     z-index: 5;
-    display: inline-block;
     color: var(--gray-color);
     font-size: 12px;
     display: none;
@@ -18,7 +40,6 @@
 
   @media (max-width: 768px) {
     height: 70px;
-    background-color: var(--lighter-color);
     border-bottom: none;
   }
 
@@ -40,8 +61,7 @@
         margin-right: -10px;
 
         > span {
-          align-self: flex-start;
-          margin-top: 21px;
+          align-self: center;
           display: inline-flex;
           width: 32px;
           height: 32px;
@@ -161,15 +181,23 @@
 
 .page-wrapper.info-page {
   .page-title-wrapper {
-    border-bottom: 1px solid var(--border-light-color);
+    &.border-bottom {
+      border-bottom: 1px solid var(--border-light-color);
+    }
   }
 }
 
 .page-wrapper.list-page {
   .page-title-wrapper {
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
     padding-top: 4px;
+
+    &.margin-bottom {
+      margin-bottom: 20px;
+    }
+
+    &.border-bottom {
+      border-bottom: 1px solid var(--border-color);
+    }
 
     > div {
       max-width: $max-width;
@@ -177,11 +205,6 @@
       display: flex;
       width: 100%;
       height: 100%;
-
-      @media (max-width: 1024px) {
-        padding-left: 10px;
-        padding-right: 10px;
-      }
 
       > div {
         align-self: center;

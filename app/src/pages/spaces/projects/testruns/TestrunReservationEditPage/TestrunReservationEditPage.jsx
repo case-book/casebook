@@ -8,7 +8,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import TestcaseSelectPopup from '@/pages/spaces/projects/testruns/TestcaseSelectPopup/TestcaseSelectPopup';
+import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -134,6 +134,11 @@ function TestrunReservationEditPage({ type }) {
 
     if (testrunReservation.startDateTime && testrunReservation.endDateTime && testrunReservation.startDateTime > testrunReservation.endDateTime) {
       dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스트 기간 오류', '테스트 종료 일시가 테스트 시작 일시보다 빠릅니다.');
+      return;
+    }
+
+    if (!testrunReservation.testrunUsers || testrunReservation.testrunUsers?.length < 1) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '테스터 없음', '테스트런에 포함된 테스터가 없습니다.');
       return;
     }
 

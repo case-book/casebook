@@ -161,6 +161,21 @@ public class TestrunIteration extends CommonEntity {
         this.filteringUserCount = testrunIteration.getFilteringUserCount();
         this.testcaseGroupCount = testrunIteration.getTestcaseGroupCount();
         this.testcaseCount = testrunIteration.getTestcaseCount();
+
+
+    }
+
+    public void updateIterationInfo(TestrunIterationDTO testrunIteration) {
+        if (testrunIteration.getFilteringUserCursor() != null) {
+            this.filteringUserCursor = testrunIteration.getFilteringUserCursor();
+        }
+        if (testrunIteration.getExpired() != null) {
+            this.expired = testrunIteration.getExpired();
+        }
+
+        if (testrunIteration.getCurrentFilteringUserIds() != null) {
+            this.currentFilteringUserIds = testrunIteration.getCurrentFilteringUserIds();
+        }
     }
 
     public void updateTester(List<TestrunUserDTO> testrunUsers) {
@@ -172,7 +187,7 @@ public class TestrunIteration extends CommonEntity {
         // 추가된 테스터 추가
         this.testrunUsers.addAll(testrunUsers
             .stream()
-            .filter(testrunUserDTO -> testrunUsers
+            .filter(testrunUserDTO -> this.testrunUsers.size() < 1 || this.testrunUsers
                 .stream()
                 .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId())))
             .map(testrunUserDTO -> TestrunUser.builder()
@@ -182,59 +197,61 @@ public class TestrunIteration extends CommonEntity {
             .collect(Collectors.toList()));
     }
 
-    public void removeDeletedTestcaseGroup(TestrunIteration newTestrunIteration) {
-        this.testcaseGroups.removeIf(testrunTestcaseGroup -> newTestrunIteration.getTestcaseGroups().stream()
-            .filter(ttg -> ttg.getId() != null)
-            .noneMatch((ttg -> ttg.getId().equals(testrunTestcaseGroup.getId()))));
+    public void updateTestcaseGroups(List<TestrunTestcaseGroup> newTestcaseGroups) {
+        // 삭제된 테스트런 테스트케이스 그룹 제거
+        this.testcaseGroups.removeIf(
+            (testrunTestcaseGroup -> newTestcaseGroups.stream()
+                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
+                .noneMatch((testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId()
+                    .equals(testrunTestcaseGroup.getId())))));
 
         // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
-        for (TestrunTestcaseGroup testcaseGroup : newTestrunIteration.getTestcaseGroups()) {
-            TestrunTestcaseGroup updateTestrunTestcaseGroup = newTestrunIteration.getTestcaseGroups()
+        for (TestrunTestcaseGroup testcaseGroup : this.testcaseGroups) {
+            TestrunTestcaseGroup updateTestrunTestcaseGroup = newTestcaseGroups
                 .stream()
-                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
-                .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testcaseGroup.getId()))
-                .findAny()
-                .orElse(null);
+                .filter(newTestrunTestcaseGroup -> newTestrunTestcaseGroup.getId() != null)
+                .filter(newTestrunTestcaseGroup -> newTestrunTestcaseGroup.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
 
             if (testcaseGroup.getTestcases() != null) {
                 testcaseGroup.getTestcases().removeIf(testcase -> {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getTestcase().getId()
+                                .equals(testcase.getTestcase().getId()));
                     }
                     return true;
                 });
             }
         }
-    }
 
-    public void addTestcase(TestrunIteration newTestrunIteration) {
-        newTestrunIteration.getTestcaseGroups().stream()
-            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
+        newTestcaseGroups.stream()
             .forEach(ttg -> {
-                TestrunTestcaseGroup targetTestcaseGroup = newTestrunIteration
-                    .getTestcaseGroups().stream().filter(
-                        testrunTestcaseGroup -> testrunTestcaseGroup.getId()
-                            .equals(ttg.getId())).findAny().orElse(null);
-
-                if (targetTestcaseGroup != null && ttg.getTestcases() != null) {
+                TestrunTestcaseGroup targetTestcaseGroup = this.testcaseGroups.stream()
+                    .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcaseGroup().getId().equals(ttg.getTestcaseGroup().getId())).findAny()
+                    .orElse(null);
+                if (targetTestcaseGroup == null) {
+                    this.testcaseGroups.add(ttg);
+                } else if (ttg.getTestcases() != null) {
                     ttg.getTestcases()
                         .stream()
-                        .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId() == null)
                         .forEach(testrunTestcaseGroupTestcase -> {
-                            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
-                            targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+
+                            TestrunTestcaseGroupTestcase testcase = targetTestcaseGroup.getTestcases()
+                                .stream()
+                                .filter(targetTestrunTestcaseGroupTestcase -> targetTestrunTestcaseGroupTestcase.getTestcase().getId()
+                                    .equals(testrunTestcaseGroupTestcase.getTestcase().getId()))
+                                .findAny().orElse(null);
+
+                            if (testcase == null) {
+                                testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
+                                targetTestcaseGroup.getTestcases().add(testrunTestcaseGroupTestcase);
+                            }
+
                         });
                 }
             });
-
-        // 추가된 테스트런 테스트케이스 그룹 추가
-        newTestrunIteration.getTestcaseGroups().stream()
-            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() == null)
-            .forEach(testrunTestcaseGroup -> {
-                testrunTestcaseGroup.setTestrunIteration(this);
-                this.testcaseGroups.add(testrunTestcaseGroup);
-            });
     }
+
+
 }

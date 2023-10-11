@@ -315,6 +315,41 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
                             })}
                         </ul>
                       )}
+                      <hr className="info-hr" />
+                      <ul>
+                        <TestcaseTemplateItem
+                          testcaseTemplateItem={{
+                            category: 'CASE',
+                            type: 'RELEASE',
+                            label: '릴리스',
+                            options: [],
+                            size: 6,
+                            defaultValue: null,
+                            defaultType: null,
+                            description: '- 테스트케이스가 포함되는 릴리스를 선택합니다.',
+                            example: null,
+                            editable: false,
+                            fixed: true,
+                            systemLabel: null,
+                          }}
+                        />
+                        <TestcaseTemplateItem
+                          testcaseTemplateItem={{
+                            category: 'CASE',
+                            type: 'USER',
+                            label: '테스터',
+                            options: [],
+                            size: 6,
+                            defaultValue: null,
+                            defaultType: null,
+                            description: null,
+                            example: null,
+                            editable: false,
+                            fixed: true,
+                            systemLabel: null,
+                          }}
+                        />
+                      </ul>
                     </div>
                   </div>
                   <div>

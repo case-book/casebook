@@ -1,23 +1,40 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Builder
 @Table(name = "testcase", indexes = {
-        @Index(name = "IDX_TESTCASE_PROJECT_ID_AND_SEQ_ID", columnList = "project_id, seq_id", unique = true)
+    @Index(name = "IDX_TESTCASE_PROJECT_ID_AND_SEQ_ID", columnList = "project_id, seq_id", unique = true)
 })
 @NoArgsConstructor
 @AllArgsConstructor
@@ -60,6 +77,9 @@ public class Testcase extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
     private Project project;
 
+    @OneToMany(mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true )
+    private List<TestcaseProjectRelease> testcaseProjectReleases;
+
     @Column(name = "tester_type", length = ColumnsDef.CODE)
     private String testerType;
 
@@ -69,7 +89,8 @@ public class Testcase extends CommonEntity {
     @Column(name = "content_update_date")
     private LocalDateTime contentUpdateDate;
 
-    public int assignTester(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, List<TestrunUser> testrunUsers, Random random, int currentSeq) {
+    public int assignTester(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, List<TestrunUser> testrunUsers, Random random,
+        int currentSeq) {
         if (this.testcaseItems != null) {
             for (TestcaseItem testcaseItem : this.testcaseItems) {
                 if (testcaseItem.getValue() == null) {
@@ -78,11 +99,11 @@ public class Testcase extends CommonEntity {
                 TestcaseTemplateItem testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
                 if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
                     TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = testrunTestcaseGroupTestcase
-                            .getTestcaseItems()
-                            .stream()
-                            .filter(item -> item.getTestcaseTemplateItem().getId().equals(testcaseTemplateItem.getId()))
-                            .findAny()
-                            .orElse(null);
+                        .getTestcaseItems()
+                        .stream()
+                        .filter(item -> item.getTestcaseTemplateItem().getId().equals(testcaseTemplateItem.getId()))
+                        .findAny()
+                        .orElse(null);
                     if (testrunTestcaseGroupTestcaseItem != null) {
                         if (!testrunUsers.isEmpty()) {
                             if ("RND".equals(testcaseItem.getValue())) {
@@ -104,5 +125,45 @@ public class Testcase extends CommonEntity {
         }
 
         return currentSeq;
+    }
+
+    public Testcase update(Testcase testcase) {
+        this.testcaseGroup = testcase.getTestcaseGroup();
+        this.name = testcase.getName();
+        this.description = testcase.getDescription();
+        this.itemOrder = testcase.getItemOrder();
+        this.closed = testcase.getClosed();
+        this.testcaseTemplate = testcase.getTestcaseTemplate();
+        this.testcaseItems = testcase.getTestcaseItems();
+        this.testerType = testcase.getTesterType();
+        this.testerValue = testcase.getTesterValue();
+        this.contentUpdateDate = LocalDateTime.now();
+
+
+
+        this.testcaseProjectReleases.removeIf(testcaseProjectRelease ->
+                testcase.getTestcaseProjectReleases()
+                    .stream()
+                    .noneMatch(testcaseProjectRelease1 ->
+                        testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId())
+                            && testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())));
+
+        for (TestcaseProjectRelease nextTestcaseProjectRelease : testcase.getTestcaseProjectReleases()) {
+            if (this.testcaseProjectReleases
+                .stream()
+                .noneMatch(testcaseProjectRelease ->
+                    testcaseProjectRelease.getProjectRelease().getId().equals(nextTestcaseProjectRelease.getProjectRelease().getId())
+                        && testcaseProjectRelease.getTestcase().getId().equals(nextTestcaseProjectRelease.getTestcase().getId()))) {
+                this.testcaseProjectReleases.add(TestcaseProjectRelease.builder()
+                    .projectRelease(ProjectRelease.builder().id(nextTestcaseProjectRelease.getProjectRelease().getId()).build())
+                    .testcase(this)
+                    .build());
+            }
+
+        }
+
+        return this;
+
+
     }
 }

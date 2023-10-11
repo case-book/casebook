@@ -63,7 +63,7 @@
 
         .summary-content {
           display: flex;
-          height: 100px;
+          height: 150px;
           margin-bottom: 10px;
           overflow: hidden;
 
@@ -74,6 +74,7 @@
 
           .result-summary {
             min-width: 200px;
+            padding-top: 20px;
 
             @media (max-width: 800px) {
               min-width: auto;
@@ -84,7 +85,7 @@
             }
             > div {
               display: flex;
-              height: 45px;
+              height: 60px;
               margin-bottom: 10px;
               .label {
                 min-width: 60px;
@@ -96,7 +97,7 @@
                 position: relative;
                 background-color: var(--lighter-color);
                 border-radius: 2px;
-                padding-top: 6px;
+                padding-top: 15px;
 
                 .progress-bar {
                   position: absolute;
@@ -112,6 +113,7 @@
                   z-index: 2;
                   margin-bottom: 2px;
                   text-align: center;
+                  font-weight: bold;
                 }
 
                 .progress-count {
@@ -142,6 +144,8 @@
             flex-grow: 1;
             display: flex;
             overflow: auto;
+            padding-top: 20px;
+
             @media (max-width: 800px) {
               margin-top: 20px;
             }
@@ -160,6 +164,14 @@
               border-radius: 2px;
               background-color: var(--lighter-color);
               border: 1px solid var(--light-color);
+
+              .user-icon {
+                position: absolute;
+                top: -40px;
+                left: 0;
+                right: 0;
+                text-align: center;
+              }
 
               .count-info {
                 align-self: center;
@@ -229,13 +241,18 @@
               }
 
               .progress-bar {
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                border-radius: 4px;
-                background-color: var(--yellow-color);
-                display: none;
+                height: 4px;
+                margin: 0 30px 2px;
+                border-radius: 5px;
+                line-height: 0;
+                background-color: var(--light-color);
+                > div {
+                  background-color: var(--yellow-color);
+                  height: 100%;
+                  border-radius: 5px;
+                  display: inline-block;
+                  line-height: 0;
+                }
               }
             }
           }
@@ -253,14 +270,16 @@
         .testrun-result-count {
           display: flex;
           overflow: auto;
+
           > div {
             flex: 1 1 0;
             text-align: center;
-            max-width: 120px;
-            min-width: 100px;
+            max-width: 140px;
+            min-width: 140px;
             border: 1px solid var(--border-light-color);
-            padding: 20px 0 24px;
+            padding: 20px 0 30px;
             margin-right: 10px;
+            position: relative;
             &:last-child {
               margin-right: 0;
             }
@@ -270,7 +289,7 @@
               white-space: nowrap;
             }
 
-            > div:last-child {
+            > div.count {
               > a {
                 font-size: 20px;
                 font-weight: bold;
@@ -297,6 +316,23 @@
                   color: var(--gray-color);
                   border-bottom-color: var(--gray-color);
                 }
+              }
+            }
+
+            > div.has-comment {
+              text-align: right;
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              padding: 6px 10px;
+
+              > span {
+                margin-right: 4px;
+              }
+
+              a {
+                font-size: 12px;
               }
             }
           }

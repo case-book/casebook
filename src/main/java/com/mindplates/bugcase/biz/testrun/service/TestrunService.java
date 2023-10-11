@@ -654,20 +654,21 @@ public class TestrunService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
-    public TestrunIterationDTO updateTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration) {
+    public TestrunIterationDTO updateTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration, boolean updateIterationInfo) {
         TestrunIteration newTestrunIteration = mappingUtil.convert(testrunIteration, TestrunIteration.class);
         TestrunIteration targetTestrunIteration = testrunIterationRepository
             .findById(testrunIteration.getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
+
         targetTestrunIteration.updateInfo(testrunIteration);
         targetTestrunIteration.updateTester(testrunIteration.getTestrunUsers());
+        if (updateIterationInfo) {
+            targetTestrunIteration.updateIterationInfo(testrunIteration);
+        }
 
-        // 삭제된 테스트런 테스트케이스 그룹 제거
-        targetTestrunIteration.removeDeletedTestcaseGroup(newTestrunIteration);
-
-        // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
-        targetTestrunIteration.addTestcase(newTestrunIteration);
+        // 삭제된 테스트런 테스트케이스 그룹 및 테스트케이스 제거
+        targetTestrunIteration.updateTestcaseGroups(newTestrunIteration.getTestcaseGroups());
 
         int testcaseGroupCount = targetTestrunIteration.getTestcaseGroups().size();
         int testcaseCount = targetTestrunIteration.getTestcaseGroups().stream()

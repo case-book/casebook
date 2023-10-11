@@ -71,7 +71,7 @@ public class SpaceService {
     @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     @Transactional
     public void deleteSpaceInfo(SpaceDTO space) {
-        List<ProjectDTO> projects = projectService.selectSpaceProjectList(space.getId());
+        List<ProjectDTO> projects = projectService.selectSpaceProjectDetailList(space.getId());
         for (ProjectDTO project : projects) {
             projectService.deleteProjectInfo(space.getCode(), project);
         }
