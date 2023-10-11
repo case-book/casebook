@@ -222,4 +222,17 @@ TestcaseService.createImage = (spaceCode, projectId, testcaseId, name, size, typ
   return request.post(`/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/images`, formData, null, null, null, null, null, true);
 };
 
+TestcaseService.updateTestcaseRelease = (spaceCode, projectId, testcaseId, releaseId, successHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/release`,
+    { releaseId },
+    res => {
+      successHandler(res);
+    },
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

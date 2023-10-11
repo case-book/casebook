@@ -3,11 +3,23 @@
   display: flex;
   flex-direction: column;
 
-  .testcase-title {
-    padding: 1.5rem;
+  .testcase-header {
     display: flex;
-    border-radius: 4px 4px 0 0;
-
+    flex-direction: row;
+    padding: 1.5rem;
+    > div {
+      display: flex;
+      flex-direction: row;
+      border-radius: 4px 4px 0 0;
+    }
+  }
+  .testcase-header .testcase-basic-info {
+    align-items: center;
+    gap: 0 8px;
+    margin-right: 8px;
+  }
+  .testcase-header .testcase-title {
+    flex-grow: 1;
     > div {
       align-self: center;
     }
@@ -48,7 +60,7 @@
     }
 
     .title-button {
-      margin-left: 1rem;
+      margin-left: 8px;
 
       button {
         margin-right: 0.5rem;
@@ -88,8 +100,9 @@
       }
     }
 
-    hr.creator-info-hr {
-      background: var(--border-light-color);
+    hr.info-hr {
+      background: transparent;
+      border-bottom: 1px dashed var(--border-light-color);
     }
 
     .creator-info {
@@ -110,7 +123,6 @@
           }
         }
       }
-
     }
   }
 

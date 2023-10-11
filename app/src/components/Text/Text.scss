@@ -26,27 +26,27 @@
 
   &.size-xxl {
     font-size: 20px;
-    height: $xxl-height;
+    min-height: $xxl-height;
   }
 
   &.size-xl {
     font-size: 18px;
-    height: $xl-height;
+    min-height: $xl-height;
   }
 
   &.size-lg {
     font-size: 16px;
-    height: $lg-height;
+    min-height: $lg-height;
   }
 
   &.size-md {
     font-size: 14px;
-    height: $md-height;
+    min-height: $md-height;
   }
 
   &.size-sm {
     font-size: 12px;
-    height: $sm-height;
+    min-height: $sm-height;
   }
 
   &.size-xs {

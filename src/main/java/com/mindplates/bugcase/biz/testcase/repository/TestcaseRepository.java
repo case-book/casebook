@@ -1,14 +1,13 @@
 package com.mindplates.bugcase.biz.testcase.repository;
 
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
@@ -39,7 +38,7 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
     List<Testcase> findAllByProjectIdAndContentUpdateDateBetween(Long projectId, LocalDateTime from, LocalDateTime to);
 
-
+    List<Testcase> findByIdIn(List<Long> ids);
 
 }
 

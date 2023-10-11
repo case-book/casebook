@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.dto;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
@@ -29,11 +30,11 @@ public class ProjectDTO extends CommonDTO {
     private List<ProjectUserDTO> users;
     private List<ProjectApplicantDTO> applicants;
     private SpaceDTO space;
+    private List<ProjectReleaseDTO> projectReleases;
     private Integer testcaseGroupSeq = 0;
     private Integer testcaseSeq = 0;
     private Integer testrunSeq = 0;
     private Long testrunCount = 0L;
-
     private Long testcaseCount = 0L;
     private String slackUrl;
     private boolean enableTestrunAlarm;
@@ -53,6 +54,9 @@ public class ProjectDTO extends CommonDTO {
         this.testrunSeq = project.getTestrunSeq();
         this.slackUrl = project.getSlackUrl();
         this.enableTestrunAlarm = project.isEnableTestrunAlarm();
+        if (project.getProjectReleases() != null) {
+            this.projectReleases = project.getProjectReleases().stream().map(ProjectReleaseDTO::new).collect(Collectors.toList());
+        }
         if (detail && project.getUsers() != null) {
             this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
         }

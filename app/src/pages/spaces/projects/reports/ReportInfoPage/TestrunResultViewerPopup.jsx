@@ -81,7 +81,6 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                   return (
                     <TestcaseItem
                       key={inx}
-                      type={false}
                       isEdit={false}
                       testcaseTemplateItem={testcaseTemplateItem}
                       testcaseItem={testcaseItem}
@@ -104,7 +103,6 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                 <div className="testrun-result-list">
                   <TestcaseItem
                     isEdit={false}
-                    type={false}
                     testcaseTemplateItem={{
                       ...DEFAULT_TESTRUN_RESULT_ITEM,
                     }}
@@ -118,7 +116,6 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                   />
                   <TestcaseItem
                     isEdit={false}
-                    type={false}
                     testcaseTemplateItem={{
                       ...DEFAULT_TESTRUN_TESTER_ITEM,
                     }}
@@ -141,7 +138,6 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                         <TestcaseItem
                           key={inx}
                           isEdit={false}
-                          type={false}
                           testcaseTemplateItem={{
                             ...testcaseTemplateItem,
                           }}

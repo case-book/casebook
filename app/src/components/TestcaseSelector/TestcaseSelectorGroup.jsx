@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { TestcaseGroupPropTypes } from '@/proptypes';
+import { ProjectReleasePropTypes, SelectedTestcaseGroupPropTypes, TestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseSelectorGroup.scss';
 import moment from 'moment/moment';
 import testcaseUtil from '@/utils/testcaseUtil';
+import { Tag } from '@/components';
 
-function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate }) {
+function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate, filteredReleases, releases }) {
   const [opened, setOpened] = useState(true);
   const hasChild = testcaseGroup.testcases?.length > 0;
   const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
+
+  const releaseNameMap = useMemo(() => {
+    const nextReleaseNameMap = {};
+    releases.forEach(projectRelease => {
+      nextReleaseNameMap[projectRelease.id] = projectRelease.name;
+    });
+    return nextReleaseNameMap;
+  }, [releases]);
 
   return (
     <div
@@ -64,6 +73,18 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
                       {!testcaseSelected && <i className="fa-regular fa-circle-check" />}
                     </div>
                     <div>{testcase.name}</div>
+                    <div>
+                      {testcase.projectReleaseIds?.length > 0 &&
+                        testcase.projectReleaseIds
+                          ?.sort((a, b) => b - a)
+                          .map(projectReleaseId => {
+                            return (
+                              <Tag key={projectReleaseId} border bold>
+                                {releaseNameMap[projectReleaseId]}
+                              </Tag>
+                            );
+                          })}
+                    </div>
                   </div>
                 </li>
               );
@@ -79,7 +100,8 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
             ...d,
             testcases: d.testcases
               .filter(testcase => testcaseUtil.isFilteredTestcaseByName(testcase, testcaseName))
-              .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate)),
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByRange(testcase, minDate, maxDate))
+              .filter(testcase => testcaseUtil.isFilteredTestcaseByRelease(testcase, filteredReleases)),
           };
 
           return (
@@ -92,6 +114,7 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
               testcaseName={testcaseName}
               minDate={minDate}
               maxDate={maxDate}
+              filteredReleases={filteredReleases}
             />
           );
         })}
@@ -106,25 +129,20 @@ TestcaseSelectorGroup.defaultProps = {
   testcaseName: '',
   minDate: null,
   maxDate: null,
+  filteredReleases: [],
+  releases: [],
 };
 
 TestcaseSelectorGroup.propTypes = {
   testcaseGroup: TestcaseGroupPropTypes,
   selected: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
-  selectedTestcaseGroups: PropTypes.arrayOf(
-    PropTypes.shape({
-      testcaseGroupId: PropTypes.number,
-      testcases: PropTypes.arrayOf(
-        PropTypes.shape({
-          testcaseId: PropTypes.number,
-        }),
-      ),
-    }),
-  ),
+  selectedTestcaseGroups: SelectedTestcaseGroupPropTypes,
   testcaseName: PropTypes.string,
   minDate: PropTypes.instanceOf(moment),
   maxDate: PropTypes.instanceOf(moment),
+  filteredReleases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.number, value: PropTypes.string })),
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
 };
 
 export default TestcaseSelectorGroup;

@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager/TestcaseManager';
 import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
 import { ITEM_TYPE } from '@/constants/constants';
-import { TestcaseTemplatePropTypes } from '@/proptypes';
+import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 function ContentManager({
   type,
   content: originalContent,
+  releases,
   testcaseTemplates,
   loading,
   setContentChanged,
@@ -57,7 +58,6 @@ function ContentManager({
             <div>{t('아이템을 선택해주세요.')}</div>
           </EmptyContent>
         )}
-
         {popupContent && (
           <div
             className="testcase-editor-popup"
@@ -76,6 +76,7 @@ function ContentManager({
                   onSaveTestcase(popupContent);
                 }}
                 onCancel={onCancel}
+                releases={releases}
                 users={users}
                 createTestcaseImage={createTestcaseImage}
                 tags={tags}
@@ -96,6 +97,7 @@ function ContentManager({
               });
             }}
             onCancel={onCancel}
+            releases={releases}
             users={users}
             createTestcaseImage={createTestcaseImage}
             tags={tags}
@@ -113,6 +115,7 @@ function ContentManager({
                 setIsEdit(false);
               });
             }}
+            releases={releases}
             onCancel={onCancel}
             getPopupContent={getPopupContent}
             onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
@@ -126,6 +129,7 @@ function ContentManager({
 ContentManager.defaultProps = {
   type: null,
   content: null,
+  releases: [],
   testcaseTemplates: [],
   loading: false,
   users: [],
@@ -155,6 +159,7 @@ ContentManager.propTypes = {
     testerType: PropTypes.string,
     testerValue: PropTypes.string,
   }),
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   loading: PropTypes.bool,
   setContentChanged: PropTypes.func.isRequired,

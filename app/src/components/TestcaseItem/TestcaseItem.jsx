@@ -24,7 +24,6 @@ function TestcaseItem({
   caseContentElement,
   openTooltipInfo,
   inx,
-  type,
   size,
   selectUserOnly,
   isTestResult,
@@ -48,7 +47,7 @@ function TestcaseItem({
           caseContentElement={caseContentElement}
           openTooltipInfo={openTooltipInfo}
           inx={inx}
-          type={type}
+          showType={isEdit}
         />
         <div className={`value ${testcaseTemplateItem.type}`}>
           <div>
@@ -266,6 +265,7 @@ TestcaseItem.propTypes = {
   }),
   content: PropTypes.shape({
     id: PropTypes.number,
+    projectReleaseId: PropTypes.number,
   }),
   theme: PropTypes.string,
   createImage: PropTypes.func,

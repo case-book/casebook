@@ -225,7 +225,7 @@ function TestcaseNavigatorGroupItem({
             }}
           />
         </div>
-        {setting.testcaseGroupColumns.testcase?.show && treeOpen && group.testcases?.length > 0 && (
+        {treeOpen && group.testcases?.length > 0 && (
           <div
             className="group-testcases"
             style={{

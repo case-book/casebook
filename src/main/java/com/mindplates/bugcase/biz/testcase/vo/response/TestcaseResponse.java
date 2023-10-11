@@ -2,10 +2,9 @@ package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import java.time.LocalDateTime;
-import lombok.Data;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
 
 @Data
 public class TestcaseResponse {
@@ -15,6 +14,7 @@ public class TestcaseResponse {
     private Long projectId;
     private Long testcaseGroupId;
     private Long testcaseTemplateId;
+    private List<Long> projectReleaseIds;
     private String name;
     private Integer itemOrder;
     private Boolean closed;
@@ -33,6 +33,13 @@ public class TestcaseResponse {
         this.seqId = testcase.getSeqId();
         this.testcaseGroupId = testcase.getTestcaseGroup().getId();
         this.testcaseTemplateId = testcase.getTestcaseTemplate().getId();
+        if (testcase.getProjectReleases() != null) {
+            this.projectReleaseIds = testcase.getProjectReleases()
+                .stream()
+                .map(projectReleaseDTO -> projectReleaseDTO.getId())
+                .distinct()
+                .collect(Collectors.toList());
+        }
         this.name = testcase.getName();
         this.itemOrder = testcase.getItemOrder();
         this.closed = testcase.getClosed();

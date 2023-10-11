@@ -261,6 +261,28 @@ function isFilteredTestcaseByName(testcase, name) {
   return false;
 }
 
+function getSelectionFromTestcaseGroups(testcaseGroups) {
+  return testcaseGroups
+    ?.map(d => {
+      return {
+        testcaseGroupId: d.id,
+        ...d,
+        testcases: d.testcases?.map(item => {
+          return {
+            ...item,
+            testcaseId: item.id,
+          };
+        }),
+      };
+    })
+    .filter(d => d.testcases?.length > 0);
+}
+
+function isFilteredTestcaseByRelease(testcase, releases) {
+  if (!releases || releases.length === 0) return true;
+  return releases.some(release => testcase.projectReleaseIds.includes(release.key)) || (testcase.projectReleaseIds?.length < 1 && releases.filter(d => d.key === null).length > 0);
+}
+
 const testcaseUtil = {
   getTestcaseTreeData,
   getFilteredTestcaseGroupList,
@@ -271,6 +293,8 @@ const testcaseUtil = {
   isFilteredTestcaseByRange,
   isGroupFilteredByName,
   isFilteredTestcaseByName,
+  getSelectionFromTestcaseGroups,
+  isFilteredTestcaseByRelease,
 };
 
 export default testcaseUtil;
