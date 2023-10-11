@@ -161,6 +161,21 @@ public class TestrunIteration extends CommonEntity {
         this.filteringUserCount = testrunIteration.getFilteringUserCount();
         this.testcaseGroupCount = testrunIteration.getTestcaseGroupCount();
         this.testcaseCount = testrunIteration.getTestcaseCount();
+
+
+    }
+
+    public void updateIterationInfo(TestrunIterationDTO testrunIteration) {
+        if (testrunIteration.getFilteringUserCursor() != null) {
+            this.filteringUserCursor = testrunIteration.getFilteringUserCursor();
+        }
+        if (testrunIteration.getExpired() != null) {
+            this.expired = testrunIteration.getExpired();
+        }
+
+        if (testrunIteration.getCurrentFilteringUserIds() != null) {
+            this.currentFilteringUserIds = testrunIteration.getCurrentFilteringUserIds();
+        }
     }
 
     public void updateTester(List<TestrunUserDTO> testrunUsers) {
