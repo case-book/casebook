@@ -172,7 +172,7 @@ public class TestrunIteration extends CommonEntity {
         // 추가된 테스터 추가
         this.testrunUsers.addAll(testrunUsers
             .stream()
-            .filter(testrunUserDTO -> testrunUsers
+            .filter(testrunUserDTO -> this.testrunUsers.size() < 1 || this.testrunUsers
                 .stream()
                 .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(testrunUserDTO.getUser().getId())))
             .map(testrunUserDTO -> TestrunUser.builder()
