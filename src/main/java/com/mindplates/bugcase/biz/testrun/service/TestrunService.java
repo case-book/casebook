@@ -663,11 +663,8 @@ public class TestrunService {
         targetTestrunIteration.updateInfo(testrunIteration);
         targetTestrunIteration.updateTester(testrunIteration.getTestrunUsers());
 
-        // 삭제된 테스트런 테스트케이스 그룹 제거
-        targetTestrunIteration.removeDeletedTestcaseGroup(newTestrunIteration);
-
-        // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
-        targetTestrunIteration.addTestcase(newTestrunIteration);
+        // 삭제된 테스트런 테스트케이스 그룹 및 테스트케이스 제거
+        targetTestrunIteration.updateTestcaseGroups(newTestrunIteration.getTestcaseGroups());
 
         int testcaseGroupCount = targetTestrunIteration.getTestcaseGroups().size();
         int testcaseCount = targetTestrunIteration.getTestcaseGroups().stream()
