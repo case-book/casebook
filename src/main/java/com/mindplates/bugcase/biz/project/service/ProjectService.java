@@ -73,7 +73,7 @@ public class ProjectService {
 
     public List<ProjectDTO> selectSpaceProjectList(String spaceCode) {
         List<Project> projectList = projectRepository.findAllBySpaceCode(spaceCode);
-        return projectList.parallelStream().map((project -> {
+        return projectList.stream().map((project -> {
             Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId());
             Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceCode, project.getId());
             return new ProjectDTO(project, testrunCount, testcaseCount);
@@ -82,7 +82,7 @@ public class ProjectService {
 
     public List<ProjectDTO> selectSpaceProjectList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
-        return projectList.parallelStream().map((project -> {
+        return projectList.stream().map((project -> {
             Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceId, project.getId());
             Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceId, project.getId());
             return new ProjectDTO(project, testrunCount, testcaseCount);
@@ -96,7 +96,7 @@ public class ProjectService {
 
     public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
-        return projectList.parallelStream().map((project -> {
+        return projectList.stream().map((project -> {
             Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId());
             Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceCode, project.getId());
             return new ProjectDTO(project, testrunCount, testcaseCount);
