@@ -282,7 +282,7 @@ function getSelectionFromTestcaseGroups(testcaseGroups) {
         }),
       };
     })
-    .filter(d => d.testcases?.length > 0 || parentIds[d.testcaseGroupId]);
+    .filter(d => d.testcases?.length > 0);
 }
 
 function getSelectionForTestrunEdit(testcaseGroups) {
