@@ -109,6 +109,10 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
     } else if (selectedGroupIndex > -1) {
       const currentSelectedInfo = nextCurrentSelectedTestcaseGroups[selectedGroupIndex];
       const selectedTestcaseIndex = currentSelectedInfo.testcases?.findIndex(d => d.testcaseId === testcaseId);
+      if (!currentSelectedInfo.testcases) {
+        currentSelectedInfo.testcases = [];
+      }
+
       if (selectedTestcaseIndex > -1) {
         currentSelectedInfo.testcases.splice(selectedTestcaseIndex, 1);
       } else {
