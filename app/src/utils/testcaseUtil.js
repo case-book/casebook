@@ -262,6 +262,13 @@ function isFilteredTestcaseByName(testcase, name) {
 }
 
 function getSelectionFromTestcaseGroups(testcaseGroups) {
+  const parentIds = {};
+  testcaseGroups?.forEach(d => {
+    if (d.parentId) {
+      parentIds[d.parentId] = true;
+    }
+  });
+
   return testcaseGroups
     ?.map(d => {
       return {
@@ -276,6 +283,30 @@ function getSelectionFromTestcaseGroups(testcaseGroups) {
       };
     })
     .filter(d => d.testcases?.length > 0);
+}
+
+function getSelectionForTestrunEdit(testcaseGroups) {
+  const parentIds = {};
+  testcaseGroups?.forEach(d => {
+    if (d.parentId) {
+      parentIds[d.parentId] = true;
+    }
+  });
+
+  return testcaseGroups
+    ?.map(d => {
+      return {
+        testcaseGroupId: d.id,
+        // ...d,
+        testcases: d.testcases?.map(item => {
+          return {
+            // ...item,
+            testcaseId: item.id,
+          };
+        }),
+      };
+    })
+    .filter(d => d.testcases?.length > 0 || parentIds[d.testcaseGroupId]);
 }
 
 function isFilteredTestcaseByRelease(testcase, releases) {
@@ -295,6 +326,7 @@ const testcaseUtil = {
   isFilteredTestcaseByName,
   getSelectionFromTestcaseGroups,
   isFilteredTestcaseByRelease,
+  getSelectionForTestrunEdit,
 };
 
 export default testcaseUtil;
