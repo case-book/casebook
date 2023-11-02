@@ -262,6 +262,13 @@ function isFilteredTestcaseByName(testcase, name) {
 }
 
 function getSelectionFromTestcaseGroups(testcaseGroups) {
+  const parentIds = {};
+  testcaseGroups?.forEach(d => {
+    if (d.parentId) {
+      parentIds[d.parentId] = true;
+    }
+  });
+
   return testcaseGroups
     ?.map(d => {
       return {
@@ -275,7 +282,7 @@ function getSelectionFromTestcaseGroups(testcaseGroups) {
         }),
       };
     })
-    .filter(d => d.testcases?.length > 0);
+    .filter(d => d.testcases?.length > 0 || parentIds[d.id]);
 }
 
 function isFilteredTestcaseByRelease(testcase, releases) {
