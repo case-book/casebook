@@ -177,7 +177,7 @@ function TestrunEditPage({ type }) {
     });
 
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
-      const nextTestcaseGroups = testcaseUtil.getSelectionFromTestcaseGroups(
+      const nextTestcaseGroups = testcaseUtil.getSelectionForTestrunEdit(
         project.testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))) })),
       );
 
