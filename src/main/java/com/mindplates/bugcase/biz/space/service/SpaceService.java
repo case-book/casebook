@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,12 @@ public class SpaceService {
     private final ProjectService projectService;
     private final NotificationService notificationService;
     private final MappingUtil mappingUtil;
+    private final MessageSourceAccessor messageSourceAccessor;
+
+    private boolean existByCode(String code) {
+        Long count = spaceRepository.countByCode(code);
+        return count > 0;
+    }
 
     public List<SpaceDTO> selectSpaceList() {
         List<Space> spaceList = spaceRepository.findAll();
@@ -78,11 +85,6 @@ public class SpaceService {
         spaceRepository.deleteById(space.getId());
     }
 
-    public boolean existByCode(String code) {
-        Long count = spaceRepository.countByCode(code);
-        return count > 0;
-    }
-
 
     @CacheEvict(key = "#createSpaceInfo.code", value = CacheConfig.SPACE)
     @Transactional
@@ -117,16 +119,22 @@ public class SpaceService {
             if ("D".equals(spaceUser.getCrud())) {
                 spaceInfo.getUsers().removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
                 spaceInfo.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
+
+                String message = messageSourceAccessor.getMessage("space.user.banned", new Object[]{spaceInfo.getName()});
                 notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(),
-                    "관리자에 의해 '" + spaceInfo.getName() + "'" + " 스페이스에서 제외되었습니다.", "/spaces/" + spaceInfo.getCode() + "/info");
+                    message, "/spaces/" + spaceInfo.getCode() + "/info");
             } else if ("U".equals(spaceUser.getCrud())) {
                 SpaceUserDTO updateUser = spaceInfo.getUsers().stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId())))
                     .findAny().orElse(null);
 
                 if (updateUser != null) {
                     if (!updateUser.getRole().equals(spaceUser.getRole())) {
+
+                        String message = messageSourceAccessor.getMessage("space.user.auth.changed",
+                            new Object[]{spaceInfo.getName(), updateUser.getRole(), spaceUser.getRole()});
+
                         notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(),
-                            "관리자에 의해 '" + spaceInfo.getName() + "'" + " 스페이스의 권한(" + spaceUser.getRole() + ")이 변경되었습니다.",
+                            message,
                             "/spaces/" + spaceInfo.getCode() + "/info");
                     }
                     updateUser.setRole(spaceUser.getRole());
@@ -210,7 +218,7 @@ public class SpaceService {
         SecurityUser user = SessionUtil.getSecurityUser();
         SpaceDTO space = this.selectSpaceInfo(spaceApplicant.getSpace().getCode());
         SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(
-            applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId()))
+                applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId()))
             .findAny().orElse(null);
 
         if (targetApplicant == null) {
