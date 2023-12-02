@@ -477,7 +477,20 @@ public class TestcaseService {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setSeqId(org.getSeqId());
         testcase.setContentUpdateDate(LocalDateTime.now());
+
+        org.getTestcaseProjectReleases().stream().filter((testcaseProjectRelease ->
+            testcase.getTestcaseProjectReleases()
+                .stream()
+                .noneMatch(testcaseProjectRelease1 -> testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())
+                    && testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId()))
+        )).forEach(testcaseProjectRelease -> {
+            testcaseProjectReleaseRepository.delete(testcaseProjectRelease);
+        });
+
         testcaseRepository.save(testcase);
+
+
+
         return new TestcaseDTO(testcase);
     }
 

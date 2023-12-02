@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -66,14 +67,43 @@ public class ProjectReleaseService {
             .findById(releaseId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-        List<Testcase> testcases = testcaseRepository.findByIdIn(projectReleaseDTO
+        List<Long> testcaseIds = projectReleaseDTO
             .getTestcases()
             .stream()
             .map(TestcaseSimpleDTO::getId)
-            .collect(Collectors.toList())
-        );
+            .collect(Collectors.toList());
 
-        projectRelease.update(projectReleaseDTO, testcases);
+        List<Testcase> testcases = testcaseRepository.findByIdIn(testcaseIds);
+
+        projectRelease.setName(projectReleaseDTO.getName());
+        projectRelease.setDescription(projectReleaseDTO.getDescription());
+
+        // 선택에서 제외된 테스트케이스 릴리스 삭제
+        projectRelease.getTestcaseProjectReleases()
+            .stream()
+            .forEach(testcaseProjectRelease -> {
+                if (!testcaseIds.contains(testcaseProjectRelease.getTestcase().getId())) {
+                    testcaseProjectReleaseRepository.delete(testcaseProjectRelease);
+                }
+            });
+
+        projectRelease.getTestcaseProjectReleases()
+            .removeIf(testcaseProjectRelease -> !testcaseIds.contains(testcaseProjectRelease.getTestcase().getId()));
+
+        for (Testcase testcase : testcases) {
+            if (projectRelease.getTestcaseProjectReleases()
+                .stream()
+                .noneMatch(testcaseProjectRelease ->
+                    testcaseProjectRelease.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId())
+                        && testcaseProjectRelease.getTestcase().getId().equals(testcase.getId()))) {
+                projectRelease.getTestcaseProjectReleases().add(TestcaseProjectRelease.builder()
+                    .projectRelease(projectRelease)
+                    .testcase(testcase)
+                    .build());
+            }
+
+        }
+
         projectReleaseRepository.save(projectRelease);
         return new ProjectReleaseDTO(projectRelease);
     }

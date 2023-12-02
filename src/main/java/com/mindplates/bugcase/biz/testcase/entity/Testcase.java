@@ -77,7 +77,7 @@ public class Testcase extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
     private Project project;
 
-    @OneToMany(mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true )
+    @OneToMany(mappedBy = "testcase", cascade = CascadeType.ALL)
     private List<TestcaseProjectRelease> testcaseProjectReleases;
 
     @Column(name = "tester_type", length = ColumnsDef.CODE)
