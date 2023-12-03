@@ -49,14 +49,14 @@ public class ProjectService {
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
     private final ProjectReleaseService projectReleaseService;
-
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
     private final MappingUtil mappingUtil;
 
     public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
-                          @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
-                          TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
-                          ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService, ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository) {
+        @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
+        TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
+        ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService,
+        ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
@@ -112,14 +112,14 @@ public class ProjectService {
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public ProjectDTO selectProjectName(String spaceCode, Long projectId) {
         Project project = projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId)
-                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new ProjectDTO(project, true);
     }
 
 
     public Long selectProjectId(String token) {
         ProjectToken projectToken = projectTokenRepository.findByToken(token)
-                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
         return projectToken.getProject().getId();
     }
 
@@ -156,14 +156,14 @@ public class ProjectService {
 
         // 기본 어드민 유저로 사용자 추가
         ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN)
-                .build();
+            .build();
         projectInfo.setUsers(Collections.singletonList(projectUser));
         return new ProjectDTO(projectRepository.save(mappingUtil.convert(projectInfo, Project.class)), true);
     }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#updateProjectInfo.id}", value = CacheConfig.PROJECT)
-    public ProjectDTO updateProjectInfo(String spaceCode, ProjectDTO updateProjectInfo) {
+    public ProjectDTO updateProjectInfo(String spaceCode, ProjectDTO updateProjectInfo, Long targetReleaseId) {
         ProjectDTO projectInfo = this.selectProjectInfo(spaceCode, updateProjectInfo.getId());
         projectInfo.setName(updateProjectInfo.getName());
         projectInfo.setDescription(updateProjectInfo.getDescription());
@@ -185,34 +185,33 @@ public class ProjectService {
 
         List deleteTestcaseTemplateIds = new ArrayList();
         updateProjectInfo.getTestcaseTemplates()
-                .stream()
-                .filter((testcaseTemplate -> "D".equals(testcaseTemplate.getCrud())))
-                .forEach(testcaseTemplateDTO -> {
-                    deleteTestcaseTemplateIds.add(testcaseTemplateDTO.getId());
+            .stream()
+            .filter((testcaseTemplate -> "D".equals(testcaseTemplate.getCrud())))
+            .forEach(testcaseTemplateDTO -> {
+                deleteTestcaseTemplateIds.add(testcaseTemplateDTO.getId());
 
+                testrunTestcaseGroupTestcaseRepository.deleteByTestcaseTemplateId(testcaseTemplateDTO.getId());
 
-                    testrunTestcaseGroupTestcaseRepository.deleteByTestcaseTemplateId(testcaseTemplateDTO.getId());
-
-                });
+            });
 
         projectInfo.setTestcaseTemplates(
-                updateProjectInfo.getTestcaseTemplates()
-                        .stream()
-                        .filter((testcaseTemplate -> !"D".equals(testcaseTemplate.getCrud())))
-                        .map(testcaseTemplate -> {
-                            testcaseTemplate.getTestcaseTemplateItems().stream().filter(TestcaseTemplateItemDTO::isDeleted).forEach(testcaseTemplateItem -> {
-                                testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
-                                testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
-                            });
+            updateProjectInfo.getTestcaseTemplates()
+                .stream()
+                .filter((testcaseTemplate -> !"D".equals(testcaseTemplate.getCrud())))
+                .map(testcaseTemplate -> {
+                    testcaseTemplate.getTestcaseTemplateItems().stream().filter(TestcaseTemplateItemDTO::isDeleted).forEach(testcaseTemplateItem -> {
+                        testcaseItemRepository.deleteByTestcaseId(testcaseTemplateItem.getId());
+                        testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateItemId(testcaseTemplateItem.getId());
+                    });
 
-                            testcaseTemplate.setTestcaseTemplateItems(
-                                    testcaseTemplate.getTestcaseTemplateItems()
-                                            .stream()
-                                            .filter(testcaseTemplateItem -> !testcaseTemplateItem.isDeleted())
-                                            .collect(Collectors.toList())
-                            );
-                            return testcaseTemplate;
-                        }).collect(Collectors.toList()));
+                    testcaseTemplate.setTestcaseTemplateItems(
+                        testcaseTemplate.getTestcaseTemplateItems()
+                            .stream()
+                            .filter(testcaseTemplateItem -> !testcaseTemplateItem.isDeleted())
+                            .collect(Collectors.toList())
+                    );
+                    return testcaseTemplate;
+                }).collect(Collectors.toList()));
 
         AtomicBoolean foundDefaultTemplate = new AtomicBoolean(false);
         projectInfo.getTestcaseTemplates().forEach((testcaseTemplate -> {
@@ -233,8 +232,25 @@ public class ProjectService {
         }
 
         projectInfo.setUsers(
-                updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D"))
-                        .collect(Collectors.toList()));
+            updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D"))
+                .collect(Collectors.toList()));
+
+        if (!projectInfo.getProjectReleases().isEmpty()) {
+            if (targetReleaseId == null) {
+                projectInfo.getProjectReleases().forEach(projectReleaseDTO -> {
+                    projectReleaseDTO.setIsTarget(false);
+                });
+            } else {
+                projectInfo.getProjectReleases().forEach(projectReleaseDTO -> {
+                    if (projectReleaseDTO.getId().equals(targetReleaseId)) {
+                        projectReleaseDTO.setIsTarget(true);
+                    } else {
+                        projectReleaseDTO.setIsTarget(false);
+                    }
+                });
+            }
+
+        }
 
         Project updateResult = mappingUtil.convert(projectInfo, Project.class);
         return new ProjectDTO(projectRepository.save(updateResult), true);

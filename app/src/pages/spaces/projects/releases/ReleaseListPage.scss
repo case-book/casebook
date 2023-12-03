@@ -12,7 +12,27 @@
       table-layout: fixed;
 
       .name {
-        font-family: MartianMono, monospace;
+        > a {
+          font-weight: bold;
+          display: inline-block;
+          margin-top: 2px;
+          position: relative;
+          .target {
+            display: inline-block;
+            position: absolute;
+            top: -2px;
+            left: calc(100% + 6px);
+          }
+        }
+        .description {
+          font-size: 12px;
+          margin-top: 4px;
+          min-height: 13px;
+          color: $gray-800;
+          background-color: $gray-100;
+          padding: 4px;
+          border-radius: 4px;
+        }
       }
 
       .description {

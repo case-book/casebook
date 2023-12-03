@@ -16,6 +16,7 @@ public class ProjectReleaseResponse {
 
     private Long id;
     private String name;
+    private Boolean isTarget;
     private String description;
     private ProjectResponse project;
     private List<TestcaseSimpleResponse> testcases;
@@ -24,6 +25,7 @@ public class ProjectReleaseResponse {
     public ProjectReleaseResponse(ProjectReleaseDTO projectReleaseDTO, long userId) {
         this.id = projectReleaseDTO.getId();
         this.name = projectReleaseDTO.getName();
+        this.isTarget = projectReleaseDTO.getIsTarget();
         this.description = projectReleaseDTO.getDescription();
         this.project = new ProjectResponse(projectReleaseDTO.getProject(), userId);
         this.creationDate = projectReleaseDTO.getCreationDate();

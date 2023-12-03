@@ -20,6 +20,7 @@ public class ProjectCreateRequest implements IRequestVO<ProjectDTO> {
     private List<ProjectUserRequest> users;
     private String slackUrl;
     private boolean enableTestrunAlarm;
+    private Long targetReleaseId;
 
     public ProjectDTO toDTO() {
 

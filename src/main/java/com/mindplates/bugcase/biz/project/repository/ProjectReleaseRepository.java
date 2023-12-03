@@ -9,4 +9,11 @@ import org.springframework.stereotype.Repository;
 public interface ProjectReleaseRepository extends JpaRepository<ProjectRelease, Long> {
 
     List<ProjectRelease> findByProjectIdOrderByNameDesc(long projectId);
+
+    Long countByProjectIdAndName(long projectId, String name);
+
+    Long countByProjectIdAndNameAndIdIsNot(long projectId, String name, long id);
+
+    List<ProjectRelease> findByProjectIdAndIsTargetTrue(long projectId);
+
 }

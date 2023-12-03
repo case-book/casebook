@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
+import { Block, BlockRow, Button, CheckBox, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -31,7 +31,7 @@ function ReleaseEditPage({ type }) {
 
     if (!isEdit) {
       ReleaseService.createRelease(spaceCode, projectId, { ...release, testcaseIds }, () => {
-        navigate(-1);
+        navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
       });
       return;
     }
@@ -130,7 +130,30 @@ function ReleaseEditPage({ type }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label minWidth={LABEL_MIN_WIDTH}>{t('설명')}</Label>
+              <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="baseline">
+                {t('타겟 릴리즈')}
+              </Label>
+              <div>
+                <CheckBox
+                  type="checkbox"
+                  size="sm"
+                  value={release.isTarget}
+                  onChange={val =>
+                    setRelease({
+                      ...release,
+                      isTarget: val,
+                    })
+                  }
+                />
+                <div className="target-description">
+                  {t('테스트케이스 생성이나 변경 시 타겟 릴리즈로 설정된 릴리즈가 해당 테스트케이스에 설정되어 있지 않다면, 자동으로 테스트케이스에 릴리즈로 추가됩니다.')}
+                </div>
+              </div>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="baseline">
+                {t('설명')}
+              </Label>
               <TextArea
                 value={release.description || ''}
                 rows={4}

@@ -13,12 +13,14 @@ public class ProjectReleaseCreateRequest {
     private String name;
     private String description;
     private List<Long> testcaseIds;
+    private Boolean isTarget;
 
     public ProjectReleaseDTO toDTO(long projectId) {
         return ProjectReleaseDTO.builder()
             .name(name)
             .description(description)
             .project(ProjectDTO.builder().id(projectId).build())
+            .isTarget(isTarget)
             .testcases(testcaseIds.stream().map(id -> TestcaseSimpleDTO.builder().id(id).build()).collect(Collectors.toList()))
             .build();
     }

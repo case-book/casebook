@@ -39,6 +39,9 @@ public class ProjectRelease extends CommonEntity {
     @Column(name = "name", nullable = false, length = 128)
     private String name;
 
+    @Column(name = "is_target")
+    private Boolean isTarget;
+
     @Column(name = "description", length = 512)
     private String description;
 
@@ -52,6 +55,7 @@ public class ProjectRelease extends CommonEntity {
     public ProjectRelease(ProjectReleaseDTO projectReleaseDTO, List<Testcase> testcases) {
         setName(projectReleaseDTO.getName());
         setDescription(projectReleaseDTO.getDescription());
+        setIsTarget(projectReleaseDTO.getIsTarget());
         setProject(Project.builder().id(projectReleaseDTO.getProject().getId()).build());
 
         setTestcaseProjectReleases(testcases.stream()

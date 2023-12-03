@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,13 +50,24 @@ public class ProjectReleaseService {
             .map(TestcaseSimpleDTO::getId)
             .collect(Collectors.toList())
         );
-        try {
-            ProjectRelease projectReleaseA = new ProjectRelease(projectReleaseDTO, testcases);
-            ProjectRelease projectRelease = projectReleaseRepository.save(projectReleaseA);
-            return new ProjectReleaseDTO(projectRelease);
-        } catch (DataIntegrityViolationException e) {
+
+        Long count = projectReleaseRepository.countByProjectIdAndName(projectId, projectReleaseDTO.getName());
+
+        if (count > 0) {
             throw new ServiceException(HttpStatus.CONFLICT, "release.name.duplicated");
         }
+
+        if (projectReleaseDTO.getIsTarget() != null && projectReleaseDTO.getIsTarget()) {
+            List<ProjectRelease> targetReleaseList = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
+            if (targetReleaseList.size() > 0) {
+                for (ProjectRelease projectRelease : targetReleaseList) {
+                    projectRelease.setIsTarget(false);
+                    projectReleaseRepository.save(projectRelease);
+                }
+            }
+        }
+
+        return new ProjectReleaseDTO(projectReleaseRepository.save(new ProjectRelease(projectReleaseDTO, testcases)));
     }
 
     @Transactional
@@ -75,8 +85,25 @@ public class ProjectReleaseService {
 
         List<Testcase> testcases = testcaseRepository.findByIdIn(testcaseIds);
 
+        Long count = projectReleaseRepository.countByProjectIdAndNameAndIdIsNot(projectId, projectReleaseDTO.getName(), releaseId);
+
+        if (count > 0) {
+            throw new ServiceException(HttpStatus.CONFLICT, "release.name.duplicated");
+        }
+
+        if (projectReleaseDTO.getIsTarget() != null && projectReleaseDTO.getIsTarget()) {
+            List<ProjectRelease> targetReleaseList = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
+            if (targetReleaseList.size() > 0) {
+                for (ProjectRelease targetRelease : targetReleaseList) {
+                    targetRelease.setIsTarget(false);
+                    projectReleaseRepository.save(targetRelease);
+                }
+            }
+        }
+
         projectRelease.setName(projectReleaseDTO.getName());
         projectRelease.setDescription(projectReleaseDTO.getDescription());
+        projectRelease.setIsTarget(projectReleaseDTO.getIsTarget());
 
         // 선택에서 제외된 테스트케이스 릴리스 삭제
         projectRelease.getTestcaseProjectReleases()
@@ -114,4 +141,6 @@ public class ProjectReleaseService {
         testcaseProjectReleaseRepository.deleteByProjectReleaseId(releaseId);
         projectReleaseRepository.deleteById(releaseId);
     }
+
+
 }
