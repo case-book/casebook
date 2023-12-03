@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
+import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
@@ -78,6 +79,7 @@ public class TestcaseService {
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final UserRepository userRepository;
     private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
+    private final ProjectReleaseRepository projectReleaseRepository;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -334,6 +336,17 @@ public class TestcaseService {
 
         projectRepository.save(project);
         Testcase result = testcaseRepository.save(mappingUtil.convert(testcase, Testcase.class));
+
+        List<ProjectRelease> targetReleases = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
+        if (targetReleases.size() > 0) {
+            TestcaseProjectRelease testcaseProjectRelease = TestcaseProjectRelease
+                .builder()
+                .testcase(Testcase.builder().id(result.getId()).build())
+                .projectRelease(targetReleases.get(0))
+                .build();
+
+            testcaseProjectReleaseRepository.save(testcaseProjectRelease);
+        }
         return new TestcaseDTO(result);
     }
 
@@ -477,7 +490,19 @@ public class TestcaseService {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setSeqId(org.getSeqId());
         testcase.setContentUpdateDate(LocalDateTime.now());
+
+        org.getTestcaseProjectReleases().stream().filter((testcaseProjectRelease ->
+            testcase.getTestcaseProjectReleases()
+                .stream()
+                .noneMatch(
+                    testcaseProjectRelease1 -> testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())
+                        && testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId()))
+        )).forEach(testcaseProjectRelease -> {
+            testcaseProjectReleaseRepository.delete(testcaseProjectRelease);
+        });
+
         testcaseRepository.save(testcase);
+
         return new TestcaseDTO(testcase);
     }
 

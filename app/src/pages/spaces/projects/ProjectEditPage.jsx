@@ -1,6 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './ProjectEditPage.scss';
-import { Block, Button, Card, CardContent, CardHeader, CheckBox, EmptyContent, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Tag, Text, TextArea, Title } from '@/components';
+import {
+  Block,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CheckBox,
+  EmptyContent,
+  Form,
+  Input,
+  Label,
+  Page,
+  PageButtons,
+  PageContent,
+  PageTitle,
+  Selector,
+  Tag,
+  Text,
+  TextArea,
+  Title,
+} from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,6 +36,7 @@ import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import useStores from '@/hooks/useStores';
+import ReleaseService from '@/services/ReleaseService';
 
 const defaultProjectConfig = {
   testcaseTemplates: [
@@ -150,6 +171,7 @@ function ProjectEditPage({ type }) {
   const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
   const [testcaseItemCategories, setTestcaseItemCategories] = useState([]);
   const [opened, setOpened] = useState(false);
+  const [releases, setReleases] = useState([]);
 
   const [templateEditorPopupInfo, setTemplateEditorPopupInfo] = useState({
     opened: false,
@@ -164,6 +186,7 @@ function ProjectEditPage({ type }) {
     activated: true,
     token: uuidv4(),
     testcaseTemplates: cloneDeep(defaultProjectConfig.testcaseTemplates),
+    targetReleaseId: null,
   });
 
   const isEdit = useMemo(() => {
@@ -181,7 +204,14 @@ function ProjectEditPage({ type }) {
     window.scrollTo(0, 0);
     if (projectId && type === 'edit') {
       ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-        setProject(info);
+        ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+          const targetRelease = list.find(release => release.isTarget);
+          setProject({
+            ...info,
+            targetReleaseId: targetRelease?.id || null,
+          });
+          setReleases(list);
+        });
       });
     }
   }, [type, projectId]);
@@ -459,6 +489,28 @@ function ProjectEditPage({ type }) {
                   }
                 />
               </BlockRow>
+              {isEdit && (
+                <BlockRow>
+                  <Label>{t('타겟 릴리즈')}</Label>
+                  <Selector
+                    items={[{ key: null, value: t('없음') }].concat(
+                      releases.map(release => {
+                        return {
+                          key: release.id,
+                          value: release.name,
+                        };
+                      }),
+                    )}
+                    value={project.targetReleaseId}
+                    onChange={value => {
+                      setProject({
+                        ...project,
+                        targetReleaseId: value,
+                      });
+                    }}
+                  />
+                </BlockRow>
+              )}
             </Block>
             <Title border={false} marginBottom={false}>
               {t('알림 설정')}

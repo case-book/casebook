@@ -31,7 +31,6 @@ public class StompErrorHandler extends StompSubProtocolErrorHandler {
     }
 
     private Message<byte[]> handleUnauthorizedException(Message<byte[]> clientMessage, Throwable ex) {
-        log.error(ex.getMessage(), ex);
         ServiceException apiError = new ServiceException(ex.getMessage());
         return prepareErrorMessage(clientMessage, apiError);
     }

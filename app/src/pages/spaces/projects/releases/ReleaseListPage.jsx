@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, EmptyContent, Page, PageContent, PageTitle, Table, Tbody, Td, Th, THead, Tr } from '@/components';
+import { Button, Card, CardContent, CardHeader, EmptyContent, Page, PageContent, PageTitle, Table, Tag, Tbody, Td, Th, THead, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import React, { useEffect, useState } from 'react';
@@ -87,16 +87,13 @@ function ReleaseListPage() {
         )}
         {releases?.length > 0 && (
           <div className="release-table">
-            <Table cols={['240px', '120px', '240px', '']}>
+            <Table cols={['', '120px', '240px']}>
               <THead>
                 <Tr>
                   <Th align="left">{t('이름')}</Th>
                   <Th align="right">{t('테스트케이스')}</Th>
                   <Th align="center" className="creation-date">
                     {t('생성 일시')}
-                  </Th>
-                  <Th align="left" className="description">
-                    {t('설명')}
                   </Th>
                 </Tr>
               </THead>
@@ -105,15 +102,18 @@ function ReleaseListPage() {
                   return (
                     <Tr key={release.id}>
                       <Td className="name">
-                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/releases/${release.id}`}>{release.name}</Link>
+                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/releases/${release.id}`}>
+                          {release.name}
+                          {release.isTarget && (
+                            <Tag size="xs" color="secondary" className="target">
+                              {t('타겟 릴리즈')}
+                            </Tag>
+                          )}
+                        </Link>
                       </Td>
-
                       <Td align="right">{release.testcases?.length || 0}</Td>
                       <Td className="creation-date" align="center">
                         {dateUtil.getDateString(release.creationDate)}
-                      </Td>
-                      <Td align="left" className="description">
-                        {release.description}
                       </Td>
                     </Tr>
                   );

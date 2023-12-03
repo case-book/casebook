@@ -23,7 +23,7 @@ ReleaseService.selectReleaseList = (spaceCode, projectId, successHandler, failHa
     `/api/${spaceCode}/projects/${projectId}/releases`,
     null,
     res => {
-      successHandler(res);
+      successHandler(res.sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime()));
     },
     failHandler,
     null,

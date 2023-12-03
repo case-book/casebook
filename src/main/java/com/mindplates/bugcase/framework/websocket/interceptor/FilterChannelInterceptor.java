@@ -68,6 +68,8 @@ public class FilterChannelInterceptor implements ChannelInterceptor {
                         }
                     }
                 }
+            } else {
+                throw new ServiceException(HttpStatus.BAD_REQUEST);
             }
         } else if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
             validateSubscriptionHeader(headerAccessor);

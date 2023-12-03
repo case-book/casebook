@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Block,
   Button,
@@ -35,6 +35,7 @@ import './ProjectInfoPage.scss';
 import useStores from '@/hooks/useStores';
 import TokenDialog from '@/pages/common/Header/TokenDialog';
 import SpaceService from '@/services/SpaceService';
+import ReleaseService from '@/services/ReleaseService';
 
 function ProjectInfoPage() {
   const { t } = useTranslation();
@@ -46,6 +47,7 @@ function ProjectInfoPage() {
   const [space, setSpace] = useState(null);
   const [project, setProject] = useState(null);
   const [projectTokenList, setProjectTokenList] = useState([]);
+  const [releases, setReleases] = useState([]);
   const [tagUserMap, setTagUserMap] = useState({});
   const [templateViewerPopupInfo, setTemplateViewerPopupInfo] = useState({
     opened: false,
@@ -112,6 +114,10 @@ function ProjectInfoPage() {
     ProjectService.getProjectTokenList(spaceCode, projectId, tokens => {
       setProjectTokenList(tokens);
     });
+
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+      setReleases(list);
+    });
   }, [projectId]);
 
   const onDelete = () => {
@@ -169,6 +175,8 @@ function ProjectInfoPage() {
       'danger',
     );
   };
+
+  const targetRelease = useMemo(() => releases.find(release => release.isTarget), [releases]);
 
   return (
     <>
@@ -234,6 +242,10 @@ function ProjectInfoPage() {
             <BlockRow>
               <Label>{t('활성화')}</Label>
               <Text>{project?.activated ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('타겟 릴리즈')}</Label>
+              <Text>{targetRelease?.name}</Text>
             </BlockRow>
           </Block>
           <Title

@@ -98,7 +98,7 @@ public class ProjectController {
         }
 
         ProjectDTO project = projectUpdateRequest.toDTO();
-        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, project), SessionUtil.getUserId());
+        return new ProjectResponse(projectService.updateProjectInfo(spaceCode, project, projectUpdateRequest.getTargetReleaseId()), SessionUtil.getUserId());
     }
 
 
@@ -161,7 +161,6 @@ public class ProjectController {
         projectService.deleteProjectUser(spaceCode, id, SessionUtil.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @Operation(description = "프로젝트 토큰 목록")
     @GetMapping("/{id}/tokens")

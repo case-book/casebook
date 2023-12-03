@@ -5,15 +5,15 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -34,22 +34,28 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
         this.id = testrunTestcaseGroupTestcase.getId();
         this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId()).build();
         this.testcase = TestcaseDTO.builder()
-                .id(testrunTestcaseGroupTestcase.getTestcase().getId())
-                .seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId())
-                .name(testrunTestcaseGroupTestcase.getTestcase().getName())
-                .description(testrunTestcaseGroupTestcase.getTestcase().getDescription())
-                .itemOrder(testrunTestcaseGroupTestcase.getTestcase().getItemOrder())
-                .closed(testrunTestcaseGroupTestcase.getTestcase().getClosed())
-                .build();
+            .id(testrunTestcaseGroupTestcase.getTestcase().getId())
+            .seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId())
+            .name(testrunTestcaseGroupTestcase.getTestcase().getName())
+            .description(testrunTestcaseGroupTestcase.getTestcase().getDescription())
+            .itemOrder(testrunTestcaseGroupTestcase.getTestcase().getItemOrder())
+            .closed(testrunTestcaseGroupTestcase.getTestcase().getClosed())
+            .build();
+
+        this.testcase.setCreationDate(testrunTestcaseGroupTestcase.getTestcase().getCreationDate());
+        this.testcase.setLastUpdateDate(testrunTestcaseGroupTestcase.getTestcase().getLastUpdateDate());
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate() != null) {
-            this.testcase.setTestcaseTemplate(TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build());
+            this.testcase.setTestcaseTemplate(
+                TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build());
         }
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems() != null) {
-            this.testcase.setTestcaseItems(testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()));
+            this.testcase.setTestcaseItems(
+                testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()));
             if (testrunTestcaseGroupTestcase.getTestcaseItems() != null) {
-                this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new).collect(Collectors.toList());
+                this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new)
+                    .collect(Collectors.toList());
             }
         }
         this.testResult = testrunTestcaseGroupTestcase.getTestResult();
@@ -57,8 +63,16 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
             this.tester = UserDTO.builder().id(testrunTestcaseGroupTestcase.getTester().getId()).build();
         }
         if (testrunTestcaseGroupTestcase.getComments() != null) {
-            this.comments = testrunTestcaseGroupTestcase.getComments().stream().map(TestrunTestcaseGroupTestcaseCommentDTO::new).collect(Collectors.toList());
+            this.comments = testrunTestcaseGroupTestcase.getComments().stream().map(TestrunTestcaseGroupTestcaseCommentDTO::new)
+                .collect(Collectors.toList());
         }
+    }
+
+    public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, User createdUser, User lastUpdatedUser) {
+        this(testrunTestcaseGroupTestcase);
+        this.testcase.setCreatedUserName(createdUser.getName());
+        this.testcase.setLastUpdatedUserName(lastUpdatedUser.getName());
+        
     }
 
 

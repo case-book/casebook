@@ -116,12 +116,23 @@ function ReleaseInfoPage() {
       <PageContent>
         <Block>
           <BlockRow>
+            <Label minWidth={LABEL_MIN_WIDTH}>{t('프로젝트')}</Label>
+            <Text>{project?.name}</Text>
+          </BlockRow>
+          <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('이름')}</Label>
             <Text>{release.name}</Text>
           </BlockRow>
           <BlockRow>
-            <Label minWidth={LABEL_MIN_WIDTH}>{t('프로젝트')}</Label>
-            <Text>{project?.name}</Text>
+            <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="baseline">
+              {t('타겟 릴리즈')}
+            </Label>
+            <Text>
+              <div>{release.isTarget ? 'Y' : 'N'}</div>
+              <div className="target-description">
+                {t('테스트케이스 생성이나 변경 시 타겟 릴리즈로 설정된 릴리즈가 해당 테스트케이스에 설정되어 있지 않다면, 자동으로 테스트케이스에 릴리즈로 추가하는지 됩니다.')}
+              </div>
+            </Text>
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('설명')}</Label>
