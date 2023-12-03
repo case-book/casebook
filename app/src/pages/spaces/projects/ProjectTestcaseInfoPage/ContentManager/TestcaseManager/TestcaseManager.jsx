@@ -277,8 +277,8 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
               </tr>
               <tr>
                 <td>{t('마지막 변경')}</td>
-                <td>{content.createdUserName}</td>
-                <td>{dateUtil.getDateString(content.creationDate)}</td>
+                <td>{content.lastUpdatedUserName}</td>
+                <td>{dateUtil.getDateString(content.lastUpdateDate)}</td>
               </tr>
             </tbody>
           </table>

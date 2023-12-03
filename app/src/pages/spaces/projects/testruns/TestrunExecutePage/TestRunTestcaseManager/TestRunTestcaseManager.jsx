@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { getOption, setOption } from '@/utils/storageUtil';
 import './TestRunTestcaseManager.scss';
 import TestRunResultInfo from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunResultInfo';
+import dateUtil from '@/utils/dateUtil';
 
 function TestRunTestcaseManager({
   content,
@@ -240,6 +241,22 @@ function TestRunTestcaseManager({
                 );
               })}
           </div>
+          <div className="creator-info">
+            <table>
+              <tbody>
+                <tr>
+                  <td>{t('생성')}</td>
+                  <td>{content.createdUserName}</td>
+                  <td>{dateUtil.getDateString(content.creationDate)}</td>
+                </tr>
+                <tr>
+                  <td>{t('마지막 변경')}</td>
+                  <td>{content.lastUpdatedUserName}</td>
+                  <td>{dateUtil.getDateString(content.lastUpdateDate)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -346,6 +363,10 @@ TestRunTestcaseManager.propTypes = {
     description: PropTypes.string,
     itemOrder: PropTypes.number,
     closed: PropTypes.bool,
+    createdUserName: PropTypes.string,
+    lastUpdatedUserName: PropTypes.string,
+    creationDate: PropTypes.string,
+    lastUpdateDate: PropTypes.string,
     testcaseItems: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number,

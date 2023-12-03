@@ -104,7 +104,18 @@ public class TestrunService {
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase);
+        Testcase testcase = testrunTestcaseGroupTestcase.getTestcase();
+
+        User createdUser = null;
+        if (testcase.getCreatedBy() != null) {
+            createdUser = userRepository.findById(testcase.getCreatedBy()).orElse(null);
+        }
+        User lastUpdatedUser = null;
+        if (testcase.getLastUpdatedBy() != null) {
+            lastUpdatedUser = userRepository.findById(testcase.getLastUpdatedBy()).orElse(null);
+        }
+
+        return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase, createdUser, lastUpdatedUser);
     }
 
     private void checkIsTestrunClosed(Testrun testrun) {

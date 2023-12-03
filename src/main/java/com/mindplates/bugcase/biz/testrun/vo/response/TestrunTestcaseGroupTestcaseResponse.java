@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.testrun.vo.response;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.common.code.TestResultCode;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,8 +32,11 @@ public class TestrunTestcaseGroupTestcaseResponse {
     private List<TestrunTestcaseGroupTestcaseItemResponse> testrunTestcaseItems;
     private List<TestrunTestcaseGroupTestcaseCommentResponse> comments;
     private TestResultCode testResult;
-
     private Long testerId;
+    private String createdUserName;
+    private String lastUpdatedUserName;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
 
     public TestrunTestcaseGroupTestcaseResponse(TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase) {
         this.id = testrunTestcaseGroupTestcase.getId();
@@ -46,6 +50,11 @@ public class TestrunTestcaseGroupTestcaseResponse {
         this.itemOrder = testrunTestcaseGroupTestcase.getTestcase().getItemOrder();
         this.closed = testrunTestcaseGroupTestcase.getTestcase().getClosed();
         this.testResult = testrunTestcaseGroupTestcase.getTestResult();
+        this.createdUserName = testrunTestcaseGroupTestcase.getTestcase().getCreatedUserName();
+        this.lastUpdatedUserName = testrunTestcaseGroupTestcase.getTestcase().getLastUpdatedUserName();
+        this.creationDate = testrunTestcaseGroupTestcase.getTestcase().getCreationDate();
+        this.lastUpdateDate = testrunTestcaseGroupTestcase.getTestcase().getLastUpdateDate();
+
         if (testrunTestcaseGroupTestcase.getTester() != null) {
             this.testerId = testrunTestcaseGroupTestcase.getTester().getId();
         }
