@@ -235,4 +235,18 @@ TestcaseService.updateTestcaseRelease = (spaceCode, projectId, testcaseId, relea
   );
 };
 
+TestcaseService.selectTestcaseTestrunHistory = (spaceCode, projectId, testcaseId, currentTestrunId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/testrun/result/history?currentTestrunId=${currentTestrunId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

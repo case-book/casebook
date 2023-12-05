@@ -72,6 +72,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -103,7 +105,8 @@ public class TestrunService {
     private final Random random = new Random();
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
-        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Testcase testcase = testrunTestcaseGroupTestcase.getTestcase();
 
         User createdUser = null;
@@ -674,7 +677,6 @@ public class TestrunService {
             .findById(testrunIteration.getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-
         targetTestrunIteration.updateInfo(testrunIteration);
         targetTestrunIteration.updateTester(testrunIteration.getTestrunUsers());
         if (updateIterationInfo) {
@@ -902,6 +904,16 @@ public class TestrunService {
         List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestrunTestcaseGroupTestrunIdAndAndTestResult(
             testrunId, TestResultCode.UNTESTED);
         return list.stream().map(TestrunTestcaseGroupTestcaseDTO::new).collect(Collectors.toList());
+    }
+
+
+    public List<TestrunTestcaseGroupTestcaseDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId,
+        Long currentTestrunId, Integer pageNo) {
+        Pageable pageInfo = PageRequest.of(Optional.ofNullable(pageNo).orElse(0), 10);
+        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(projectId,
+            testcaseId, currentTestrunId, pageInfo);
+        return list.stream().map(TestrunTestcaseGroupTestcaseDTO::new)
+            .collect(Collectors.toList());
     }
 
 }

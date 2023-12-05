@@ -24,10 +24,15 @@ import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseUpdateRequest;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestrunTestcaseGroupTestcaseResultResponse;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class TestcaseController {
 
     private final TestcaseService testcaseService;
+    private final TestrunService testrunService;
     private final MappingUtil mappingUtil;
     private final ProjectFileService projectFileService;
 
@@ -181,14 +187,16 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 복사")
     @PostMapping("/{testcaseId}/copy")
-    public TestcaseSimpleResponse copyTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
+    public TestcaseSimpleResponse copyTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
+        @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
         TestcaseDTO result = testcaseService.copyTestcaseInfo(spaceCode, projectId, testcaseId, targetType, targetId);
         return new TestcaseSimpleResponse(result);
     }
 
     @Operation(description = "테스트케이스 그룹 복사")
     @PostMapping("/groups/{testcaseGroupId}/copy")
-    public TestcaseGroupResponse copyTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseGroupId, @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
+    public TestcaseGroupResponse copyTestcaseGroup(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseGroupId,
+        @RequestParam(value = "targetType") String targetType, @RequestParam(value = "targetId") Long targetId) {
         TestcaseGroupDTO result = testcaseService.copyTestcaseGroupInfo(spaceCode, projectId, testcaseGroupId, targetType, targetId);
         return new TestcaseGroupResponse(result);
     }
@@ -201,5 +209,14 @@ public class TestcaseController {
         TestcaseSimpleDTO testcase = testcaseService
             .createTestcaseRelease(spaceCode, projectId, testcaseId, testcaseReleaseChangeRequest.getProjectReleaseId());
         return new TestcaseSimpleResponse(testcase);
+    }
+
+    @Operation(description = "테스트케이스 테스트런 결과 히스토리")
+    @GetMapping("/{testcaseId}/testrun/result/history")
+    public List<TestrunTestcaseGroupTestcaseResultResponse> selectTestcaseTestrunHistory(@PathVariable String spaceCode, @PathVariable Long projectId,
+        @PathVariable Long testcaseId, @RequestParam(required = false) Integer pageNo, @RequestParam(required = false) Long currentTestrunId) {
+        List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectTestcaseTestrunResultHistory(spaceCode, projectId, testcaseId, currentTestrunId, pageNo);
+
+        return list.stream().map(TestrunTestcaseGroupTestcaseResultResponse::new).collect(Collectors.toList());
     }
 }

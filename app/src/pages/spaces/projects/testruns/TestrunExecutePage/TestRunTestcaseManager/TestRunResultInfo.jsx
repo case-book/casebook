@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, CloseIcon, TestcaseItem } from '@/components';
+import { Button, CloseIcon, Liner, Tag, TestcaseItem } from '@/components';
 import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -14,8 +14,12 @@ import { getBaseURL } from '@/utils/configUtil';
 import { Editor } from '@toast-ui/react-editor';
 import { useTranslation } from 'react-i18next';
 import { CommentList } from '@/assets';
+import './TestRunResultInfo.scss';
+import TestcaseService from '@/services/TestcaseService';
+import TestrunService from '@/services/TestrunService';
+import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
 
-function TestRunTestcaseManager({
+function TestRunResultInfo({
   content,
   testcaseTemplates,
   users,
@@ -29,18 +33,25 @@ function TestRunTestcaseManager({
   onChangeTestcaseItem,
   resultPopupOpened,
   setResultPopupOpened,
+  spaceCode,
+  projectId,
+  project,
+  testrunId,
 }) {
   const {
     themeStore: { theme },
   } = useStores();
 
   const { t } = useTranslation();
-
   const caseContentElement = useRef(null);
-
   const editor = useRef(null);
-
   const resultInfoElement = useRef(null);
+  const [comment, setComment] = useState('');
+  const [testcaseResultHistory, setTestcaseResultHistory] = useState([]);
+  const [testcaseResultHistoryOpened, setTestcaseResultHistoryOpened] = useState(false);
+  const [popupInfo, setPopupInfo] = useState({
+    opened: false,
+  });
 
   const testcaseTemplate = useMemo(() => {
     return testcaseTemplates.find(d => d.id === content?.testcaseTemplateId);
@@ -51,8 +62,6 @@ function TestRunTestcaseManager({
     type: '',
   });
 
-  const [comment, setComment] = useState('');
-
   useEffect(() => {
     if (resultInfoElement.current && resultInfoElement.current.parentNode && resultInfoElement.current.parentNode.parentNode) {
       resultInfoElement.current.parentNode.parentNode.scrollTop = 0;
@@ -62,12 +71,87 @@ function TestRunTestcaseManager({
     editor.current?.getInstance().setHTML('');
   }, [content?.id]);
 
+  useEffect(() => {
+    if (spaceCode && projectId && content.testcaseId) {
+      TestcaseService.selectTestcaseTestrunHistory(spaceCode, projectId, content.testcaseId, testrunId, result => {
+        setTestcaseResultHistory(result);
+      });
+    }
+  }, [spaceCode, projectId, content.testcaseId]);
+
+  const lastTestcaseResultHistory = useMemo(() => {
+    return testcaseResultHistory?.length > 0 ? testcaseResultHistory[0] : null;
+  }, [testcaseResultHistory]);
+
+  const getResultHistory = resultHistory => {
+    TestrunService.selectTestrunTestcaseGroupTestcase(spaceCode, projectId, resultHistory.testrunId, resultHistory.testrunTestcaseGroupId, resultHistory.id, result => {
+      setTestcaseResultHistoryOpened(false);
+      setPopupInfo({
+        opened: true,
+        testcaseTemplate,
+        testrunTestcaseGroupTestcase: result,
+      });
+    });
+  };
+
   return (
-    <div className={`testrun-result-info ${resultPopupOpened ? 'opened' : ''}`} ref={resultInfoElement}>
+    <div className={`testrun-result-info-wrapper ${resultPopupOpened ? 'opened' : ''} ${resultLayoutPosition}`} ref={resultInfoElement}>
       <div>
         <div className="result-liner title-liner" />
         <div className="layout-title">
           <span>{t('테스트 결과 입력')}</span>
+          {testcaseResultHistory?.length > 0 && (
+            <>
+              <span>
+                <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px" />
+              </span>
+              <span className={`last-testcase-result ${testcaseResultHistoryOpened ? 'opened' : ''}`}>
+                <span
+                  className="button"
+                  onClick={() => {
+                    getResultHistory(lastTestcaseResultHistory);
+                  }}
+                >
+                  {t('마지막 결과')}
+                  <Tag size="xs" className={`test-result ${lastTestcaseResultHistory.testResult}`}>
+                    {lastTestcaseResultHistory.testResult}
+                  </Tag>
+                </span>
+                <span>
+                  <Liner className="liner" display="inline-block" width="1px" height="8px" color={theme === 'LIGHT' ? 'gray' : 'white'} margin="0 4px 0 0" />
+                </span>
+                <span
+                  className="button"
+                  onClick={() => {
+                    setTestcaseResultHistoryOpened(!testcaseResultHistoryOpened);
+                  }}
+                >
+                  <i className="fas fa-chevron-down" />
+                </span>
+                {testcaseResultHistoryOpened && (
+                  <ul className="testrun-history-list-popup">
+                    {testcaseResultHistory.map(history => {
+                      return (
+                        <li
+                          key={history.id}
+                          onClick={() => {
+                            getResultHistory(history);
+                          }}
+                        >
+                          <div>{history.testrunSeqId}</div>
+                          <div>
+                            <Tag size="xs" className={`test-result ${history.testResult}`}>
+                              {history.testResult}
+                            </Tag>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </span>
+            </>
+          )}
           <Button
             className="exit-button"
             color="transparent"
@@ -216,11 +300,30 @@ function TestRunTestcaseManager({
           </div>
         </div>
       </div>
+      {popupInfo.opened && (
+        <TestrunResultViewerPopup
+          project={project}
+          testcaseTemplate={popupInfo.testcaseTemplate}
+          testrunTestcaseGroupTestcase={popupInfo.testrunTestcaseGroupTestcase}
+          users={users.map(u => {
+            return {
+              ...u,
+              id: u.userId,
+            };
+          })}
+          setOpened={val => {
+            setPopupInfo({
+              ...popupInfo,
+              opened: val,
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
 
-TestRunTestcaseManager.defaultProps = {
+TestRunResultInfo.defaultProps = {
   content: null,
   testcaseTemplates: [],
   users: [],
@@ -228,9 +331,19 @@ TestRunTestcaseManager.defaultProps = {
   user: null,
   onDeleteComment: null,
   onRandomTester: null,
+  spaceCode: null,
+  projectId: null,
+  project: null,
+  testrunId: null,
 };
 
-TestRunTestcaseManager.propTypes = {
+TestRunResultInfo.propTypes = {
+  spaceCode: PropTypes.string,
+  projectId: PropTypes.string,
+  testrunId: PropTypes.string,
+  project: PropTypes.shape({
+    id: PropTypes.number,
+  }),
   content: PropTypes.shape({
     id: PropTypes.number,
     testrunTestcaseGroupId: PropTypes.number,
@@ -294,4 +407,4 @@ TestRunTestcaseManager.propTypes = {
   setResultPopupOpened: PropTypes.func.isRequired,
 };
 
-export default observer(TestRunTestcaseManager);
+export default observer(TestRunResultInfo);
