@@ -70,9 +70,12 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
 
     public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, User createdUser, User lastUpdatedUser) {
         this(testrunTestcaseGroupTestcase);
-        this.testcase.setCreatedUserName(createdUser.getName());
-        this.testcase.setLastUpdatedUserName(lastUpdatedUser.getName());
-        
+        if (createdUser != null) {
+            this.testcase.setCreatedUserName(createdUser.getName());
+        }
+        if (lastUpdatedUser != null) {
+            this.testcase.setLastUpdatedUserName(lastUpdatedUser.getName());
+        }
     }
 
 
