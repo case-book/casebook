@@ -627,6 +627,10 @@ function TestrunExecutePage() {
             id &&
             type === ITEM_TYPE.TESTCASE && (
               <TestRunTestcaseManager
+                spaceCode={spaceCode}
+                projectId={projectId}
+                project={project}
+                testrunId={testrunId}
                 setWide={setWide}
                 contentLoading={contentLoading}
                 content={content || {}}

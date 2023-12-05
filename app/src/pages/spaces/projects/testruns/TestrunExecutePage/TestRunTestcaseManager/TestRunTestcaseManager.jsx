@@ -17,6 +17,9 @@ import TestRunResultInfo from '@/pages/spaces/projects/testruns/TestrunExecutePa
 import dateUtil from '@/utils/dateUtil';
 
 function TestRunTestcaseManager({
+  spaceCode,
+  projectId,
+  project,
   content,
   testcaseTemplates,
   setContent,
@@ -31,17 +34,15 @@ function TestRunTestcaseManager({
   onRandomTester,
   onSaveTester,
   setWide,
+  testrunId,
 }) {
   const {
     themeStore: { theme },
   } = useStores();
 
   const { t } = useTranslation();
-
   const { testcaseItems } = content;
-
   const caseContentElement = useRef(null);
-
   const testcaseManagerContentElement = useRef(null);
   const managerLayoutElement = useRef(null);
   const managerContentElement = useRef(null);
@@ -252,7 +253,7 @@ function TestRunTestcaseManager({
                 <tr>
                   <td>{t('마지막 변경')}</td>
                   <td>{content.lastUpdatedUserName}</td>
-                  <td>{dateUtil.getDateString(content.lastUpdateDate)}</td>
+                  <td>{content.lastUpdatedUserName ? dateUtil.getDateString(content.lastUpdateDate) : ''}</td>
                 </tr>
               </tbody>
             </table>
@@ -274,6 +275,10 @@ function TestRunTestcaseManager({
           right={
             <div>
               <TestRunResultInfo
+                spaceCode={spaceCode}
+                projectId={projectId}
+                testrunId={testrunId}
+                project={project}
                 content={content}
                 testcaseTemplates={testcaseTemplates}
                 users={users}
@@ -298,6 +303,10 @@ function TestRunTestcaseManager({
           {getManagerContent()}
           {resultLayoutPosition === 'BOTTOM' && (
             <TestRunResultInfo
+              spaceCode={spaceCode}
+              projectId={projectId}
+              testrunId={testrunId}
+              project={project}
               content={content}
               testcaseTemplates={testcaseTemplates}
               users={users}
@@ -317,6 +326,10 @@ function TestRunTestcaseManager({
       )}
       {resultLayoutPosition === 'POPUP' && (
         <TestRunResultInfo
+          spaceCode={spaceCode}
+          projectId={projectId}
+          testrunId={testrunId}
+          project={project}
           content={content}
           testcaseTemplates={testcaseTemplates}
           users={users}
@@ -340,6 +353,7 @@ TestRunTestcaseManager.defaultProps = {
   content: null,
   testcaseTemplates: [],
   users: [],
+  testrunId: null,
   onSaveComment: null,
   contentLoading: false,
   user: null,
@@ -349,9 +363,18 @@ TestRunTestcaseManager.defaultProps = {
   onRandomTester: null,
   onSaveTestResultItem: null,
   setWide: null,
+  spaceCode: null,
+  projectId: null,
+  project: null,
 };
 
 TestRunTestcaseManager.propTypes = {
+  spaceCode: PropTypes.string,
+  projectId: PropTypes.string,
+  project: PropTypes.shape({
+    id: PropTypes.number,
+  }),
+  testrunId: PropTypes.string,
   content: PropTypes.shape({
     id: PropTypes.number,
     testrunTestcaseGroupId: PropTypes.number,

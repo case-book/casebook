@@ -32,7 +32,20 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
     public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase) {
 
         this.id = testrunTestcaseGroupTestcase.getId();
-        this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId()).build();
+        this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder()
+            .id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId())
+            .build();
+
+        if (testrunTestcaseGroupTestcase != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup() != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun() != null) {
+            this.testrunTestcaseGroup
+                .setTestrun(TestrunDTO
+                    .builder()
+                    .id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun().getId())
+                    .seqId(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun().getSeqId())
+                    .build()
+                );
+        }
+
         this.testcase = TestcaseDTO.builder()
             .id(testrunTestcaseGroupTestcase.getTestcase().getId())
             .seqId(testrunTestcaseGroupTestcase.getTestcase().getSeqId())
@@ -70,9 +83,12 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
 
     public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, User createdUser, User lastUpdatedUser) {
         this(testrunTestcaseGroupTestcase);
-        this.testcase.setCreatedUserName(createdUser.getName());
-        this.testcase.setLastUpdatedUserName(lastUpdatedUser.getName());
-        
+        if (createdUser != null) {
+            this.testcase.setCreatedUserName(createdUser.getName());
+        }
+        if (lastUpdatedUser != null) {
+            this.testcase.setLastUpdatedUserName(lastUpdatedUser.getName());
+        }
     }
 
 
