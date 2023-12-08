@@ -60,6 +60,12 @@ public class TestcaseController {
     private final MappingUtil mappingUtil;
     private final ProjectFileService projectFileService;
 
+    @Operation(description = "테스트케이스 목록 조회")
+    @GetMapping("")
+    public List<TestcaseSimpleResponse> selectProjectTestcaseList(@PathVariable String spaceCode, @PathVariable Long projectId) {
+        List<TestcaseDTO> testcaseList = testcaseService.selectProjectTestcaseList(projectId);
+        return mappingUtil.convert(testcaseList, TestcaseSimpleResponse.class);
+    }
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
     public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId,

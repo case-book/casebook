@@ -13,6 +13,7 @@ import './App.scss';
 import { useTranslation } from 'react-i18next';
 import GuestHeader from '@/pages/common/Header/GuestHeader';
 import ProjectHeader from '@/pages/common/Header/ProjectHeader';
+import ApiRoutes from '@/pages/apis';
 
 function App() {
   const {
@@ -98,11 +99,13 @@ function App() {
                 <Route path="/spaces/*" element={<SpacesRoutes />} />
                 <Route path="/projects/*" element={<ProjectsRoutes />} />
                 <Route path="/admin/*" element={<AdminRoutes />} />
+                <Route path="/apis/*" element={<ApiRoutes />} />
                 <Route path="*" element={<Message code="404" />} />
               </Routes>
             )}
             {!isLogin && (
               <Routes location={location}>
+                <Route path="/apis/*" element={<ApiRoutes />} />
                 <Route path="/users/join" element={<Join />} />
                 <Route path="*" element={<Login />} />
               </Routes>

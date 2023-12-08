@@ -32,6 +32,8 @@ function Version({ className }) {
           >
             RELEASE LIST
           </Link>
+          <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 8px" />
+          <Link to="/apis">APIS</Link>
         </div>
       </div>
     </div>

@@ -1,0 +1,126 @@
+.apis-index-info-page-wrapper {
+  .page-content {
+    .function {
+      display: inline-block;
+      font-size: 12px;
+      padding: 8px 8px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      background-color: white;
+      margin-left: 8px;
+    }
+    span.var {
+      display: inline-block;
+      font-size: 10px;
+      padding: 4px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-weight: bold;
+      margin: 0 2px;
+      background-color: white;
+      vertical-align: middle;
+    }
+
+    p {
+      margin-left: 10px;
+    }
+
+    .code {
+      padding: 20px;
+      background-color: var(--light-color);
+      display: flex;
+      margin-bottom: 20px;
+      margin-left: 10px;
+      > div {
+        align-self: center;
+      }
+
+      .text {
+        flex-grow: 1;
+      }
+    }
+
+    .apis {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      .name {
+        font-weight: bold;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      .description {
+        font-size: 12px;
+        padding-left: 10px;
+        margin-bottom: 10px;
+      }
+
+      > li {
+        margin-bottom: 20px;
+
+        .req-res {
+          margin-left: 10px;
+          border: 1px solid var(--border-color);
+          .request,
+          .request-body {
+            border-bottom: 1px solid var(--border-color);
+          }
+          .request,
+          .request-body,
+          .response {
+            .label {
+              padding: 10px 10px 0;
+              display: flex;
+              > div {
+                align-self: center;
+
+                &.explain {
+                  margin-left: 8px;
+                }
+              }
+            }
+
+            .request-info {
+              .spec {
+                display: flex;
+                padding: 4px 10px 10px;
+                font-weight: bold;
+                margin-left: 10px;
+
+                > div {
+                  align-self: center;
+
+                  &.method {
+                    margin-right: 10px;
+                  }
+
+                  &.path {
+                    flex-grow: 1;
+                  }
+                }
+              }
+              .sample {
+                padding: 0 10px 10px;
+                margin-left: 10px;
+                display: flex;
+                > div {
+                  align-self: center;
+                  &:first-child {
+                    margin-right: 4px;
+                  }
+                }
+              }
+            }
+
+            .result {
+              padding: 10px;
+              margin-left: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
