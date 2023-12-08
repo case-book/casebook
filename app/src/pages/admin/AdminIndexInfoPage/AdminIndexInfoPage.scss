@@ -9,6 +9,15 @@
       background-color: white;
       margin-left: 8px;
     }
+
+    .token-selector {
+      text-align: center;
+      .user-token {
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+    }
+
     span.var {
       display: inline-block;
       font-size: 10px;

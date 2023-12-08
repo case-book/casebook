@@ -68,7 +68,7 @@ function AdminIndexInfoPage() {
           )}
           {isLogin && (
             <>
-              {selectedUserTokenId && <div className="text">{`Authorization: ${btoa(`${user.email}:${userTokenList[selectedUserTokenId]?.token}`)}`}</div>}
+              {selectedUserTokenId && <div className="text">{`Authorization: ${btoa(`${user.email}:${userTokenList?.find(d => d.id === selectedUserTokenId)?.token}`)}`}</div>}
               {!selectedUserTokenId && (
                 <div className="text">
                   Authorization:
@@ -77,7 +77,8 @@ function AdminIndexInfoPage() {
                   </span>
                 </div>
               )}
-              <div className="selector">
+              <div className="token-selector">
+                <div className="user-token">{t('사용자 인증 토큰')}</div>
                 <Selector
                   size="sm"
                   value={selectedUserTokenId}
