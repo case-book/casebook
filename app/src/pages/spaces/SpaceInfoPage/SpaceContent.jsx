@@ -440,6 +440,20 @@ function SpaceContent({ space, onRefresh }) {
         </Title>
         <Block>
           <BlockRow>
+            <Label>{t('스페이스 변수')}</Label>
+            <Text>
+              <Button
+                size="sm"
+                color="primary"
+                onClick={() => {
+                  navigate(`/spaces/${spaceCode}/variables`);
+                }}
+              >
+                {t('스페이스 변수 관리')}
+              </Button>
+            </Text>
+          </BlockRow>
+          <BlockRow>
             <Label>{t('스페이스 탈퇴')}</Label>
             <Text>
               <Button size="sm" color="warning" onClick={withdraw}>

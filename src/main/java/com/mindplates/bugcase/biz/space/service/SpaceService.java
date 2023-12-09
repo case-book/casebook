@@ -8,8 +8,11 @@ import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
+import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
+import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
+import com.mindplates.bugcase.biz.space.repository.SpaceVariableRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
@@ -44,6 +47,9 @@ public class SpaceService {
     private final NotificationService notificationService;
     private final MappingUtil mappingUtil;
     private final MessageSourceAccessor messageSourceAccessor;
+    private final SpaceVariableRepository spaceVariableRepository;
+    private final SpaceProfileRepository spaceProfileRepository;
+    private final SpaceProfileVariableRepository spaceProfileVariableRepository;
 
     private boolean existByCode(String code) {
         Long count = spaceRepository.countByCode(code);
@@ -74,6 +80,11 @@ public class SpaceService {
         return new SpaceDTO(space);
     }
 
+    public Long selectSpaceIdByCode(String spaceCode) {
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return space.getId();
+    }
+
 
     @CacheEvict(key = "#space.code", value = CacheConfig.SPACE)
     @Transactional
@@ -82,6 +93,11 @@ public class SpaceService {
         for (ProjectDTO project : projects) {
             projectService.deleteProjectInfo(space.getCode(), project);
         }
+
+        spaceVariableRepository.deleteBySpaceId(space.getId());
+        spaceProfileRepository.deleteBySpaceId(space.getId());
+        spaceProfileVariableRepository.deleteBySpaceId(space.getId());
+
         spaceRepository.deleteById(space.getId());
     }
 

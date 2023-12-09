@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Message, SpaceEditPage, SpaceInfoPage, SpaceListPage } from '@/pages';
+import { Message, SpaceEditPage, SpaceInfoPage, SpaceListPage, SpaceVariableEditPage } from '@/pages';
 import ProjectsRoutes from '@/pages/spaces/projects';
 
 function SpacesRoutes() {
@@ -10,6 +10,7 @@ function SpacesRoutes() {
       <Route path="/new" element={<SpaceEditPage />} />
       <Route path="/:spaceCode/edit" element={<SpaceEditPage type="edit" />} />
       <Route path="/:spaceCode/info" element={<SpaceInfoPage />} />
+      <Route path="/:spaceCode/variables" element={<SpaceVariableEditPage />} />
       <Route path="/" element={<SpaceListPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>

@@ -1,6 +1,7 @@
 import SpaceListPage from '@/pages/spaces/SpaceListPage/SpaceListPage';
 import SpaceEditPage from '@/pages/spaces/SpaceEditPage';
 import SpaceInfoPage from '@/pages/spaces/SpaceInfoPage/SpaceInfoPage';
+import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVariableEditPage';
 
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
@@ -88,4 +89,5 @@ export {
   ReleaseListPage,
   ReleaseEditPage,
   ReleaseInfoPage,
+  SpaceVariableEditPage,
 };
