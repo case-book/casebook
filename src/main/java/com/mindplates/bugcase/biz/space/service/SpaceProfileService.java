@@ -1,9 +1,7 @@
 package com.mindplates.bugcase.biz.space.service;
 
 import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
-import com.mindplates.bugcase.biz.space.dto.SpaceVariableDTO;
 import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
-import com.mindplates.bugcase.biz.space.entity.SpaceVariable;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -61,9 +59,15 @@ public class SpaceProfileService {
 
     @Transactional
     public SpaceProfileDTO updateProfileSpaceInfo(SpaceProfileDTO updateSpaceProfileInfo) {
+        if (updateSpaceProfileInfo.isDefault()) {
+            spaceProfileRepository.updateSpaceProfileDefault(updateSpaceProfileInfo.getSpace().getId(), false);
+        }
+
         SpaceProfile spaceProfile = spaceProfileRepository.findById(updateSpaceProfileInfo.getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         spaceProfile.setName(updateSpaceProfileInfo.getName());
+        spaceProfile.setDefault(updateSpaceProfileInfo.isDefault());
+
         return new SpaceProfileDTO(spaceProfileRepository.save(spaceProfile));
     }
 

@@ -22,8 +22,8 @@ function SpaceVariableEditPage() {
   const [spaceProfileList, setSpaceProfileList] = useState([]);
   const [spaceProfileVariableList, setSpaceProfileVariableList] = useState([]);
   const [space, setSpace] = useState(null);
-  const [variableEditPopup, setVariableEditPopup] = useState(false);
-  const [profileEditPopup, setProfileEditPopup] = useState(false);
+  const [variableEditPopup, setVariableEditPopup] = useState({ opened: false, data: null });
+  const [profileEditPopup, setProfileEditPopup] = useState({ opened: false, data: null });
   const [profileVariableEditPopup, setProfileVariableEditPopup] = useState({
     opened: false,
     data: null,
@@ -47,20 +47,77 @@ function SpaceVariableEditPage() {
   }, [spaceCode]);
 
   const createSpaceVariableInfo = data => {
-    SpaceVariableService.createSpaceVariableInfo(spaceCode, data, info => {
+    if (data.id) {
+      SpaceVariableService.updateSpaceVariableInfo(spaceCode, data, info => {
+        const nextSpaceVariableList = spaceVariableList.slice(0);
+        nextSpaceVariableList.find(d => d.id === info.id).name = info.name;
+        setSpaceVariableList(nextSpaceVariableList);
+      });
+    } else {
+      SpaceVariableService.createSpaceVariableInfo(spaceCode, data, info => {
+        const nextSpaceVariableList = spaceVariableList.slice(0);
+        nextSpaceVariableList.push(info);
+        setSpaceVariableList(nextSpaceVariableList);
+      });
+    }
+
+    setVariableEditPopup({
+      opened: false,
+    });
+  };
+
+  const deleteSpaceVariableInfo = spaceVariableId => {
+    SpaceVariableService.deleteSpaceVariableInfo(spaceCode, spaceVariableId, () => {
       const nextSpaceVariableList = spaceVariableList.slice(0);
-      nextSpaceVariableList.push(info);
+      const targetIndex = nextSpaceVariableList.findIndex(d => d.id === spaceVariableId);
+      nextSpaceVariableList.splice(targetIndex, 1);
       setSpaceVariableList(nextSpaceVariableList);
-      setVariableEditPopup(false);
+
+      const nextSpaceProfileVariableList = spaceProfileVariableList.slice(0);
+      setSpaceProfileVariableList(nextSpaceProfileVariableList.filter(d => d.spaceVariable.id !== spaceVariableId));
+
+      setVariableEditPopup({
+        opened: false,
+      });
     });
   };
 
   const createSpaceProfileInfo = data => {
-    SpaceProfileService.createSpaceProfileInfo(spaceCode, data, info => {
+    if (data.id) {
+      SpaceProfileService.updateSpaceProfileInfo(spaceCode, data, info => {
+        const nextSpaceProfileList = spaceProfileList.slice(0);
+        const targetIndex = nextSpaceProfileList.findIndex(d => d.id === info.id);
+        nextSpaceProfileList.splice(targetIndex, 1, info);
+        setSpaceProfileList(nextSpaceProfileList);
+        SpaceProfileService.selectSpaceProfileList(spaceCode, list => {
+          setSpaceProfileList(list);
+        });
+      });
+    } else {
+      SpaceProfileService.createSpaceProfileInfo(spaceCode, data, info => {
+        const nextSpaceProfileList = spaceProfileList.slice(0);
+        nextSpaceProfileList.push(info);
+        setSpaceProfileList(nextSpaceProfileList);
+        SpaceProfileService.selectSpaceProfileList(spaceCode, list => {
+          setSpaceProfileList(list);
+        });
+      });
+    }
+
+    setProfileEditPopup({
+      opened: false,
+    });
+  };
+
+  const deleteSpaceProfileInfo = spaceProfileId => {
+    SpaceProfileService.deleteSpaceProfileInfo(spaceCode, spaceProfileId, () => {
       const nextSpaceProfileList = spaceProfileList.slice(0);
-      nextSpaceProfileList.push(info);
+      const targetIndex = nextSpaceProfileList.findIndex(d => d.id === spaceProfileId);
+      nextSpaceProfileList.splice(targetIndex, 1);
       setSpaceProfileList(nextSpaceProfileList);
-      setProfileEditPopup(false);
+      setProfileEditPopup({
+        opened: false,
+      });
     });
   };
 
@@ -128,175 +185,253 @@ function SpaceVariableEditPage() {
       <PageContent>
         <Title
           control={
-            <Button
-              size="xs"
-              color="primary"
-              onClick={() => {
-                setProfileEditPopup(true);
-              }}
-            >
-              {t('프로파일 별 변수 서정')}
-            </Button>
+            <div className="buttons">
+              <Button
+                size="xs"
+                color="primary"
+                onClick={() => {
+                  setVariableEditPopup({
+                    opened: true,
+                  });
+                }}
+              >
+                {t('변수 추가')}
+              </Button>
+              <Button
+                size="xs"
+                color="primary"
+                onClick={() => {
+                  setProfileEditPopup({
+                    opened: true,
+                  });
+                }}
+              >
+                {t('프로파일 추가')}
+              </Button>
+            </div>
           }
         >
-          {t('프로파일 별 변수 설정')}
+          {t('변수 및 프로파일')}
         </Title>
         <Block>
-          {spaceProfileList?.length > 0 && (
-            <Table cols={['160px']} border>
-              <THead>
-                <Tr>
-                  <Th align="left">{t('변수')}</Th>
-                  {spaceProfileList.map(d => {
-                    return <Th align="left">{d.name}</Th>;
+          <div className="variable-content">
+            {spaceProfileList?.length > 0 && (
+              <Table border>
+                <THead>
+                  <Tr>
+                    <Th className="variable" align="left">
+                      {t('변수')}
+                    </Th>
+                    {spaceProfileList.map(d => {
+                      return (
+                        <Th className="profile" align="left">
+                          <Link
+                            to="/"
+                            onClick={e => {
+                              e.preventDefault();
+                              console.log(d);
+                              setProfileEditPopup({
+                                opened: true,
+                                data: d,
+                              });
+                            }}
+                          >
+                            {d.name}
+                          </Link>
+                        </Th>
+                      );
+                    })}
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {spaceVariableList.map(d => {
+                    const variableProfiles = spaceProfileVariableList.filter(info => info.spaceVariable.id === d.id);
+
+                    return (
+                      <Tr key={d.id}>
+                        <Td className="variable" align="left">
+                          <Link
+                            className="comment-delete-link"
+                            to="/"
+                            onClick={e => {
+                              e.preventDefault();
+                              setVariableEditPopup({
+                                opened: true,
+                                data: d,
+                              });
+                            }}
+                          >
+                            {d.name}
+                          </Link>
+                        </Td>
+                        {spaceProfileList.map(profile => {
+                          const value = variableProfiles.find(info => info.spaceProfile.id === profile.id);
+
+                          return (
+                            <Td className="profile" align="left">
+                              {value?.value && (
+                                <Link
+                                  className="comment-delete-link"
+                                  to="/"
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    setProfileVariableEditPopup({
+                                      opened: true,
+                                      data: value,
+                                    });
+                                  }}
+                                >
+                                  {value.value}
+                                </Link>
+                              )}
+                              {!value?.value && (
+                                <Button
+                                  size="xs"
+                                  color="primary"
+                                  onClick={() => {
+                                    setProfileVariableEditPopup({
+                                      opened: true,
+                                      data: {
+                                        value: '',
+                                        spaceVariable: { id: d.id },
+                                        spaceProfile: { id: profile.id },
+                                      },
+                                    });
+                                  }}
+                                >
+                                  {t('추가')}
+                                </Button>
+                              )}
+                            </Td>
+                          );
+                        })}
+                      </Tr>
+                    );
                   })}
-                </Tr>
-              </THead>
-              <Tbody>
-                {spaceVariableList.map(d => {
-                  const variableProfiles = spaceProfileVariableList.filter(info => info.spaceVariable.id === d.id);
-
-                  return (
-                    <Tr key={d.id}>
-                      <Td align="left">{d.name}</Td>
-                      {spaceProfileList.map(profile => {
-                        const value = variableProfiles.find(info => info.spaceProfile.id === profile.id);
-
-                        return (
-                          <Td align="left">
-                            {value?.value && (
-                              <Link
-                                className="comment-delete-link"
-                                to="/"
-                                onClick={e => {
-                                  e.preventDefault();
-                                  setProfileVariableEditPopup({
-                                    opened: true,
-                                    data: value,
-                                  });
-                                }}
-                              >
-                                {value.value}
-                              </Link>
-                            )}
-                            {!value?.value && (
-                              <Button
-                                size="xs"
-                                color="primary"
-                                onClick={() => {
-                                  setProfileVariableEditPopup({
-                                    opened: true,
-                                    data: {
-                                      value: '',
-                                      spaceVariable: { id: d.id },
-                                      spaceProfile: { id: profile.id },
-                                    },
-                                  });
-                                }}
-                              >
-                                {t('추가')}
-                              </Button>
-                            )}
-                          </Td>
-                        );
-                      })}
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          )}
+                </Tbody>
+              </Table>
+            )}
+          </div>
         </Block>
-
-        <Title
-          control={
-            <Button
-              size="xs"
-              color="primary"
-              onClick={() => {
-                setVariableEditPopup(true);
-              }}
+        {false && (
+          <>
+            <Title
+              control={
+                <Button
+                  size="xs"
+                  color="primary"
+                  onClick={() => {
+                    setVariableEditPopup({
+                      opened: true,
+                    });
+                  }}
+                >
+                  {t('변수 추가')}
+                </Button>
+              }
             >
-              {t('변수 추가')}
-            </Button>
-          }
-        >
-          {t('변수')}
-        </Title>
-        <Block>
-          {spaceVariableList?.length > 0 && (
-            <Table cols={['', '220px']} border>
-              <THead>
-                <Tr>
-                  <Th align="left">{t('이름')}</Th>
-                  <Th align="center">{t('생성 일시')}</Th>
-                </Tr>
-              </THead>
-              <Tbody>
-                {spaceVariableList.map(d => {
-                  return (
-                    <Tr key={d.id}>
-                      <Td align="left">{d.name}</Td>
-                      <Td align="center">{dateUtil.getDateString(d.creationDate)}</Td>
+              {t('변수')}
+            </Title>
+            <Block>
+              {spaceVariableList?.length > 0 && (
+                <Table cols={['', '220px']} border>
+                  <THead>
+                    <Tr>
+                      <Th align="left">{t('이름')}</Th>
+                      <Th align="center">{t('생성 일시')}</Th>
                     </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          )}
-          {spaceVariableList?.length < 1 && (
-            <EmptyContent className="empty-content">
-              <div>{t('등록된 변수가 없습니다.')}</div>
-            </EmptyContent>
-          )}
-        </Block>
-        <Title
-          control={
-            <Button
-              size="xs"
-              color="primary"
-              onClick={() => {
-                setProfileEditPopup(true);
-              }}
+                  </THead>
+                  <Tbody>
+                    {spaceVariableList.map(d => {
+                      return (
+                        <Tr key={d.id}>
+                          <Td align="left">{d.name}</Td>
+                          <Td align="center">{dateUtil.getDateString(d.creationDate)}</Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              )}
+              {spaceVariableList?.length < 1 && (
+                <EmptyContent className="empty-content">
+                  <div>{t('등록된 변수가 없습니다.')}</div>
+                </EmptyContent>
+              )}
+            </Block>
+            <Title
+              control={
+                <Button
+                  size="xs"
+                  color="primary"
+                  onClick={() => {
+                    setProfileEditPopup({
+                      opened: true,
+                    });
+                  }}
+                >
+                  {t('프로파일 추가')}
+                </Button>
+              }
             >
-              {t('프로파일 추가')}
-            </Button>
-          }
-        >
-          {t('프로파일')}
-        </Title>
-        <Block>
-          {spaceProfileList?.length > 0 && (
-            <Table cols={['', '120px', '220px']} border>
-              <THead>
-                <Tr>
-                  <Th align="left">{t('이름')}</Th>
-                  <Th align="center">{t('기본 프로파일')}</Th>
-                  <Th align="center">{t('생성 일시')}</Th>
-                </Tr>
-              </THead>
-              <Tbody>
-                {spaceProfileList.map(d => {
-                  return (
-                    <Tr key={d.id}>
-                      <Td align="left">{d.name}</Td>
-                      <Td align="center">{d.default ? 'Y' : 'N'}</Td>
-                      <Td align="center">{dateUtil.getDateString(d.creationDate)}</Td>
+              {t('프로파일')}
+            </Title>
+            <Block>
+              {spaceProfileList?.length > 0 && (
+                <Table cols={['', '120px', '220px']} border>
+                  <THead>
+                    <Tr>
+                      <Th align="left">{t('이름')}</Th>
+                      <Th align="center">{t('기본 프로파일')}</Th>
+                      <Th align="center">{t('생성 일시')}</Th>
                     </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          )}
-          {spaceProfileList?.length < 1 && (
-            <EmptyContent className="empty-content">
-              <div>{t('등록된 프로파일이 없습니다.')}</div>
-            </EmptyContent>
-          )}
-        </Block>
+                  </THead>
+                  <Tbody>
+                    {spaceProfileList.map(d => {
+                      return (
+                        <Tr key={d.id}>
+                          <Td align="left">{d.name}</Td>
+                          <Td align="center">{d.default ? 'Y' : 'N'}</Td>
+                          <Td align="center">{dateUtil.getDateString(d.creationDate)}</Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              )}
+              {spaceProfileList?.length < 1 && (
+                <EmptyContent className="empty-content">
+                  <div>{t('등록된 프로파일이 없습니다.')}</div>
+                </EmptyContent>
+              )}
+            </Block>
+          </>
+        )}
       </PageContent>
-      {variableEditPopup && <VariableEditPopup setOpened={setVariableEditPopup} onApply={createSpaceVariableInfo} />}
-      {profileEditPopup && <ProfileEditPopup setOpened={setProfileEditPopup} onApply={createSpaceProfileInfo} />}
+      {variableEditPopup.opened && (
+        <VariableEditPopup
+          data={variableEditPopup.data}
+          setOpened={value => {
+            setVariableEditPopup({
+              opened: value,
+            });
+          }}
+          onSave={createSpaceVariableInfo}
+          onDelete={deleteSpaceVariableInfo}
+        />
+      )}
+      {profileEditPopup.opened && (
+        <ProfileEditPopup
+          data={profileEditPopup.data}
+          onSave={createSpaceProfileInfo}
+          setOpened={value => {
+            setProfileEditPopup({
+              opened: value,
+            });
+          }}
+          onDelete={deleteSpaceProfileInfo}
+        />
+      )}
       {profileVariableEditPopup.opened && (
         <ProfileVariableEditPopup
           data={profileVariableEditPopup.data}

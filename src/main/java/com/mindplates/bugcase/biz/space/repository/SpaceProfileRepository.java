@@ -4,6 +4,9 @@ import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface SpaceProfileRepository extends JpaRepository<SpaceProfile, Long> {
 
@@ -13,6 +16,10 @@ public interface SpaceProfileRepository extends JpaRepository<SpaceProfile, Long
     List<SpaceProfile> findAllBySpaceCode(String spaceCode);
 
     Long countBySpaceIdAndName(Long spaceId, String name);
+
+    @Modifying
+    @Query("UPDATE SpaceProfile sp SET sp.isDefault = :isDefault WHERE sp.space.id = :spaceId")
+    void updateSpaceProfileDefault(@Param("spaceId") long spaceId, @Param("isDefault") boolean isDefault);
 
 }
 

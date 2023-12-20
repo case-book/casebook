@@ -1,36 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Block, BlockRow, Button, CheckBox, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import './VariableCommonPopup.scss';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 const labelMinWidth = '100px';
 
-function ProfileEditPopup({ data, setOpened, onApply }) {
+function ProfileEditPopup({ data, setOpened, onSave, onDelete }) {
   const { t } = useTranslation();
-
-  const isEdit = !!data?.id;
 
   const [spaceProfile, setSpaceProfile] = useState({
     id: null,
     name: '',
-    isDefault: 'N',
+    default: false,
   });
 
-  const onSubmit = e => {
-    e.preventDefault();
-    onApply(spaceProfile);
-  };
+  const isEdit = useMemo(() => {
+    return !!data?.id;
+  }, [data]);
+
+  useEffect(() => {
+    console.log(data);
+    setSpaceProfile({ ...data });
+  }, [data]);
+
+  console.log(spaceProfile);
 
   return (
     <Modal
       isOpen
+      className="variable-common-popup-wrapper"
       toggle={() => {
         if (setOpened) {
           setOpened(false);
         }
       }}
     >
-      <Form onSubmit={onSubmit}>
+      <Form
+        onSubmit={e => {
+          e.preventDefault();
+          onSave(spaceProfile);
+        }}
+      >
         <ModalHeader>{isEdit ? t('프로파일 변경') : t('프로파일 등록')}</ModalHeader>
         <ModalBody className="modal-body">
           <Block className="block">
@@ -57,11 +70,11 @@ function ProfileEditPopup({ data, setOpened, onApply }) {
               </Label>
               <CheckBox
                 type="checkbox"
-                value={spaceProfile.isDefault === 'Y'}
+                value={spaceProfile.default}
                 onChange={val => {
                   setSpaceProfile({
                     ...spaceProfile,
-                    isDefault: val ? 'Y' : 'N',
+                    default: val,
                   });
                 }}
               />
@@ -69,8 +82,35 @@ function ProfileEditPopup({ data, setOpened, onApply }) {
           </Block>
         </ModalBody>
         <ModalFooter className="modal-footer">
-          <Button onClick={() => setOpened(false)}>{t('취소')}</Button>
-          <Button type="submit">{isEdit ? t('변경') : t('추가')}</Button>
+          <div className="controls">
+            <div className="delete">
+              {isEdit && (
+                <Button
+                  color="danger"
+                  onClick={() => {
+                    dialogUtil.setConfirm(
+                      MESSAGE_CATEGORY.WARNING,
+                      t('변수 삭제'),
+                      <div>{t('프로파일과 프로파일에 등록된 프로파일 변수가 모두 삭제됩니다. 삭제하시겠습니까?')}</div>,
+                      () => {
+                        onDelete(data.id);
+                      },
+                      null,
+                      t('삭제'),
+                      null,
+                      'danger',
+                    );
+                  }}
+                >
+                  {t('삭제')}
+                </Button>
+              )}
+            </div>
+            <div className="others">
+              <Button onClick={() => setOpened(false)}>{t('취소')}</Button>
+              <Button type="submit">{t('저장')}</Button>
+            </div>
+          </div>
         </ModalFooter>
       </Form>
     </Modal>
@@ -93,7 +133,8 @@ ProfileEditPopup.propTypes = {
     day: PropTypes.number,
   }),
   setOpened: PropTypes.func.isRequired,
-  onApply: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default ProfileEditPopup;

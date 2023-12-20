@@ -29,4 +29,26 @@ SpaceProfileService.createSpaceProfileInfo = (spaceCode, spaceProfile, successHa
   );
 };
 
+SpaceProfileService.updateSpaceProfileInfo = (spaceCode, spaceProfile, successHandler, failHandler) => {
+  return request.put(
+    `/api/spaces/${spaceCode}/profiles/${spaceProfile.id}`,
+    spaceProfile,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+SpaceProfileService.deleteSpaceProfileInfo = (spaceCode, spaceProfileId, successHandler, failHandler) => {
+  return request.del(
+    `/api/spaces/${spaceCode}/profiles/${spaceProfileId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default SpaceProfileService;

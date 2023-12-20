@@ -29,6 +29,28 @@ SpaceVariableService.createSpaceVariableInfo = (spaceCode, spaceVariable, succes
   );
 };
 
+SpaceVariableService.updateSpaceVariableInfo = (spaceCode, spaceVariable, successHandler, failHandler) => {
+  return request.put(
+    `/api/spaces/${spaceCode}/variables/${spaceVariable.id}`,
+    spaceVariable,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+SpaceVariableService.deleteSpaceVariableInfo = (spaceCode, spaceVariableId, successHandler, failHandler) => {
+  return request.del(
+    `/api/spaces/${spaceCode}/variables/${spaceVariableId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 SpaceVariableService.createSpaceProfileVariableInfo = (spaceCode, spaceVariableId, spaceProfileId, spaceProfileVariable, successHandler, failHandler) => {
   return request.put(
     `/api/spaces/${spaceCode}/variables/${spaceVariableId}/profiles/${spaceProfileId}`,
