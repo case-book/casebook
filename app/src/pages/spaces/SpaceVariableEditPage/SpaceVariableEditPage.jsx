@@ -155,8 +155,34 @@ function SpaceVariableEditPage() {
   };
 
   return (
-    <Page className="space-variable-edit-page-wrapper">
+    <Page className="space-variable-edit-page-wrapper" list>
       <PageTitle
+        control={
+          <div>
+            <Button
+              size="xs"
+              color="primary"
+              onClick={() => {
+                setVariableEditPopup({
+                  opened: true,
+                });
+              }}
+            >
+              {t('변수 추가')}
+            </Button>
+            <Button
+              size="xs"
+              color="primary"
+              onClick={() => {
+                setProfileEditPopup({
+                  opened: true,
+                });
+              }}
+            >
+              {t('프로파일 추가')}
+            </Button>
+          </div>
+        }
         name={t('스페이스 변수 관리')}
         breadcrumbs={[
           {
@@ -172,8 +198,8 @@ function SpaceVariableEditPage() {
             text: space?.name,
           },
           {
-            to: `/spaces/${spaceCode}/edit`,
-            text: t('편집'),
+            to: `/spaces/${spaceCode}/variables`,
+            text: t('스페이스 변수 관리'),
           },
         ]}
         onListClick={() => {
@@ -183,134 +209,138 @@ function SpaceVariableEditPage() {
         {t('스페이스 변수 관리')}
       </PageTitle>
       <PageContent>
-        <Title
-          control={
-            <div className="buttons">
-              <Button
-                size="xs"
-                color="primary"
-                onClick={() => {
-                  setVariableEditPopup({
-                    opened: true,
-                  });
-                }}
-              >
-                {t('변수 추가')}
-              </Button>
-              <Button
-                size="xs"
-                color="primary"
-                onClick={() => {
-                  setProfileEditPopup({
-                    opened: true,
-                  });
-                }}
-              >
-                {t('프로파일 추가')}
-              </Button>
-            </div>
-          }
-        >
-          {t('변수 및 프로파일')}
-        </Title>
         <Block>
           <div className="variable-content">
-            {spaceProfileList?.length > 0 && (
-              <Table border>
-                <THead>
-                  <Tr>
-                    <Th className="variable" align="left">
-                      {t('변수')}
+            <Table border>
+              <THead>
+                <Tr>
+                  <Th className="description" align="left">
+                    <div>
+                      <div className="profile">{t('프로파일')}</div>
+                      <div className="variable">{t('변수')}</div>
+                      <div className="line" />
+                    </div>
+                  </Th>
+                  {spaceProfileList.length < 1 && (
+                    <Th align="center">
+                      <Button
+                        size="xs"
+                        color="primary"
+                        onClick={() => {
+                          setProfileEditPopup({
+                            opened: true,
+                          });
+                        }}
+                      >
+                        {t('프로파일 추가')}
+                      </Button>
                     </Th>
-                    {spaceProfileList.map(d => {
-                      return (
-                        <Th className="profile" align="left">
-                          <Link
-                            to="/"
-                            onClick={e => {
-                              e.preventDefault();
-                              console.log(d);
-                              setProfileEditPopup({
-                                opened: true,
-                                data: d,
-                              });
-                            }}
-                          >
-                            {d.name}
-                          </Link>
-                        </Th>
-                      );
-                    })}
-                  </Tr>
-                </THead>
-                <Tbody>
-                  {spaceVariableList.map(d => {
-                    const variableProfiles = spaceProfileVariableList.filter(info => info.spaceVariable.id === d.id);
-
+                  )}
+                  {spaceProfileList.map(d => {
                     return (
-                      <Tr key={d.id}>
-                        <Td className="variable" align="left">
-                          <Link
-                            className="comment-delete-link"
-                            to="/"
-                            onClick={e => {
-                              e.preventDefault();
-                              setVariableEditPopup({
-                                opened: true,
-                                data: d,
-                              });
-                            }}
-                          >
-                            {d.name}
-                          </Link>
-                        </Td>
-                        {spaceProfileList.map(profile => {
-                          const value = variableProfiles.find(info => info.spaceProfile.id === profile.id);
-
-                          return (
-                            <Td className="profile" align="left">
-                              {value?.value && (
-                                <Link
-                                  className="comment-delete-link"
-                                  to="/"
-                                  onClick={e => {
-                                    e.preventDefault();
-                                    setProfileVariableEditPopup({
-                                      opened: true,
-                                      data: value,
-                                    });
-                                  }}
-                                >
-                                  {value.value}
-                                </Link>
-                              )}
-                              {!value?.value && (
-                                <Button
-                                  size="xs"
-                                  color="primary"
-                                  onClick={() => {
-                                    setProfileVariableEditPopup({
-                                      opened: true,
-                                      data: {
-                                        value: '',
-                                        spaceVariable: { id: d.id },
-                                        spaceProfile: { id: profile.id },
-                                      },
-                                    });
-                                  }}
-                                >
-                                  {t('추가')}
-                                </Button>
-                              )}
-                            </Td>
-                          );
-                        })}
-                      </Tr>
+                      <Th className="profile" align="left">
+                        <Link
+                          to="/"
+                          onClick={e => {
+                            e.preventDefault();
+                            setProfileEditPopup({
+                              opened: true,
+                              data: d,
+                            });
+                          }}
+                        >
+                          {d.name}
+                        </Link>
+                      </Th>
                     );
                   })}
-                </Tbody>
-              </Table>
-            )}
+                  {spaceProfileList.length > 0 && <Th className="last" />}
+                </Tr>
+              </THead>
+              <Tbody>
+                {spaceVariableList.length < 1 && (
+                  <Th className="empty-variable">
+                    <Button
+                      size="xs"
+                      color="primary"
+                      onClick={() => {
+                        setVariableEditPopup({
+                          opened: true,
+                        });
+                      }}
+                    >
+                      {t('변수 추가')}
+                    </Button>
+                  </Th>
+                )}
+                {spaceVariableList.length < 1 && spaceProfileList.length < 1 && <Td align="center">{t('변수와 프로파일을 추가해주세요.')}</Td>}
+                {spaceVariableList.length < 1 && spaceProfileList.length > 0 && <Td align="center">{t('변수를 추가해주세요.')}</Td>}
+                {spaceVariableList.map(d => {
+                  const variableProfiles = spaceProfileVariableList.filter(info => info.spaceVariable.id === d.id);
+
+                  return (
+                    <Tr key={d.id}>
+                      <Th className="variable" align="left">
+                        <Link
+                          to="/"
+                          onClick={e => {
+                            e.preventDefault();
+                            setVariableEditPopup({
+                              opened: true,
+                              data: d,
+                            });
+                          }}
+                        >
+                          {d.name}
+                        </Link>
+                      </Th>
+                      {spaceProfileList.map(profile => {
+                        const value = variableProfiles.find(info => info.spaceProfile.id === profile.id);
+
+                        return (
+                          <Td className="profile" align="left">
+                            {value?.value && (
+                              <Link
+                                to="/"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  setProfileVariableEditPopup({
+                                    opened: true,
+                                    data: value,
+                                  });
+                                }}
+                              >
+                                {value.value}
+                              </Link>
+                            )}
+                            {!value?.value && (
+                              <Button
+                                size="xs"
+                                color="white"
+                                onClick={() => {
+                                  setProfileVariableEditPopup({
+                                    opened: true,
+                                    data: {
+                                      value: '',
+                                      spaceVariable: { id: d.id },
+                                      spaceProfile: { id: profile.id },
+                                    },
+                                  });
+                                }}
+                              >
+                                {t('추가')}
+                              </Button>
+                            )}
+                          </Td>
+                        );
+                      })}
+                      {spaceVariableList.length > 0 && spaceProfileList.length < 1 && <Td align="center">{t('프로파일을 추가해주세요.')}</Td>}
+                      {spaceProfileList.length > 0 && <Td className="last" />}
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
           </div>
         </Block>
         {false && (
