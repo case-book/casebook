@@ -10,6 +10,7 @@ import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/co
 import dateUtil from '@/utils/dateUtil';
 import './TestrunInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
+import SpaceProfileService from '@/services/SpaceProfileService';
 
 const labelMinWidth = '120px';
 
@@ -20,6 +21,8 @@ function TestrunInfoPage() {
   const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
+
+  const [spaceProfileList, setSpaceProfileList] = useState([]);
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -59,13 +62,17 @@ function TestrunInfoPage() {
       return startTime.getTime();
     })(),
     durationHours: 24,
+    profileIds: [],
   });
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-      TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
-        setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
+      setSpaceProfileList(profiles);
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+        setProject(info);
+        TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
+          setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+        });
       });
     });
   }, [projectId, testrunId]);
@@ -197,6 +204,27 @@ function TestrunInfoPage() {
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('이름')}</Label>
             <Text>{testrun?.name}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+            {testrun?.profileIds?.length > 0 && (
+              <div className="profile-list">
+                <ul>
+                  {testrun?.profileIds?.map((profileId, inx) => {
+                    return (
+                      <li key={profileId}>
+                        <div>
+                          <span className="badge">
+                            <span>{inx + 1}</span>
+                          </span>
+                        </div>
+                        <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('설명')}</Label>

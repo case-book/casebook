@@ -78,7 +78,7 @@ public class SpaceProfileController {
     @Operation(description = "스페이스 프로파일 삭제")
     @DeleteMapping("/{spaceProfileId}")
     public ResponseEntity<?> deleteSpaceProfileInfo(@PathVariable String spaceCode, @PathVariable Long spaceProfileId) {
-        long spaceId = -spaceService.selectSpaceIdByCode(spaceCode);
+        long spaceId = spaceService.selectSpaceIdByCode(spaceCode);
         spaceProfileService.deleteSpaceProfileInfo(spaceId, spaceProfileId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

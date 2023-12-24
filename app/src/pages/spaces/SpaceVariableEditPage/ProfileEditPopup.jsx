@@ -22,11 +22,8 @@ function ProfileEditPopup({ data, setOpened, onSave, onDelete }) {
   }, [data]);
 
   useEffect(() => {
-    console.log(data);
     setSpaceProfile({ ...data });
   }, [data]);
-
-  console.log(spaceProfile);
 
   return (
     <Modal
@@ -44,7 +41,7 @@ function ProfileEditPopup({ data, setOpened, onSave, onDelete }) {
           onSave(spaceProfile);
         }}
       >
-        <ModalHeader>{isEdit ? t('프로파일 변경') : t('프로파일 등록')}</ModalHeader>
+        <ModalHeader>{isEdit ? t('프로파일 변경') : t('프로파일 추가')}</ModalHeader>
         <ModalBody className="modal-body">
           <Block className="block">
             <BlockRow>

@@ -36,6 +36,7 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunParticipantRedisRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunProfileRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunReservationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupRepository;
@@ -101,6 +102,7 @@ public class TestrunService {
     private final MessageSendService messageSendService;
     private final ProjectRepository projectRepository;
     private final TestrunCommentRepository testrunCommentRepository;
+    private final TestrunProfileRepository testrunProfileRepository;
     private final UserRepository userRepository;
     private final Random random = new Random();
 
@@ -221,6 +223,7 @@ public class TestrunService {
         List<ProjectFile> files = projectFileRepository
             .findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
 
+        testrunProfileRepository.deleteByTestrunId(testrunId);
         testrunCommentRepository.deleteByTestrunId(testrunId);
         testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);

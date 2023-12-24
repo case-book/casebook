@@ -1,4 +1,5 @@
 import CommentList from './CommentList/CommentList';
+import ProfileSelectPopup from './ProfileSelectPopup/ProfileSelectPopup';
+import TestcaseSelectPopup from './TestcaseSelectPopup/TestcaseSelectPopup';
 
-const dummy = {};
-export { CommentList, dummy };
+export { CommentList, ProfileSelectPopup, TestcaseSelectPopup };

@@ -25,7 +25,6 @@ function ProfileVariableEditPopup({ data, setOpened, onApply, onDelete }) {
 
   const onSubmit = e => {
     e.preventDefault();
-    console.log(data);
     onApply(data.spaceVariable.id, data.spaceProfile.id, spaceProfileVariable);
   };
 
@@ -39,7 +38,7 @@ function ProfileVariableEditPopup({ data, setOpened, onApply, onDelete }) {
       }}
     >
       <Form onSubmit={onSubmit}>
-        <ModalHeader>{isEdit ? t('프로파일 변수 변경') : t('프로파일 변수 등록')}</ModalHeader>
+        <ModalHeader>{isEdit ? t('프로파일 변수 변경') : t('프로파일 변수 추가')}</ModalHeader>
         <ModalBody className="modal-body">
           <Block className="block">
             <BlockRow>

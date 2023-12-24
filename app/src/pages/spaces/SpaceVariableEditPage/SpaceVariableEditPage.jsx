@@ -238,7 +238,7 @@ function SpaceVariableEditPage() {
                   )}
                   {spaceProfileList.map(d => {
                     return (
-                      <Th className="profile" align="left">
+                      <Th key={d.id} className="profile" align="left">
                         <Link
                           to="/"
                           onClick={e => {
@@ -258,23 +258,28 @@ function SpaceVariableEditPage() {
                 </Tr>
               </THead>
               <Tbody>
-                {spaceVariableList.length < 1 && (
-                  <Th className="empty-variable">
-                    <Button
-                      size="xs"
-                      color="primary"
-                      onClick={() => {
-                        setVariableEditPopup({
-                          opened: true,
-                        });
-                      }}
-                    >
-                      {t('변수 추가')}
-                    </Button>
-                  </Th>
+                {(spaceVariableList.length < 1 || spaceProfileList.length < 1) && (
+                  <Tr>
+                    {spaceVariableList.length < 1 && (
+                      <Th className="empty-variable">
+                        <Button
+                          size="xs"
+                          color="primary"
+                          onClick={() => {
+                            setVariableEditPopup({
+                              opened: true,
+                            });
+                          }}
+                        >
+                          {t('변수 추가')}
+                        </Button>
+                      </Th>
+                    )}
+                    {spaceVariableList.length < 1 && spaceProfileList.length < 1 && <Td align="center">{t('변수와 프로파일을 추가해주세요.')}</Td>}
+                    {spaceVariableList.length < 1 && spaceProfileList.length > 0 && <Td align="center">{t('변수를 추가해주세요.')}</Td>}
+                  </Tr>
                 )}
-                {spaceVariableList.length < 1 && spaceProfileList.length < 1 && <Td align="center">{t('변수와 프로파일을 추가해주세요.')}</Td>}
-                {spaceVariableList.length < 1 && spaceProfileList.length > 0 && <Td align="center">{t('변수를 추가해주세요.')}</Td>}
+
                 {spaceVariableList.map(d => {
                   const variableProfiles = spaceProfileVariableList.filter(info => info.spaceVariable.id === d.id);
 
@@ -298,7 +303,7 @@ function SpaceVariableEditPage() {
                         const value = variableProfiles.find(info => info.spaceProfile.id === profile.id);
 
                         return (
-                          <Td className="profile" align="left">
+                          <Td key={profile.id} className="profile" align="left">
                             {value?.value && (
                               <Link
                                 to="/"

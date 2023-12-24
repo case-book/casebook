@@ -14,6 +14,10 @@ import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExec
 import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
 import ReactTooltip from 'react-tooltip';
+import SpaceProfileVariableService from '@/services/SpaceProfileVariableService';
+import SpaceVariableService from '@/services/SpaceVariableService';
+import { waitFor } from '@/utils/request';
+import { convertTestcaseVariables, convertTestrun } from '@/pages/spaces/projects/testruns/TestrunExecutePage/variableUtil';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -62,6 +66,8 @@ function TestrunExecutePage() {
   const lastParicipants = useRef(null);
 
   const [watcherInfo, setWatcherInfo] = useState({});
+
+  const [variables, setVariables] = useState({});
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -129,7 +135,41 @@ function TestrunExecutePage() {
   };
 
   const getTestrunInfo = () => {
-    TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, info => {
+    const promises = [];
+    promises.push(SpaceVariableService.selectSpaceVariableList(spaceCode));
+    promises.push(SpaceProfileVariableService.selectSpaceProfileVariableList(spaceCode));
+    promises.push(TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId));
+
+    waitFor(promises).then(responses => {
+      const profileVariables = responses[0].data;
+      const spaceProfileVariables = responses[1].data;
+      const orgTestrunInfo = responses[2].data;
+
+      const profileIds = orgTestrunInfo.profileIds || [];
+
+      const map = profileVariables.reduce((obj, next) => {
+        const current = obj;
+        current[next.name] = next.id;
+        return current;
+      }, {});
+
+      Object.keys(map).forEach(key => {
+        const variableId = map[key];
+        let value = '';
+        profileIds.forEach(profileId => {
+          const varInfo = spaceProfileVariables.find(d => d.spaceVariable.id === variableId && d.spaceProfile.id === profileId);
+          if (varInfo?.value) {
+            value = varInfo?.value || null;
+          }
+        });
+
+        map[key] = value;
+      });
+
+      setVariables(map);
+
+      const info = convertTestrun(responses[2].data, map);
+
       if (!project) {
         return;
       }
@@ -239,7 +279,7 @@ function TestrunExecutePage() {
           }, 200);
         }
 
-        setContent(info);
+        setContent(convertTestcaseVariables(info, variables));
       },
       () => {
         if (loading) {
