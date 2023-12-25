@@ -50,7 +50,7 @@ public class SpaceProfileController {
         long spaceId = spaceService.selectSpaceIdByCode(spaceCode);
         SpaceProfileDTO spaceProfile = spaceProfileCreateRequest.toDTO();
         spaceProfile.setSpace(SpaceDTO.builder().id(spaceId).build());
-        SpaceProfileDTO spaceProfileInfo = spaceProfileService.createSpaceProfileInfo(spaceProfile);
+        SpaceProfileDTO spaceProfileInfo = spaceProfileService.createSpaceProfileInfo(spaceCode, spaceProfile);
         return new SpaceProfileResponse(spaceProfileInfo);
     }
 
@@ -63,7 +63,7 @@ public class SpaceProfileController {
         SpaceProfileDTO spaceProfile = spaceProfileUpdateRequest.toDTO();
         spaceProfile.setId(spaceProfileId);
         spaceProfile.setSpace(SpaceDTO.builder().id(spaceId).build());
-        SpaceProfileDTO spaceProfileInfo = spaceProfileService.updateProfileSpaceInfo(spaceProfile);
+        SpaceProfileDTO spaceProfileInfo = spaceProfileService.updateProfileSpaceInfo(spaceCode, spaceProfile);
         return new SpaceProfileResponse(spaceProfileInfo);
 
     }
@@ -79,7 +79,7 @@ public class SpaceProfileController {
     @DeleteMapping("/{spaceProfileId}")
     public ResponseEntity<?> deleteSpaceProfileInfo(@PathVariable String spaceCode, @PathVariable Long spaceProfileId) {
         long spaceId = spaceService.selectSpaceIdByCode(spaceCode);
-        spaceProfileService.deleteSpaceProfileInfo(spaceId, spaceProfileId);
+        spaceProfileService.deleteSpaceProfileInfo(spaceCode, spaceId, spaceProfileId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

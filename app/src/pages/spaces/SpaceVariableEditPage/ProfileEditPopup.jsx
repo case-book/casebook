@@ -6,7 +6,7 @@ import './VariableCommonPopup.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 
-const labelMinWidth = '100px';
+const labelMinWidth = '80px';
 
 function ProfileEditPopup({ data, setOpened, onSave, onDelete }) {
   const { t } = useTranslation();
@@ -62,9 +62,7 @@ function ProfileEditPopup({ data, setOpened, onSave, onDelete }) {
               />
             </BlockRow>
             <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('기본 프로파일')}
-              </Label>
+              <Label minWidth={labelMinWidth}>{t('디폴트')}</Label>
               <CheckBox
                 type="checkbox"
                 value={spaceProfile.default}
@@ -76,6 +74,9 @@ function ProfileEditPopup({ data, setOpened, onSave, onDelete }) {
                 }}
               />
             </BlockRow>
+            <div className="description" style={{ marginLeft: labelMinWidth }}>
+              {t('디폴트 프로파일은 테스트런 생성 시 선택 상태로 표시됩니다.')}
+            </div>
           </Block>
         </ModalBody>
         <ModalFooter className="modal-footer">

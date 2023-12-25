@@ -13,14 +13,14 @@ public class SpaceProfileCreateRequest implements IRequestVO<SpaceProfileDTO> {
     @NotNull
     @Size(min = 1)
     private String name;
-    private String isDefault;
+    private boolean isDefault;
 
     public SpaceProfileDTO toDTO() {
 
         return SpaceProfileDTO
             .builder()
             .id(id)
-            .isDefault("Y".equals(isDefault))
+            .isDefault(isDefault)
             .name(name)
             .build();
     }

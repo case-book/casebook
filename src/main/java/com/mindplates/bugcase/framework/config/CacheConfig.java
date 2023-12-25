@@ -1,5 +1,8 @@
 package com.mindplates.bugcase.framework.config;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -13,10 +16,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-
 @Configuration
 @AllArgsConstructor
 @EnableCaching
@@ -25,8 +24,16 @@ public class CacheConfig {
     public static final int DEFAULT_EXPIRE_SEC = 60 * 60;
     public static final String SPACE = "space";
     public static final int SPACE_EXPIRE_SEC = 60 * 60 * 24;
-
     public static final String PROJECT = "project";
+
+    public static final int SPACE_VARIABLE_EXPIRE_SEC = 60 * 60 * 24;
+    public static final String SPACE_VARIABLE = "space_variable";
+
+    public static final int SPACE_PROFILE_EXPIRE_SEC = 60 * 60 * 24;
+    public static final String SPACE_PROFILE = "space_profile";
+
+    public static final int SPACE_PROFILE_VARIABLE_EXPIRE_SEC = 60 * 60 * 24;
+    public static final String SPACE_PROFILE_VARIABLE = "space_profile_variable";
 
     public static final int PROJECT_EXPIRE_SEC = 60 * 60 * 24;
     private final RedisConnectionFactory connectionFactory;
@@ -47,6 +54,9 @@ public class CacheConfig {
 
         cacheConfigurations.put(SPACE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_EXPIRE_SEC)));
         cacheConfigurations.put(PROJECT, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(PROJECT_EXPIRE_SEC)));
+        cacheConfigurations.put(SPACE_VARIABLE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_VARIABLE_EXPIRE_SEC)));
+        cacheConfigurations.put(SPACE_PROFILE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_PROFILE_EXPIRE_SEC)));
+        cacheConfigurations.put(SPACE_PROFILE_VARIABLE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_PROFILE_VARIABLE_EXPIRE_SEC)));
 
         return RedisCacheManager.RedisCacheManagerBuilder
                 .fromConnectionFactory(connectionFactory)

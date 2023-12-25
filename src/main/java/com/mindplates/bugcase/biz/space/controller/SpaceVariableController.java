@@ -56,7 +56,7 @@ public class SpaceVariableController {
         long spaceId = spaceService.selectSpaceIdByCode(spaceCode);
         SpaceVariableDTO spaceVariable = spaceVariableCreateRequest.toDTO();
         spaceVariable.setSpace(SpaceDTO.builder().id(spaceId).build());
-        SpaceVariableDTO spaceVariableInfo = spaceVariableService.createSpaceVariableInfo(spaceVariable);
+        SpaceVariableDTO spaceVariableInfo = spaceVariableService.createSpaceVariableInfo(spaceCode, spaceVariable);
         return new SpaceVariableResponse(spaceVariableInfo);
     }
 
@@ -69,7 +69,7 @@ public class SpaceVariableController {
         SpaceVariableDTO spaceVariable = spaceVariableUpdateRequest.toDTO();
         spaceVariable.setId(spaceVariableId);
         spaceVariable.setSpace(SpaceDTO.builder().id(spaceId).build());
-        SpaceVariableDTO spaceVariableInfo = spaceVariableService.updateVariableSpaceInfo(spaceVariable);
+        SpaceVariableDTO spaceVariableInfo = spaceVariableService.updateVariableSpaceInfo(spaceCode, spaceVariable);
         return new SpaceVariableResponse(spaceVariableInfo);
 
     }
@@ -85,7 +85,7 @@ public class SpaceVariableController {
     @DeleteMapping("/{spaceVariableId}")
     public ResponseEntity<?> deleteSpaceVariableInfo(@PathVariable String spaceCode, @PathVariable Long spaceVariableId) {
         long spaceId = spaceService.selectSpaceIdByCode(spaceCode);
-        spaceVariableService.deleteSpaceVariableInfo(spaceId, spaceVariableId);
+        spaceVariableService.deleteSpaceVariableInfo(spaceCode, spaceId, spaceVariableId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -100,7 +100,7 @@ public class SpaceVariableController {
         spaceProfileVariable.setSpace(SpaceDTO.builder().id(spaceId).code(spaceCode).build());
         spaceProfileVariable.setSpaceVariable(SpaceVariableDTO.builder().id(spaceVariableId).build());
         spaceProfileVariable.setSpaceProfile(SpaceProfileDTO.builder().id(spaceProfileId).build());
-        SpaceProfileVariableDTO result = spaceProfileVariableService.createOrUpdateSpaceProfileVariableInfo(spaceProfileVariable);
+        SpaceProfileVariableDTO result = spaceProfileVariableService.createOrUpdateSpaceProfileVariableInfo(spaceCode, spaceProfileVariable);
         return new SpaceProfileVariableResponse(result);
     }
 

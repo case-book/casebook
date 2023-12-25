@@ -4,6 +4,10 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
+import com.mindplates.bugcase.biz.space.dto.SpaceProfileVariableDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceVariableDTO;
+import com.mindplates.bugcase.biz.space.service.SpaceProfileVariableService;
+import com.mindplates.bugcase.biz.space.service.SpaceVariableService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
@@ -41,7 +45,9 @@ import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -71,6 +77,10 @@ public class TestrunController {
     private final ProjectFileService projectFileService;
 
     private final MessageSendService messageSendService;
+
+    private final SpaceVariableService spaceVariableService;
+
+    private final SpaceProfileVariableService spaceProfileVariableService;
 
     @Operation(description = "진행중인 테스트런 목록 조회")
     @GetMapping("")
@@ -264,7 +274,57 @@ public class TestrunController {
     public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId,
         @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId,
         @PathVariable long testrunTestcaseGroupTestcaseId) {
+
+        TestrunDTO testrunDTO = testrunService.selectProjectTestrunInfo(testrunId);
+        HashMap<String, String> variables = new HashMap<>();
+        List<SpaceVariableDTO> spaceVariables = spaceVariableService.selectSpaceVariableList(spaceCode);
+        List<SpaceProfileVariableDTO> spaceProfileVariables = spaceProfileVariableService.selectSpaceProfileVariableList(spaceCode);
+
+        spaceVariables.forEach(spaceVariable -> {
+
+            testrunDTO.getProfiles().forEach(profile -> {
+
+                Optional<SpaceProfileVariableDTO> spaceProfileVariableDTO = spaceProfileVariables
+                    .stream()
+                    .filter((spaceProfileVariable) ->
+                        spaceProfileVariable.getSpaceVariable().getId().equals(spaceVariable.getId())
+                            && spaceProfileVariable.getSpaceProfile().getId().equals(profile.getProfile().getId())
+                    ).findFirst();
+
+                if (spaceProfileVariableDTO.isPresent() && spaceProfileVariableDTO.get().getValue() != null) {
+                    variables.put(spaceVariable.getName(), spaceProfileVariableDTO.get().getValue());
+                }
+            });
+        });
+
         TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);
+
+        if (testcase.getTestcase().getName() != null && testcase.getTestcase().getName().contains("{{")) {
+            variables.forEach((key, value) -> {
+                testcase.getTestcase().setName(testcase.getTestcase().getName().replace("{{" + key + "}}", value));
+            });
+        }
+
+        if (testcase.getTestcase().getDescription() != null && testcase.getTestcase().getDescription().contains("{{")) {
+            variables.forEach((key, value) -> {
+                testcase.getTestcase().setDescription(testcase.getTestcase().getDescription().replace("{{" + key + "}}", value));
+            });
+        }
+
+        testcase.getTestcase().getTestcaseItems().forEach(testcaseItem -> {
+            if (testcaseItem.getValue() != null && testcaseItem.getValue().contains("{{")) {
+                variables.forEach((key, value) -> {
+                    testcaseItem.setValue(testcaseItem.getValue().replace("{{" + key + "}}", value));
+                });
+            }
+
+            if (testcaseItem.getText() != null && testcaseItem.getText().contains("{{")) {
+                variables.forEach((key, value) -> {
+                    testcaseItem.setText(testcaseItem.getText().replace("{{" + key + "}}", value));
+                });
+            }
+        });
+
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
     }
 
@@ -324,7 +384,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 테스터 랜덤 변경")
     @PutMapping("/{testrunId}/tester/random")
-    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId,
+        @PathVariable long testrunId, @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
         testrunService.updateTestrunTestcaseTesterRandom(
             spaceCode,
             projectId,

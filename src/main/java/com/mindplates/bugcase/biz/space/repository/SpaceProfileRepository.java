@@ -17,9 +17,5 @@ public interface SpaceProfileRepository extends JpaRepository<SpaceProfile, Long
 
     Long countBySpaceIdAndName(Long spaceId, String name);
 
-    @Modifying
-    @Query("UPDATE SpaceProfile sp SET sp.isDefault = :isDefault WHERE sp.space.id = :spaceId")
-    void updateSpaceProfileDefault(@Param("spaceId") long spaceId, @Param("isDefault") boolean isDefault);
-
 }
 

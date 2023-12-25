@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader } from '@/components';
+import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Text } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import './VariableCommonPopup.scss';
 
 const labelMinWidth = '100px';
 
@@ -31,6 +34,7 @@ function ProfileVariableEditPopup({ data, setOpened, onApply, onDelete }) {
   return (
     <Modal
       isOpen
+      className="variable-common-popup-wrapper"
       toggle={() => {
         if (setOpened) {
           setOpened(false);
@@ -41,6 +45,14 @@ function ProfileVariableEditPopup({ data, setOpened, onApply, onDelete }) {
         <ModalHeader>{isEdit ? t('프로파일 변수 변경') : t('프로파일 변수 추가')}</ModalHeader>
         <ModalBody className="modal-body">
           <Block className="block">
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('변수')}</Label>
+              <Text>{data.variableName}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+              <Text>{data.profileName}</Text>
+            </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
                 {t('값')}
@@ -61,17 +73,35 @@ function ProfileVariableEditPopup({ data, setOpened, onApply, onDelete }) {
           </Block>
         </ModalBody>
         <ModalFooter className="modal-footer">
-          {isEdit && (
-            <Button
-              onClick={() => {
-                onDelete(data);
-              }}
-            >
-              {t('삭제')}
-            </Button>
-          )}
-          <Button onClick={() => setOpened(false)}>{t('취소')}</Button>
-          <Button type="submit">{isEdit ? t('변경') : t('추가')}</Button>
+          <div className="controls">
+            <div className="delete">
+              {isEdit && (
+                <Button
+                  color="danger"
+                  onClick={() => {
+                    dialogUtil.setConfirm(
+                      MESSAGE_CATEGORY.WARNING,
+                      t('프로파일 변수 삭제'),
+                      <div>{t('프로파일 변수를 삭제하시겠습니까?')}</div>,
+                      () => {
+                        onDelete(data);
+                      },
+                      null,
+                      t('삭제'),
+                      null,
+                      'danger',
+                    );
+                  }}
+                >
+                  {t('삭제')}
+                </Button>
+              )}
+            </div>
+            <div className="others">
+              <Button onClick={() => setOpened(false)}>{t('취소')}</Button>
+              <Button type="submit">{t('저장')}</Button>
+            </div>
+          </div>
         </ModalFooter>
       </Form>
     </Modal>
@@ -92,6 +122,8 @@ ProfileVariableEditPopup.propTypes = {
     spaceProfile: PropTypes.shape({
       id: PropTypes.number,
     }),
+    profileName: PropTypes.string,
+    variableName: PropTypes.string,
   }),
   setOpened: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired,
