@@ -52,6 +52,11 @@ function ProjectListPage() {
         ]}
         links={[
           {
+            to: `/spaces/${spaceCode}/variables`,
+            text: t('변수 관리'),
+            color: 'primary',
+          },
+          {
             to: `/spaces/${spaceCode}/projects/new`,
             text: t('새 프로젝트'),
             color: 'primary',
