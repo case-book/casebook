@@ -15,12 +15,22 @@ import lombok.NoArgsConstructor;
 public class TestrunProfileDTO extends CommonDTO {
 
     private TestrunDTO testrun;
+    private TestrunIterationDTO testrunIteration;
+    private TestrunReservationDTO testrunReservation;
     private SpaceProfileDTO profile;
     private Integer itemOrder;
 
     public TestrunProfileDTO(TestrunProfile testrunProfile) {
         if (testrunProfile.getTestrun() != null) {
             this.testrun = TestrunDTO.builder().id(testrunProfile.getTestrun().getId()).build();
+        }
+
+        if (testrunProfile.getTestrunIteration() != null) {
+            this.testrunIteration = TestrunIterationDTO.builder().id(testrunProfile.getTestrunIteration().getId()).build();
+        }
+
+        if (testrunProfile.getTestrunReservation() != null) {
+            this.testrunReservation = TestrunReservationDTO.builder().id(testrunProfile.getTestrunReservation().getId()).build();
         }
 
         if (testrunProfile.getProfile() != null) {

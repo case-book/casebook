@@ -1,9 +1,11 @@
 package com.mindplates.bugcase.biz.testrun.vo.request;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
@@ -11,6 +13,7 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
@@ -41,6 +44,7 @@ public class TestrunIterationRequest {
     private TestrunIterationUserFilterTypeCode testrunIterationUserFilterType;
     private TestrunIterationUserFilterSelectRuleCode testrunIterationUserFilterSelectRule;
     private Integer filteringUserCount;
+    private List<Long> profileIds;
 
     public TestrunIterationDTO buildEntity() {
 
@@ -64,6 +68,19 @@ public class TestrunIterationRequest {
                 .testrunIterationUserFilterSelectRule(testrunIterationUserFilterSelectRule)
                 .filteringUserCount(filteringUserCount)
                 .build();
+
+        if (profileIds != null) {
+            AtomicInteger index = new AtomicInteger();
+            testrunIteration.setProfiles(
+                profileIds.stream()
+                    .map((profileId) ->
+                        TestrunProfileDTO.builder()
+                            .testrunIteration(testrunIteration)
+                            .profile(SpaceProfileDTO.builder().id(profileId).build())
+                            .itemOrder(index.getAndIncrement())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
 
         if (testrunUsers != null) {
             List<TestrunUserDTO> users = testrunUsers

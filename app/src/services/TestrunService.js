@@ -7,6 +7,38 @@ import { convertTestrun } from '@/pages/spaces/projects/testruns/TestrunExecuteP
 
 const TestrunService = {};
 
+function convert(responses) {
+  const profileVariables = responses[0].data;
+  const spaceProfileVariables = responses[1].data;
+  const orgTestrunInfo = responses[2].data;
+  const profileIds = orgTestrunInfo.profileIds || [];
+
+  const variables = profileVariables.reduce((obj, next) => {
+    const current = obj;
+    current[next.name] = next.id;
+    return current;
+  }, {});
+
+  Object.keys(variables).forEach(key => {
+    const variableId = variables[key];
+    let value = '';
+    profileIds.forEach(profileId => {
+      const varInfo = spaceProfileVariables.find(d => d.spaceVariable.id === variableId && d.spaceProfile.id === profileId);
+      if (varInfo?.value) {
+        value = varInfo?.value || null;
+      }
+    });
+
+    variables[key] = value;
+  });
+
+  const info = convertTestrun(responses[2].data, variables);
+  return {
+    info,
+    variables,
+  };
+}
+
 TestrunService.selectProjectTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testruns`,
@@ -205,63 +237,59 @@ TestrunService.selectTestrunInfo = (spaceCode, projectId, testrunId, successHand
   );
 
   waitFor(promises).then(responses => {
-    const profileVariables = responses[0].data;
-    const spaceProfileVariables = responses[1].data;
-    const orgTestrunInfo = responses[2].data;
-    const profileIds = orgTestrunInfo.profileIds || [];
-
-    const variables = profileVariables.reduce((obj, next) => {
-      const current = obj;
-      current[next.name] = next.id;
-      return current;
-    }, {});
-
-    Object.keys(variables).forEach(key => {
-      const variableId = variables[key];
-      let value = '';
-      profileIds.forEach(profileId => {
-        const varInfo = spaceProfileVariables.find(d => d.spaceVariable.id === variableId && d.spaceProfile.id === profileId);
-        if (varInfo?.value) {
-          value = varInfo?.value || null;
-        }
-      });
-
-      variables[key] = value;
-    });
-
-    const info = convertTestrun(responses[2].data, variables);
-    successHandler(info, variables);
+    const result = convert(responses);
+    successHandler(result.info, result.variables);
   });
 };
 
 TestrunService.selectTestrunReservationInfo = (spaceCode, projectId, testrunReservationId, successHandler, failHandler, loading = true) => {
-  return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}`,
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-    null,
-    null,
-    loading,
-    i18n.t('테스트런 상세 정보를 불러오고 있습니다.'),
+  const promises = [];
+  promises.push(SpaceVariableService.selectSpaceVariableList(spaceCode));
+  promises.push(SpaceProfileVariableService.selectSpaceProfileVariableList(spaceCode));
+  promises.push(
+    request.get(
+      `/api/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}`,
+      null,
+      res => {
+        successHandler(res);
+      },
+      failHandler,
+      null,
+      null,
+      loading,
+      i18n.t('테스트런 상세 정보를 불러오고 있습니다.'),
+    ),
   );
+
+  waitFor(promises).then(responses => {
+    const result = convert(responses);
+    successHandler(result.info, result.variables);
+  });
 };
 
 TestrunService.selectTestrunIterationInfo = (spaceCode, projectId, testrunIterationId, successHandler, failHandler, loading = true) => {
-  return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}`,
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-    null,
-    null,
-    loading,
-    i18n.t('반복 테스트런 상세 정보를 불러오고 있습니다.'),
+  const promises = [];
+  promises.push(SpaceVariableService.selectSpaceVariableList(spaceCode));
+  promises.push(SpaceProfileVariableService.selectSpaceProfileVariableList(spaceCode));
+  promises.push(
+    request.get(
+      `/api/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}`,
+      null,
+      res => {
+        successHandler(res);
+      },
+      failHandler,
+      null,
+      null,
+      loading,
+      i18n.t('반복 테스트런 상세 정보를 불러오고 있습니다.'),
+    ),
   );
+
+  waitFor(promises).then(responses => {
+    const result = convert(responses);
+    successHandler(result.info, result.variables);
+  });
 };
 
 TestrunService.selectTestrunTestcaseGroupTestcase = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, successHandler, failHandler) => {

@@ -19,6 +19,7 @@ import {
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import './TestrunIterationInfoPage.scss';
+import SpaceProfileService from '@/services/SpaceProfileService';
 
 const labelMinWidth = '120px';
 
@@ -29,6 +30,8 @@ function TestrunIterationInfoPage() {
   const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
+
+  const [spaceProfileList, setSpaceProfileList] = useState([]);
 
   const [testrunIteration, setTestrunIteration] = useState({
     id: null,
@@ -73,13 +76,17 @@ function TestrunIterationInfoPage() {
     testrunIterationUserFilterType: 'NONE', // NONE, TESTRUN, WEEKLY, MONTHLY
     testrunIterationUserFilterSelectRule: 'SEQ', // RANDOM, SEQ
     filteringUserCount: null,
+    profileIds: [],
   });
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-      TestrunService.selectTestrunIterationInfo(spaceCode, projectId, testrunIterationId, data => {
-        setTestrunIteration({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
+      setSpaceProfileList(profiles);
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+        setProject(info);
+        TestrunService.selectTestrunIterationInfo(spaceCode, projectId, testrunIterationId, data => {
+          setTestrunIteration({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+        });
       });
     });
   }, [projectId, testrunIterationId]);
@@ -145,7 +152,7 @@ function TestrunIterationInfoPage() {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/iterations`);
         }}
       >
-        {t('테스트런')}
+        {t('반복 테스트런')}
       </PageTitle>
       <PageContent>
         <Block>
@@ -156,6 +163,27 @@ function TestrunIterationInfoPage() {
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('이름')}</Label>
             <Text>{testrunIteration?.name}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+            {testrunIteration?.profileIds?.length > 0 && (
+              <div className="profile-list">
+                <ul>
+                  {testrunIteration?.profileIds?.map((profileId, inx) => {
+                    return (
+                      <li key={profileId}>
+                        <div>
+                          <span className="badge">
+                            <span>{inx + 1}</span>
+                          </span>
+                        </div>
+                        <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('설명')}</Label>
@@ -169,7 +197,6 @@ function TestrunIterationInfoPage() {
               </Tag>
             </Text>
           </BlockRow>
-
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('반복 기간')}</Label>
             <Text>

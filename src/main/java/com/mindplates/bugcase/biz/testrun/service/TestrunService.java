@@ -663,7 +663,7 @@ public class TestrunService {
         TestrunReservation targetTestrunReservation = testrunReservationRepository.findById(testrunReservation.getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-        targetTestrunReservation.updateInfo(testrunReservation);
+        targetTestrunReservation.updateInfo(newTestrunReservation);
         targetTestrunReservation.updateTestrunUsers(newTestrunReservation.getTestrunUsers());
         targetTestrunReservation.updateTestcaseGroups(newTestrunReservation.getTestcaseGroups());
         targetTestrunReservation.updateTestcaseAndGroupCount();
@@ -680,7 +680,7 @@ public class TestrunService {
             .findById(testrunIteration.getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-        targetTestrunIteration.updateInfo(testrunIteration);
+        targetTestrunIteration.updateInfo(newTestrunIteration);
         targetTestrunIteration.updateTester(testrunIteration.getTestrunUsers());
         if (updateIterationInfo) {
             targetTestrunIteration.updateIterationInfo(testrunIteration);

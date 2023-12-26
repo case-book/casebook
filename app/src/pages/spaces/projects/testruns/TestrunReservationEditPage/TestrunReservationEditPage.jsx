@@ -14,6 +14,8 @@ import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import './TestrunReservationEditPage.scss';
+import SpaceProfileService from '@/services/SpaceProfileService';
+import { ProfileSelectPopup } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -32,6 +34,10 @@ function TestrunReservationEditPage({ type }) {
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [project, setProject] = useState(null);
+
+  const [spaceProfileList, setSpaceProfileList] = useState([]);
+
+  const [profileSelectPopupOpened, setProfileSelectPopupOpened] = useState(false);
 
   const [testrunReservation, setTestrunReservation] = useState({
     id: null,
@@ -63,6 +69,7 @@ function TestrunReservationEditPage({ type }) {
     deadlineClose: true,
     selectCreatedTestcase: false,
     selectUpdatedTestcase: false,
+    profileIds: [],
   });
 
   const isEdit = useMemo(() => {
@@ -97,35 +104,41 @@ function TestrunReservationEditPage({ type }) {
   };
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-      if (!isEdit) {
-        setTestrunReservation({
-          ...testrunReservation,
-          testrunUsers: info.users?.map(d => {
-            return { userId: d.userId, email: d.email, name: d.name };
-          }),
-          testcaseGroups: info.testcaseGroups?.map(d => {
-            return {
-              testcaseGroupId: d.id,
-              testcases: d.testcases?.map(item => {
-                return {
-                  testcaseId: item.id,
-                };
-              }),
-            };
-          }),
-        });
-      } else {
-        TestrunService.selectTestrunReservationInfo(spaceCode, projectId, testrunReservationId, data => {
-          setTestrunReservation({
-            ...data,
-            startTime: dateUtil.getHourMinuteTime(data.startTime),
-            startDateTime: dateUtil.getTime(data.startDateTime),
-            endDateTime: dateUtil.getTime(data.endDateTime),
+    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
+      setSpaceProfileList(profiles);
+
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+        setProject(info);
+        if (isEdit) {
+          TestrunService.selectTestrunReservationInfo(spaceCode, projectId, testrunReservationId, data => {
+            setTestrunReservation({
+              ...data,
+              startTime: dateUtil.getHourMinuteTime(data.startTime),
+              startDateTime: dateUtil.getTime(data.startDateTime),
+              endDateTime: dateUtil.getTime(data.endDateTime),
+            });
           });
-        });
-      }
+        } else {
+          const defaultProfile = profiles.find(profile => profile.default);
+          setTestrunReservation({
+            ...testrunReservation,
+            testrunUsers: info.users?.map(d => {
+              return { userId: d.userId, email: d.email, name: d.name };
+            }),
+            testcaseGroups: info.testcaseGroups?.map(d => {
+              return {
+                testcaseGroupId: d.id,
+                testcases: d.testcases?.map(item => {
+                  return {
+                    testcaseId: item.id,
+                  };
+                }),
+              };
+            }),
+            profileIds: defaultProfile ? [defaultProfile.id] : [],
+          });
+        }
+      });
     });
   }, [type, projectId, testrunReservationId]);
 
@@ -262,6 +275,36 @@ function TestrunReservationEditPage({ type }) {
                   required
                   minLength={1}
                 />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+                {testrunReservation?.profileIds?.length > 0 && (
+                  <div className="profile-list">
+                    <ul>
+                      {testrunReservation?.profileIds?.map((profileId, inx) => {
+                        return (
+                          <li key={profileId}>
+                            <div>
+                              <span className="badge">
+                                <span>{inx + 1}</span>
+                              </span>
+                            </div>
+                            <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+                <Button
+                  outline
+                  size="sm"
+                  onClick={() => {
+                    setProfileSelectPopupOpened(true);
+                  }}
+                >
+                  {t('프로파일 선택')}
+                </Button>
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('설명')}</Label>
@@ -472,6 +515,15 @@ function TestrunReservationEditPage({ type }) {
           setOpened={setTestcaseSelectPopupOpened}
           onApply={selectedTestcaseGroups => {
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
+          }}
+        />
+      )}
+      {profileSelectPopupOpened && (
+        <ProfileSelectPopup
+          profileIds={testrunReservation.profileIds}
+          setOpened={setProfileSelectPopupOpened}
+          onApply={profileIds => {
+            onChangeTestrun('profileIds', profileIds);
           }}
         />
       )}

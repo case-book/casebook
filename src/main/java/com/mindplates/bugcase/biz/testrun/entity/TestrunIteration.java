@@ -27,6 +27,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -140,8 +141,12 @@ public class TestrunIteration extends CommonEntity {
     @Column(name = "testcase_count")
     private Integer testcaseCount;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrunIteration")
+    @Fetch(value = FetchMode.SUBSELECT)
+    @OrderBy("itemOrder ASC")
+    private List<TestrunProfile> profiles;
 
-    public void updateInfo(TestrunIterationDTO testrunIteration) {
+    public void updateInfo(TestrunIteration testrunIteration) {
         this.expired = false;
         this.name = testrunIteration.getName();
         this.description = testrunIteration.getDescription();
@@ -161,8 +166,8 @@ public class TestrunIteration extends CommonEntity {
         this.filteringUserCount = testrunIteration.getFilteringUserCount();
         this.testcaseGroupCount = testrunIteration.getTestcaseGroupCount();
         this.testcaseCount = testrunIteration.getTestcaseCount();
-
-
+        this.profiles.clear();
+        this.profiles.addAll(testrunIteration.getProfiles());
     }
 
     public void updateIterationInfo(TestrunIterationDTO testrunIteration) {

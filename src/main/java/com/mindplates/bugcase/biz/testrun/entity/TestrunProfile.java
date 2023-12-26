@@ -37,6 +37,14 @@ public class TestrunProfile extends CommonEntity {
     private Testrun testrun;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testrun_reservation_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_PROFILE__TESTRUN_RESERVATION"))
+    private TestrunReservation testrunReservation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testrun_iteration_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_PROFILE__TESTRUN_ITERATION"))
+    private TestrunIteration testrunIteration;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_profile_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_PROFILE__SPACE_PROFILE"))
     private SpaceProfile profile;
 

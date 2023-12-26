@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,8 +32,8 @@ public class TestrunReservationResponse {
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Boolean selectCreatedTestcase;
     private Boolean selectUpdatedTestcase;
-
     private List<TestrunTestcaseGroupResponse> conditionalTestcaseGroups;
+    private List<Long> profileIds;
 
     public TestrunReservationResponse(TestrunReservationDTO testrunReservation) {
         this.id = testrunReservation.getId();
@@ -47,6 +48,15 @@ public class TestrunReservationResponse {
         this.projectName = testrunReservation.getProject().getName();
         this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();
         this.selectUpdatedTestcase = testrunReservation.getSelectUpdatedTestcase();
+
+        if (testrunReservation.getProfiles() != null && !testrunReservation.getProfiles().isEmpty()) {
+            this.profileIds = testrunReservation.getProfiles()
+                .stream()
+                .map(testrunProfileDTO -> testrunProfileDTO.getProfile().getId()).collect(Collectors.toList());
+        } else {
+            this.profileIds = new ArrayList<>();
+        }
+
         if (testrunReservation.getTestrun() != null) {
             this.testrunId = testrunReservation.getTestrun().getId();
         }

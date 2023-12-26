@@ -4,13 +4,17 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
+import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunProfile;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
@@ -60,6 +64,17 @@ public class TestrunScheduler {
             .endDateTime(testrunReservationDTO.getEndDateTime())
             .deadlineClose(testrunReservationDTO.getDeadlineClose())
             .build();
+
+        testrun.setProfiles(new ArrayList<>());
+
+        testrunReservationDTO.getProfiles().forEach((testrunProfileDTO -> {
+            testrun.getProfiles()
+                .add(TestrunProfileDTO
+                    .builder()
+                    .profile(SpaceProfileDTO.builder().id(testrunProfileDTO.getProfile().getId()).build())
+                    .testrun(testrun)
+                    .build());
+        }));
 
         List<TestrunUserDTO> testrunUserList = new ArrayList<>();
         if (testrunReservationDTO.getTestrunUsers() != null) {
@@ -122,6 +137,17 @@ public class TestrunScheduler {
             .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
             .deadlineClose(testrunIterationDTO.getDeadlineClose())
             .build();
+
+        testrun.setProfiles(new ArrayList<>());
+
+        testrunIterationDTO.getProfiles().forEach((testrunProfileDTO -> {
+            testrun.getProfiles()
+                .add(TestrunProfileDTO
+                    .builder()
+                    .profile(SpaceProfileDTO.builder().id(testrunProfileDTO.getProfile().getId()).build())
+                    .testrun(testrun)
+                    .build());
+        }));
 
         List<TestrunUserDTO> testrunUserList = new ArrayList<>();
         boolean isRandom = !TestrunIterationUserFilterSelectRuleCode.SEQ.equals(testrunIterationDTO.getTestrunIterationUserFilterSelectRule());

@@ -1,13 +1,16 @@
 package com.mindplates.bugcase.biz.testrun.vo.request;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -28,6 +31,8 @@ public class TestrunReservationRequest {
     private boolean deadlineClose;
     private boolean selectCreatedTestcase;
     private boolean selectUpdatedTestcase;
+    private List<Long> profileIds;
+
 
     public TestrunReservationDTO buildEntity() {
 
@@ -43,6 +48,19 @@ public class TestrunReservationRequest {
                 .selectCreatedTestcase(selectCreatedTestcase)
                 .selectUpdatedTestcase(selectUpdatedTestcase)
                 .build();
+
+        if (profileIds != null) {
+            AtomicInteger index = new AtomicInteger();
+            testrunReservation.setProfiles(
+                profileIds.stream()
+                    .map((profileId) ->
+                        TestrunProfileDTO.builder()
+                            .testrunReservation(testrunReservation)
+                            .profile(SpaceProfileDTO.builder().id(profileId).build())
+                            .itemOrder(index.getAndIncrement())
+                            .build())
+                    .collect(Collectors.toList()));
+        }
 
         if (testrunUsers != null) {
             List<TestrunUserDTO> users = testrunUsers.stream()
