@@ -9,6 +9,9 @@ import { getBaseURL } from '@/utils/configUtil';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
+import { getVariableList } from '@/pages/spaces/projects/testruns/TestrunExecutePage/variableUtil';
+
+// const reWidgetRule = /\{{(\S+)}}/;
 
 function TestcaseItem({
   isEdit,
@@ -34,6 +37,7 @@ function TestcaseItem({
   const editor = useRef(null);
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
+  const lastEditorKey = useRef(null);
 
   const onUserRandomChange = () => {
     setOpened(true);
@@ -213,6 +217,18 @@ function TestcaseItem({
                     onChange={() => {
                       if (!isTestResultItem) {
                         onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
+                      }
+                    }}
+                    onKeyup={(editorType, ev) => {
+                      if (editor.current && ev.shiftKey && ev.key === '{' && lastEditorKey.current === '{') {
+                        const widgetPopup = getVariableList(variables, e => {
+                          const [start, end] = editor.current.getInstance().getSelection();
+                          editor.current.getInstance().replaceSelection(`${e.target.textContent}}}`, [start[0], start[1] - 1], end);
+                        });
+
+                        editor.current.getInstance().addWidget(widgetPopup, 'bottom');
+                      } else if (ev.key !== 'Shift') {
+                        lastEditorKey.current = ev.key;
                       }
                     }}
                   />

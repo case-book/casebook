@@ -214,7 +214,7 @@ function VariableInput(props) {
 
       {opened && (
         <div ref={list} className="variables">
-          {!(variables?.length > 0) && <div className="empty">{t('일치하는 변수가 없습니다.')}</div>}
+          {variables?.length < 1 && <div className="empty">{t('일치 또는 사용 가능한 변수가 없습니다.')}</div>}
           {variables?.length > 0 && (
             <ul>
               {variables.map((variable, index) => {
@@ -229,7 +229,18 @@ function VariableInput(props) {
                     className={selectedIndex === index ? 'selected' : ''}
                     key={variable.id}
                     onClick={() => {
-                      setOpened(false);
+                      if (inputElement.current) {
+                        const currentPosition = inputElement.current.selectionStart;
+
+                        const pre = `${value.substring(0, cursor)}{{${variable.name}}}`;
+                        const nextValue = `${pre}${value.substring(currentPosition, value.length)}`;
+                        onChange(nextValue);
+
+                        setTimeout(() => {
+                          inputElement.current.setSelectionRange(pre.length, pre.length);
+                        }, 100);
+                        setOpened(false);
+                      }
                     }}
                   >
                     <span className="select-arrow" />
