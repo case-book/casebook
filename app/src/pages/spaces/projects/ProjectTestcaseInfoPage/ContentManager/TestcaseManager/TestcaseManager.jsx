@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Input, Selector, SeqId, TestcaseItem, TextArea } from '@/components';
+import { Button, Selector, SeqId, TestcaseItem, TextArea, VariableInput } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 import TestcaseReleaseItem from '@/components/TestcaseItem/TestcaseReleaseItem';
 
-function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags }) {
+function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags, variables }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -143,7 +143,7 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             {isEdit && (
               <div className="title-input">
                 <div className="name-input">
-                  <Input
+                  <VariableInput
                     value={content.name}
                     size="md"
                     onChange={val => {
@@ -151,6 +151,7 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                     }}
                     required
                     minLength={1}
+                    variables={variables}
                   />
                 </div>
               </div>
@@ -182,7 +183,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
           </div>
         </div>
       </div>
-
       <div className="title-liner" />
       <div className="case-content" ref={caseContentElement}>
         <div className="case-description">
@@ -191,7 +191,6 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             <TextArea size="sm" placeholder={t('테스트케이스에 대한 설명을 입력해주세요.')} value={content.description || ''} rows={4} onChange={onChangeTestcaseTemplateDescription} autoHeight />
           )}
         </div>
-
         {testcaseTemplate?.testcaseTemplateItems
           .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
           .sort((a, b) => a.itemOrder - b.itemOrder)
@@ -294,6 +293,7 @@ TestcaseManager.defaultProps = {
   releases: [],
   users: [],
   tags: [],
+  variables: [],
 };
 
 TestcaseManager.propTypes = {
@@ -339,6 +339,12 @@ TestcaseManager.propTypes = {
   ),
   createTestcaseImage: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(PropTypes.string),
+  variables: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
 };
 
 export default TestcaseManager;
