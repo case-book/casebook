@@ -2,7 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Input.scss';
 
-function Input({ className, type, value, size, disabled, outline, required, onChange, placeholder, minLength, maxLength, onRef, underline, color, onKeyDown, pattern, onBlur, autoComplete }) {
+function Input({
+  className,
+  type,
+  value,
+  size,
+  disabled,
+  outline,
+  required,
+  onChange,
+  placeholder,
+  minLength,
+  maxLength,
+  onRef,
+  underline,
+  color,
+  onKeyDown,
+  pattern,
+  onBlur,
+  autoComplete,
+  onKeyUp,
+  onClick,
+}) {
   return (
     <input
       ref={e => {
@@ -23,10 +44,12 @@ function Input({ className, type, value, size, disabled, outline, required, onCh
       }}
       onBlur={onBlur}
       onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
       value={value}
       required={required}
       minLength={minLength}
       maxLength={maxLength}
+      onClick={onClick}
     />
   );
 }
@@ -50,6 +73,8 @@ Input.defaultProps = {
   pattern: null,
   onBlur: null,
   autoComplete: 'off',
+  onKeyUp: null,
+  onClick: null,
 };
 
 Input.propTypes = {
@@ -71,6 +96,8 @@ Input.propTypes = {
   pattern: PropTypes.string,
   onBlur: PropTypes.func,
   autoComplete: PropTypes.string,
+  onKeyUp: PropTypes.func,
+  onClick: PropTypes.func,
 };
 
 export default Input;

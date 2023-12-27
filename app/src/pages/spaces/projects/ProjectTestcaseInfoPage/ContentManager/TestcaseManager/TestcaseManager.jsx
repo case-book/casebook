@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Selector, SeqId, TestcaseItem, TextArea, VariableInput } from '@/components';
+import { Button, Selector, SeqId, TestcaseItem, VariableInput } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -188,7 +188,16 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
         <div className="case-description">
           {!isEdit && <div className={`case-description-content ${content.description ? '' : 'empty'}`}>{content.description || t('설명이 없습니다.')}</div>}
           {isEdit && (
-            <TextArea size="sm" placeholder={t('테스트케이스에 대한 설명을 입력해주세요.')} value={content.description || ''} rows={4} onChange={onChangeTestcaseTemplateDescription} autoHeight />
+            <VariableInput
+              textArea
+              size="sm"
+              placeholder={t('테스트케이스에 대한 설명을 입력해주세요.')}
+              value={content.description || ''}
+              rows={4}
+              onChange={onChangeTestcaseTemplateDescription}
+              autoHeight
+              variables={variables}
+            />
           )}
         </div>
         {testcaseTemplate?.testcaseTemplateItems
@@ -214,6 +223,7 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                 inx={inx}
                 onChangeTestcaseItem={onChangeTestcaseItem}
                 size="sm"
+                variables={variables}
               />
             );
           })}
@@ -264,6 +274,7 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
               onChangeTestcaseTester(typeValue, val);
             }}
             size="sm"
+            variables={variables}
           />
         </div>
         <div className="creator-info">

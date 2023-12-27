@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './TestcaseItem.scss';
-import { Button, CheckBox, Input, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector } from '@/components';
+import { Button, CheckBox, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector, VariableInput } from '@/components';
 import { getUserText } from '@/utils/userUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
@@ -29,6 +29,7 @@ function TestcaseItem({
   isTestResult,
   isTestResultItem,
   tags,
+  variables,
 }) {
   const editor = useRef(null);
   const { t } = useTranslation();
@@ -107,7 +108,7 @@ function TestcaseItem({
                   </div>
                 )}
                 {isEdit && (
-                  <Input
+                  <VariableInput
                     type={testcaseTemplateItem.type.toLowerCase()}
                     value={testcaseItem.value}
                     size={size}
@@ -117,6 +118,7 @@ function TestcaseItem({
                     }}
                     required
                     minLength={1}
+                    variables={variables}
                   />
                 )}
               </div>
@@ -183,7 +185,7 @@ function TestcaseItem({
                   <Editor
                     ref={editor}
                     theme={theme === 'DARK' ? 'dark' : 'white'}
-                    placeholder="내용을 입력해주세요."
+                    placeholder={t('내용을 입력해주세요.')}
                     previewStyle="vertical"
                     height="400px"
                     initialEditType="wysiwyg"
@@ -245,6 +247,7 @@ TestcaseItem.defaultProps = {
   isTestResultItem: false,
   tags: [],
   onRandomTester: null,
+  variables: [],
 };
 
 TestcaseItem.propTypes = {
@@ -292,6 +295,12 @@ TestcaseItem.propTypes = {
   isTestResultItem: PropTypes.bool,
   tags: PropTypes.arrayOf(PropTypes.string),
   onRandomTester: PropTypes.func,
+  variables: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
 };
 
 export default TestcaseItem;

@@ -3,29 +3,12 @@ import PropTypes from 'prop-types';
 import useClickOutside from '@/hooks/useClickOutside';
 import useKeyboard from '@/hooks/useKeyboard';
 import { useTranslation } from 'react-i18next';
+import { Input, TextArea } from '@/components';
 import './VariableInput.scss';
 
-function VariableInput({
-  className,
-  type,
-  value,
-  size,
-  disabled,
-  outline,
-  required,
-  onChange,
-  placeholder,
-  minLength,
-  maxLength,
-  onRef,
-  underline,
-  color,
-  onKeyDown,
-  pattern,
-  onBlur,
-  autoComplete,
-  variables: variablesProp,
-}) {
+function VariableInput(props) {
+  const { className, value, onChange, onRef, variables: variablesProp, textArea } = props;
+
   const { t } = useTranslation();
   const list = useRef(null);
   const element = useRef();
@@ -112,73 +95,123 @@ function VariableInput({
 
   return (
     <div className={`variable-input-wrapper ${className}`} ref={element}>
-      <input
-        ref={e => {
-          inputElement.current = e;
-          if (onRef) {
-            onRef(e);
-          }
-        }}
-        className={`variable-input-wrapper ${className} size-${size} ${outline ? 'outline' : ''} ${underline ? 'underline' : ''} color-${color}`}
-        type={type}
-        pattern={pattern}
-        disabled={disabled}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        onClick={() => {
-          if (opened) {
-            setOpened(false);
-          }
-        }}
-        onKeyUp={e => {
-          if (e.key === '{' && e.shiftKey && !opened) {
-            const nextCount = targetKeyPressCount + 1;
-            setTargetKeyPressCount(nextCount);
-            if (nextCount === 2) {
-              if (variables.length > 0) {
-                setSelectedIndex(0);
-              } else {
-                setSelectedIndex(-1);
-              }
-              const currentPosition = inputElement.current.selectionStart;
-              if (currentPosition >= 2) {
-                setCursor(currentPosition - 2);
-              } else {
-                setCursor(-1);
-              }
-
-              setQuery('');
-              setOpened(true);
+      {textArea && (
+        <TextArea
+          /*  eslint-disable react/jsx-props-no-spreading */
+          {...props}
+          onRef={e => {
+            inputElement.current = e;
+            if (onRef) {
+              onRef(e);
             }
-          } else {
-            setTargetKeyPressCount(0);
-          }
-        }}
-        onChange={e => {
-          if (onChange) {
-            const v = e.target.value;
-            onChange(v, e);
-            if (opened && cursor > -1) {
-              const currentPosition = inputElement.current.selectionStart;
-              if (cursor + 2 <= currentPosition + 1) {
-                setQuery(v.substring(cursor + 2, currentPosition));
-              } else {
+          }}
+          onClick={() => {
+            if (opened) {
+              setOpened(false);
+            }
+          }}
+          onKeyUp={e => {
+            if (e.key === '{' && e.shiftKey && !opened) {
+              const nextCount = targetKeyPressCount + 1;
+              setTargetKeyPressCount(nextCount);
+              if (nextCount === 2) {
+                if (variables.length > 0) {
+                  setSelectedIndex(0);
+                } else {
+                  setSelectedIndex(-1);
+                }
+                const currentPosition = inputElement.current.selectionStart;
+                if (currentPosition >= 2) {
+                  setCursor(currentPosition - 2);
+                } else {
+                  setCursor(-1);
+                }
+
                 setQuery('');
+                setOpened(true);
               }
+            } else {
+              setTargetKeyPressCount(0);
+            }
+          }}
+          onChange={v => {
+            if (onChange) {
+              onChange(v);
+              if (opened && cursor > -1) {
+                const currentPosition = inputElement.current.selectionStart;
+                if (cursor + 2 <= currentPosition + 1) {
+                  setQuery(v.substring(cursor + 2, currentPosition));
+                } else {
+                  setQuery('');
+                }
 
-              if (currentPosition < cursor + +2) {
-                setOpened(false);
+                if (currentPosition < cursor + +2) {
+                  setOpened(false);
+                }
               }
             }
-          }
-        }}
-        onBlur={onBlur}
-        onKeyDown={onKeyDown}
-        value={value}
-        required={required}
-        minLength={minLength}
-        maxLength={maxLength}
-      />
+          }}
+        />
+      )}
+      {!textArea && (
+        <Input
+          /*  eslint-disable react/jsx-props-no-spreading */
+          {...props}
+          onRef={e => {
+            inputElement.current = e;
+            if (onRef) {
+              onRef(e);
+            }
+          }}
+          onClick={() => {
+            if (opened) {
+              setOpened(false);
+            }
+          }}
+          onKeyUp={e => {
+            if (e.key === '{' && e.shiftKey && !opened) {
+              const nextCount = targetKeyPressCount + 1;
+              setTargetKeyPressCount(nextCount);
+              if (nextCount === 2) {
+                if (variables.length > 0) {
+                  setSelectedIndex(0);
+                } else {
+                  setSelectedIndex(-1);
+                }
+                const currentPosition = inputElement.current.selectionStart;
+                if (currentPosition >= 2) {
+                  setCursor(currentPosition - 2);
+                } else {
+                  setCursor(-1);
+                }
+
+                setQuery('');
+                setOpened(true);
+              }
+            } else {
+              setTargetKeyPressCount(0);
+            }
+          }}
+          onChange={v => {
+            if (onChange) {
+              onChange(v);
+              if (opened && cursor > -1) {
+                const currentPosition = inputElement.current.selectionStart;
+                if (cursor + 2 <= currentPosition + 1) {
+                  setQuery(v.substring(cursor + 2, currentPosition));
+                } else {
+                  setQuery('');
+                }
+
+                if (currentPosition < cursor + +2) {
+                  setOpened(false);
+                }
+              }
+            }
+          }}
+        />
+      )}
+
       {opened && (
         <div ref={list} className="variables">
           {!(variables?.length > 0) && <div className="empty">{t('일치하는 변수가 없습니다.')}</div>}
@@ -239,6 +272,7 @@ VariableInput.defaultProps = {
   onBlur: null,
   autoComplete: 'off',
   variables: [],
+  textArea: false,
 };
 
 VariableInput.propTypes = {
@@ -266,6 +300,7 @@ VariableInput.propTypes = {
       name: PropTypes.string,
     }),
   ),
+  textArea: PropTypes.bool,
 };
 
 export default React.memo(VariableInput);
