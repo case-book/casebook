@@ -11,6 +11,7 @@ import dateUtil from '@/utils/dateUtil';
 import './TestrunReservationInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import TestrunReservationTestcaseGroupTable from '@/pages/spaces/projects/testruns/TestrunReservationInfoPage/TestrunReservationTestcaseGroupTable';
+import SpaceProfileService from '@/services/SpaceProfileService';
 
 const labelMinWidth = '120px';
 
@@ -19,6 +20,7 @@ function TestrunReservationInfoPage() {
   const { projectId, spaceCode, testrunReservationId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [spaceProfileList, setSpaceProfileList] = useState([]);
   const [testrunReservation, setTestrunReservation] = useState({
     id: '',
     name: '',
@@ -52,13 +54,23 @@ function TestrunReservationInfoPage() {
     testcaseGroups: [],
     selectCreatedTestcase: false,
     selectUpdatedTestcase: false,
+    profileIds: [],
   });
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-      TestrunService.selectTestrunReservationInfo(spaceCode, projectId, testrunReservationId, data => {
-        setTestrunReservation({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
+      setSpaceProfileList(profiles);
+
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+        setProject(info);
+        TestrunService.selectTestrunReservationInfo(spaceCode, projectId, testrunReservationId, data => {
+          setTestrunReservation({
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            startDateTime: dateUtil.getTime(data.startDateTime),
+            endDateTime: dateUtil.getTime(data.endDateTime),
+          });
+        });
       });
     });
   }, [projectId, testrunReservationId]);
@@ -83,7 +95,7 @@ function TestrunReservationInfoPage() {
   return (
     <Page className="testrun-reservation-info-page-wrapper">
       <PageTitle
-        name={t('예약 테스트런 정보')}
+        name={t('예약 테스트런')}
         breadcrumbs={[
           {
             to: '/',
@@ -136,6 +148,27 @@ function TestrunReservationInfoPage() {
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('이름')}</Label>
             <Text>{testrunReservation?.name}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+            {testrunReservation?.profileIds?.length > 0 && (
+              <div className="profile-list">
+                <ul>
+                  {testrunReservation?.profileIds?.map((profileId, inx) => {
+                    return (
+                      <li key={profileId}>
+                        <div>
+                          <span className="badge">
+                            <span>{inx + 1}</span>
+                          </span>
+                        </div>
+                        <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
           </BlockRow>
           <BlockRow>
             <Label minWidth={labelMinWidth}>{t('설명')}</Label>

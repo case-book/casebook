@@ -37,6 +37,7 @@ public class TestrunReservationDTO extends CommonDTO {
     private Boolean selectUpdatedTestcase;
 
     private List<TestrunTestcaseGroupDTO> conditionalTestcaseGroupList;
+    private List<TestrunProfileDTO> profiles;
 
     public TestrunReservationDTO(TestrunReservation testrunReservation) {
         this.id = testrunReservation.getId();
@@ -62,6 +63,8 @@ public class TestrunReservationDTO extends CommonDTO {
         if (testrunReservation.getTestrun() != null) {
             this.testrun = TestrunDTO.builder().id(testrunReservation.getTestrun().getId()).build();
         }
+
+        this.profiles = testrunReservation.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
     }
 
 

@@ -28,7 +28,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
+import { ProfileSelectPopup, TestcaseSelectPopup } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -36,6 +36,7 @@ import dateUtil from '@/utils/dateUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
 import ReleaseService from '@/services/ReleaseService';
+import SpaceProfileService from '@/services/SpaceProfileService';
 
 const labelMinWidth = '120px';
 
@@ -55,9 +56,13 @@ function TestrunEditPage({ type }) {
 
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
+  const [profileSelectPopupOpened, setProfileSelectPopupOpened] = useState(false);
+
   const [project, setProject] = useState(null);
 
   const [releases, setReleases] = useState([]);
+
+  const [spaceProfileList, setSpaceProfileList] = useState([]);
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -98,6 +103,7 @@ function TestrunEditPage({ type }) {
     })(),
     durationHours: 24,
     deadlineClose: true,
+    profileIds: [],
   });
 
   const selectedTestcaseGroupSummary = useMemo(() => {
@@ -139,32 +145,39 @@ function TestrunEditPage({ type }) {
   };
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-      if (isEdit) {
-        TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
-          setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
+      setSpaceProfileList(profiles);
+
+      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+        setProject(info);
+        if (isEdit) {
+          TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
+            setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+          });
+          return;
+        }
+
+        const initSelectedGroups = info.testcaseGroups?.map(d => {
+          return {
+            testcaseGroupId: d.id,
+            testcases: d.testcases?.map(item => {
+              return {
+                testcaseId: item.id,
+              };
+            }),
+          };
         });
-        return;
-      }
 
-      const initSelectedGroups = info.testcaseGroups?.map(d => {
-        return {
-          testcaseGroupId: d.id,
-          testcases: d.testcases?.map(item => {
-            return {
-              testcaseId: item.id,
-            };
+        const defaultProfile = profiles.find(profile => profile.default);
+
+        setTestrun({
+          ...testrun,
+          testrunUsers: info.users?.map(d => {
+            return { userId: d.userId, email: d.email, name: d.name };
           }),
-        };
-      });
-
-      setTestrun({
-        ...testrun,
-        testrunUsers: info.users?.map(d => {
-          return { userId: d.userId, email: d.email, name: d.name };
-        }),
-        testcaseGroups: initSelectedGroups,
+          testcaseGroups: initSelectedGroups,
+          profileIds: defaultProfile ? [defaultProfile.id] : [],
+        });
       });
     });
   }, [isEdit, projectId, testrunId]);
@@ -330,6 +343,36 @@ function TestrunEditPage({ type }) {
                 />
               </BlockRow>
               <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+                {testrun?.profileIds?.length > 0 && (
+                  <div className="profile-list">
+                    <ul>
+                      {testrun?.profileIds?.map((profileId, inx) => {
+                        return (
+                          <li key={profileId}>
+                            <div>
+                              <span className="badge">
+                                <span>{inx + 1}</span>
+                              </span>
+                            </div>
+                            <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+                <Button
+                  outline
+                  size="sm"
+                  onClick={() => {
+                    setProfileSelectPopupOpened(true);
+                  }}
+                >
+                  {t('프로파일 선택')}
+                </Button>
+              </BlockRow>
+              <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('설명')}</Label>
                 <TextArea
                   value={testrun.description || ''}
@@ -342,7 +385,6 @@ function TestrunEditPage({ type }) {
                   }}
                 />
               </BlockRow>
-
               <BlockRow className="testrun-range-type-row">
                 <Label minWidth={labelMinWidth} required>
                   {t('테스트 기간')}
@@ -517,6 +559,15 @@ function TestrunEditPage({ type }) {
             onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
           }}
           releases={releases}
+        />
+      )}
+      {profileSelectPopupOpened && (
+        <ProfileSelectPopup
+          profileIds={testrun.profileIds}
+          setOpened={setProfileSelectPopupOpened}
+          onApply={profileIds => {
+            onChangeTestrun('profileIds', profileIds);
+          }}
         />
       )}
     </>

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './TestcaseItem.scss';
-import { Button, CheckBox, Input, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector } from '@/components';
+import { Button, CheckBox, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector, VariableInput } from '@/components';
 import { getUserText } from '@/utils/userUtil';
 import { Editor, Viewer } from '@toast-ui/react-editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
@@ -9,6 +9,9 @@ import { getBaseURL } from '@/utils/configUtil';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
+import { getVariableList } from '@/pages/spaces/projects/testruns/TestrunExecutePage/variableUtil';
+
+// const reWidgetRule = /\{{(\S+)}}/;
 
 function TestcaseItem({
   isEdit,
@@ -29,10 +32,12 @@ function TestcaseItem({
   isTestResult,
   isTestResultItem,
   tags,
+  variables,
 }) {
   const editor = useRef(null);
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
+  const lastEditorKey = useRef(null);
 
   const onUserRandomChange = () => {
     setOpened(true);
@@ -107,7 +112,7 @@ function TestcaseItem({
                   </div>
                 )}
                 {isEdit && (
-                  <Input
+                  <VariableInput
                     type={testcaseTemplateItem.type.toLowerCase()}
                     value={testcaseItem.value}
                     size={size}
@@ -117,6 +122,7 @@ function TestcaseItem({
                     }}
                     required
                     minLength={1}
+                    variables={variables}
                   />
                 )}
               </div>
@@ -183,7 +189,7 @@ function TestcaseItem({
                   <Editor
                     ref={editor}
                     theme={theme === 'DARK' ? 'dark' : 'white'}
-                    placeholder="내용을 입력해주세요."
+                    placeholder={t('내용을 입력해주세요.')}
                     previewStyle="vertical"
                     height="400px"
                     initialEditType="wysiwyg"
@@ -211,6 +217,18 @@ function TestcaseItem({
                     onChange={() => {
                       if (!isTestResultItem) {
                         onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
+                      }
+                    }}
+                    onKeyup={(editorType, ev) => {
+                      if (editor.current && ev.shiftKey && ev.key === '{' && lastEditorKey.current === '{') {
+                        const widgetPopup = getVariableList(variables, e => {
+                          const [start, end] = editor.current.getInstance().getSelection();
+                          editor.current.getInstance().replaceSelection(`${e.target.textContent}}}`, [start[0], start[1] - 1], end);
+                        });
+
+                        editor.current.getInstance().addWidget(widgetPopup, 'bottom');
+                      } else if (ev.key !== 'Shift') {
+                        lastEditorKey.current = ev.key;
                       }
                     }}
                   />
@@ -245,6 +263,7 @@ TestcaseItem.defaultProps = {
   isTestResultItem: false,
   tags: [],
   onRandomTester: null,
+  variables: [],
 };
 
 TestcaseItem.propTypes = {
@@ -292,6 +311,12 @@ TestcaseItem.propTypes = {
   isTestResultItem: PropTypes.bool,
   tags: PropTypes.arrayOf(PropTypes.string),
   onRandomTester: PropTypes.func,
+  variables: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
 };
 
 export default TestcaseItem;

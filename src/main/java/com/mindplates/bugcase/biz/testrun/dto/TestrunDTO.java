@@ -4,15 +4,14 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor
@@ -41,8 +40,8 @@ public class TestrunDTO extends CommonDTO {
     private Integer durationHours;
     private Boolean reserveExpired;
     private Long reserveResultId;
-
     private Boolean deadlineClose;
+    private List<TestrunProfileDTO> profiles;
 
     public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
@@ -58,7 +57,9 @@ public class TestrunDTO extends CommonDTO {
         this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
         if (testrun.getProject() != null && testrun.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrun.getProject().getId()).space(SpaceDTO.builder().id(testrun.getProject().getSpace().getId()).code(testrun.getProject().getSpace().getCode()).build()).build();
+            this.project = ProjectDTO.builder().id(testrun.getProject().getId())
+                .space(SpaceDTO.builder().id(testrun.getProject().getSpace().getId()).code(testrun.getProject().getSpace().getCode()).build())
+                .build();
         }
 
         if (testrun.getProject() != null && testrun.getProject().getSpace() == null) {
@@ -72,6 +73,8 @@ public class TestrunDTO extends CommonDTO {
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
+        this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+
     }
 
     public TestrunDTO(Testrun testrun, boolean detail) {

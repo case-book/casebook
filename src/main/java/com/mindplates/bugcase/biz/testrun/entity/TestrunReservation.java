@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -94,6 +95,11 @@ public class TestrunReservation extends CommonEntity {
     @Column(name = "select_updated_testcase")
     private Boolean selectUpdatedTestcase;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrunReservation")
+    @Fetch(value = FetchMode.SUBSELECT)
+    @OrderBy("itemOrder ASC")
+    private List<TestrunProfile> profiles;
+
     public void updateTestcaseCount() {
         int testcaseGroupCountResult = 0;
         int testcaseCountResult = 0;
@@ -113,13 +119,15 @@ public class TestrunReservation extends CommonEntity {
         this.testcaseCount = testcaseCountResult;
     }
 
-    public void updateInfo(TestrunReservationDTO testrunReservation) {
+    public void updateInfo(TestrunReservation testrunReservation) {
         this.expired = false;
         this.name = testrunReservation.getName();
         this.description = testrunReservation.getDescription();
         this.startDateTime = testrunReservation.getStartDateTime();
         this.endDateTime = testrunReservation.getEndDateTime();
         this.deadlineClose = testrunReservation.getDeadlineClose();
+        this.profiles.clear();
+        this.profiles.addAll(testrunReservation.getProfiles());
     }
 
     public void updateTestrunUsers(List<TestrunUser> newTestrunUsers) {

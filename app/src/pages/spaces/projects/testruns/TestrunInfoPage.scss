@@ -3,6 +3,45 @@
     display: flex;
   }
 
+  .profile-list {
+    display: inline-flex;
+    margin-right: 10px;
+    ul {
+      align-self: center;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      > li {
+        display: inline-flex;
+        > div {
+          align-self: center;
+
+          .badge {
+            margin-left: 0.5rem;
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--lighter-color);
+            display: inline-flex;
+            justify-content: center;
+            border-radius: 50%;
+            color: var(--black-color);
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 4px;
+
+            > span {
+              align-self: center;
+              line-height: 100%;
+              font-family: Cairo, sans-serif;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .day-of-weeks {
     display: flex;
     > div {

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import './TextArea.scss';
 
-function TextArea({ className, value, maxLength, size, outline, disabled, border, required, onChange, underline, placeholder, rows, autoHeight }) {
+function TextArea({ className, value, maxLength, size, outline, disabled, border, required, onChange, underline, placeholder, rows, autoHeight, onClick, onKeyUp, onRef }) {
   const element = useRef({});
 
   useEffect(() => {
@@ -14,7 +14,12 @@ function TextArea({ className, value, maxLength, size, outline, disabled, border
 
   return (
     <textarea
-      ref={element}
+      ref={e => {
+        element.current = e;
+        if (onRef) {
+          onRef(e);
+        }
+      }}
       className={`text-area-wrapper ${className} ${outline ? 'outline' : ''} ${underline ? 'underline' : ''} size-${size} ${border ? 'border' : ''}`}
       onInput={e => {
         if (autoHeight) {
@@ -32,6 +37,8 @@ function TextArea({ className, value, maxLength, size, outline, disabled, border
       value={value}
       required={required}
       rows={rows}
+      onClick={onClick}
+      onKeyUp={onKeyUp}
     >
       {value}
     </textarea>
@@ -52,6 +59,9 @@ TextArea.defaultProps = {
   autoHeight: false,
   outline: true,
   underline: false,
+  onClick: null,
+  onKeyUp: null,
+  onRef: null,
 };
 
 TextArea.propTypes = {
@@ -68,6 +78,9 @@ TextArea.propTypes = {
   rows: PropTypes.number,
   autoHeight: PropTypes.bool,
   underline: PropTypes.bool,
+  onClick: PropTypes.func,
+  onKeyUp: PropTypes.func,
+  onRef: PropTypes.func,
 };
 
 export default TextArea;

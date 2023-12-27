@@ -1,15 +1,16 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
+import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -38,8 +39,8 @@ public class TestrunResponse {
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Long reserveResultId;
-
     private Boolean deadlineClose;
+    private List<Long> profileIds;
 
     public TestrunResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -62,6 +63,13 @@ public class TestrunResponse {
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
+        if (testrun.getProfiles() != null && !testrun.getProfiles().isEmpty()) {
+            this.profileIds = testrun.getProfiles()
+                .stream()
+                .map(testrunProfileDTO -> testrunProfileDTO.getProfile().getId()).collect(Collectors.toList());
+        } else {
+            this.profileIds = new ArrayList<>();
+        }
 
         if (testrun.getTestrunUsers() != null && !testrun.getTestrunUsers().isEmpty()) {
             this.testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserResponse::new).collect(Collectors.toList());

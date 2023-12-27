@@ -1,0 +1,23 @@
+.variable-common-popup-wrapper {
+  .controls {
+    display: flex;
+    .delete {
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    .others {
+      button {
+        margin-right: 10px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .description {
+    padding-left: 16px;
+    font-size: 12px;
+  }
+}

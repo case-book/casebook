@@ -363,3 +363,7 @@ export function del(url, data, successHandler, errorHandler, ref, noAuth, showLo
 
   return promise;
 }
+
+export function waitFor(promises, callback) {
+  return axios.all(promises).then(callback);
+}

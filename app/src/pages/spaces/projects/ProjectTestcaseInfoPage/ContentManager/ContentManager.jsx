@@ -26,6 +26,7 @@ function ContentManager({
   popupContent,
   setPopupContent,
   tags,
+  variables,
 }) {
   const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
@@ -101,6 +102,7 @@ function ContentManager({
             users={users}
             createTestcaseImage={createTestcaseImage}
             tags={tags}
+            variables={variables}
           />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && (
@@ -135,6 +137,7 @@ ContentManager.defaultProps = {
   users: [],
   popupContent: null,
   tags: [],
+  variables: [],
 };
 
 ContentManager.propTypes = {
@@ -196,6 +199,12 @@ ContentManager.propTypes = {
   }),
   setPopupContent: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(PropTypes.string),
+  variables: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
 };
 
 export default ContentManager;

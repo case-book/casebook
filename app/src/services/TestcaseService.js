@@ -184,6 +184,20 @@ TestcaseService.updateTestcaseNameAndDescription = (spaceCode, projectId, testca
   );
 };
 
+TestcaseService.selectTestcaseList = (spaceCode, projectId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testcases`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 TestcaseService.selectTestcase = (spaceCode, projectId, testcaseId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}`,

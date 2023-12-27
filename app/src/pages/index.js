@@ -1,6 +1,7 @@
 import SpaceListPage from '@/pages/spaces/SpaceListPage/SpaceListPage';
 import SpaceEditPage from '@/pages/spaces/SpaceEditPage';
 import SpaceInfoPage from '@/pages/spaces/SpaceInfoPage/SpaceInfoPage';
+import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVariableEditPage';
 
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
@@ -25,7 +26,7 @@ import SetUpPage from '@/pages/admin/SetUpPage';
 import UserListPage from '@/pages/admin/UserListPage';
 import UserInfoPage from '@/pages/admin/UserInfoPage';
 import UserEditPage from '@/pages/admin/UserEditPage';
-import AdminIndexInfoPage from '@/pages/admin/AdminIndexInfoPage';
+import AdminIndexInfoPage from '@/pages/admin/AdminIndexInfoPage/AdminIndexInfoPage';
 
 import AdminSpaceListPage from '@/pages/admin/AdminSpaceListPage';
 import AdminSpaceInfoPage from '@/pages/admin/AdminSpaceInfoPage';
@@ -88,4 +89,5 @@ export {
   ReleaseListPage,
   ReleaseEditPage,
   ReleaseInfoPage,
+  SpaceVariableEditPage,
 };

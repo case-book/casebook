@@ -3,7 +3,7 @@ import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { STATIC_MENUS } from '@/constants/menu';
-import './AdminIndexInfoPage.scss';
+import './ApiIndexInfoPage.scss';
 
 function AdminIndexInfoPage() {
   const { t } = useTranslation();

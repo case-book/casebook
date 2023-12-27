@@ -13,6 +13,7 @@ import './ProjectTestcaseInfoPage.scss';
 import testcaseUtil from '@/utils/testcaseUtil';
 import { useNavigate } from 'react-router-dom';
 import useQueryString from '@/hooks/useQueryString';
+import SpaceVariableService from '@/services/SpaceVariableService';
 
 function ProjectTestcaseInfoPage() {
   const { t } = useTranslation();
@@ -37,6 +38,7 @@ function ProjectTestcaseInfoPage() {
   const [content, setContent] = useState(null);
   const [popupContent, setPopupContent] = useState(null);
   const [contentChanged, setContentChanged] = useState(false);
+  const [variables, setVariables] = useState([]);
 
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
@@ -110,6 +112,12 @@ function ProjectTestcaseInfoPage() {
     getProject();
     getReleases();
   }, [spaceCode, projectId]);
+
+  useEffect(() => {
+    SpaceVariableService.selectSpaceVariableList(spaceCode, list => {
+      setVariables(list);
+    });
+  }, [spaceCode]);
 
   const findGroup = (id, groups) => {
     if (!groups || groups?.length < 1) {
@@ -552,6 +560,7 @@ function ProjectTestcaseInfoPage() {
                 onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
                 setPopupContent={setPopupContent}
                 tags={tags}
+                variables={variables}
               />
             }
           />
