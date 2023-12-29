@@ -17,10 +17,12 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
 import com.mindplates.bugcase.common.service.SlackService;
+import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -52,6 +54,8 @@ public class TestrunScheduler {
     private final ProjectService projectService;
 
     private final SlackService slackService;
+
+    private final HttpRequestUtil httpRequestUtil;
 
     private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
         TestrunDTO testrun = TestrunDTO
@@ -446,6 +450,13 @@ public class TestrunScheduler {
                 TestrunDTO testrun = getTestrun(testrunReservation, now);
                 TestrunDTO result = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
                 testrunService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
+
+                // 시작 후 훅 호출
+                result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
+                    testrunHook.request(httpRequestUtil);
+                    testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
+                    testrunService.updateTestrunHook(testrunHook);
+                });
             }
         }));
 
@@ -572,7 +583,14 @@ public class TestrunScheduler {
                 reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
-                testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
+                TestrunDTO result = testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
+
+                // 시작 후 훅 호출
+                result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
+                    testrunHook.request(httpRequestUtil);
+                    testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
+                    testrunService.updateTestrunHook(testrunHook);
+                });
             }
 
             if (reserveEndDateTime != null && now.isAfter(reserveEndDateTime)) {
@@ -588,8 +606,15 @@ public class TestrunScheduler {
         LocalDateTime now = LocalDateTime.now();
         List<TestrunDTO> testrunList = testrunService.selectDeadlineTestrunList(now);
         testrunList.forEach((testrunDTO -> {
-            testrunService.updateProjectTestrunStatusClosed(testrunDTO.getProject().getSpace().getCode(), testrunDTO.getProject().getId(),
+            TestrunDTO result = testrunService.updateProjectTestrunStatusClosed(testrunDTO.getProject().getSpace().getCode(), testrunDTO.getProject().getId(),
                 testrunDTO.getId());
+
+            // 종료 후 훅 호출
+            result.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
+                testrunHook.request(httpRequestUtil);
+                testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
+                testrunService.updateTestrunHook(testrunHook);
+            });
         }));
     }
 

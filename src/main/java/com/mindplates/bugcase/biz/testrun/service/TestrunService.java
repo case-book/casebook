@@ -273,7 +273,7 @@ public class TestrunService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public void updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
+    public TestrunDTO updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         // 종료 전 훅 호출
@@ -291,11 +291,7 @@ public class TestrunService {
 
         testrunRepository.save(testrun);
 
-        // 종료 후 훅 호출
-        testrun.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
-            testrunHook.request(httpRequestUtil);
-            updateTestrunHook(testrunHook);
-        });
+        return new TestrunDTO(testrun);
     }
 
     @Transactional
@@ -586,12 +582,6 @@ public class TestrunService {
             slackService
                 .sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
         }
-
-        // 시작 후 훅 호출
-        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
-            testrunHook.request(httpRequestUtil);
-            updateTestrunHook(testrunHook);
-        });
 
         return new TestrunDTO(result);
     }
@@ -955,7 +945,8 @@ public class TestrunService {
     }
 
     @Transactional
-    private TestrunHookDTO updateTestrunHook(TestrunHook testrunHook) {
+    public TestrunHookDTO updateTestrunHook(TestrunHookDTO testrunHookDTO) {
+        TestrunHook testrunHook = mappingUtil.convert(testrunHookDTO, TestrunHook.class);
         testrunHookRepository.save(testrunHook);
         return new TestrunHookDTO(testrunHook);
     }
