@@ -172,6 +172,22 @@ public class TestrunIteration extends CommonEntity {
         this.testcaseCount = testrunIteration.getTestcaseCount();
         this.profiles.clear();
         this.profiles.addAll(testrunIteration.getProfiles());
+        this.hooks.removeIf(hook -> testrunIteration.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
+        this.hooks.addAll(testrunIteration.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
+            testrunIteration.getHooks()
+                .stream()
+                .filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny()
+                .ifPresent(targetHook -> {
+                    hook.setTiming(targetHook.getTiming());
+                    hook.setName(targetHook.getName());
+                    hook.setUrl(targetHook.getUrl());
+                    hook.setMethod(targetHook.getMethod());
+                    hook.setHeaders(targetHook.getHeaders());
+                    hook.setBodies(targetHook.getBodies());
+                    hook.setRetryCount(targetHook.getRetryCount());
+                });
+        });
     }
 
     public void updateIterationInfo(TestrunIterationDTO testrunIteration) {
