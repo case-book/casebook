@@ -46,6 +46,7 @@ public class TestrunIterationResponse {
     private Integer testcaseCount;
     private Integer testrunUserCount;
     private List<Long> profileIds;
+    private List<TestrunHookResponse> hooks;
 
     public TestrunIterationResponse(TestrunIterationDTO testrunIteration) {
         this.id = testrunIteration.getId();
@@ -85,6 +86,10 @@ public class TestrunIterationResponse {
 
         if (testrunIteration.getTestcaseGroups() != null && !testrunIteration.getTestcaseGroups().isEmpty()) {
             this.testcaseGroups = testrunIteration.getTestcaseGroups().stream().map(TestrunTestcaseGroupResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrunIteration.getHooks() != null && !testrunIteration.getHooks().isEmpty()) {
+            this.hooks = testrunIteration.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
         }
     }
 

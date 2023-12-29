@@ -5,16 +5,15 @@ import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
-import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunProfile;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
@@ -64,6 +63,21 @@ public class TestrunScheduler {
             .endDateTime(testrunReservationDTO.getEndDateTime())
             .deadlineClose(testrunReservationDTO.getDeadlineClose())
             .build();
+
+        testrun.setHooks(new ArrayList<>());
+        testrunReservationDTO.getHooks().forEach((testrunHookDTO -> {
+            testrun.getHooks().add(TestrunHookDTO
+                .builder()
+                .timing(testrunHookDTO.getTiming())
+                .name(testrunHookDTO.getName())
+                .url(testrunHookDTO.getUrl())
+                .method(testrunHookDTO.getMethod())
+                .headers(testrunHookDTO.getHeaders())
+                .bodies(testrunHookDTO.getBodies())
+                .testrun(testrun)
+                .retryCount(testrunHookDTO.getRetryCount())
+                .build());
+        }));
 
         testrun.setProfiles(new ArrayList<>());
 
@@ -138,8 +152,22 @@ public class TestrunScheduler {
             .deadlineClose(testrunIterationDTO.getDeadlineClose())
             .build();
 
-        testrun.setProfiles(new ArrayList<>());
+        testrun.setHooks(new ArrayList<>());
+        testrunIterationDTO.getHooks().forEach((testrunHookDTO -> {
+            testrun.getHooks().add(TestrunHookDTO
+                .builder()
+                .timing(testrunHookDTO.getTiming())
+                .name(testrunHookDTO.getName())
+                .url(testrunHookDTO.getUrl())
+                .method(testrunHookDTO.getMethod())
+                .headers(testrunHookDTO.getHeaders())
+                .bodies(testrunHookDTO.getBodies())
+                .testrun(testrun)
+                .retryCount(testrunHookDTO.getRetryCount())
+                .build());
+        }));
 
+        testrun.setProfiles(new ArrayList<>());
         testrunIterationDTO.getProfiles().forEach((testrunProfileDTO -> {
             testrun.getProfiles()
                 .add(TestrunProfileDTO
@@ -540,7 +568,8 @@ public class TestrunScheduler {
             // String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
-            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
+            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(
+                reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);

@@ -3,6 +3,8 @@ package com.mindplates.bugcase.biz.testrun.entity;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.util.HttpRequestUtil;
+import com.mindplates.bugcase.common.vo.TestrunHookResult;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.springframework.http.HttpMethod;
 
 @Entity
 @Builder
@@ -79,4 +82,11 @@ public class TestrunHook extends CommonEntity {
 
     @Column(name = "message", columnDefinition = ColumnsDef.LONGTEXT)
     private String message;
+
+    public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
+        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
+        this.result = Integer.toString(testrunHookResult.getCode().value());
+        this.message = testrunHookResult.getMessage();
+        return testrunHookResult;
+    }
 }

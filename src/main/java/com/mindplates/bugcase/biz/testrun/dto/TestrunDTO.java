@@ -76,8 +76,9 @@ public class TestrunDTO extends CommonDTO {
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
         this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
-        this.hooks = testrun.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
-
+        if (testrun.getHooks() != null) {
+            this.hooks = testrun.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
+        }
     }
 
     public TestrunDTO(Testrun testrun, boolean detail) {

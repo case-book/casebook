@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { HTTP_METHOD, ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_HOOK_TIMINGS, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import './TestrunInfoPage.scss';
-import { TestrunHookInfoPopup } from '@/assets';
+import { TestrunHookInfoPopup, TestrunHookTable } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -363,43 +363,15 @@ function TestrunInfoPage() {
           </Title>
           <Block>
             <BlockRow className="testrun-hooks-content">
-              <Table cols={['200px', '100px', '100px', '', '100px']} border>
-                <THead>
-                  <Tr>
-                    <Th align="left">{t('이름')}</Th>
-                    <Th align="center">{t('실행 시기')}</Th>
-                    <Th align="center">{t('메소드')}</Th>
-                    <Th align="left">{t('URL')}</Th>
-                    <Th align="left">{t('실행 결과')}</Th>
-                  </Tr>
-                </THead>
-                <Tbody>
-                  {testrun.hooks?.map((hook, inx) => {
-                    return (
-                      <Tr key={inx}>
-                        <Td>{hook.name}</Td>
-                        <Td align="center">{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
-                        <Td align="center">{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
-                        <Td>{hook.url}</Td>
-                        <Td>
-                          {hook.result && (
-                            <Link
-                              className="result-link"
-                              to="/"
-                              onClick={e => {
-                                e.preventDefault();
-                                setTestrunHookInfoPopup({ opened: true, data: hook });
-                              }}
-                            >
-                              {hook.result}
-                            </Link>
-                          )}
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
+              <TestrunHookTable
+                hooks={testrun.hooks}
+                onNameClick={hook => {
+                  setTestrunHookInfoPopup({ opened: true, data: hook });
+                }}
+                onResultClick={hook => {
+                  setTestrunHookInfoPopup({ opened: true, data: hook });
+                }}
+              />
             </BlockRow>
           </Block>
           <PageButtons

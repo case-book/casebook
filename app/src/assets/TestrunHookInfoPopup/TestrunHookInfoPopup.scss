@@ -8,6 +8,11 @@
     flex-grow: 1;
     white-space: pre-wrap;
     word-break: break-all;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    font-size: 12px;
   }
 
   .header-content {

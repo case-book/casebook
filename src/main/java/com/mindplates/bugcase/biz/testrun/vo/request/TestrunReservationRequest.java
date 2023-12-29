@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
@@ -32,6 +33,7 @@ public class TestrunReservationRequest {
     private boolean selectCreatedTestcase;
     private boolean selectUpdatedTestcase;
     private List<Long> profileIds;
+    private List<TestrunHookRequest> hooks;
 
 
     public TestrunReservationDTO buildEntity() {
@@ -48,6 +50,12 @@ public class TestrunReservationRequest {
                 .selectCreatedTestcase(selectCreatedTestcase)
                 .selectUpdatedTestcase(selectUpdatedTestcase)
                 .build();
+
+        testrunReservation.setHooks(hooks.stream().map((testrunHookRequest -> {
+            TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+            testrunHookDTO.setTestrunReservation(testrunReservation);
+            return testrunHookDTO;
+        })).collect(Collectors.toList()));
 
         if (profileIds != null) {
             AtomicInteger index = new AtomicInteger();

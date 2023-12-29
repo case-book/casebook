@@ -62,7 +62,6 @@ import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
-import com.mindplates.bugcase.common.vo.TestrunHookResult;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -81,7 +80,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -277,6 +275,12 @@ public class TestrunService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        // 종료 전 훅 호출
+        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_END).forEach(testrunHookDTO -> {
+            testrunHookDTO.request(httpRequestUtil);
+        });
+
         checkIsTestrunClosed(testrun);
         testrun.setOpened(false);
         testrun.setClosedDate(LocalDateTime.now());
@@ -284,7 +288,14 @@ public class TestrunService {
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
         }
+
         testrunRepository.save(testrun);
+
+        // 종료 후 훅 호출
+        testrun.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            updateTestrunHook(testrunHook);
+        });
     }
 
     @Transactional
@@ -521,6 +532,7 @@ public class TestrunService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT)
     public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
+
         // 프로젝트 TESTRUN SEQ 증가
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, testrunDTO.getProject().getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -564,18 +576,9 @@ public class TestrunService {
         }
 
         // 시작 전 훅 호출
-        List<TestrunHook> afterStartHooks = testrun.getHooks().stream().filter(hook -> hook.getTiming().equals(TestrunHookTiming.BEFORE_START))
-            .collect(Collectors.toList());
-        if (!afterStartHooks.isEmpty()) {
-            afterStartHooks.forEach(hook -> {
-                TestrunHookResult testrunHookResult = httpRequestUtil.request(hook.getUrl(), HttpMethod.resolve(hook.getMethod()), hook.getHeaders(),
-                    hook.getBodies());
-                hook.setResult(Integer.toString(testrunHookResult.getCode().value()));
-                if (!testrunHookResult.getCode().equals(HttpStatus.OK)) {
-                    hook.setMessage(testrunHookResult.getMessage());
-                }
-            });
-        }
+        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+        });
 
         Testrun result = testrunRepository.save(testrun);
         if (project.isSlackAlarmEnabled() && project.getSlackUrl() != null) {
@@ -583,6 +586,13 @@ public class TestrunService {
             slackService
                 .sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
         }
+
+        // 시작 후 훅 호출
+        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            updateTestrunHook(testrunHook);
+        });
+
         return new TestrunDTO(result);
     }
 
@@ -945,8 +955,7 @@ public class TestrunService {
     }
 
     @Transactional
-    public TestrunHookDTO updateTestrunHook(TestrunHookDTO testrunHookDTO) {
-        TestrunHook testrunHook = mappingUtil.convert(testrunHookDTO, TestrunHook.class);
+    private TestrunHookDTO updateTestrunHook(TestrunHook testrunHook) {
         testrunHookRepository.save(testrunHook);
         return new TestrunHookDTO(testrunHook);
     }

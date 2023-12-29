@@ -42,7 +42,6 @@ import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestca
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
-import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
@@ -138,16 +137,7 @@ public class TestrunController {
             throw new ServiceException("error.no.testrun.users");
         }
 
-        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHookDTO -> {
-            testrunHookDTO.request(httpRequestUtil);
-        });
-
         TestrunDTO result = testrunService.createTestrunInfo(spaceCode, testrun);
-
-        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHookDTO -> {
-            testrunHookDTO.request(httpRequestUtil);
-            testrunService.updateTestrunHook(testrunHookDTO);
-        });
 
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
         createdTestrunData.addData("testrunId", result.getId());

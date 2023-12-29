@@ -14,16 +14,10 @@ import {
   PageButtons,
   PageContent,
   PageTitle,
-  Table,
-  Tbody,
-  Td,
   TestcaseSelectorSummary,
   Text,
   TextArea,
-  Th,
-  THead,
   Title,
-  Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -34,10 +28,10 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup } from '@/assets';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
-import { HTTP_METHOD, MESSAGE_CATEGORY, TESTRUN_HOOK_TIMINGS } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
@@ -560,66 +554,25 @@ function TestrunEditPage({ type }) {
             </Title>
             <Block>
               <BlockRow className="testrun-hooks-content">
-                <Table cols={['200px', '100px', '100px', '100%', '50px']} border>
-                  <THead>
-                    <Tr>
-                      <Th align="left">{t('이름')}</Th>
-                      <Th align="center">{t('실행 시기')}</Th>
-                      <Th align="center">{t('메소드')}</Th>
-                      <Th align="left">{t('URL')}</Th>
-                      <Th align="center" />
-                    </Tr>
-                  </THead>
-                  <Tbody>
-                    {testrun.hooks?.length < 1 && (
-                      <Tr>
-                        <Td align="center" colSpan={5}>
-                          {t('데이터가 없습니다.')}
-                        </Td>
-                      </Tr>
-                    )}
-                    {testrun.hooks?.length > 0 &&
-                      testrun.hooks?.map((hook, inx) => {
-                        return (
-                          <Tr key={inx}>
-                            <Td>
-                              <Link
-                                to="/"
-                                onClick={e => {
-                                  e.preventDefault();
-                                  setTestrunHookEditPopupInfo({
-                                    opened: true,
-                                    index: inx,
-                                    data: hook,
-                                  });
-                                }}
-                              >
-                                {hook.name}
-                              </Link>
-                            </Td>
-                            <Td align="center">{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
-                            <Td align="center">{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
-                            <Td>{hook.url}</Td>
-                            <Td align="center">
-                              <Button
-                                outline
-                                size="xs"
-                                color="danger"
-                                onClick={() => {
-                                  const nextTestrun = { ...testrun };
-                                  const nextHooks = nextTestrun.hooks.slice(0);
-                                  nextHooks.splice(inx, 1);
-                                  setTestrun({ ...nextTestrun, hooks: nextHooks });
-                                }}
-                              >
-                                {t('삭제')}
-                              </Button>
-                            </Td>
-                          </Tr>
-                        );
-                      })}
-                  </Tbody>
-                </Table>
+                <TestrunHookTable
+                  hooks={testrun.hooks}
+                  onNameClick={(data, index) => {
+                    setTestrunHookEditPopupInfo({
+                      opened: true,
+                      index,
+                      data,
+                    });
+                  }}
+                  onDeleteClick={(data, index) => {
+                    const nextTestrun = { ...testrun };
+                    const nextHooks = nextTestrun.hooks.slice(0);
+                    nextHooks.splice(index, 1);
+                    setTestrun({
+                      ...nextTestrun,
+                      hooks: nextHooks,
+                    });
+                  }}
+                />
               </BlockRow>
             </Block>
             <PageButtons
