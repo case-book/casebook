@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.testrun.dto;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -42,6 +43,7 @@ public class TestrunDTO extends CommonDTO {
     private Long reserveResultId;
     private Boolean deadlineClose;
     private List<TestrunProfileDTO> profiles;
+    private List<TestrunHookDTO> hooks;
 
     public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
@@ -74,7 +76,9 @@ public class TestrunDTO extends CommonDTO {
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
         this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
-
+        if (testrun.getHooks() != null) {
+            this.hooks = testrun.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
+        }
     }
 
     public TestrunDTO(Testrun testrun, boolean detail) {
@@ -83,6 +87,10 @@ public class TestrunDTO extends CommonDTO {
             testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
             testcaseGroups = testrun.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
         }
+    }
+
+    public List<TestrunHookDTO> getTestrunHookList(TestrunHookTiming timing) {
+        return this.hooks.stream().filter(hook -> hook.getTiming().equals(timing)).collect(Collectors.toList());
     }
 
 }

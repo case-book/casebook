@@ -100,6 +100,10 @@ public class TestrunReservation extends CommonEntity {
     @OrderBy("itemOrder ASC")
     private List<TestrunProfile> profiles;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrunReservation")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunHook> hooks;
+
     public void updateTestcaseCount() {
         int testcaseGroupCountResult = 0;
         int testcaseCountResult = 0;

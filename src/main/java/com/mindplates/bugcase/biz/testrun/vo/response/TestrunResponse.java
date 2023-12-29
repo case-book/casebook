@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
-import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -41,6 +40,7 @@ public class TestrunResponse {
     private Long reserveResultId;
     private Boolean deadlineClose;
     private List<Long> profileIds;
+    private List<TestrunHookResponse> hooks;
 
     public TestrunResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -77,6 +77,10 @@ public class TestrunResponse {
 
         if (testrun.getTestcaseGroups() != null && !testrun.getTestcaseGroups().isEmpty()) {
             this.testcaseGroups = testrun.getTestcaseGroups().stream().map(TestrunTestcaseGroupResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrun.getHooks() != null && !testrun.getHooks().isEmpty()) {
+            this.hooks = testrun.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
         }
 
     }

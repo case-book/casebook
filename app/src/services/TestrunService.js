@@ -547,4 +547,18 @@ TestrunService.deleteTestrunComment = (spaceCode, projectId, testrunId, commentI
   );
 };
 
+TestrunService.executeTestrunHook = (spaceCode, projectId, testrunHook, successHandler, failHandler, loading = true) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testruns/hooks/execute`,
+    testrunHook,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 export default TestrunService;

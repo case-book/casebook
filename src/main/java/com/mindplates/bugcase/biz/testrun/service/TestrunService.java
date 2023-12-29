@@ -15,6 +15,7 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunParticipantDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
@@ -25,6 +26,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunComment;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunParticipant;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
@@ -34,6 +36,7 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseCom
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunParticipantRedisRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunProfileRepository;
@@ -50,11 +53,13 @@ import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TesterChangeTargetCode;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.service.SlackService;
 import com.mindplates.bugcase.common.util.FileUtil;
+import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -104,6 +109,8 @@ public class TestrunService {
     private final TestrunCommentRepository testrunCommentRepository;
     private final TestrunProfileRepository testrunProfileRepository;
     private final UserRepository userRepository;
+    private final TestrunHookRepository testrunHookRepository;
+    private final HttpRequestUtil httpRequestUtil;
     private final Random random = new Random();
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
@@ -223,6 +230,7 @@ public class TestrunService {
         List<ProjectFile> files = projectFileRepository
             .findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
 
+        testrunHookRepository.deleteByTestrunId(testrunId);
         testrunProfileRepository.deleteByTestrunId(testrunId);
         testrunCommentRepository.deleteByTestrunId(testrunId);
         testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
@@ -267,6 +275,12 @@ public class TestrunService {
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        // 종료 전 훅 호출
+        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_END).forEach(testrunHookDTO -> {
+            testrunHookDTO.request(httpRequestUtil);
+        });
+
         checkIsTestrunClosed(testrun);
         testrun.setOpened(false);
         testrun.setClosedDate(LocalDateTime.now());
@@ -274,7 +288,14 @@ public class TestrunService {
         if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
             slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
         }
+
         testrunRepository.save(testrun);
+
+        // 종료 후 훅 호출
+        testrun.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            updateTestrunHook(testrunHook);
+        });
     }
 
     @Transactional
@@ -510,7 +531,8 @@ public class TestrunService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT)
-    public Long createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
+    public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
+
         // 프로젝트 TESTRUN SEQ 증가
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, testrunDTO.getProject().getId())
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -553,13 +575,25 @@ public class TestrunService {
             testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, random);
         }
 
+        // 시작 전 훅 호출
+        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+        });
+
         Testrun result = testrunRepository.save(testrun);
         if (project.isSlackAlarmEnabled() && project.getSlackUrl() != null) {
             List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
             slackService
                 .sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
         }
-        return result.getId();
+
+        // 시작 후 훅 호출
+        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            updateTestrunHook(testrunHook);
+        });
+
+        return new TestrunDTO(result);
     }
 
     @Transactional
@@ -913,10 +947,17 @@ public class TestrunService {
     public List<TestrunTestcaseGroupTestcaseDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId,
         Long currentTestrunId, Integer pageNo) {
         Pageable pageInfo = PageRequest.of(Optional.ofNullable(pageNo).orElse(0), 10);
-        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(projectId,
+        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(
+            projectId,
             testcaseId, currentTestrunId, pageInfo);
         return list.stream().map(TestrunTestcaseGroupTestcaseDTO::new)
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    private TestrunHookDTO updateTestrunHook(TestrunHook testrunHook) {
+        testrunHookRepository.save(testrunHook);
+        return new TestrunHookDTO(testrunHook);
     }
 
 }

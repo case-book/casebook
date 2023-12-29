@@ -5,8 +5,10 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -126,6 +128,10 @@ public class Testrun extends CommonEntity {
     @OrderBy("itemOrder ASC")
     private List<TestrunProfile> profiles;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrun")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunHook> hooks;
+
     public void updateInfo(Testrun testrun) {
         this.name = (testrun.getName());
         this.description = (testrun.getDescription());
@@ -140,6 +146,19 @@ public class Testrun extends CommonEntity {
         this.deadlineClose = (testrun.getDeadlineClose());
         this.profiles.clear();
         this.profiles.addAll(testrun.getProfiles());
+        this.hooks.removeIf(hook -> testrun.hooks.stream().noneMatch(targetHook -> targetHook.getId().equals(hook.getId())));
+        this.hooks.addAll(testrun.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        this.hooks.forEach(hook -> {
+            testrun.getHooks().stream().filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny().ifPresent(targetHook -> {
+                hook.setTiming(targetHook.getTiming());
+                hook.setName(targetHook.getName());
+                hook.setUrl(targetHook.getUrl());
+                hook.setMethod(targetHook.getMethod());
+                hook.setHeaders(targetHook.getHeaders());
+                hook.setBodies(targetHook.getBodies());
+                hook.setRetryCount(targetHook.getRetryCount());
+            });
+        });
     }
 
     public void updateTestrunUsers(List<TestrunUser> testrunUsers) {
@@ -321,5 +340,9 @@ public class Testrun extends CommonEntity {
                 }
             }
         }
+    }
+
+    public List<TestrunHook> getTestrunHookList(TestrunHookTiming timing) {
+        return this.hooks.stream().filter(hook -> hook.getTiming().equals(timing)).collect(Collectors.toList());
     }
 }

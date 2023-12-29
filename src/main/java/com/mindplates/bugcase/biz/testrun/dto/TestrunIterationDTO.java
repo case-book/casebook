@@ -55,6 +55,7 @@ public class TestrunIterationDTO extends CommonDTO {
 
     private Integer testrunUserCount;
     private List<TestrunProfileDTO> profiles;
+    private List<TestrunHookDTO> hooks;
 
     public TestrunIterationDTO(TestrunIteration testrunIteration) {
         this.id = testrunIteration.getId();
@@ -90,6 +91,9 @@ public class TestrunIterationDTO extends CommonDTO {
         this.testcaseCount = Optional.ofNullable(testrunIteration.getTestcaseCount()).orElse(0);
         this.testrunUserCount = testrunIteration.getTestrunUsers().size();
         this.profiles = testrunIteration.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+        if (testrunIteration.getHooks() != null) {
+            this.hooks = testrunIteration.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
+        }
     }
 
     public TestrunIterationDTO(TestrunIteration testrunIteration, boolean detail) {

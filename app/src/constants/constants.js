@@ -587,6 +587,20 @@ const TESTER_CHANGE_TARGETS = [
   },
 ];
 
+const TESTRUN_HOOK_TIMINGS = [
+  { key: 'BEFORE_START', value: i18n.t('시작 전'), description: i18n.t('테스트런을 생성하기 전에 API 훅이 실행됩니다.') },
+  { key: 'AFTER_START', value: i18n.t('시작 후'), description: i18n.t('테스트런 생성 후 훅이 실행됩니다.') },
+  { key: 'BEFORE_END', value: i18n.t('종료 전'), description: i18n.t('테스트런을 종료하기 전에 API 훅이 실행됩니다.') },
+  { key: 'AFTER_END', value: i18n.t('종료 후'), description: i18n.t('테스트런 종료 후 API 훅이 실행됩니다.') },
+];
+
+const HTTP_METHOD = [
+  { key: 'POST', value: 'POST' },
+  { key: 'GET', value: 'GET' },
+  { key: 'PUT', value: 'PUT' },
+  { key: 'DEL', value: 'DEL' },
+];
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -617,4 +631,6 @@ export {
   TESTRUN_ITERATION_USER_FILTER_SELECT_RULE,
   TESTER_CHANGE_REASONS,
   TESTER_CHANGE_TARGETS,
+  TESTRUN_HOOK_TIMINGS,
+  HTTP_METHOD,
 };

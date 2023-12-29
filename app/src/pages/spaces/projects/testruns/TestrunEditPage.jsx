@@ -28,7 +28,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup } from '@/assets';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -57,6 +57,10 @@ function TestrunEditPage({ type }) {
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [profileSelectPopupOpened, setProfileSelectPopupOpened] = useState(false);
+
+  const [testrunHookEditPopupInfo, setTestrunHookEditPopupInfo] = useState({
+    opened: false,
+  });
 
   const [project, setProject] = useState(null);
 
@@ -104,6 +108,7 @@ function TestrunEditPage({ type }) {
     durationHours: 24,
     deadlineClose: true,
     profileIds: [],
+    hooks: [],
   });
 
   const selectedTestcaseGroupSummary = useMemo(() => {
@@ -527,6 +532,49 @@ function TestrunEditPage({ type }) {
                 )}
               </BlockRow>
             </Block>
+            <Title
+              border={false}
+              marginBottom={false}
+              control={
+                <Button
+                  outline
+                  size="sm"
+                  onClick={() => {
+                    setTestrunHookEditPopupInfo({
+                      opened: true,
+                      index: null,
+                    });
+                  }}
+                >
+                  {t('API 추가')}
+                </Button>
+              }
+            >
+              {t('테스트런 API 훅')}
+            </Title>
+            <Block>
+              <BlockRow className="testrun-hooks-content">
+                <TestrunHookTable
+                  hooks={testrun.hooks}
+                  onNameClick={(data, index) => {
+                    setTestrunHookEditPopupInfo({
+                      opened: true,
+                      index,
+                      data,
+                    });
+                  }}
+                  onDeleteClick={(data, index) => {
+                    const nextTestrun = { ...testrun };
+                    const nextHooks = nextTestrun.hooks.slice(0);
+                    nextHooks.splice(index, 1);
+                    setTestrun({
+                      ...nextTestrun,
+                      hooks: nextHooks,
+                    });
+                  }}
+                />
+              </BlockRow>
+            </Block>
             <PageButtons
               onCancel={() => {
                 navigate(-1);
@@ -567,6 +615,27 @@ function TestrunEditPage({ type }) {
           setOpened={setProfileSelectPopupOpened}
           onApply={profileIds => {
             onChangeTestrun('profileIds', profileIds);
+          }}
+        />
+      )}
+      {testrunHookEditPopupInfo.opened && (
+        <TestrunHookEditPopup
+          spaceCode={spaceCode}
+          projectId={projectId}
+          setOpened={value => {
+            setTestrunHookEditPopupInfo({ ...testrunHookEditPopupInfo, opened: value });
+          }}
+          data={testrunHookEditPopupInfo.data}
+          onApply={apiInfo => {
+            const nextTestrun = { ...testrun };
+            const nextHooks = nextTestrun.hooks.slice(0);
+            if (testrunHookEditPopupInfo.index === null) {
+              nextHooks.push(apiInfo);
+              setTestrun({ ...nextTestrun, hooks: nextHooks });
+            } else {
+              nextHooks[testrunHookEditPopupInfo.index] = apiInfo;
+              setTestrun({ ...nextTestrun, hooks: nextHooks });
+            }
           }}
         />
       )}

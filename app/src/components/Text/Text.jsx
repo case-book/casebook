@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Text.scss';
 
-function Text({ className, children, size, bold, verticalAlign, whiteSpace, white, inline }) {
+function Text({ className, children, size, bold, verticalAlign, whiteSpace, white, inline, sub }) {
   return (
     <div
-      className={`text-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''} ${white ? 'bg-white' : ''} ${inline ? 'inline' : ''}`}
+      className={`text-wrapper ${className} size-${size} ${bold ? 'is-bold' : ''} ${white ? 'bg-white' : ''} ${inline ? 'inline' : ''} ${sub ? 'sub' : ''}`}
       style={{
         alignSelf: verticalAlign,
       }}
@@ -32,6 +32,7 @@ Text.defaultProps = {
   whiteSpace: 'normal',
   white: false,
   inline: false,
+  sub: false,
 };
 
 Text.propTypes = {
@@ -43,6 +44,7 @@ Text.propTypes = {
   whiteSpace: PropTypes.oneOf(['nowrap', 'normal', 'pre', 'pre-wrap', 'pre-line']),
   white: PropTypes.bool,
   inline: PropTypes.bool,
+  sub: PropTypes.bool,
 };
 
 export default Text;

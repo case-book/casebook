@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
@@ -45,6 +46,7 @@ public class TestrunIterationRequest {
     private TestrunIterationUserFilterSelectRuleCode testrunIterationUserFilterSelectRule;
     private Integer filteringUserCount;
     private List<Long> profileIds;
+    private List<TestrunHookRequest> hooks;
 
     public TestrunIterationDTO buildEntity() {
 
@@ -68,6 +70,12 @@ public class TestrunIterationRequest {
                 .testrunIterationUserFilterSelectRule(testrunIterationUserFilterSelectRule)
                 .filteringUserCount(filteringUserCount)
                 .build();
+
+        testrunIteration.setHooks(hooks.stream().map((testrunHookRequest -> {
+            TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+            testrunHookDTO.setTestrunIteration(testrunIteration);
+            return testrunHookDTO;
+        })).collect(Collectors.toList()));
 
         if (profileIds != null) {
             AtomicInteger index = new AtomicInteger();

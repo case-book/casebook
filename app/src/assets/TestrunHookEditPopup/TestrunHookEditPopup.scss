@@ -1,0 +1,24 @@
+.testrun-hook-popup-wrapper {
+  .key,
+  .value {
+    padding-right: 0;
+  }
+
+  .header-content {
+    margin-bottom: 24px;
+  }
+
+  .react-json-view {
+    font-family: MartianMono, monospace !important;
+    font-size: 12px !important;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+  }
+
+  .message {
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 12px !important;
+  }
+}

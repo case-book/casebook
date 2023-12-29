@@ -261,6 +261,10 @@
         padding: 20px;
         overflow-y: auto;
 
+        img {
+          max-width: 100%;
+        }
+
         @media (max-width: 800px) {
         }
 

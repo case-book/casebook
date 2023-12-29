@@ -146,6 +146,10 @@ public class TestrunIteration extends CommonEntity {
     @OrderBy("itemOrder ASC")
     private List<TestrunProfile> profiles;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrunIteration")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunHook> hooks;
+
     public void updateInfo(TestrunIteration testrunIteration) {
         this.expired = false;
         this.name = testrunIteration.getName();

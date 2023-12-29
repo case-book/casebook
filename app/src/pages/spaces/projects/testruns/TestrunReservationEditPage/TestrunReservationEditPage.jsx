@@ -15,7 +15,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import './TestrunReservationEditPage.scss';
 import SpaceProfileService from '@/services/SpaceProfileService';
-import { ProfileSelectPopup } from '@/assets';
+import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -38,6 +38,10 @@ function TestrunReservationEditPage({ type }) {
   const [spaceProfileList, setSpaceProfileList] = useState([]);
 
   const [profileSelectPopupOpened, setProfileSelectPopupOpened] = useState(false);
+
+  const [testrunHookEditPopupInfo, setTestrunHookEditPopupInfo] = useState({
+    opened: false,
+  });
 
   const [testrunReservation, setTestrunReservation] = useState({
     id: null,
@@ -70,6 +74,7 @@ function TestrunReservationEditPage({ type }) {
     selectCreatedTestcase: false,
     selectUpdatedTestcase: false,
     profileIds: [],
+    hooks: [],
   });
 
   const isEdit = useMemo(() => {
@@ -485,6 +490,49 @@ function TestrunReservationEditPage({ type }) {
                 </Text>
               </BlockRow>
             </Block>
+            <Title
+              border={false}
+              marginBottom={false}
+              control={
+                <Button
+                  outline
+                  size="sm"
+                  onClick={() => {
+                    setTestrunHookEditPopupInfo({
+                      opened: true,
+                      index: null,
+                    });
+                  }}
+                >
+                  {t('API 추가')}
+                </Button>
+              }
+            >
+              {t('테스트런 API 훅')}
+            </Title>
+            <Block>
+              <BlockRow className="testrun-hooks-content">
+                <TestrunHookTable
+                  hooks={testrunReservation.hooks}
+                  onNameClick={(data, index) => {
+                    setTestrunHookEditPopupInfo({
+                      opened: true,
+                      index,
+                      data,
+                    });
+                  }}
+                  onDeleteClick={(data, index) => {
+                    const nextTestrun = { ...testrunReservation };
+                    const nextHooks = nextTestrun.hooks.slice(0);
+                    nextHooks.splice(index, 1);
+                    setTestrunReservation({
+                      ...nextTestrun,
+                      hooks: nextHooks,
+                    });
+                  }}
+                />
+              </BlockRow>
+            </Block>
             <PageButtons
               onCancel={() => {
                 navigate(-1);
@@ -524,6 +572,27 @@ function TestrunReservationEditPage({ type }) {
           setOpened={setProfileSelectPopupOpened}
           onApply={profileIds => {
             onChangeTestrun('profileIds', profileIds);
+          }}
+        />
+      )}
+      {testrunHookEditPopupInfo.opened && (
+        <TestrunHookEditPopup
+          spaceCode={spaceCode}
+          projectId={projectId}
+          setOpened={value => {
+            setTestrunHookEditPopupInfo({ ...testrunHookEditPopupInfo, opened: value });
+          }}
+          data={testrunHookEditPopupInfo.data}
+          onApply={apiInfo => {
+            const nextTestrun = { ...testrunReservation };
+            const nextHooks = nextTestrun.hooks.slice(0);
+            if (testrunHookEditPopupInfo.index === null) {
+              nextHooks.push(apiInfo);
+              setTestrunReservation({ ...nextTestrun, hooks: nextHooks });
+            } else {
+              nextHooks[testrunHookEditPopupInfo.index] = apiInfo;
+              setTestrunReservation({ ...nextTestrun, hooks: nextHooks });
+            }
           }}
         />
       )}

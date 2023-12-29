@@ -54,6 +54,10 @@
     height: $xs-height;
   }
 
+  &.sub {
+    font-size: 12px;
+  }
+
   @media (max-width: 768px) {
     height: auto !important;
   }
