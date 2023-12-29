@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.Length;
 public class TestrunHookRequest {
 
     private Long id;
-    @NotEmpty
     private TestrunHookTiming timing;
     @NotEmpty
     @Length(min = 1, max = 100)
@@ -22,8 +21,8 @@ public class TestrunHookRequest {
     private String url;
     @NotEmpty
     private String method;
-    private List<Map<String, Object>> headers;
-    private List<Map<String, Object>> bodies;
+    private List<Map<String, String>> headers;
+    private List<Map<String, String>> bodies;
     private Integer retryCount;
 
     public TestrunHookDTO buildEntity() {

@@ -20,8 +20,8 @@ public class TestrunHookResponse {
     private String name;
     private String url;
     private String method;
-    private List<Map<String, Object>> headers;
-    private List<Map<String, Object>> bodies;
+    private List<Map<String, String>> headers;
+    private List<Map<String, String>> bodies;
     private Long testrunId;
     private Long testrunReservationId;
     private Long testrunIterationId;

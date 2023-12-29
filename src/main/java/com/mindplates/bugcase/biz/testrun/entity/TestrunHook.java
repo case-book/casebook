@@ -53,11 +53,11 @@ public class TestrunHook extends CommonEntity {
 
     @Type(type = "json")
     @Column(name = "headers", columnDefinition = ColumnsDef.LONGTEXT)
-    private List<Map<String, Object>> headers;
+    private List<Map<String, String>> headers;
 
     @Type(type = "json")
     @Column(name = "bodies", columnDefinition = ColumnsDef.LONGTEXT)
-    private List<Map<String, Object>> bodies;
+    private List<Map<String, String>> bodies;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testrun_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_HOOK__TESTRUN"))

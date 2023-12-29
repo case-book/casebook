@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.testrun.dto;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -85,6 +86,10 @@ public class TestrunDTO extends CommonDTO {
             testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
             testcaseGroups = testrun.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
         }
+    }
+
+    public List<TestrunHookDTO> getTestrunHookList(TestrunHookTiming timing) {
+        return this.hooks.stream().filter(hook -> hook.getTiming().equals(timing)).collect(Collectors.toList());
     }
 
 }

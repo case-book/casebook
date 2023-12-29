@@ -10,6 +10,7 @@ import com.mindplates.bugcase.biz.space.service.SpaceProfileVariableService;
 import com.mindplates.bugcase.biz.space.service.SpaceVariableService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
@@ -19,6 +20,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDT
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunCommentRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunCreateRequest;
+import com.mindplates.bugcase.biz.testrun.vo.request.TestrunHookRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunIterationRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunReservationRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunResultItemsRequest;
@@ -29,6 +31,7 @@ import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTesterRandomChangeRe
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTesterRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunUpdateRequest;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunCommentResponse;
+import com.mindplates.bugcase.biz.testrun.vo.response.TestrunHookResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunIterationListResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunIterationResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunListResponse;
@@ -39,9 +42,11 @@ import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestca
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
+import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDateTime;
@@ -81,6 +86,8 @@ public class TestrunController {
     private final SpaceVariableService spaceVariableService;
 
     private final SpaceProfileVariableService spaceProfileVariableService;
+
+    private final HttpRequestUtil httpRequestUtil;
 
     @Operation(description = "진행중인 테스트런 목록 조회")
     @GetMapping("")
@@ -130,14 +137,22 @@ public class TestrunController {
         if (testrun.getTestrunUsers().isEmpty()) {
             throw new ServiceException("error.no.testrun.users");
         }
-        Long testrunId = testrunService.createTestrunInfo(spaceCode, testrun);
+
+        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHookDTO -> {
+            testrunHookDTO.request(httpRequestUtil);
+        });
+
+        TestrunDTO result = testrunService.createTestrunInfo(spaceCode, testrun);
+
+        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHookDTO -> {
+            testrunHookDTO.request(httpRequestUtil);
+            testrunService.updateTestrunHook(testrunHookDTO);
+        });
 
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
-        // createdTestrunData.addData("testrun", createdTestrun);
-        createdTestrunData.addData("testrunId", testrunId);
+        createdTestrunData.addData("testrunId", result.getId());
         messageSendService.sendTo("projects/" + projectId, createdTestrunData);
 
-        // return new TestrunListResponse(createdTestrun);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -472,6 +487,15 @@ public class TestrunController {
         @PathVariable long commentId) {
         testrunService.deleteTestrunCommentInfo(projectId, testrunId, commentId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "테스트런 훅 실행")
+    @PostMapping("/hooks/execute")
+    public TestrunHookResponse executeTestrunHook(@PathVariable String spaceCode, @PathVariable long projectId,
+        @Valid @RequestBody TestrunHookRequest testrunHookRequest) {
+        TestrunHookDTO testrunHook = testrunHookRequest.buildEntity();
+        testrunHook.request(httpRequestUtil);
+        return new TestrunHookResponse(testrunHook);
     }
 
 

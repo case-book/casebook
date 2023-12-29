@@ -34,7 +34,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookPopup } from '@/assets';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { HTTP_METHOD, MESSAGE_CATEGORY, TESTRUN_HOOK_TIMINGS } from '@/constants/constants';
@@ -64,7 +64,7 @@ function TestrunEditPage({ type }) {
 
   const [profileSelectPopupOpened, setProfileSelectPopupOpened] = useState(false);
 
-  const [apiPopupInfo, setApiPopupInfo] = useState({
+  const [testrunHookEditPopupInfo, setTestrunHookEditPopupInfo] = useState({
     opened: false,
   });
 
@@ -546,7 +546,7 @@ function TestrunEditPage({ type }) {
                   outline
                   size="sm"
                   onClick={() => {
-                    setApiPopupInfo({
+                    setTestrunHookEditPopupInfo({
                       opened: true,
                       index: null,
                     });
@@ -559,58 +559,68 @@ function TestrunEditPage({ type }) {
               {t('테스트런 API 훅')}
             </Title>
             <Block>
-              <Table cols={['200px', '100px', '100px', '', '50px']} border>
-                <THead>
-                  <Tr>
-                    <Th align="left">{t('이름')}</Th>
-                    <Th align="left">{t('실행 시기')}</Th>
-                    <Th align="left">{t('메소드')}</Th>
-                    <Th align="left">{t('URL')}</Th>
-                    <Th align="center" />
-                  </Tr>
-                </THead>
-                <Tbody>
-                  {testrun.hooks?.map((hook, inx) => {
-                    return (
-                      <Tr key={inx}>
-                        <Td>
-                          <Link
-                            to="/"
-                            onClick={e => {
-                              e.preventDefault();
-                              setApiPopupInfo({
-                                opened: true,
-                                index: inx,
-                                data: hook,
-                              });
-                            }}
-                          >
-                            {hook.name}
-                          </Link>
-                        </Td>
-                        <Td>{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
-                        <Td>{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
-                        <Td>{hook.url}</Td>
-                        <Td align="center">
-                          <Button
-                            outline
-                            size="xs"
-                            color="danger"
-                            onClick={() => {
-                              const nextTestrun = { ...testrun };
-                              const nextHooks = nextTestrun.hooks.slice(0);
-                              nextHooks.splice(inx, 1);
-                              setTestrun({ ...nextTestrun, hooks: nextHooks });
-                            }}
-                          >
-                            {t('삭제')}
-                          </Button>
+              <BlockRow className="testrun-hooks-content">
+                <Table cols={['200px', '100px', '100px', '100%', '50px']} border>
+                  <THead>
+                    <Tr>
+                      <Th align="left">{t('이름')}</Th>
+                      <Th align="center">{t('실행 시기')}</Th>
+                      <Th align="center">{t('메소드')}</Th>
+                      <Th align="left">{t('URL')}</Th>
+                      <Th align="center" />
+                    </Tr>
+                  </THead>
+                  <Tbody>
+                    {testrun.hooks?.length < 1 && (
+                      <Tr>
+                        <Td align="center" colSpan={5}>
+                          {t('데이터가 없습니다.')}
                         </Td>
                       </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
+                    )}
+                    {testrun.hooks?.length > 0 &&
+                      testrun.hooks?.map((hook, inx) => {
+                        return (
+                          <Tr key={inx}>
+                            <Td>
+                              <Link
+                                to="/"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  setTestrunHookEditPopupInfo({
+                                    opened: true,
+                                    index: inx,
+                                    data: hook,
+                                  });
+                                }}
+                              >
+                                {hook.name}
+                              </Link>
+                            </Td>
+                            <Td align="center">{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
+                            <Td align="center">{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
+                            <Td>{hook.url}</Td>
+                            <Td align="center">
+                              <Button
+                                outline
+                                size="xs"
+                                color="danger"
+                                onClick={() => {
+                                  const nextTestrun = { ...testrun };
+                                  const nextHooks = nextTestrun.hooks.slice(0);
+                                  nextHooks.splice(inx, 1);
+                                  setTestrun({ ...nextTestrun, hooks: nextHooks });
+                                }}
+                              >
+                                {t('삭제')}
+                              </Button>
+                            </Td>
+                          </Tr>
+                        );
+                      })}
+                  </Tbody>
+                </Table>
+              </BlockRow>
             </Block>
             <PageButtons
               onCancel={() => {
@@ -655,21 +665,22 @@ function TestrunEditPage({ type }) {
           }}
         />
       )}
-      {apiPopupInfo.opened && (
-        <TestrunHookPopup
-          profileIds={testrun.profileIds}
+      {testrunHookEditPopupInfo.opened && (
+        <TestrunHookEditPopup
+          spaceCode={spaceCode}
+          projectId={projectId}
           setOpened={value => {
-            setApiPopupInfo({ ...apiPopupInfo, opened: value });
+            setTestrunHookEditPopupInfo({ ...testrunHookEditPopupInfo, opened: value });
           }}
-          data={apiPopupInfo.data}
+          data={testrunHookEditPopupInfo.data}
           onApply={apiInfo => {
             const nextTestrun = { ...testrun };
             const nextHooks = nextTestrun.hooks.slice(0);
-            if (apiPopupInfo.index === null) {
+            if (testrunHookEditPopupInfo.index === null) {
               nextHooks.push(apiInfo);
               setTestrun({ ...nextTestrun, hooks: nextHooks });
             } else {
-              nextHooks[apiPopupInfo.index] = apiInfo;
+              nextHooks[testrunHookEditPopupInfo.index] = apiInfo;
               setTestrun({ ...nextTestrun, hooks: nextHooks });
             }
           }}

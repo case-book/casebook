@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
 import { HTTP_METHOD, ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_HOOK_TIMINGS, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
-import './TestrunInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import SpaceProfileService from '@/services/SpaceProfileService';
+import './TestrunInfoPage.scss';
+import { TestrunHookInfoPopup } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -66,13 +67,22 @@ function TestrunInfoPage() {
     hooks: [],
   });
 
+  const [testrunHookInfoPopup, setTestrunHookInfoPopup] = useState({
+    opened: false,
+  });
+
   useEffect(() => {
     SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
       setSpaceProfileList(profiles);
       ProjectService.selectProjectInfo(spaceCode, projectId, info => {
         setProject(info);
         TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
-          setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+          setTestrun({
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            startDateTime: dateUtil.getTime(data.startDateTime),
+            endDateTime: dateUtil.getTime(data.endDateTime),
+          });
         });
       });
     });
@@ -130,265 +140,288 @@ function TestrunInfoPage() {
   };
 
   return (
-    <Page className="testrun-info-page-wrapper">
-      <PageTitle
-        name={t('테스트런 정보')}
-        breadcrumbs={[
-          {
-            to: '/',
-            text: t('HOME'),
-          },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
-          {
-            to: `/spaces/${spaceCode}/info`,
-            text: spaceCode,
-          },
-          {
-            to: `/spaces/${spaceCode}/projects`,
-            text: t('프로젝트 목록'),
-          },
-          {
-            to: `/spaces/${spaceCode}/projects/${projectId}`,
-            text: project?.name,
-          },
-          {
-            to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
-            text: t('테스트런 목록'),
-          },
-          {
-            to: `/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/info`,
-            text: testrun?.name,
-          },
-        ]}
-        control={
-          <div>
-            {testrun.opened && (
-              <Button size="sm" color="warning" onClick={onClosed}>
-                {t('테스트런 종료')}
+    <>
+      <Page className="testrun-info-page-wrapper">
+        <PageTitle
+          name={t('테스트런 정보')}
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
+            {
+              to: '/',
+              text: t('스페이스 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/info`,
+              text: spaceCode,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects`,
+              text: t('프로젝트 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}`,
+              text: project?.name,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/testruns`,
+              text: t('테스트런 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/info`,
+              text: testrun?.name,
+            },
+          ]}
+          control={
+            <div>
+              {testrun.opened && (
+                <Button size="sm" color="warning" onClick={onClosed}>
+                  {t('테스트런 종료')}
+                </Button>
+              )}
+              {!testrun.opened && (
+                <Button size="sm" color="warning" onClick={onOpened}>
+                  {t('테스트런 오픈')}
+                </Button>
+              )}
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('테스트런 삭제')}
               </Button>
-            )}
-            {!testrun.opened && (
-              <Button size="sm" color="warning" onClick={onOpened}>
-                {t('테스트런 오픈')}
+              <Liner display="inline-block" width="1px" height="10px" margin="0 10px 0 0" />
+              <Button
+                size="sm"
+                color="primary"
+                onClick={() => {
+                  navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
+                }}
+              >
+                {t('편집')}
               </Button>
-            )}
-            <Button size="sm" color="danger" onClick={onDelete}>
-              {t('테스트런 삭제')}
-            </Button>
-            <Liner display="inline-block" width="1px" height="10px" margin="0 10px 0 0" />
-            <Button
-              size="sm"
-              color="primary"
-              onClick={() => {
-                navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
-              }}
-            >
-              {t('편집')}
-            </Button>
-          </div>
-        }
-        onListClick={() => {
-          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
-        }}
-      >
-        {t('테스트런')}
-      </PageTitle>
-      <PageContent>
-        <Block>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
-            <Text>{project?.name}</Text>
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('이름')}</Label>
-            <Text>{testrun?.name}</Text>
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
-            {testrun?.profileIds?.length > 0 && (
-              <div className="profile-list">
-                <ul>
-                  {testrun?.profileIds?.map((profileId, inx) => {
+            </div>
+          }
+          onListClick={() => {
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+          }}
+        >
+          {t('테스트런')}
+        </PageTitle>
+        <PageContent>
+          <Block>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
+              <Text>{project?.name}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('이름')}</Label>
+              <Text>{testrun?.name}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('프로파일')}</Label>
+              {testrun?.profileIds?.length > 0 && (
+                <div className="profile-list">
+                  <ul>
+                    {testrun?.profileIds?.map((profileId, inx) => {
+                      return (
+                        <li key={profileId}>
+                          <div>
+                            <span className="badge">
+                              <span>{inx + 1}</span>
+                            </span>
+                          </div>
+                          <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('설명')}</Label>
+              <Text>{testrun?.description}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('테스트 기간')}</Label>
+              <Text>
+                <div className="testrun-range">
+                  <div>{dateUtil.getDateString(testrun.startDateTime)}</div>
+                  <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
+                  <div>{dateUtil.getDateString(testrun.endDateTime)}</div>
+                </div>
+              </Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
+                {t('자동 종료')}
+              </Label>
+              <Text>{testrun.deadlineClose ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
+              {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
+              {testrun.testrunUsers?.length > 0 && (
+                <Text>
+                  {testrun.testrunUsers?.map(d => {
                     return (
-                      <li key={profileId}>
-                        <div>
-                          <span className="badge">
-                            <span>{inx + 1}</span>
-                          </span>
-                        </div>
-                        <div>{spaceProfileList.find(d => d.id === profileId)?.name}</div>
-                      </li>
+                      <Tag className="tester" size="sm" key={d.userId} color="white" border>
+                        {d.name}
+                      </Tag>
                     );
                   })}
-                </ul>
-              </div>
-            )}
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('설명')}</Label>
-            <Text>{testrun?.description}</Text>
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('테스트 기간')}</Label>
-            <Text>
-              <div className="testrun-range">
-                <div>{dateUtil.getDateString(testrun.startDateTime)}</div>
-                <Liner display="inline-block" width="10px" height="1px" margin="0 0.5rem" />
-                <div>{dateUtil.getDateString(testrun.endDateTime)}</div>
-              </div>
-            </Text>
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
-              {t('자동 종료')}
-            </Label>
-            <Text>{testrun.deadlineClose ? 'Y' : 'N'}</Text>
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
-            {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
-            {testrun.testrunUsers?.length > 0 && (
-              <Text>
-                {testrun.testrunUsers?.map(d => {
-                  return (
-                    <Tag className="tester" size="sm" key={d.userId} color="white" border>
-                      {d.name}
-                    </Tag>
-                  );
-                })}
-              </Text>
-            )}
-          </BlockRow>
-          <BlockRow>
-            <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
-          </BlockRow>
-          <BlockRow className="testrun-testcases-content">
-            {testrun.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
-            {testrun.testcaseGroups?.length > 0 && (
-              <Table cols={['1px', '100%']} border>
+                </Text>
+              )}
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
+            </BlockRow>
+            <BlockRow className="testrun-testcases-content">
+              {testrun.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
+              {testrun.testcaseGroups?.length > 0 && (
+                <Table cols={['1px', '100%']} border>
+                  <THead>
+                    <Tr>
+                      <Th align="left">{t('테스트케이스 그룹')}</Th>
+                      <Th align="left">{t('테스트케이스')}</Th>
+                      <Th align="left">{t('테스터')}</Th>
+                      <Th align="center">{t('테스트 결과')}</Th>
+                    </Tr>
+                  </THead>
+                  <Tbody>
+                    {testrun.testcaseGroups?.map(d => {
+                      if (d.testcases?.length > 0) {
+                        return (
+                          <React.Fragment key={d.id}>
+                            {d.testcases?.map((testcase, inx) => {
+                              const tester = project.users.find(user => {
+                                return user.userId === testcase.testerId;
+                              });
+
+                              return (
+                                <Tr key={testcase.id}>
+                                  {inx === 0 && (
+                                    <Td rowSpan={d.testcases.length} className="group-info">
+                                      <div className="seq-name">
+                                        <div>
+                                          <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                            {d.seqId}
+                                          </SeqId>
+                                        </div>
+                                        <div>{d.name}</div>
+                                      </div>
+                                    </Td>
+                                  )}
+                                  <Td>
+                                    <div className="seq-name">
+                                      <div>
+                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
+                                          {testcase.seqId}
+                                        </SeqId>
+                                      </div>
+                                      <div>{testcase.name}</div>
+                                    </div>
+                                  </Td>
+                                  <Td align="left">{tester?.name}</Td>
+                                  <Td align="center">
+                                    <Tag size="xs" className={testcase.testResult}>
+                                      {TESTRUN_RESULT_CODE[testcase.testResult]}
+                                    </Tag>
+                                  </Td>
+                                </Tr>
+                              );
+                            })}
+                          </React.Fragment>
+                        );
+                      }
+
+                      return (
+                        <Tr key={d.seqId}>
+                          <Td className="group-info">
+                            <div className="seq-name">
+                              <div>
+                                <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
+                                  {d.seqId}
+                                </SeqId>
+                              </div>
+                              <div>{d.name}</div>
+                            </div>
+                          </Td>
+                          <Td />
+                          <Td />
+                          <Td />
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              )}
+            </BlockRow>
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('테스트런 API 훅')}
+          </Title>
+          <Block>
+            <BlockRow className="testrun-hooks-content">
+              <Table cols={['200px', '100px', '100px', '', '100px']} border>
                 <THead>
                   <Tr>
-                    <Th align="left">{t('테스트케이스 그룹')}</Th>
-                    <Th align="left">{t('테스트케이스')}</Th>
-                    <Th align="left">{t('테스터')}</Th>
-                    <Th align="center">{t('테스트 결과')}</Th>
+                    <Th align="left">{t('이름')}</Th>
+                    <Th align="center">{t('실행 시기')}</Th>
+                    <Th align="center">{t('메소드')}</Th>
+                    <Th align="left">{t('URL')}</Th>
+                    <Th align="left">{t('실행 결과')}</Th>
                   </Tr>
                 </THead>
                 <Tbody>
-                  {testrun.testcaseGroups?.map(d => {
-                    if (d.testcases?.length > 0) {
-                      return (
-                        <React.Fragment key={d.id}>
-                          {d.testcases?.map((testcase, inx) => {
-                            const tester = project.users.find(user => {
-                              return user.userId === testcase.testerId;
-                            });
-
-                            return (
-                              <Tr key={testcase.id}>
-                                {inx === 0 && (
-                                  <Td rowSpan={d.testcases.length} className="group-info">
-                                    <div className="seq-name">
-                                      <div>
-                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                                          {d.seqId}
-                                        </SeqId>
-                                      </div>
-                                      <div>{d.name}</div>
-                                    </div>
-                                  </Td>
-                                )}
-                                <Td>
-                                  <div className="seq-name">
-                                    <div>
-                                      <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
-                                        {testcase.seqId}
-                                      </SeqId>
-                                    </div>
-                                    <div>{testcase.name}</div>
-                                  </div>
-                                </Td>
-                                <Td align="left">{tester?.name}</Td>
-                                <Td align="center">
-                                  <Tag size="xs" className={testcase.testResult}>
-                                    {TESTRUN_RESULT_CODE[testcase.testResult]}
-                                  </Tag>
-                                </Td>
-                              </Tr>
-                            );
-                          })}
-                        </React.Fragment>
-                      );
-                    }
-
+                  {testrun.hooks?.map((hook, inx) => {
                     return (
-                      <Tr key={d.seqId}>
-                        <Td className="group-info">
-                          <div className="seq-name">
-                            <div>
-                              <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                                {d.seqId}
-                              </SeqId>
-                            </div>
-                            <div>{d.name}</div>
-                          </div>
+                      <Tr key={inx}>
+                        <Td>{hook.name}</Td>
+                        <Td align="center">{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
+                        <Td align="center">{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
+                        <Td>{hook.url}</Td>
+                        <Td>
+                          {hook.result && (
+                            <Link
+                              className="result-link"
+                              to="/"
+                              onClick={e => {
+                                e.preventDefault();
+                                setTestrunHookInfoPopup({ opened: true, data: hook });
+                              }}
+                            >
+                              {hook.result}
+                            </Link>
+                          )}
                         </Td>
-                        <Td />
-                        <Td />
-                        <Td />
                       </Tr>
                     );
                   })}
                 </Tbody>
               </Table>
-            )}
-          </BlockRow>
-        </Block>
-        <Title border={false} marginBottom={false}>
-          {t('테스트런 API 훅')}
-        </Title>
-        <Block>
-          <BlockRow className="testrun-hooks-content">
-            <Table cols={['200px', '100px', '100px', '', '100px']} border>
-              <THead>
-                <Tr>
-                  <Th align="left">{t('이름')}</Th>
-                  <Th align="left">{t('실행 시기')}</Th>
-                  <Th align="left">{t('메소드')}</Th>
-                  <Th align="left">{t('URL')}</Th>
-                  <Th align="left">{t('실행 결과')}</Th>
-                </Tr>
-              </THead>
-              <Tbody>
-                {testrun.hooks?.map((hook, inx) => {
-                  return (
-                    <Tr key={inx}>
-                      <Td>{hook.name}</Td>
-                      <Td>{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
-                      <Td>{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
-                      <Td>{hook.url}</Td>
-                      <Td>{hook.result}</Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </BlockRow>
-        </Block>
-        <PageButtons
-          onBack={() => {
-            navigate(-1);
+            </BlockRow>
+          </Block>
+          <PageButtons
+            onBack={() => {
+              navigate(-1);
+            }}
+            onEdit={() => {
+              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
+            }}
+            onCancelIcon=""
+          />
+        </PageContent>
+      </Page>
+      {testrunHookInfoPopup.opened && (
+        <TestrunHookInfoPopup
+          setOpened={value => {
+            setTestrunHookInfoPopup({ opened: value });
           }}
-          onEdit={() => {
-            navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
-          }}
-          onCancelIcon=""
+          data={testrunHookInfoPopup.data}
         />
-      </PageContent>
-    </Page>
+      )}
+    </>
   );
 }
 

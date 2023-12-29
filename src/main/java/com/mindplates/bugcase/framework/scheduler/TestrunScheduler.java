@@ -416,8 +416,8 @@ public class TestrunScheduler {
 
             if (now.isAfter(startDateTime)) {
                 TestrunDTO testrun = getTestrun(testrunReservation, now);
-                Long testrunId = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
-                testrunService.updateTestrunReserveExpired(testrunReservationId, true, testrunId);
+                TestrunDTO result = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
+                testrunService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
             }
         }));
 

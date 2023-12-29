@@ -1,22 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Selector, Table, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Selector, Table, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { HTTP_METHOD, TESTRUN_HOOK_TIMINGS } from '@/constants/constants';
-import './TestrunHookPopup.scss';
+import ReactJson from 'react-json-view';
+import TestrunService from '@/services/TestrunService';
+import './TestrunHookEditPopup.scss';
 
 const labelMinWidth = '100px';
 
-function TestrunHookPopup({ setOpened, onApply, data }) {
+function TestrunHookEditPopup({ spaceCode, projectId, setOpened, onApply, data }) {
   const { t } = useTranslation();
 
   const [apiInfo, setApiInfo] = useState({
-    name: '',
+    name: '테스트',
     timing: 'AFTER_START',
     method: 'POST',
-    url: '',
-    headers: [],
+    url: 'https://testlab-api.onkakao.net/exec/test-suites/MGJhMzc0YzQtMmRlNS00Yzk0LThlNmMtZDQ5M2ZjZDNmODkzLTE3MDI5NjA5NjU3MzI=',
+    headers: [
+      {
+        key: 'Accept',
+        value: 'application/json',
+      },
+      {
+        key: 'Content-Type',
+        value: 'application/json',
+      },
+    ],
   });
+
+  const [executeResult, setExecuteResult] = useState(null);
 
   useEffect(() => {
     if (!data) return;
@@ -32,6 +45,17 @@ function TestrunHookPopup({ setOpened, onApply, data }) {
     if (setOpened) {
       setOpened(false);
     }
+  };
+
+  const executeHook = () => {
+    TestrunService.executeTestrunHook(spaceCode, projectId, apiInfo, result => {
+      try {
+        const json = JSON.parse(result.message);
+        setExecuteResult({ ...result, json });
+      } catch (e) {
+        setExecuteResult(result);
+      }
+    });
   };
 
   return (
@@ -114,7 +138,7 @@ function TestrunHookPopup({ setOpened, onApply, data }) {
           >
             {t('헤더')}
           </Title>
-          <Block>
+          <Block className="header-content">
             <Table cols={['200px', '', '70px']} border>
               <THead>
                 <Tr>
@@ -130,7 +154,7 @@ function TestrunHookPopup({ setOpened, onApply, data }) {
               <Tbody>
                 {apiInfo.headers?.length < 1 && (
                   <Tr>
-                    <Td align="center" colSpan={2}>
+                    <Td align="center" colSpan={3}>
                       {t('헤더 정보가 없습니다.')}
                     </Td>
                   </Tr>
@@ -184,6 +208,41 @@ function TestrunHookPopup({ setOpened, onApply, data }) {
               </Tbody>
             </Table>
           </Block>
+          <Title
+            border={false}
+            marginBottom={false}
+            control={
+              <Button outline onClick={executeHook}>
+                {t('실행 테스트')}
+              </Button>
+            }
+          >
+            {t('실행 테스트')}
+          </Title>
+          <Block>
+            {!executeResult && (
+              <EmptyContent border fill minHeight="50px">
+                {t('실행 정보가 없습니다.')}
+              </EmptyContent>
+            )}
+            {executeResult && (
+              <>
+                <BlockRow>
+                  <Label minWidth={labelMinWidth}>{t('실행 결과')}</Label>
+                  <Text>{executeResult?.result}</Text>
+                </BlockRow>
+                <BlockRow>
+                  <Label verticalAlign="baseline" minWidth={labelMinWidth}>
+                    {t('메세지')}
+                  </Label>
+                  <Text>
+                    {executeResult?.json && <ReactJson src={executeResult?.json} />}
+                    {!executeResult?.json && <div className="message">{executeResult?.message}</div>}
+                  </Text>
+                </BlockRow>
+              </>
+            )}
+          </Block>
         </ModalBody>
         <ModalFooter>
           <Button outline onClick={() => setOpened(false)}>
@@ -198,11 +257,13 @@ function TestrunHookPopup({ setOpened, onApply, data }) {
   );
 }
 
-TestrunHookPopup.defaultProps = {
+TestrunHookEditPopup.defaultProps = {
   data: null,
 };
 
-TestrunHookPopup.propTypes = {
+TestrunHookEditPopup.propTypes = {
+  spaceCode: PropTypes.string.isRequired,
+  projectId: PropTypes.string.isRequired,
   setOpened: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired,
   data: PropTypes.shape({
@@ -211,4 +272,4 @@ TestrunHookPopup.propTypes = {
   }),
 };
 
-export default TestrunHookPopup;
+export default TestrunHookEditPopup;

@@ -1,0 +1,16 @@
+.testrun-hook-info-popup-wrapper {
+  .key,
+  .value {
+    padding-right: 0;
+  }
+
+  .message {
+    flex-grow: 1;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .header-content {
+    margin-bottom: 24px;
+  }
+}

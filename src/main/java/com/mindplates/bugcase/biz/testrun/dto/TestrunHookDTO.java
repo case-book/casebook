@@ -3,12 +3,15 @@ package com.mindplates.bugcase.biz.testrun.dto;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.util.HttpRequestUtil;
+import com.mindplates.bugcase.common.vo.TestrunHookResult;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpMethod;
 
 @Builder
 @NoArgsConstructor
@@ -16,19 +19,21 @@ import lombok.NoArgsConstructor;
 @Data
 public class TestrunHookDTO extends CommonDTO {
 
+
     private Long id;
     private TestrunHookTiming timing;
     private String name;
     private String url;
     private String method;
-    private List<Map<String, Object>> headers;
-    private List<Map<String, Object>> bodies;
+    private List<Map<String, String>> headers;
+    private List<Map<String, String>> bodies;
     private TestrunDTO testrun;
     private TestrunReservationDTO testrunReservation;
     private TestrunIterationDTO testrunIteration;
     private Integer retryCount;
     private String result;
     private String message;
+
 
     public TestrunHookDTO(TestrunHook testrunHook) {
         this.id = testrunHook.getId();
@@ -53,6 +58,15 @@ public class TestrunHookDTO extends CommonDTO {
         this.retryCount = testrunHook.getRetryCount();
         this.result = testrunHook.getResult();
         this.message = testrunHook.getMessage();
+    }
+
+    public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
+        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
+        this.result = Integer.toString(testrunHookResult.getCode().value());
+        this.message = testrunHookResult.getMessage();
+
+        return testrunHookResult;
+
 
     }
 }
