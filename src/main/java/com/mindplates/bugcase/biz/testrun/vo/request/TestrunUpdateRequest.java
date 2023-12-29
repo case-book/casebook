@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
@@ -34,6 +35,7 @@ public class TestrunUpdateRequest {
     private int durationHours;
     private boolean deadlineClose;
     private List<Long> profileIds;
+    private List<TestrunHookRequest> hooks;
 
     public TestrunDTO buildEntity() {
 
@@ -51,6 +53,12 @@ public class TestrunUpdateRequest {
             .durationHours(durationHours)
             .deadlineClose(deadlineClose)
             .build();
+
+        testrun.setHooks(hooks.stream().map((testrunHookRequest -> {
+            TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+            testrunHookDTO.setTestrun(testrun);
+            return testrunHookDTO;
+        })).collect(Collectors.toList()));
 
         if (profileIds != null) {
             AtomicInteger index = new AtomicInteger();

@@ -126,6 +126,10 @@ public class Testrun extends CommonEntity {
     @OrderBy("itemOrder ASC")
     private List<TestrunProfile> profiles;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrun")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunHook> hooks;
+
     public void updateInfo(Testrun testrun) {
         this.name = (testrun.getName());
         this.description = (testrun.getDescription());
@@ -140,6 +144,19 @@ public class Testrun extends CommonEntity {
         this.deadlineClose = (testrun.getDeadlineClose());
         this.profiles.clear();
         this.profiles.addAll(testrun.getProfiles());
+        this.hooks.removeIf(hook -> testrun.hooks.stream().noneMatch(targetHook -> targetHook.getId().equals(hook.getId())));
+        this.hooks.addAll(testrun.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        this.hooks.forEach(hook -> {
+            testrun.getHooks().stream().filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny().ifPresent(targetHook -> {
+                hook.setTiming(targetHook.getTiming());
+                hook.setName(targetHook.getName());
+                hook.setUrl(targetHook.getUrl());
+                hook.setMethod(targetHook.getMethod());
+                hook.setHeaders(targetHook.getHeaders());
+                hook.setBodies(targetHook.getBodies());
+                hook.setRetryCount(targetHook.getRetryCount());
+            });
+        });
     }
 
     public void updateTestrunUsers(List<TestrunUser> testrunUsers) {

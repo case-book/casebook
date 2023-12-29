@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Tr } from '@/components';
+import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { HTTP_METHOD, ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_HOOK_TIMINGS, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import './TestrunInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
@@ -63,6 +63,7 @@ function TestrunInfoPage() {
     })(),
     durationHours: 24,
     profileIds: [],
+    hooks: [],
   });
 
   useEffect(() => {
@@ -344,6 +345,37 @@ function TestrunInfoPage() {
                 </Tbody>
               </Table>
             )}
+          </BlockRow>
+        </Block>
+        <Title border={false} marginBottom={false}>
+          {t('테스트런 API 훅')}
+        </Title>
+        <Block>
+          <BlockRow className="testrun-hooks-content">
+            <Table cols={['200px', '100px', '100px', '', '100px']} border>
+              <THead>
+                <Tr>
+                  <Th align="left">{t('이름')}</Th>
+                  <Th align="left">{t('실행 시기')}</Th>
+                  <Th align="left">{t('메소드')}</Th>
+                  <Th align="left">{t('URL')}</Th>
+                  <Th align="left">{t('실행 결과')}</Th>
+                </Tr>
+              </THead>
+              <Tbody>
+                {testrun.hooks?.map((hook, inx) => {
+                  return (
+                    <Tr key={inx}>
+                      <Td>{hook.name}</Td>
+                      <Td>{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
+                      <Td>{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
+                      <Td>{hook.url}</Td>
+                      <Td>{hook.result}</Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
           </BlockRow>
         </Block>
         <PageButtons

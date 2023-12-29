@@ -14,10 +14,16 @@ import {
   PageButtons,
   PageContent,
   PageTitle,
+  Table,
+  Tbody,
+  Td,
   TestcaseSelectorSummary,
   Text,
   TextArea,
+  Th,
+  THead,
   Title,
+  Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -28,10 +34,10 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup } from '@/assets';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookPopup } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { HTTP_METHOD, MESSAGE_CATEGORY, TESTRUN_HOOK_TIMINGS } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
@@ -57,6 +63,10 @@ function TestrunEditPage({ type }) {
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [profileSelectPopupOpened, setProfileSelectPopupOpened] = useState(false);
+
+  const [apiPopupInfo, setApiPopupInfo] = useState({
+    opened: false,
+  });
 
   const [project, setProject] = useState(null);
 
@@ -104,6 +114,7 @@ function TestrunEditPage({ type }) {
     durationHours: 24,
     deadlineClose: true,
     profileIds: [],
+    hooks: [],
   });
 
   const selectedTestcaseGroupSummary = useMemo(() => {
@@ -527,6 +538,80 @@ function TestrunEditPage({ type }) {
                 )}
               </BlockRow>
             </Block>
+            <Title
+              border={false}
+              marginBottom={false}
+              control={
+                <Button
+                  outline
+                  size="sm"
+                  onClick={() => {
+                    setApiPopupInfo({
+                      opened: true,
+                      index: null,
+                    });
+                  }}
+                >
+                  {t('API 추가')}
+                </Button>
+              }
+            >
+              {t('테스트런 API 훅')}
+            </Title>
+            <Block>
+              <Table cols={['200px', '100px', '100px', '', '50px']} border>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('이름')}</Th>
+                    <Th align="left">{t('실행 시기')}</Th>
+                    <Th align="left">{t('메소드')}</Th>
+                    <Th align="left">{t('URL')}</Th>
+                    <Th align="center" />
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {testrun.hooks?.map((hook, inx) => {
+                    return (
+                      <Tr key={inx}>
+                        <Td>
+                          <Link
+                            to="/"
+                            onClick={e => {
+                              e.preventDefault();
+                              setApiPopupInfo({
+                                opened: true,
+                                index: inx,
+                                data: hook,
+                              });
+                            }}
+                          >
+                            {hook.name}
+                          </Link>
+                        </Td>
+                        <Td>{TESTRUN_HOOK_TIMINGS.find(d => d.key === hook.timing)?.value || hook.timing}</Td>
+                        <Td>{HTTP_METHOD.find(d => d.key === hook.method)?.value || hook.method}</Td>
+                        <Td>{hook.url}</Td>
+                        <Td align="center">
+                          <Button
+                            outline
+                            size="xs"
+                            color="danger"
+                            onClick={() => {
+                              const nextTestrun = { ...testrun };
+                              const nextHooks = nextTestrun.hooks.slice(0);
+                              nextHooks.splice(inx, 1);
+                              setTestrun({ ...nextTestrun, hooks: nextHooks });
+                            }}
+                          >
+                            {t('삭제')}
+                          </Button>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </Block>
             <PageButtons
               onCancel={() => {
                 navigate(-1);
@@ -567,6 +652,26 @@ function TestrunEditPage({ type }) {
           setOpened={setProfileSelectPopupOpened}
           onApply={profileIds => {
             onChangeTestrun('profileIds', profileIds);
+          }}
+        />
+      )}
+      {apiPopupInfo.opened && (
+        <TestrunHookPopup
+          profileIds={testrun.profileIds}
+          setOpened={value => {
+            setApiPopupInfo({ ...apiPopupInfo, opened: value });
+          }}
+          data={apiPopupInfo.data}
+          onApply={apiInfo => {
+            const nextTestrun = { ...testrun };
+            const nextHooks = nextTestrun.hooks.slice(0);
+            if (apiPopupInfo.index === null) {
+              nextHooks.push(apiInfo);
+              setTestrun({ ...nextTestrun, hooks: nextHooks });
+            } else {
+              nextHooks[apiPopupInfo.index] = apiInfo;
+              setTestrun({ ...nextTestrun, hooks: nextHooks });
+            }
           }}
         />
       )}

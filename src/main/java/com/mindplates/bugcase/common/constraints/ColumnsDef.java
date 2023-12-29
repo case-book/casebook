@@ -16,4 +16,6 @@ public class ColumnsDef {
     public static final int PASSWORD = 100;
     public static final int PATH = 200;
 
+    public static final String LONGTEXT = "longtext";
+
 }

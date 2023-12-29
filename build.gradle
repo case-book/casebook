@@ -43,6 +43,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3'
     implementation 'org.apache.httpcomponents:httpclient'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
+    implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-55', version: '3.7.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'mysql:mysql-connector-java'
