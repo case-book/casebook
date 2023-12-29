@@ -555,6 +555,7 @@ function TestrunEditPage({ type }) {
             <Block>
               <BlockRow className="testrun-hooks-content">
                 <TestrunHookTable
+                  edit
                   hooks={testrun.hooks}
                   onNameClick={(data, index) => {
                     setTestrunHookEditPopupInfo({
@@ -628,7 +629,7 @@ function TestrunEditPage({ type }) {
           data={testrunHookEditPopupInfo.data}
           onApply={apiInfo => {
             const nextTestrun = { ...testrun };
-            const nextHooks = nextTestrun.hooks.slice(0);
+            const nextHooks = (nextTestrun.hooks || []).slice(0);
             if (testrunHookEditPopupInfo.index === null) {
               nextHooks.push(apiInfo);
               setTestrun({ ...nextTestrun, hooks: nextHooks });

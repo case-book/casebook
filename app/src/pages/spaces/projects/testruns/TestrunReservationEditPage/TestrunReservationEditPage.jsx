@@ -513,6 +513,7 @@ function TestrunReservationEditPage({ type }) {
             <Block>
               <BlockRow className="testrun-hooks-content">
                 <TestrunHookTable
+                  edit
                   hooks={testrunReservation.hooks}
                   onNameClick={(data, index) => {
                     setTestrunHookEditPopupInfo({
@@ -585,7 +586,7 @@ function TestrunReservationEditPage({ type }) {
           data={testrunHookEditPopupInfo.data}
           onApply={apiInfo => {
             const nextTestrun = { ...testrunReservation };
-            const nextHooks = nextTestrun.hooks.slice(0);
+            const nextHooks = (nextTestrun.hooks || []).slice(0);
             if (testrunHookEditPopupInfo.index === null) {
               nextHooks.push(apiInfo);
               setTestrunReservation({ ...nextTestrun, hooks: nextHooks });

@@ -42,6 +42,7 @@ import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestca
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
+import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
@@ -142,6 +143,13 @@ public class TestrunController {
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
         createdTestrunData.addData("testrunId", result.getId());
         messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        // 시작 후 훅 호출
+        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
+            testrunService.updateTestrunHook(testrunHook);
+        });
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -262,7 +270,15 @@ public class TestrunController {
     @PutMapping("/{testrunId}/status/closed")
     public ResponseEntity<HttpStatus> updateTestrunClosed(@PathVariable String spaceCode, @PathVariable long projectId,
         @PathVariable long testrunId) {
-        testrunService.updateProjectTestrunStatusClosed(spaceCode, projectId, testrunId);
+        TestrunDTO result = testrunService.updateProjectTestrunStatusClosed(spaceCode, projectId, testrunId);
+
+        // 종료 후 훅 호출
+        result.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
+            testrunService.updateTestrunHook(testrunHook);
+        });
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

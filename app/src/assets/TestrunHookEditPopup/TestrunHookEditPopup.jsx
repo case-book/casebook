@@ -13,20 +13,11 @@ function TestrunHookEditPopup({ spaceCode, projectId, setOpened, onApply, data }
   const { t } = useTranslation();
 
   const [apiInfo, setApiInfo] = useState({
-    name: '테스트',
+    name: '',
     timing: 'AFTER_START',
     method: 'POST',
-    url: 'https://testlab-api.onkakao.net/exec/test-suites/MGJhMzc0YzQtMmRlNS00Yzk0LThlNmMtZDQ5M2ZjZDNmODkzLTE3MDI5NjA5NjU3MzI=',
-    headers: [
-      {
-        key: 'Accept',
-        value: 'application/json',
-      },
-      {
-        key: 'Content-Type',
-        value: 'application/json',
-      },
-    ],
+    url: '',
+    headers: [],
   });
 
   const [executeResult, setExecuteResult] = useState(null);
