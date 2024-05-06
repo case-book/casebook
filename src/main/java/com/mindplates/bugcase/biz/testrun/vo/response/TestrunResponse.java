@@ -39,6 +39,7 @@ public class TestrunResponse {
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Long reserveResultId;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
 
@@ -63,6 +64,7 @@ public class TestrunResponse {
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
         if (testrun.getProfiles() != null && !testrun.getProfiles().isEmpty()) {
             this.profileIds = testrun.getProfiles()
                 .stream()

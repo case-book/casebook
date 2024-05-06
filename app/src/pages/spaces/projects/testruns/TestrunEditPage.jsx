@@ -38,7 +38,7 @@ import './TestrunEditPage.scss';
 import ReleaseService from '@/services/ReleaseService';
 import SpaceProfileService from '@/services/SpaceProfileService';
 
-const labelMinWidth = '120px';
+const labelMinWidth = '160px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
@@ -107,6 +107,7 @@ function TestrunEditPage({ type }) {
     })(),
     durationHours: 24,
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     profileIds: [],
     hooks: [],
   });
@@ -431,6 +432,22 @@ function TestrunEditPage({ type }) {
                     setTestrun({
                       ...testrun,
                       deadlineClose: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                  {t('자동화 테스터 제외')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrun.autoTestcaseNotAssignedTester}
+                  onChange={val =>
+                    setTestrun({
+                      ...testrun,
+                      autoTestcaseNotAssignedTester: val,
                     })
                   }
                 />

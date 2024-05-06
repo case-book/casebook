@@ -210,12 +210,7 @@ function TestRunTestcaseManager({
             {testcaseTemplate?.testcaseTemplateItems
               .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
               .map((testcaseTemplateItem, inx) => {
-                let testcaseItem;
-                if (testcaseTemplateItem.systemLabel) {
-                  testcaseItem = content?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-                } else {
-                  testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
-                }
+                const testcaseItem = testcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
 
                 return (
                   <TestcaseItem

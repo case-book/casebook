@@ -87,6 +87,7 @@ function TestrunIterationEditPage({ type }) {
       return startTime.getTime();
     })(),
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     date: null,
     week: null,
     day: null,
@@ -545,7 +546,6 @@ function TestrunIterationEditPage({ type }) {
                   />
                 </div>
               </BlockRow>
-
               <BlockRow>
                 <Label minWidth={labelMinWidth} tip={t('테스트 종료 기간이 지나면, 모든 테스트가 완료되지 않은 상태라도 테스트를 종료 처리합니다.')}>
                   {t('자동 종료')}
@@ -558,6 +558,22 @@ function TestrunIterationEditPage({ type }) {
                     setTestrunIteration({
                       ...testrunIteration,
                       deadlineClose: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                  {t('자동화 테스터 제외')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrunIteration.autoTestcaseNotAssignedTester}
+                  onChange={val =>
+                    setTestrunIteration({
+                      ...testrunIteration,
+                      autoTestcaseNotAssignedTester: val,
                     })
                   }
                 />

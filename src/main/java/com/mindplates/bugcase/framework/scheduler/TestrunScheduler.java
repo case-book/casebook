@@ -66,6 +66,7 @@ public class TestrunScheduler {
             .startDateTime(testrunReservationDTO.getStartDateTime())
             .endDateTime(testrunReservationDTO.getEndDateTime())
             .deadlineClose(testrunReservationDTO.getDeadlineClose())
+            .autoTestcaseNotAssignedTester(testrunReservationDTO.getAutoTestcaseNotAssignedTester())
             .build();
 
         testrun.setHooks(new ArrayList<>());
@@ -154,6 +155,7 @@ public class TestrunScheduler {
             .startDateTime(startDateTime)
             .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
             .deadlineClose(testrunIterationDTO.getDeadlineClose())
+            .autoTestcaseNotAssignedTester(testrunIterationDTO.getAutoTestcaseNotAssignedTester())
             .build();
 
         testrun.setHooks(new ArrayList<>());
@@ -579,8 +581,7 @@ public class TestrunScheduler {
             // String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
-            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(
-                reserveEndDateTime)) && nowStartTime.equals(startTime)) {
+            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 TestrunDTO result = testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);

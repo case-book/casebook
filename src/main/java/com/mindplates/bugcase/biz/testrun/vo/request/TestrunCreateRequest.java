@@ -34,6 +34,7 @@ public class TestrunCreateRequest {
     private LocalDateTime startTime;
     private int durationHours;
     private boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private List<Long> profileIds;
     private List<TestrunHookRequest> hooks;
 
@@ -52,13 +53,16 @@ public class TestrunCreateRequest {
             .startTime(startTime.toLocalTime())
             .durationHours(durationHours)
             .deadlineClose(deadlineClose)
+            .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
             .build();
 
-        testrun.setHooks(hooks.stream().map((testrunHookRequest -> {
-            TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
-            testrunHookDTO.setTestrun(testrun);
-            return testrunHookDTO;
-        })).collect(Collectors.toList()));
+        if (hooks != null) {
+            testrun.setHooks(hooks.stream().map((testrunHookRequest -> {
+                TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+                testrunHookDTO.setTestrun(testrun);
+                return testrunHookDTO;
+            })).collect(Collectors.toList()));
+        }
 
         if (profileIds != null) {
             AtomicInteger index = new AtomicInteger();

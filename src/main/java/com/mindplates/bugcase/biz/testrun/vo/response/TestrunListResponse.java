@@ -34,6 +34,7 @@ public class TestrunListResponse {
     private Boolean reserveExpired;
     private Long reserveResultId;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
 
     public TestrunListResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -55,6 +56,7 @@ public class TestrunListResponse {
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
     }
 
 

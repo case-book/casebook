@@ -30,6 +30,7 @@ public class TestrunReservationDTO extends CommonDTO {
     private LocalDateTime endDateTime;
     private Boolean expired;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private int testcaseGroupCount;
     private int testcaseCount;
     private TestrunDTO testrun;
@@ -48,6 +49,7 @@ public class TestrunReservationDTO extends CommonDTO {
         this.endDateTime = testrunReservation.getEndDateTime();
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
         this.testcaseGroupCount = Optional.ofNullable(testrunReservation.getTestcaseGroupCount()).orElse(0);
         this.testcaseCount = Optional.ofNullable(testrunReservation.getTestcaseCount()).orElse(0);
         this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();

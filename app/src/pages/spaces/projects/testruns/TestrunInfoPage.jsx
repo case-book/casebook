@@ -259,6 +259,12 @@ function TestrunInfoPage() {
               <Text>{testrun.deadlineClose ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                {t('자동화 테스터 제외')}
+              </Label>
+              <Text>{testrun.autoTestcaseNotAssignedTester ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
               <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
               {testrun.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
               {testrun.testrunUsers?.length > 0 && (

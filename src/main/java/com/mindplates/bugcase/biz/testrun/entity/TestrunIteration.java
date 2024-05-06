@@ -91,6 +91,9 @@ public class TestrunIteration extends CommonEntity {
     @Column(name = "deadline_close")
     private Boolean deadlineClose;
 
+    @Column(name = "auto_testcase_not_assigned_tester")
+    private Boolean autoTestcaseNotAssignedTester;
+
     @Column(name = "start_time")
     private LocalTime startTime;
 
@@ -160,6 +163,7 @@ public class TestrunIteration extends CommonEntity {
         this.excludeHoliday = testrunIteration.getExcludeHoliday();
         this.durationHours = testrunIteration.getDurationHours();
         this.deadlineClose = testrunIteration.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
         this.startTime = testrunIteration.getStartTime();
         this.days = testrunIteration.getDays();
         this.date = testrunIteration.getDate();
@@ -173,7 +177,9 @@ public class TestrunIteration extends CommonEntity {
         this.profiles.clear();
         this.profiles.addAll(testrunIteration.getProfiles());
         this.hooks.removeIf(hook -> testrunIteration.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
-        this.hooks.addAll(testrunIteration.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        if (testrunIteration.hooks != null) {
+            this.hooks.addAll(testrunIteration.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        }
         this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
             testrunIteration.getHooks()
                 .stream()

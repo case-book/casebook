@@ -47,6 +47,7 @@ function TestrunReservationInfoPage() {
     })(),
     expired: false,
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     testcaseGroupCount: 0,
     testcaseCount: 0,
     testrunId: null,
@@ -204,6 +205,12 @@ function TestrunReservationInfoPage() {
                 {t('자동 종료')}
               </Label>
               <Text>{testrunReservation.deadlineClose ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                {t('자동화 테스터 제외')}
+              </Label>
+              <Text>{testrunReservation.autoTestcaseNotAssignedTester ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('테스터')}</Label>

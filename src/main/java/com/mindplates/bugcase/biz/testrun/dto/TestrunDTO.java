@@ -42,6 +42,7 @@ public class TestrunDTO extends CommonDTO {
     private Boolean reserveExpired;
     private Long reserveResultId;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private List<TestrunProfileDTO> profiles;
     private List<TestrunHookDTO> hooks;
 
@@ -75,6 +76,7 @@ public class TestrunDTO extends CommonDTO {
         this.reserveExpired = testrun.getReserveExpired();
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
         this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
         if (testrun.getHooks() != null) {
             this.hooks = testrun.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());

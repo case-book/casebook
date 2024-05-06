@@ -41,6 +41,7 @@ public class TestrunIterationResponse {
     private Integer filteringUserCursor;
     private List<Long> currentFilteringUserIds;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Integer testcaseCount;
@@ -69,6 +70,7 @@ public class TestrunIterationResponse {
         this.filteringUserCursor = testrunIteration.getFilteringUserCursor();
         this.currentFilteringUserIds = testrunIteration.getCurrentFilteringUserIds();
         this.deadlineClose = testrunIteration.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
         this.testcaseCount = testrunIteration.getTestcaseCount();
         this.testrunUserCount = testrunIteration.getTestrunUserCount();
 

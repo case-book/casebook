@@ -7,16 +7,15 @@ import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor
@@ -42,6 +41,7 @@ public class TestrunIterationDTO extends CommonDTO {
     private Integer week;
     private Integer day;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
 
     private TestrunIterationUserFilterTypeCode testrunIterationUserFilterType;
     private TestrunIterationUserFilterSelectRuleCode testrunIterationUserFilterSelectRule;
@@ -80,7 +80,7 @@ public class TestrunIterationDTO extends CommonDTO {
         this.week = testrunIteration.getWeek();
         this.day = testrunIteration.getDay();
         this.deadlineClose = testrunIteration.getDeadlineClose();
-
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
         this.testrunIterationUserFilterType = testrunIteration.getTestrunIterationUserFilterType();
         this.testrunIterationUserFilterSelectRule = testrunIteration.getTestrunIterationUserFilterSelectRule();
         this.filteringUserCount = testrunIteration.getFilteringUserCount();

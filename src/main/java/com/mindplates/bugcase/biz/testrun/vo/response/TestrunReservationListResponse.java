@@ -22,6 +22,7 @@ public class TestrunReservationListResponse {
     private LocalDateTime endDateTime;
     private boolean expired;
     private boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private int testcaseGroupCount;
     private int testcaseCount;
 
@@ -35,6 +36,7 @@ public class TestrunReservationListResponse {
         this.endDateTime = testrunReservation.getEndDateTime();
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
         this.testcaseGroupCount = testrunReservation.getTestcaseGroupCount();
         this.testcaseCount = testrunReservation.getTestcaseCount();
         if (testrunReservation.getTestrun() != null) {

@@ -71,6 +71,7 @@ function TestrunReservationEditPage({ type }) {
     })(),
     expired: false,
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     selectCreatedTestcase: false,
     selectUpdatedTestcase: false,
     profileIds: [],
@@ -356,6 +357,22 @@ function TestrunReservationEditPage({ type }) {
                     setTestrunReservation({
                       ...testrunReservation,
                       deadlineClose: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                  {t('자동화 테스터 제외')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrunReservation.autoTestcaseNotAssignedTester}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      autoTestcaseNotAssignedTester: val,
                     })
                   }
                 />
