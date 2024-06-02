@@ -38,8 +38,6 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
     setOpened(false);
   };
 
-  console.log(messageChannel);
-
   return (
     <Modal
       className="message-channel-edit-popup-wrapper"
@@ -152,7 +150,7 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
                         onClick={() => {
                           setMessageChannel({
                             ...messageChannel,
-                            headers: [...messageChannel.headers, { key: '', value: '' }],
+                            headers: [...messageChannel.headers, { dataKey: '', dataValue: '' }],
                           });
                         }}
                       >
@@ -203,7 +201,7 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
                           onClick={() => {
                             setMessageChannel({
                               ...messageChannel,
-                              payloads: [...messageChannel.payloads, { key: '', value: '' }],
+                              payloads: [...messageChannel.payloads, { dataKey: '', dataValue: '' }],
                             });
                           }}
                         >

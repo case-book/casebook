@@ -6,6 +6,8 @@ import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
@@ -132,10 +134,11 @@ public class SpaceService {
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
 
-        if (updateSpaceInfo.getMessageChannels() != null) {
-            // spaceInfo의 messageChanner에는 존재하지만, updateSpaceInfo에는 없는 경우는 list에서 제거
-            spaceInfo.getMessageChannels().removeIf(
-                (spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream().noneMatch((updateChannel -> updateChannel.getId().equals(spaceMessageChannel.getId())))));
+        if (updateSpaceInfo.getMessageChannels() == null || updateSpaceInfo.getMessageChannels().isEmpty()) {
+            spaceInfo.setMessageChannels(null);
+        } else {
+
+            spaceInfo.getMessageChannels().removeIf((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream().noneMatch((updateChannel -> updateChannel.getId().equals(spaceMessageChannel.getId())))));
 
             updateSpaceInfo.getMessageChannels().forEach((updateChannel -> {
                 if (updateChannel.getId() == null) {
@@ -149,13 +152,39 @@ public class SpaceService {
                         targetChannel.setMessageChannelType(updateChannel.getMessageChannelType());
                         targetChannel.setPayloadType(updateChannel.getPayloadType());
                         targetChannel.setJson(updateChannel.getJson());
-                        targetChannel.setHeaders(updateChannel.getHeaders());
-                        targetChannel.setPayloads(updateChannel.getPayloads());
+
+                        // updateChannel의 header를 id가 존재하는지에 따라 업데이터 및 추가 처리
+                        targetChannel.getHeaders().removeIf((header -> updateChannel.getHeaders().stream().noneMatch((updateHeader -> updateHeader.getId().equals(header.getId())))));
+                        updateChannel.getHeaders().forEach((updateHeader -> {
+                            if (updateHeader.getId() == null) {
+                                targetChannel.getHeaders().add(updateHeader);
+                            } else {
+                                SpaceMessageChannelHeaderDTO targetHeader = targetChannel.getHeaders().stream().filter((header -> header.getId().equals(updateHeader.getId()))).findAny().orElse(null);
+                                if (targetHeader != null) {
+                                    targetHeader.setDataKey(updateHeader.getDataKey());
+                                    targetHeader.setDataKey(updateHeader.getDataValue());
+                                }
+                            }
+                        }));
+
+                        // updateChannel의 payloads를 id가 존재하는지에 따라 업데이터 및 추가 처리
+                        targetChannel.getPayloads().removeIf((payload -> updateChannel.getPayloads().stream().noneMatch((updatePayload -> updatePayload.getId().equals(payload.getId())))));
+                        updateChannel.getPayloads().forEach((updatePayload -> {
+                            if (updatePayload.getId() == null) {
+                                targetChannel.getPayloads().add(updatePayload);
+                            } else {
+                                SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny().orElse(null);
+                                if (targetPayload != null) {
+                                    targetPayload.setDataKey(updatePayload.getDataKey());
+                                    targetPayload.setDataKey(updatePayload.getDataValue());
+                                }
+                            }
+                        }));
+
                     }
                 }
             }));
         }
-
 
         updateSpaceInfo.getUsers().forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {

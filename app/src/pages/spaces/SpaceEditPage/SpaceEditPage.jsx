@@ -118,13 +118,6 @@ function SpaceEditPage({ type }) {
         };
       });
 
-      /*
-      ConfigService.selectMessageTypeList(channels => {
-        console.log(channels);
-        setMessageChannelTypeList(channels);
-      });
-       */
-
       zoneList.sort((a, b) => {
         if (a.zoneId < b.zoneId) {
           return -1;
@@ -153,7 +146,6 @@ function SpaceEditPage({ type }) {
         });
       } else if (spaceCode && isEdit) {
         SpaceService.selectSpaceInfo(spaceCode, info => {
-          console.log(info);
           setSpace({
             ...info,
             timeZone: zoneList.find(d => d.value === info.timeZone),
@@ -186,8 +178,6 @@ function SpaceEditPage({ type }) {
         dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, '스페이스 사용자 오류', '최소한 1명의 스페이스 관리자는 지정되어야 합니다.');
         return;
       }
-
-      console.log(spaceInfo);
 
       SpaceService.updateSpace(spaceInfo, () => {
         navigate(`/spaces/${spaceCode}/info`);
@@ -685,18 +675,20 @@ function SpaceEditPage({ type }) {
           }}
           messageChannelTypeList={['SLACK', 'WEBHOOK']}
           onApply={messageChannelInfo => {
-            console.log(messageChannelInfo);
             const nextMessageChannels = space.messageChannels.slice(0);
             if (messageChannelInfo.index === null) {
               nextMessageChannels.push(messageChannelInfo);
             } else {
               const nextMessageChannel = nextMessageChannels[messageChannelInfo.index];
               nextMessageChannel.id = messageChannelInfo.id;
+              nextMessageChannel.messageChannelType = messageChannelInfo.messageChannelType;
               nextMessageChannel.name = messageChannelInfo.name;
               nextMessageChannel.url = messageChannelInfo.url;
               nextMessageChannel.httpMethod = messageChannelInfo.httpMethod;
-              nextMessageChannel.messageChannelType = messageChannelInfo.messageChannelType;
-              nextMessageChannel.template = messageChannelInfo.template;
+              nextMessageChannel.payloadType = messageChannelInfo.payloadType;
+              nextMessageChannel.headers = messageChannelInfo.headers;
+              nextMessageChannel.payloads = messageChannelInfo.payloads;
+              nextMessageChannel.json = messageChannelInfo.json;
             }
 
             setSpace({

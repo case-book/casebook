@@ -23,9 +23,24 @@
   .holiday-list-content {
     .date-condition {
       @include monospace;
-
     }
+  }
 
+  .message-channels {
+    list-style: disc;
+    padding: 0;
+    margin: 0;
+    > li {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      > div {
+        align-self: center;
+      }
+    }
   }
 
   table.applicant-list {
@@ -108,7 +123,7 @@
         &.REQUEST,
         &.REQUEST_AGAIN {
           > div {
-            background-color: var(--warning-color);;
+            background-color: var(--warning-color);
             color: var(--primary-text-color);
           }
         }
@@ -122,7 +137,7 @@
 
         &.REJECTED {
           > div {
-            background-color: var(--danger-color);;
+            background-color: var(--danger-color);
             color: var(--primary-text-color);
           }
         }
