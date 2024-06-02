@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
@@ -130,6 +131,31 @@ public class SpaceService {
         spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
+
+        if (updateSpaceInfo.getMessageChannels() != null) {
+            // spaceInfo의 messageChanner에는 존재하지만, updateSpaceInfo에는 없는 경우는 list에서 제거
+            spaceInfo.getMessageChannels().removeIf(
+                (spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream().noneMatch((updateChannel -> updateChannel.getId().equals(spaceMessageChannel.getId())))));
+
+            updateSpaceInfo.getMessageChannels().forEach((updateChannel -> {
+                if (updateChannel.getId() == null) {
+                    spaceInfo.getMessageChannels().add(updateChannel);
+                } else {
+                    SpaceMessageChannelDTO targetChannel = spaceInfo.getMessageChannels().stream().filter((channel -> channel.getId().equals(updateChannel.getId()))).findAny().orElse(null);
+                    if (targetChannel != null) {
+                        targetChannel.setName(updateChannel.getName());
+                        targetChannel.setUrl(updateChannel.getUrl());
+                        targetChannel.setHttpMethod(updateChannel.getHttpMethod());
+                        targetChannel.setMessageChannelType(updateChannel.getMessageChannelType());
+                        targetChannel.setPayloadType(updateChannel.getPayloadType());
+                        targetChannel.setJson(updateChannel.getJson());
+                        targetChannel.setHeaders(updateChannel.getHeaders());
+                        targetChannel.setPayloads(updateChannel.getPayloads());
+                    }
+                }
+            }));
+        }
+
 
         updateSpaceInfo.getUsers().forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {

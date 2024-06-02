@@ -236,7 +236,7 @@ function SpaceContent({ space, onRefresh }) {
               {t('스페이스 참여 요청')}
             </Title>
             <Block>
-              {applicants?.length < 1 && (
+              {(!applicants || applicants?.length < 1) && (
                 <EmptyContent className="empty-content">
                   <div>{t('참여 요청이 없습니다.')}</div>
                 </EmptyContent>

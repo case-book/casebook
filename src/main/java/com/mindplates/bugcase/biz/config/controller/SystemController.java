@@ -9,25 +9,31 @@ import com.mindplates.bugcase.biz.config.vo.response.TimeZoneResponse;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateDataResponse;
+import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.service.SlackService;
-import com.mindplates.bugcase.common.util.SessionUtil;
-import com.mindplates.bugcase.common.vo.SecurityUser;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.ZoneId;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.time.ZoneId;
-import java.time.format.TextStyle;
-import java.util.*;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -54,11 +60,9 @@ public class SystemController {
     @Operation(description = "타임존 목록 조회")
     public List<TimeZoneResponse> selectTimeZoneList(@RequestParam(value = "language") String language) {
 
-
         Locale locale = new Locale(language);
         Set<String> zoneIds = ZoneId.getAvailableZoneIds();
         List<TimeZoneResponse> timezones = new ArrayList<>();
-
 
         for (String id : zoneIds) {
             ZoneId zoneId = ZoneId.of(id);
@@ -71,7 +75,8 @@ public class SystemController {
     @GetMapping("/testcase/configs")
     @Operation(summary = "테스트케이스 마스터 데이터 조회")
     public TestcaseTemplateDataResponse selectTestcaseDataInfo() {
-        return new TestcaseTemplateDataResponse(Arrays.stream(TestcaseItemType.values()).map((testcaseItemType -> testcaseItemType.toString())).collect(Collectors.toList()), Arrays.stream(TestcaseItemCategory.values()).map((testcaseItemCategory -> testcaseItemCategory.toString())).collect(Collectors.toList()));
+        return new TestcaseTemplateDataResponse(Arrays.stream(TestcaseItemType.values()).map((testcaseItemType -> testcaseItemType.toString())).collect(Collectors.toList()),
+            Arrays.stream(TestcaseItemCategory.values()).map((testcaseItemCategory -> testcaseItemCategory.toString())).collect(Collectors.toList()));
     }
 
     @PostMapping("/setup")
@@ -120,6 +125,12 @@ public class SystemController {
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @GetMapping("/channels/types")
+    public List<MessageChannelTypeCode> getChannelTypeCodeList() {
+        return Arrays.asList(MessageChannelTypeCode.values());
 
     }
 

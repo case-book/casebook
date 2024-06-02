@@ -601,6 +601,12 @@ const HTTP_METHOD = [
   { key: 'DEL', value: 'DEL' },
 ];
 
+const CHANNEL_TYPE_CODE = {
+  SLACK: i18n.t('슬랙'),
+  WATCH_CENTER: i18n.t('와치센터'),
+  WEBHOOK: i18n.t('웹훅'),
+};
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -633,4 +639,5 @@ export {
   TESTER_CHANGE_TARGETS,
   TESTRUN_HOOK_TIMINGS,
   HTTP_METHOD,
+  CHANNEL_TYPE_CODE,
 };

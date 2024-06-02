@@ -27,6 +27,7 @@ function SpaceInfoPage() {
       SpaceService.selectSpaceInfo(
         spaceCode,
         info => {
+          console.log(info);
           setAccessible(true);
           setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone)?.label });
         },

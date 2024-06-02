@@ -1,0 +1,38 @@
+.message-channel-edit-popup-wrapper {
+  .modal-body {
+    padding: 1.5rem 1rem 0 1rem !important;
+    min-height: 340px;
+  }
+
+  .modal-footer {
+    padding: 1.5rem !important;
+  }
+  .date-row {
+    > div {
+      padding-bottom: 0;
+    }
+  }
+  .description {
+    margin-left: 120px;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .condition-row {
+    .selector {
+      margin-right: 0.5rem;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .payload {
+    flex-grow: 1;
+
+    .add-button {
+      text-align: right;
+    }
+  }
+}

@@ -79,4 +79,15 @@ ConfigService.selectTimeZoneList = (language, successHandler, failHandler) => {
   );
 };
 
+ConfigService.selectMessageTypeList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/channels',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

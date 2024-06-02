@@ -1,5 +1,5 @@
 import SpaceListPage from '@/pages/spaces/SpaceListPage/SpaceListPage';
-import SpaceEditPage from '@/pages/spaces/SpaceEditPage';
+import SpaceEditPage from '@/pages/spaces/SpaceEditPage/SpaceEditPage';
 import SpaceInfoPage from '@/pages/spaces/SpaceInfoPage/SpaceInfoPage';
 import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVariableEditPage';
 
