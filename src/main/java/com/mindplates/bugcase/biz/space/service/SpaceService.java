@@ -135,7 +135,9 @@ public class SpaceService {
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
 
         if (updateSpaceInfo.getMessageChannels() == null || updateSpaceInfo.getMessageChannels().isEmpty()) {
-            spaceInfo.setMessageChannels(null);
+            if (!spaceInfo.getMessageChannels().isEmpty()) {
+                spaceInfo.getMessageChannels().clear();
+            }
         } else {
 
             spaceInfo.getMessageChannels().removeIf((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream().noneMatch((updateChannel -> updateChannel.getId().equals(spaceMessageChannel.getId())))));

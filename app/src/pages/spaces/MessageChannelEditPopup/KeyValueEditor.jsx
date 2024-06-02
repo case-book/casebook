@@ -24,7 +24,7 @@ function KeyValueEditor({ list, onChange }) {
       <ul>
         {list.map((d, index) => {
           return (
-            <li key={d.index}>
+            <li key={index}>
               <div className="label">키</div>
               <div>
                 <Input
