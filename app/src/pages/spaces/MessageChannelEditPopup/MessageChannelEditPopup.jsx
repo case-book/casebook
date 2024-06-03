@@ -3,8 +3,10 @@ import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFoo
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './MessageChannelEditPopup.scss';
-import { CHANNEL_TYPE_CODE } from '@/constants/constants';
+import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import KeyValueEditor from '@/pages/spaces/MessageChannelEditPopup/KeyValueEditor';
+import dialogUtil from '@/utils/dialogUtil';
+import ConfigService from '@/services/ConfigService';
 
 const labelMinWidth = '100px';
 
@@ -55,25 +57,27 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
           <Block className="block">
             <BlockRow>
               <Label minWidth={labelMinWidth}>{t('채널 타입')}</Label>
-              {messageChannelTypeList.map(channelType => {
-                return (
-                  <Radio
-                    key={channelType}
-                    type="inline"
-                    value={channelType}
-                    checked={messageChannel.messageChannelType === channelType}
-                    onChange={val => {
-                      if (messageChannel.messageChannelType !== val) {
-                        setMessageChannel({
-                          ...messageChannel,
-                          messageChannelType: val,
-                        });
-                      }
-                    }}
-                    label={CHANNEL_TYPE_CODE[channelType]}
-                  />
-                );
-              })}
+              <div>
+                {messageChannelTypeList.map(channelType => {
+                  return (
+                    <Radio
+                      key={channelType}
+                      type="inline"
+                      value={channelType}
+                      checked={messageChannel.messageChannelType === channelType}
+                      onChange={val => {
+                        if (messageChannel.messageChannelType !== val) {
+                          setMessageChannel({
+                            ...messageChannel,
+                            messageChannelType: val,
+                          });
+                        }
+                      }}
+                      label={CHANNEL_TYPE_CODE[channelType]}
+                    />
+                  );
+                })}
+              </div>
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
@@ -113,25 +117,27 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
               <>
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('메소드')}</Label>
-                  {['POST', 'PUT', 'GET', 'DELETE'].map(httpMethod => {
-                    return (
-                      <Radio
-                        key={httpMethod}
-                        type="inline"
-                        value={httpMethod}
-                        checked={messageChannel.httpMethod === httpMethod}
-                        onChange={val => {
-                          if (messageChannel.httpMethod !== val) {
-                            setMessageChannel({
-                              ...messageChannel,
-                              httpMethod: val,
-                            });
-                          }
-                        }}
-                        label={httpMethod}
-                      />
-                    );
-                  })}
+                  <div>
+                    {['POST', 'PUT', 'GET', 'DELETE'].map(httpMethod => {
+                      return (
+                        <Radio
+                          key={httpMethod}
+                          type="inline"
+                          value={httpMethod}
+                          checked={messageChannel.httpMethod === httpMethod}
+                          onChange={val => {
+                            if (messageChannel.httpMethod !== val) {
+                              setMessageChannel({
+                                ...messageChannel,
+                                httpMethod: val,
+                              });
+                            }
+                          }}
+                          label={httpMethod}
+                        />
+                      );
+                    })}
+                  </div>
                 </BlockRow>
                 <BlockRow>
                   <Label minWidth={labelMinWidth}>{t('헤더')}</Label>
@@ -214,14 +220,43 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
                 {messageChannel.payloadType === 'JSON' && (
                   <BlockRow>
                     <Label minWidth={labelMinWidth}>{t('메세지')}</Label>
-                    <TextArea />
+                    <TextArea
+                      placeholder="JSON 형식의 메세지 템플릿을 입력해주세요. 메세지는 {{message}}로 입력해주세요."
+                      value={messageChannel.json || ''}
+                      rows={4}
+                      onChange={val => {
+                        setMessageChannel({
+                          ...messageChannel,
+                          json: val,
+                        });
+                      }}
+                    />
                   </BlockRow>
                 )}
               </>
             )}
             <BlockRow>
               <Label minWidth={labelMinWidth} />
-              <Button onClick={() => {}}>{t('발송 테스트')}</Button>
+              <Button
+                onClick={() => {
+                  if (!messageChannel.url) {
+                    dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('URL 없음'), t('슬랙 URL을 입력해주세요.'));
+                    return;
+                  }
+
+                  if (messageChannel.messageChannelType === 'SLACK') {
+                    ConfigService.sendTestMessageToSlack(messageChannel.url, () => {
+                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 URL로 슬랙 메세지가 발송되었습니다.'));
+                    });
+                  } else {
+                    ConfigService.sendTestMessageByWebhook(messageChannel, () => {
+                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 웹훅으로 메세지가 발송되었습니다.'));
+                    });
+                  }
+                }}
+              >
+                {t('발송 테스트')}
+              </Button>
             </BlockRow>
           </Block>
         </ModalBody>

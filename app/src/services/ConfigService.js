@@ -46,6 +46,17 @@ ConfigService.sendTestMessageToSlack = (slackUrl, successHandler, failHandler) =
   );
 };
 
+ConfigService.sendTestMessageByWebhook = (messageChannel, successHandler, failHandler) => {
+  return request.post(
+    '/api/configs/systems/webhook',
+    messageChannel,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 ConfigService.createArithmeticException = (successHandler, failHandler) => {
   return request.get(
     '/api/configs/systems/errors/arithmetic',

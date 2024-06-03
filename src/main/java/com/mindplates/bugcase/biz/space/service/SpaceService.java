@@ -164,7 +164,7 @@ public class SpaceService {
                                 SpaceMessageChannelHeaderDTO targetHeader = targetChannel.getHeaders().stream().filter((header -> header.getId().equals(updateHeader.getId()))).findAny().orElse(null);
                                 if (targetHeader != null) {
                                     targetHeader.setDataKey(updateHeader.getDataKey());
-                                    targetHeader.setDataKey(updateHeader.getDataValue());
+                                    targetHeader.setDataValue(updateHeader.getDataValue());
                                 }
                             }
                         }));
@@ -178,7 +178,7 @@ public class SpaceService {
                                 SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny().orElse(null);
                                 if (targetPayload != null) {
                                     targetPayload.setDataKey(updatePayload.getDataKey());
-                                    targetPayload.setDataKey(updatePayload.getDataValue());
+                                    targetPayload.setDataValue(updatePayload.getDataValue());
                                 }
                             }
                         }));
