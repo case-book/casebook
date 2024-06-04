@@ -673,7 +673,7 @@ function SpaceEditPage({ type }) {
               isOpened: false,
             });
           }}
-          messageChannelTypeList={['SLACK', 'WEBHOOK']}
+          messageChannelTypeList={['WEBHOOK', 'SLACK']}
           onApply={messageChannelInfo => {
             const nextMessageChannels = space.messageChannels.slice(0);
             if (messageChannelInfo.index === null) {

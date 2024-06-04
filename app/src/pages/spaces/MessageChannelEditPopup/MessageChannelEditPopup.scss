@@ -1,31 +1,36 @@
 .message-channel-edit-popup-wrapper {
   .modal-body {
-    padding: 1.5rem 1rem 0 1rem !important;
-    min-height: 340px;
+    padding-top: 24px !important;
+  }
+  .webhook-title {
+    margin-top: 10px;
   }
 
-  .modal-footer {
-    padding: 1.5rem !important;
-  }
-  .date-row {
-    > div {
-      padding-bottom: 0;
-    }
-  }
-  .description {
-    margin-left: 120px;
+  .sub-title {
     font-size: 14px;
-    margin-top: 4px;
-  }
+    padding: 0 8px;
 
-  .condition-row {
-    .selector {
-      margin-right: 0.5rem;
+    &.border {
+      border-bottom: 1px solid var(--border-light-color);
+      padding-bottom: 8px;
+    }
 
-      &:last-child {
-        margin-right: 0;
+    > div {
+      display: flex;
+
+      > div {
+        align-self: center;
+        &:first-child {
+          flex-grow: 1;
+        }
       }
     }
+  }
+
+  .sub-content {
+    padding: 16px 8px;
+
+
   }
 
   .payload {
@@ -34,5 +39,10 @@
     .add-button {
       text-align: right;
     }
+  }
+
+  .send-message-button {
+    text-align: right;
+    padding: 0 8px;
   }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio, TextArea } from '@/components';
+import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './MessageChannelEditPopup.scss';
@@ -40,6 +40,23 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
     setOpened(false);
   };
 
+  const onSendTestMessage = () => {
+    if (!messageChannel.url) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('URL 없음'), t('URL을 입력해주세요.'));
+      return;
+    }
+
+    if (messageChannel.messageChannelType === 'SLACK') {
+      ConfigService.sendTestMessageToSlack(messageChannel.url, () => {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 URL로 슬랙 메세지가 발송되었습니다.'));
+      });
+    } else {
+      ConfigService.sendTestMessageByWebhook(messageChannel, () => {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 웹훅으로 메세지가 발송되었습니다.'));
+      });
+    }
+  };
+
   return (
     <Modal
       className="message-channel-edit-popup-wrapper"
@@ -63,12 +80,18 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
                     <Radio
                       key={channelType}
                       type="inline"
+                      size="sm"
                       value={channelType}
                       checked={messageChannel.messageChannelType === channelType}
                       onChange={val => {
                         if (messageChannel.messageChannelType !== val) {
                           setMessageChannel({
                             ...messageChannel,
+                            httpMethod: 'POST',
+                            payloadType: 'FORM_DATA',
+                            headers: [],
+                            payloads: [],
+                            json: '',
                             messageChannelType: val,
                           });
                         }
@@ -85,6 +108,7 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
               </Label>
               <Input
                 type="text"
+                size="sm"
                 value={messageChannel.name}
                 onChange={val =>
                   setMessageChannel({
@@ -102,6 +126,7 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
               </Label>
               <Input
                 type="text"
+                size="sm"
                 value={messageChannel.url}
                 onChange={val =>
                   setMessageChannel({
@@ -113,152 +138,148 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
                 minLength={1}
               />
             </BlockRow>
-            {messageChannel.messageChannelType === 'WEBHOOK' && (
-              <>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('메소드')}</Label>
+          </Block>
+          {messageChannel.messageChannelType === 'WEBHOOK' && (
+            <>
+              <Title type="h3" icon={false} className="webhook-title">
+                {t('웹훅 설정')}
+              </Title>
+              <div className="sub-title">{t('메소드')}</div>
+              <div className="sub-content">
+                <div>
+                  {['POST', 'PUT', 'GET', 'DELETE'].map(httpMethod => {
+                    return (
+                      <Radio
+                        key={httpMethod}
+                        type="inline"
+                        size="sm"
+                        value={httpMethod}
+                        checked={messageChannel.httpMethod === httpMethod}
+                        onChange={val => {
+                          if (messageChannel.httpMethod !== val) {
+                            setMessageChannel({
+                              ...messageChannel,
+                              httpMethod: val,
+                            });
+                          }
+                        }}
+                        label={httpMethod}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="sub-title">{t('메세지 형식')}</div>
+              <div className="sub-content">
+                <div>
+                  {['FORM_DATA', 'JSON'].map(httpMethod => {
+                    return (
+                      <Radio
+                        key={httpMethod}
+                        type="inline"
+                        size="sm"
+                        value={httpMethod}
+                        checked={messageChannel.payloadType === httpMethod}
+                        onChange={val => {
+                          if (messageChannel.payloadType !== val) {
+                            setMessageChannel({
+                              ...messageChannel,
+                              payloads: [],
+                              json: '',
+                              payloadType: val,
+                            });
+                          }
+                        }}
+                        label={httpMethod}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="sub-title border">
+                <div>
+                  <div>{t('요청 헤더')}</div>
                   <div>
-                    {['POST', 'PUT', 'GET', 'DELETE'].map(httpMethod => {
-                      return (
-                        <Radio
-                          key={httpMethod}
-                          type="inline"
-                          value={httpMethod}
-                          checked={messageChannel.httpMethod === httpMethod}
-                          onChange={val => {
-                            if (messageChannel.httpMethod !== val) {
-                              setMessageChannel({
-                                ...messageChannel,
-                                httpMethod: val,
-                              });
-                            }
-                          }}
-                          label={httpMethod}
-                        />
-                      );
-                    })}
-                  </div>
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('헤더')}</Label>
-                  <div className="payload">
-                    <KeyValueEditor
-                      list={messageChannel.headers}
-                      onChange={list => {
+                    <Button
+                      size="xs"
+                      onClick={() => {
                         setMessageChannel({
                           ...messageChannel,
-                          headers: list,
+                          headers: [...messageChannel.headers, { dataKey: '', dataValue: '' }],
                         });
                       }}
-                    />
-                    <div className="add-button">
+                    >
+                      {t('추가')}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="sub-content">
+                <div className="payload">
+                  <KeyValueEditor
+                    list={messageChannel.headers}
+                    onChange={list => {
+                      setMessageChannel({
+                        ...messageChannel,
+                        headers: list,
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="sub-title border">
+                <div>
+                  <div>{t('페이로드')}</div>
+                  {messageChannel.payloadType === 'FORM_DATA' && (
+                    <div>
                       <Button
+                        size="xs"
                         onClick={() => {
                           setMessageChannel({
                             ...messageChannel,
-                            headers: [...messageChannel.headers, { dataKey: '', dataValue: '' }],
+                            payloads: [...messageChannel.payloads, { dataKey: '', dataValue: '' }],
                           });
                         }}
                       >
                         {t('추가')}
                       </Button>
                     </div>
-                  </div>
-                </BlockRow>
-                <BlockRow>
-                  <Label minWidth={labelMinWidth}>{t('메세지 형식')}</Label>
-                  <div>
-                    {['FORM_DATA', 'JSON'].map(httpMethod => {
-                      return (
-                        <Radio
-                          key={httpMethod}
-                          type="inline"
-                          value={httpMethod}
-                          checked={messageChannel.payloadType === httpMethod}
-                          onChange={val => {
-                            if (messageChannel.payloadType !== val) {
-                              setMessageChannel({
-                                ...messageChannel,
-                                payloadType: val,
-                              });
-                            }
-                          }}
-                          label={httpMethod}
-                        />
-                      );
-                    })}
-                  </div>
-                </BlockRow>
-                {messageChannel.payloadType === 'FORM_DATA' && (
-                  <BlockRow>
-                    <Label minWidth={labelMinWidth}>{t('페이로드')}</Label>
-                    <div className="payload">
-                      <KeyValueEditor
-                        list={messageChannel.payloads}
-                        onChange={list => {
-                          setMessageChannel({
-                            ...messageChannel,
-                            payloads: list,
-                          });
-                        }}
-                      />
-                      <div className="add-button">
-                        <Button
-                          onClick={() => {
-                            setMessageChannel({
-                              ...messageChannel,
-                              payloads: [...messageChannel.payloads, { dataKey: '', dataValue: '' }],
-                            });
-                          }}
-                        >
-                          {t('추가')}
-                        </Button>
-                      </div>
-                    </div>
-                  </BlockRow>
-                )}
-                {messageChannel.payloadType === 'JSON' && (
-                  <BlockRow>
-                    <Label minWidth={labelMinWidth}>{t('메세지')}</Label>
-                    <TextArea
-                      placeholder="JSON 형식의 메세지 템플릿을 입력해주세요. 메세지는 {{message}}로 입력해주세요."
-                      value={messageChannel.json || ''}
-                      rows={4}
-                      onChange={val => {
-                        setMessageChannel({
-                          ...messageChannel,
-                          json: val,
-                        });
-                      }}
-                    />
-                  </BlockRow>
-                )}
-              </>
-            )}
-            <BlockRow>
-              <Label minWidth={labelMinWidth} />
-              <Button
-                onClick={() => {
-                  if (!messageChannel.url) {
-                    dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('URL 없음'), t('슬랙 URL을 입력해주세요.'));
-                    return;
-                  }
-
-                  if (messageChannel.messageChannelType === 'SLACK') {
-                    ConfigService.sendTestMessageToSlack(messageChannel.url, () => {
-                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 URL로 슬랙 메세지가 발송되었습니다.'));
-                    });
-                  } else {
-                    ConfigService.sendTestMessageByWebhook(messageChannel, () => {
-                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 웹훅으로 메세지가 발송되었습니다.'));
-                    });
-                  }
-                }}
-              >
-                {t('발송 테스트')}
-              </Button>
-            </BlockRow>
-          </Block>
+                  )}
+                </div>
+              </div>
+              {messageChannel.payloadType === 'JSON' && (
+                <div className="sub-content">
+                  <TextArea
+                    placeholder={t('JSON 형식의 메세지 템플릿을 입력해주세요. 메세지는 {{message}}로 입력해주세요.')}
+                    value={messageChannel.json || ''}
+                    rows={4}
+                    onChange={val => {
+                      setMessageChannel({
+                        ...messageChannel,
+                        json: val,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              {messageChannel.payloadType === 'FORM_DATA' && (
+                <div className="sub-content">
+                  <KeyValueEditor
+                    list={messageChannel.payloads}
+                    onChange={list => {
+                      setMessageChannel({
+                        ...messageChannel,
+                        payloads: list,
+                      });
+                    }}
+                  />
+                </div>
+              )}
+              <div className="send-message-button">
+                <Button onClick={onSendTestMessage}>{t('발송 테스트')}</Button>
+              </div>
+            </>
+          )}
         </ModalBody>
         <ModalFooter className="modal-footer">
           <Button onClick={() => setOpened(false)}>{t('취소')}</Button>

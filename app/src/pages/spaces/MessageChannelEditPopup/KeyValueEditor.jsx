@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, Input } from '@/components';
+import { Button, EmptyContent, Input, Tag } from '@/components';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import './KeyValueEditor.scss';
 
 function KeyValueEditor({ list, onChange }) {
+  const { t } = useTranslation();
   const onChangeKey = (index, value) => {
     const newList = [...list];
     newList[index].dataKey = value;
@@ -17,51 +18,62 @@ function KeyValueEditor({ list, onChange }) {
     onChange(newList);
   };
 
-  const { t } = useTranslation();
-
   return (
     <div className="key-value-editor-wrapper">
-      <ul>
-        {list.map((d, index) => {
-          return (
-            <li key={index}>
-              <div className="label">키</div>
-              <div>
-                <Input
-                  size="sm"
-                  value={d.dataKey}
-                  onChange={v => {
-                    onChangeKey(index, v);
-                  }}
-                />
-              </div>
-              <div className="label">값</div>
-              <div>
-                <Input
-                  size="sm"
-                  value={d.dataValue}
-                  onChange={v => {
-                    onChangeValue(index, v);
-                  }}
-                />
-              </div>
-              <div className="button">
-                <Button
-                  size="sm"
-                  color="danger"
-                  onClick={() => {
-                    const newList = [...list];
-                    newList.splice(index, 1);
-                    onChange(newList);
-                  }}
-                >
-                  {t('삭제')}
-                </Button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      {(!list || list?.length < 1) && <EmptyContent minHeight="60px">{t('데이터가 없습니다.')}</EmptyContent>}
+      {list?.length > 0 && (
+        <ul>
+          {list.map((d, index) => {
+            return (
+              <li key={index}>
+                <div className="key">
+                  <div className="label">
+                    <Tag>KEY</Tag>
+                  </div>
+                  <div>
+                    <Input
+                      required
+                      size="sm"
+                      value={d.dataKey}
+                      onChange={v => {
+                        onChangeKey(index, v);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="value">
+                  <div className="label">
+                    <Tag>VALUE</Tag>
+                  </div>
+                  <div>
+                    <Input
+                      size="sm"
+                      value={d.dataValue}
+                      onChange={v => {
+                        onChangeValue(index, v);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="button">
+                  <Button
+                    size="xs"
+                    color="primary"
+                    rounded
+                    onClick={() => {
+                      const newList = [...list];
+                      newList.splice(index, 1);
+                      onChange(newList);
+                    }}
+                  >
+                    <i className="fa-solid fa-xmark" />
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
