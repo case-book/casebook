@@ -171,6 +171,7 @@ function ProjectEditPage({ type }) {
   const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
   const [testcaseItemCategories, setTestcaseItemCategories] = useState([]);
   const [opened, setOpened] = useState(false);
+  const [spaceMessageChannelList, setSpaceMessageChannelList] = useState([]);
   const [releases, setReleases] = useState([]);
 
   const [templateEditorPopupInfo, setTemplateEditorPopupInfo] = useState({
@@ -187,6 +188,7 @@ function ProjectEditPage({ type }) {
     token: uuidv4(),
     testcaseTemplates: cloneDeep(defaultProjectConfig.testcaseTemplates),
     targetReleaseId: null,
+    messageChannels: [],
   });
 
   const isEdit = useMemo(() => {
@@ -194,6 +196,10 @@ function ProjectEditPage({ type }) {
   }, [type]);
 
   useEffect(() => {
+    SpaceService.selectSpaceChannelList(spaceCode, list => {
+      setSpaceMessageChannelList(list);
+    });
+
     ConfigService.selectTestcaseConfigs(info => {
       setTestcaseItemTypes(info.testcaseItemTypes);
       setTestcaseItemCategories(info.testcaseItemCategories);
@@ -377,6 +383,26 @@ function ProjectEditPage({ type }) {
     return ProjectService.createImage(spaceCode, projectId, name, size, typeText, file);
   };
 
+  const addMessageChannel = () => {
+    const nextProject = { ...project };
+    if (!nextProject.messageChannels) {
+      nextProject.messageChannels = [];
+    }
+
+    if (spaceMessageChannelList.length > 0) {
+      nextProject.messageChannels.push({
+        spaceMessageChannelId: spaceMessageChannelList[0].id,
+      });
+      setProject(nextProject);
+    }
+  };
+
+  const removeMessageChannel = inx => {
+    const nextProject = { ...project };
+    nextProject.messageChannels.splice(inx, 1);
+    setProject(nextProject);
+  };
+
   return (
     <>
       <Page className="project-edit-page-wrapper">
@@ -510,6 +536,50 @@ function ProjectEditPage({ type }) {
                     }}
                   />
                 </BlockRow>
+              )}
+            </Block>
+            <Title
+              control={
+                <Button size="sm" outline onClick={addMessageChannel}>
+                  <i className="fa-solid fa-plus" /> {t('알림 채널 추가')}
+                </Button>
+              }
+            >
+              {t('알림 채널')}
+            </Title>
+            <Block>
+              {(!project.messageChannels || project.messageChannels?.length < 1) && <EmptyContent border>{t('알림 채널이 없습니다.')}</EmptyContent>}
+              {project?.messageChannels?.length > 0 && (
+                <ul className="message-channels">
+                  {project.messageChannels?.map((channel, inx) => {
+                    return (
+                      <li key={inx}>
+                        <div>
+                          <Selector
+                            minWidth="100%"
+                            items={spaceMessageChannelList.map(d => {
+                              return {
+                                key: d.id,
+                                value: d.name,
+                              };
+                            })}
+                            value={channel.spaceMessageChannelId}
+                            onChange={value => {
+                              const nextProject = { ...project };
+                              nextProject.messageChannels[inx].spaceMessageChannelId = value;
+                              setProject(nextProject);
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <Button size="sm" color="primary" rounded onClick={() => removeMessageChannel(inx)}>
+                            <i className="fa-solid fa-xmark" />
+                          </Button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </Block>
             <Title border={false} marginBottom={false}>

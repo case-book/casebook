@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.space.vo.request.HolidayRequest;
@@ -12,6 +13,7 @@ import com.mindplates.bugcase.biz.space.vo.request.SpaceJoinRequest;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceUpdateRequest;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceAccessibleResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceMessageChannelResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
@@ -179,6 +181,13 @@ public class SpaceController {
     public ResponseEntity<?> deleteSpaceUserInfo(@PathVariable String spaceCode) {
         spaceService.deleteSpaceUser(spaceCode, SessionUtil.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "스페이스 메세지 채널 조회")
+    @GetMapping("/{spaceCode}/channels")
+    public List<SpaceMessageChannelResponse> selectSpaceMessageChannels(@PathVariable String spaceCode) {
+        List<SpaceMessageChannelDTO> spaceMessageChannels = spaceService.selectSpaceMessageChannels(spaceCode);
+        return spaceMessageChannels.stream().map(SpaceMessageChannelResponse::new).collect(Collectors.toList());
     }
 
 

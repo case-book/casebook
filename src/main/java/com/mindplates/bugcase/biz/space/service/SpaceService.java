@@ -10,7 +10,9 @@ import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
+import com.mindplates.bugcase.biz.space.repository.SpaceMessageChannelRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
@@ -53,6 +55,7 @@ public class SpaceService {
     private final SpaceVariableRepository spaceVariableRepository;
     private final SpaceProfileRepository spaceProfileRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
+    private final SpaceMessageChannelRepository spaceMessageChannelRepository;
 
     private boolean existByCode(String code) {
         Long count = spaceRepository.countByCode(code);
@@ -401,6 +404,11 @@ public class SpaceService {
         spaceRepository.save(mappingUtil.convert(space, Space.class));
         notificationService.createSpaceUserWithdrawInfo(space, targetUser.getName() + " [" + targetUser.getEmail() + "]");
 
+    }
+
+    public List<SpaceMessageChannelDTO> selectSpaceMessageChannels(String spaceCode) {
+        List<SpaceMessageChannel> spaceMessageChannels = spaceMessageChannelRepository.findAllBySpaceCode(spaceCode);
+        return spaceMessageChannels.stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
     }
 
 }

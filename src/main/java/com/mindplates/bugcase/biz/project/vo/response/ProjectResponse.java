@@ -36,6 +36,7 @@ public class ProjectResponse {
     private boolean enableTestrunAlarm;
     private boolean isAdmin = false;
     private List<ProjectReleaseResponse> projectReleases;
+    private List<ProjectMessageChannelResponse> messageChannels;
 
     public ProjectResponse(ProjectDTO project, Long userId) {
         this.id = project.getId();
@@ -85,6 +86,10 @@ public class ProjectResponse {
                     .name(projectReleaseDTO.getName())
                     .build())
                 .collect(Collectors.toList());
+        }
+
+        if (project.getMessageChannels() != null) {
+            this.messageChannels = project.getMessageChannels().stream().map(ProjectMessageChannelResponse::new).collect(Collectors.toList());
         }
 
     }

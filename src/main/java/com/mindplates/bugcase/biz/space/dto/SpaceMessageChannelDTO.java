@@ -31,14 +31,22 @@ public class SpaceMessageChannelDTO extends CommonDTO {
 
     public SpaceMessageChannelDTO(SpaceMessageChannel spaceMessageChannel) {
         this.id = spaceMessageChannel.getId();
-        this.space = SpaceDTO.builder().id(spaceMessageChannel.getSpace().getId()).build();
+        if (spaceMessageChannel.getSpace() != null) {
+            this.space = SpaceDTO.builder().id(spaceMessageChannel.getSpace().getId()).build();
+        }
         this.httpMethod = spaceMessageChannel.getHttpMethod();
         this.messageChannelType = spaceMessageChannel.getMessageChannelType();
         this.name = spaceMessageChannel.getName();
         this.payloadType = spaceMessageChannel.getPayloadType();
         this.url = spaceMessageChannel.getUrl();
         this.json = spaceMessageChannel.getJson();
-        this.headers = spaceMessageChannel.getHeaders().stream().map(SpaceMessageChannelHeaderDTO::new).collect(Collectors.toList());
-        this.payloads = spaceMessageChannel.getPayloads().stream().map(SpaceMessageChannelPayloadDTO::new).collect(Collectors.toList());
+        if (spaceMessageChannel.getHeaders() != null) {
+            this.headers = spaceMessageChannel.getHeaders().stream().map(SpaceMessageChannelHeaderDTO::new).collect(Collectors.toList());
+        }
+
+        if (spaceMessageChannel.getPayloads() != null) {
+            this.payloads = spaceMessageChannel.getPayloads().stream().map(SpaceMessageChannelPayloadDTO::new).collect(Collectors.toList());
+        }
+
     }
 }

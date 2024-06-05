@@ -30,7 +30,7 @@ import ProjectService from '@/services/ProjectService';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import './ProjectInfoPage.scss';
 import useStores from '@/hooks/useStores';
 import TokenDialog from '@/pages/common/Header/TokenDialog';
@@ -279,7 +279,28 @@ function ProjectInfoPage() {
               }}
             />
           </Block>
+          <Title>{t('알림 채널')}</Title>
+          <Block>
+            {(!project?.messageChannels || project?.messageChannels?.length < 1) && <EmptyContent border>{t('알림 채널이 없습니다.')}</EmptyContent>}
+            {project?.messageChannels?.length > 0 && (
+              <ul className="message-channels">
+                {project.messageChannels?.map((channel, inx) => {
+                  return (
+                    <li key={inx}>
+                      <div>
+                        <Tag size="sm" color="white" border>
+                          {CHANNEL_TYPE_CODE[channel.messageChannelType]}
+                        </Tag>
+                      </div>
+                      <div>{channel.name}</div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Block>
           <Title marginBottom={false}>{t('알림 설정')}</Title>
+
           <Block>
             <BlockRow>
               <Label>{t('슬랙 URL')}</Label>

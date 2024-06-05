@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
@@ -251,6 +252,25 @@ public class ProjectService {
             }
 
         }
+
+        // projectInfo의 messageChannels에 아이템 중 updateProjectInfo의 messageChannels에 없다면, 목록에서 제거
+        projectInfo.getMessageChannels().removeIf((projectMessageChannel -> updateProjectInfo.getMessageChannels().stream()
+            .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(projectMessageChannel.getId())))));
+
+        // updateProjectInfo의 messageChannel을 projectInfo에 업데이트
+        updateProjectInfo.getMessageChannels().forEach((updateMessageChannel -> {
+
+            ProjectMessageChannelDTO projectMessageChannel = projectInfo.getMessageChannels().stream()
+                .filter((messageChannel -> messageChannel.getId().equals(updateMessageChannel.getId())))
+                .findFirst()
+                .orElse(null);
+
+            if (projectMessageChannel != null) {
+                projectMessageChannel.setMessageChannel(updateMessageChannel.getMessageChannel());
+            } else {
+                projectInfo.getMessageChannels().add(updateMessageChannel);
+            }
+        }));
 
         Project updateResult = mappingUtil.convert(projectInfo, Project.class);
         return new ProjectDTO(projectRepository.save(updateResult), true);

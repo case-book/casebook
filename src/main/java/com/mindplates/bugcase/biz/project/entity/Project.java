@@ -95,6 +95,10 @@ public class Project extends CommonEntity {
     @Column(name = "enable_testrun_alarm")
     private boolean enableTestrunAlarm;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column
+    private List<ProjectMessageChannel> messageChannels;
+
     public Map<String, List<ProjectUser>> getUsersByTag(List<TestrunUser> testrunUsers) {
         Map<String, List<ProjectUser>> result = new HashMap<>();
         this.users.forEach(projectUser -> {

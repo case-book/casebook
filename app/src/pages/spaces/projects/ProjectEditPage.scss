@@ -117,7 +117,7 @@
               width: 22px;
               font-size: 12px;
               background-color: var(--light-color);
-              color : var(--text-color);
+              color: var(--text-color);
               justify-content: center;
               border-radius: 50%;
               @include number;
@@ -130,6 +130,29 @@
               font-size: 14px;
             }
           }
+        }
+      }
+    }
+  }
+
+  .message-channels {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    > li {
+      margin-bottom: 10px;
+      display: flex;
+      width: 100%;
+      gap: 10px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      > div {
+        align-self: center;
+        &:first-child {
+          flex-grow: 1;
         }
       }
     }
