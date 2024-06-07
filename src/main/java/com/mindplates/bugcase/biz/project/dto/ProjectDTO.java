@@ -34,8 +34,6 @@ public class ProjectDTO extends CommonDTO {
     private Integer testrunSeq = 0;
     private Long testrunCount = 0L;
     private Long testcaseCount = 0L;
-    private String slackUrl;
-    private boolean enableTestrunAlarm;
     private List<ProjectMessageChannelDTO> messageChannels;
 
     public ProjectDTO(Project project, boolean detail) {
@@ -51,8 +49,6 @@ public class ProjectDTO extends CommonDTO {
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
         this.testcaseSeq = project.getTestcaseSeq();
         this.testrunSeq = project.getTestrunSeq();
-        this.slackUrl = project.getSlackUrl();
-        this.enableTestrunAlarm = project.isEnableTestrunAlarm();
         if (project.getProjectReleases() != null) {
             this.projectReleases = project.getProjectReleases().stream().map(ProjectReleaseDTO::new).collect(Collectors.toList());
         }

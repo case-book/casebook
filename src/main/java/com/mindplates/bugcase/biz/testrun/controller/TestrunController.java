@@ -398,8 +398,8 @@ public class TestrunController {
     public ResponseEntity<HttpStatus> updateTestrunTestcaseTester(@PathVariable String spaceCode, @PathVariable long projectId,
         @PathVariable long testrunId,
         @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
-        testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId,
-            testrunTesterRequest.getTesterId());
+        long userId = SessionUtil.getUserId();
+        testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunTesterRequest.getTesterId(), userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -502,6 +502,13 @@ public class TestrunController {
         TestrunHookDTO testrunHook = testrunHookRequest.buildEntity();
         testrunHook.request(httpRequestUtil);
         return new TestrunHookResponse(testrunHook);
+    }
+
+    @Operation(description = "테스트런 진행 상황 메세지 발송")
+    @PostMapping("/{testrunId}/notify")
+    public ResponseEntity<HttpStatus> notifyTestrunProgress(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
+        testrunService.notifyTestrun(spaceCode, projectId, testrunId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

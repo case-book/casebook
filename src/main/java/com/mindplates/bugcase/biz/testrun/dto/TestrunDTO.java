@@ -45,6 +45,7 @@ public class TestrunDTO extends CommonDTO {
     private Boolean autoTestcaseNotAssignedTester;
     private List<TestrunProfileDTO> profiles;
     private List<TestrunHookDTO> hooks;
+    private List<TestrunMessageChannelDTO> messageChannels;
 
     public TestrunDTO(Testrun testrun) {
         this.id = testrun.getId();
@@ -80,6 +81,9 @@ public class TestrunDTO extends CommonDTO {
         this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
         if (testrun.getHooks() != null) {
             this.hooks = testrun.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
+        }
+        if (testrun.getMessageChannels() != null) {
+            this.messageChannels = testrun.getMessageChannels().stream().map(TestrunMessageChannelDTO::new).collect(Collectors.toList());
         }
     }
 

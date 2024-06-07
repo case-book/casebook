@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectTokenDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
@@ -14,9 +15,12 @@ import com.mindplates.bugcase.biz.project.vo.request.ProjectReleaseCreateRequest
 import com.mindplates.bugcase.biz.project.vo.request.UpdateProjectTokenRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectMessageChannelResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectReleaseResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectTokenResponse;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
+import com.mindplates.bugcase.biz.space.vo.response.SpaceMessageChannelResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
@@ -257,5 +261,12 @@ public class ProjectController {
     @DeleteMapping("/{id}/releases/{releaseId}")
     public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable long releaseId) {
         projectReleaseService.deleteProjectRelease(spaceCode, id, releaseId);
+    }
+
+    @Operation(description = "프로젝트 메세지 채널 조회")
+    @GetMapping("/{id}/channels")
+    public List<ProjectMessageChannelResponse> selectProjectMessageChannels(@PathVariable Long id) {
+        List<ProjectMessageChannelDTO> projectMessageChannels = projectService.selectProjectMessageChannels(id);
+        return projectMessageChannels.stream().map(ProjectMessageChannelResponse::new).collect(Collectors.toList());
     }
 }

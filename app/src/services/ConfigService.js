@@ -35,20 +35,9 @@ ConfigService.createSetUpInfo = (setupInfo, successHandler, failHandler) => {
   );
 };
 
-ConfigService.sendTestMessageToSlack = (slackUrl, successHandler, failHandler) => {
+ConfigService.sendTestMessage = (messageChannel, successHandler, failHandler) => {
   return request.post(
-    '/api/configs/systems/slack',
-    { slackUrl },
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-  );
-};
-
-ConfigService.sendTestMessageByWebhook = (messageChannel, successHandler, failHandler) => {
-  return request.post(
-    '/api/configs/systems/webhook',
+    '/api/configs/systems/message',
     messageChannel,
     res => {
       successHandler(res);

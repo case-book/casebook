@@ -20,8 +20,13 @@ public class ProjectMessageChannelDTO extends CommonDTO {
 
     public ProjectMessageChannelDTO(ProjectMessageChannel projectMessageChannel) {
         this.id = projectMessageChannel.getId();
-        this.project = ProjectDTO.builder().id(projectMessageChannel.getProject().getId()).build();
-        this.messageChannel = new SpaceMessageChannelDTO(projectMessageChannel.getMessageChannel());
+        if (projectMessageChannel.getProject() != null) {
+            this.project = ProjectDTO.builder().id(projectMessageChannel.getProject().getId()).build();
+        }
+        if (projectMessageChannel.getMessageChannel() != null) {
+            this.messageChannel = new SpaceMessageChannelDTO(projectMessageChannel.getMessageChannel());
+        }
+
     }
 
 

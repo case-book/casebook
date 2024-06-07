@@ -4,7 +4,9 @@ import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.code.PayloadTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +49,46 @@ public class SpaceMessageChannelDTO extends CommonDTO {
         if (spaceMessageChannel.getPayloads() != null) {
             this.payloads = spaceMessageChannel.getPayloads().stream().map(SpaceMessageChannelPayloadDTO::new).collect(Collectors.toList());
         }
+    }
 
+    public List<Map<String, String>> getHeaderList() {
+        return this.headers.stream().map(payload -> {
+            Map<String, String> map = new HashMap<>();
+            map.put("key", payload.getDataKey());
+            map.put("value", payload.getDataValue());
+            return map;
+        }).collect(Collectors.toList());
+    }
+
+    private List<Map<String, String>> getPayloadList() {
+        return this.payloads.stream().map(payload -> {
+            Map<String, String> map = new HashMap<>();
+            map.put("key", payload.getDataKey());
+            map.put("value", payload.getDataValue());
+            return map;
+        }).collect(Collectors.toList());
+    }
+
+    public String getJsonMessage(String message) {
+
+        String jsonMessage = this.json;
+        if (jsonMessage.contains("{{message}}")) {
+            jsonMessage = jsonMessage.replace("{{message}}", message.replaceAll("\"", "'").replaceAll("\n", "\\\\n"));
+        }
+
+        return jsonMessage;
+    }
+
+    public List<Map<String, String>> getPayloadMessage(String message) {
+        List<Map<String, String>> payloads = getPayloadList();
+        payloads.forEach(payload -> {
+            payload.forEach((key, value) -> {
+                if (value.contains("{{message}}")) {
+                    payload.put(key, value.replace("{{message}}", message));
+                }
+            });
+        });
+
+        return payloads;
     }
 }

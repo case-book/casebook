@@ -561,4 +561,18 @@ TestrunService.executeTestrunHook = (spaceCode, projectId, testrunHook, successH
   );
 };
 
+TestrunService.notifyTestrunProgress = (spaceCode, projectId, testrunId, successHandler, failHandler, loading = true) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/notify`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+  );
+};
+
 export default TestrunService;

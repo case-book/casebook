@@ -4,10 +4,14 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
+import com.mindplates.bugcase.biz.project.entity.ProjectMessageChannel;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
+import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
+import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
@@ -17,6 +21,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunParticipantDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
@@ -38,6 +43,7 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunParticipantRedisRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunProfileRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
@@ -57,7 +63,7 @@ import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
-import com.mindplates.bugcase.common.service.SlackService;
+import com.mindplates.bugcase.common.service.MessageChannelService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
@@ -65,6 +71,7 @@ import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,6 +84,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -103,7 +111,7 @@ public class TestrunService {
     private final ProjectFileRepository projectFileRepository;
     private final MappingUtil mappingUtil;
     private final FileUtil fileUtil;
-    private final SlackService slackService;
+    private final MessageChannelService messageChannelService;
     private final MessageSendService messageSendService;
     private final ProjectRepository projectRepository;
     private final TestrunCommentRepository testrunCommentRepository;
@@ -111,6 +119,9 @@ public class TestrunService {
     private final UserRepository userRepository;
     private final TestrunHookRepository testrunHookRepository;
     private final HttpRequestUtil httpRequestUtil;
+    private final ProjectMessageChannelRepository projectMessageChannelRepository;
+    private final TestrunMessageChannelRepository testrunMessageChannelRepository;
+    private final MessageSourceAccessor messageSourceAccessor;
     private final Random random = new Random();
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
@@ -230,6 +241,7 @@ public class TestrunService {
         List<ProjectFile> files = projectFileRepository
             .findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
 
+        testrunMessageChannelRepository.deleteByTestrunId(testrunId);
         testrunHookRepository.deleteByTestrunId(testrunId);
         testrunProfileRepository.deleteByTestrunId(testrunId);
         testrunCommentRepository.deleteByTestrunId(testrunId);
@@ -284,9 +296,12 @@ public class TestrunService {
         checkIsTestrunClosed(testrun);
         testrun.setOpened(false);
         testrun.setClosedDate(LocalDateTime.now());
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
-            slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
+
+        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                messageChannelService.sendTestrunClosedMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, new TestrunDTO(testrun));
+            });
         }
 
         testrunRepository.save(testrun);
@@ -300,12 +315,23 @@ public class TestrunService {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testrun.setOpened(true);
         testrun.setClosedDate(null);
-        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        if (project.isSlackAlarmEnabled() && project.getSlackUrl() != null) {
-            List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
-            slackService.sendTestrunReOpenMessage(project.getSlackUrl(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(),
-                testers);
+
+        LocalDateTime now = LocalDateTime.now();
+        // testrun의 endDateTime이 지났을 경우, endDateTime을 현재 시간 + 1시간으로 변경
+        if (testrun.getEndDateTime() != null && testrun.getEndDateTime().isBefore(now)) {
+            testrun.setEndDateTime(now.plusHours(1));
         }
+
+        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+            List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
+            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                messageChannelService.sendTestrunReOpenMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(), testers);
+            });
+        }
+
         testrunRepository.save(testrun);
     }
 
@@ -391,10 +417,13 @@ public class TestrunService {
             done = true;
             String spaceCode = testrun.getProject().getSpace().getCode();
             Long projectId = testrun.getProject().getId();
-            ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-            if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
-                slackService.sendTestrunClosedMessage(project.getSlackUrl(), spaceCode, projectId, new TestrunDTO(testrun));
+            if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+                testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                    TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                    messageChannelService.sendTestrunClosedMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, new TestrunDTO(testrun));
+                });
             }
+
         }
         testrunTestcaseGroupTestcase.setTestResult(testResultCode);
         return done;
@@ -414,7 +443,7 @@ public class TestrunService {
             }
         }));
 
-        if (userIds.size() < 1) {
+        if (userIds.isEmpty()) {
             throw new ServiceException("error.no.rest.tester");
         }
 
@@ -433,21 +462,23 @@ public class TestrunService {
                 .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
             testrunTestcaseGroupTestcase.setTester(User.builder().id(userIds.get(index)).build());
 
-            if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
-                String afterUserName = project.getUsers().stream()
-                    .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
-                    .map(projectUserDTO -> projectUserDTO.getUser().getName())
-                    .findAny().orElse("");
+            String afterUserName = project.getUsers().stream()
+                .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
+                .map(projectUserDTO -> projectUserDTO.getUser().getName())
+                .findAny().orElse("");
 
-                slackService.sendTestrunTesterRandomChangeMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, targetId,
-                    testrun.getName(),
-                    testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+            if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+                testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                    TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                });
             }
+
             testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
         } else if (target.equals(TesterChangeTargetCode.ALL)) {
             for (TestrunTestcaseGroup testcaseGroup : testrun.getTestcaseGroups()) {
                 for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
-                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && testcase.getTester().getId().equals(testerId)) {
+                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && testcase.getTester() != null && testcase.getTester().getId().equals(testerId)) {
                         int index = random.nextInt(userIds.size());
                         testcase.setTester(User.builder().id(userIds.get(index)).build());
 
@@ -456,11 +487,12 @@ public class TestrunService {
                             .map(projectUserDTO -> projectUserDTO.getUser().getName())
                             .findAny().orElse("");
 
-                        slackService.sendTestrunTesterRandomChangeMessage(project.getSlackUrl(),
-                            spaceCode, projectId, testrunId,
-                            testcase.getId(),
-                            testrun.getName(),
-                            testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+                            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                                messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(), testrun.getName(), testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                            });
+                        }
                     }
                 }
             }
@@ -472,15 +504,26 @@ public class TestrunService {
     }
 
     @Transactional
-    public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, Long testerId) {
+    public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, Long testerId, Long actorId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Long oldUserId = testrunTestcaseGroupTestcase.getTester().getId();
         testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
 
+        User actor = userRepository.findById(actorId).orElse(null);
+        String actorName;
+        if (actor != null) {
+            actorName = actor.getName();
+        } else {
+            actorName = "";
+        }
+
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-        if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
-            Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+
             checkIsTestrunClosed(testrun);
             String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(oldUserId))
                 .map(projectUserDTO -> projectUserDTO.getUser().getName())
@@ -489,10 +532,13 @@ public class TestrunService {
                 .map(projectUserDTO -> projectUserDTO.getUser().getName())
                 .findAny().orElse("");
 
-            slackService.sendTestrunTesterChangeMessage(project.getSlackUrl(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId,
-                testrun.getName(),
-                testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName);
+            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName,
+                    actorName);
+            });
         }
+
         testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
     }
 
@@ -572,10 +618,18 @@ public class TestrunService {
         });
 
         Testrun result = testrunRepository.save(testrun);
-        if (project.isSlackAlarmEnabled() && project.getSlackUrl() != null) {
+
+        if (result.getMessageChannels() != null) {
             List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
-            slackService
-                .sendTestrunStartMessage(project.getSlackUrl(), spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
+            result.getMessageChannels().forEach(channel -> {
+                ProjectMessageChannel projectMessageChannel = projectMessageChannelRepository.findById(channel.getMessageChannel().getId()).orElse(null);
+                SpaceMessageChannel messageChannel = projectMessageChannel.getMessageChannel();
+                SpaceMessageChannelDTO spaceMessageChannelDTO = new SpaceMessageChannelDTO(messageChannel);
+
+                if (spaceMessageChannelDTO != null) {
+                    messageChannelService.sendTestrunStartMessage(spaceMessageChannelDTO, spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
+                }
+            });
         }
 
         return new TestrunDTO(result);
@@ -739,10 +793,10 @@ public class TestrunService {
                     .filter(
                         testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()
                             .anyMatch((testrunTestcaseGroupTestcase -> userId
-                                .equals(testrunTestcaseGroupTestcase.getTester().getId()))))
+                                .equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null))))
                     .map((testrunTestcaseGroup -> {
                         List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream()
-                            .filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())))
+                            .filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)))
                             .collect(Collectors.toList());
                         testrunTestcaseGroup.setTestcases(userTestcaseList);
                         return testrunTestcaseGroup;
@@ -944,6 +998,50 @@ public class TestrunService {
         TestrunHook testrunHook = mappingUtil.convert(testrunHookDTO, TestrunHook.class);
         testrunHookRepository.save(testrunHook);
         return new TestrunHookDTO(testrunHook);
+    }
+
+    public void notifyTestrun(String spaceCode, Long projectId, Long testrunId) {
+        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+
+        LocalDateTime testrunEndDateTime = testrun.getEndDateTime();
+        // testrunEndDateTime과 현재 시간과의 시간 차이를 분으로 계산
+        long diffMinutes = 0;
+        if (testrunEndDateTime != null) {
+            diffMinutes = Duration.between(LocalDateTime.now(), testrunEndDateTime).toMinutes();
+        }
+
+        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+
+            Map<Long, Integer> userRemainCount = new HashMap<>();
+            List<TestrunTestcaseGroupTestcaseDTO> list = selectUntestedTestrunTestcaseGroupTestcaseList(testrun.getId());
+            for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO : list) {
+                if (testrunTestcaseGroupTestcaseDTO.getTester() != null) {
+                    Long testerId = testrunTestcaseGroupTestcaseDTO.getTester().getId();
+                    if (userRemainCount.containsKey(testerId)) {
+                        userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
+                    } else {
+                        userRemainCount.put(testerId, 1);
+                    }
+                }
+            }
+
+            String message;
+            if (diffMinutes > 0) {
+                message = messageSourceAccessor.getMessage("testrun.m.left", new Object[]{testrun.getName(), diffMinutes});
+            } else {
+                message = messageSourceAccessor.getMessage("testrun.remain.info", new Object[]{testrun.getName()});
+            }
+
+            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
+                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                messageChannelService.sendTestrunRemainInfo(
+                    messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId,
+                    message, testrun.getId(), testrun.getName(), project.getUsers(), userRemainCount);
+            });
+        }
+
+
     }
 
 }

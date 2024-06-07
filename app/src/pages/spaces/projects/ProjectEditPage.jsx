@@ -582,52 +582,6 @@ function ProjectEditPage({ type }) {
                 </ul>
               )}
             </Block>
-            <Title border={false} marginBottom={false}>
-              {t('알림 설정')}
-            </Title>
-            <Block>
-              <BlockRow>
-                <Label>{t('슬랙 URL')}</Label>
-                <Input
-                  value={project.slackUrl || ''}
-                  onChange={val =>
-                    setProject({
-                      ...project,
-                      slackUrl: val,
-                    })
-                  }
-                  minLength={1}
-                />
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    if (!project.slackUrl) {
-                      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('URL 없음'), t('슬랙 URL을 입력해주세요.'));
-                      return;
-                    }
-                    ConfigService.sendTestMessageToSlack(project.slackUrl, () => {
-                      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 URL로 슬랙 메세지가 발송되었습니다.'));
-                    });
-                  }}
-                >
-                  {t('발송 테스트')}
-                </Button>
-              </BlockRow>
-              <BlockRow>
-                <Label>{t('테스트런 알림')}</Label>
-                <CheckBox
-                  type="checkbox"
-                  value={project.enableTestrunAlarm}
-                  onChange={val =>
-                    setProject({
-                      ...project,
-                      enableTestrunAlarm: val,
-                    })
-                  }
-                  label={t('테스트런이 생성되거나, 종료되면 슬랙을 통해 알립니다.')}
-                />
-              </BlockRow>
-            </Block>
             {isEdit && (
               <>
                 <Title

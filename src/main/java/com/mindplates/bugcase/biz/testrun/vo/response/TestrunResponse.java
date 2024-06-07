@@ -42,6 +42,7 @@ public class TestrunResponse {
     private Boolean autoTestcaseNotAssignedTester;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
+    private List<TestrunMessageChannelResponse> messageChannels;
 
     public TestrunResponse(TestrunDTO testrun) {
         this.id = testrun.getId();
@@ -83,6 +84,10 @@ public class TestrunResponse {
 
         if (testrun.getHooks() != null && !testrun.getHooks().isEmpty()) {
             this.hooks = testrun.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
+            this.messageChannels = testrun.getMessageChannels().stream().map(TestrunMessageChannelResponse::new).collect(Collectors.toList());
         }
 
     }

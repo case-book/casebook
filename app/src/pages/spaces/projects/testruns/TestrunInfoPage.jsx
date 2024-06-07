@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { CHANNEL_TYPE_CODE, ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import SpaceProfileService from '@/services/SpaceProfileService';
@@ -361,6 +361,40 @@ function TestrunInfoPage() {
                     })}
                   </Tbody>
                 </Table>
+              )}
+            </BlockRow>
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('알림 채널')}
+          </Title>
+          {!(testrun?.messageChannels?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          <Block>
+            <BlockRow className="testrun-hooks-content">
+              {testrun?.messageChannels?.length > 0 && (
+                <ul className="message-channels">
+                  {testrun.messageChannels?.map((channel, inx) => {
+                    const channelInfo = project.messageChannels.find(d => d.id === channel.projectMessageChannelId);
+
+                    if (!channelInfo) {
+                      return null;
+                    }
+
+                    return (
+                      <li key={inx}>
+                        <div>
+                          <Tag size="sm" color="white" border>
+                            {CHANNEL_TYPE_CODE[channelInfo.messageChannelType]}
+                          </Tag>
+                        </div>
+                        <div>{channelInfo.name}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
               )}
             </BlockRow>
           </Block>

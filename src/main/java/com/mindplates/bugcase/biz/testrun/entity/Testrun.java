@@ -134,6 +134,10 @@ public class Testrun extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunHook> hooks;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column
+    private List<TestrunMessageChannel> messageChannels;
+
     public void updateInfo(Testrun testrun) {
         this.name = (testrun.getName());
         this.description = (testrun.getDescription());
@@ -168,6 +172,12 @@ public class Testrun extends CommonEntity {
                         hook.setRetryCount(targetHook.getRetryCount());
                     });
             });
+        }
+
+        this.messageChannels.removeIf(messageChannel -> testrun.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
+        if (testrun.messageChannels != null) {
+            // testrun의 messageChannels를 반복하면서, ID가 있으면 업데이트, 없으면 추가
+            this.messageChannels.addAll(testrun.messageChannels.stream().filter(targetMessageChannel -> targetMessageChannel.getId() == null).collect(Collectors.toList()));
         }
 
     }
@@ -291,7 +301,7 @@ public class Testrun extends CommonEntity {
             .stream()
             .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
                 .stream()
-                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())));
+                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)));
     }
 
     public void initializeCreateInfo(Project project, int currentTestrunSeq) {

@@ -2,6 +2,8 @@ package com.mindplates.bugcase.biz.space.service;
 
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
+import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
@@ -18,6 +20,7 @@ import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepositor
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceVariableRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
@@ -56,6 +59,8 @@ public class SpaceService {
     private final SpaceProfileRepository spaceProfileRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
     private final SpaceMessageChannelRepository spaceMessageChannelRepository;
+    private final ProjectMessageChannelRepository projectMessageChannelRepository;
+    private final TestrunMessageChannelRepository testrunMessageChannelRepository;
 
     private boolean existByCode(String code) {
         Long count = spaceRepository.countByCode(code);
@@ -143,7 +148,22 @@ public class SpaceService {
             }
         } else {
 
-            spaceInfo.getMessageChannels().removeIf((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream().noneMatch((updateChannel -> updateChannel.getId().equals(spaceMessageChannel.getId())))));
+
+            List<Long> deleteMessageChannelIds = spaceInfo.getMessageChannels().stream()
+                .filter((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream()
+                    .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(spaceMessageChannel.getId())))))
+                .map(SpaceMessageChannelDTO::getId)
+                .collect(Collectors.toList());
+
+            spaceInfo.getMessageChannels().removeIf((projectMessageChannel -> deleteMessageChannelIds.contains(projectMessageChannel.getId())));
+
+            // deleteMessageChannelIds에 있는 ID를 가진 testrunMessageChannel 삭제
+            deleteMessageChannelIds.forEach((deleteSpaceMessageChannelId -> {
+                projectMessageChannelRepository.findAllByMessageChannelId(deleteSpaceMessageChannelId).forEach((projectMessageChannel -> {
+                    testrunMessageChannelRepository.deleteByProjectMessageChannelId(projectMessageChannel.getId());
+                }));
+                projectMessageChannelRepository.deleteBySpaceMessageChannelId(deleteSpaceMessageChannelId);
+            }));
 
             updateSpaceInfo.getMessageChannels().forEach((updateChannel -> {
                 if (updateChannel.getId() == null) {

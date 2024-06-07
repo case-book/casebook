@@ -3,20 +3,15 @@ package com.mindplates.bugcase.biz.config.controller;
 import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.config.vo.request.SetUpRequest;
-import com.mindplates.bugcase.biz.config.vo.request.SlackTestRequest;
 import com.mindplates.bugcase.biz.config.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.config.vo.response.TimeZoneResponse;
-import com.mindplates.bugcase.biz.space.vo.request.SpaceMessageChannelHeaderRequest;
-import com.mindplates.bugcase.biz.space.vo.request.SpaceMessageChannelPayloadRequest;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceMessageChannelRequest;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateDataResponse;
 import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
-import com.mindplates.bugcase.common.code.PayloadTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.service.SlackService;
-import com.mindplates.bugcase.common.service.WebhookService;
+import com.mindplates.bugcase.common.service.MessageChannelService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -24,14 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,11 +44,7 @@ public class SystemController {
 
     private final ConfigService configService;
 
-    private final SlackService slackService;
-
-    private final WebhookService webhookService;
-
-    private final MessageSourceAccessor messageSourceAccessor;
+    private final MessageChannelService messageChannelService;
 
     @GetMapping("/info")
     @Operation(description = "API 버전 조회")
@@ -102,55 +91,11 @@ public class SystemController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/slack")
-    @Operation(summary = "슬랙 메세지 전송 테스트")
-    public ResponseEntity<?> sendTestMessageToSlack(@Valid @RequestBody SlackTestRequest slackTestRequest) {
-        boolean result = slackService.sendText(slackTestRequest.getSlackUrl(), messageSourceAccessor.getMessage("slack.test.message"));
 
-        if (!result) {
-            throw new ServiceException("fail.send.slack.message");
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
-    @PostMapping("/webhook")
-    @Operation(summary = "웹훅 메세지 전송 테스트")
-    public ResponseEntity<?> sendTestMessageByWebhook(@Valid @RequestBody SpaceMessageChannelRequest spaceMessageChannelRequest) {
-
-        // spaceMessageChannelRequest.header를 list<map>으로 변경
-        List<Map<String, String>> headers = spaceMessageChannelRequest.getHeaders().stream().map(SpaceMessageChannelHeaderRequest::toMap).collect(Collectors.toList());
-
-        // spaceMessageChannelRequest.payload를 list<map>으로 변경
-        List<Map<String, String>> payloads = spaceMessageChannelRequest.getPayloads().stream().map(SpaceMessageChannelPayloadRequest::toMap).collect(Collectors.toList());
-
-        String testMessage = messageSourceAccessor.getMessage("slack.test.message");
-        // payloads를 반복하면서, {{message}}라는 value가 있을 경우, testMessage로 치환
-        payloads.forEach(payload -> {
-            // payload의 values 중에 {{message}}가 있을 경우, value를 testMessage로 변경
-            payload.forEach((key, value) -> {
-                if (value.contains("{{message}}")) {
-                    payload.put(key, value.replace("{{message}}", testMessage));
-                }
-            });
-        });
-
-        // spaceMessageChannelRequest의 json에 {{message}}가 있을 경우, testMessage로 치환
-        String jsonMessage = spaceMessageChannelRequest.getJson();
-        if (jsonMessage.contains("{{message}}")) {
-            jsonMessage = jsonMessage.replace("{{message}}", testMessage);
-        }
-
-        boolean result = false;
-        if (spaceMessageChannelRequest.getPayloadType().equals(PayloadTypeCode.JSON)) {
-            result = webhookService.sendText(spaceMessageChannelRequest.getHttpMethod(), spaceMessageChannelRequest.getUrl(), headers, jsonMessage);
-        } else {
-            result = webhookService.sendText(spaceMessageChannelRequest.getHttpMethod(), spaceMessageChannelRequest.getUrl(), headers, payloads);
-        }
-
-
-
+    @PostMapping("/message")
+    @Operation(summary = "메세지 전송 테스트")
+    public ResponseEntity<?> sendTestMessage(@Valid @RequestBody SpaceMessageChannelRequest spaceMessageChannelRequest) {
+        boolean result = messageChannelService.sendTestMessage(spaceMessageChannelRequest.toDTO());
         if (!result) {
             throw new ServiceException("fail.send.webhook.message");
         }

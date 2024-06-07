@@ -46,15 +46,9 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
       return;
     }
 
-    if (messageChannel.messageChannelType === 'SLACK') {
-      ConfigService.sendTestMessageToSlack(messageChannel.url, () => {
-        dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 URL로 슬랙 메세지가 발송되었습니다.'));
-      });
-    } else {
-      ConfigService.sendTestMessageByWebhook(messageChannel, () => {
-        dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 웹훅으로 메세지가 발송되었습니다.'));
-      });
-    }
+    ConfigService.sendTestMessage(messageChannel, () => {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('메세지 발송 완료'), t('입력하신 설정 정보를 통해 메세지가 발송되었습니다.'));
+    });
   };
 
   return (
@@ -275,11 +269,11 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
                   />
                 </div>
               )}
-              <div className="send-message-button">
-                <Button onClick={onSendTestMessage}>{t('발송 테스트')}</Button>
-              </div>
             </>
           )}
+          <div className="send-message-button">
+            <Button onClick={onSendTestMessage}>{t('발송 테스트')}</Button>
+          </div>
         </ModalBody>
         <ModalFooter className="modal-footer">
           <Button onClick={() => setOpened(false)}>{t('취소')}</Button>
