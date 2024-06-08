@@ -37,6 +37,14 @@ public class TestrunMessageChannel extends CommonEntity {
     @JoinColumn(name = "testrun_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_MESSAGE_CHANNEL__TESTRUN"))
     private Testrun testrun;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testrun_reservation_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_MESSAGE_CHANNEL__TESTRUN_RESERVATION"))
+    private TestrunReservation testrunReservation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testrun_iteration_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_MESSAGE_CHANNEL__TESTRUN_ITERATION"))
+    private TestrunIteration testrunIteration;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_message_channel_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_MESSAGE_CHANNEL__PROJECT_MESSAGE_CHANNEL"))
     private ProjectMessageChannel messageChannel;

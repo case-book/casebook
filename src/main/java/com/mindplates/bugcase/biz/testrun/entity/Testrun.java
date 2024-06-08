@@ -135,7 +135,7 @@ public class Testrun extends CommonEntity {
     private List<TestrunHook> hooks;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunMessageChannel> messageChannels;
 
     public void updateInfo(Testrun testrun) {

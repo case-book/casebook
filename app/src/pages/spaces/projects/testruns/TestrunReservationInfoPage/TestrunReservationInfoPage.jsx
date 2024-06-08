@@ -12,7 +12,7 @@ import './TestrunReservationInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import TestrunReservationTestcaseGroupTable from '@/pages/spaces/projects/testruns/TestrunReservationInfoPage/TestrunReservationTestcaseGroupTable';
 import SpaceProfileService from '@/services/SpaceProfileService';
-import { TestrunHookInfoPopup, TestrunHookTable } from '@/assets';
+import { TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -263,6 +263,19 @@ function TestrunReservationInfoPage() {
                 </BlockRow>
               </>
             )}
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('알림 채널')}
+          </Title>
+          {!(testrunReservation?.messageChannels?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          <Block>
+            <BlockRow className="testrun-hooks-content">
+              <TestrunMessageChannelList messageChannels={testrunReservation?.messageChannels} projectMessageChannels={project?.messageChannels} />
+            </BlockRow>
           </Block>
           <Title border={false} marginBottom={false}>
             {t('테스트런 API 훅')}

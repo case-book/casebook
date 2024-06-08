@@ -6,6 +6,7 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
@@ -48,6 +49,7 @@ public class TestrunIterationRequest {
     private Integer filteringUserCount;
     private List<Long> profileIds;
     private List<TestrunHookRequest> hooks;
+    private List<TestrunMessageChannelRequest> messageChannels;
 
     public TestrunIterationDTO buildEntity() {
 
@@ -136,6 +138,14 @@ public class TestrunIterationRequest {
             }).collect(Collectors.toList());
 
             testrunIteration.setTestcaseGroups(groups);
+        }
+
+        if (messageChannels != null) {
+            testrunIteration.setMessageChannels(messageChannels.stream().map((testrunMessageChannelRequest) -> {
+                TestrunMessageChannelDTO testrunMessageChannel = testrunMessageChannelRequest.toDTO();
+                testrunMessageChannel.setTestrunIteration(testrunIteration);
+                return testrunMessageChannel;
+            }).collect(Collectors.toList()));
         }
 
         return testrunIteration;

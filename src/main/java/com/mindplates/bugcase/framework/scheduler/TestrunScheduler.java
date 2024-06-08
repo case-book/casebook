@@ -9,6 +9,7 @@ import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
@@ -85,6 +86,17 @@ public class TestrunScheduler {
                 .testrun(testrun)
                 .retryCount(testrunHookDTO.getRetryCount())
                 .build());
+        }));
+
+        // testrunIteration의 messageChannels를 testrun의 messageChannels로 변환하여 저장
+        testrun.setMessageChannels(new ArrayList<>());
+        testrunReservationDTO.getMessageChannels().forEach((testrunMessageChannelDTO -> {
+            TestrunMessageChannelDTO testrunMessageChannel = TestrunMessageChannelDTO
+                .builder()
+                .testrun(testrun)
+                .messageChannel(testrunMessageChannelDTO.getMessageChannel())
+                .build();
+            testrun.getMessageChannels().add(testrunMessageChannel);
         }));
 
         testrun.setProfiles(new ArrayList<>());
@@ -174,6 +186,17 @@ public class TestrunScheduler {
                 .testrun(testrun)
                 .retryCount(testrunHookDTO.getRetryCount())
                 .build());
+        }));
+
+        // testrunIteration의 messageChannels를 testrun의 messageChannels로 변환하여 저장
+        testrun.setMessageChannels(new ArrayList<>());
+        testrunIterationDTO.getMessageChannels().forEach((testrunMessageChannelDTO -> {
+            TestrunMessageChannelDTO testrunMessageChannel = TestrunMessageChannelDTO
+                .builder()
+                .testrun(testrun)
+                .messageChannel(testrunMessageChannelDTO.getMessageChannel())
+                .build();
+            testrun.getMessageChannels().add(testrunMessageChannel);
         }));
 
         testrun.setProfiles(new ArrayList<>());

@@ -16,11 +16,24 @@ public class TestrunMessageChannelDTO extends CommonDTO {
 
     private Long id;
     private TestrunDTO testrun;
+    private TestrunReservationDTO testrunReservation;
+    private TestrunIterationDTO testrunIteration;
     private ProjectMessageChannelDTO messageChannel;
 
     public TestrunMessageChannelDTO(TestrunMessageChannel testrunMessageChannel) {
         this.id = testrunMessageChannel.getId();
-        this.testrun = TestrunDTO.builder().id(testrunMessageChannel.getTestrun().getId()).build();
+        if (testrunMessageChannel.getTestrun() != null) {
+            this.testrun = TestrunDTO.builder().id(testrunMessageChannel.getTestrun().getId()).build();
+        }
+
+        if (testrunMessageChannel.getTestrunReservation() != null) {
+            this.testrunReservation = TestrunReservationDTO.builder().id(testrunMessageChannel.getTestrunReservation().getId()).build();
+        }
+
+        if (testrunMessageChannel.getTestrunIteration() != null) {
+            this.testrunIteration = TestrunIterationDTO.builder().id(testrunMessageChannel.getTestrunIteration().getId()).build();
+        }
+
         this.messageChannel = new ProjectMessageChannelDTO(testrunMessageChannel.getMessageChannel());
     }
 

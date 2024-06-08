@@ -36,6 +36,7 @@ public class TestrunReservationResponse {
     private List<TestrunTestcaseGroupResponse> conditionalTestcaseGroups;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
+    private List<TestrunMessageChannelResponse> messageChannels;
 
     public TestrunReservationResponse(TestrunReservationDTO testrunReservation) {
         this.id = testrunReservation.getId();
@@ -76,6 +77,10 @@ public class TestrunReservationResponse {
 
         if (testrunReservation.getHooks() != null && !testrunReservation.getHooks().isEmpty()) {
             this.hooks = testrunReservation.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrunReservation.getMessageChannels() != null && !testrunReservation.getMessageChannels().isEmpty()) {
+            this.messageChannels = testrunReservation.getMessageChannels().stream().map(TestrunMessageChannelResponse::new).collect(Collectors.toList());
         }
 
 

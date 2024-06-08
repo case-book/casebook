@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.space.dto.SpaceProfileDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
@@ -35,6 +36,7 @@ public class TestrunReservationRequest {
     private boolean selectUpdatedTestcase;
     private List<Long> profileIds;
     private List<TestrunHookRequest> hooks;
+    private List<TestrunMessageChannelRequest> messageChannels;
 
 
     public TestrunReservationDTO buildEntity() {
@@ -115,6 +117,14 @@ public class TestrunReservationRequest {
             }).collect(Collectors.toList());
 
             testrunReservation.setTestcaseGroups(groups);
+        }
+
+        if (messageChannels != null) {
+            testrunReservation.setMessageChannels(messageChannels.stream().map((testrunMessageChannelRequest) -> {
+                TestrunMessageChannelDTO testrunMessageChannel = testrunMessageChannelRequest.toDTO();
+                testrunMessageChannel.setTestrunReservation(testrunReservation);
+                return testrunMessageChannel;
+            }).collect(Collectors.toList()));
         }
 
         return testrunReservation;

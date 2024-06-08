@@ -106,6 +106,10 @@ public class TestrunReservation extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunHook> hooks;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunMessageChannel> messageChannels;
+
     public void updateTestcaseCount() {
         int testcaseGroupCountResult = 0;
         int testcaseCountResult = 0;
