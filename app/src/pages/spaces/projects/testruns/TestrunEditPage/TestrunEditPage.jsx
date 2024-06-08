@@ -14,7 +14,6 @@ import {
   PageButtons,
   PageContent,
   PageTitle,
-  Tag,
   TestcaseSelectorSummary,
   Text,
   TextArea,
@@ -28,11 +27,11 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
-import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
+import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup/ProjectUserSelectPopup';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
-import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
@@ -564,50 +563,20 @@ function TestrunEditPage({ type }) {
             <Title border={false} marginBottom={false}>
               {t('알림 채널')}
             </Title>
+            <TestrunMessageChannelSelector
+              projectMessageChannels={project?.messageChannels}
+              messageChannels={testrun?.messageChannels}
+              onChange={messageChannels => {
+                setTestrun({
+                  ...testrun,
+                  messageChannels,
+                });
+              }}
+            />
             {!(project?.messageChannels?.length > 0) && (
               <EmptyContent className="empty-content">
                 <div>{t('등록된 메세지 채널이 없습니다.')}</div>
               </EmptyContent>
-            )}
-            {project?.messageChannels?.length > 0 && (
-              <ul className="message-channels">
-                {project.messageChannels.map((messageChannel, inx) => {
-                  return (
-                    <li key={inx}>
-                      <div>
-                        <CheckBox
-                          type="checkbox"
-                          size="xs"
-                          value={!!testrun?.messageChannels?.find(d => d.projectMessageChannelId === messageChannel.id)}
-                          onChange={val => {
-                            const nextMessageChannels = testrun.messageChannels.slice(0);
-
-                            if (val) {
-                              nextMessageChannels.push({ projectMessageChannelId: messageChannel.id });
-                            } else {
-                              const index = nextMessageChannels.findIndex(d => d.projectMessageChannelId === messageChannel.id);
-                              if (index > -1) {
-                                nextMessageChannels.splice(index, 1);
-                              }
-                            }
-
-                            setTestrun({
-                              ...testrun,
-                              messageChannels: nextMessageChannels,
-                            });
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <Tag size="sm" color="white" border>
-                          {CHANNEL_TYPE_CODE[messageChannel.messageChannelType]}
-                        </Tag>
-                      </div>
-                      <div>{messageChannel.name}</div>
-                    </li>
-                  );
-                })}
-              </ul>
             )}
             <Title
               border={false}

@@ -12,6 +12,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class TestrunUpdateRequest {
+public class TestrunUpdateRequest implements IRequestVO<TestrunDTO> {
 
     private Long id;
     private String name;
@@ -39,8 +40,9 @@ public class TestrunUpdateRequest {
     private List<TestrunHookRequest> hooks;
     private List<TestrunMessageChannelRequest> messageChannels;
 
-    public TestrunDTO buildEntity() {
 
+    @Override
+    public TestrunDTO toDTO() {
         TestrunDTO testrun = TestrunDTO.builder()
             .id(id)
             .name(name)
@@ -58,7 +60,7 @@ public class TestrunUpdateRequest {
 
         if (hooks != null) {
             testrun.setHooks(hooks.stream().map((testrunHookRequest -> {
-                TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+                TestrunHookDTO testrunHookDTO = testrunHookRequest.toDTO();
                 testrunHookDTO.setTestrun(testrun);
                 return testrunHookDTO;
             })).collect(Collectors.toList()));
@@ -115,6 +117,4 @@ public class TestrunUpdateRequest {
 
         return testrun;
     }
-
-
 }

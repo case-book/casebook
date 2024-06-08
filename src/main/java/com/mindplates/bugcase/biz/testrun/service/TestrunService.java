@@ -994,10 +994,10 @@ public class TestrunService {
     }
 
     @Transactional
-    public TestrunHookDTO updateTestrunHook(TestrunHookDTO testrunHookDTO) {
-        TestrunHook testrunHook = mappingUtil.convert(testrunHookDTO, TestrunHook.class);
-        testrunHookRepository.save(testrunHook);
-        return new TestrunHookDTO(testrunHook);
+    public TestrunHookDTO updateTestrunHook(TestrunHookDTO testrunHook) {
+        TestrunHook target = mappingUtil.convert(testrunHook, TestrunHook.class);
+        testrunHookRepository.save(target);
+        return new TestrunHookDTO(target);
     }
 
     public void notifyTestrun(String spaceCode, Long projectId, Long testrunId) {

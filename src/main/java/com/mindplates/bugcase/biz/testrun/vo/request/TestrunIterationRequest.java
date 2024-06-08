@@ -77,7 +77,7 @@ public class TestrunIterationRequest {
 
         if (hooks != null) {
             testrunIteration.setHooks(hooks.stream().map((testrunHookRequest -> {
-                TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+                TestrunHookDTO testrunHookDTO = testrunHookRequest.toDTO();
                 testrunHookDTO.setTestrunIteration(testrunIteration);
                 return testrunHookDTO;
             })).collect(Collectors.toList()));

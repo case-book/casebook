@@ -57,7 +57,7 @@ public class TestrunReservationRequest {
 
         if (hooks != null) {
             testrunReservation.setHooks(hooks.stream().map((testrunHookRequest -> {
-                TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+                TestrunHookDTO testrunHookDTO = testrunHookRequest.toDTO();
                 testrunHookDTO.setTestrunReservation(testrunReservation);
                 return testrunHookDTO;
             })).collect(Collectors.toList()));

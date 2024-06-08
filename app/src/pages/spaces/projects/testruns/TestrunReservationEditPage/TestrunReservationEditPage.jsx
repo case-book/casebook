@@ -7,7 +7,7 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
-import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
+import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup/ProjectUserSelectPopup';
 import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';

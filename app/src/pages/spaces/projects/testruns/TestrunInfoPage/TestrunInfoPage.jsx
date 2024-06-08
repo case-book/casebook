@@ -6,12 +6,12 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { CHANNEL_TYPE_CODE, ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import './TestrunInfoPage.scss';
-import { TestrunHookInfoPopup, TestrunHookTable } from '@/assets';
+import { TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -374,28 +374,7 @@ function TestrunInfoPage() {
           )}
           <Block>
             <BlockRow className="testrun-hooks-content">
-              {testrun?.messageChannels?.length > 0 && (
-                <ul className="message-channels">
-                  {testrun.messageChannels?.map((channel, inx) => {
-                    const channelInfo = project.messageChannels.find(d => d.id === channel.projectMessageChannelId);
-
-                    if (!channelInfo) {
-                      return null;
-                    }
-
-                    return (
-                      <li key={inx}>
-                        <div>
-                          <Tag size="sm" color="white" border>
-                            {CHANNEL_TYPE_CODE[channelInfo.messageChannelType]}
-                          </Tag>
-                        </div>
-                        <div>{channelInfo.name}</div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <TestrunMessageChannelList messageChannels={testrun?.messageChannels} projectMessageChannels={project?.messageChannels} />
             </BlockRow>
           </Block>
           <Title border={false} marginBottom={false}>

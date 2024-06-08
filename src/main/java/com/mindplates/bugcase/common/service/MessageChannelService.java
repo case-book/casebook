@@ -77,8 +77,6 @@ public class MessageChannelService {
     }
 
 
-
-
     /**
      * 테스트 실행이 시작될 때 메시지를 보냅니다.
      *
@@ -130,11 +128,11 @@ public class MessageChannelService {
      * 테스트 실행이 재개될 때 메시지를 보냅니다.
      *
      * @param messageChannel 메시지가 전송될 채널입니다. 이것은 슬랙 채널이거나 웹훅일 수 있습니다.
-     * @param spaceCode 프로젝트가 위치한 공간의 코드입니다.
-     * @param projectId 테스트 실행이 재개되는 프로젝트의 ID입니다.
-     * @param testrunId 재개되는 테스트 실행의 ID입니다.
-     * @param testrunName 재개되는 테스트 실행의 이름입니다.
-     * @param testers 테스트 실행에 할당된 테스터의 목록입니다.
+     * @param spaceCode      프로젝트가 위치한 공간의 코드입니다.
+     * @param projectId      테스트 실행이 재개되는 프로젝트의 ID입니다.
+     * @param testrunId      재개되는 테스트 실행의 ID입니다.
+     * @param testrunName    재개되는 테스트 실행의 이름입니다.
+     * @param testers        테스트 실행에 할당된 테스터의 목록입니다.
      */
     public void sendTestrunReOpenMessage(SpaceMessageChannelDTO messageChannel, String spaceCode, Long projectId, Long testrunId, String testrunName,
         List<ProjectUserDTO> testers) {
@@ -326,10 +324,9 @@ public class MessageChannelService {
     }
 
 
-
     public boolean sendTestMessage(SpaceMessageChannelDTO messageChannel) {
 
-        String message = messageSourceAccessor.getMessage("test.message");
+        String message = messageSourceAccessor.getMessage("message.channel.sample.message");
 
         if (messageChannel.getMessageChannelType().equals(MessageChannelTypeCode.SLACK)) {
             return sendSlack(messageChannel.getUrl(), message);
