@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,13 +50,15 @@ public class HttpRequestUtil {
 
     public TestrunHookResult request(String url, HttpMethod method, List<Map<String, String>> headers, List<Map<String, String>> bodies) {
         try {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            headers.forEach(header -> httpHeaders.set(header.get("key"), header.get("value")));
-            HttpEntity<String> request = new HttpEntity<String>(httpHeaders);
+            MultiValueMap<String, String> headerData = new LinkedMultiValueMap<>();
+            headers.forEach(header -> headerData.add(header.get("key"), header.get("value")));
+            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+            bodies.forEach(body -> formData.set(body.get("key"), body.get("value")));
+            HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headerData);
             ResponseEntity<String> response = restTemplate.exchange(
                 url,
                 method,
-                request,
+                entity,
                 String.class
             );
 
@@ -66,5 +70,27 @@ public class HttpRequestUtil {
         }
 
     }
+
+    public TestrunHookResult request(String url, HttpMethod method, List<Map<String, String>> headers, String message) {
+        try {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            headers.forEach(header -> httpHeaders.set(header.get("key"), header.get("value")));
+            HttpEntity<String> entity = new HttpEntity<String>(message, httpHeaders);
+            ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                method,
+                entity,
+                String.class
+            );
+
+            return TestrunHookResult.builder().code(response.getStatusCode()).message(response.getBody()).build();
+        } catch (HttpServerErrorException e) {
+            return TestrunHookResult.builder().code(e.getStatusCode()).message(e.getMessage()).build();
+        } catch (Exception e) {
+            return TestrunHookResult.builder().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage()).build();
+        }
+
+    }
+
 
 }

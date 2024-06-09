@@ -48,6 +48,7 @@ public class TestrunIterationResponse {
     private Integer testrunUserCount;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
+    private List<TestrunMessageChannelResponse> messageChannels;
 
     public TestrunIterationResponse(TestrunIterationDTO testrunIteration) {
         this.id = testrunIteration.getId();
@@ -92,6 +93,10 @@ public class TestrunIterationResponse {
 
         if (testrunIteration.getHooks() != null && !testrunIteration.getHooks().isEmpty()) {
             this.hooks = testrunIteration.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrunIteration.getMessageChannels() != null && !testrunIteration.getMessageChannels().isEmpty()) {
+            this.messageChannels = testrunIteration.getMessageChannels().stream().map(TestrunMessageChannelResponse::new).collect(Collectors.toList());
         }
     }
 

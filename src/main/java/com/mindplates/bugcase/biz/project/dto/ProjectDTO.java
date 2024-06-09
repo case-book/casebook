@@ -1,18 +1,16 @@
 package com.mindplates.bugcase.biz.project.dto;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -36,8 +34,7 @@ public class ProjectDTO extends CommonDTO {
     private Integer testrunSeq = 0;
     private Long testrunCount = 0L;
     private Long testcaseCount = 0L;
-    private String slackUrl;
-    private boolean enableTestrunAlarm;
+    private List<ProjectMessageChannelDTO> messageChannels;
 
     public ProjectDTO(Project project, boolean detail) {
         this.id = project.getId();
@@ -52,8 +49,6 @@ public class ProjectDTO extends CommonDTO {
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
         this.testcaseSeq = project.getTestcaseSeq();
         this.testrunSeq = project.getTestrunSeq();
-        this.slackUrl = project.getSlackUrl();
-        this.enableTestrunAlarm = project.isEnableTestrunAlarm();
         if (project.getProjectReleases() != null) {
             this.projectReleases = project.getProjectReleases().stream().map(ProjectReleaseDTO::new).collect(Collectors.toList());
         }
@@ -71,6 +66,10 @@ public class ProjectDTO extends CommonDTO {
 
         if (detail && project.getApplicants() != null) {
             this.applicants = project.getApplicants().stream().map(ProjectApplicantDTO::new).collect(Collectors.toList());
+        }
+
+        if (detail && project.getMessageChannels() != null) {
+            this.messageChannels = project.getMessageChannels().stream().map(ProjectMessageChannelDTO::new).collect(Collectors.toList());
         }
 
     }

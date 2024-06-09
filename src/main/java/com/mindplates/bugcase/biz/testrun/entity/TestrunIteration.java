@@ -153,6 +153,10 @@ public class TestrunIteration extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunHook> hooks;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunIteration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunMessageChannel> messageChannels;
+
     public void updateInfo(TestrunIteration testrunIteration) {
         this.expired = false;
         this.name = testrunIteration.getName();
@@ -194,6 +198,12 @@ public class TestrunIteration extends CommonEntity {
                     hook.setRetryCount(targetHook.getRetryCount());
                 });
         });
+
+        this.messageChannels.removeIf(messageChannel -> testrunIteration.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
+        if (testrunIteration.messageChannels != null) {
+            // testrun의 messageChannels를 반복하면서, ID가 있으면 업데이트, 없으면 추가
+            this.messageChannels.addAll(testrunIteration.messageChannels.stream().filter(targetMessageChannel -> targetMessageChannel.getId() == null).collect(Collectors.toList()));
+        }
     }
 
     public void updateIterationInfo(TestrunIterationDTO testrunIteration) {

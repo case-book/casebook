@@ -1,5 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, CloseIcon, DatePicker, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Radio, Selector, Tag, Text, TextArea, Title } from '@/components';
+import {
+  Block,
+  Button,
+  CheckBox,
+  CloseIcon,
+  DatePicker,
+  EmptyContent,
+  Form,
+  Input,
+  Label,
+  Liner,
+  Page,
+  PageButtons,
+  PageContent,
+  PageTitle,
+  Radio,
+  Selector,
+  Tag,
+  Text,
+  TextArea,
+  Title,
+} from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -8,7 +29,7 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 
-import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
+import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup/ProjectUserSelectPopup';
 import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
@@ -26,7 +47,7 @@ import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomIn
 import dateUtil from '@/utils/dateUtil';
 import './TestrunIterationEditPage.scss';
 import SpaceProfileService from '@/services/SpaceProfileService';
-import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
+import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -142,6 +163,7 @@ function TestrunIterationEditPage({ type }) {
               startTime: dateUtil.getHourMinuteTime(data.startTime),
               reserveStartDateTime: dateUtil.getTime(data.reserveStartDateTime),
               reserveEndDateTime: dateUtil.getTime(data.reserveEndDateTime),
+              messageChannels: data.messageChannels || [],
             });
           });
         } else {
@@ -162,6 +184,11 @@ function TestrunIterationEditPage({ type }) {
               };
             }),
             profileIds: defaultProfile ? [defaultProfile.id] : [],
+            messageChannels: info.messageChannels?.map(d => {
+              return {
+                projectMessageChannelId: d.id,
+              };
+            }),
           });
         }
       });
@@ -730,6 +757,24 @@ function TestrunIterationEditPage({ type }) {
                 </BlockRow>
               )}
             </Block>
+            <Title border={false} marginBottom={false}>
+              {t('알림 채널')}
+            </Title>
+            <TestrunMessageChannelSelector
+              projectMessageChannels={project?.messageChannels}
+              messageChannels={testrunIteration?.messageChannels}
+              onChange={messageChannels => {
+                setTestrunIteration({
+                  ...testrunIteration,
+                  messageChannels,
+                });
+              }}
+            />
+            {!(project?.messageChannels?.length > 0) && (
+              <EmptyContent className="empty-content">
+                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+              </EmptyContent>
+            )}
             <Title
               border={false}
               marginBottom={false}

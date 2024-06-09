@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.testrun.vo.request;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotEmpty;
@@ -9,7 +10,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 @Data
-public class TestrunHookRequest {
+public class TestrunHookRequest implements IRequestVO<TestrunHookDTO> {
 
     private Long id;
     private TestrunHookTiming timing;
@@ -25,7 +26,8 @@ public class TestrunHookRequest {
     private List<Map<String, String>> bodies;
     private Integer retryCount;
 
-    public TestrunHookDTO buildEntity() {
+    @Override
+    public TestrunHookDTO toDTO() {
         return TestrunHookDTO.builder()
             .id(id)
             .timing(timing)
@@ -37,6 +39,4 @@ public class TestrunHookRequest {
             .retryCount(retryCount)
             .build();
     }
-
-
 }

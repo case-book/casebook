@@ -5,10 +5,13 @@ import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
 import com.mindplates.bugcase.common.code.UserRoleCode;
-import lombok.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -25,6 +28,7 @@ public class SpaceResponse {
     private String token;
     private List<SimpleMemberResponse> users;
     private List<SpaceApplicantResponse> applicants;
+    private List<SpaceMessageChannelResponse> messageChannels;
     private List<ProjectListResponse> projects;
     private List<HolidayResponse> holidays;
 
@@ -51,6 +55,10 @@ public class SpaceResponse {
         }
         if (space.getHolidays() != null) {
             this.holidays = space.getHolidays().stream().map(HolidayResponse::new).collect(Collectors.toList());
+        }
+
+        if (space.getMessageChannels() != null) {
+            this.messageChannels = space.getMessageChannels().stream().map(SpaceMessageChannelResponse::new).collect(Collectors.toList());
         }
     }
 

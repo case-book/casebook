@@ -25,7 +25,6 @@ public class TestrunReservationListResponse {
     private Boolean autoTestcaseNotAssignedTester;
     private int testcaseGroupCount;
     private int testcaseCount;
-
     private Long testrunId;
 
     public TestrunReservationListResponse(TestrunReservationDTO testrunReservation) {

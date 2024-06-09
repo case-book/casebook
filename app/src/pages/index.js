@@ -1,5 +1,5 @@
 import SpaceListPage from '@/pages/spaces/SpaceListPage/SpaceListPage';
-import SpaceEditPage from '@/pages/spaces/SpaceEditPage';
+import SpaceEditPage from '@/pages/spaces/SpaceEditPage/SpaceEditPage';
 import SpaceInfoPage from '@/pages/spaces/SpaceInfoPage/SpaceInfoPage';
 import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVariableEditPage';
 
@@ -31,9 +31,9 @@ import AdminIndexInfoPage from '@/pages/admin/AdminIndexInfoPage/AdminIndexInfoP
 import AdminSpaceListPage from '@/pages/admin/AdminSpaceListPage';
 import AdminSpaceInfoPage from '@/pages/admin/AdminSpaceInfoPage';
 import TestrunListPage from '@/pages/spaces/projects/testruns/TestrunListPage/TestrunListPage';
-import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage';
+import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage/TestrunEditPage';
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
-import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage';
+import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestrunInfoPage';
 
 import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage';
 import ReportInfoPage from '@/pages/spaces/projects/reports/ReportInfoPage/ReportInfoPage';

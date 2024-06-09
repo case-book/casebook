@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -11,7 +11,7 @@ import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import './TestrunInfoPage.scss';
-import { TestrunHookInfoPopup, TestrunHookTable } from '@/assets';
+import { TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -362,6 +362,19 @@ function TestrunInfoPage() {
                   </Tbody>
                 </Table>
               )}
+            </BlockRow>
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('알림 채널')}
+          </Title>
+          {!(testrun?.messageChannels?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          <Block>
+            <BlockRow className="testrun-hooks-content">
+              <TestrunMessageChannelList messageChannels={testrun?.messageChannels} projectMessageChannels={project?.messageChannels} />
             </BlockRow>
           </Block>
           <Title border={false} marginBottom={false}>

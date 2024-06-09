@@ -154,4 +154,19 @@ SpaceService.withdrawSpace = (spaceCode, successHandler, failHandler) => {
   );
 };
 
+SpaceService.selectSpaceChannelList = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/channels`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    i18n.t('스페이스에 등록된 채널을 가져오고 있습니다.'),
+  );
+};
+
 export default SpaceService;

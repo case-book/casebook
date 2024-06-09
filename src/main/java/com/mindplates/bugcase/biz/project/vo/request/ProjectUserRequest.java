@@ -14,7 +14,6 @@ public class ProjectUserRequest implements IRequestVO<ProjectUserDTO> {
     private String crud;
     private Long userId;
     private UserRoleCode role;
-
     private String tags;
 
     public ProjectUserDTO toDTO() {

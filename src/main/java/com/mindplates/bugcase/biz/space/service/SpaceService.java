@@ -2,17 +2,25 @@ package com.mindplates.bugcase.biz.space.service;
 
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
+import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
+import com.mindplates.bugcase.biz.space.repository.SpaceMessageChannelRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceVariableRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
@@ -50,6 +58,9 @@ public class SpaceService {
     private final SpaceVariableRepository spaceVariableRepository;
     private final SpaceProfileRepository spaceProfileRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
+    private final SpaceMessageChannelRepository spaceMessageChannelRepository;
+    private final ProjectMessageChannelRepository projectMessageChannelRepository;
+    private final TestrunMessageChannelRepository testrunMessageChannelRepository;
 
     private boolean existByCode(String code) {
         Long count = spaceRepository.countByCode(code);
@@ -130,6 +141,75 @@ public class SpaceService {
         spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
+
+        if (updateSpaceInfo.getMessageChannels() == null || updateSpaceInfo.getMessageChannels().isEmpty()) {
+            if (!spaceInfo.getMessageChannels().isEmpty()) {
+                spaceInfo.getMessageChannels().clear();
+            }
+        } else {
+
+
+            List<Long> deleteMessageChannelIds = spaceInfo.getMessageChannels().stream()
+                .filter((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream()
+                    .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(spaceMessageChannel.getId())))))
+                .map(SpaceMessageChannelDTO::getId)
+                .collect(Collectors.toList());
+
+            spaceInfo.getMessageChannels().removeIf((projectMessageChannel -> deleteMessageChannelIds.contains(projectMessageChannel.getId())));
+
+            // deleteMessageChannelIds에 있는 ID를 가진 testrunMessageChannel 삭제
+            deleteMessageChannelIds.forEach((deleteSpaceMessageChannelId -> {
+                projectMessageChannelRepository.findAllByMessageChannelId(deleteSpaceMessageChannelId).forEach((projectMessageChannel -> {
+                    testrunMessageChannelRepository.deleteByProjectMessageChannelId(projectMessageChannel.getId());
+                }));
+                projectMessageChannelRepository.deleteBySpaceMessageChannelId(deleteSpaceMessageChannelId);
+            }));
+
+            updateSpaceInfo.getMessageChannels().forEach((updateChannel -> {
+                if (updateChannel.getId() == null) {
+                    spaceInfo.getMessageChannels().add(updateChannel);
+                } else {
+                    SpaceMessageChannelDTO targetChannel = spaceInfo.getMessageChannels().stream().filter((channel -> channel.getId().equals(updateChannel.getId()))).findAny().orElse(null);
+                    if (targetChannel != null) {
+                        targetChannel.setName(updateChannel.getName());
+                        targetChannel.setUrl(updateChannel.getUrl());
+                        targetChannel.setHttpMethod(updateChannel.getHttpMethod());
+                        targetChannel.setMessageChannelType(updateChannel.getMessageChannelType());
+                        targetChannel.setPayloadType(updateChannel.getPayloadType());
+                        targetChannel.setJson(updateChannel.getJson());
+
+                        // updateChannel의 header를 id가 존재하는지에 따라 업데이터 및 추가 처리
+                        targetChannel.getHeaders().removeIf((header -> updateChannel.getHeaders().stream().noneMatch((updateHeader -> updateHeader.getId().equals(header.getId())))));
+                        updateChannel.getHeaders().forEach((updateHeader -> {
+                            if (updateHeader.getId() == null) {
+                                targetChannel.getHeaders().add(updateHeader);
+                            } else {
+                                SpaceMessageChannelHeaderDTO targetHeader = targetChannel.getHeaders().stream().filter((header -> header.getId().equals(updateHeader.getId()))).findAny().orElse(null);
+                                if (targetHeader != null) {
+                                    targetHeader.setDataKey(updateHeader.getDataKey());
+                                    targetHeader.setDataValue(updateHeader.getDataValue());
+                                }
+                            }
+                        }));
+
+                        // updateChannel의 payloads를 id가 존재하는지에 따라 업데이터 및 추가 처리
+                        targetChannel.getPayloads().removeIf((payload -> updateChannel.getPayloads().stream().noneMatch((updatePayload -> updatePayload.getId().equals(payload.getId())))));
+                        updateChannel.getPayloads().forEach((updatePayload -> {
+                            if (updatePayload.getId() == null) {
+                                targetChannel.getPayloads().add(updatePayload);
+                            } else {
+                                SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny().orElse(null);
+                                if (targetPayload != null) {
+                                    targetPayload.setDataKey(updatePayload.getDataKey());
+                                    targetPayload.setDataValue(updatePayload.getDataValue());
+                                }
+                            }
+                        }));
+
+                    }
+                }
+            }));
+        }
 
         updateSpaceInfo.getUsers().forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {
@@ -344,6 +424,11 @@ public class SpaceService {
         spaceRepository.save(mappingUtil.convert(space, Space.class));
         notificationService.createSpaceUserWithdrawInfo(space, targetUser.getName() + " [" + targetUser.getEmail() + "]");
 
+    }
+
+    public List<SpaceMessageChannelDTO> selectSpaceMessageChannels(String spaceCode) {
+        List<SpaceMessageChannel> spaceMessageChannels = spaceMessageChannelRepository.findAllBySpaceCode(spaceCode);
+        return spaceMessageChannels.stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
     }
 
 }

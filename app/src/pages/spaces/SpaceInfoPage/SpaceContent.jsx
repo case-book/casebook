@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import dialogUtil from '@/utils/dialogUtil';
 import {
   APPROVAL_STATUS_INFO,
+  CHANNEL_TYPE_CODE,
   COUNTRIES,
   DATE_FORMATS,
   HOLIDAY_CONDITION_DAY_LIST,
@@ -212,6 +213,30 @@ function SpaceContent({ space, onRefresh }) {
         <Block>
           <MemberCardManager users={users} />
         </Block>
+        <Title>{t('메세지 채널')}</Title>
+        <Block>
+          {!(space.messageChannels?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          {space.messageChannels?.length > 0 && (
+            <ul className="message-channels">
+              {space.messageChannels.map((messageChannel, inx) => {
+                return (
+                  <li key={inx}>
+                    <div>
+                      <Tag size="sm" color="white" border>
+                        {CHANNEL_TYPE_CODE[messageChannel.messageChannelType]}
+                      </Tag>
+                    </div>
+                    <div>{messageChannel.name}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Block>
         {(isAdmin || space?.admin) && (
           <>
             <Title
@@ -236,7 +261,7 @@ function SpaceContent({ space, onRefresh }) {
               {t('스페이스 참여 요청')}
             </Title>
             <Block>
-              {applicants?.length < 1 && (
+              {(!applicants || applicants?.length < 1) && (
                 <EmptyContent className="empty-content">
                   <div>{t('참여 요청이 없습니다.')}</div>
                 </EmptyContent>

@@ -6,21 +6,25 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class TestrunCreateRequest {
+public class TestrunCreateRequest implements IRequestVO<TestrunDTO> {
 
     private Long id;
+    @NotBlank
     private String name;
     private String description;
     private Long projectId;
@@ -37,9 +41,10 @@ public class TestrunCreateRequest {
     private Boolean autoTestcaseNotAssignedTester;
     private List<Long> profileIds;
     private List<TestrunHookRequest> hooks;
+    private List<TestrunMessageChannelRequest> messageChannels;
 
-    public TestrunDTO buildEntity() {
-
+    @Override
+    public TestrunDTO toDTO() {
         TestrunDTO testrun = TestrunDTO.builder()
             .id(id)
             .name(name)
@@ -58,7 +63,7 @@ public class TestrunCreateRequest {
 
         if (hooks != null) {
             testrun.setHooks(hooks.stream().map((testrunHookRequest -> {
-                TestrunHookDTO testrunHookDTO = testrunHookRequest.buildEntity();
+                TestrunHookDTO testrunHookDTO = testrunHookRequest.toDTO();
                 testrunHookDTO.setTestrun(testrun);
                 return testrunHookDTO;
             })).collect(Collectors.toList()));
@@ -109,8 +114,14 @@ public class TestrunCreateRequest {
             testrun.setTestcaseGroups(groups);
         }
 
+        if (messageChannels != null) {
+            testrun.setMessageChannels(messageChannels.stream().map((testrunMessageChannelRequest) -> {
+                TestrunMessageChannelDTO testrunMessageChannel = testrunMessageChannelRequest.toDTO();
+                testrunMessageChannel.setTestrun(testrun);
+                return testrunMessageChannel;
+            }).collect(Collectors.toList()));
+        }
+
         return testrun;
     }
-
-
 }
