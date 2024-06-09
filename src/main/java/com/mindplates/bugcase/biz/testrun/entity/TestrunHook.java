@@ -80,13 +80,9 @@ public class TestrunHook extends CommonEntity {
     @Column(name = "result", length = ColumnsDef.CODE)
     private String result;
 
-    @Column(name = "message", columnDefinition = ColumnsDef.LONGTEXT)
-    private String message;
-
     public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
         TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
-        this.message = testrunHookResult.getMessage();
         return testrunHookResult;
     }
 }

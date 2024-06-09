@@ -32,7 +32,6 @@ public class TestrunHookDTO extends CommonDTO {
     private TestrunIterationDTO testrunIteration;
     private Integer retryCount;
     private String result;
-    private String message;
 
 
     public TestrunHookDTO(TestrunHook testrunHook) {
@@ -57,14 +56,11 @@ public class TestrunHookDTO extends CommonDTO {
 
         this.retryCount = testrunHook.getRetryCount();
         this.result = testrunHook.getResult();
-        this.message = testrunHook.getMessage();
     }
 
     public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
         TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
-        this.message = testrunHookResult.getMessage();
-
         return testrunHookResult;
 
 

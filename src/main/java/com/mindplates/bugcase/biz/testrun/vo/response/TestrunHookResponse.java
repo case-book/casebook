@@ -27,7 +27,6 @@ public class TestrunHookResponse {
     private Long testrunIterationId;
     private Integer retryCount;
     private String result;
-    private String message;
 
     public TestrunHookResponse(TestrunHookDTO testrunHookDTO) {
         this.id = testrunHookDTO.getId();
@@ -50,7 +49,6 @@ public class TestrunHookResponse {
         }
         this.retryCount = testrunHookDTO.getRetryCount();
         this.result = testrunHookDTO.getResult();
-        this.message = testrunHookDTO.getMessage();
 
     }
 
