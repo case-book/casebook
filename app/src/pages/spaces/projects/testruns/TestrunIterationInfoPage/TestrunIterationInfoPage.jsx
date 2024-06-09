@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -20,7 +20,7 @@ import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import './TestrunIterationInfoPage.scss';
 import SpaceProfileService from '@/services/SpaceProfileService';
-import { TestrunHookInfoPopup, TestrunHookTable } from '@/assets';
+import { TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -263,6 +263,12 @@ function TestrunIterationInfoPage() {
               <Text>{testrunIteration.deadlineClose ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                {t('자동화 테스터 제외')}
+              </Label>
+              <Text>{testrunIteration.autoTestcaseNotAssignedTester ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
               <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
               {testrunIteration.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
               {testrunIteration.testrunUsers?.length > 0 && (
@@ -361,6 +367,19 @@ function TestrunIterationInfoPage() {
                   </Tbody>
                 </Table>
               )}
+            </BlockRow>
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('알림 채널')}
+          </Title>
+          {!(testrunIteration?.messageChannels?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          <Block>
+            <BlockRow className="testrun-hooks-content">
+              <TestrunMessageChannelList messageChannels={testrunIteration?.messageChannels} projectMessageChannels={project?.messageChannels} />
             </BlockRow>
           </Block>
           <Title border={false} marginBottom={false}>

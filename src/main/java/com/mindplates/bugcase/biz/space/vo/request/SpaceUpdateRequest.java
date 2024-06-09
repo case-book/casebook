@@ -29,6 +29,7 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
     private List<HolidayRequest> holidays;
     private String country;
     private String timeZone;
+    private List<SpaceMessageChannelRequest> messageChannels;
 
     @Override
     public SpaceDTO toDTO() {
@@ -46,6 +47,10 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
 
         if (holidays != null) {
             space.setHolidays(holidays.stream().map(holiday -> holiday.toDTO(space)).collect(Collectors.toList()));
+        }
+
+        if (messageChannels != null) {
+            space.setMessageChannels(messageChannels.stream().map(messageChannel -> messageChannel.toDTO(space)).collect(Collectors.toList()));
         }
 
         return space;

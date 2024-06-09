@@ -18,9 +18,8 @@ public class ProjectCreateRequest implements IRequestVO<ProjectDTO> {
     private String token;
     private List<TestcaseTemplateRequest> testcaseTemplates;
     private List<ProjectUserRequest> users;
-    private String slackUrl;
-    private boolean enableTestrunAlarm;
     private Long targetReleaseId;
+    private List<ProjectMessageChannelRequest> messageChannels;
 
     public ProjectDTO toDTO() {
 
@@ -30,8 +29,6 @@ public class ProjectCreateRequest implements IRequestVO<ProjectDTO> {
                 .description(description)
                 .token(token)
                 .activated(activated)
-                .slackUrl(slackUrl)
-                .enableTestrunAlarm(enableTestrunAlarm)
                 .build();
 
         if (users != null) {
@@ -41,6 +38,12 @@ public class ProjectCreateRequest implements IRequestVO<ProjectDTO> {
         if (testcaseTemplates != null) {
             project.setTestcaseTemplates(testcaseTemplates.stream().map((testcaseTemplateRequest -> testcaseTemplateRequest.toDTO(project))).collect(Collectors.toList()));
         }
+
+        if (messageChannels != null) {
+            project.setMessageChannels(messageChannels.stream().map((projectMessageChannelRequest -> projectMessageChannelRequest.toDTO(project))).collect(Collectors.toList()));
+        }
+
+
 
         return project;
     }

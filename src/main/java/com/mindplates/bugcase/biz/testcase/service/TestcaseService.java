@@ -461,6 +461,7 @@ public class TestcaseService {
             .testerType(testcase.getTesterType())
             .testerValue(testcase.getTesterValue())
             .contentUpdateDate(testcase.getContentUpdateDate())
+            .testcaseItems(testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()))
             .build()).collect(Collectors.toList());
     }
 

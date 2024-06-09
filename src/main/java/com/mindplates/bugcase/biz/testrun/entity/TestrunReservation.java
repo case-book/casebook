@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
@@ -77,6 +76,9 @@ public class TestrunReservation extends CommonEntity {
     @Column(name = "deadline_close")
     private Boolean deadlineClose;
 
+    @Column(name = "auto_testcase_not_assigned_tester")
+    private Boolean autoTestcaseNotAssignedTester;
+
     @Column(name = "testcase_group_count")
     private Integer testcaseGroupCount;
 
@@ -104,6 +106,10 @@ public class TestrunReservation extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunHook> hooks;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunMessageChannel> messageChannels;
+
     public void updateTestcaseCount() {
         int testcaseGroupCountResult = 0;
         int testcaseCountResult = 0;
@@ -130,24 +136,31 @@ public class TestrunReservation extends CommonEntity {
         this.startDateTime = testrunReservation.getStartDateTime();
         this.endDateTime = testrunReservation.getEndDateTime();
         this.deadlineClose = testrunReservation.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
         this.profiles.clear();
         this.profiles.addAll(testrunReservation.getProfiles());
         this.hooks.removeIf(hook -> testrunReservation.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
-        this.hooks.addAll(testrunReservation.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
-        this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
-            testrunReservation.getHooks()
-                .stream()
-                .filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny()
-                .ifPresent(targetHook -> {
-                    hook.setTiming(targetHook.getTiming());
-                    hook.setName(targetHook.getName());
-                    hook.setUrl(targetHook.getUrl());
-                    hook.setMethod(targetHook.getMethod());
-                    hook.setHeaders(targetHook.getHeaders());
-                    hook.setBodies(targetHook.getBodies());
-                    hook.setRetryCount(targetHook.getRetryCount());
-                });
-        });
+        if (testrunReservation.hooks != null) {
+            this.hooks.addAll(testrunReservation.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        }
+
+        if (this.hooks != null) {
+            this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
+                testrunReservation.getHooks()
+                    .stream()
+                    .filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny()
+                    .ifPresent(targetHook -> {
+                        hook.setTiming(targetHook.getTiming());
+                        hook.setName(targetHook.getName());
+                        hook.setUrl(targetHook.getUrl());
+                        hook.setMethod(targetHook.getMethod());
+                        hook.setHeaders(targetHook.getHeaders());
+                        hook.setBodies(targetHook.getBodies());
+                        hook.setRetryCount(targetHook.getRetryCount());
+                    });
+            });
+        }
+
     }
 
     public void updateTestrunUsers(List<TestrunUser> newTestrunUsers) {

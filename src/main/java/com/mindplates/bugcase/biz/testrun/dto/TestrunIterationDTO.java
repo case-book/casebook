@@ -7,16 +7,15 @@ import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor
@@ -42,6 +41,7 @@ public class TestrunIterationDTO extends CommonDTO {
     private Integer week;
     private Integer day;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
 
     private TestrunIterationUserFilterTypeCode testrunIterationUserFilterType;
     private TestrunIterationUserFilterSelectRuleCode testrunIterationUserFilterSelectRule;
@@ -56,6 +56,7 @@ public class TestrunIterationDTO extends CommonDTO {
     private Integer testrunUserCount;
     private List<TestrunProfileDTO> profiles;
     private List<TestrunHookDTO> hooks;
+    private List<TestrunMessageChannelDTO> messageChannels;
 
     public TestrunIterationDTO(TestrunIteration testrunIteration) {
         this.id = testrunIteration.getId();
@@ -80,7 +81,7 @@ public class TestrunIterationDTO extends CommonDTO {
         this.week = testrunIteration.getWeek();
         this.day = testrunIteration.getDay();
         this.deadlineClose = testrunIteration.getDeadlineClose();
-
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
         this.testrunIterationUserFilterType = testrunIteration.getTestrunIterationUserFilterType();
         this.testrunIterationUserFilterSelectRule = testrunIteration.getTestrunIterationUserFilterSelectRule();
         this.filteringUserCount = testrunIteration.getFilteringUserCount();
@@ -93,6 +94,9 @@ public class TestrunIterationDTO extends CommonDTO {
         this.profiles = testrunIteration.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
         if (testrunIteration.getHooks() != null) {
             this.hooks = testrunIteration.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
+        }
+        if (testrunIteration.getMessageChannels() != null) {
+            this.messageChannels = testrunIteration.getMessageChannels().stream().map(TestrunMessageChannelDTO::new).collect(Collectors.toList());
         }
     }
 

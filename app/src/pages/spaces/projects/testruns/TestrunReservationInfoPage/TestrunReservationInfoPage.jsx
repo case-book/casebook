@@ -12,7 +12,7 @@ import './TestrunReservationInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import TestrunReservationTestcaseGroupTable from '@/pages/spaces/projects/testruns/TestrunReservationInfoPage/TestrunReservationTestcaseGroupTable';
 import SpaceProfileService from '@/services/SpaceProfileService';
-import { TestrunHookInfoPopup, TestrunHookTable } from '@/assets';
+import { TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -47,6 +47,7 @@ function TestrunReservationInfoPage() {
     })(),
     expired: false,
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     testcaseGroupCount: 0,
     testcaseCount: 0,
     testrunId: null,
@@ -206,6 +207,12 @@ function TestrunReservationInfoPage() {
               <Text>{testrunReservation.deadlineClose ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                {t('자동화 테스터 제외')}
+              </Label>
+              <Text>{testrunReservation.autoTestcaseNotAssignedTester ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
               <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
               {testrunReservation.testrunUsers?.length < 1 && <Text className="no-user">{t('선택된 사용자가 없습니다.')}</Text>}
               {testrunReservation.testrunUsers?.length > 0 && (
@@ -256,6 +263,19 @@ function TestrunReservationInfoPage() {
                 </BlockRow>
               </>
             )}
+          </Block>
+          <Title border={false} marginBottom={false}>
+            {t('알림 채널')}
+          </Title>
+          {!(testrunReservation?.messageChannels?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          <Block>
+            <BlockRow className="testrun-hooks-content">
+              <TestrunMessageChannelList messageChannels={testrunReservation?.messageChannels} projectMessageChannels={project?.messageChannels} />
+            </BlockRow>
           </Block>
           <Title border={false} marginBottom={false}>
             {t('테스트런 API 훅')}

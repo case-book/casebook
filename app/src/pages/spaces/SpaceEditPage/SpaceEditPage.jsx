@@ -34,6 +34,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
 import {
+  CHANNEL_TYPE_CODE,
   COUNTRIES,
   DATE_FORMATS,
   DEFAULT_HOLIDAY,
@@ -51,6 +52,7 @@ import dateUtil from '@/utils/dateUtil';
 import moment from 'moment';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
+import MessageChannelEditPopup from '@/pages/spaces/MessageChannelEditPopup/MessageChannelEditPopup';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
@@ -73,8 +75,10 @@ function SpaceEditPage({ type }) {
     timeZone: null, // country === 'KR' ? 'Asia/Seoul' : 'US/Central',
     country,
     holidays: country === 'KR' ? cloneDeep(DEFAULT_HOLIDAY.KR) : cloneDeep(DEFAULT_HOLIDAY.US),
+    messageChannels: [],
   });
 
+  // const [messageChannelTypeList, setMessageChannelTypeList] = useState([]);
   const [timeZoneList, setTimeZoneList] = useState([]);
 
   const [holidayPopupInfo, setHolidayPopupInfo] = useState({
@@ -87,6 +91,17 @@ function SpaceEditPage({ type }) {
     month: null,
     week: null,
     day: null,
+  });
+
+  const [messageChannelPopupInfo, setMessageChannelPopupInfo] = useState({
+    isOpened: false,
+    index: null,
+    id: null,
+    name: '',
+    url: '',
+    httpMethod: '',
+    messageChannelType: null,
+    template: null,
   });
 
   const isEdit = useMemo(() => {
@@ -131,7 +146,10 @@ function SpaceEditPage({ type }) {
         });
       } else if (spaceCode && isEdit) {
         SpaceService.selectSpaceInfo(spaceCode, info => {
-          setSpace({ ...info, timeZone: zoneList.find(d => d.value === info.timeZone) });
+          setSpace({
+            ...info,
+            timeZone: zoneList.find(d => d.value === info.timeZone),
+          });
         });
       }
     });
@@ -413,7 +431,88 @@ function SpaceEditPage({ type }) {
                 </Block>
               </>
             )}
-
+            <Title
+              control={
+                <Button
+                  size="xs"
+                  color="primary"
+                  onClick={() => {
+                    setMessageChannelPopupInfo({
+                      isOpened: true,
+                      index: null,
+                    });
+                  }}
+                >
+                  {t('채널 추가')}
+                </Button>
+              }
+            >
+              {t('메세지 채널')}
+            </Title>
+            <Block>
+              {!(space.messageChannels?.length > 0) && (
+                <EmptyContent className="empty-content">
+                  <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+                </EmptyContent>
+              )}
+              {space.messageChannels?.length > 0 && (
+                <Table cols={['1px', '1px', '100%', '1px']} border>
+                  <THead>
+                    <Tr>
+                      <Th align="center">{t('타입')}</Th>
+                      <Th align="left">{t('이름')}</Th>
+                      <Th align="left">{t('URL')}</Th>
+                      <Th />
+                    </Tr>
+                  </THead>
+                  <Tbody>
+                    {space.messageChannels.map((messageChannel, inx) => {
+                      return (
+                        <Tr key={inx}>
+                          <Td align="center">
+                            <Tag size="sm" color="white" border>
+                              {CHANNEL_TYPE_CODE[messageChannel.messageChannelType]}
+                            </Tag>
+                          </Td>
+                          <Td>{messageChannel.name}</Td>
+                          <Td>{messageChannel.url}</Td>
+                          <Td>
+                            <Button
+                              size="xs"
+                              color="danger"
+                              onClick={() => {
+                                const nextMessageChannels = space.messageChannels.slice(0);
+                                nextMessageChannels.splice(inx, 1);
+                                setSpace({
+                                  ...space,
+                                  messageChannels: nextMessageChannels,
+                                });
+                              }}
+                            >
+                              {t('삭제')}
+                            </Button>
+                            <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.5rem " />
+                            <Button
+                              size="xs"
+                              color="primary"
+                              onClick={() => {
+                                setMessageChannelPopupInfo({
+                                  ...messageChannel,
+                                  isOpened: true,
+                                  index: inx,
+                                });
+                              }}
+                            >
+                              {t('변경')}
+                            </Button>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              )}
+            </Block>
             <Title
               control={
                 <Button
@@ -562,6 +661,39 @@ function SpaceEditPage({ type }) {
             setSpace({
               ...space,
               holidays: nextHolidays,
+            });
+          }}
+        />
+      )}
+      {messageChannelPopupInfo.isOpened && (
+        <MessageChannelEditPopup
+          data={messageChannelPopupInfo}
+          setOpened={() => {
+            setMessageChannelPopupInfo({
+              isOpened: false,
+            });
+          }}
+          messageChannelTypeList={['WEBHOOK', 'SLACK']}
+          onApply={messageChannelInfo => {
+            const nextMessageChannels = space.messageChannels.slice(0);
+            if (messageChannelInfo.index === null) {
+              nextMessageChannels.push(messageChannelInfo);
+            } else {
+              const nextMessageChannel = nextMessageChannels[messageChannelInfo.index];
+              nextMessageChannel.id = messageChannelInfo.id;
+              nextMessageChannel.messageChannelType = messageChannelInfo.messageChannelType;
+              nextMessageChannel.name = messageChannelInfo.name;
+              nextMessageChannel.url = messageChannelInfo.url;
+              nextMessageChannel.httpMethod = messageChannelInfo.httpMethod;
+              nextMessageChannel.payloadType = messageChannelInfo.payloadType;
+              nextMessageChannel.headers = messageChannelInfo.headers;
+              nextMessageChannel.payloads = messageChannelInfo.payloads;
+              nextMessageChannel.json = messageChannelInfo.json;
+            }
+
+            setSpace({
+              ...space,
+              messageChannels: nextMessageChannels,
             });
           }}
         />

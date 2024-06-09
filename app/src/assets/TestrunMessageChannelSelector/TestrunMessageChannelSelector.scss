@@ -1,0 +1,18 @@
+.testrun-message-channel-selector-wrapper {
+  .message-channels {
+    list-style: disc;
+    padding: 0 8px;
+    margin: 0;
+    > li {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      > div {
+        align-self: center;
+      }
+    }
+  }
+}

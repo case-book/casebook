@@ -17,7 +17,7 @@ function Version({ className }) {
     <div className={`version-wrapper ${className}`}>
       <div>
         <div className="app-version">
-          <span>CASEBOOK (APP-V{process.env.REACT_APP_VERSION}</span>
+          <span>CASEBOOK (APP-{process.env.REACT_APP_VERSION}</span>
           <span className="slash">/</span>
           <span>API-{version?.version})</span>
         </div>

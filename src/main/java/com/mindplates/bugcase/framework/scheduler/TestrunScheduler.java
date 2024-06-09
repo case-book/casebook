@@ -9,6 +9,7 @@ import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
@@ -21,7 +22,7 @@ import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
-import com.mindplates.bugcase.common.service.SlackService;
+import com.mindplates.bugcase.common.service.MessageChannelService;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Random;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -53,9 +55,11 @@ public class TestrunScheduler {
 
     private final ProjectService projectService;
 
-    private final SlackService slackService;
+    private final MessageChannelService messageChannelService;
 
     private final HttpRequestUtil httpRequestUtil;
+
+    private final MessageSourceAccessor messageSourceAccessor;
 
     private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
         TestrunDTO testrun = TestrunDTO
@@ -66,6 +70,7 @@ public class TestrunScheduler {
             .startDateTime(testrunReservationDTO.getStartDateTime())
             .endDateTime(testrunReservationDTO.getEndDateTime())
             .deadlineClose(testrunReservationDTO.getDeadlineClose())
+            .autoTestcaseNotAssignedTester(testrunReservationDTO.getAutoTestcaseNotAssignedTester())
             .build();
 
         testrun.setHooks(new ArrayList<>());
@@ -81,6 +86,17 @@ public class TestrunScheduler {
                 .testrun(testrun)
                 .retryCount(testrunHookDTO.getRetryCount())
                 .build());
+        }));
+
+        // testrunIteration의 messageChannels를 testrun의 messageChannels로 변환하여 저장
+        testrun.setMessageChannels(new ArrayList<>());
+        testrunReservationDTO.getMessageChannels().forEach((testrunMessageChannelDTO -> {
+            TestrunMessageChannelDTO testrunMessageChannel = TestrunMessageChannelDTO
+                .builder()
+                .testrun(testrun)
+                .messageChannel(testrunMessageChannelDTO.getMessageChannel())
+                .build();
+            testrun.getMessageChannels().add(testrunMessageChannel);
         }));
 
         testrun.setProfiles(new ArrayList<>());
@@ -154,6 +170,7 @@ public class TestrunScheduler {
             .startDateTime(startDateTime)
             .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
             .deadlineClose(testrunIterationDTO.getDeadlineClose())
+            .autoTestcaseNotAssignedTester(testrunIterationDTO.getAutoTestcaseNotAssignedTester())
             .build();
 
         testrun.setHooks(new ArrayList<>());
@@ -169,6 +186,17 @@ public class TestrunScheduler {
                 .testrun(testrun)
                 .retryCount(testrunHookDTO.getRetryCount())
                 .build());
+        }));
+
+        // testrunIteration의 messageChannels를 testrun의 messageChannels로 변환하여 저장
+        testrun.setMessageChannels(new ArrayList<>());
+        testrunIterationDTO.getMessageChannels().forEach((testrunMessageChannelDTO -> {
+            TestrunMessageChannelDTO testrunMessageChannel = TestrunMessageChannelDTO
+                .builder()
+                .testrun(testrun)
+                .messageChannel(testrunMessageChannelDTO.getMessageChannel())
+                .build();
+            testrun.getMessageChannels().add(testrunMessageChannel);
         }));
 
         testrun.setProfiles(new ArrayList<>());
@@ -579,8 +607,7 @@ public class TestrunScheduler {
             // String nowStartHour = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
             // String startHour = testrunIterationDTO.getStartTime().format(DateTimeFormatter.ofPattern("HH")); // FOR TEST
 
-            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(
-                reserveEndDateTime)) && nowStartTime.equals(startTime)) {
+            if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
                 TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
                 TestrunDTO result = testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
@@ -651,41 +678,38 @@ public class TestrunScheduler {
                 Long projectId = testrunDTO.getProject().getId();
                 ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
 
-                if (project.isEnableTestrunAlarm() && project.getSlackUrl() != null) {
+                if (testrunDTO.getMessageChannels() != null && !testrunDTO.getMessageChannels().isEmpty()) {
+
                     Map<Long, Integer> userRemainCount = new HashMap<>();
                     List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectUntestedTestrunTestcaseGroupTestcaseList(
                         testrunDTO.getId());
                     for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO : list) {
-                        Long testerId = testrunTestcaseGroupTestcaseDTO.getTester().getId();
-                        if (userRemainCount.containsKey(testerId)) {
-                            userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
-                        } else {
-                            userRemainCount.put(testerId, 1);
+                        if (testrunTestcaseGroupTestcaseDTO.getTester() != null) {
+                            Long testerId = testrunTestcaseGroupTestcaseDTO.getTester().getId();
+                            if (userRemainCount.containsKey(testerId)) {
+                                userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
+                            } else {
+                                userRemainCount.put(testerId, 1);
+                            }
                         }
+
                     }
 
-                    String messageCode = "";
+                    String message;
                     if (isSameTimeUntilMinute(now, last30)) {
-                        messageCode = "testrun.30m.left";
+                        message = messageSourceAccessor.getMessage("testrun.30m.left", new Object[]{testrunDTO.getName()});
                     } else if (isSameTimeUntilMinute(now, last60)) {
-                        messageCode = "testrun.60m.left";
+                        message = messageSourceAccessor.getMessage("testrun.60m.left", new Object[]{testrunDTO.getName()});
                     } else {
-                        messageCode = "testrun.half.time.left";
+                        message = messageSourceAccessor.getMessage("testrun.half.time.left");
                     }
 
-                    slackService.sendTestrunRemainInfo(project.getSlackUrl(),
-                        spaceCode,
-                        projectId,
-                        messageCode,
-                        testrunDTO.getId(),
-                        testrunDTO.getName(),
-                        project.getUsers(),
-                        userRemainCount);
+                    testrunDTO.getMessageChannels().forEach(testrunMessageChannel -> {
+                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunDTO.getId(), testrunDTO.getName(), project.getUsers(), userRemainCount);
+                    });
                 }
 
             }
-
-
         }));
 
 

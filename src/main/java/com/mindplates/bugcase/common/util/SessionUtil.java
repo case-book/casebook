@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.common.util;
 
 
+import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +30,16 @@ public class SessionUtil {
         }
 
         return id;
+    }
+
+    public static Long getUserId(boolean throwException) {
+
+        Long userId = SessionUtil.getUserId();
+        if (userId == null && throwException) {
+            throw new ServiceException("session.error.expired");
+        }
+
+        return userId;
     }
 
     public static SecurityUser getSecurityUser() {

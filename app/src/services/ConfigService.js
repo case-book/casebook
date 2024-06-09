@@ -35,10 +35,10 @@ ConfigService.createSetUpInfo = (setupInfo, successHandler, failHandler) => {
   );
 };
 
-ConfigService.sendTestMessageToSlack = (slackUrl, successHandler, failHandler) => {
+ConfigService.sendTestMessage = (messageChannel, successHandler, failHandler) => {
   return request.post(
-    '/api/configs/systems/slack',
-    { slackUrl },
+    '/api/configs/systems/message',
+    messageChannel,
     res => {
       successHandler(res);
     },
@@ -71,6 +71,17 @@ ConfigService.createServiceException = (successHandler, failHandler) => {
 ConfigService.selectTimeZoneList = (language, successHandler, failHandler) => {
   return request.get(
     `/api/configs/systems/timezones?language=${language}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ConfigService.selectMessageTypeList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/channels',
     null,
     res => {
       successHandler(res);

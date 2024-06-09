@@ -291,6 +291,10 @@ function TestrunExecutePage() {
     );
   };
 
+  const onNotify = () => {
+    TestrunService.notifyTestrunProgress(spaceCode, projectId, testrunId, () => {});
+  };
+
   const onChangeComment = (pId, comment, handler) => {
     TestrunService.updateTestrunTestcaseComment(
       spaceCode,
@@ -563,6 +567,9 @@ function TestrunExecutePage() {
         control={
           testrun.opened && (
             <div>
+              <Button size="sm" color="primary" onClick={onNotify}>
+                {t('알림 메세지 전송')}
+              </Button>
               <Button size="sm" color="warning" onClick={onClosed}>
                 {t('테스트런 종료')}
               </Button>

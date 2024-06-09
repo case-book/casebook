@@ -3,31 +3,36 @@ package com.mindplates.bugcase.biz.config.controller;
 import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.config.vo.request.SetUpRequest;
-import com.mindplates.bugcase.biz.config.vo.request.SlackTestRequest;
 import com.mindplates.bugcase.biz.config.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.config.vo.response.TimeZoneResponse;
+import com.mindplates.bugcase.biz.space.vo.request.SpaceMessageChannelRequest;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateDataResponse;
+import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.service.SlackService;
-import com.mindplates.bugcase.common.util.SessionUtil;
-import com.mindplates.bugcase.common.vo.SecurityUser;
+import com.mindplates.bugcase.common.service.MessageChannelService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.ZoneId;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.info.BuildProperties;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.time.ZoneId;
-import java.time.format.TextStyle;
-import java.util.*;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -39,9 +44,7 @@ public class SystemController {
 
     private final ConfigService configService;
 
-    private final SlackService slackService;
-
-    private final MessageSourceAccessor messageSourceAccessor;
+    private final MessageChannelService messageChannelService;
 
     @GetMapping("/info")
     @Operation(description = "API 버전 조회")
@@ -54,11 +57,9 @@ public class SystemController {
     @Operation(description = "타임존 목록 조회")
     public List<TimeZoneResponse> selectTimeZoneList(@RequestParam(value = "language") String language) {
 
-
         Locale locale = new Locale(language);
         Set<String> zoneIds = ZoneId.getAvailableZoneIds();
         List<TimeZoneResponse> timezones = new ArrayList<>();
-
 
         for (String id : zoneIds) {
             ZoneId zoneId = ZoneId.of(id);
@@ -71,7 +72,8 @@ public class SystemController {
     @GetMapping("/testcase/configs")
     @Operation(summary = "테스트케이스 마스터 데이터 조회")
     public TestcaseTemplateDataResponse selectTestcaseDataInfo() {
-        return new TestcaseTemplateDataResponse(Arrays.stream(TestcaseItemType.values()).map((testcaseItemType -> testcaseItemType.toString())).collect(Collectors.toList()), Arrays.stream(TestcaseItemCategory.values()).map((testcaseItemCategory -> testcaseItemCategory.toString())).collect(Collectors.toList()));
+        return new TestcaseTemplateDataResponse(Arrays.stream(TestcaseItemType.values()).map((testcaseItemType -> testcaseItemType.toString())).collect(Collectors.toList()),
+            Arrays.stream(TestcaseItemCategory.values()).map((testcaseItemCategory -> testcaseItemCategory.toString())).collect(Collectors.toList()));
     }
 
     @PostMapping("/setup")
@@ -89,16 +91,17 @@ public class SystemController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/slack")
-    @Operation(summary = "슬랙 메세지 전송 테스트")
-    public ResponseEntity<?> sendTestMessageToSlack(@Valid @RequestBody SlackTestRequest slackTestRequest) {
-        boolean result = slackService.sendText(slackTestRequest.getSlackUrl(), messageSourceAccessor.getMessage("slack.test.message"));
 
+    @PostMapping("/message")
+    @Operation(summary = "메세지 전송 테스트")
+    public ResponseEntity<?> sendTestMessage(@Valid @RequestBody SpaceMessageChannelRequest spaceMessageChannelRequest) {
+        boolean result = messageChannelService.sendTestMessage(spaceMessageChannelRequest.toDTO());
         if (!result) {
-            throw new ServiceException("fail.send.slack.message");
+            throw new ServiceException("fail.send.webhook.message");
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
+
 
     }
 
@@ -120,6 +123,12 @@ public class SystemController {
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @GetMapping("/channels/types")
+    public List<MessageChannelTypeCode> getChannelTypeCodeList() {
+        return Arrays.asList(MessageChannelTypeCode.values());
 
     }
 

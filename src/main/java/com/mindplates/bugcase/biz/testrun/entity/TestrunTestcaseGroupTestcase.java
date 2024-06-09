@@ -74,12 +74,19 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
     private User tester;
 
 
-    public int assignTester(Project project, Testcase testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
+    public int assignTester(Project project, Testcase testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         List<TestcaseItem> items = testcase.getTestcaseItems();
         this.testResult = TestResultCode.UNTESTED;
         if (!testrunUsers.isEmpty()) {
-            currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
+            // 아이템 중에서 systemLabel이 AUTOMATION이 아이템 찾기
+            TestcaseItem automationItem = items != null ? items.stream().filter(item -> item.getTestcaseTemplateItem().getSystemLabel() != null && "AUTOMATION".equals(item.getTestcaseTemplateItem().getSystemLabel())).findFirst().orElse(null) : null;
+            boolean isAutomationItem = automationItem != null && "Y".equals(automationItem.getValue());
+
+            if (!(autoTestcaseNotAssignedTester && isAutomationItem)) {
+                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
+            }
+
         }
         if (!CollectionUtils.isEmpty(items)) {
             for (TestcaseItem testcaseItem : items) {

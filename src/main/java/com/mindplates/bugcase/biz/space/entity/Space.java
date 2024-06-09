@@ -55,6 +55,11 @@ public class Space extends CommonEntity {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
+    @Column(updatable = false, insertable = false)
+    private List<SpaceMessageChannel> messageChannels;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<Holiday> holidays;
 
     @Column(name = "country", length = ColumnsDef.CODE)

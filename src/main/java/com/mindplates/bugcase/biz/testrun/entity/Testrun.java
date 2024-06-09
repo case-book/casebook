@@ -5,7 +5,6 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
@@ -123,6 +122,9 @@ public class Testrun extends CommonEntity {
     @Column(name = "deadline_close")
     private Boolean deadlineClose;
 
+    @Column(name = "auto_testcase_not_assigned_tester")
+    private Boolean autoTestcaseNotAssignedTester;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrun")
     @Fetch(value = FetchMode.SUBSELECT)
     @OrderBy("itemOrder ASC")
@@ -131,6 +133,10 @@ public class Testrun extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrun")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunHook> hooks;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunMessageChannel> messageChannels;
 
     public void updateInfo(Testrun testrun) {
         this.name = (testrun.getName());
@@ -144,24 +150,36 @@ public class Testrun extends CommonEntity {
         this.durationHours = (testrun.getDurationHours());
         this.reserveExpired = (testrun.getReserveExpired());
         this.deadlineClose = (testrun.getDeadlineClose());
+        this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
         this.profiles.clear();
         this.profiles.addAll(testrun.getProfiles());
         this.hooks.removeIf(hook -> testrun.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
-        this.hooks.addAll(testrun.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
-        this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
-            testrun.getHooks()
-                .stream()
-                .filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny()
-                .ifPresent(targetHook -> {
-                    hook.setTiming(targetHook.getTiming());
-                    hook.setName(targetHook.getName());
-                    hook.setUrl(targetHook.getUrl());
-                    hook.setMethod(targetHook.getMethod());
-                    hook.setHeaders(targetHook.getHeaders());
-                    hook.setBodies(targetHook.getBodies());
-                    hook.setRetryCount(targetHook.getRetryCount());
-                });
-        });
+        if (testrun.hooks != null) {
+            this.hooks.addAll(testrun.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        }
+        if (this.hooks != null) {
+            this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
+                testrun.getHooks()
+                    .stream()
+                    .filter(targetHook -> targetHook.getId().equals(hook.getId())).findAny()
+                    .ifPresent(targetHook -> {
+                        hook.setTiming(targetHook.getTiming());
+                        hook.setName(targetHook.getName());
+                        hook.setUrl(targetHook.getUrl());
+                        hook.setMethod(targetHook.getMethod());
+                        hook.setHeaders(targetHook.getHeaders());
+                        hook.setBodies(targetHook.getBodies());
+                        hook.setRetryCount(targetHook.getRetryCount());
+                    });
+            });
+        }
+
+        this.messageChannels.removeIf(messageChannel -> testrun.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
+        if (testrun.messageChannels != null) {
+            // testrun의 messageChannels를 반복하면서, ID가 있으면 업데이트, 없으면 추가
+            this.messageChannels.addAll(testrun.messageChannels.stream().filter(targetMessageChannel -> targetMessageChannel.getId() == null).collect(Collectors.toList()));
+        }
+
     }
 
     public void updateTestrunUsers(List<TestrunUser> testrunUsers) {
@@ -283,7 +301,7 @@ public class Testrun extends CommonEntity {
             .stream()
             .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
                 .stream()
-                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester().getId())));
+                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)));
     }
 
     public void initializeCreateInfo(Project project, int currentTestrunSeq) {
@@ -301,22 +319,18 @@ public class Testrun extends CommonEntity {
             this.testcaseGroups.forEach(testrunTestcaseGroup -> {
                 testrunTestcaseGroup.setTestrun(this);
                 if (!CollectionUtils.isEmpty(testrunTestcaseGroup.getTestcases())) {
-                    testrunTestcaseGroup.getTestcases()
-                        .forEach(testrunTestcaseGroupTestcase -> {
-                            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
-                            if (!CollectionUtils.isEmpty(testrunTestcaseGroupTestcase.getTestcaseItems())) {
-                                testrunTestcaseGroupTestcase.getTestcaseItems()
-                                    .forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem
-                                        .setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
-                            }
-                        });
+                    testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
+                        testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+                        if (!CollectionUtils.isEmpty(testrunTestcaseGroupTestcase.getTestcaseItems())) {
+                            testrunTestcaseGroupTestcase.getTestcaseItems().forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem.setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
+                        }
+                    });
                 }
             });
         }
     }
 
-    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap,
-        Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, Random random) {
+    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap, Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, Random random, Boolean autoTestcaseNotAssignedTester) {
         int currentSeq = random.nextInt(testrunUsers.size());
         for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
             if (testrunTestcaseGroup.getTestcases() != null) {
@@ -327,7 +341,7 @@ public class Testrun extends CommonEntity {
                     }
                     List<TestcaseItem> testcaseItems = idTestcaseItemListMap.get(testcase.getId());
                     testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
-                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random);
+                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester);
                     if (testcaseItems != null) {
                         for (TestcaseItem testcaseItem : testcaseItems) {
                             if (testcaseItem.getValue() == null || Objects

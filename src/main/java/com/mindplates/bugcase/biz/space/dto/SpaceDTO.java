@@ -27,6 +27,7 @@ public class SpaceDTO extends CommonDTO {
     private String token;
     private List<SpaceUserDTO> users;
     private List<SpaceApplicantDTO> applicants;
+    private List<SpaceMessageChannelDTO> messageChannels;
     private List<HolidayDTO> holidays;
     private String country;
     private String timeZone;
@@ -53,6 +54,10 @@ public class SpaceDTO extends CommonDTO {
 
         if (space.getHolidays() != null) {
             this.holidays = space.getHolidays().stream().map(HolidayDTO::new).collect(Collectors.toList());
+        }
+
+        if (space.getMessageChannels() != null) {
+            this.messageChannels = space.getMessageChannels().stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
         }
     }
 

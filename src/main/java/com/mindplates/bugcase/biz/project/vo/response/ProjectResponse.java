@@ -32,10 +32,9 @@ public class ProjectResponse {
     private List<TestcaseTemplateResponse> testcaseTemplates;
     private List<TestcaseGroupResponse> testcaseGroups;
     private List<SimpleMemberResponse> users;
-    private String slackUrl;
-    private boolean enableTestrunAlarm;
     private boolean isAdmin = false;
     private List<ProjectReleaseResponse> projectReleases;
+    private List<ProjectMessageChannelResponse> messageChannels;
 
     public ProjectResponse(ProjectDTO project, Long userId) {
         this.id = project.getId();
@@ -44,8 +43,6 @@ public class ProjectResponse {
         this.token = project.getToken();
         this.activated = project.isActivated();
         this.creationDate = project.getCreationDate();
-        this.slackUrl = project.getSlackUrl();
-        this.enableTestrunAlarm = project.isEnableTestrunAlarm();
 
         if (project.getSpace() != null) {
             this.spaceName = project.getSpace().getName();
@@ -85,6 +82,10 @@ public class ProjectResponse {
                     .name(projectReleaseDTO.getName())
                     .build())
                 .collect(Collectors.toList());
+        }
+
+        if (project.getMessageChannels() != null) {
+            this.messageChannels = project.getMessageChannels().stream().map(ProjectMessageChannelResponse::new).collect(Collectors.toList());
         }
 
     }

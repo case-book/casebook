@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
+import { Block, Button, CheckBox, CloseIcon, DateRange, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -7,7 +7,7 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
-import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
+import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup/ProjectUserSelectPopup';
 import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
@@ -15,7 +15,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import './TestrunReservationEditPage.scss';
 import SpaceProfileService from '@/services/SpaceProfileService';
-import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
+import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
 
 const labelMinWidth = '120px';
 
@@ -71,6 +71,7 @@ function TestrunReservationEditPage({ type }) {
     })(),
     expired: false,
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     selectCreatedTestcase: false,
     selectUpdatedTestcase: false,
     profileIds: [],
@@ -121,6 +122,7 @@ function TestrunReservationEditPage({ type }) {
               startTime: dateUtil.getHourMinuteTime(data.startTime),
               startDateTime: dateUtil.getTime(data.startDateTime),
               endDateTime: dateUtil.getTime(data.endDateTime),
+              messageChannels: data.messageChannels || [],
             });
           });
         } else {
@@ -141,6 +143,11 @@ function TestrunReservationEditPage({ type }) {
               };
             }),
             profileIds: defaultProfile ? [defaultProfile.id] : [],
+            messageChannels: info.messageChannels?.map(d => {
+              return {
+                projectMessageChannelId: d.id,
+              };
+            }),
           });
         }
       });
@@ -360,6 +367,22 @@ function TestrunReservationEditPage({ type }) {
                   }
                 />
               </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                  {t('자동화 테스터 제외')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrunReservation.autoTestcaseNotAssignedTester}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      autoTestcaseNotAssignedTester: val,
+                    })
+                  }
+                />
+              </BlockRow>
               <BlockRow className="testrun-users-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
                 <Text>
@@ -490,6 +513,24 @@ function TestrunReservationEditPage({ type }) {
                 </Text>
               </BlockRow>
             </Block>
+            <Title border={false} marginBottom={false}>
+              {t('알림 채널')}
+            </Title>
+            <TestrunMessageChannelSelector
+              projectMessageChannels={project?.messageChannels}
+              messageChannels={testrunReservation?.messageChannels}
+              onChange={messageChannels => {
+                setTestrunReservation({
+                  ...testrunReservation,
+                  messageChannels,
+                });
+              }}
+            />
+            {!(project?.messageChannels?.length > 0) && (
+              <EmptyContent className="empty-content">
+                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+              </EmptyContent>
+            )}
             <Title
               border={false}
               marginBottom={false}

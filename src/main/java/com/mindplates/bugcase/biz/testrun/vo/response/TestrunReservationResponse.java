@@ -24,6 +24,7 @@ public class TestrunReservationResponse {
     private LocalDateTime endDateTime;
     private boolean expired;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private int testcaseGroupCount;
     private int testcaseCount;
     private Long testrunId;
@@ -35,6 +36,7 @@ public class TestrunReservationResponse {
     private List<TestrunTestcaseGroupResponse> conditionalTestcaseGroups;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
+    private List<TestrunMessageChannelResponse> messageChannels;
 
     public TestrunReservationResponse(TestrunReservationDTO testrunReservation) {
         this.id = testrunReservation.getId();
@@ -44,6 +46,7 @@ public class TestrunReservationResponse {
         this.endDateTime = testrunReservation.getEndDateTime();
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
         this.testcaseGroupCount = testrunReservation.getTestcaseGroupCount();
         this.testcaseCount = testrunReservation.getTestcaseCount();
         this.projectName = testrunReservation.getProject().getName();
@@ -74,6 +77,10 @@ public class TestrunReservationResponse {
 
         if (testrunReservation.getHooks() != null && !testrunReservation.getHooks().isEmpty()) {
             this.hooks = testrunReservation.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrunReservation.getMessageChannels() != null && !testrunReservation.getMessageChannels().isEmpty()) {
+            this.messageChannels = testrunReservation.getMessageChannels().stream().map(TestrunMessageChannelResponse::new).collect(Collectors.toList());
         }
 
 

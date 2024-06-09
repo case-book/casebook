@@ -41,12 +41,14 @@ public class TestrunIterationResponse {
     private Integer filteringUserCursor;
     private List<Long> currentFilteringUserIds;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Integer testcaseCount;
     private Integer testrunUserCount;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
+    private List<TestrunMessageChannelResponse> messageChannels;
 
     public TestrunIterationResponse(TestrunIterationDTO testrunIteration) {
         this.id = testrunIteration.getId();
@@ -69,6 +71,7 @@ public class TestrunIterationResponse {
         this.filteringUserCursor = testrunIteration.getFilteringUserCursor();
         this.currentFilteringUserIds = testrunIteration.getCurrentFilteringUserIds();
         this.deadlineClose = testrunIteration.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
         this.testcaseCount = testrunIteration.getTestcaseCount();
         this.testrunUserCount = testrunIteration.getTestrunUserCount();
 
@@ -90,6 +93,10 @@ public class TestrunIterationResponse {
 
         if (testrunIteration.getHooks() != null && !testrunIteration.getHooks().isEmpty()) {
             this.hooks = testrunIteration.getHooks().stream().map(TestrunHookResponse::new).collect(Collectors.toList());
+        }
+
+        if (testrunIteration.getMessageChannels() != null && !testrunIteration.getMessageChannels().isEmpty()) {
+            this.messageChannels = testrunIteration.getMessageChannels().stream().map(TestrunMessageChannelResponse::new).collect(Collectors.toList());
         }
     }
 

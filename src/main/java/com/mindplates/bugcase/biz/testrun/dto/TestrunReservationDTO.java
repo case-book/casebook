@@ -30,6 +30,7 @@ public class TestrunReservationDTO extends CommonDTO {
     private LocalDateTime endDateTime;
     private Boolean expired;
     private Boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private int testcaseGroupCount;
     private int testcaseCount;
     private TestrunDTO testrun;
@@ -39,6 +40,7 @@ public class TestrunReservationDTO extends CommonDTO {
     private List<TestrunTestcaseGroupDTO> conditionalTestcaseGroupList;
     private List<TestrunProfileDTO> profiles;
     private List<TestrunHookDTO> hooks;
+    private List<TestrunMessageChannelDTO> messageChannels;
 
     public TestrunReservationDTO(TestrunReservation testrunReservation) {
         this.id = testrunReservation.getId();
@@ -48,6 +50,7 @@ public class TestrunReservationDTO extends CommonDTO {
         this.endDateTime = testrunReservation.getEndDateTime();
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
         this.testcaseGroupCount = Optional.ofNullable(testrunReservation.getTestcaseGroupCount()).orElse(0);
         this.testcaseCount = Optional.ofNullable(testrunReservation.getTestcaseCount()).orElse(0);
         this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();
@@ -68,6 +71,9 @@ public class TestrunReservationDTO extends CommonDTO {
         this.profiles = testrunReservation.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
         if (testrunReservation.getHooks() != null) {
             this.hooks = testrunReservation.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
+        }
+        if (testrunReservation.getMessageChannels() != null) {
+            this.messageChannels = testrunReservation.getMessageChannels().stream().map(TestrunMessageChannelDTO::new).collect(Collectors.toList());
         }
     }
 

@@ -91,6 +91,9 @@ public class TestrunIteration extends CommonEntity {
     @Column(name = "deadline_close")
     private Boolean deadlineClose;
 
+    @Column(name = "auto_testcase_not_assigned_tester")
+    private Boolean autoTestcaseNotAssignedTester;
+
     @Column(name = "start_time")
     private LocalTime startTime;
 
@@ -150,6 +153,10 @@ public class TestrunIteration extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunHook> hooks;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunIteration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunMessageChannel> messageChannels;
+
     public void updateInfo(TestrunIteration testrunIteration) {
         this.expired = false;
         this.name = testrunIteration.getName();
@@ -160,6 +167,7 @@ public class TestrunIteration extends CommonEntity {
         this.excludeHoliday = testrunIteration.getExcludeHoliday();
         this.durationHours = testrunIteration.getDurationHours();
         this.deadlineClose = testrunIteration.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
         this.startTime = testrunIteration.getStartTime();
         this.days = testrunIteration.getDays();
         this.date = testrunIteration.getDate();
@@ -173,7 +181,9 @@ public class TestrunIteration extends CommonEntity {
         this.profiles.clear();
         this.profiles.addAll(testrunIteration.getProfiles());
         this.hooks.removeIf(hook -> testrunIteration.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
-        this.hooks.addAll(testrunIteration.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        if (testrunIteration.hooks != null) {
+            this.hooks.addAll(testrunIteration.hooks.stream().filter(targetHook -> targetHook.getId() == null).collect(Collectors.toList()));
+        }
         this.hooks.stream().filter(targetHook -> targetHook.getId() != null).forEach(hook -> {
             testrunIteration.getHooks()
                 .stream()
@@ -188,6 +198,12 @@ public class TestrunIteration extends CommonEntity {
                     hook.setRetryCount(targetHook.getRetryCount());
                 });
         });
+
+        this.messageChannels.removeIf(messageChannel -> testrunIteration.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
+        if (testrunIteration.messageChannels != null) {
+            // testrun의 messageChannels를 반복하면서, ID가 있으면 업데이트, 없으면 추가
+            this.messageChannels.addAll(testrunIteration.messageChannels.stream().filter(targetMessageChannel -> targetMessageChannel.getId() == null).collect(Collectors.toList()));
+        }
     }
 
     public void updateIterationInfo(TestrunIterationDTO testrunIteration) {

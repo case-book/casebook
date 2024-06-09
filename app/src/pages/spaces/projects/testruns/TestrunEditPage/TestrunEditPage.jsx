@@ -27,8 +27,8 @@ import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
-import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable } from '@/assets';
+import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup/ProjectUserSelectPopup';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -38,7 +38,7 @@ import './TestrunEditPage.scss';
 import ReleaseService from '@/services/ReleaseService';
 import SpaceProfileService from '@/services/SpaceProfileService';
 
-const labelMinWidth = '120px';
+const labelMinWidth = '160px';
 
 function TestrunEditPage({ type }) {
   const { t } = useTranslation();
@@ -107,6 +107,7 @@ function TestrunEditPage({ type }) {
     })(),
     durationHours: 24,
     deadlineClose: true,
+    autoTestcaseNotAssignedTester: true,
     profileIds: [],
     hooks: [],
   });
@@ -157,7 +158,13 @@ function TestrunEditPage({ type }) {
         setProject(info);
         if (isEdit) {
           TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
-            setTestrun({ ...data, startTime: dateUtil.getHourMinuteTime(data.startTime), startDateTime: dateUtil.getTime(data.startDateTime), endDateTime: dateUtil.getTime(data.endDateTime) });
+            setTestrun({
+              ...data,
+              startTime: dateUtil.getHourMinuteTime(data.startTime),
+              startDateTime: dateUtil.getTime(data.startDateTime),
+              endDateTime: dateUtil.getTime(data.endDateTime),
+              messageChannels: data.messageChannels || [],
+            });
           });
           return;
         }
@@ -182,6 +189,11 @@ function TestrunEditPage({ type }) {
           }),
           testcaseGroups: initSelectedGroups,
           profileIds: defaultProfile ? [defaultProfile.id] : [],
+          messageChannels: info.messageChannels?.map(d => {
+            return {
+              projectMessageChannelId: d.id,
+            };
+          }),
         });
       });
     });
@@ -435,6 +447,22 @@ function TestrunEditPage({ type }) {
                   }
                 />
               </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('자동화 테스트케이스 테스터 할당 제외')}>
+                  {t('자동화 테스터 제외')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrun.autoTestcaseNotAssignedTester}
+                  onChange={val =>
+                    setTestrun({
+                      ...testrun,
+                      autoTestcaseNotAssignedTester: val,
+                    })
+                  }
+                />
+              </BlockRow>
               <BlockRow className="testrun-users-type-row">
                 <Label minWidth={labelMinWidth}>{t('테스터')}</Label>
                 <Text>
@@ -532,6 +560,24 @@ function TestrunEditPage({ type }) {
                 )}
               </BlockRow>
             </Block>
+            <Title border={false} marginBottom={false}>
+              {t('알림 채널')}
+            </Title>
+            <TestrunMessageChannelSelector
+              projectMessageChannels={project?.messageChannels}
+              messageChannels={testrun?.messageChannels}
+              onChange={messageChannels => {
+                setTestrun({
+                  ...testrun,
+                  messageChannels,
+                });
+              }}
+            />
+            {!(project?.messageChannels?.length > 0) && (
+              <EmptyContent className="empty-content">
+                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
+              </EmptyContent>
+            )}
             <Title
               border={false}
               marginBottom={false}
