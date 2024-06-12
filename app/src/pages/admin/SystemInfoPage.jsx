@@ -146,6 +146,25 @@ function SystemInfoPage() {
         <Block>
           <BlockRow>
             <Label minWidth={labelMinWidth} tip={t('스크립트 및 서버에서 에러를 생성합니다. 발생한 에러를 인지하고, 모니터링 할 수 있는지 확인하기 위해 인위적으로 에러를 생성합니다.')}>
+              {t('OPEN AI')}
+            </Label>
+            <Text className="exception">
+              <Button
+                size="sm"
+                className="remove-button"
+                color="warning"
+                onClick={() => {
+                  AdminService.chat(d => {
+                    console.log(d);
+                  });
+                }}
+              >
+                {t('스크립트 오류 생성')}
+              </Button>
+            </Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={labelMinWidth} tip={t('스크립트 및 서버에서 에러를 생성합니다. 발생한 에러를 인지하고, 모니터링 할 수 있는지 확인하기 위해 인위적으로 에러를 생성합니다.')}>
               {t('에러 생성')}
             </Label>
             <Text className="exception">

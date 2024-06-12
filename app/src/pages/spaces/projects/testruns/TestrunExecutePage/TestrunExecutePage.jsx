@@ -9,7 +9,7 @@ import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
-import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
+import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunTestcaseManager';
 import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';

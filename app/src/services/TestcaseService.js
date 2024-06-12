@@ -263,4 +263,18 @@ TestcaseService.selectTestcaseTestrunHistory = (spaceCode, projectId, testcaseId
   );
 };
 
+TestcaseService.createParaphraseTestcase = (spaceCode, projectId, testcaseId, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/paraphrase`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 export default TestcaseService;

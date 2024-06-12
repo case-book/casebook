@@ -46,6 +46,7 @@ public class SystemController {
 
     private final MessageChannelService messageChannelService;
 
+
     @GetMapping("/info")
     @Operation(description = "API 버전 조회")
     public SystemInfoResponse selectSystemVersion() {
@@ -131,5 +132,6 @@ public class SystemController {
         return Arrays.asList(MessageChannelTypeCode.values());
 
     }
+
 
 }

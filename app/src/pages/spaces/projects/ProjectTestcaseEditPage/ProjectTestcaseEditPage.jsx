@@ -7,15 +7,15 @@ import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
 import ReleaseService from '@/services/ReleaseService';
-import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigator';
-import ContentManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/ContentManager';
-import './ProjectTestcaseInfoPage.scss';
+import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
+import ContentManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/ContentManager';
+import './ProjectTestcaseEditPage.scss';
 import testcaseUtil from '@/utils/testcaseUtil';
 import { useNavigate } from 'react-router-dom';
 import useQueryString from '@/hooks/useQueryString';
 import SpaceVariableService from '@/services/SpaceVariableService';
 
-function ProjectTestcaseInfoPage() {
+function ProjectTestcaseEditPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { projectId, spaceCode } = useParams();
@@ -484,6 +484,12 @@ function ProjectTestcaseInfoPage() {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
 
+  const onParaphrase = testcaseId => {
+    return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, d => {
+      console.log(d);
+    });
+  };
+
   return (
     <Page className="project-testcase-info-page-wrapper">
       <PageTitle
@@ -561,6 +567,7 @@ function ProjectTestcaseInfoPage() {
                 setPopupContent={setPopupContent}
                 tags={tags}
                 variables={variables}
+                onParaphrase={onParaphrase}
               />
             }
           />
@@ -570,8 +577,8 @@ function ProjectTestcaseInfoPage() {
   );
 }
 
-ProjectTestcaseInfoPage.defaultProps = {};
+ProjectTestcaseEditPage.defaultProps = {};
 
-ProjectTestcaseInfoPage.propTypes = {};
+ProjectTestcaseEditPage.propTypes = {};
 
-export default ProjectTestcaseInfoPage;
+export default ProjectTestcaseEditPage;

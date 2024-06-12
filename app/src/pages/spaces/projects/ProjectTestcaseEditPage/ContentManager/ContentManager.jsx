@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseManager/TestcaseManager';
-import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
+import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/TestcaseManager/TestcaseManager';
+import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
 import { ITEM_TYPE } from '@/constants/constants';
 import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
@@ -27,6 +27,7 @@ function ContentManager({
   setPopupContent,
   tags,
   variables,
+  onParaphrase,
 }) {
   const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
@@ -81,6 +82,7 @@ function ContentManager({
                 users={users}
                 createTestcaseImage={createTestcaseImage}
                 tags={tags}
+                onParaphrase={onParaphrase}
               />
             </div>
           </div>
@@ -103,6 +105,7 @@ function ContentManager({
             createTestcaseImage={createTestcaseImage}
             tags={tags}
             variables={variables}
+            onParaphrase={onParaphrase}
           />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && (
@@ -205,6 +208,7 @@ ContentManager.propTypes = {
       name: PropTypes.string,
     }),
   ),
+  onParaphrase: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

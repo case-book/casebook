@@ -111,4 +111,15 @@ AdminService.deleteRedis = (successHandler, failHandler) => {
   );
 };
 
+AdminService.chat = (successHandler, failHandler) => {
+  return request.get(
+    '/api/admin/chat?prompt=테스트 메세지',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default AdminService;

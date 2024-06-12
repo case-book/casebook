@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
@@ -36,6 +38,7 @@ import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.service.OpenAIClientService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -58,13 +61,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
 public class TestcaseService {
 
     private final TestcaseTemplateRepository testcaseTemplateRepository;
-
     private final TestcaseTemplateItemRepository testcaseTemplateItemRepository;
     private final TestcaseGroupRepository testcaseGroupRepository;
     private final TestcaseRepository testcaseRepository;
@@ -80,6 +83,7 @@ public class TestcaseService {
     private final UserRepository userRepository;
     private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
     private final ProjectReleaseRepository projectReleaseRepository;
+    private final OpenAIClientService openAIClientService;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -607,6 +611,13 @@ public class TestcaseService {
         projectRepository.save(project);
         Testcase result = testcaseRepository.save(mappingUtil.convert(copiedTestcase, Testcase.class));
         return new TestcaseDTO(result);
+    }
+
+    @Transactional
+    public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId) throws JsonProcessingException {
+        TestcaseDTO testcase = this.selectTestcaseInfo(projectId, testcaseId);
+        Mono<JsonNode> result = openAIClientService.rephraseToTestCase(testcase);
+        return result;
     }
 
 

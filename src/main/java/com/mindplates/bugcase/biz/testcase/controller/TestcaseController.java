@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
@@ -48,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -66,6 +69,7 @@ public class TestcaseController {
         List<TestcaseDTO> testcaseList = testcaseService.selectProjectTestcaseList(projectId);
         return mappingUtil.convert(testcaseList, TestcaseSimpleResponse.class);
     }
+
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
     public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId,
@@ -224,5 +228,11 @@ public class TestcaseController {
         List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectTestcaseTestrunResultHistory(spaceCode, projectId, testcaseId, currentTestrunId, pageNo);
 
         return list.stream().map(TestrunTestcaseGroupTestcaseResultResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "테스트케이스 AI 재구성")
+    @PostMapping("/{testcaseId}/paraphrase")
+    public Mono<JsonNode> createParaphraseTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId) throws JsonProcessingException {
+        return testcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId);
     }
 }

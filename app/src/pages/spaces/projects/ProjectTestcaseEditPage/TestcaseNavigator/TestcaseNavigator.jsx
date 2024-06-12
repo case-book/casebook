@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, EmptyContent, Liner, Selector } from '@/components';
 import PropTypes from 'prop-types';
-import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
-import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
+import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
+import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
 import { NullableNumber, NullableString, TestcaseGroupPropTypes } from '@/proptypes';
 import { useResizeDetector } from 'react-resize-detector';
 import { getOption, setOption } from '@/utils/storageUtil';
-import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
+import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigatorSetting';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import './TestcaseNavigator.scss';
