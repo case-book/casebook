@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.vo.request;
 
+import com.mindplates.bugcase.biz.ai.vo.request.LlmRequest;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.common.vo.IRequestVO;
@@ -30,6 +31,7 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
     private String country;
     private String timeZone;
     private List<SpaceMessageChannelRequest> messageChannels;
+    private List<LlmRequest> llms;
 
     public SpaceDTO toDTO() {
 
@@ -50,6 +52,10 @@ public class SpaceCreateRequest implements IRequestVO<SpaceDTO> {
 
         if (messageChannels != null) {
             space.setMessageChannels(messageChannels.stream().map(messageChannel -> messageChannel.toDTO(space)).collect(Collectors.toList()));
+        }
+
+        if (llms != null) {
+            space.setLlms(llms.stream().map(llm -> llm.toDTO(space)).collect(Collectors.toList()));
         }
 
         return space;

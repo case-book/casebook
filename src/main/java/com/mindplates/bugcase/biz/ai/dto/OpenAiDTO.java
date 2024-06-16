@@ -30,7 +30,10 @@ public class OpenAiDTO extends CommonDTO {
         if (openAi.getLlm() != null) {
             this.llm = LlmDTO.builder().id(openAi.getLlm().getId()).build();
         }
-        this.models = openAi.getModels().stream().map(OpenAiModelDTO::new).collect(java.util.stream.Collectors.toList());
+        if (openAi.getModels() != null) {
+            this.models = openAi.getModels().stream().map(OpenAiModelDTO::new).collect(java.util.stream.Collectors.toList());
+        }
+
     }
 
 }

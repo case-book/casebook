@@ -1,7 +1,10 @@
 package com.mindplates.bugcase.biz.space.service;
 
 import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
+import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
+import com.mindplates.bugcase.biz.ai.entity.Llm;
 import com.mindplates.bugcase.biz.ai.repository.LlmRepository;
+import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
@@ -25,6 +28,7 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelReposi
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
+import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -32,6 +36,7 @@ import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.config.CacheConfig;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,6 +68,7 @@ public class SpaceService {
     private final ProjectMessageChannelRepository projectMessageChannelRepository;
     private final LlmRepository llmRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
+    private final OpenAIClientService openAIClientService;
 
     private boolean existByCode(String code) {
         Long count = spaceRepository.countByCode(code);
@@ -123,7 +129,27 @@ public class SpaceService {
             throw new ServiceException("error.space.code.duplicated");
         }
 
+        createSpaceInfo.getLlms().forEach((llm -> {
+            if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
+
+                llm.getOpenAi().setModels(new ArrayList<>());
+
+                openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey())
+                    .forEach((model -> {
+                        llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
+                            .name(model)
+                            .code(model)
+                            .build());
+                    }));
+            }
+        }));
+
         Space spaceInfo = mappingUtil.convert(createSpaceInfo, Space.class);
+
+        for (Llm llm : spaceInfo.getLlms()) {
+            llm.getOpenAi().getModels().forEach((model -> model.setOpenAi(llm.getOpenAi())));
+        }
+
         SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
         spaceInfo.setUsers(Arrays.asList(spaceUser));
         spaceRepository.save(spaceInfo);
@@ -157,17 +183,44 @@ public class SpaceService {
             spaceInfo.getLlms().removeIf((llm -> deleteLlmIds.contains(llm.getId())));
 
             updateSpaceInfo.getLlms().forEach((updateLlm -> {
-                if (updateLlm.getId() == null) {
-                    spaceInfo.getLlms().add(updateLlm);
-                } else {
-                    LlmDTO targetLlm = spaceInfo.getLlms().stream().filter((llm -> llm.getId().equals(updateLlm.getId()))).findAny().orElse(null);
-                    if (targetLlm != null) {
-                        targetLlm.setLlmTypeCode(updateLlm.getLlmTypeCode());
-                        targetLlm.getOpenAi().setName(updateLlm.getOpenAi().getName());
-                        targetLlm.getOpenAi().setUrl(updateLlm.getOpenAi().getUrl());
-                        targetLlm.getOpenAi().setApiKey(updateLlm.getOpenAi().getApiKey());
+                if (LlmTypeCode.OPENAI.equals(updateLlm.getLlmTypeCode())) {
+                    if (updateLlm.getId() == null) {
+                        openAIClientService.getModelList(updateLlm.getOpenAi().getUrl(), updateLlm.getOpenAi().getApiKey())
+                            .forEach((model -> {
+                                updateLlm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
+                                    .name(model)
+                                    .code(model)
+                                    .openAi(updateLlm.getOpenAi())
+                                    .build());
+
+                            }));
+
+                        spaceInfo.getLlms().add(updateLlm);
+                    } else {
+                        LlmDTO targetLlm = spaceInfo.getLlms().stream().filter((llm -> llm.getId().equals(updateLlm.getId()))).findAny().orElse(null);
+                        if (targetLlm != null) {
+                            targetLlm.setLlmTypeCode(updateLlm.getLlmTypeCode());
+                            targetLlm.getOpenAi().setName(updateLlm.getOpenAi().getName());
+                            targetLlm.getOpenAi().setUrl(updateLlm.getOpenAi().getUrl());
+                            targetLlm.getOpenAi().setApiKey(updateLlm.getOpenAi().getApiKey());
+
+                            List<String> modelCodes = openAIClientService.getModelList(updateLlm.getOpenAi().getUrl(), updateLlm.getOpenAi().getApiKey());
+                            // targetLlm의 model의 code와 modelCodes가 일치하지 않는 것만 추가
+                            modelCodes.stream().filter((modelCode -> targetLlm.getOpenAi().getModels().stream().noneMatch((model -> model.getCode().equals(modelCode)))))
+                                .forEach((modelCode -> {
+                                    targetLlm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
+                                        .name(modelCode)
+                                        .code(modelCode)
+                                        .openAi(targetLlm.getOpenAi())
+                                        .build());
+                                }));
+
+                            // targetLlm의 model에는 있는 code인데, modeCodes에 없다면 제거
+                            targetLlm.getOpenAi().getModels().removeIf((model -> modelCodes.stream().noneMatch((modelCode -> model.getCode().equals(modelCode)))));
+                        }
                     }
                 }
+
             }));
         }
 

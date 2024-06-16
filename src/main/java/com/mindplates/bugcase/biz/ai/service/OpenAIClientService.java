@@ -5,16 +5,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
-import com.mindplates.bugcase.framework.config.OpenAIConfig;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,9 +26,6 @@ import reactor.core.publisher.Mono;
 
 public class OpenAIClientService {
 
-    @Value("${openai.apiKey}")
-    private String apiKey;
-
     private final WebClient webClient;
 
     @Autowired
@@ -38,11 +34,8 @@ public class OpenAIClientService {
     @Autowired
     private MessageSourceAccessor messageSourceAccessor;
 
-    public OpenAIClientService(OpenAIConfig openAIConfig) {
-        this.apiKey = openAIConfig.getApiKey();
-        this.webClient = WebClient.builder()
-            .defaultHeader("Authorization", "Bearer " + this.apiKey)
-            .build();
+    public OpenAIClientService() {
+        this.webClient = WebClient.builder().build();
     }
 
     public String checkApiKey(String url, String apiKey) {
@@ -80,6 +73,21 @@ public class OpenAIClientService {
             })
             .block();
 
+    }
+
+
+    public List<String> getModelList(String url, String apiKey) {
+        return this.webClient.get()
+            .uri(url + "/models")
+            .header("Authorization", "Bearer " + apiKey)
+            .retrieve()
+            .bodyToMono(Map.class)
+            .map(response -> {
+                List<Map<String, Object>> data = (List<Map<String, Object>>) response.get("data");
+                return data.stream()
+                    .map(model -> (String) model.get("id"))
+                    .collect(Collectors.toList());
+            }).block();
     }
 
     public Mono<JsonNode> rephraseToTestCase(TestcaseDTO testcase) throws JsonProcessingException {
