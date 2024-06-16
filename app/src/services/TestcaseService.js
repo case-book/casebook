@@ -263,10 +263,24 @@ TestcaseService.selectTestcaseTestrunHistory = (spaceCode, projectId, testcaseId
   );
 };
 
-TestcaseService.createParaphraseTestcase = (spaceCode, projectId, testcaseId, successHandler, failHandler) => {
+TestcaseService.createParaphraseTestcase = (spaceCode, projectId, testcaseId, modelId, successHandler, failHandler) => {
   return request.post(
-    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/paraphrase`,
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/paraphrase?modelId=${modelId}`,
     null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+TestcaseService.updateTestcaseItem = (spaceCode, projectId, testcaseId, testcaseItemId, testcaseItem, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/items/${testcaseItemId}`,
+    testcaseItem,
     res => {
       successHandler(res);
     },

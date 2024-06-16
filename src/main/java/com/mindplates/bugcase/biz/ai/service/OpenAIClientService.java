@@ -3,8 +3,13 @@ package com.mindplates.bugcase.biz.ai.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mindplates.bugcase.biz.ai.dto.AiRequestHistoryDTO;
+import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
+import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
+import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -23,10 +28,12 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-
 public class OpenAIClientService {
 
     private final WebClient webClient;
+
+    @Autowired
+    private LlmService llmService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -90,33 +97,51 @@ public class OpenAIClientService {
             }).block();
     }
 
-    public Mono<JsonNode> rephraseToTestCase(TestcaseDTO testcase) throws JsonProcessingException {
+    public Mono<JsonNode> rephraseToTestCase(OpenAiDTO openAi, OpenAiModelDTO model, TestcaseDTO testcase, long userId) throws JsonProcessingException {
 
         List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
-
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
 
         Map<String, Object> testcaseTitle = new HashMap<>();
         testcaseTitle.put("id", "name");
         testcaseTitle.put("label", "테스트케이스 제목");
         testcaseTitle.put("text", testcase.getName());
-
         messages.add(testcaseTitle);
 
         for (TestcaseItemDTO testcaseItem : testcaseItems) {
-
-            Map<String, Object> testcaseItemInfo = new HashMap<>();
-            testcaseItemInfo.put("id", testcaseItem.getId());
-            testcaseItemInfo.put("label", testcaseItem.getTestcaseTemplateItem().getLabel());
-            testcaseItemInfo.put("text", testcaseItem.getText());
-            messages.add(testcaseItemInfo);
+            if (TestcaseItemType.EDITOR.equals(testcaseItem.getTestcaseTemplateItem().getType()) ||
+                TestcaseItemType.TEXT.equals(testcaseItem.getTestcaseTemplateItem().getType())
+            ) {
+                Map<String, Object> testcaseItemInfo = new HashMap<>();
+                testcaseItemInfo.put("id", testcaseItem.getId());
+                testcaseItemInfo.put("label", testcaseItem.getTestcaseTemplateItem().getLabel());
+                testcaseItemInfo.put("text", testcaseItem.getText());
+                messages.add(testcaseItemInfo);
+            }
         }
 
+        Map<String, Object> requestBody = createRequestBody(objectMapper.writeValueAsString(messages), model.getCode());
+
+        AiRequestHistoryDTO aiRequestHistory = AiRequestHistoryDTO.builder()
+            .aiModel(model)
+            .requester(UserDTO.builder().id(userId).build())
+            .request(objectMapper.writeValueAsString(requestBody))
+            .build();
+
         return webClient.post()
-            .uri("/chat/completions")
-            .bodyValue(createRequestBody(objectMapper.writeValueAsString(messages)))
+            .uri(openAi.getUrl() + "/chat/completions")
+            .header("Authorization", "Bearer " + openAi.getApiKey())
+            .bodyValue(requestBody)
             .retrieve()
             .bodyToMono(String.class)
+            .doOnNext(response -> {
+                try {
+                    aiRequestHistory.setResponse(response);
+                    llmService.createAiRequestHistoryInfo(aiRequestHistory);
+                } catch (Exception e) {
+                    log.error("Failed to parse response", e);
+                }
+            })
             .map(this::parseResponse);
     }
 
@@ -137,12 +162,19 @@ public class OpenAIClientService {
             .append("3. The response should only include the resulting JSON : ");
 */
 
-        prompt.append("JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변환하면서, 모든 문장이 일관된 형태의 문장이 되도록 단어, 어조, 어미를 일관되게 재구성. 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");
+        // prompt.append("JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변환하면서, 모든 문장이 일관된 형태의 문장이 되도록 단어, 어조, 어미를 일관되게 재구성. 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");
+
+        prompt
+            .append("JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변경한다.")
+            .append("문장의 맞춤법이 틀린 경우 올바르게 수정한다.")
+            .append("변경하는 모든 문장이 하나의 관점에서 일관된 형태의 문장이 되도록 문장에 포함된 단어, 문장의 어조, 어미 일관되게 재구성한다.")
+            .append("제공되는 문장이 HTML인 경우, HTML 문법이 최대한 유지되도록 변경한다.")
+            .append("응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");;
 
         return prompt.toString();
     }
 
-    private Map<String, Object> createRequestBody(String prompt) {
+    private Map<String, Object> createRequestBody(String prompt, String model) {
 
         Map<String, Object> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
@@ -157,7 +189,7 @@ public class OpenAIClientService {
         messages.add(message);
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-3.5-turbo");
+        requestBody.put("model", model);
         requestBody.put("messages", messages);
 
         return requestBody;

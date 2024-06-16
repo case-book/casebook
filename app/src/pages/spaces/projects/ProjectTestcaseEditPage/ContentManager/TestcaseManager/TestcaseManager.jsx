@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
+import { LlmPropTypes, ParaphraseInfoPropTypes, ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import { Button, Liner, Selector, SeqId, TestcaseItem, VariableInput } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -14,7 +14,25 @@ import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 import TestcaseReleaseItem from '@/components/TestcaseItem/TestcaseReleaseItem';
 
-function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags, variables, onParaphrase }) {
+function TestcaseManager({
+  content,
+  releases,
+  testcaseTemplates,
+  isEdit,
+  setIsEdit,
+  setContent,
+  onSave,
+  onCancel,
+  users,
+  createTestcaseImage,
+  tags,
+  variables,
+  onParaphrase,
+  llms,
+  paraphraseInfo,
+  onAcceptParaphraseContent,
+  onRemoveParaphraseContent,
+}) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -165,8 +183,14 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                   size="md"
                   color="yellow"
                   className="ai-button"
+                  disabled={!llms || llms.length === 0 || paraphraseInfo.isLoading}
                   onClick={() => {
-                    onParaphrase(content.id);
+                    if (llms.length > 0) {
+                      const { models } = llms[0].openAi;
+                      if (models.length > 0) {
+                        onParaphrase(content.id, models[models.length - 1].id);
+                      }
+                    }
                   }}
                 >
                   <i className="fa-solid fa-wand-magic-sparkles" />
@@ -238,6 +262,9 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                 onChangeTestcaseItem={onChangeTestcaseItem}
                 size="sm"
                 variables={variables}
+                paraphraseInfo={paraphraseInfo}
+                onAcceptParaphraseContent={onAcceptParaphraseContent}
+                onRemoveParaphraseContent={onRemoveParaphraseContent}
               />
             );
           })}
@@ -289,6 +316,9 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             }}
             size="sm"
             variables={variables}
+            paraphraseInfo={paraphraseInfo}
+            onAcceptParaphraseContent={onAcceptParaphraseContent}
+            onRemoveParaphraseContent={onRemoveParaphraseContent}
           />
         </div>
         <div className="creator-info">
@@ -319,6 +349,8 @@ TestcaseManager.defaultProps = {
   users: [],
   tags: [],
   variables: [],
+  llms: [],
+  paraphraseInfo: {},
 };
 
 TestcaseManager.propTypes = {
@@ -371,6 +403,10 @@ TestcaseManager.propTypes = {
     }),
   ),
   onParaphrase: PropTypes.func.isRequired,
+  llms: LlmPropTypes,
+  paraphraseInfo: ParaphraseInfoPropTypes,
+  onAcceptParaphraseContent: PropTypes.func.isRequired,
+  onRemoveParaphraseContent: PropTypes.func.isRequired,
 };
 
 export default TestcaseManager;

@@ -61,6 +61,33 @@
         > div {
           white-space: normal;
         }
+
+        .paraphrase-content {
+          position: relative;
+          border: 1px solid var(--border-light-color);
+          background-color: white;
+          padding: 0.5rem 1rem;
+          margin-top: 1rem;
+
+          .ai-tag {
+            position: absolute;
+            top : -10px;
+            left : 8px;
+          }
+          > .buttons {
+            position: absolute;
+            text-align: center;
+            left: 0;
+            width: 100%;
+            top: -16px;
+            > button {
+              margin-right: 0.5rem;
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+          }
+        }
       }
     }
 

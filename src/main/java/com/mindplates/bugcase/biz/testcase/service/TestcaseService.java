@@ -2,6 +2,10 @@ package com.mindplates.bugcase.biz.testcase.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
+import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
+import com.mindplates.bugcase.biz.ai.service.LlmService;
+import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
@@ -38,9 +42,9 @@ import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -84,6 +88,7 @@ public class TestcaseService {
     private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
     private final ProjectReleaseRepository projectReleaseRepository;
     private final OpenAIClientService openAIClientService;
+    private final LlmService llmService;
 
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
@@ -511,6 +516,20 @@ public class TestcaseService {
         return new TestcaseDTO(testcase);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public TestcaseItemDTO updateTestcaseItem(String spaceCode, Long projectId, TestcaseItem testcaseItem) {
+        TestcaseItem org = testcaseItemRepository.findById(testcaseItem.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        if ("text".equals(testcaseItem.getType())) {
+            org.setText(testcaseItem.getText());
+        } else if ("value".equals(testcaseItem.getType())) {
+            org.setValue(testcaseItem.getValue());
+        }
+
+        testcaseItemRepository.save(org);
+        return new TestcaseItemDTO(org);
+    }
+
     public Long selectProjectTestcaseCount(String spaceCode, long projectId) {
         return testcaseRepository.countByProjectSpaceCodeAndProjectId(spaceCode, projectId);
     }
@@ -614,10 +633,11 @@ public class TestcaseService {
     }
 
     @Transactional
-    public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId) throws JsonProcessingException {
+    public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
+        OpenAiDTO openAi = llmService.selectOpenAiInfo(modelId, spaceCode);
+        OpenAiModelDTO openAiModel = openAi.getModels().stream().filter(model -> model.getId().equals(modelId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestcaseDTO testcase = this.selectTestcaseInfo(projectId, testcaseId);
-        Mono<JsonNode> result = openAIClientService.rephraseToTestCase(testcase);
-        return result;
+        return openAIClientService.rephraseToTestCase(openAi, openAiModel, testcase, SessionUtil.getUserId());
     }
 
 

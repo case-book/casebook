@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/TestcaseManager/TestcaseManager';
 import TestcaseGroupManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/TestcaseGroupManager/TestcaseGroupManager';
 import { ITEM_TYPE } from '@/constants/constants';
-import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
+import { LlmPropTypes, ParaphraseInfoPropTypes, ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
 import './ContentManager.scss';
 import { EmptyContent, Loader } from '@/components';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,10 @@ function ContentManager({
   tags,
   variables,
   onParaphrase,
+  llms,
+  paraphraseInfo,
+  onAcceptParaphraseContent,
+  onRemoveParaphraseContent,
 }) {
   const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
@@ -82,7 +86,11 @@ function ContentManager({
                 users={users}
                 createTestcaseImage={createTestcaseImage}
                 tags={tags}
+                llms={llms}
                 onParaphrase={onParaphrase}
+                paraphraseInfo={paraphraseInfo}
+                onAcceptParaphraseContent={onAcceptParaphraseContent}
+                onRemoveParaphraseContent={onRemoveParaphraseContent}
               />
             </div>
           </div>
@@ -105,7 +113,11 @@ function ContentManager({
             createTestcaseImage={createTestcaseImage}
             tags={tags}
             variables={variables}
+            llms={llms}
             onParaphrase={onParaphrase}
+            paraphraseInfo={paraphraseInfo}
+            onAcceptParaphraseContent={onAcceptParaphraseContent}
+            onRemoveParaphraseContent={onRemoveParaphraseContent}
           />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && (
@@ -141,6 +153,8 @@ ContentManager.defaultProps = {
   popupContent: null,
   tags: [],
   variables: [],
+  llms: [],
+  paraphraseInfo: {},
 };
 
 ContentManager.propTypes = {
@@ -209,6 +223,10 @@ ContentManager.propTypes = {
     }),
   ),
   onParaphrase: PropTypes.func.isRequired,
+  llms: LlmPropTypes,
+  paraphraseInfo: ParaphraseInfoPropTypes,
+  onAcceptParaphraseContent: PropTypes.func.isRequired,
+  onRemoveParaphraseContent: PropTypes.func.isRequired,
 };
 
 export default ContentManager;

@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.controller;
 
+import com.mindplates.bugcase.biz.ai.vo.response.LlmResponse;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
@@ -188,6 +189,13 @@ public class SpaceController {
     public List<SpaceMessageChannelResponse> selectSpaceMessageChannels(@PathVariable String spaceCode) {
         List<SpaceMessageChannelDTO> spaceMessageChannels = spaceService.selectSpaceMessageChannels(spaceCode);
         return spaceMessageChannels.stream().map(SpaceMessageChannelResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "스페이스 LLM 목록 조회")
+    @GetMapping("/{spaceCode}/llms")
+    public List<LlmResponse> selectSpaceLlms(@PathVariable String spaceCode) {
+        SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
+        return spaceInfo.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
     }
 
 

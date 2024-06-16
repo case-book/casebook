@@ -14,16 +14,19 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import { useNavigate } from 'react-router-dom';
 import useQueryString from '@/hooks/useQueryString';
 import SpaceVariableService from '@/services/SpaceVariableService';
+import SpaceService from '@/services/SpaceService';
 
 function ProjectTestcaseEditPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
+  const [llms, setLlms] = useState([]);
   const [tags, setTags] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [releases, setReleases] = useState([]);
+  const [paraphraseInfo, setParaphraseInfo] = useState({});
   const { query, setQuery: setSelectedItemInfo } = useQueryString();
 
   const selectedItemInfo = useMemo(() => {
@@ -39,6 +42,12 @@ function ProjectTestcaseEditPage() {
   const [popupContent, setPopupContent] = useState(null);
   const [contentChanged, setContentChanged] = useState(false);
   const [variables, setVariables] = useState([]);
+
+  const getLlms = () => {
+    SpaceService.selectSpaceLlmList(spaceCode, list => {
+      setLlms(list);
+    });
+  };
 
   const getProject = () => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
@@ -109,6 +118,7 @@ function ProjectTestcaseEditPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    getLlms();
     getProject();
     getReleases();
   }, [spaceCode, projectId]);
@@ -484,10 +494,78 @@ function ProjectTestcaseEditPage() {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
 
-  const onParaphrase = testcaseId => {
-    return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, d => {
-      console.log(d);
+  const onParaphrase = (testcaseId, modelId) => {
+    setParaphraseInfo({
+      testcaseId,
+      isLoading: true,
     });
+    return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId, d => {
+      if (d.length > 12) {
+        try {
+          const string = d.substring(8, d.length - 4);
+          const items = JSON.parse(string);
+          setParaphraseInfo({
+            testcaseId,
+            result: true,
+            isLoading: false,
+            items,
+          });
+        } catch (e) {
+          setParaphraseInfo({
+            testcaseId,
+            result: false,
+            isLoading: false,
+          });
+          console.error(e);
+        }
+      } else {
+        setParaphraseInfo({
+          testcaseId,
+          result: false,
+          isLoading: false,
+        });
+      }
+    });
+  };
+
+  const onAcceptParaphraseContent = (testcaseId, testcaseItemId) => {
+    const nextContent = { ...content };
+    const nextTestcaseItems = nextContent.testcaseItems.slice(0);
+    const testcaseItemIndex = nextTestcaseItems.findIndex(d => d.id === testcaseItemId);
+    const nextTestcaseItem = { ...nextTestcaseItems[testcaseItemIndex] };
+
+    const nextParaphraseInfo = { ...paraphraseInfo };
+    const index = nextParaphraseInfo.items.findIndex(d => d.id === testcaseItemId);
+
+    if (index > -1) {
+      if (nextTestcaseItem) {
+        if (nextTestcaseItem.type === 'value') {
+          nextTestcaseItem.value = nextParaphraseInfo.items[index].text;
+        } else if (nextTestcaseItem.type === 'text') {
+          nextTestcaseItem.text = nextParaphraseInfo.items[index].text;
+        }
+
+        nextTestcaseItems[testcaseItemIndex] = nextTestcaseItem;
+        nextContent.testcaseItems = nextTestcaseItems;
+
+        TestcaseService.updateTestcaseItem(spaceCode, projectId, testcaseId, testcaseItemId, nextTestcaseItem, () => {
+          setContent(nextContent);
+          nextParaphraseInfo.items.splice(index, 1);
+          setParaphraseInfo(nextParaphraseInfo);
+        });
+      }
+    }
+  };
+
+  const onRemoveParaphraseContent = testcaseItemId => {
+    const nextParaphraseInfo = { ...paraphraseInfo };
+
+    const index = nextParaphraseInfo.items.findIndex(d => d.id === testcaseItemId);
+    if (index > -1) {
+      nextParaphraseInfo.items.splice(index, 1);
+    }
+
+    setParaphraseInfo(nextParaphraseInfo);
   };
 
   return (
@@ -567,7 +645,11 @@ function ProjectTestcaseEditPage() {
                 setPopupContent={setPopupContent}
                 tags={tags}
                 variables={variables}
+                llms={llms}
                 onParaphrase={onParaphrase}
+                paraphraseInfo={paraphraseInfo}
+                onAcceptParaphraseContent={onAcceptParaphraseContent}
+                onRemoveParaphraseContent={onRemoveParaphraseContent}
               />
             }
           />

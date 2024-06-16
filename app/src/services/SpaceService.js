@@ -169,4 +169,19 @@ SpaceService.selectSpaceChannelList = (spaceCode, successHandler, failHandler) =
   );
 };
 
+SpaceService.selectSpaceLlmList = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/llms`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    i18n.t('스페이스에 등록된 LLM 정보를 가져옵니다.'),
+  );
+};
+
 export default SpaceService;
