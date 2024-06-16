@@ -1,4 +1,4 @@
-package com.mindplates.bugcase.common.service;
+package com.mindplates.bugcase.biz.ai.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,6 +7,7 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.framework.config.OpenAIConfig;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,11 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -31,12 +35,51 @@ public class OpenAIClientService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private MessageSourceAccessor messageSourceAccessor;
+
     public OpenAIClientService(OpenAIConfig openAIConfig) {
         this.apiKey = openAIConfig.getApiKey();
         this.webClient = WebClient.builder()
-            .baseUrl("https://api.openai.com/v1")
             .defaultHeader("Authorization", "Bearer " + this.apiKey)
             .build();
+    }
+
+    public String checkApiKey(String url, String apiKey) {
+        return this.webClient.get()
+            .uri(url + "/models")
+            .header("Authorization", "Bearer " + apiKey)
+            .retrieve()
+            .bodyToMono(String.class)
+            .map(response -> messageSourceAccessor.getMessage("llm.config.success"))
+            .onErrorResume(e -> {
+                if (e instanceof WebClientResponseException) {
+                    WebClientResponseException webClientResponseException = (WebClientResponseException) e;
+                    if (webClientResponseException.getStatusCode().is4xxClientError()) {
+                        return Mono.just(messageSourceAccessor.getMessage("llm.config.invalid.key"));
+                    } else {
+                        if (webClientResponseException.getMessage() != null) {
+                            return Mono.just(webClientResponseException.getMessage());
+                        }
+
+                        return Mono.just(messageSourceAccessor.getMessage("common.error.unknownError"));
+
+                    }
+                } else if (e instanceof WebClientRequestException) {
+                    Throwable cause = e.getCause();
+                    if (cause instanceof UnknownHostException) {
+                        return Mono.just(messageSourceAccessor.getMessage("llm.config.error.dns"));
+                    } else if (cause instanceof IOException) {
+                        return Mono.just(cause.getMessage());
+                    } else {
+                        return Mono.just(cause.getMessage());
+                    }
+                } else {
+                    return Mono.just(e.getMessage());
+                }
+            })
+            .block();
+
     }
 
     public Mono<JsonNode> rephraseToTestCase(TestcaseDTO testcase) throws JsonProcessingException {
@@ -86,11 +129,7 @@ public class OpenAIClientService {
             .append("3. The response should only include the resulting JSON : ");
 */
 
-        prompt.append("JSON 컨텐츠의 text 필드의 데이터들이 모두 일관된 형태의 어조, 어미를 가지도록, 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변환해줘. 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");
-
-
-
-
+        prompt.append("JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변환하면서, 모든 문장이 일관된 형태의 문장이 되도록 단어, 어조, 어미를 일관되게 재구성. 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");
 
         return prompt.toString();
     }

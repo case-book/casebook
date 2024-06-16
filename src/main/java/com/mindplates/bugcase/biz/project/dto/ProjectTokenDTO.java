@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.dto;
 
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
+import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectTokenDTO extends CommonEntity {
+public class ProjectTokenDTO extends CommonDTO {
 
     private Long id;
     private ProjectDTO project;

@@ -3,7 +3,7 @@ package com.mindplates.bugcase.biz.space.dto;
 
 import com.mindplates.bugcase.biz.space.entity.Holiday;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
-import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HolidayDTO extends CommonEntity {
+public class HolidayDTO extends CommonDTO {
 
     Long id;
     private HolidayTypeCode holidayType;

@@ -607,6 +607,10 @@ const CHANNEL_TYPE_CODE = {
   WEBHOOK: i18n.t('웹훅'),
 };
 
+const LLM_TYPE_CODE = {
+  OPENAI: 'OPENAI',
+};
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -640,4 +644,5 @@ export {
   TESTRUN_HOOK_TIMINGS,
   HTTP_METHOD,
   CHANNEL_TYPE_CODE,
+  LLM_TYPE_CODE,
 };

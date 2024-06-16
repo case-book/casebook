@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
+import com.mindplates.bugcase.biz.ai.vo.response.LlmResponse;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
@@ -39,6 +40,8 @@ public class SpaceResponse {
     private String country;
     private String timeZone;
 
+    private List<LlmResponse> llms;
+
     public SpaceResponse(SpaceDTO space) {
         this.id = space.getId();
         this.name = space.getName();
@@ -59,6 +62,10 @@ public class SpaceResponse {
 
         if (space.getMessageChannels() != null) {
             this.messageChannels = space.getMessageChannels().stream().map(SpaceMessageChannelResponse::new).collect(Collectors.toList());
+        }
+
+        if (space.getLlms() != null) {
+            this.llms = space.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
         }
     }
 

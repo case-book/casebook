@@ -38,7 +38,7 @@ import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.service.OpenAIClientService;
+import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Selector, SeqId, TestcaseItem, VariableInput } from '@/components';
+import { Button, Liner, Selector, SeqId, TestcaseItem, VariableInput } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 import TestcaseReleaseItem from '@/components/TestcaseItem/TestcaseReleaseItem';
 
-function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags, variables }) {
+function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags, variables, onParaphrase }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -160,19 +160,33 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
           </div>
           <div className="title-button">
             {!isEdit && (
-              <Button
-                size="md"
-                color="primary"
-                onClick={() => {
-                  setIsEdit(true);
-                }}
-              >
-                {t('변경')}
-              </Button>
+              <>
+                <Button
+                  size="md"
+                  color="yellow"
+                  className="ai-button"
+                  onClick={() => {
+                    onParaphrase(content.id);
+                  }}
+                >
+                  <i className="fa-solid fa-wand-magic-sparkles" />
+                  {t('AI 재구성')}
+                </Button>
+                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                <Button
+                  size="md"
+                  color="primary"
+                  onClick={() => {
+                    setIsEdit(true);
+                  }}
+                >
+                  {t('변경')}
+                </Button>
+              </>
             )}
             {isEdit && (
               <>
-                <Button size="md" color="white" onClick={onCancel}>
+                <Button className="cancel-button" size="md" color="white" onClick={onCancel}>
                   {t('취소')}
                 </Button>
                 <Button size="md" color="primary" onClick={onSave}>
@@ -356,6 +370,7 @@ TestcaseManager.propTypes = {
       name: PropTypes.string,
     }),
   ),
+  onParaphrase: PropTypes.func.isRequired,
 };
 
 export default TestcaseManager;

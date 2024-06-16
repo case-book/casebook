@@ -14,7 +14,7 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.service.OpenAIClientService;
+import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.common.service.RedisService;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;

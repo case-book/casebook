@@ -45,7 +45,7 @@ import {
   MESSAGE_CATEGORY,
 } from '@/constants/constants';
 import MemberCardManager from '@/components/MemberManager/MemberCardManager';
-import HolidayEditPopup from '@/pages/spaces/HolidayEditPopup';
+import HolidayEditPopup from '@/pages/spaces/SpaceEditPage/HolidayEditPopup/HolidayEditPopup';
 import PropTypes from 'prop-types';
 import './SpaceEditPage.scss';
 import dateUtil from '@/utils/dateUtil';
@@ -53,6 +53,7 @@ import moment from 'moment';
 import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
 import MessageChannelEditPopup from '@/pages/spaces/MessageChannelEditPopup/MessageChannelEditPopup';
+import LlmEditPopup from '@/pages/spaces/SpaceEditPage/LlmEditPopup/LlmEditPopup';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
@@ -76,6 +77,7 @@ function SpaceEditPage({ type }) {
     country,
     holidays: country === 'KR' ? cloneDeep(DEFAULT_HOLIDAY.KR) : cloneDeep(DEFAULT_HOLIDAY.US),
     messageChannels: [],
+    llms: [],
   });
 
   // const [messageChannelTypeList, setMessageChannelTypeList] = useState([]);
@@ -102,6 +104,20 @@ function SpaceEditPage({ type }) {
     httpMethod: '',
     messageChannelType: null,
     template: null,
+  });
+
+  const [llmPopupInfo, setLlmPopupInfo] = useState({
+    isOpened: false,
+    index: null,
+    id: null,
+    llmTypeCode: null,
+    openAi: {
+      id: null,
+      name: '',
+      url: '',
+      apiKey: '',
+      models: [],
+    },
   });
 
   const isEdit = useMemo(() => {
@@ -519,6 +535,87 @@ function SpaceEditPage({ type }) {
                   size="xs"
                   color="primary"
                   onClick={() => {
+                    setLlmPopupInfo({
+                      isOpened: true,
+                      index: null,
+                    });
+                  }}
+                >
+                  {t('API 설정 추가')}
+                </Button>
+              }
+            >
+              {t('LLM API 설정')}
+            </Title>
+            <Block>
+              {!(space.llms?.length > 0) && (
+                <EmptyContent className="empty-content">
+                  <div>{t('등록된 API 설정이 없습니다.')}</div>
+                </EmptyContent>
+              )}
+              {space.llms?.length > 0 && (
+                <Table cols={['1px', '100%', '1px']} border>
+                  <THead>
+                    <Tr>
+                      <Th align="center">{t('타입')}</Th>
+                      <Th align="left">{t('이름')}</Th>
+                      <Th />
+                    </Tr>
+                  </THead>
+                  <Tbody>
+                    {space.llms.map((llm, inx) => {
+                      return (
+                        <Tr key={inx}>
+                          <Td align="center">
+                            <Tag size="sm" color="white" border>
+                              {llm.llmTypeCode}
+                            </Tag>
+                          </Td>
+                          <Td>{llm?.openAi.name}</Td>
+                          <Td>
+                            <Button
+                              size="xs"
+                              color="danger"
+                              onClick={() => {
+                                const nextLlms = space.llms.slice(0);
+                                nextLlms.splice(inx, 1);
+                                setSpace({
+                                  ...space,
+                                  llms: nextLlms,
+                                });
+                              }}
+                            >
+                              {t('삭제')}
+                            </Button>
+                            <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.5rem " />
+                            <Button
+                              size="xs"
+                              color="primary"
+                              onClick={() => {
+                                setLlmPopupInfo({
+                                  ...llm,
+                                  openAi: { ...llm.openAi },
+                                  isOpened: true,
+                                  index: inx,
+                                });
+                              }}
+                            >
+                              {t('변경')}
+                            </Button>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              )}
+            </Block>
+            <Title
+              control={
+                <Button
+                  size="xs"
+                  color="primary"
+                  onClick={() => {
                     setHolidayPopupInfo({
                       isOpened: true,
                       index: null,
@@ -694,6 +791,39 @@ function SpaceEditPage({ type }) {
             setSpace({
               ...space,
               messageChannels: nextMessageChannels,
+            });
+          }}
+        />
+      )}
+      {llmPopupInfo.isOpened && (
+        <LlmEditPopup
+          data={llmPopupInfo}
+          setOpened={() => {
+            setLlmPopupInfo({
+              isOpened: false,
+            });
+          }}
+          onApply={llm => {
+            const nextLlms = space.llms.slice(0);
+            if (llm.index === null) {
+              nextLlms.push(llm);
+            } else {
+              const nextLlm = nextLlms[llm.index];
+              nextLlm.id = llm.id;
+              nextLlm.llmTypeCode = llm.llmTypeCode;
+              if (!nextLlm.openAi) {
+                nextLlm.openAi = {};
+              }
+
+              nextLlm.openAi.id = llm.openAi.id;
+              nextLlm.openAi.name = llm.openAi.name;
+              nextLlm.openAi.url = llm.openAi.url;
+              nextLlm.openAi.apiKey = llm.openAi.apiKey;
+            }
+
+            setSpace({
+              ...space,
+              llms: nextLlms,
             });
           }}
         />

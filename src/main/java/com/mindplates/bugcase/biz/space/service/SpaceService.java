@@ -1,8 +1,9 @@
 package com.mindplates.bugcase.biz.space.service;
 
+import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
+import com.mindplates.bugcase.biz.ai.repository.LlmRepository;
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
@@ -60,6 +61,7 @@ public class SpaceService {
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
     private final SpaceMessageChannelRepository spaceMessageChannelRepository;
     private final ProjectMessageChannelRepository projectMessageChannelRepository;
+    private final LlmRepository llmRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
 
     private boolean existByCode(String code) {
@@ -142,13 +144,38 @@ public class SpaceService {
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
 
+        if (updateSpaceInfo.getLlms() == null || updateSpaceInfo.getLlms().isEmpty()) {
+            if (spaceInfo.getLlms() != null && !spaceInfo.getLlms().isEmpty()) {
+                spaceInfo.getLlms().clear();
+            }
+        } else {
+            List<Long> deleteLlmIds = spaceInfo.getLlms().stream()
+                .filter((llm) -> updateSpaceInfo.getLlms().stream().noneMatch((updateLlm -> updateLlm.getId() != null && updateLlm.getId().equals(llm.getId()))))
+                .map(LlmDTO::getId)
+                .collect(Collectors.toList());
+
+            spaceInfo.getLlms().removeIf((llm -> deleteLlmIds.contains(llm.getId())));
+
+            updateSpaceInfo.getLlms().forEach((updateLlm -> {
+                if (updateLlm.getId() == null) {
+                    spaceInfo.getLlms().add(updateLlm);
+                } else {
+                    LlmDTO targetLlm = spaceInfo.getLlms().stream().filter((llm -> llm.getId().equals(updateLlm.getId()))).findAny().orElse(null);
+                    if (targetLlm != null) {
+                        targetLlm.setLlmTypeCode(updateLlm.getLlmTypeCode());
+                        targetLlm.getOpenAi().setName(updateLlm.getOpenAi().getName());
+                        targetLlm.getOpenAi().setUrl(updateLlm.getOpenAi().getUrl());
+                        targetLlm.getOpenAi().setApiKey(updateLlm.getOpenAi().getApiKey());
+                    }
+                }
+            }));
+        }
+
         if (updateSpaceInfo.getMessageChannels() == null || updateSpaceInfo.getMessageChannels().isEmpty()) {
             if (!spaceInfo.getMessageChannels().isEmpty()) {
                 spaceInfo.getMessageChannels().clear();
             }
         } else {
-
-
             List<Long> deleteMessageChannelIds = spaceInfo.getMessageChannels().stream()
                 .filter((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream()
                     .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(spaceMessageChannel.getId())))))
