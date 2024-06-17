@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Page, PageButtons, PageContent, PageTitle, Table, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
@@ -96,11 +96,18 @@ function SystemInfoPage() {
             text: t('시스템 관리'),
           },
         ]}
+        links={[
+          {
+            to: '/admin/systems/edit',
+            text: t('편집'),
+            color: 'primary',
+          },
+        ]}
         onListClick={() => {
           navigate('/');
         }}
       >
-        {t('관리')}
+        {t('시스템 관리')}
       </PageTitle>
       <PageContent>
         <Title border={false} marginBottom={false}>
@@ -139,6 +146,29 @@ function SystemInfoPage() {
               </Button>
             </Text>
           </BlockRow>
+        </Block>
+        <Title>{t('LLM 프롬프트 설정')}</Title>
+        {!(info.llmPrompts?.length > 0) && (
+          <EmptyContent className="empty-content">
+            <div>{t('등록된 프롬프트가 없습니다.')}</div>
+          </EmptyContent>
+        )}
+        <Block>
+          {!(info.llmPrompts?.length > 0) && <EmptyContent border>{t('등록된 프롬프트가 없습니다.')}</EmptyContent>}
+          {info.llmPrompts?.length > 0 && (
+            <ul className="prompts">
+              {info.llmPrompts?.map((prompt, inx) => {
+                return (
+                  <li key={inx}>
+                    <div>
+                      <div>{prompt.name}</div>
+                      <div>{prompt.activated ? <Tag border>ACTIVE</Tag> : null}</div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </Block>
         <Title border={false} marginBottom={false}>
           {t('기타')}

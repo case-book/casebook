@@ -9,7 +9,7 @@ import ConfigService from '@/services/ConfigService';
 
 const labelMinWidth = '100px';
 
-function HolidayEditPopup({ data, setOpened, onApply }) {
+function LlmEditPopup({ data, setOpened, onApply }) {
   const { t } = useTranslation();
 
   const isEdit = data.index !== null;
@@ -188,11 +188,11 @@ function HolidayEditPopup({ data, setOpened, onApply }) {
   );
 }
 
-HolidayEditPopup.defaultProps = {
+LlmEditPopup.defaultProps = {
   data: null,
 };
 
-HolidayEditPopup.propTypes = {
+LlmEditPopup.propTypes = {
   data: PropTypes.shape({
     index: PropTypes.number,
     id: PropTypes.number,
@@ -215,4 +215,4 @@ HolidayEditPopup.propTypes = {
   onApply: PropTypes.func.isRequired,
 };
 
-export default HolidayEditPopup;
+export default LlmEditPopup;

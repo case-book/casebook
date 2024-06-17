@@ -6,10 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.biz.ai.dto.AiRequestHistoryDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
+import com.mindplates.bugcase.biz.config.dto.LlmPromptDTO;
+import com.mindplates.bugcase.biz.config.service.LlmPromptService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.framework.config.AiConfig;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -40,6 +43,13 @@ public class OpenAIClientService {
 
     @Autowired
     private MessageSourceAccessor messageSourceAccessor;
+
+    @Autowired
+    private LlmPromptService llmPromptService;
+
+    @Autowired
+    private AiConfig aiConfig;
+
 
     public OpenAIClientService() {
         this.webClient = WebClient.builder().build();
@@ -145,44 +155,23 @@ public class OpenAIClientService {
             .map(this::parseResponse);
     }
 
-    private String getPrompt() {
 
-        StringBuilder prompt = new StringBuilder();
-        /*
-        prompt.append("You are an expert test engineer. Please perform the following tasks on the provided JSON array")
-            .append("\n")
-            //.append("1. Only transform the content of objects with the key \"text\".")
-            //.append("\n")
-            //.append("2. Include the rest of the content in the response exactly as it was in the request.")
-            //.append("\n")
-            .append("1. Transform the content of the key \"text\" into rephrase the following sentence to a formal test case format.")
-            .append("\n")
-            .append("2. Translate the content of the key \"text\" to the provided language.")
-            .append("\n")
-            .append("3. The response should only include the resulting JSON : ");
-*/
+    private Map<String, Object> createRequestBody(String targetContent, String model) {
 
-        // prompt.append("JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변환하면서, 모든 문장이 일관된 형태의 문장이 되도록 단어, 어조, 어미를 일관되게 재구성. 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");
-
-        prompt
-            .append("JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변경한다.")
-            .append("문장의 맞춤법이 틀린 경우 올바르게 수정한다.")
-            .append("변경하는 모든 문장이 하나의 관점에서 일관된 형태의 문장이 되도록 문장에 포함된 단어, 문장의 어조, 어미 일관되게 재구성한다.")
-            .append("제공되는 문장이 HTML인 경우, HTML 문법이 최대한 유지되도록 변경한다.")
-            .append("응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.: ");;
-
-        return prompt.toString();
-    }
-
-    private Map<String, Object> createRequestBody(String prompt, String model) {
+        LlmPromptDTO llmPrompt = llmPromptService.selectActivatedLlmPromptInfo();
+        if (llmPrompt == null) {
+            llmPrompt = new LlmPromptDTO();
+            llmPrompt.setPrompt(aiConfig.getPrompt());
+            llmPrompt.setSystemRole(aiConfig.getSystemRole());
+        }
 
         Map<String, Object> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "You are an expert test engineer.");
+        systemMessage.put("content", llmPrompt.getSystemRole());
 
         Map<String, Object> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content", getPrompt() + prompt);
+        message.put("content", llmPrompt.getPrompt() + aiConfig.getPostPrompt() + ":" + targetContent);
 
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
         messages.add(systemMessage);

@@ -231,7 +231,7 @@ ContentManager.propTypes = {
   paraphraseInfo: ParaphraseInfoPropTypes,
   onAcceptParaphraseContent: PropTypes.func.isRequired,
   onRemoveParaphraseContent: PropTypes.func.isRequired,
-  aiEnabled: PropTypes.func,
+  aiEnabled: PropTypes.bool,
 };
 
 export default ContentManager;

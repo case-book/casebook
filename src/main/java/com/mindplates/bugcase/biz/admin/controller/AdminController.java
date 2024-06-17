@@ -1,10 +1,16 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.vo.request.SystemInfoRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
+import com.mindplates.bugcase.biz.admin.vo.response.PromptInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
+import com.mindplates.bugcase.biz.config.dto.LlmPromptDTO;
+import com.mindplates.bugcase.biz.config.service.LlmPromptService;
+import com.mindplates.bugcase.biz.config.vo.request.LlmPromptRequest;
+import com.mindplates.bugcase.biz.config.vo.response.LlmPromptResponse;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
@@ -14,8 +20,8 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.common.service.RedisService;
+import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Enumeration;
@@ -55,7 +61,9 @@ public class AdminController {
 
     private final RedisService redisService;
 
-    private final OpenAIClientService openAIClientService;
+    private final LlmPromptService llmPromptService;
+
+    private final AiConfig aiConfig;
 
     @Operation(description = "모든 스페이스 조회")
     @GetMapping("/spaces")
@@ -134,7 +142,13 @@ public class AdminController {
         Properties properties = System.getProperties();
         getInfo(system, properties);
 
-        return new SystemInfoResponse(redis, system);
+        List<LlmPromptDTO> llmPrompts = llmPromptService.selectLlmPromptList();
+
+        return SystemInfoResponse.builder()
+            .redis(redis)
+            .system(system)
+            .llmPrompts(llmPrompts.stream().map(LlmPromptResponse::new).collect(Collectors.toList()))
+            .build();
     }
 
 
@@ -167,6 +181,23 @@ public class AdminController {
             String value = memoryProperties.getProperty(key);
             info.put(key, value);
         }
+    }
+
+    @Operation(description = "시스템 정보 조회")
+    @GetMapping("/prompts/default")
+    public PromptInfoResponse selectDefaultPromptInfo() {
+        return PromptInfoResponse.builder()
+            .prompt(aiConfig.getPrompt())
+            .postPrompt(aiConfig.getPostPrompt())
+            .systemRole(aiConfig.getSystemRole())
+            .build();
+    }
+
+    @Operation(description = "시스템 정보 변경")
+    @PutMapping("/system/info")
+    public ResponseEntity<?> updateSystemInfo(@Valid @RequestBody SystemInfoRequest updateSystemInfo) {
+        llmPromptService.saveLlmPromptList(updateSystemInfo.getLlmPrompts().stream().map(LlmPromptRequest::toDTO).collect(Collectors.toList()));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

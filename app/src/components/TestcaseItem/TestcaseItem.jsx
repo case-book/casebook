@@ -47,7 +47,13 @@ function TestcaseItem({
     setOpened(true);
   };
 
-  const paraphraseContent = paraphraseInfo?.items?.find(d => d.id === testcaseItem.id);
+  let paraphraseContent = '';
+  try {
+    paraphraseContent = paraphraseInfo?.items?.find(d => d.id === testcaseItem.id);
+  } catch (e) {
+    paraphraseContent = '';
+    console.error(e);
+  }
 
   return (
     <div key={testcaseTemplateItem.id} className={`testcase-item-wrapper size-${testcaseTemplateItem?.size}`}>

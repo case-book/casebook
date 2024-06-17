@@ -1,11 +1,12 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { AdminSpaceInfoPage, AdminSpaceListPage, Message, SystemInfoPage, UserEditPage, UserInfoPage, UserListPage, AdminIndexInfoPage } from '@/pages';
+import { AdminIndexInfoPage, AdminSpaceInfoPage, AdminSpaceListPage, Message, SystemEditPage, SystemInfoPage, UserEditPage, UserInfoPage, UserListPage } from '@/pages';
 
 function AdminRoutes() {
   return (
     <Routes>
       <Route path="/systems" element={<SystemInfoPage />} />
+      <Route path="/systems/edit" element={<SystemEditPage />} />
       <Route path="/users/:userId/edit" element={<UserEditPage />} />
       <Route path="/users/:userId" element={<UserInfoPage />} />
       <Route path="/users" element={<UserListPage />} />

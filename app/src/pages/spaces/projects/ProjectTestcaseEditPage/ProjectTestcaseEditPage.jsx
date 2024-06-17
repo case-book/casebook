@@ -504,6 +504,18 @@ function ProjectTestcaseEditPage() {
         try {
           const string = d.substring(8, d.length - 4);
           const items = JSON.parse(string);
+
+          // items가 array인지 확인
+          if (!Array.isArray(items)) {
+            setParaphraseInfo({
+              testcaseId,
+              result: false,
+              isLoading: false,
+            });
+            dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
+            return;
+          }
+
           setParaphraseInfo({
             testcaseId,
             result: true,

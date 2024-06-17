@@ -15,6 +15,7 @@ import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.service.MessageChannelService;
+import com.mindplates.bugcase.framework.config.AiConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -50,6 +51,8 @@ public class SystemController {
     private final MessageChannelService messageChannelService;
 
     private final OpenAIClientService openAIClientService;
+
+
 
 
     @GetMapping("/info")

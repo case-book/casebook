@@ -1,5 +1,6 @@
 package com.mindplates.bugcase;
 
+import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.config.FileConfig;
 import java.util.TimeZone;
 import javax.annotation.PostConstruct;
@@ -10,7 +11,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableConfigurationProperties({
-    FileConfig.class
+    FileConfig.class,
+    AiConfig.class
 })
 // @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @SpringBootApplication
