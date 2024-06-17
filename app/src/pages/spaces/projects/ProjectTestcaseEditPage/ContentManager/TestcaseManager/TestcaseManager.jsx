@@ -32,6 +32,7 @@ function TestcaseManager({
   paraphraseInfo,
   onAcceptParaphraseContent,
   onRemoveParaphraseContent,
+  aiEnabled,
 }) {
   const {
     themeStore: { theme },
@@ -179,24 +180,29 @@ function TestcaseManager({
           <div className="title-button">
             {!isEdit && (
               <>
-                <Button
-                  size="md"
-                  color="yellow"
-                  className="ai-button"
-                  disabled={!llms || llms.length === 0 || paraphraseInfo.isLoading}
-                  onClick={() => {
-                    if (llms.length > 0) {
-                      const { models } = llms[0].openAi;
-                      if (models.length > 0) {
-                        onParaphrase(content.id, models[models.length - 1].id);
-                      }
-                    }
-                  }}
-                >
-                  <i className="fa-solid fa-wand-magic-sparkles" />
-                  {t('AI 재구성')}
-                </Button>
-                <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                {aiEnabled && (
+                  <>
+                    <Button
+                      size="md"
+                      color="yellow"
+                      className="ai-button"
+                      disabled={!llms || llms.length === 0 || paraphraseInfo.isLoading}
+                      onClick={() => {
+                        if (llms.length > 0) {
+                          const { models } = llms[0].openAi;
+                          if (models.length > 0) {
+                            onParaphrase(content.id, models[models.length - 1].id);
+                          }
+                        }
+                      }}
+                    >
+                      <i className="fa-solid fa-wand-magic-sparkles" />
+                      {t('AI 재구성')}
+                    </Button>
+                    <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                  </>
+                )}
+
                 <Button
                   size="md"
                   color="primary"
@@ -351,6 +357,7 @@ TestcaseManager.defaultProps = {
   variables: [],
   llms: [],
   paraphraseInfo: {},
+  aiEnabled: false,
 };
 
 TestcaseManager.propTypes = {
@@ -407,6 +414,7 @@ TestcaseManager.propTypes = {
   paraphraseInfo: ParaphraseInfoPropTypes,
   onAcceptParaphraseContent: PropTypes.func.isRequired,
   onRemoveParaphraseContent: PropTypes.func.isRequired,
+  aiEnabled: PropTypes.bool,
 };
 
 export default TestcaseManager;

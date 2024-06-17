@@ -650,6 +650,7 @@ function ProjectTestcaseEditPage() {
                 paraphraseInfo={paraphraseInfo}
                 onAcceptParaphraseContent={onAcceptParaphraseContent}
                 onRemoveParaphraseContent={onRemoveParaphraseContent}
+                aiEnabled={project.aiEnabled}
               />
             }
           />

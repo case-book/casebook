@@ -634,6 +634,12 @@ public class TestcaseService {
 
     @Transactional
     public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        if (!project.isAiEnabled()) {
+            throw new ServiceException(HttpStatus.FORBIDDEN, "error.project.ai.not.activated");
+        }
+
         OpenAiDTO openAi = llmService.selectOpenAiInfo(modelId, spaceCode);
         OpenAiModelDTO openAiModel = openAi.getModels().stream().filter(model -> model.getId().equals(modelId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestcaseDTO testcase = this.selectTestcaseInfo(projectId, testcaseId);

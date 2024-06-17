@@ -244,6 +244,10 @@ function ProjectInfoPage() {
               <Text>{project?.activated ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
+              <Label>{t('AI 활성화')}</Label>
+              <Text>{project?.aiEnabled ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
               <Label>{t('타겟 릴리즈')}</Label>
               <Text>{targetRelease?.name}</Text>
             </BlockRow>

@@ -32,6 +32,7 @@ function ContentManager({
   paraphraseInfo,
   onAcceptParaphraseContent,
   onRemoveParaphraseContent,
+  aiEnabled,
 }) {
   const { t } = useTranslation();
   const [isEdit, setIsEdit] = useState(false);
@@ -91,6 +92,7 @@ function ContentManager({
                 paraphraseInfo={paraphraseInfo}
                 onAcceptParaphraseContent={onAcceptParaphraseContent}
                 onRemoveParaphraseContent={onRemoveParaphraseContent}
+                aiEnabled={aiEnabled}
               />
             </div>
           </div>
@@ -118,6 +120,7 @@ function ContentManager({
             paraphraseInfo={paraphraseInfo}
             onAcceptParaphraseContent={onAcceptParaphraseContent}
             onRemoveParaphraseContent={onRemoveParaphraseContent}
+            aiEnabled={aiEnabled}
           />
         )}
         {content && type === ITEM_TYPE.TESTCASE_GROUP && (
@@ -155,6 +158,7 @@ ContentManager.defaultProps = {
   variables: [],
   llms: [],
   paraphraseInfo: {},
+  aiEnabled: false,
 };
 
 ContentManager.propTypes = {
@@ -227,6 +231,7 @@ ContentManager.propTypes = {
   paraphraseInfo: ParaphraseInfoPropTypes,
   onAcceptParaphraseContent: PropTypes.func.isRequired,
   onRemoveParaphraseContent: PropTypes.func.isRequired,
+  aiEnabled: PropTypes.func,
 };
 
 export default ContentManager;
