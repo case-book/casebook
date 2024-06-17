@@ -1,11 +1,14 @@
 package com.mindplates.bugcase.framework.config;
 
+import com.mindplates.bugcase.biz.config.service.LlmPromptService;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.common.bean.InitService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.converter.LongToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
+import java.io.IOException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +27,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
-import java.io.IOException;
-
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -38,6 +39,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private JsonRedisTemplate jsonRedisTemplate;
+
+    @Autowired
+    private LlmPromptService llmPromptService;
+
+    @Autowired
+    private ProjectService projectService;
 
     public WebConfig(SessionUtil sessionUtil) {
 
@@ -92,7 +99,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public InitService initService() {
-        InitService initService = new InitService(jsonRedisTemplate);
+        InitService initService = new InitService(jsonRedisTemplate, llmPromptService, projectService);
         initService.init();
         return initService;
     }
@@ -100,15 +107,15 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**/*")
-                .addResourceLocations("classpath:/static/")
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver() {
-                    @Override
-                    protected Resource getResource(String resourcePath, Resource location) throws IOException {
-                        Resource requestedResource = location.createRelative(resourcePath);
-                        return requestedResource.exists() && requestedResource.isReadable() ? requestedResource : new ClassPathResource("/static/index.html");
-                    }
-                });
+            .addResourceLocations("classpath:/static/")
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver() {
+                @Override
+                protected Resource getResource(String resourcePath, Resource location) throws IOException {
+                    Resource requestedResource = location.createRelative(resourcePath);
+                    return requestedResource.exists() && requestedResource.isReadable() ? requestedResource : new ClassPathResource("/static/index.html");
+                }
+            });
     }
 
 

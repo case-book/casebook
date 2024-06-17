@@ -335,5 +335,11 @@ public class ProjectService {
         return projectMessageChannels.stream().map(ProjectMessageChannelDTO::new).collect(Collectors.toList());
     }
 
+    @Transactional
+    public void updateProjectAiEnabledFalse() {
+        projectRepository.updateProjectAiEnable();
+    }
+
+
 
 }

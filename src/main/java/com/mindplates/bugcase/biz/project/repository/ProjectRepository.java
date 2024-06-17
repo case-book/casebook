@@ -1,13 +1,13 @@
 package com.mindplates.bugcase.biz.project.repository;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-
 
 
     Long countBySpaceCodeAndName(String spaceCode, String name);
@@ -23,6 +23,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Long countBySpaceId(Long spaceId);
 
     List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
+
+    @Modifying
+    @Query("UPDATE Project p SET p.aiEnabled = false WHERE p.aiEnabled IS NULL")
+    void updateProjectAiEnable();
 
 
 }
