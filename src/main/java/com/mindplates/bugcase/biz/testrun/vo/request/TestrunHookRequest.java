@@ -5,7 +5,7 @@ import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.util.List;
 import java.util.Map;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -14,13 +14,13 @@ public class TestrunHookRequest implements IRequestVO<TestrunHookDTO> {
 
     private Long id;
     private TestrunHookTiming timing;
-    @NotEmpty
+    @NotBlank
     @Length(min = 1, max = 100)
     private String name;
-    @NotEmpty
+    @NotBlank
     @Length(min = 1, max = 200)
     private String url;
-    @NotEmpty
+    @NotBlank
     private String method;
     private List<Map<String, String>> headers;
     private List<Map<String, String>> bodies;

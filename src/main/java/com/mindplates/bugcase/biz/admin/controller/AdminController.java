@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AdminController {
 
-    private final JsonRedisTemplate jsonRedisTemplate;
+    private final JsonRedisTemplate<Object> jsonRedisTemplate;
 
     private final UserService userService;
 

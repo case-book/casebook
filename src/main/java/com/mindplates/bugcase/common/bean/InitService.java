@@ -1,22 +1,18 @@
 package com.mindplates.bugcase.common.bean;
 
-import com.mindplates.bugcase.biz.config.service.LlmPromptService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import org.springframework.data.redis.core.RedisCallback;
 
 public class InitService {
 
-    private final JsonRedisTemplate jsonRedisTemplate;
-
-    private final LlmPromptService llmPromptService;
+    private final JsonRedisTemplate<Object> jsonRedisTemplate;
 
     private final ProjectService projectService;
 
 
-    public InitService (JsonRedisTemplate jsonRedisTemplate, LlmPromptService llmPromptService, ProjectService projectService) {
+    public InitService(JsonRedisTemplate<Object> jsonRedisTemplate, ProjectService projectService) {
         this.jsonRedisTemplate = jsonRedisTemplate;
-        this.llmPromptService = llmPromptService;
         this.projectService = projectService;
     }
 

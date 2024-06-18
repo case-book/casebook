@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,29 +31,26 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OpenAIClientService {
 
     private final WebClient webClient;
 
-    @Autowired
-    private LlmService llmService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MessageSourceAccessor messageSourceAccessor;
-
-    @Autowired
-    private LlmPromptService llmPromptService;
-
-    @Autowired
-    private AiConfig aiConfig;
+    private final LlmService llmService;
 
 
-    public OpenAIClientService() {
-        this.webClient = WebClient.builder().build();
-    }
+    private final ObjectMapper objectMapper;
+
+
+    private final MessageSourceAccessor messageSourceAccessor;
+
+
+    private final LlmPromptService llmPromptService;
+
+
+    private final AiConfig aiConfig;
+
 
     public String checkApiKey(String url, String apiKey) {
         return this.webClient.get()
