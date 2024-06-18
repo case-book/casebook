@@ -53,6 +53,7 @@ app] npm start
 ### 백엔드 환경 구성
 
 
+
 ## 릴리스
 아래와 같이 릴리스 파일을 생성할 수 있습니다. 단, gradle 7.X 버전을 사용해야 올바르게 릴리스됩니다. gradle 8.0 이상의 버전에서는 현재 올바르게 릴리스 과정이 동작하지 않습니다.
 ```agsl
@@ -65,3 +66,7 @@ gradle release
 설치 파일을 직접사용하지 않고, 빌드 과정에서 생성된 파일들을 이용하여, 일반적인 웹 애플리케이션을 배포하는 방식으로 각 사용자의 상황에 맞게 직접 설치를 진행할 수 있습니다. 이때 아래의 디렉토리에 생성된 파일들을 참고하실 수 있습니다. 
  - build/libs/casebook-api-[version].war
  - app/build
+
+## API 요청
+curl -u (user-email):(user-token) -d "{""result"":""SUCCESS"", ""comment"":""your comment""}" -H "Content-Type: application/json"  -X POST http://casebook-domain/api/automation/projects/(project-token)/testruns/147/testcases/40
+curl -u (user-email):3ad56155-6faf-475c-abba-9897fcf6fb56 -d "{""result"":""SUCCESS"", ""comment"":""your comment""}" -H "Content-Type: application/json" -X POST http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testruns/147/testcases/40

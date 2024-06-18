@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Selector, SeqId, TestcaseItem, VariableInput } from '@/components';
+import { LlmPropTypes, ParaphraseInfoPropTypes, ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
+import { Button, Liner, Selector, SeqId, TestcaseItem, VariableInput } from '@/components';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -14,7 +14,26 @@ import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 import TestcaseReleaseItem from '@/components/TestcaseItem/TestcaseReleaseItem';
 
-function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEdit, setContent, onSave, onCancel, users, createTestcaseImage, tags, variables }) {
+function TestcaseManager({
+  content,
+  releases,
+  testcaseTemplates,
+  isEdit,
+  setIsEdit,
+  setContent,
+  onSave,
+  onCancel,
+  users,
+  createTestcaseImage,
+  tags,
+  variables,
+  onParaphrase,
+  llms,
+  paraphraseInfo,
+  onAcceptParaphraseContent,
+  onRemoveParaphraseContent,
+  aiEnabled,
+}) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -160,19 +179,44 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
           </div>
           <div className="title-button">
             {!isEdit && (
-              <Button
-                size="md"
-                color="primary"
-                onClick={() => {
-                  setIsEdit(true);
-                }}
-              >
-                {t('변경')}
-              </Button>
+              <>
+                {aiEnabled && (
+                  <>
+                    <Button
+                      size="md"
+                      color="yellow"
+                      className="ai-button"
+                      disabled={!llms || llms.length === 0 || paraphraseInfo.isLoading}
+                      onClick={() => {
+                        if (llms.length > 0) {
+                          const { models } = llms[0].openAi;
+                          if (models.length > 0) {
+                            onParaphrase(content.id, models[models.length - 1].id);
+                          }
+                        }
+                      }}
+                    >
+                      <i className="fa-solid fa-wand-magic-sparkles" />
+                      {t('AI 재구성')}
+                    </Button>
+                    <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                  </>
+                )}
+
+                <Button
+                  size="md"
+                  color="primary"
+                  onClick={() => {
+                    setIsEdit(true);
+                  }}
+                >
+                  {t('변경')}
+                </Button>
+              </>
             )}
             {isEdit && (
               <>
-                <Button size="md" color="white" onClick={onCancel}>
+                <Button className="cancel-button" size="md" color="white" onClick={onCancel}>
                   {t('취소')}
                 </Button>
                 <Button size="md" color="primary" onClick={onSave}>
@@ -224,6 +268,9 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
                 onChangeTestcaseItem={onChangeTestcaseItem}
                 size="sm"
                 variables={variables}
+                paraphraseInfo={paraphraseInfo}
+                onAcceptParaphraseContent={onAcceptParaphraseContent}
+                onRemoveParaphraseContent={onRemoveParaphraseContent}
               />
             );
           })}
@@ -275,6 +322,9 @@ function TestcaseManager({ content, releases, testcaseTemplates, isEdit, setIsEd
             }}
             size="sm"
             variables={variables}
+            paraphraseInfo={paraphraseInfo}
+            onAcceptParaphraseContent={onAcceptParaphraseContent}
+            onRemoveParaphraseContent={onRemoveParaphraseContent}
           />
         </div>
         <div className="creator-info">
@@ -305,6 +355,9 @@ TestcaseManager.defaultProps = {
   users: [],
   tags: [],
   variables: [],
+  llms: [],
+  paraphraseInfo: {},
+  aiEnabled: false,
 };
 
 TestcaseManager.propTypes = {
@@ -356,6 +409,12 @@ TestcaseManager.propTypes = {
       name: PropTypes.string,
     }),
   ),
+  onParaphrase: PropTypes.func.isRequired,
+  llms: LlmPropTypes,
+  paraphraseInfo: ParaphraseInfoPropTypes,
+  onAcceptParaphraseContent: PropTypes.func.isRequired,
+  onRemoveParaphraseContent: PropTypes.func.isRequired,
+  aiEnabled: PropTypes.bool,
 };
 
 export default TestcaseManager;

@@ -90,4 +90,15 @@ ConfigService.selectMessageTypeList = (successHandler, failHandler) => {
   );
 };
 
+ConfigService.llmConfigTest = (llm, successHandler, failHandler) => {
+  return request.post(
+    '/api/configs/systems/llm',
+    llm,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

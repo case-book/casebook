@@ -237,6 +237,30 @@ function SpaceContent({ space, onRefresh }) {
             </ul>
           )}
         </Block>
+        <Title>{t('LLM API 설정')}</Title>
+        <Block>
+          {!(space.llms?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 API 설정이 없습니다.')}</div>
+            </EmptyContent>
+          )}
+          {space.llms?.length > 0 && (
+            <ul className="llms">
+              {space.llms.map((llm, inx) => {
+                return (
+                  <li key={inx}>
+                    <div>
+                      <Tag size="sm" color="white" border>
+                        {llm.llmTypeCode}
+                      </Tag>
+                    </div>
+                    <div>{llm?.openAi.name}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Block>
         {(isAdmin || space?.admin) && (
           <>
             <Title

@@ -35,6 +35,7 @@ public class ProjectResponse {
     private boolean isAdmin = false;
     private List<ProjectReleaseResponse> projectReleases;
     private List<ProjectMessageChannelResponse> messageChannels;
+    private boolean aiEnabled;
 
     public ProjectResponse(ProjectDTO project, Long userId) {
         this.id = project.getId();
@@ -43,6 +44,7 @@ public class ProjectResponse {
         this.token = project.getToken();
         this.activated = project.isActivated();
         this.creationDate = project.getCreationDate();
+        this.aiEnabled = project.isAiEnabled();
 
         if (project.getSpace() != null) {
             this.spaceName = project.getSpace().getName();

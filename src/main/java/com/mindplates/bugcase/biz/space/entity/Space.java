@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.entity;
 
+import com.mindplates.bugcase.biz.ai.entity.Llm;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
@@ -67,6 +68,11 @@ public class Space extends CommonEntity {
 
     @Column(name = "time_zone", length = ColumnsDef.CODE)
     private String timeZone;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "space", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @Column(updatable = false, insertable = false)
+    private List<Llm> llms;
 
 
 }

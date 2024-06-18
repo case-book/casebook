@@ -16,6 +16,7 @@ public class ProjectCreateRequest implements IRequestVO<ProjectDTO> {
     private String description;
     private boolean activated;
     private String token;
+    private boolean aiEnabled;
     private List<TestcaseTemplateRequest> testcaseTemplates;
     private List<ProjectUserRequest> users;
     private Long targetReleaseId;
@@ -29,6 +30,7 @@ public class ProjectCreateRequest implements IRequestVO<ProjectDTO> {
                 .description(description)
                 .token(token)
                 .activated(activated)
+                .aiEnabled(aiEnabled)
                 .build();
 
         if (users != null) {

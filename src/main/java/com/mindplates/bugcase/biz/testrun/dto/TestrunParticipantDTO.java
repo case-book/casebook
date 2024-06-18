@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestrunParticipantDTO {
+public class TestrunParticipantDTO extends CommonDTO {
 
     private String id;
     private String spaceCode;

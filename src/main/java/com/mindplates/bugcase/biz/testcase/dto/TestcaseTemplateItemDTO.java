@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.testcase.dto;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestcaseTemplateItemDTO extends CommonEntity {
+public class TestcaseTemplateItemDTO extends CommonDTO {
 
     private Long id;
     private TestcaseItemCategory category;

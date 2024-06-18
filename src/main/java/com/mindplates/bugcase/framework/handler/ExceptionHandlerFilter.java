@@ -39,7 +39,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
                 setErrorResponse(response, e.getCode(), "");
             }
         } catch (JwtException | IllegalArgumentException e) {
-            log.error(e.getMessage(), e);
             String message = messageSourceAccessor.getMessage("session.error.expired");
             setErrorResponse(response, HttpStatus.UNAUTHORIZED, message);
         } catch (Exception e) {

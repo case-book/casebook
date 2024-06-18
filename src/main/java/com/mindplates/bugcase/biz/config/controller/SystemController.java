@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.biz.config.controller;
 
+import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
+import com.mindplates.bugcase.biz.ai.vo.request.LlmRequest;
 import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.config.vo.request.SetUpRequest;
@@ -9,9 +11,11 @@ import com.mindplates.bugcase.biz.space.vo.request.SpaceMessageChannelRequest;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateDataResponse;
+import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.service.MessageChannelService;
+import com.mindplates.bugcase.framework.config.AiConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -45,6 +49,11 @@ public class SystemController {
     private final ConfigService configService;
 
     private final MessageChannelService messageChannelService;
+
+    private final OpenAIClientService openAIClientService;
+
+
+
 
     @GetMapping("/info")
     @Operation(description = "API 버전 조회")
@@ -131,5 +140,24 @@ public class SystemController {
         return Arrays.asList(MessageChannelTypeCode.values());
 
     }
+
+    @PostMapping("/llm")
+    @Operation(summary = "LLM 설정 테스트")
+    public ResponseEntity<String> llmConfigTest(@Valid @RequestBody LlmRequest llmRequest) {
+
+        if (LlmTypeCode.OPENAI.equals(llmRequest.getLlmTypeCode())) {
+            try {
+                String result = openAIClientService.checkApiKey(llmRequest.getOpenAi().getUrl(), llmRequest.getOpenAi().getApiKey());
+                return new ResponseEntity<>(result, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            }
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+    }
+
 
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestrunStatusDTO {
+public class TestrunStatusDTO extends CommonDTO {
 
     private Long id;
     private boolean done;

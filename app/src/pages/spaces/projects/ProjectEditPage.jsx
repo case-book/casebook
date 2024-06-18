@@ -22,7 +22,7 @@ import {
   Title,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import SpaceService from '@/services/SpaceService';
 import PropTypes from 'prop-types';
@@ -173,6 +173,7 @@ function ProjectEditPage({ type }) {
   const [opened, setOpened] = useState(false);
   const [spaceMessageChannelList, setSpaceMessageChannelList] = useState([]);
   const [releases, setReleases] = useState([]);
+  const [llms, setLlms] = useState([]);
 
   const [templateEditorPopupInfo, setTemplateEditorPopupInfo] = useState({
     opened: false,
@@ -185,11 +186,18 @@ function ProjectEditPage({ type }) {
     code: '',
     description: '',
     activated: true,
+    aiEnabled: false,
     token: uuidv4(),
     testcaseTemplates: cloneDeep(defaultProjectConfig.testcaseTemplates),
     targetReleaseId: null,
     messageChannels: [],
   });
+
+  const getLlms = () => {
+    SpaceService.selectSpaceLlmList(spaceCode, list => {
+      setLlms(list);
+    });
+  };
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -208,6 +216,7 @@ function ProjectEditPage({ type }) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    getLlms();
     if (projectId && type === 'edit') {
       ProjectService.selectProjectInfo(spaceCode, projectId, info => {
         ReleaseService.selectReleaseList(spaceCode, projectId, list => {
@@ -403,6 +412,10 @@ function ProjectEditPage({ type }) {
     setProject(nextProject);
   };
 
+  const hasLlm = useMemo(() => {
+    return llms && llms?.length > 0;
+  });
+
   return (
     <>
       <Page className="project-edit-page-wrapper">
@@ -514,6 +527,29 @@ function ProjectEditPage({ type }) {
                     })
                   }
                 />
+              </BlockRow>
+              <BlockRow>
+                <Label>{t('AI 활성화')}</Label>
+                <CheckBox
+                  type="checkbox"
+                  value={project.aiEnabled}
+                  disabled={!hasLlm}
+                  onChange={val =>
+                    setProject({
+                      ...project,
+                      aiEnabled: val,
+                    })
+                  }
+                />
+                {!hasLlm && (
+                  <div className="msg">
+                    <i className="fa-solid fa-circle-info" />
+                    <Link to={`/spaces/${spaceCode}/info`}>
+                      <span>{t('스페이스')}</span>
+                    </Link>
+                    에 설정된 LLM API 정보가 없습니다.
+                  </div>
+                )}
               </BlockRow>
               {isEdit && (
                 <BlockRow>

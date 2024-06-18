@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.space.dto;
 
+import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class SpaceDTO extends CommonDTO {
     private String country;
     private String timeZone;
     private Long projectCount;
+    private List<LlmDTO> llms;
 
     public SpaceDTO(Space space) {
         this.id = space.getId();
@@ -58,6 +60,10 @@ public class SpaceDTO extends CommonDTO {
 
         if (space.getMessageChannels() != null) {
             this.messageChannels = space.getMessageChannels().stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
+        }
+
+        if (space.getLlms() != null) {
+            this.llms = space.getLlms().stream().map(LlmDTO::new).collect(Collectors.toList());
         }
     }
 

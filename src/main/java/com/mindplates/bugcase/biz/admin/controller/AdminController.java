@@ -1,10 +1,16 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.vo.request.SystemInfoRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
+import com.mindplates.bugcase.biz.admin.vo.response.PromptInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
+import com.mindplates.bugcase.biz.config.dto.LlmPromptDTO;
+import com.mindplates.bugcase.biz.config.service.LlmPromptService;
+import com.mindplates.bugcase.biz.config.vo.request.LlmPromptRequest;
+import com.mindplates.bugcase.biz.config.vo.response.LlmPromptResponse;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
@@ -15,20 +21,29 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.service.RedisService;
-import com.mindplates.bugcase.common.util.SessionUtil;
+import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -36,7 +51,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AdminController {
 
-    private final JsonRedisTemplate jsonRedisTemplate;
+    private final JsonRedisTemplate<Object> jsonRedisTemplate;
 
     private final UserService userService;
 
@@ -45,6 +60,10 @@ public class AdminController {
     private final ProjectService projectService;
 
     private final RedisService redisService;
+
+    private final LlmPromptService llmPromptService;
+
+    private final AiConfig aiConfig;
 
     @Operation(description = "모든 스페이스 조회")
     @GetMapping("/spaces")
@@ -123,8 +142,13 @@ public class AdminController {
         Properties properties = System.getProperties();
         getInfo(system, properties);
 
+        List<LlmPromptDTO> llmPrompts = llmPromptService.selectLlmPromptList();
 
-        return new SystemInfoResponse(redis, system);
+        return SystemInfoResponse.builder()
+            .redis(redis)
+            .system(system)
+            .llmPrompts(llmPrompts.stream().map(LlmPromptResponse::new).collect(Collectors.toList()))
+            .build();
     }
 
 
@@ -158,5 +182,23 @@ public class AdminController {
             info.put(key, value);
         }
     }
+
+    @Operation(description = "시스템 정보 조회")
+    @GetMapping("/prompts/default")
+    public PromptInfoResponse selectDefaultPromptInfo() {
+        return PromptInfoResponse.builder()
+            .prompt(aiConfig.getPrompt())
+            .postPrompt(aiConfig.getPostPrompt())
+            .systemRole(aiConfig.getSystemRole())
+            .build();
+    }
+
+    @Operation(description = "시스템 정보 변경")
+    @PutMapping("/system/info")
+    public ResponseEntity<?> updateSystemInfo(@Valid @RequestBody SystemInfoRequest updateSystemInfo) {
+        llmPromptService.saveLlmPromptList(updateSystemInfo.getLlmPrompts().stream().map(LlmPromptRequest::toDTO).collect(Collectors.toList()));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }

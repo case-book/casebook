@@ -19,9 +19,10 @@ import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
 import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 
-import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
+import ProjectTestcaseEditPage from '@/pages/spaces/projects/ProjectTestcaseEditPage/ProjectTestcaseEditPage';
 
 import SystemInfoPage from '@/pages/admin/SystemInfoPage';
+import SystemEditPage from '@/pages/admin/SystemEditPage';
 import SetUpPage from '@/pages/admin/SetUpPage';
 import UserListPage from '@/pages/admin/UserListPage';
 import UserInfoPage from '@/pages/admin/UserInfoPage';
@@ -65,8 +66,9 @@ export {
   ProjectEditPage,
   ProjectInfoPage,
   ProjectBugInfoPage,
-  ProjectTestcaseInfoPage,
+  ProjectTestcaseEditPage,
   SystemInfoPage,
+  SystemEditPage,
   SetUpPage,
   UserListPage,
   UserInfoPage,

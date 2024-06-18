@@ -1,5 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
@@ -9,12 +11,14 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupWithTestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseCreateRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupNameChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupOrderChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseGroupUpdateRequest;
+import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseItemRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseNameChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseNameDescriptionChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseOrderChangeRequest;
@@ -22,6 +26,7 @@ import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseReleaseChangeReque
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseTestcaseGroupChangeRequest;
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseUpdateRequest;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseItemResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestrunTestcaseGroupTestcaseResultResponse;
@@ -48,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -66,6 +72,7 @@ public class TestcaseController {
         List<TestcaseDTO> testcaseList = testcaseService.selectProjectTestcaseList(projectId);
         return mappingUtil.convert(testcaseList, TestcaseSimpleResponse.class);
     }
+
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
     public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId,
@@ -180,6 +187,15 @@ public class TestcaseController {
         return new TestcaseResponse(testcaseService.updateTestcaseInfo(spaceCode, projectId, testcase));
     }
 
+    @Operation(description = "테스트케이스 아이템 변경")
+    @PutMapping("/{testcaseId}/items/{testcaseItemId}")
+    public TestcaseItemResponse updateTestcaseItem(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @PathVariable Long testcaseItemId,
+        @Valid @RequestBody TestcaseItemRequest testcaseItemRequest) {
+
+        TestcaseItem testcaseItem = testcaseItemRequest.buildEntity();
+        return new TestcaseItemResponse(testcaseService.updateTestcaseItem(spaceCode, projectId, testcaseItem));
+    }
+
     @PostMapping("/{testcaseId}/images")
     public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
         @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size,
@@ -224,5 +240,11 @@ public class TestcaseController {
         List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectTestcaseTestrunResultHistory(spaceCode, projectId, testcaseId, currentTestrunId, pageNo);
 
         return list.stream().map(TestrunTestcaseGroupTestcaseResultResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "테스트케이스 AI 재구성")
+    @PostMapping("/{testcaseId}/paraphrase")
+    public Mono<JsonNode> createParaphraseTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "modelId") long modelId) throws JsonProcessingException {
+        return testcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId);
     }
 }

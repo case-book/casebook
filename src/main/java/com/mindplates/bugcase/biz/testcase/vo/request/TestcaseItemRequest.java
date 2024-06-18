@@ -13,7 +13,6 @@ public class TestcaseItemRequest {
     private Long testcaseId;
     private String value;
     private String text;
-
     private String type;
 
     public TestcaseItem buildEntity() {

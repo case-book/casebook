@@ -157,4 +157,11 @@
       }
     }
   }
+
+  .msg {
+    align-self: center;
+    > i {
+      margin-right: 0.5rem;
+    }
+  }
 }

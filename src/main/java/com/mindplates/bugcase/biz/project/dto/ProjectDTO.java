@@ -35,6 +35,7 @@ public class ProjectDTO extends CommonDTO {
     private Long testrunCount = 0L;
     private Long testcaseCount = 0L;
     private List<ProjectMessageChannelDTO> messageChannels;
+    private boolean aiEnabled;
 
     public ProjectDTO(Project project, boolean detail) {
         this.id = project.getId();
@@ -49,6 +50,8 @@ public class ProjectDTO extends CommonDTO {
         this.testcaseGroupSeq = project.getTestcaseGroupSeq();
         this.testcaseSeq = project.getTestcaseSeq();
         this.testrunSeq = project.getTestrunSeq();
+        this.aiEnabled = project.isAiEnabled();
+
         if (project.getProjectReleases() != null) {
             this.projectReleases = project.getProjectReleases().stream().map(ProjectReleaseDTO::new).collect(Collectors.toList());
         }

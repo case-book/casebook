@@ -177,6 +177,7 @@ public class ProjectService {
         projectInfo.setDescription(updateProjectInfo.getDescription());
         projectInfo.setToken(updateProjectInfo.getToken());
         projectInfo.setActivated(updateProjectInfo.isActivated());
+        projectInfo.setAiEnabled(updateProjectInfo.isAiEnabled());
         if (updateProjectInfo.getTestcaseGroupSeq() != null) {
             projectInfo.setTestcaseGroupSeq(updateProjectInfo.getTestcaseGroupSeq());
         }
@@ -333,6 +334,12 @@ public class ProjectService {
         List<ProjectMessageChannel> projectMessageChannels = projectMessageChannelRepository.findAllByProjectId(projectId);
         return projectMessageChannels.stream().map(ProjectMessageChannelDTO::new).collect(Collectors.toList());
     }
+
+    @Transactional
+    public void updateProjectAiEnabledFalse() {
+        projectRepository.updateProjectAiEnable();
+    }
+
 
 
 }

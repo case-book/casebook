@@ -61,10 +61,17 @@
 
     .title-button {
       margin-left: 8px;
+      .ai-button {
+        > i {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .cancel-button {
+        margin-right: 0.5rem;
+      }
 
       button {
-        margin-right: 0.5rem;
-
         &:last-child {
           margin-right: 0;
         }

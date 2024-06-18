@@ -89,6 +89,9 @@ public class Project extends CommonEntity {
     @Column
     private List<ProjectMessageChannel> messageChannels;
 
+    @Column(name = "ai_enabled")
+    private boolean aiEnabled;
+
     public Map<String, List<ProjectUser>> getUsersByTag(List<TestrunUser> testrunUsers) {
         Map<String, List<ProjectUser>> result = new HashMap<>();
         this.users.forEach(projectUser -> {
