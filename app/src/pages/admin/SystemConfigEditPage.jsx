@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, EmptyContent, Form, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import './SystemInfoPage.scss';
 import AdminService from '@/services/AdminService';
 import LlmPromptEditPopup from '@/pages/admin/LlmPromptEditPopup/LlmPromptEditPopup';
 
@@ -35,7 +34,7 @@ function SystemInfoPage() {
   const onSubmit = e => {
     e.preventDefault();
     AdminService.updateSystemInfo(info, () => {
-      navigate('/admin/systems');
+      navigate('/admin/systems/config');
     });
   };
 
@@ -51,9 +50,9 @@ function SystemInfoPage() {
 
   return (
     <>
-      <Page className="space-edit-page-wrapper">
+      <Page>
         <PageTitle
-          name="시스템 설정 편집"
+          name="시스템 설정 변경"
           breadcrumbs={[
             {
               to: '/',
@@ -61,18 +60,22 @@ function SystemInfoPage() {
             },
             {
               to: '/admin',
-              text: t('관리'),
+              text: t('시스템 관리'),
             },
             {
-              to: '/admin/systems',
-              text: t('시스템 관리'),
+              to: '/admin/systems/config',
+              text: t('시스템 설정'),
+            },
+            {
+              to: '/admin/systems/config/edit',
+              text: t('시스템 설정 변경'),
             },
           ]}
           onListClick={() => {
             navigate('/');
           }}
         >
-          {t('시스템 설정 편집')}
+          {t('시스템 설정 변경')}
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>
@@ -153,7 +156,7 @@ function SystemInfoPage() {
 
             <PageButtons
               onCancel={() => {
-                navigate('/admin/systems');
+                navigate('/admin/systems/config');
               }}
               onSubmit={() => {}}
               onCancelIcon=""

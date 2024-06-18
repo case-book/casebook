@@ -1,17 +1,31 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { AdminIndexInfoPage, AdminSpaceInfoPage, AdminSpaceListPage, Message, SystemEditPage, SystemInfoPage, UserEditPage, UserInfoPage, UserListPage } from '@/pages';
+import {
+  AdminIndexInfoPage,
+  AdminSpaceInfoPage,
+  AdminSpaceListPage,
+  AiHistoryListPage,
+  Message,
+  SystemConfigInfoPage,
+  SystemEditPage,
+  SystemInfoPage,
+  UserEditPage,
+  UserInfoPage,
+  UserListPage,
+} from '@/pages';
 
 function AdminRoutes() {
   return (
     <Routes>
-      <Route path="/systems" element={<SystemInfoPage />} />
-      <Route path="/systems/edit" element={<SystemEditPage />} />
+      <Route path="/systems/info" element={<SystemInfoPage />} />
+      <Route path="/systems/config" element={<SystemConfigInfoPage />} />
+      <Route path="/systems/config/edit" element={<SystemEditPage />} />
       <Route path="/users/:userId/edit" element={<UserEditPage />} />
       <Route path="/users/:userId" element={<UserInfoPage />} />
       <Route path="/users" element={<UserListPage />} />
       <Route path="/spaces/:spaceId" element={<AdminSpaceInfoPage />} />
       <Route path="/spaces" element={<AdminSpaceListPage />} />
+      <Route path="/ai-history" element={<AiHistoryListPage />} />
       <Route path="/" element={<AdminIndexInfoPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>

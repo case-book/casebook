@@ -12,6 +12,7 @@ import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.framework.config.AiConfig;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -101,7 +102,11 @@ public class OpenAIClientService {
                 return data.stream()
                     .map(model -> (String) model.get("id"))
                     .collect(Collectors.toList());
-            }).block();
+            })
+            .onErrorResume(e -> {
+                throw new ServiceException(e.getMessage());
+            })
+            .block();
     }
 
     public Mono<JsonNode> rephraseToTestCase(OpenAiDTO openAi, OpenAiModelDTO model, TestcaseDTO testcase, long userId) throws JsonProcessingException {

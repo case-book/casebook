@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.util.PropertiesUtil;
 import com.mindplates.bugcase.biz.admin.vo.request.SystemInfoRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
@@ -24,7 +25,6 @@ import com.mindplates.bugcase.common.service.RedisService;
 import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,16 +131,12 @@ public class AdminController {
         });
 
         Map<String, String> redis = new HashMap<>();
+        Map<String, String> keyspaceInfo = PropertiesUtil.getInfo(keyspace.get());
+        Map<String, String> memoryInfo = PropertiesUtil.getInfo(memory.get());
+        redis.putAll(keyspaceInfo);
+        redis.putAll(memoryInfo);
 
-        Properties keyspaceProperties = keyspace.get();
-        getInfo(redis, keyspaceProperties);
-
-        Properties memoryProperties = memory.get();
-        getInfo(redis, memoryProperties);
-
-        Map<String, String> system = new HashMap<>();
-        Properties properties = System.getProperties();
-        getInfo(system, properties);
+        Map<String, String> system = PropertiesUtil.getInfo(System.getProperties());
 
         List<LlmPromptDTO> llmPrompts = llmPromptService.selectLlmPromptList();
 
@@ -174,14 +170,6 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private void getInfo(Map<String, String> info, Properties memoryProperties) {
-        Enumeration<String> memoryEnums = (Enumeration<String>) memoryProperties.propertyNames();
-        while (memoryEnums.hasMoreElements()) {
-            String key = memoryEnums.nextElement();
-            String value = memoryProperties.getProperty(key);
-            info.put(key, value);
-        }
-    }
 
     @Operation(description = "시스템 정보 조회")
     @GetMapping("/prompts/default")
