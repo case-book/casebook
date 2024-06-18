@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.space.service;
 import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
 import com.mindplates.bugcase.biz.ai.entity.Llm;
+import com.mindplates.bugcase.biz.ai.entity.OpenAiModel;
 import com.mindplates.bugcase.biz.ai.repository.LlmRepository;
 import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
@@ -187,6 +188,9 @@ public class SpaceService {
                     if (updateLlm.getId() == null) {
                         openAIClientService.getModelList(updateLlm.getOpenAi().getUrl(), updateLlm.getOpenAi().getApiKey())
                             .forEach((model -> {
+                                if (updateLlm.getOpenAi().getModels() == null) {
+                                    updateLlm.getOpenAi().setModels(new ArrayList<>());
+                                }
                                 updateLlm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
                                     .name(model)
                                     .code(model)
@@ -323,7 +327,18 @@ public class SpaceService {
             throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
         }
 
-        Space updateSpaceResult = spaceRepository.save(mappingUtil.convert(spaceInfo, Space.class));
+        Space space = mappingUtil.convert(spaceInfo, Space.class);
+
+        // TODO 맵핑 유틸로 변환하면, 참조 관계에 새로운 객체가 생성되는 문제가 있어, 향후 수정해야함
+        for (Llm llm : space.getLlms()) {
+            if (llm.getOpenAi().getId() == null) {
+                for (OpenAiModel model : llm.getOpenAi().getModels()) {
+                    model.setOpenAi(llm.getOpenAi());
+                }
+            }
+        }
+
+        Space updateSpaceResult = spaceRepository.save(space);
 
         return new SpaceDTO(updateSpaceResult);
     }
