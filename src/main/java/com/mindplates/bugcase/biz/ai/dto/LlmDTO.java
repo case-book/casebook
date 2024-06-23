@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.ai.dto;
 
 
 import com.mindplates.bugcase.biz.ai.entity.Llm;
-import com.mindplates.bugcase.biz.ai.entity.OpenAi;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.common.code.LlmTypeCode;
@@ -35,12 +34,17 @@ public class LlmDTO extends CommonDTO implements IDTO<Llm> {
 
     @Override
     public Llm toEntity() {
-        return Llm.builder()
+        Llm llm = Llm.builder()
             .id(id)
             .llmTypeCode(llmTypeCode)
-            .openAi(OpenAi.builder().id(openAi.getId()).build())
             .space(Space.builder().id(space.getId()).build())
             .build();
+
+        if (openAi != null) {
+            llm.setOpenAi(openAi.toEntity(llm));
+        }
+
+        return llm;
     }
 
     public Llm toEntity(Space space) {

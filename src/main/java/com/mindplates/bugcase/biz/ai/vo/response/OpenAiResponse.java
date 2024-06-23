@@ -29,7 +29,10 @@ public class OpenAiResponse {
         this.name = openAi.getName();
         this.url = openAi.getUrl();
         this.apiKey = openAi.getApiKey();
-        this.llm = LlmDTO.builder().id(openAi.getLlm().getId()).build();
+        if (openAi.getLlm() != null) {
+            this.llm = LlmDTO.builder().id(openAi.getLlm().getId()).build();
+        }
+
         if (openAi.getModels() != null) {
             this.models = openAi.getModels().stream().map(OpenAiModelResponse::new).collect(java.util.stream.Collectors.toList());
         }

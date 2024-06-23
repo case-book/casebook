@@ -73,27 +73,6 @@ public class SpaceController {
         return new SpaceListResponse(spaceInfo, null);
     }
 
-    private void checkValidHoliday(List<HolidayRequest> holidays) {
-
-        if (holidays == null) {
-            return;
-        }
-
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-            for (HolidayRequest holiday : holidays) {
-                if (HolidayTypeCode.YEARLY.equals(holiday.getHolidayType())) {
-                    LocalDate.parse(now.format(DateTimeFormatter.ofPattern("yyyy")) + holiday.getDate(), formatter);
-                } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holiday.getHolidayType())) {
-                    LocalDate.parse(holiday.getDate(), formatter);
-                }
-            }
-        } catch (Exception e) {
-            throw new ServiceException("holiday.format.invalid");
-        }
-    }
 
     @Operation(description = "스페이스 정보 변경")
     @PutMapping("/{spaceId}")
@@ -103,7 +82,6 @@ public class SpaceController {
         }
 
         checkValidHoliday(spaceUpdateRequest.getHolidays());
-
         SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
         SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(space.getCode()));
         return new SpaceResponse(spaceInfo);
@@ -196,6 +174,28 @@ public class SpaceController {
     public List<LlmResponse> selectSpaceLlms(@PathVariable String spaceCode) {
         SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
         return spaceInfo.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
+    }
+
+    private void checkValidHoliday(List<HolidayRequest> holidays) {
+
+        if (holidays == null) {
+            return;
+        }
+
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+            for (HolidayRequest holiday : holidays) {
+                if (HolidayTypeCode.YEARLY.equals(holiday.getHolidayType())) {
+                    LocalDate.parse(now.format(DateTimeFormatter.ofPattern("yyyy")) + holiday.getDate(), formatter);
+                } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holiday.getHolidayType())) {
+                    LocalDate.parse(holiday.getDate(), formatter);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException("holiday.format.invalid");
+        }
     }
 
 
