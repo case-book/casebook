@@ -1,9 +1,11 @@
 package com.mindplates.bugcase.biz.space.dto;
 
+import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.code.PayloadTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,7 @@ import org.springframework.http.HttpMethod;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpaceMessageChannelDTO extends CommonDTO {
+public class SpaceMessageChannelDTO extends CommonDTO implements IDTO<SpaceMessageChannel> {
 
     private Long id;
     private SpaceDTO space;
@@ -90,5 +92,35 @@ public class SpaceMessageChannelDTO extends CommonDTO {
         });
 
         return payloads;
+    }
+
+    @Override
+    public SpaceMessageChannel toEntity() {
+        SpaceMessageChannel spaceMessageChannel = SpaceMessageChannel.builder()
+            .id(id)
+            .space(Space.builder().id(space.getId()).build())
+            .name(name)
+            .url(url)
+            .httpMethod(httpMethod)
+            .messageChannelType(messageChannelType)
+            .payloadType(payloadType)
+            .json(json)
+            .build();
+
+        if (headers != null) {
+            spaceMessageChannel.setHeaders(headers.stream().map(spaceMessageChannelHeaderDTO -> spaceMessageChannelHeaderDTO.toEntity(spaceMessageChannel)).collect(Collectors.toList()));
+        }
+
+        if (payloads != null) {
+            spaceMessageChannel.setPayloads(payloads.stream().map(spaceMessageChannelPayloadDTO -> spaceMessageChannelPayloadDTO.toEntity(spaceMessageChannel)).collect(Collectors.toList()));
+        }
+
+        return spaceMessageChannel;
+    }
+
+    public SpaceMessageChannel toEntity(Space space) {
+        SpaceMessageChannel spaceMessageChannel = toEntity();
+        spaceMessageChannel.setSpace(space);
+        return spaceMessageChannel;
     }
 }

@@ -4,7 +4,6 @@ import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
 import com.mindplates.bugcase.biz.ai.entity.Llm;
 import com.mindplates.bugcase.biz.ai.entity.OpenAiModel;
-import com.mindplates.bugcase.biz.ai.repository.LlmRepository;
 import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
@@ -18,10 +17,8 @@ import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.space.entity.SpaceLlmPrompt;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
-import com.mindplates.bugcase.biz.space.repository.SpaceLlmPromptRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceMessageChannelRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
@@ -30,7 +27,6 @@ import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceVariableRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
 import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
@@ -41,7 +37,6 @@ import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -70,7 +65,6 @@ public class SpaceService {
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
     private final SpaceMessageChannelRepository spaceMessageChannelRepository;
     private final ProjectMessageChannelRepository projectMessageChannelRepository;
-    private final LlmRepository llmRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
     private final OpenAIClientService openAIClientService;
 
@@ -81,15 +75,12 @@ public class SpaceService {
     }
 
     public List<SpaceDTO> selectSpaceList() {
-        List<Space> spaceList = spaceRepository.findAll();
-        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
-
-        result.forEach((space -> {
+        List<SpaceDTO> spaceList = spaceRepository.findAll().stream().map(SpaceDTO::new).collect(Collectors.toList());
+        spaceList.forEach((space -> {
             Long projectCount = projectService.selectSpaceProjectCount(space.getId());
             space.setProjectCount(projectCount);
         }));
-
-        return result;
+        return spaceList;
     }
 
     public SpaceDTO selectSpaceInfo(Long id) {
@@ -118,6 +109,7 @@ public class SpaceService {
             projectService.deleteProjectInfo(space.getCode(), project);
         }
 
+        // 자식으로 설정되어 있지 않은 데이터 삭제
         spaceVariableRepository.deleteBySpaceId(space.getId());
         spaceProfileRepository.deleteBySpaceId(space.getId());
         spaceProfileVariableRepository.deleteBySpaceId(space.getId());
@@ -134,31 +126,13 @@ public class SpaceService {
             throw new ServiceException("error.space.code.duplicated");
         }
 
-        createSpaceInfo.getLlms().forEach((llm -> {
-            if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
+        createSpaceInfo.setUsers(new ArrayList<>());
+        createSpaceInfo.getUsers().add(SpaceUserDTO.builder().space(createSpaceInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build());
 
-                llm.getOpenAi().setModels(new ArrayList<>());
+        Space target = createSpaceInfo.toEntity();
 
-                openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey())
-                    .forEach((model -> {
-                        llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
-                            .name(model)
-                            .code(model)
-                            .build());
-                    }));
-            }
-        }));
-
-        Space spaceInfo = mappingUtil.convert(createSpaceInfo, Space.class);
-
-        for (Llm llm : spaceInfo.getLlms()) {
-            llm.getOpenAi().getModels().forEach((model -> model.setOpenAi(llm.getOpenAi())));
-        }
-
-        SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
-        spaceInfo.setUsers(Collections.singletonList(spaceUser));
-        spaceRepository.save(spaceInfo);
-        return new SpaceDTO(spaceInfo);
+        spaceRepository.save(target);
+        return new SpaceDTO(target);
     }
 
 
@@ -558,7 +532,6 @@ public class SpaceService {
         List<SpaceMessageChannel> spaceMessageChannels = spaceMessageChannelRepository.findAllBySpaceCode(spaceCode);
         return spaceMessageChannels.stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
     }
-
 
 
 }
