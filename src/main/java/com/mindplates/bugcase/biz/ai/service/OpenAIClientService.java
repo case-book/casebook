@@ -6,14 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.biz.ai.dto.AiRequestHistoryDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
-import com.mindplates.bugcase.biz.config.dto.LlmPromptDTO;
-import com.mindplates.bugcase.biz.config.service.LlmPromptService;
+import com.mindplates.bugcase.biz.config.constant.Constants;
+import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
+import com.mindplates.bugcase.biz.config.service.ConfigService;
+import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.framework.config.AiConfig;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -37,20 +38,13 @@ public class OpenAIClientService {
 
     private final WebClient webClient;
 
+    private final ConfigService configService;
 
     private final LlmService llmService;
 
-
     private final ObjectMapper objectMapper;
 
-
     private final MessageSourceAccessor messageSourceAccessor;
-
-
-    private final LlmPromptService llmPromptService;
-
-
-    private final AiConfig aiConfig;
 
 
     public String checkApiKey(String url, String apiKey) {
@@ -109,7 +103,7 @@ public class OpenAIClientService {
             .block();
     }
 
-    public Mono<JsonNode> rephraseToTestCase(OpenAiDTO openAi, OpenAiModelDTO model, TestcaseDTO testcase, long userId) throws JsonProcessingException {
+    public Mono<JsonNode> rephraseToTestCase(OpenAiDTO openAi, OpenAiModelDTO model, SpaceLlmPromptDTO prompt, TestcaseDTO testcase, long userId) throws JsonProcessingException {
 
         List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
@@ -132,7 +126,7 @@ public class OpenAIClientService {
             }
         }
 
-        Map<String, Object> requestBody = createRequestBody(objectMapper.writeValueAsString(messages), model.getCode());
+        Map<String, Object> requestBody = createRequestBody(objectMapper.writeValueAsString(messages), model.getCode(), prompt);
 
         AiRequestHistoryDTO aiRequestHistory = AiRequestHistoryDTO.builder()
             .aiModel(model)
@@ -158,22 +152,29 @@ public class OpenAIClientService {
     }
 
 
-    private Map<String, Object> createRequestBody(String targetContent, String model) {
+    private Map<String, Object> createRequestBody(String targetContent, String model, SpaceLlmPromptDTO prompt) {
 
-        LlmPromptDTO llmPrompt = llmPromptService.selectActivatedLlmPromptInfo();
-        if (llmPrompt == null) {
-            llmPrompt = new LlmPromptDTO();
-            llmPrompt.setPrompt(aiConfig.getPrompt());
-            llmPrompt.setSystemRole(aiConfig.getSystemRole());
+        List<ConfigDTO> llmConfigs = configService.selectLlmConfigList();
+
+        Map<String, String> valueByKey = new HashMap<>();
+        for (ConfigDTO llmConfig : llmConfigs) {
+            valueByKey.put(llmConfig.getCode(), llmConfig.getValue());
+        }
+
+        String prefix = valueByKey.get(Constants.LLM_PREFIX);
+        String postfix = valueByKey.get(Constants.LLM_POSTFIX);
+
+        if (prefix == null || postfix == null) {
+            throw new ServiceException("llm.config.not.found");
         }
 
         Map<String, Object> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", llmPrompt.getSystemRole());
+        systemMessage.put("content", prompt.getSystemRole());
 
         Map<String, Object> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content", llmPrompt.getPrompt() + aiConfig.getPostPrompt() + ":" + targetContent);
+        message.put("content", prefix + prompt.getPrompt() + postfix + ":" + targetContent);
 
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
         messages.add(systemMessage);

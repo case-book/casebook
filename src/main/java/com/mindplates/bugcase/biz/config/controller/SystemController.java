@@ -1,10 +1,12 @@
 package com.mindplates.bugcase.biz.config.controller;
 
+import com.mindplates.bugcase.biz.admin.vo.response.PromptInfoResponse;
 import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.biz.ai.vo.request.LlmRequest;
 import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.config.vo.request.SetUpRequest;
+import com.mindplates.bugcase.biz.config.vo.response.ConfigInfoResponse;
 import com.mindplates.bugcase.biz.config.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.config.vo.response.TimeZoneResponse;
 import com.mindplates.bugcase.biz.space.vo.request.SpaceMessageChannelRequest;
@@ -52,14 +54,13 @@ public class SystemController {
 
     private final OpenAIClientService openAIClientService;
 
-
-
+    private final AiConfig aiConfig;
 
     @GetMapping("/info")
     @Operation(description = "API 버전 조회")
     public SystemInfoResponse selectSystemVersion() {
         ConfigDTO config = configService.selectConfig("SET_UP");
-        return SystemInfoResponse.builder().version(buildProperties.getVersion()).name(buildProperties.getName()).setUp("Y".equals(config.getValue())).build();
+        return SystemInfoResponse.builder().version(buildProperties.getVersion()).name(buildProperties.getName()).setUp(config != null && "Y".equals(config.getValue())).build();
     }
 
     @GetMapping("/timezones")
@@ -91,7 +92,7 @@ public class SystemController {
 
         ConfigDTO config = configService.selectConfig("SET_UP");
 
-        if ("Y".equals(config.getValue())) {
+        if (config != null && "Y".equals(config.getValue())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
@@ -157,6 +158,23 @@ public class SystemController {
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
+    }
+
+    @GetMapping("/llm/config")
+    public List<ConfigInfoResponse> getLlmConfig() {
+        List<ConfigDTO> list = configService.selectLlmConfigList();
+        return list.stream().map(ConfigInfoResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "시스템 정보 조회")
+    @GetMapping("/llm/config/default")
+    public PromptInfoResponse selectDefaultPromptInfo() {
+        return PromptInfoResponse.builder()
+            .prompt(aiConfig.getLLM_PROMPT())
+            .systemRole(aiConfig.getLLM_SYSTEM_ROLE())
+            .prefix(aiConfig.getLLM_PREFIX())
+            .postfix(aiConfig.getLLM_POSTFIX())
+            .build();
     }
 
 

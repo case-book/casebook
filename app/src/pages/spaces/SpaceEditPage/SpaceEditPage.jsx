@@ -54,6 +54,7 @@ import ConfigService from '@/services/ConfigService';
 import { cloneDeep } from 'lodash';
 import MessageChannelEditPopup from '@/pages/spaces/MessageChannelEditPopup/MessageChannelEditPopup';
 import LlmEditPopup from '@/pages/spaces/SpaceEditPage/LlmEditPopup/LlmEditPopup';
+import LlmPromptEditPopup from './LlmPromptEditPopup/LlmPromptEditPopup';
 
 function SpaceEditPage({ type }) {
   const { t } = useTranslation();
@@ -78,10 +79,13 @@ function SpaceEditPage({ type }) {
     holidays: country === 'KR' ? cloneDeep(DEFAULT_HOLIDAY.KR) : cloneDeep(DEFAULT_HOLIDAY.US),
     messageChannels: [],
     llms: [],
+    llmPrompts: [],
   });
 
   // const [messageChannelTypeList, setMessageChannelTypeList] = useState([]);
+
   const [timeZoneList, setTimeZoneList] = useState([]);
+  const [systemLlmConfigList, setSystemLlmConfigList] = useState([]);
 
   const [holidayPopupInfo, setHolidayPopupInfo] = useState({
     isOpened: false,
@@ -120,12 +124,29 @@ function SpaceEditPage({ type }) {
     },
   });
 
+  const [llmPromptPopupInfo, setLlmPromptPopupInfo] = useState({
+    isOpened: false,
+    index: null,
+    id: null,
+    name: '',
+    systemRole: '',
+    prompt: '',
+    activated: false,
+  });
+
   const isEdit = useMemo(() => {
     return type === 'edit';
   }, [type]);
 
+  const getDefaultPromptInfo = () => {
+    ConfigService.selectLlmConfigList(d => {
+      setSystemLlmConfigList(d);
+    });
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    getDefaultPromptInfo();
     ConfigService.selectTimeZoneList(language || 'ko', list => {
       const zoneList = list.map(timeZone => {
         return {
@@ -616,6 +637,80 @@ function SpaceEditPage({ type }) {
                   size="xs"
                   color="primary"
                   onClick={() => {
+                    setLlmPromptPopupInfo({
+                      isOpened: true,
+                      index: null,
+                    });
+                  }}
+                >
+                  {t('프롬프트 추가')}
+                </Button>
+              }
+            >
+              {t('LLM 프롬프트 설정')}
+            </Title>
+            {!(space.llmPrompts?.length > 0) && (
+              <EmptyContent className="empty-content">
+                <div>{t('등록된 프롬프트가 없습니다.')}</div>
+              </EmptyContent>
+            )}
+            {space.llmPrompts?.length > 0 && (
+              <Table cols={['1px', '100%', '1px']} border>
+                <THead>
+                  <Tr>
+                    <Th align="center">{t('이름')}</Th>
+                    <Th align="left">{t('활성화')}</Th>
+                    <Th />
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {space.llmPrompts.map((llmPrompt, inx) => {
+                    return (
+                      <Tr key={inx}>
+                        <Td>{llmPrompt.name}</Td>
+                        <Td>{llmPrompt.activated ? <Tag border>ACTIVE</Tag> : null}</Td>
+                        <Td>
+                          <Button
+                            size="xs"
+                            color="danger"
+                            onClick={() => {
+                              const nextLlmPrompts = space.llmPrompts.slice(0);
+                              nextLlmPrompts.splice(inx, 1);
+                              setSpace({
+                                ...space,
+                                llmPrompts: nextLlmPrompts,
+                              });
+                            }}
+                          >
+                            {t('삭제')}
+                          </Button>
+                          <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 0.5rem " />
+                          <Button
+                            size="xs"
+                            color="primary"
+                            onClick={() => {
+                              setLlmPromptPopupInfo({
+                                ...llmPrompt,
+                                isOpened: true,
+                                index: inx,
+                              });
+                            }}
+                          >
+                            {t('변경')}
+                          </Button>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            )}
+            <Title
+              control={
+                <Button
+                  size="xs"
+                  color="primary"
+                  onClick={() => {
                     setHolidayPopupInfo({
                       isOpened: true,
                       index: null,
@@ -824,6 +919,45 @@ function SpaceEditPage({ type }) {
             setSpace({
               ...space,
               llms: nextLlms,
+            });
+          }}
+        />
+      )}
+      {llmPromptPopupInfo.isOpened && (
+        <LlmPromptEditPopup
+          data={llmPromptPopupInfo}
+          systemLlmConfigList={systemLlmConfigList}
+          setOpened={() => {
+            setLlmPromptPopupInfo({
+              isOpened: false,
+            });
+          }}
+          onApply={llmPrompt => {
+            const nextLlmPrompts = space.llmPrompts.slice(0);
+
+            if (llmPrompt.activated && nextLlmPrompts?.length > 0) {
+              nextLlmPrompts.forEach((prompt, index) => {
+                const nextPrompt = prompt;
+                if (nextPrompt.activated && index !== llmPrompt.index) {
+                  nextPrompt.activated = false;
+                }
+              });
+            }
+
+            if (llmPrompt.index === null) {
+              nextLlmPrompts.push(llmPrompt);
+            } else {
+              const nextLlmPrompt = nextLlmPrompts[llmPrompt.index];
+              nextLlmPrompt.id = llmPrompt.id;
+              nextLlmPrompt.name = llmPrompt.name;
+              nextLlmPrompt.systemRole = llmPrompt.systemRole;
+              nextLlmPrompt.prompt = llmPrompt.prompt;
+              nextLlmPrompt.activated = llmPrompt.activated;
+            }
+
+            setSpace({
+              ...space,
+              llmPrompts: nextLlmPrompts,
             });
           }}
         />

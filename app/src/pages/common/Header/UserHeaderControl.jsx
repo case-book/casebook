@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
@@ -135,12 +135,12 @@ function UserHeaderControl({ className }) {
             </div>
             {ADMIN_MENUS.map(d => {
               return (
-                <>
+                <React.Fragment key={d.to}>
                   <li key={d.to}>
                     <Link to={d.to}>{d.name}</Link>
                   </li>
                   {d.separator && <div className="separator" />}
-                </>
+                </React.Fragment>
               );
             })}
           </ul>

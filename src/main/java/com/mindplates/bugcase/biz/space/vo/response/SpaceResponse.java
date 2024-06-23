@@ -41,6 +41,7 @@ public class SpaceResponse {
     private String timeZone;
 
     private List<LlmResponse> llms;
+    private List<SpaceLlmPromptResponse> llmPrompts;
 
     public SpaceResponse(SpaceDTO space) {
         this.id = space.getId();
@@ -66,6 +67,10 @@ public class SpaceResponse {
 
         if (space.getLlms() != null) {
             this.llms = space.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
+        }
+
+        if (space.getLlmPrompts() != null) {
+            this.llmPrompts = space.getLlmPrompts().stream().map(SpaceLlmPromptResponse::new).collect(Collectors.toList());
         }
     }
 

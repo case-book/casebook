@@ -22,6 +22,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Long countBySpaceId(Long spaceId);
 
+    @Query("SELECT p.aiEnabled FROM Project p WHERE p.id = :projectId")
+    boolean findAiEnabledById(Long projectId);
+
     List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
 
     @Modifying

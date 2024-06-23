@@ -12,13 +12,16 @@ import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelReposi
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.space.entity.SpaceLlmPrompt;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
+import com.mindplates.bugcase.biz.space.repository.SpaceLlmPromptRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceMessageChannelRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
@@ -38,7 +41,7 @@ import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -70,6 +73,7 @@ public class SpaceService {
     private final LlmRepository llmRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
     private final OpenAIClientService openAIClientService;
+
 
     private boolean existByCode(String code) {
         Long count = spaceRepository.countByCode(code);
@@ -152,7 +156,7 @@ public class SpaceService {
         }
 
         SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
-        spaceInfo.setUsers(Arrays.asList(spaceUser));
+        spaceInfo.setUsers(Collections.singletonList(spaceUser));
         spaceRepository.save(spaceInfo);
         return new SpaceDTO(spaceInfo);
     }
@@ -170,6 +174,34 @@ public class SpaceService {
         spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
+
+        if (updateSpaceInfo.getLlmPrompts() == null || updateSpaceInfo.getLlmPrompts().isEmpty()) {
+            if (spaceInfo.getLlmPrompts() != null && !spaceInfo.getLlmPrompts().isEmpty()) {
+                spaceInfo.getLlmPrompts().clear();
+            }
+        } else {
+
+            List<Long> deleteLlmIds = spaceInfo.getLlmPrompts().stream()
+                .filter((llmPrompt) -> updateSpaceInfo.getLlmPrompts().stream().noneMatch((updateLlmPrompt -> updateLlmPrompt.getId() != null && updateLlmPrompt.getId().equals(llmPrompt.getId()))))
+                .map(SpaceLlmPromptDTO::getId)
+                .collect(Collectors.toList());
+
+            spaceInfo.getLlmPrompts().removeIf((llmPrompt -> deleteLlmIds.contains(llmPrompt.getId())));
+
+            updateSpaceInfo.getLlmPrompts().forEach((updateLlmPrompt -> {
+                SpaceLlmPromptDTO targetLlmPrompt = spaceInfo.getLlmPrompts().stream().filter((llmPrompt -> llmPrompt.getId().equals(updateLlmPrompt.getId()))).findAny().orElse(null);
+                if (targetLlmPrompt != null) {
+                    targetLlmPrompt.setName(updateLlmPrompt.getName());
+                    targetLlmPrompt.setSystemRole(updateLlmPrompt.getSystemRole());
+                    targetLlmPrompt.setPrompt(updateLlmPrompt.getPrompt());
+                    targetLlmPrompt.setActivated(updateLlmPrompt.isActivated());
+                    targetLlmPrompt.setSpace(SpaceDTO.builder().id(spaceInfo.getId()).build());
+                } else {
+                    spaceInfo.getLlmPrompts().add(updateLlmPrompt);
+                }
+            }));
+
+        }
 
         if (updateSpaceInfo.getLlms() == null || updateSpaceInfo.getLlms().isEmpty()) {
             if (spaceInfo.getLlms() != null && !spaceInfo.getLlms().isEmpty()) {
@@ -282,7 +314,8 @@ public class SpaceService {
                             if (updatePayload.getId() == null) {
                                 targetChannel.getPayloads().add(updatePayload);
                             } else {
-                                SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny().orElse(null);
+                                SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny()
+                                    .orElse(null);
                                 if (targetPayload != null) {
                                     targetPayload.setDataKey(updatePayload.getDataKey());
                                     targetPayload.setDataValue(updatePayload.getDataValue());
@@ -525,5 +558,7 @@ public class SpaceService {
         List<SpaceMessageChannel> spaceMessageChannels = spaceMessageChannelRepository.findAllBySpaceCode(spaceCode);
         return spaceMessageChannels.stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
     }
+
+
 
 }

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Tag, Text, Title } from '@/components';
+import { Block, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import AdminService from '@/services/AdminService';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { LLM_CONFIGS, MESSAGE_CATEGORY } from '@/constants/constants';
 import ConfigService from '@/services/ConfigService';
 import './SystemConfigInfoPage.scss';
 
-const labelMinWidth = '120px';
+const labelMinWidth = '150px';
 
 function SystemInfoPage() {
   const { t } = useTranslation();
@@ -19,6 +19,7 @@ function SystemInfoPage() {
     redis: {},
     system: {},
   });
+  const [llmConfigs, setLlmConfigs] = useState([]);
 
   const getSystemInfo = () => {
     AdminService.selectSystemInfo(d => {
@@ -44,9 +45,16 @@ function SystemInfoPage() {
     });
   };
 
+  const getSystemLlmConfigList = () => {
+    ConfigService.selectLlmConfigList(d => {
+      setLlmConfigs(d);
+    });
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
     getSystemInfo();
+    getSystemLlmConfigList();
   }, []);
 
   const flushRedis = () => {
@@ -107,31 +115,24 @@ function SystemInfoPage() {
           navigate('/');
         }}
       >
-        {t('시스템 관리')}
+        {t('시스템 설정')}
       </PageTitle>
       <PageContent>
         <Title>{t('LLM 프롬프트 설정')}</Title>
-        {!(info.llmPrompts?.length > 0) && (
-          <EmptyContent className="empty-content">
-            <div>{t('등록된 프롬프트가 없습니다.')}</div>
-          </EmptyContent>
-        )}
         <Block>
-          {!(info.llmPrompts?.length > 0) && <EmptyContent border>{t('등록된 프롬프트가 없습니다.')}</EmptyContent>}
-          {info.llmPrompts?.length > 0 && (
-            <ul className="prompts">
-              {info.llmPrompts?.map((prompt, inx) => {
-                return (
-                  <li key={inx}>
-                    <div>
-                      <div>{prompt.name}</div>
-                      <div>{prompt.activated ? <Tag border>ACTIVE</Tag> : null}</div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+          {!(llmConfigs?.length > 0) && (
+            <EmptyContent className="empty-content">
+              <div>{t('등록된 프롬프트가 없습니다.')}</div>
+            </EmptyContent>
           )}
+          {llmConfigs.map(d => {
+            return (
+              <BlockRow key={d.code}>
+                <Label minWidth={labelMinWidth}>{LLM_CONFIGS[d.code] || d.code}</Label>
+                <Text whiteSpace="pre-wrap">{d.value}</Text>
+              </BlockRow>
+            );
+          })}
         </Block>
         <Title>{t('캐시 관리')}</Title>
         <Block>

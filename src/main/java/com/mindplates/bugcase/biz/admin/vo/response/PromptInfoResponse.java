@@ -12,10 +12,9 @@ import lombok.Setter;
 public class PromptInfoResponse {
 
     private String systemRole;
-
     private String prompt;
-
-    private String postPrompt;
+    private String prefix;
+    private String postfix;
 
 
 }

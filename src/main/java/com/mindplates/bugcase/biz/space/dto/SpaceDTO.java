@@ -3,13 +3,12 @@ package com.mindplates.bugcase.biz.space.dto;
 import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Builder
@@ -34,6 +33,7 @@ public class SpaceDTO extends CommonDTO {
     private String timeZone;
     private Long projectCount;
     private List<LlmDTO> llms;
+    private List<SpaceLlmPromptDTO> llmPrompts;
 
     public SpaceDTO(Space space) {
         this.id = space.getId();
@@ -64,6 +64,10 @@ public class SpaceDTO extends CommonDTO {
 
         if (space.getLlms() != null) {
             this.llms = space.getLlms().stream().map(LlmDTO::new).collect(Collectors.toList());
+        }
+
+        if (space.getLlmPrompts() != null) {
+            this.llmPrompts = space.getLlmPrompts().stream().map(SpaceLlmPromptDTO::new).collect(Collectors.toList());
         }
     }
 

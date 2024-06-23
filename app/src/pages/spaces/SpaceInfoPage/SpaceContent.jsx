@@ -261,6 +261,24 @@ function SpaceContent({ space, onRefresh }) {
             </ul>
           )}
         </Block>
+        <Title>{t('LLM 프롬프트 설정')}</Title>
+        <Block>
+          {!(space.llmPrompts?.length > 0) && <EmptyContent border>{t('등록된 프롬프트가 없습니다.')}</EmptyContent>}
+          {space.llmPrompts?.length > 0 && (
+            <ul className="prompts">
+              {space.llmPrompts?.map((prompt, inx) => {
+                return (
+                  <li key={inx}>
+                    <div>
+                      <div>{prompt.name}</div>
+                      <div>{prompt.activated ? <Tag border>ACTIVE</Tag> : null}</div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Block>
         {(isAdmin || space?.admin) && (
           <>
             <Title
