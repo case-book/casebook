@@ -36,6 +36,7 @@ public class ResourceVoter extends WebExpressionVoter {
     private final ProjectService projectService;
     List<Pattern> allPassPatterns = Arrays.asList(
             Pattern.compile("^/api/users/my/?(.*)?$"),
+            Pattern.compile("^/api/spaces/(.*)/users/my$"),
             Pattern.compile("^/api/spaces/(.*)/accessible$"), // 스페이스 참여 가능 여부 확인
             Pattern.compile("^/api/spaces/(.*)/applicants$") // 스페이스 참여
     );

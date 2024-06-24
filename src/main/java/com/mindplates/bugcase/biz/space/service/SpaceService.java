@@ -15,6 +15,7 @@ import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
+import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
 import com.mindplates.bugcase.biz.space.repository.SpaceMessageChannelRepository;
@@ -25,6 +26,7 @@ import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceVariableRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
 import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
@@ -68,8 +70,7 @@ public class SpaceService {
 
 
     private boolean existByCode(String code) {
-        Long count = spaceRepository.countByCode(code);
-        return count > 0;
+        return spaceRepository.existsByCode(code);
     }
 
     public List<SpaceDTO> selectSpaceList() {
@@ -94,8 +95,7 @@ public class SpaceService {
     }
 
     public Long selectSpaceIdByCode(String spaceCode) {
-        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return space.getId();
+        return spaceRepository.findIdByCode(spaceCode);
     }
 
 
@@ -155,6 +155,7 @@ public class SpaceService {
         spaceInfo.setActivated(updateSpaceInfo.isActivated());
         spaceInfo.setToken(updateSpaceInfo.getToken());
         spaceInfo.setAllowAutoJoin(updateSpaceInfo.isAllowAutoJoin());
+        spaceInfo.setAllowSearch(updateSpaceInfo.isAllowSearch());
         spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
@@ -344,22 +345,8 @@ public class SpaceService {
             throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
         }
 
-        // Space space = mappingUtil.convert(spaceInfo, Space.class);
         Space space = spaceInfo.toEntity();
-
-        // TODO 맵핑 유틸로 변환하면, 참조 관계에 새로운 객체가 생성되는 문제가 있어, 향후 수정해야함
-        /*
-        for (Llm llm : space.getLlms()) {
-            if (llm.getOpenAi().getId() == null) {
-                for (OpenAiModel model : llm.getOpenAi().getModels()) {
-                    model.setOpenAi(llm.getOpenAi());
-                }
-            }
-        }
-        */
-
         Space updateSpaceResult = spaceRepository.save(space);
-
         return new SpaceDTO(updateSpaceResult);
     }
 
@@ -426,30 +413,35 @@ public class SpaceService {
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
     public SpaceDTO createOrUpdateSpaceApplicantInfo(String spaceCode, SpaceApplicantDTO spaceApplicant) {
+
+        if (!spaceCode.equals(spaceApplicant.getSpace().getCode())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
         SecurityUser user = SessionUtil.getSecurityUser();
-        SpaceDTO space = this.selectSpaceInfo(spaceApplicant.getSpace().getCode());
-        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        SpaceApplicant targetApplicant = space.getApplicants().stream().filter(
                 applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId()))
             .findAny().orElse(null);
 
         if (targetApplicant == null) {
-            targetApplicant = spaceApplicant;
+            targetApplicant = spaceApplicant.toEntity(space);
             space.getApplicants().add(targetApplicant);
-            targetApplicant.setSpace(space);
         } else {
             targetApplicant.setMessage(spaceApplicant.getMessage());
         }
 
+        SpaceDTO spaceDTO = new SpaceDTO(space);
+
         // 자동 참여 옵션이 켜진 스페이스
         if (space.isAllowAutoJoin()) {
-            if (targetApplicant.getApprovalStatusCode() == null || targetApplicant.getApprovalStatusCode() != null && !ApprovalStatusCode.APPROVAL
-                .equals(targetApplicant.getApprovalStatusCode())) {
+            if (targetApplicant.getApprovalStatusCode() == null || !ApprovalStatusCode.APPROVAL.equals(targetApplicant.getApprovalStatusCode())) {
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
 
                 if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(spaceApplicant.getUser().getId()))) {
-                    notificationService.createSpaceSelfJoinNotificationInfo(space, user.getUsername());
-                    space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build())
-                        .role(UserRoleCode.USER).build());
+                    notificationService.createSpaceSelfJoinNotificationInfo(spaceDTO, user.getUsername());
+                    space.getUsers().add(SpaceUser.builder().space(space).user(User.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
                 }
             }
 
@@ -460,15 +452,15 @@ public class SpaceService {
                 .equals(targetApplicant.getApprovalStatusCode())) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST, "already.requested");
             } else if (ApprovalStatusCode.REJECTED.equals(targetApplicant.getApprovalStatusCode())) {
-                notificationService.createSpaceJoinAgainRequestNotificationInfo(space, user.getUsername());
+                notificationService.createSpaceJoinAgainRequestNotificationInfo(spaceDTO, user.getUsername());
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.REQUEST_AGAIN);
             } else {
-                notificationService.createSpaceJoinRequestNotificationInfo(space, user.getUsername());
+                notificationService.createSpaceJoinRequestNotificationInfo(spaceDTO, user.getUsername());
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.REQUEST);
             }
         }
 
-        Space result = spaceRepository.save(mappingUtil.convert(space, Space.class));
+        Space result = spaceRepository.save(space);
         return new SpaceDTO(result);
     }
 
@@ -517,16 +509,17 @@ public class SpaceService {
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
     public void deleteSpaceUser(String spaceCode, Long userId) {
-        SpaceDTO space = this.selectSpaceInfo(spaceCode);
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
         boolean isSpaceAdmin = space.getUsers().stream()
             .anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRoleCode.ADMIN)));
         SecurityUser user = SessionUtil.getSecurityUser();
-        if (!(user.getId().equals(userId) || isSpaceAdmin)) {
+        if (!(user != null && user.getId().equals(userId) || isSpaceAdmin)) {
             throw new ServiceException(HttpStatus.FORBIDDEN);
         }
 
-        UserDTO targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny()
-            .map(spaceUser -> spaceUser.getUser()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        User targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny()
+            .map(SpaceUser::getUser).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
         space.getUsers().removeIf((spaceUser -> spaceUser.getUser().getId().equals(userId)));
@@ -536,8 +529,9 @@ public class SpaceService {
             throw new ServiceException(HttpStatus.BAD_GATEWAY, "no.space.admin.exist");
         }
 
-        spaceRepository.save(mappingUtil.convert(space, Space.class));
-        notificationService.createSpaceUserWithdrawInfo(space, targetUser.getName() + " [" + targetUser.getEmail() + "]");
+        spaceRepository.save(space);
+
+        notificationService.createSpaceUserWithdrawInfo(new SpaceDTO(space), targetUser.getName() + " [" + targetUser.getEmail() + "]");
 
     }
 
