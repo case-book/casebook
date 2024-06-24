@@ -32,7 +32,6 @@ import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.config.CacheConfig;
@@ -58,7 +57,6 @@ public class SpaceService {
     private final SpaceUserRepository spaceUserRepository;
     private final ProjectService projectService;
     private final NotificationService notificationService;
-    private final MappingUtil mappingUtil;
     private final MessageSourceAccessor messageSourceAccessor;
     private final SpaceVariableRepository spaceVariableRepository;
     private final SpaceProfileRepository spaceProfileRepository;
@@ -418,7 +416,7 @@ public class SpaceService {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        SecurityUser user = SessionUtil.getSecurityUser();
+        SecurityUser user = SessionUtil.findSecurityUser();
         Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         SpaceApplicant targetApplicant = space.getApplicants().stream().filter(
@@ -469,10 +467,10 @@ public class SpaceService {
     @Transactional
     public void deleteSpaceApplicantInfo(String spaceCode, Long userId) {
         SecurityUser user = SessionUtil.getSecurityUser();
-        SpaceDTO space = this.selectSpaceInfo(spaceCode);
-        notificationService.createSpaceJoinRequestCancelNotificationInfo(space, user.getUsername());
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        notificationService.createSpaceJoinRequestCancelNotificationInfo(new SpaceDTO(space), user.getUsername());
         space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
-        spaceRepository.save(mappingUtil.convert(space, Space.class));
+        spaceRepository.save(space);
     }
 
 
@@ -481,28 +479,24 @@ public class SpaceService {
     public SpaceDTO updateSpaceApplicantStatus(String spaceCode, Long applicantId, boolean approve) {
 
         SecurityUser user = SessionUtil.getSecurityUser();
-        SpaceDTO space = this.selectSpaceInfo(spaceCode);
-        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getId().equals(applicantId)).findAny()
+
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        SpaceApplicant targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getId().equals(applicantId)).findAny()
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (approve) {
             targetApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
 
             if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(targetApplicant.getUser().getId()))) {
-                notificationService.createSpaceJoinResultNotificationInfo(space, user.getUsername(), targetApplicant.getUser().getId(), true);
-                space.getUsers().add(
-                    SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER)
-                        .build());
+                notificationService.createSpaceJoinResultNotificationInfo(new SpaceDTO(space), user.getUsername(), targetApplicant.getUser().getId(), true);
+                space.getUsers().add(SpaceUser.builder().space(space).user(User.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
             }
-
-
         } else {
-            notificationService.createSpaceJoinResultNotificationInfo(space, user.getUsername(), targetApplicant.getUser().getId(), false);
+            notificationService.createSpaceJoinResultNotificationInfo(new SpaceDTO(space), user.getUsername(), targetApplicant.getUser().getId(), false);
             targetApplicant.setApprovalStatusCode(ApprovalStatusCode.REJECTED);
         }
 
-        Space result = spaceRepository.save(mappingUtil.convert(space, Space.class));
-
+        Space result = spaceRepository.save(space);
         return new SpaceDTO(result);
     }
 
@@ -513,7 +507,7 @@ public class SpaceService {
 
         boolean isSpaceAdmin = space.getUsers().stream()
             .anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRoleCode.ADMIN)));
-        SecurityUser user = SessionUtil.getSecurityUser();
+        SecurityUser user = SessionUtil.findSecurityUser();
         if (!(user != null && user.getId().equals(userId) || isSpaceAdmin)) {
             throw new ServiceException(HttpStatus.FORBIDDEN);
         }

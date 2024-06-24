@@ -36,7 +36,6 @@ function SpaceContent({ space, onRefresh }) {
   const { spaceCode } = useParams();
   const [status, setStatus] = useState('REQUEST');
   const [userRole, setUserRole] = useState('ALL');
-  const [tooltipId, setTooltipId] = useState(null);
   const [statusOptions] = useState([
     { key: 'ALL', value: t('전체') },
     { key: 'REQUEST', value: t('요청') },
@@ -326,35 +325,15 @@ function SpaceContent({ space, onRefresh }) {
                           <Tr key={applicant.id}>
                             <Td className="user-info">{applicant.userName}</Td>
                             <Td className={`request-status ${applicant.approvalStatusCode}`}>
-                              <Tag border>{APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}</Tag>
+                              <Tag>{APPROVAL_STATUS_INFO[applicant.approvalStatusCode]}</Tag>
                             </Td>
                             <Td className="user-email">{applicant.userEmail}</Td>
                             <Td className="message">
-                              {tooltipId === applicant.id && (
-                                <>
-                                  <div
-                                    className="message-tooltip-overlay"
-                                    onClick={() => {
-                                      setTooltipId(null);
-                                    }}
-                                  />
-                                  <div className="message-tooltip">
-                                    <div className="arrow">
-                                      <div />
-                                    </div>
-                                    <div className="message-content">{applicant.message}</div>
-                                  </div>
-                                </>
-                              )}
                               {applicant.message && (
                                 <Button
                                   size="xs"
                                   onClick={() => {
-                                    if (applicant.id !== tooltipId) {
-                                      setTooltipId(applicant.id);
-                                    } else {
-                                      setTooltipId(null);
-                                    }
+                                    dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('참여 요청 메세지'), applicant.message, () => {});
                                   }}
                                 >
                                   <i className="fa-regular fa-envelope" /> {t('메세지')}
