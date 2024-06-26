@@ -82,8 +82,8 @@ public class SpaceController {
         }
 
         checkValidHoliday(spaceUpdateRequest.getHolidays());
-        SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
-        SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(space.getCode()));
+        String spaceCode = spaceService.selectSpaceCode(spaceId);
+        SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(spaceCode));
         return new SpaceResponse(spaceInfo);
     }
 

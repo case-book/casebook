@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface SpaceRepository extends JpaRepository<Space, Long> {
 
+    @Query(value = "SELECT s.code FROM Space s WHERE s.id = :spaceId")
+    Optional<String> findCodeById(Long spaceId);
+
     List<Space> findAllByUsersUserId(Long userId);
 
     List<Space> findAllByUsersUserIdAndNameContainingIgnoreCase(Long userId, String query);
