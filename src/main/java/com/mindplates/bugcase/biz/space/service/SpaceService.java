@@ -155,22 +155,26 @@ public class SpaceService {
             llm.getOpenAi().setModels(new ArrayList<>());
         }
 
-        List<String> models = openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey());
+        try {
+            List<String> models = openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey());
+            if (llm.getId() != null) {
+                // targetLlm의 model에는 있는 code인데, modeCodes에 없다면 제거
+                llm.getOpenAi().getModels().removeIf((model -> models.stream().noneMatch((modelCode -> model.getCode().equals(modelCode)))));
+            }
 
-        if (llm.getId() != null) {
-            // targetLlm의 model에는 있는 code인데, modeCodes에 없다면 제거
-            llm.getOpenAi().getModels().removeIf((model -> models.stream().noneMatch((modelCode -> model.getCode().equals(modelCode)))));
+            // targetLlm의 model의 code와 modelCodes가 일치하지 않는 것만 추가
+            models.stream().filter((modelCode -> llm.getOpenAi().getModels().stream().noneMatch((model -> model.getCode().equals(modelCode)))))
+                .forEach((modelCode -> {
+                    llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
+                        .name(modelCode)
+                        .code(modelCode)
+                        .openAi(llm.getOpenAi())
+                        .build());
+                }));
+        } catch (Exception e) {
+            throw new ServiceException("llm.fail.to.get.models", new String[]{e.getMessage()});
         }
 
-        // targetLlm의 model의 code와 modelCodes가 일치하지 않는 것만 추가
-        models.stream().filter((modelCode -> llm.getOpenAi().getModels().stream().noneMatch((model -> model.getCode().equals(modelCode)))))
-            .forEach((modelCode -> {
-                llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
-                    .name(modelCode)
-                    .code(modelCode)
-                    .openAi(llm.getOpenAi())
-                    .build());
-            }));
     }
 
 
@@ -199,6 +203,7 @@ public class SpaceService {
 
         // LLM 설정 업데이트
         spaceInfo.updateLlms(updateSpaceInfo.getLlms());
+        // 모델 업데이트
         spaceInfo.getLlms().forEach((llm -> {
             if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
                 syncLlmModels(llm);

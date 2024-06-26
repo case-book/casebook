@@ -121,20 +121,20 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
         return space;
     }
 
-    public void updateLlmPrompts(List<SpaceLlmPromptDTO> llmPrompts) {
-        if (llmPrompts == null || llmPrompts.isEmpty()) {
+    public void updateLlmPrompts(List<SpaceLlmPromptDTO> updateLlmPrompts) {
+        if (updateLlmPrompts == null || updateLlmPrompts.isEmpty()) {
             if (this.llmPrompts != null && !this.llmPrompts.isEmpty()) {
                 this.llmPrompts.clear();
             }
         } else {
             List<Long> deleteLlmIds = this.llmPrompts.stream()
                 .map(SpaceLlmPromptDTO::getId)
-                .filter(llmPromptId -> llmPrompts.stream().noneMatch((updateLlmPrompt -> updateLlmPrompt.getId() != null && updateLlmPrompt.getId().equals(llmPromptId))))
+                .filter(llmPromptId -> updateLlmPrompts.stream().noneMatch((updateLlmPrompt -> updateLlmPrompt.getId() != null && updateLlmPrompt.getId().equals(llmPromptId))))
                 .collect(Collectors.toList());
 
             this.llmPrompts.removeIf((llmPrompt -> deleteLlmIds.contains(llmPrompt.getId())));
 
-            llmPrompts.forEach((updateLlmPrompt -> {
+            updateLlmPrompts.forEach((updateLlmPrompt -> {
                 SpaceLlmPromptDTO targetLlmPrompt = this.llmPrompts.stream().filter((llmPrompt -> llmPrompt.getId() != null && llmPrompt.getId().equals(updateLlmPrompt.getId()))).findAny()
                     .orElse(null);
                 if (targetLlmPrompt != null) {
@@ -151,20 +151,20 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
         }
     }
 
-    public void updateLlms(List<LlmDTO> llms) {
-        if (llms == null || llms.isEmpty()) {
+    public void updateLlms(List<LlmDTO> updateLlms) {
+        if (updateLlms == null || updateLlms.isEmpty()) {
             if (this.llms != null && !this.llms.isEmpty()) {
                 this.llms.clear();
             }
         } else {
             List<Long> deleteLlmIds = this.llms.stream()
                 .map(LlmDTO::getId)
-                .filter(id -> llms.stream().noneMatch((updateLlm -> updateLlm.getId() != null && updateLlm.getId().equals(id))))
+                .filter(id -> updateLlms.stream().noneMatch((updateLlm -> updateLlm.getId() != null && updateLlm.getId().equals(id))))
                 .collect(Collectors.toList());
 
             this.llms.removeIf((llm -> deleteLlmIds.contains(llm.getId())));
 
-            llms.forEach((updateLlm -> {
+            updateLlms.forEach((updateLlm -> {
                 if (updateLlm.getId() == null) {
                     this.llms.add(updateLlm);
                 } else {
@@ -181,8 +181,8 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
         }
     }
 
-    public void updateUsers(List<SpaceUserDTO> users) {
-        users.forEach((spaceUser -> {
+    public void updateUsers(List<SpaceUserDTO> updateUsers) {
+        updateUsers.forEach((spaceUser -> {
             if ("D".equals(spaceUser.getCrud())) {
                 this.users.removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
                 this.applicants.removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
@@ -198,10 +198,10 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
         return users.stream().filter((spaceUser -> "D".equals(spaceUser.getCrud()))).map((spaceUserDTO -> spaceUserDTO.getUser().getId())).collect(Collectors.toList());
     }
 
-    public List<Map<String, String>> getRoleChangedUsers(List<SpaceUserDTO> users) {
+    public List<Map<String, String>> getRoleChangedUsers(List<SpaceUserDTO> updateUsers) {
         // crud가 U인 사용자의 변경 전 Role과 변경 후 Role이 다른 경우, Map에 before, after로 저장하여 반환
         List<Map<String, String>> result = new ArrayList<>();
-        users.stream()
+        updateUsers.stream()
             .filter((spaceUser -> "U".equals(spaceUser.getCrud())))
             .forEach((spaceUser -> {
                 SpaceUserDTO targetUser = this.users.stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId()))).findAny().orElse(null);
@@ -218,22 +218,22 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
     }
 
 
-    public List<Long> getRemoveTargetMessageChannels(List<SpaceMessageChannelDTO> messageChannels) {
+    public List<Long> getRemoveTargetMessageChannels(List<SpaceMessageChannelDTO> updateMessageChannels) {
 
         if (this.messageChannels == null || this.messageChannels.isEmpty()) {
             return new ArrayList<>();
         }
 
-        return this.messageChannels.stream().map(SpaceMessageChannelDTO::getId).filter((id -> messageChannels.stream().noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(id)))))
+        return this.messageChannels.stream().map(SpaceMessageChannelDTO::getId)
+            .filter((id -> updateMessageChannels.stream().noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(id)))))
             .collect(Collectors.toList());
 
     }
 
-    public List<Long> updateMessageChannels(List<SpaceMessageChannelDTO> messageChannels) {
+    public void updateMessageChannels(List<SpaceMessageChannelDTO> messageChannels) {
 
         if (messageChannels == null || messageChannels.isEmpty()) {
             this.messageChannels.clear();
-            return new ArrayList<>();
         } else {
             List<Long> deleteMessageChannelIds = this.messageChannels.stream()
                 .map(SpaceMessageChannelDTO::getId)
@@ -289,7 +289,6 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
                 }
             }));
 
-            return deleteMessageChannelIds;
         }
 
 
