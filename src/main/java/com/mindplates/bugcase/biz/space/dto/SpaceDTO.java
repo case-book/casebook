@@ -4,8 +4,11 @@ import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.vo.IDTO;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -117,4 +120,180 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
 
         return space;
     }
+
+    public void updateLlmPrompts(List<SpaceLlmPromptDTO> llmPrompts) {
+        if (llmPrompts == null || llmPrompts.isEmpty()) {
+            if (this.llmPrompts != null && !this.llmPrompts.isEmpty()) {
+                this.llmPrompts.clear();
+            }
+        } else {
+            List<Long> deleteLlmIds = this.llmPrompts.stream()
+                .map(SpaceLlmPromptDTO::getId)
+                .filter(llmPromptId -> llmPrompts.stream().noneMatch((updateLlmPrompt -> updateLlmPrompt.getId() != null && updateLlmPrompt.getId().equals(llmPromptId))))
+                .collect(Collectors.toList());
+
+            this.llmPrompts.removeIf((llmPrompt -> deleteLlmIds.contains(llmPrompt.getId())));
+
+            llmPrompts.forEach((updateLlmPrompt -> {
+                SpaceLlmPromptDTO targetLlmPrompt = this.llmPrompts.stream().filter((llmPrompt -> llmPrompt.getId() != null && llmPrompt.getId().equals(updateLlmPrompt.getId()))).findAny()
+                    .orElse(null);
+                if (targetLlmPrompt != null) {
+                    targetLlmPrompt.setName(updateLlmPrompt.getName());
+                    targetLlmPrompt.setSystemRole(updateLlmPrompt.getSystemRole());
+                    targetLlmPrompt.setPrompt(updateLlmPrompt.getPrompt());
+                    targetLlmPrompt.setActivated(updateLlmPrompt.isActivated());
+                    targetLlmPrompt.setSpace(SpaceDTO.builder().id(this.id).build());
+                } else {
+                    this.llmPrompts.add(updateLlmPrompt);
+                }
+            }));
+
+        }
+    }
+
+    public void updateLlms(List<LlmDTO> llms) {
+        if (llms == null || llms.isEmpty()) {
+            if (this.llms != null && !this.llms.isEmpty()) {
+                this.llms.clear();
+            }
+        } else {
+            List<Long> deleteLlmIds = this.llms.stream()
+                .map(LlmDTO::getId)
+                .filter(id -> llms.stream().noneMatch((updateLlm -> updateLlm.getId() != null && updateLlm.getId().equals(id))))
+                .collect(Collectors.toList());
+
+            this.llms.removeIf((llm -> deleteLlmIds.contains(llm.getId())));
+
+            llms.forEach((updateLlm -> {
+                if (updateLlm.getId() == null) {
+                    this.llms.add(updateLlm);
+                } else {
+                    LlmDTO targetLlm = this.llms.stream().filter((llm -> llm.getId().equals(updateLlm.getId()))).findAny().orElse(null);
+                    if (targetLlm != null) {
+                        targetLlm.setLlmTypeCode(updateLlm.getLlmTypeCode());
+                        targetLlm.getOpenAi().setName(updateLlm.getOpenAi().getName());
+                        targetLlm.getOpenAi().setUrl(updateLlm.getOpenAi().getUrl());
+                        targetLlm.getOpenAi().setApiKey(updateLlm.getOpenAi().getApiKey());
+                    }
+                }
+
+            }));
+        }
+    }
+
+    public void updateUsers(List<SpaceUserDTO> users) {
+        users.forEach((spaceUser -> {
+            if ("D".equals(spaceUser.getCrud())) {
+                this.users.removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
+                this.applicants.removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
+
+            } else if ("U".equals(spaceUser.getCrud())) {
+                this.users.stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId()))).findAny().ifPresent(updateUser -> updateUser.setRole(spaceUser.getRole()));
+            }
+        }));
+    }
+
+    public List<Long> getBannedUserIds(List<SpaceUserDTO> users) {
+        // crud가 D인 userId 반환
+        return users.stream().filter((spaceUser -> "D".equals(spaceUser.getCrud()))).map((spaceUserDTO -> spaceUserDTO.getUser().getId())).collect(Collectors.toList());
+    }
+
+    public List<Map<String, String>> getRoleChangedUsers(List<SpaceUserDTO> users) {
+        // crud가 U인 사용자의 변경 전 Role과 변경 후 Role이 다른 경우, Map에 before, after로 저장하여 반환
+        List<Map<String, String>> result = new ArrayList<>();
+        users.stream()
+            .filter((spaceUser -> "U".equals(spaceUser.getCrud())))
+            .forEach((spaceUser -> {
+                SpaceUserDTO targetUser = this.users.stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId()))).findAny().orElse(null);
+                if (targetUser != null && !targetUser.getRole().equals(spaceUser.getRole())) {
+                    Map<String, String> roleMap = new HashMap<>();
+                    roleMap.put("userId", spaceUser.getUser().getId().toString());
+                    roleMap.put("beforeRole", targetUser.getRole().toString());
+                    roleMap.put("afterRole", spaceUser.getRole().toString());
+                    result.add(roleMap);
+                }
+            }));
+
+        return result;
+    }
+
+
+    public List<Long> getRemoveTargetMessageChannels(List<SpaceMessageChannelDTO> messageChannels) {
+
+        if (this.messageChannels == null || this.messageChannels.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return this.messageChannels.stream().map(SpaceMessageChannelDTO::getId).filter((id -> messageChannels.stream().noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(id)))))
+            .collect(Collectors.toList());
+
+    }
+
+    public List<Long> updateMessageChannels(List<SpaceMessageChannelDTO> messageChannels) {
+
+        if (messageChannels == null || messageChannels.isEmpty()) {
+            this.messageChannels.clear();
+            return new ArrayList<>();
+        } else {
+            List<Long> deleteMessageChannelIds = this.messageChannels.stream()
+                .map(SpaceMessageChannelDTO::getId)
+                .filter((id -> messageChannels.stream()
+                    .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(id)))))
+                .collect(Collectors.toList());
+
+            this.messageChannels.removeIf((projectMessageChannel -> deleteMessageChannelIds.contains(projectMessageChannel.getId())));
+
+            messageChannels.forEach((updateChannel -> {
+                if (updateChannel.getId() == null) {
+                    this.messageChannels.add(updateChannel);
+                } else {
+                    SpaceMessageChannelDTO targetChannel = this.messageChannels.stream().filter((channel -> channel.getId().equals(updateChannel.getId()))).findAny().orElse(null);
+                    if (targetChannel != null) {
+                        targetChannel.setName(updateChannel.getName());
+                        targetChannel.setUrl(updateChannel.getUrl());
+                        targetChannel.setHttpMethod(updateChannel.getHttpMethod());
+                        targetChannel.setMessageChannelType(updateChannel.getMessageChannelType());
+                        targetChannel.setPayloadType(updateChannel.getPayloadType());
+                        targetChannel.setJson(updateChannel.getJson());
+
+                        // updateChannel의 header를 id가 존재하는지에 따라 업데이터 및 추가 처리
+                        targetChannel.getHeaders().removeIf((header -> updateChannel.getHeaders().stream().noneMatch((updateHeader -> updateHeader.getId().equals(header.getId())))));
+                        updateChannel.getHeaders().forEach((updateHeader -> {
+                            if (updateHeader.getId() == null) {
+                                targetChannel.getHeaders().add(updateHeader);
+                            } else {
+                                SpaceMessageChannelHeaderDTO targetHeader = targetChannel.getHeaders().stream().filter((header -> header.getId().equals(updateHeader.getId()))).findAny().orElse(null);
+                                if (targetHeader != null) {
+                                    targetHeader.setDataKey(updateHeader.getDataKey());
+                                    targetHeader.setDataValue(updateHeader.getDataValue());
+                                }
+                            }
+                        }));
+
+                        // updateChannel의 payloads를 id가 존재하는지에 따라 업데이터 및 추가 처리
+                        targetChannel.getPayloads().removeIf((payload -> updateChannel.getPayloads().stream().noneMatch((updatePayload -> updatePayload.getId().equals(payload.getId())))));
+                        updateChannel.getPayloads().forEach((updatePayload -> {
+                            if (updatePayload.getId() == null) {
+                                targetChannel.getPayloads().add(updatePayload);
+                            } else {
+                                SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny()
+                                    .orElse(null);
+                                if (targetPayload != null) {
+                                    targetPayload.setDataKey(updatePayload.getDataKey());
+                                    targetPayload.setDataValue(updatePayload.getDataValue());
+                                }
+                            }
+                        }));
+
+                    }
+                }
+            }));
+
+            return deleteMessageChannelIds;
+        }
+
+
+    }
+
+
 }
