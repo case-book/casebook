@@ -115,6 +115,7 @@ function SpaceEditPage({ type }) {
     index: null,
     id: null,
     llmTypeCode: null,
+    activated: false,
     openAi: {
       id: null,
       name: '',
@@ -575,11 +576,12 @@ function SpaceEditPage({ type }) {
                 </EmptyContent>
               )}
               {space.llms?.length > 0 && (
-                <Table cols={['1px', '100%', '1px']} border>
+                <Table cols={['1px', '1px', '100%', '1px']} border>
                   <THead>
                     <Tr>
                       <Th align="center">{t('타입')}</Th>
                       <Th align="left">{t('이름')}</Th>
+                      <Th align="left">{t('활성화')}</Th>
                       <Th />
                     </Tr>
                   </THead>
@@ -593,6 +595,7 @@ function SpaceEditPage({ type }) {
                             </Tag>
                           </Td>
                           <Td>{llm?.openAi.name}</Td>
+                          <Td>{llm.activated ? <Tag border>ACTIVE</Tag> : null}</Td>
                           <Td>
                             <Button
                               size="xs"
@@ -900,6 +903,16 @@ function SpaceEditPage({ type }) {
           }}
           onApply={llm => {
             const nextLlms = space.llms.slice(0);
+
+            if (llm.activated && nextLlms?.length > 0) {
+              nextLlms.forEach((item, index) => {
+                const nextLlm = item;
+                if (nextLlm.activated && index !== llm.index) {
+                  nextLlm.activated = false;
+                }
+              });
+            }
+
             if (llm.index === null) {
               nextLlms.push(llm);
             } else {
@@ -914,6 +927,7 @@ function SpaceEditPage({ type }) {
               nextLlm.openAi.name = llm.openAi.name;
               nextLlm.openAi.url = llm.openAi.url;
               nextLlm.openAi.apiKey = llm.openAi.apiKey;
+              nextLlm.activated = llm.activated;
             }
 
             setSpace({

@@ -37,4 +37,9 @@ public class OpenAiResponse {
             this.models = openAi.getModels().stream().map(OpenAiModelResponse::new).collect(java.util.stream.Collectors.toList());
         }
     }
+
+    public OpenAiResponse(OpenAiDTO openAi, boolean masking) {
+        this(openAi);
+        this.apiKey = "********";
+    }
 }

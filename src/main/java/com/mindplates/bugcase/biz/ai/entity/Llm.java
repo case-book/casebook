@@ -49,4 +49,7 @@ public class Llm extends CommonEntity {
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_OPEN_AI__SPACE"))
     private Space space;
 
+    @Column(name = "activated")
+    private boolean activated;
+
 }

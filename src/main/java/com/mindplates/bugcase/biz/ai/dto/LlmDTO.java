@@ -22,11 +22,13 @@ public class LlmDTO extends CommonDTO implements IDTO<Llm> {
     private LlmTypeCode llmTypeCode;
     private OpenAiDTO openAi;
     private SpaceDTO space;
+    private boolean activated;
 
     public LlmDTO(Llm llm) {
         this.id = llm.getId();
         this.llmTypeCode = llm.getLlmTypeCode();
         this.openAi = new OpenAiDTO(llm.getOpenAi());
+        this.activated = llm.isActivated();
         if (llm.getSpace() != null) {
             this.space = SpaceDTO.builder().id(llm.getSpace().getId()).build();
         }
@@ -38,6 +40,7 @@ public class LlmDTO extends CommonDTO implements IDTO<Llm> {
             .id(id)
             .llmTypeCode(llmTypeCode)
             .space(Space.builder().id(space.getId()).build())
+            .activated(activated)
             .build();
 
         if (openAi != null) {

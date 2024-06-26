@@ -254,6 +254,7 @@ function SpaceContent({ space, onRefresh }) {
                       </Tag>
                     </div>
                     <div>{llm?.openAi.name}</div>
+                    <div>{llm.activated ? <Tag border>ACTIVE</Tag> : null}</div>
                   </li>
                 );
               })}

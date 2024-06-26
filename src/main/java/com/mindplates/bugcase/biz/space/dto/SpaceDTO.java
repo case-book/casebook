@@ -171,6 +171,7 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
                     LlmDTO targetLlm = this.llms.stream().filter((llm -> llm.getId().equals(updateLlm.getId()))).findAny().orElse(null);
                     if (targetLlm != null) {
                         targetLlm.setLlmTypeCode(updateLlm.getLlmTypeCode());
+                        targetLlm.setActivated(updateLlm.isActivated());
                         targetLlm.getOpenAi().setName(updateLlm.getOpenAi().getName());
                         targetLlm.getOpenAi().setUrl(updateLlm.getOpenAi().getUrl());
                         targetLlm.getOpenAi().setApiKey(updateLlm.getOpenAi().getApiKey());

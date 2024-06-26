@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio } from '@/components';
+import { Block, BlockRow, Button, CheckBox, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './LlmEditPopup.scss';
@@ -23,6 +23,7 @@ function LlmEditPopup({ data, setOpened, onApply }) {
       url: '',
       apiKey: '',
       models: [],
+      activated: false,
     },
   });
 
@@ -174,6 +175,19 @@ function LlmEditPopup({ data, setOpened, onApply }) {
                 </BlockRow>
               </>
             )}
+            <BlockRow>
+              <Label minWidth={labelMinWidth}>{t('활성화')}</Label>
+              <CheckBox
+                type="checkbox"
+                value={llm.activated}
+                onChange={val => {
+                  setLlm({
+                    ...llm,
+                    activated: val,
+                  });
+                }}
+              />
+            </BlockRow>
           </Block>
           <div className="api-config-test-button">
             <Button onClick={onApiInfoTest}>{t('설정 테스트')}</Button>
