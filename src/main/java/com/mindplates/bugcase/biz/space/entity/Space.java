@@ -129,8 +129,6 @@ public class Space extends CommonEntity {
         this.description = description;
         this.projectCount = projectCount;
         this.userCount = userCount;
-        this.isMember = isMember;
-        this.isAdmin = isAdmin;
     }
 
 

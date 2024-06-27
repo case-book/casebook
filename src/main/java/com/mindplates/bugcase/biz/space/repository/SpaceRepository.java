@@ -35,7 +35,7 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
     boolean existsByCode(String code);
 
     @Query("SELECT s.id FROM Space s WHERE s.code = :spaceCode")
-    long findIdByCode(String spaceCode);
+    Optional<Long> findIdByCode(String spaceCode);
 
 }
 

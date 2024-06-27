@@ -157,8 +157,8 @@ public class SpaceController {
 
     @Operation(description = "스페이스 탈퇴")
     @DeleteMapping("/{spaceCode}/users/my")
-    public ResponseEntity<?> deleteSpaceUserInfo(@PathVariable String spaceCode) {
-        spaceService.deleteSpaceUser(spaceCode, SessionUtil.getUserId());
+    public ResponseEntity<?> leaveSpace(@PathVariable String spaceCode) {
+        spaceService.leaveSpace(spaceCode, SessionUtil.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
