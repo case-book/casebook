@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -90,6 +91,47 @@ public class Space extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     @Column(updatable = false, insertable = false)
     private List<SpaceLlmPrompt> llmPrompts;
+
+    @Transient
+    private Long projectCount;
+
+    @Transient
+    private Long userCount;
+
+    @Transient
+    private boolean isMember;
+
+    @Transient
+    private boolean isAdmin;
+
+    public Space(long id, String name, String code, boolean activated, boolean allowSearch, boolean allowAutoJoin, String description, long projectCount, long userCount, boolean isMember,
+        boolean isAdmin) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.activated = activated;
+        this.allowSearch = allowSearch;
+        this.allowAutoJoin = allowAutoJoin;
+        this.description = description;
+        this.projectCount = projectCount;
+        this.userCount = userCount;
+        this.isMember = isMember;
+        this.isAdmin = isAdmin;
+    }
+
+    public Space(long id, String name, String code, boolean activated, boolean allowSearch, boolean allowAutoJoin, String description, long projectCount, long userCount) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.activated = activated;
+        this.allowSearch = allowSearch;
+        this.allowAutoJoin = allowAutoJoin;
+        this.description = description;
+        this.projectCount = projectCount;
+        this.userCount = userCount;
+        this.isMember = isMember;
+        this.isAdmin = isAdmin;
+    }
 
 
 }

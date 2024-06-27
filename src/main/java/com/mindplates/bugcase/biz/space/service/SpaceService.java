@@ -70,12 +70,7 @@ public class SpaceService {
     }
 
     public List<SpaceDTO> selectSpaceList() {
-        List<SpaceDTO> spaceList = spaceRepository.findAll().stream().map(SpaceDTO::new).collect(Collectors.toList());
-        spaceList.forEach((space -> {
-            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
-            space.setProjectCount(projectCount);
-        }));
-        return spaceList;
+        return spaceRepository.findAll().stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
     public SpaceDTO selectSpaceInfo(Long id) {
@@ -120,65 +115,26 @@ public class SpaceService {
     @Transactional
     public SpaceDTO createSpaceInfo(SpaceDTO createSpaceInfo, Long userId) {
 
+        // 스페이스 코드 중복 확인
         if (existByCode(createSpaceInfo.getCode())) {
             throw new ServiceException("error.space.code.duplicated");
         }
 
-        createSpaceInfo.setUsers(new ArrayList<>());
-        createSpaceInfo.getUsers().add(SpaceUserDTO.builder().space(createSpaceInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build());
+        // 생성한 사용자를 어드민으로 추가
+        List<SpaceUserDTO> users = new ArrayList<SpaceUserDTO>();
+        users.add(SpaceUserDTO.builder().space(createSpaceInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build());
+        createSpaceInfo.setUsers(users);
 
+        // LLM 모델 동기화
         createSpaceInfo.getLlms().forEach((llm -> {
             if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
-                List<String> models = openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey());
-                models.forEach((model -> {
-                    if (llm.getOpenAi().getModels() == null) {
-                        llm.getOpenAi().setModels(new ArrayList<>());
-                    }
-                    llm.getOpenAi().getModels().add(OpenAiModelDTO.builder().name(model).code(model).openAi(llm.getOpenAi()).build());
-                }));
+                syncLlmModels(llm);
             }
         }));
 
         Space target = createSpaceInfo.toEntity();
-
         spaceRepository.save(target);
         return new SpaceDTO(target);
-    }
-
-    private void deleteSpaceMessageChannels(List<Long> deleteMessageChannelIds) {
-        deleteMessageChannelIds.forEach((deleteSpaceMessageChannelId -> {
-            projectMessageChannelRepository.findAllByMessageChannelId(deleteSpaceMessageChannelId).forEach((projectMessageChannel -> {
-                testrunMessageChannelRepository.deleteByProjectMessageChannelId(projectMessageChannel.getId());
-            }));
-            projectMessageChannelRepository.deleteBySpaceMessageChannelId(deleteSpaceMessageChannelId);
-        }));
-    }
-
-    private void syncLlmModels(LlmDTO llm) {
-        if (llm.getOpenAi().getModels() == null) {
-            llm.getOpenAi().setModels(new ArrayList<>());
-        }
-
-        try {
-            List<String> models = openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey());
-            if (llm.getId() != null) {
-                // targetLlm의 model에는 있는 code인데, modeCodes에 없다면 제거
-                llm.getOpenAi().getModels().removeIf((model -> models.stream().noneMatch((modelCode -> model.getCode().equals(modelCode)))));
-            }
-
-            // targetLlm의 model의 code와 modelCodes가 일치하지 않는 것만 추가
-            models.stream().filter((modelCode -> llm.getOpenAi().getModels().stream().noneMatch((model -> model.getCode().equals(modelCode)))))
-                .forEach((modelCode -> {
-                    llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
-                        .name(modelCode)
-                        .code(modelCode)
-                        .openAi(llm.getOpenAi())
-                        .build());
-                }));
-        } catch (Exception e) {
-            throw new ServiceException("llm.fail.to.get.models", new String[]{e.getMessage()});
-        }
-
     }
 
 
@@ -246,8 +202,8 @@ public class SpaceService {
 
     }
 
-    public List<SpaceDTO> selectSearchAllowedSpaceList(String query) {
-        List<Space> spaceList = spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%");
+    public List<SpaceDTO> selectSearchAllowedSpaceList(String query, Long userId) {
+        List<Space> spaceList = spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%", userId);
         return spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
@@ -272,21 +228,12 @@ public class SpaceService {
             spaceList = spaceRepository.findAllByUsersUserIdAndNameContainingIgnoreCase(userId, query);
         }
 
-        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
-
-        result.forEach((space -> {
-            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
-            space.setProjectCount(projectCount);
-        }));
-
-        return result;
-
+        return spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
     public List<SpaceUserDTO> selectSpaceUserList(String spaceCode, String query) {
         if (StringUtils.isNotBlank(query)) {
-            List<SpaceUser> spaceUserList = spaceUserRepository
-                .findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);
+            List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query);
             return spaceUserList.stream().map(SpaceUserDTO::new).collect(Collectors.toList());
         }
 
@@ -427,6 +374,42 @@ public class SpaceService {
     public List<SpaceMessageChannelDTO> selectSpaceMessageChannels(String spaceCode) {
         List<SpaceMessageChannel> spaceMessageChannels = spaceMessageChannelRepository.findAllBySpaceCode(spaceCode);
         return spaceMessageChannels.stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
+    }
+
+    private void syncLlmModels(LlmDTO llm) {
+        if (llm.getOpenAi().getModels() == null) {
+            llm.getOpenAi().setModels(new ArrayList<>());
+        }
+
+        try {
+            List<String> models = openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey());
+            if (llm.getId() != null) {
+                // targetLlm의 model에는 있는 code인데, modeCodes에 없다면 제거
+                llm.getOpenAi().getModels().removeIf((model -> models.stream().noneMatch((modelCode -> model.getCode().equals(modelCode)))));
+            }
+
+            // targetLlm의 model의 code와 modelCodes가 일치하지 않는 것만 추가
+            models.stream().filter((modelCode -> llm.getOpenAi().getModels().stream().noneMatch((model -> model.getCode().equals(modelCode)))))
+                .forEach((modelCode -> {
+                    llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
+                        .name(modelCode)
+                        .code(modelCode)
+                        .openAi(llm.getOpenAi())
+                        .build());
+                }));
+        } catch (Exception e) {
+            throw new ServiceException("llm.fail.to.get.models", new String[]{e.getMessage()});
+        }
+
+    }
+
+    private void deleteSpaceMessageChannels(List<Long> deleteMessageChannelIds) {
+        deleteMessageChannelIds.forEach((deleteSpaceMessageChannelId -> {
+            projectMessageChannelRepository.findAllByMessageChannelId(deleteSpaceMessageChannelId).forEach((projectMessageChannel -> {
+                testrunMessageChannelRepository.deleteByProjectMessageChannelId(projectMessageChannel.getId());
+            }));
+            projectMessageChannelRepository.deleteBySpaceMessageChannelId(deleteSpaceMessageChannelId);
+        }));
     }
 
 

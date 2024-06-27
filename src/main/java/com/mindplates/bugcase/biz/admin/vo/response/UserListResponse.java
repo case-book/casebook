@@ -52,7 +52,7 @@ public class UserListResponse {
     public UserListResponse(UserDTO user, List<SpaceDTO> spaces) {
         this(user);
         if (spaces != null) {
-            this.spaces = spaces.stream().map((spaceDTO -> new SpaceListResponse(spaceDTO, user.getId()))).collect(Collectors.toList());
+            this.spaces = spaces.stream().map((SpaceListResponse::new)).collect(Collectors.toList());
         }
 
 

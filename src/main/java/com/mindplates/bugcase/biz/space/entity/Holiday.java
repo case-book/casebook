@@ -25,7 +25,7 @@ public class Holiday extends CommonEntity {
     @Column(name = "holiday_type", length = ColumnsDef.CODE)
     private HolidayTypeCode holidayType;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_SPACE__HOLIDAY"))
     private Space space;
 

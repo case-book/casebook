@@ -51,6 +51,11 @@ function MemberCardManager({ className, spaceUser, edit, onChangeUserRole, onUnd
       }
     >
       <CardHeader className="user-name">
+        {selected && (
+          <span className="selected-mark">
+            <i className="fa-solid fa-circle-check" />
+          </span>
+        )}
         <div className="user-card-content">
           <div>
             <UserAvatar avatarInfo={spaceUser?.avatarInfo} size={48} rounded fill />

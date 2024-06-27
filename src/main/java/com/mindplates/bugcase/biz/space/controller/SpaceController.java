@@ -54,23 +54,23 @@ public class SpaceController {
     @Operation(description = "스페이스 검색")
     @GetMapping("")
     public List<SpaceListResponse> selectSpaceList(@RequestParam(value = "query") String query) {
-        List<SpaceDTO> spaceList = spaceService.selectSearchAllowedSpaceList(query);
-        return spaceList.stream().map(space -> new SpaceListResponse(space, SessionUtil.getUserId())).collect(Collectors.toList());
+        List<SpaceDTO> spaceList = spaceService.selectSearchAllowedSpaceList(query, SessionUtil.getUserId());
+        return spaceList.stream().map(SpaceListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "내 스페이스 목록 조회")
     @GetMapping("/my")
     public List<SpaceListResponse> selectMySpaceList(@RequestParam(value = "query", required = false) String query) {
         List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId(), query);
-        return spaceList.stream().map((space -> new SpaceListResponse(space, SessionUtil.getUserId()))).collect(Collectors.toList());
+        return spaceList.stream().map((SpaceListResponse::new)).collect(Collectors.toList());
     }
 
     @Operation(description = "새 스페이스 추가")
     @PostMapping("")
-    public SpaceListResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
+    public SpaceResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
         checkValidHoliday(spaceCreateRequest.getHolidays());
         SpaceDTO spaceInfo = spaceService.createSpaceInfo(spaceCreateRequest.toDTO(), SessionUtil.getUserId());
-        return new SpaceListResponse(spaceInfo, null);
+        return new SpaceResponse(spaceInfo);
     }
 
 

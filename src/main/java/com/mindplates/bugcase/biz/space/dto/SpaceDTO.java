@@ -39,6 +39,9 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
     private List<LlmDTO> llms;
     private List<SpaceLlmPromptDTO> llmPrompts;
     private Long projectCount;
+    private Long userCount;
+    private boolean isMember;
+    private boolean isAdmin;
 
     public SpaceDTO(Space space) {
         this.id = space.getId();
@@ -51,6 +54,11 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
         this.token = space.getToken();
         this.country = space.getCountry();
         this.timeZone = space.getTimeZone();
+        this.projectCount = space.getProjectCount();
+        this.userCount = space.getUserCount();
+        this.isMember = space.isMember();
+        this.isAdmin = space.isAdmin();
+
         if (space.getUsers() != null) {
             this.users = space.getUsers().stream().map(SpaceUserDTO::new).collect(Collectors.toList());
         }
