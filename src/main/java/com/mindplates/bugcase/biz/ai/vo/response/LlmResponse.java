@@ -20,14 +20,22 @@ public class LlmResponse {
     private LlmTypeCode llmTypeCode;
     private OpenAiResponse openAi;
     private SpaceDTO space;
+    private boolean activated;
 
 
     public LlmResponse(LlmDTO llm) {
         this.id = llm.getId();
         this.llmTypeCode = llm.getLlmTypeCode();
         this.openAi = new OpenAiResponse(llm.getOpenAi());
+        this.activated = llm.isActivated();
         if (llm.getSpace() != null) {
             this.space = SpaceDTO.builder().id(llm.getSpace().getId()).build();
         }
+    }
+
+    public LlmResponse(LlmDTO llm, boolean masking) {
+        this(llm);
+        this.openAi = new OpenAiResponse(llm.getOpenAi(), masking);
+
     }
 }

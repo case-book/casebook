@@ -29,14 +29,32 @@
 
   .admin-menu-item {
     margin-right: 0.5rem;
-    > div {
+
+    > div.menu-button {
       cursor: pointer;
       font-size: 14px;
-      display: inline-block;
+      display: inline-flex;
+      border: 1px solid var(--input-border-color);
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 20px;
+      > span {
+        align-self: center;
+      }
+    }
+
+    .hover-area {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      display: none;
     }
 
     &:hover {
-      .admin-menu {
+      .admin-menu,
+      .hover-area {
         display: block;
       }
     }
@@ -46,8 +64,8 @@
       white-space: nowrap;
       list-style: none;
       margin: 0;
-      top: 34px;
-      left: -46px;
+      top: 42px;
+      left: -7px;
       background-color: white;
       padding: 10px;
       display: none;
@@ -92,6 +110,11 @@
             color: var(--primary-text-color);
           }
         }
+      }
+
+      div.separator {
+        border-bottom: 1px solid var(--border-light-color);
+        margin: 6px 6px;
       }
     }
   }

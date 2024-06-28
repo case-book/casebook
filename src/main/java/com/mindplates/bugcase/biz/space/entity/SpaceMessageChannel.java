@@ -24,6 +24,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.http.HttpMethod;
 
 @Entity
@@ -65,10 +67,12 @@ public class SpaceMessageChannel extends CommonEntity {
     @Column(name = "json", length = ColumnsDef.TEXT)
     private String json;
 
-    @OneToMany(mappedBy = "spaceMessageChannel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "spaceMessageChannel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<SpaceMessageChannelHeader> headers;
 
-    @OneToMany(mappedBy = "spaceMessageChannel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "spaceMessageChannel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<SpaceMessageChannelPayload> payloads;
 
 

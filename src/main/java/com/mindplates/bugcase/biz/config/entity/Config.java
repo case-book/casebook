@@ -24,6 +24,6 @@ public class Config extends CommonEntity {
     @Column(name = "code", nullable = false, unique = true, length = ColumnsDef.CODE, updatable = false)
     String code;
 
-    @Column(name = "value", length = ColumnsDef.NAME)
+    @Column(name = "value", length = ColumnsDef.TEXT)
     String value;
 }

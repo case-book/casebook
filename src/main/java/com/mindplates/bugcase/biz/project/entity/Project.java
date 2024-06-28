@@ -28,6 +28,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
@@ -55,7 +57,24 @@ public class Project extends CommonEntity {
     @Column(name = "token", length = ColumnsDef.CODE)
     private String token;
 
+    @Column(name = "ai_enabled")
+    private boolean aiEnabled;
+
+    @Column(name = "testcase_group_seq", columnDefinition = "integer default 0")
+    private Integer testcaseGroupSeq = 0;
+
+    @Column(name = "testcase_seq", columnDefinition = "integer default 0")
+    private Integer testcaseSeq = 0;
+
+    @Column(name = "testrun_seq", columnDefinition = "integer default 0")
+    private Integer testrunSeq = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
+    private Space space;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
     private List<TestcaseGroup> testcaseGroups;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -68,29 +87,13 @@ public class Project extends CommonEntity {
     @Column(updatable = false, insertable = false)
     private List<ProjectApplicant> applicants;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
-    private Space space;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
     private List<ProjectRelease> projectReleases;
 
-    @Column(name = "testcase_group_seq", columnDefinition = "integer default 0")
-    private Integer testcaseGroupSeq = 0;
-
-    @Column(name = "testcase_seq", columnDefinition = "integer default 0")
-    private Integer testcaseSeq = 0;
-
-    @Column(name = "testrun_seq", columnDefinition = "integer default 0")
-    private Integer testrunSeq = 0;
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
+    @Fetch(value = FetchMode.SELECT)
     private List<ProjectMessageChannel> messageChannels;
-
-    @Column(name = "ai_enabled")
-    private boolean aiEnabled;
 
     public Map<String, List<ProjectUser>> getUsersByTag(List<TestrunUser> testrunUsers) {
         Map<String, List<ProjectUser>> result = new HashMap<>();

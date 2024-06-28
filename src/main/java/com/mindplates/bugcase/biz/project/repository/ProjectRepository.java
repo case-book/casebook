@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
 
+    @Query(value = "SELECT p.id FROM Project p WHERE p.id = :id AND p.space.id = (SELECT s.id FROM Space s WHERE s.code = :spaceCode)")
+    Optional<Long> findIdBySpaceCodeAndId(String spaceCode, Long id);
+
     Long countBySpaceCodeAndName(String spaceCode, String name);
 
     Optional<Project> findBySpaceCodeAndId(String spaceCode, Long id);
@@ -21,6 +24,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findAllBySpaceId(Long spaceId);
 
     Long countBySpaceId(Long spaceId);
+
+    @Query("SELECT p.aiEnabled FROM Project p WHERE p.id = :projectId")
+    boolean findAiEnabledById(Long projectId);
 
     List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
 

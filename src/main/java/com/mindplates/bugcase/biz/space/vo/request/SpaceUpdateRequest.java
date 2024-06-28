@@ -4,13 +4,12 @@ import com.mindplates.bugcase.biz.ai.vo.request.LlmRequest;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.common.vo.IRequestVO;
-import lombok.Data;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.Data;
 
 @Data
 public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
@@ -32,6 +31,7 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
     private String timeZone;
     private List<SpaceMessageChannelRequest> messageChannels;
     private List<LlmRequest> llms;
+    private List<SpaceLlmPromptRequest> llmPrompts;
 
     @Override
     public SpaceDTO toDTO() {
@@ -40,7 +40,8 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
 
     public SpaceDTO toDTO(String code) {
 
-        SpaceDTO space = SpaceDTO.builder().id(id).name(name).code(code).description(description).activated(activated).token(token).allowSearch(allowSearch).allowAutoJoin(allowAutoJoin).country(country).timeZone(timeZone).build();
+        SpaceDTO space = SpaceDTO.builder().id(id).name(name).code(code).description(description).activated(activated).token(token).allowSearch(allowSearch).allowAutoJoin(allowAutoJoin)
+            .country(country).timeZone(timeZone).build();
 
         if (users != null) {
             List<SpaceUserDTO> spaceUsers = users.stream().map(spaceUser -> spaceUser.toDTO(space)).collect(Collectors.toList());
@@ -57,6 +58,10 @@ public class SpaceUpdateRequest implements IRequestVO<SpaceDTO> {
 
         if (llms != null) {
             space.setLlms(llms.stream().map(llm -> llm.toDTO(space)).collect(Collectors.toList()));
+        }
+
+        if (llmPrompts != null) {
+            space.setLlmPrompts(llmPrompts.stream().map(llmPrompt -> llmPrompt.toDTO(space)).collect(Collectors.toList()));
         }
 
         return space;

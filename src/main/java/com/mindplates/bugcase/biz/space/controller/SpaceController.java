@@ -54,46 +54,25 @@ public class SpaceController {
     @Operation(description = "스페이스 검색")
     @GetMapping("")
     public List<SpaceListResponse> selectSpaceList(@RequestParam(value = "query") String query) {
-        List<SpaceDTO> spaceList = spaceService.selectSearchAllowedSpaceList(query);
-        return spaceList.stream().map(space -> new SpaceListResponse(space, SessionUtil.getUserId())).collect(Collectors.toList());
+        List<SpaceDTO> spaceList = spaceService.selectSearchAllowedSpaceList(query, SessionUtil.getUserId());
+        return spaceList.stream().map(SpaceListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "내 스페이스 목록 조회")
     @GetMapping("/my")
     public List<SpaceListResponse> selectMySpaceList(@RequestParam(value = "query", required = false) String query) {
         List<SpaceDTO> spaceList = spaceService.selectUserSpaceList(SessionUtil.getUserId(), query);
-        return spaceList.stream().map((space -> new SpaceListResponse(space, SessionUtil.getUserId()))).collect(Collectors.toList());
+        return spaceList.stream().map((SpaceListResponse::new)).collect(Collectors.toList());
     }
 
     @Operation(description = "새 스페이스 추가")
     @PostMapping("")
-    public SpaceListResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
+    public SpaceResponse createSpaceInfo(@Valid @RequestBody SpaceCreateRequest spaceCreateRequest) {
         checkValidHoliday(spaceCreateRequest.getHolidays());
         SpaceDTO spaceInfo = spaceService.createSpaceInfo(spaceCreateRequest.toDTO(), SessionUtil.getUserId());
-        return new SpaceListResponse(spaceInfo, null);
+        return new SpaceResponse(spaceInfo);
     }
 
-    private void checkValidHoliday(List<HolidayRequest> holidays) {
-
-        if (holidays == null) {
-            return;
-        }
-
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-            for (HolidayRequest holiday : holidays) {
-                if (HolidayTypeCode.YEARLY.equals(holiday.getHolidayType())) {
-                    LocalDate.parse(now.format(DateTimeFormatter.ofPattern("yyyy")) + holiday.getDate(), formatter);
-                } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holiday.getHolidayType())) {
-                    LocalDate.parse(holiday.getDate(), formatter);
-                }
-            }
-        } catch (Exception e) {
-            throw new ServiceException("holiday.format.invalid");
-        }
-    }
 
     @Operation(description = "스페이스 정보 변경")
     @PutMapping("/{spaceId}")
@@ -103,9 +82,8 @@ public class SpaceController {
         }
 
         checkValidHoliday(spaceUpdateRequest.getHolidays());
-
-        SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
-        SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(space.getCode()));
+        String spaceCode = spaceService.selectSpaceCode(spaceId);
+        SpaceDTO spaceInfo = spaceService.updateSpaceInfo(spaceUpdateRequest.toDTO(spaceCode));
         return new SpaceResponse(spaceInfo);
     }
 
@@ -179,8 +157,8 @@ public class SpaceController {
 
     @Operation(description = "스페이스 탈퇴")
     @DeleteMapping("/{spaceCode}/users/my")
-    public ResponseEntity<?> deleteSpaceUserInfo(@PathVariable String spaceCode) {
-        spaceService.deleteSpaceUser(spaceCode, SessionUtil.getUserId());
+    public ResponseEntity<?> leaveSpace(@PathVariable String spaceCode) {
+        spaceService.leaveSpace(spaceCode, SessionUtil.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -195,7 +173,29 @@ public class SpaceController {
     @GetMapping("/{spaceCode}/llms")
     public List<LlmResponse> selectSpaceLlms(@PathVariable String spaceCode) {
         SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
-        return spaceInfo.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
+        return spaceInfo.getLlms().stream().map(llmDTO -> new LlmResponse(llmDTO, true)).collect(Collectors.toList());
+    }
+
+    private void checkValidHoliday(List<HolidayRequest> holidays) {
+
+        if (holidays == null) {
+            return;
+        }
+
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+            for (HolidayRequest holiday : holidays) {
+                if (HolidayTypeCode.YEARLY.equals(holiday.getHolidayType())) {
+                    LocalDate.parse(now.format(DateTimeFormatter.ofPattern("yyyy")) + holiday.getDate(), formatter);
+                } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holiday.getHolidayType())) {
+                    LocalDate.parse(holiday.getDate(), formatter);
+                }
+            }
+        } catch (Exception e) {
+            throw new ServiceException("holiday.format.invalid");
+        }
     }
 
 

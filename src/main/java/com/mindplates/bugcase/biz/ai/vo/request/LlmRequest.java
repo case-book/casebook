@@ -13,6 +13,7 @@ public class LlmRequest implements IRequestVO<LlmDTO> {
     private Long id;
     private LlmTypeCode llmTypeCode;
     private OpenAiRequest openAi;
+    private boolean activated;
 
     @Override
     public LlmDTO toDTO() {
@@ -20,6 +21,7 @@ public class LlmRequest implements IRequestVO<LlmDTO> {
             .builder()
             .id(id)
             .llmTypeCode(llmTypeCode)
+            .activated(activated)
             .build();
 
         OpenAiDTO openAiDto = openAi.toDTO();

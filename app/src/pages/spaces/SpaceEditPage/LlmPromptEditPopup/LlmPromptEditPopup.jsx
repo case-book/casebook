@@ -6,7 +6,7 @@ import './LlmPromptEditPopup.scss';
 
 const labelMinWidth = '100px';
 
-function LlmPromptEditPopup({ data, setOpened, onApply, defaultPromptInfo }) {
+function LlmPromptEditPopup({ data, setOpened, onApply, systemLlmConfigList }) {
   const { t } = useTranslation();
 
   const isEdit = data.index !== null;
@@ -116,10 +116,13 @@ function LlmPromptEditPopup({ data, setOpened, onApply, defaultPromptInfo }) {
             <div className="single-button">
               <Button
                 onClick={() => {
+                  const prompt = systemLlmConfigList.find(d => d.code === 'LLM_PROMPT');
+                  const systemRole = systemLlmConfigList.find(d => d.code === 'LLM_SYSTEM_ROLE');
+
                   setLlmPrompt({
                     ...llmPrompt,
-                    systemRole: defaultPromptInfo.systemRole,
-                    prompt: defaultPromptInfo.prompt.replaceAll('\\n', '\n'),
+                    systemRole: systemRole?.value || '',
+                    prompt: prompt?.value || '',
                   });
                 }}
               >
@@ -139,7 +142,7 @@ function LlmPromptEditPopup({ data, setOpened, onApply, defaultPromptInfo }) {
 
 LlmPromptEditPopup.defaultProps = {
   data: null,
-  defaultPromptInfo: {},
+  systemLlmConfigList: [],
 };
 
 LlmPromptEditPopup.propTypes = {
@@ -163,11 +166,12 @@ LlmPromptEditPopup.propTypes = {
   }),
   setOpened: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired,
-  defaultPromptInfo: PropTypes.shape({
-    systemRole: PropTypes.string,
-    prompt: PropTypes.string,
-    postPrompt: PropTypes.string,
-  }),
+  systemLlmConfigList: PropTypes.arrayOf(
+    PropTypes.shape({
+      code: PropTypes.string,
+      value: PropTypes.string,
+    }),
+  ),
 };
 
 export default LlmPromptEditPopup;

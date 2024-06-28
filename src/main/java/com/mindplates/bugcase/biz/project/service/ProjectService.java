@@ -12,9 +12,9 @@ import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
-import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
 
     private final SpaceRepository spaceRepository;
+
     private final ProjectRepository projectRepository;
     private final ProjectFileService projectFileService;
     private final TestrunService testrunService;
@@ -62,7 +63,8 @@ public class ProjectService {
         @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
         TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
         ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService,
-        ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository, ProjectMessageChannelRepository projectMessageChannelRepository, TestrunMessageChannelRepository testrunMessageChannelRepository) {
+        ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository, ProjectMessageChannelRepository projectMessageChannelRepository,
+        TestrunMessageChannelRepository testrunMessageChannelRepository) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
@@ -77,6 +79,45 @@ public class ProjectService {
         this.testrunTestcaseGroupTestcaseRepository = testrunTestcaseGroupTestcaseRepository;
         this.projectMessageChannelRepository = projectMessageChannelRepository;
         this.testrunMessageChannelRepository = testrunMessageChannelRepository;
+    }
+
+    @Transactional
+    public ProjectDTO createProjectInfo(String spaceCode, ProjectDTO projectInfo, Long userId) {
+
+        if (existByName(spaceCode, projectInfo.getName())) {
+            throw new ServiceException("error.project.duplicated");
+        }
+
+        // projectInfo.getTestcaseTemplates()에서 default가 2개 이상이면 Exception
+        long defaultTemplateCount = projectInfo.getTestcaseTemplates().stream().filter(TestcaseTemplateDTO::isDefaultTemplate).count();
+        if (defaultTemplateCount < 1) {
+            throw new ServiceException("error.default.template.not.exist");
+
+        } else if (defaultTemplateCount > 1) {
+            throw new ServiceException("error.default.template.count.over");
+        }
+
+        Long spaceId = spaceRepository.findIdByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        projectInfo.setSpace(SpaceDTO.builder().id(spaceId).build());
+        projectInfo.setTestcaseSeq(0);
+        projectInfo.setTestcaseGroupSeq(0);
+
+        // 기본 어드민 유저로 사용자 추가
+        ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
+        projectInfo.setUsers(Collections.singletonList(projectUser));
+        Project project = projectInfo.toEntity();
+        return new ProjectDTO(projectRepository.save(project), true);
+    }
+
+    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public ProjectDTO selectProjectInfo(String spaceCode, Long projectId) {
+        Long id = projectRepository.findIdBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        if (id == null) {
+            throw new ServiceException(HttpStatus.NOT_FOUND);
+        }
+
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        return new ProjectDTO(project, true);
     }
 
     public List<ProjectDTO> selectSpaceProjectList(String spaceCode) {
@@ -111,11 +152,6 @@ public class ProjectService {
         })).collect(Collectors.toList());
     }
 
-    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public ProjectDTO selectProjectInfo(String spaceCode, Long projectId) {
-        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new ProjectDTO(project, true);
-    }
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public ProjectDTO selectProjectName(String spaceCode, Long projectId) {
@@ -137,37 +173,6 @@ public class ProjectService {
         return count > 0;
     }
 
-    @Transactional
-    public ProjectDTO createProjectInfo(String spaceCode, ProjectDTO projectInfo, Long userId) {
-
-        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        projectInfo.setSpace(SpaceDTO.builder().id(space.getId()).build());
-
-        AtomicBoolean foundDefaultTemplate = new AtomicBoolean(false);
-        projectInfo.getTestcaseTemplates().forEach((testcaseTemplate -> {
-            if (foundDefaultTemplate.get() && testcaseTemplate.isDefaultTemplate()) {
-                testcaseTemplate.setDefaultTemplate(false);
-            }
-
-            if (!foundDefaultTemplate.get() && testcaseTemplate.isDefaultTemplate()) {
-                foundDefaultTemplate.set(true);
-            }
-        }));
-
-        if (!projectInfo.getTestcaseTemplates().isEmpty() && !foundDefaultTemplate.get()) {
-            projectInfo.getTestcaseTemplates().get(0).setDefaultTemplate(true);
-        }
-
-        projectInfo.setTestcaseSeq(0);
-        projectInfo.setTestcaseGroupSeq(0);
-
-        // 기본 어드민 유저로 사용자 추가
-        ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN)
-            .build();
-        projectInfo.setUsers(Collections.singletonList(projectUser));
-        return new ProjectDTO(projectRepository.save(mappingUtil.convert(projectInfo, Project.class)), true);
-    }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#updateProjectInfo.id}", value = CacheConfig.PROJECT)
@@ -249,11 +254,7 @@ public class ProjectService {
                 });
             } else {
                 projectInfo.getProjectReleases().forEach(projectReleaseDTO -> {
-                    if (projectReleaseDTO.getId().equals(targetReleaseId)) {
-                        projectReleaseDTO.setIsTarget(true);
-                    } else {
-                        projectReleaseDTO.setIsTarget(false);
-                    }
+                    projectReleaseDTO.setIsTarget(projectReleaseDTO.getId().equals(targetReleaseId));
                 });
             }
 
@@ -339,7 +340,6 @@ public class ProjectService {
     public void updateProjectAiEnabledFalse() {
         projectRepository.updateProjectAiEnable();
     }
-
 
 
 }

@@ -101,4 +101,26 @@ ConfigService.llmConfigTest = (llm, successHandler, failHandler) => {
   );
 };
 
+ConfigService.selectDefaultPromptInfo = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/llm/config/default',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ConfigService.selectLlmConfigList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/llm/config',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

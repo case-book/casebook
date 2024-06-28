@@ -42,7 +42,7 @@ public class SessionUtil {
         return userId;
     }
 
-    public static SecurityUser getSecurityUser() {
+    public static SecurityUser findSecurityUser() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -51,6 +51,16 @@ public class SessionUtil {
 
         return null;
 
+    }
+
+    public static SecurityUser getSecurityUser() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            return (SecurityUser) authentication.getPrincipal();
+        }
+
+        throw new ServiceException("session.error.expired");
     }
 
 

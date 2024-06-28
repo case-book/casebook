@@ -24,12 +24,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RefreshToken {
 
-    @Column
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @Column(name = "value")
     private String value;
 
     @Column(name = "user_id")

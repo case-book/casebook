@@ -89,17 +89,6 @@ AdminService.selectSystemInfo = (successHandler, failHandler) => {
   );
 };
 
-AdminService.selectDefaultPromptInfo = (successHandler, failHandler) => {
-  return request.get(
-    '/api/admin/prompts/default',
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-  );
-};
-
 AdminService.flushRedis = (successHandler, failHandler) => {
   return request.del(
     '/api/admin/system/caches/flush',
@@ -122,10 +111,10 @@ AdminService.deleteRedis = (successHandler, failHandler) => {
   );
 };
 
-AdminService.updateSystemInfo = (systemInfo, successHandler, failHandler) => {
+AdminService.updateSystemInfo = (configRequests, successHandler, failHandler) => {
   return request.put(
-    '/api/admin/system/info',
-    systemInfo,
+    '/api/admin/llm/config',
+    { configRequests },
     res => {
       successHandler(res);
     },

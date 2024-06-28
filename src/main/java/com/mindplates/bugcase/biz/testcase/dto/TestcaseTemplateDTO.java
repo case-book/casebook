@@ -1,22 +1,24 @@
 package com.mindplates.bugcase.biz.testcase.dto;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestcaseTemplateDTO extends CommonDTO {
+public class TestcaseTemplateDTO extends CommonDTO implements IDTO<TestcaseTemplate> {
 
     private Long id;
     private String name;
@@ -27,7 +29,7 @@ public class TestcaseTemplateDTO extends CommonDTO {
     private List<TestcaseTemplateItemDTO> testcaseTemplateItems;
     private String crud;
 
-    public TestcaseTemplateDTO (TestcaseTemplate testcaseTemplate) {
+    public TestcaseTemplateDTO(TestcaseTemplate testcaseTemplate) {
         this.id = testcaseTemplate.getId();
         this.name = testcaseTemplate.getName();
         this.defaultTemplate = testcaseTemplate.isDefaultTemplate();
@@ -44,4 +46,31 @@ public class TestcaseTemplateDTO extends CommonDTO {
     }
 
 
+    @Override
+    public TestcaseTemplate toEntity() {
+        TestcaseTemplate testcaseTemplate = TestcaseTemplate.builder()
+            .id(this.id)
+            .name(this.name)
+            .defaultTemplate(this.defaultTemplate)
+            .defaultTesterType(this.defaultTesterType)
+            .defaultTesterValue(this.defaultTesterValue)
+            .project(Project.builder().id(this.project.getId()).build())
+            .crud(this.crud)
+            .build();
+
+        if (this.testcaseTemplateItems != null) {
+            testcaseTemplate.setTestcaseTemplateItems(
+                this.testcaseTemplateItems.stream().map(testcaseTemplateItemDTO -> testcaseTemplateItemDTO.toEntity(testcaseTemplate)).collect(Collectors.toList()));
+        } else {
+            testcaseTemplate.setTestcaseTemplateItems(Collections.emptyList());
+        }
+
+        return testcaseTemplate;
+    }
+
+    public TestcaseTemplate toEntity(Project project) {
+        TestcaseTemplate testcaseTemplate = toEntity();
+        testcaseTemplate.setProject(project);
+        return testcaseTemplate;
+    }
 }
