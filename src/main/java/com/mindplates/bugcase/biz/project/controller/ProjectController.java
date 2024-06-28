@@ -19,8 +19,6 @@ import com.mindplates.bugcase.biz.project.vo.response.ProjectMessageChannelRespo
 import com.mindplates.bugcase.biz.project.vo.response.ProjectReleaseResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectTokenResponse;
-import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
-import com.mindplates.bugcase.biz.space.vo.response.SpaceMessageChannelResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
@@ -66,6 +64,27 @@ public class ProjectController {
 
     private final FileUtil fileUtil;
 
+    @Operation(description = "프로젝트 생성")
+    @PostMapping("")
+    public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectCreateRequest projectCreateRequest) {
+        ProjectDTO project = projectCreateRequest.toDTO();
+        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project, SessionUtil.getUserId()), SessionUtil.getUserId());
+    }
+
+    @Operation(description = "프로젝트 조회")
+    @GetMapping("/{id}")
+    public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
+        ProjectDTO project = projectService.selectProjectInfo(spaceCode, id);
+
+        /*
+        if (!project.isActivated()) {
+            throw new ServiceException(HttpStatus.LOCKED);
+        }
+         */
+
+        return new ProjectResponse(project, SessionUtil.getUserId());
+    }
+
     @Operation(description = "스페이스 프로젝트 목록 조회")
     @GetMapping("")
     public List<ProjectListResponse> selectSpaceProjectList(@PathVariable String spaceCode) {
@@ -80,17 +99,6 @@ public class ProjectController {
         return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
 
-    @Operation(description = "프로젝트 생성")
-    @PostMapping("")
-    public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectCreateRequest projectCreateRequest) {
-
-        if (projectService.existByName(spaceCode, projectCreateRequest.getName())) {
-            throw new ServiceException("error.project.duplicated");
-        }
-
-        ProjectDTO project = projectCreateRequest.toDTO();
-        return new ProjectResponse(projectService.createProjectInfo(spaceCode, project, SessionUtil.getUserId()), SessionUtil.getUserId());
-    }
 
     @Operation(description = "프로젝트 수정")
     @PutMapping("/{id}")
@@ -114,19 +122,7 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(description = "프로젝트 조회")
-    @GetMapping("/{id}")
-    public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, id);
 
-        /*
-        if (!project.isActivated()) {
-            throw new ServiceException(HttpStatus.LOCKED);
-        }
-         */
-
-        return new ProjectResponse(project, SessionUtil.getUserId());
-    }
 
     @Operation(description = "프로젝트 이름 조회")
     @GetMapping("/{id}/name")

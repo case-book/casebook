@@ -2,22 +2,22 @@ package com.mindplates.bugcase.biz.testcase.dto;
 
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemCategory;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import com.mindplates.bugcase.common.entity.CommonEntity;
+import com.mindplates.bugcase.common.vo.IDTO;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestcaseTemplateItemDTO extends CommonDTO {
+public class TestcaseTemplateItemDTO extends CommonDTO implements IDTO<TestcaseTemplateItem> {
 
     private Long id;
     private TestcaseItemCategory category;
@@ -56,4 +56,32 @@ public class TestcaseTemplateItemDTO extends CommonDTO {
     }
 
 
+    @Override
+    public TestcaseTemplateItem toEntity() {
+        return TestcaseTemplateItem.builder()
+            .id(this.id)
+            .category(this.category)
+            .type(this.type)
+            .itemOrder(this.itemOrder)
+            .label(this.label)
+            .options(this.options)
+            .size(this.size)
+            .testcaseTemplate(TestcaseTemplate.builder().id(this.testcaseTemplate.getId()).build())
+            .defaultType(this.defaultType)
+            .defaultValue(this.defaultValue)
+            .description(this.description)
+            .example(this.example)
+            .editable(this.editable)
+            .systemLabel(this.systemLabel)
+            .deleted(this.deleted)
+            .build();
+
+    }
+
+    public TestcaseTemplateItem toEntity(TestcaseTemplate testcaseTemplate) {
+        TestcaseTemplateItem testcaseTemplateItem = toEntity();
+        testcaseTemplateItem.setTestcaseTemplate(testcaseTemplate);
+        return testcaseTemplateItem;
+
+    }
 }

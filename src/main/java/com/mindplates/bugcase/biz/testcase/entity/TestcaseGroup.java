@@ -48,8 +48,8 @@ public class TestcaseGroup extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE_GROUP__PROJECT"))
     private Project project;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.JOIN)
     private List<Testcase> testcases;
 
 

@@ -30,6 +30,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
@@ -50,10 +52,6 @@ public class Testcase extends CommonEntity {
     @Column(name = "seq_id", nullable = false, length = ColumnsDef.CODE)
     private String seqId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_GROUP"))
-    private TestcaseGroup testcaseGroup;
-
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
@@ -66,18 +64,24 @@ public class Testcase extends CommonEntity {
     @Column(name = "closed")
     private Boolean closed;
 
-    @OneToOne
-    @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_TEMPLATE"))
-    private TestcaseTemplate testcaseTemplate;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TestcaseItem> testcaseItems;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__PROJECT"))
     private Project project;
 
-    @OneToMany(mappedBy = "testcase", cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "testcase_group_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_GROUP"))
+    private TestcaseGroup testcaseGroup;
+
+    @OneToOne
+    @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_TEMPLATE"))
+    private TestcaseTemplate testcaseTemplate;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestcaseItem> testcaseItems;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<TestcaseProjectRelease> testcaseProjectReleases;
 
     @Column(name = "tester_type", length = ColumnsDef.CODE)
