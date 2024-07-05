@@ -217,7 +217,7 @@ public class TestrunScheduler {
         if (filteringUserCount > testrunIterationDTO.getTestrunUsers().size()) {
             filteringUserCount = testrunIterationDTO.getTestrunUsers().size();
         }
-        int totalTestrunUserCount = testrunIterationDTO.getTestrunUsers() == null ? 0 : testrunIterationDTO.getTestrunUsers().size();
+        int totalTestrunUserCount = testrunIterationDTO.getTestrunUsers().size();
 
         if (TestrunIterationUserFilterTypeCode.TESTRUN.equals(testrunIterationDTO.getTestrunIterationUserFilterType())) {
 
@@ -312,7 +312,7 @@ public class TestrunScheduler {
                     }
                 } else {
                     Long lastUserId = null;
-                    if (userIds.size() > 0) {
+                    if (!userIds.isEmpty()) {
                         lastUserId = userIds.get(userIds.size() - 1);
                     }
 
@@ -684,15 +684,12 @@ public class TestrunScheduler {
                     List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectUntestedTestrunTestcaseGroupTestcaseList(
                         testrunDTO.getId());
                     for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO : list) {
-                        if (testrunTestcaseGroupTestcaseDTO.getTester() != null) {
-                            Long testerId = testrunTestcaseGroupTestcaseDTO.getTester().getId();
-                            if (userRemainCount.containsKey(testerId)) {
-                                userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
-                            } else {
-                                userRemainCount.put(testerId, 1);
-                            }
+                        Long testerId = testrunTestcaseGroupTestcaseDTO.getTester() != null ? testrunTestcaseGroupTestcaseDTO.getTester().getId() : null;
+                        if (userRemainCount.containsKey(testerId)) {
+                            userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
+                        } else {
+                            userRemainCount.put(testerId, 1);
                         }
-
                     }
 
                     String message;
@@ -701,7 +698,7 @@ public class TestrunScheduler {
                     } else if (isSameTimeUntilMinute(now, last60)) {
                         message = messageSourceAccessor.getMessage("testrun.60m.left", new Object[]{testrunDTO.getName()});
                     } else {
-                        message = messageSourceAccessor.getMessage("testrun.half.time.left");
+                        message = messageSourceAccessor.getMessage("testrun.half.time.left", new Object[]{testrunDTO.getName()});
                     }
 
                     testrunDTO.getMessageChannels().forEach(testrunMessageChannel -> {

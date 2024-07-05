@@ -235,15 +235,20 @@ public class MessageChannelService {
 
         remainInfo.forEach((testerId, count) -> {
             Optional<ProjectUserDTO> projectUser = testers.stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))).findAny();
-            String testerName = "";
             if (projectUser.isPresent()) {
-                testerName = projectUser.get().getUser().getName();
+                messageInfo
+                    .append(messageSourceAccessor.getMessage("testrun.user.link.count", new Object[]{projectUser.get().getUser().getName(), count}))
+                    .append('\n')
+                    .append(testrunUrl).append("?tester=").append(testerId)
+                    .append("\n\n");
+            } else {
+                messageInfo
+                    .append(messageSourceAccessor.getMessage("testrun.not.assigned.link.count", new Object[]{count}))
+                    .append('\n')
+                    .append(testrunUrl).append("?tester=").append(testerId)
+                    .append("\n\n");
             }
-            messageInfo
-                .append(messageSourceAccessor.getMessage("testrun.user.link.count", new Object[]{testerName, count}))
-                .append('\n')
-                .append(testrunUrl).append("?tester=").append(testerId)
-                .append("\n\n");
+
 
         });
 

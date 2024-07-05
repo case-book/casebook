@@ -470,7 +470,8 @@ public class TestrunService {
             if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
                 testrun.getMessageChannels().forEach(testrunMessageChannel -> {
                     TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrun.getName(),
+                        testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
                 });
             }
 
@@ -490,7 +491,8 @@ public class TestrunService {
                         if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
                             testrun.getMessageChannels().forEach(testrunMessageChannel -> {
                                 TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                                messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(), testrun.getName(), testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                                messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(),
+                                    testrun.getName(), testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
                             });
                         }
                     }
@@ -534,7 +536,8 @@ public class TestrunService {
 
             testrun.getMessageChannels().forEach(testrunMessageChannel -> {
                 TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName,
+                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId,
+                    testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName,
                     actorName);
             });
         }
@@ -1016,14 +1019,14 @@ public class TestrunService {
             Map<Long, Integer> userRemainCount = new HashMap<>();
             List<TestrunTestcaseGroupTestcaseDTO> list = selectUntestedTestrunTestcaseGroupTestcaseList(testrun.getId());
             for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO : list) {
-                if (testrunTestcaseGroupTestcaseDTO.getTester() != null) {
-                    Long testerId = testrunTestcaseGroupTestcaseDTO.getTester().getId();
-                    if (userRemainCount.containsKey(testerId)) {
-                        userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
-                    } else {
-                        userRemainCount.put(testerId, 1);
-                    }
+
+                Long testerId = testrunTestcaseGroupTestcaseDTO.getTester() != null ? testrunTestcaseGroupTestcaseDTO.getTester().getId() : null;
+                if (userRemainCount.containsKey(testerId)) {
+                    userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
+                } else {
+                    userRemainCount.put(testerId, 1);
                 }
+
             }
 
             String message;
