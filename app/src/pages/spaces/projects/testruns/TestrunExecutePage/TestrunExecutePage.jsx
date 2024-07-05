@@ -160,6 +160,10 @@ function TestrunExecutePage() {
                 return true;
               }
 
+              if (tester === 'none') {
+                return !testcase.testerId;
+              }
+
               return String(testcase.testerId) === String(tester);
             }) || [],
         };
@@ -201,6 +205,10 @@ function TestrunExecutePage() {
         testcases: d.testcases?.filter(testcase => {
           if (tester === '') {
             return true;
+          }
+
+          if (tester === 'none') {
+            return !testcase.testerId;
           }
 
           return String(testcase.testerId) === String(tester);
@@ -490,6 +498,10 @@ function TestrunExecutePage() {
               d.testcases?.filter(testcase => {
                 if (tester === '') {
                   return true;
+                }
+
+                if (tester === 'none') {
+                  return !testcase.testerId;
                 }
 
                 return String(testcase.testerId) === String(tester);

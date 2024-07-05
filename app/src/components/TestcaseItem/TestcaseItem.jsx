@@ -219,26 +219,30 @@ function TestcaseItem({
                       AI GEN
                     </Tag>
                     <div className="buttons">
-                      <Button
-                        size="sm"
-                        color="danger"
-                        rounded
-                        onClick={() => {
-                          onRemoveParaphraseContent(testcaseItem.id);
-                        }}
-                      >
-                        <i className="fa-solid fa-xmark" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        color="yellow"
-                        rounded
-                        onClick={() => {
-                          onAcceptParaphraseContent(content.id, testcaseItem.id);
-                        }}
-                      >
-                        <i className="fa-solid fa-arrow-up" />
-                      </Button>
+                      {onRemoveParaphraseContent && (
+                        <Button
+                          size="sm"
+                          color="danger"
+                          rounded
+                          onClick={() => {
+                            onRemoveParaphraseContent(testcaseItem.id);
+                          }}
+                        >
+                          <i className="fa-solid fa-xmark" />
+                        </Button>
+                      )}
+                      {onAcceptParaphraseContent && (
+                        <Button
+                          size="sm"
+                          color="yellow"
+                          rounded
+                          onClick={() => {
+                            onAcceptParaphraseContent(content.id, testcaseItem.id);
+                          }}
+                        >
+                          <i className="fa-solid fa-arrow-up" />
+                        </Button>
+                      )}
                     </div>
                     <div>
                       <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={paraphraseContent?.text || '<span className="none-text">&nbsp;</span>'} />
@@ -325,6 +329,8 @@ TestcaseItem.defaultProps = {
   onRandomTester: null,
   variables: [],
   paraphraseInfo: {},
+  onAcceptParaphraseContent: null,
+  onRemoveParaphraseContent: null,
 };
 
 TestcaseItem.propTypes = {
@@ -380,8 +386,8 @@ TestcaseItem.propTypes = {
     }),
   ),
   paraphraseInfo: ParaphraseInfoPropTypes,
-  onAcceptParaphraseContent: PropTypes.func.isRequired,
-  onRemoveParaphraseContent: PropTypes.func.isRequired,
+  onAcceptParaphraseContent: PropTypes.func,
+  onRemoveParaphraseContent: PropTypes.func,
 };
 
 export default TestcaseItem;

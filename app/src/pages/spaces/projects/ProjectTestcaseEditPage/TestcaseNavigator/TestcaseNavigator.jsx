@@ -360,6 +360,10 @@ function TestcaseNavigator({
                     userId: '',
                     name: t('전체'),
                   },
+                  {
+                    userId: 'none',
+                    name: t('미지정'),
+                  },
                 ]
                   .concat(users)
                   .map(d => {

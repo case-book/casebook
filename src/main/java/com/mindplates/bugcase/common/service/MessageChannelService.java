@@ -245,7 +245,7 @@ public class MessageChannelService {
                 messageInfo
                     .append(messageSourceAccessor.getMessage("testrun.not.assigned.link.count", new Object[]{count}))
                     .append('\n')
-                    .append(testrunUrl).append("?tester=").append(testerId)
+                    .append(testrunUrl).append("?tester=none")
                     .append("\n\n");
             }
 
