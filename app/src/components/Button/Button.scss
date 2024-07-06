@@ -49,6 +49,18 @@
     opacity: var(--disable-opacity);
   }
 
+  &.btn-xxs {
+    padding: 0 8px;
+    font-size: 8px;
+    height: $xxxs-height;
+  }
+
+  &.btn-xxs {
+    padding: 0 8px;
+    font-size: 10px;
+    height: $xxs-height;
+  }
+
   &.btn-xs {
     padding: 0 8px;
     font-size: 12px;
@@ -205,6 +217,34 @@
     padding-left: 0;
     padding-right: 0;
     line-height: 100%;
+
+    &.btn-xxxs {
+      width: $xxxs-height;
+      height: $xxxs-height;
+      padding-left: 0;
+      padding-right: 0;
+      padding-top: 0;
+      display: inline-flex;
+      > i {
+        align-self: center;
+        width: 100%;
+        line-height: 0;
+      }
+    }
+
+    &.btn-xxs {
+      width: $xxs-height;
+      height: $xxs-height;
+      padding-left: 0;
+      padding-right: 0;
+      padding-top: 0;
+      display: inline-flex;
+      > i {
+        align-self: center;
+        width: 100%;
+        line-height: 0;
+      }
+    }
 
     &.btn-xs {
       width: $xs-height;
