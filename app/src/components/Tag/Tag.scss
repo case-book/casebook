@@ -10,9 +10,8 @@
   box-sizing: border-box;
 
   &.size-xs {
-    padding: 6px;
+    padding: 4px;
     font-size: 10px;
-    height: $xs-height;
 
     .remove-button {
       margin-left: 4px;
@@ -20,7 +19,7 @@
   }
 
   &.size-sm {
-    padding: 6px;
+    padding: 8px;
     font-size: 12px;
     height: $sm-height;
 
