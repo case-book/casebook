@@ -13,8 +13,13 @@ const MAX_ID_RANGE_END = 2000;
 const getFilterIdsFromIdStrings = idStrings => {
   let isParsedRangeValid = true;
   const parsedIds = idStrings.map(idString => {
-    const [[rangeStart], [rangeEnd] = []] = idString.matchAll(/(\d+)/g);
-    if (rangeEnd > MAX_ID_RANGE_END || rangeStart > MAX_ID_RANGE_END || rangeStart > rangeEnd || rangeStart < 1 || rangeEnd < 1) {
+    const [[rangeStartString], [rangeEndString] = []] = idString.matchAll(/(\d+)/g);
+    const rangeStart = Number(rangeStartString);
+    const rangeEnd = rangeEndString ? Number(rangeEndString) : null;
+    if (rangeStart > MAX_ID_RANGE_END || rangeStart < 1) {
+      isParsedRangeValid = false;
+    }
+    if (rangeEnd && (rangeEnd > MAX_ID_RANGE_END || rangeStart >= rangeEnd || rangeEnd < 1)) {
       isParsedRangeValid = false;
     }
     return [rangeStart, rangeEnd];
@@ -24,10 +29,10 @@ const getFilterIdsFromIdStrings = idStrings => {
 
   const idSet = parsedIds.reduce((set, [rangeStart, rangeEnd]) => {
     if (!rangeEnd) {
-      set.add(Number(rangeStart[0]));
+      set.add(rangeStart);
       return set;
     }
-    Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i).forEach(i => set.set(i));
+    Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i).forEach(i => set.add(i));
     return set;
   }, new Set());
 
@@ -79,7 +84,11 @@ function TestcaseNavigatorControl({
     const nextFilterIdStrings = [...filterIdStrings, deblanked];
     const nextFilterIds = getFilterIdsFromIdStrings(nextFilterIdStrings);
     if (!nextFilterIds) {
-      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('입력 오류'), t('잘못된 입력입니다. 번호는 1 보다 작거나 {{max}}보다 클 수 없습니다.', { max: MAX_ID_RANGE_END }));
+      dialogUtil.setMessage(
+        MESSAGE_CATEGORY.WARNING,
+        t('입력 오류'),
+        t('잘못된 입력입니다. 번호는 1 보다 작거나 {{max}}보다 클 수 없고, 범위 시작은 범위 끝보다 작아야 합니다.', { max: MAX_ID_RANGE_END }),
+      );
       return;
     }
 
@@ -273,7 +282,11 @@ function TestcaseNavigatorControl({
                       const nextFilterIdStrings = filterIdStrings.filter(d => d !== id);
                       const nextFilterIds = getFilterIdsFromIdStrings(nextFilterIdStrings);
                       if (!nextFilterIds) {
-                        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('입력 오류'), t('잘못된 입력입니다. 번호는 1 보다 작거나 {{max}}보다 클 수 없습니다.', { max: MAX_ID_RANGE_END }));
+                        dialogUtil.setMessage(
+                          MESSAGE_CATEGORY.WARNING,
+                          t('입력 오류'),
+                          t('잘못된 입력입니다. 번호는 1 보다 작거나 {{max}}보다 클 수 없고, 범위 시작은 범위 끝보다 작아야 합니다.', { max: MAX_ID_RANGE_END }),
+                        );
                         return;
                       }
                       setFilterIdStrings(nextFilterIdStrings);
@@ -292,6 +305,7 @@ function TestcaseNavigatorControl({
                 size="sm"
                 items={filterReleaseIdsOptions}
                 onChange={v => {
+                  if (testcaseFilter.releaseIds.includes(v)) return;
                   onChangeTestcaseFilter({ ...testcaseFilter, releaseIds: [...testcaseFilter.releaseIds, v] });
                 }}
               />
