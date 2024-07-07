@@ -1,12 +1,98 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Button, Liner, Selector } from '@/components';
-
+import { Button, Liner, Selector, Input, Label, Tag } from '@/components';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import ReleaseService from '@/services/ReleaseService';
+import useStores from '@/hooks/useStores';
+import { observer } from 'mobx-react';
 import './TestcaseNavigatorControl.scss';
 
-function TestcaseNavigatorControl({ className, min, setMin, onClickAllOpen, user, users, userFilter, onChangeUserFilter, addTestcase, addTestcaseGroup, selectedItemInfo, width }) {
+const MAX_ID_RANGE_END = 2000;
+const getFilterIdsFromIdStrings = idStrings => {
+  let isParsedRangeValid = true;
+  const parsedIds = idStrings.map(idString => {
+    const [[rangeStart], [rangeEnd] = []] = idString.matchAll(/(\d+)/g);
+    if (rangeEnd > MAX_ID_RANGE_END || rangeStart > MAX_ID_RANGE_END || rangeStart > rangeEnd || rangeStart < 1 || rangeEnd < 1) {
+      isParsedRangeValid = false;
+    }
+    return [rangeStart, rangeEnd];
+  });
+
+  if (!isParsedRangeValid) return null;
+
+  const idSet = parsedIds.reduce((set, [rangeStart, rangeEnd]) => {
+    if (!rangeEnd) {
+      set.add(Number(rangeStart[0]));
+      return set;
+    }
+    Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i).forEach(i => set.set(i));
+    return set;
+  }, new Set());
+
+  return [...idSet];
+};
+
+function TestcaseNavigatorControl({
+  className,
+  min,
+  setMin,
+  onClickAllOpen,
+  user,
+  users,
+  userFilter,
+  onChangeUserFilter,
+  addTestcase,
+  addTestcaseGroup,
+  selectedItemInfo,
+  width,
+  testcaseFilter,
+  onChangeTestcaseFilter,
+}) {
   const { t } = useTranslation();
+  const [isFilterFolded, setIsFilterFolded] = useState(false);
+  const [filterIdsInput, setFilterIdsInput] = useState('');
+  const [filterIdStrings, setFilterIdStrings] = useState([]);
+  const [projectReleases, setProjectReleases] = useState([]);
+
+  const {
+    contextStore: { spaceCode, projectId },
+  } = useStores();
+
+  const filterReleaseIdsOptions = useMemo(() => {
+    return projectReleases.map(release => ({
+      key: release.id,
+      value: release.name,
+    }));
+  }, [projectReleases]);
+
+  const projectReleaseMap = useMemo(() => new Map(projectReleases.map(release => [release.id, release.name])), [projectReleases]);
+
+  const onAddFilterIds = () => {
+    if (!filterIdsInput || !/^\d+(?:\s*-\s*\d+)?$/.test(filterIdsInput)) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('입력 오류'), t('숫자 또는 숫자 범위 (ex. 1-10) 만 입력 가능합니다.'));
+      setFilterIdsInput('');
+      return;
+    }
+    const deblanked = filterIdsInput.replace(/\s/g, '');
+    const nextFilterIdStrings = [...filterIdStrings, deblanked];
+    const nextFilterIds = getFilterIdsFromIdStrings(nextFilterIdStrings);
+    if (!nextFilterIds) {
+      dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('입력 오류'), t('잘못된 입력입니다. 번호는 1 보다 작거나 {{max}}보다 클 수 없습니다.', { max: MAX_ID_RANGE_END }));
+      return;
+    }
+
+    setFilterIdsInput('');
+    setFilterIdStrings(nextFilterIdStrings);
+    onChangeTestcaseFilter({ ...testcaseFilter, ids: nextFilterIds });
+  };
+
+  useEffect(() => {
+    if (isFilterFolded) return;
+
+    ReleaseService.selectReleaseList(spaceCode, projectId, setProjectReleases, () => {}, false);
+  }, [isFilterFolded, spaceCode, projectId]);
 
   return (
     <div className={`testcase-navigator-control-wrapper ${className}`}>
@@ -141,6 +227,95 @@ function TestcaseNavigatorControl({ className, min, setMin, onClickAllOpen, user
           </div>
         )}
       </div>
+      <div className="testcase-filter-group">
+        <div className="always-show-filter">
+          <Input
+            value={testcaseFilter.name}
+            size="sm"
+            placeholder={t('테스트케이스 이름')}
+            onChange={value => {
+              onChangeTestcaseFilter({ ...testcaseFilter, name: value });
+            }}
+          />
+          <Button size="xs" rounded tip={t('필터 리셋')} onClick={() => onChangeTestcaseFilter({ name: '', ids: [], releaseIds: [] })}>
+            <i className="fa-solid fa-rotate-left" />
+          </Button>
+          <Button size="xs" rounded tip={t('필터 확장/축소')} onClick={() => setIsFilterFolded(prev => !prev)}>
+            <i className={`fa-solid fa-${isFilterFolded ? 'chevron-down' : 'chevron-up'}`} />
+          </Button>
+        </div>
+        {!isFilterFolded && (
+          <div className="foldable-filter">
+            <div className="filter-input-group">
+              <Label minWidth="70px">{t('TC 번호')}</Label>
+              <Input
+                size="sm"
+                value={filterIdsInput}
+                placeholder={t('숫자 또는 범위 (ex. 1-10) 입력')}
+                onChange={v => setFilterIdsInput(v)}
+                onKeyDown={e => {
+                  if (e.key !== 'Enter') return;
+                  onAddFilterIds();
+                }}
+              />
+              <Button size="sm" onClick={() => onAddFilterIds()}>
+                +
+              </Button>
+            </div>
+            <div className="testcase-filter-ids-list">
+              {filterIdStrings.map(id => {
+                return (
+                  <Tag
+                    key={id}
+                    border
+                    size="sm"
+                    onRemove={() => {
+                      const nextFilterIdStrings = filterIdStrings.filter(d => d !== id);
+                      const nextFilterIds = getFilterIdsFromIdStrings(nextFilterIdStrings);
+                      if (!nextFilterIds) {
+                        dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('입력 오류'), t('잘못된 입력입니다. 번호는 1 보다 작거나 {{max}}보다 클 수 없습니다.', { max: MAX_ID_RANGE_END }));
+                        return;
+                      }
+                      setFilterIdStrings(nextFilterIdStrings);
+                      onChangeTestcaseFilter({ ...testcaseFilter, ids: nextFilterIds });
+                    }}
+                    text={id}
+                  >
+                    {id}
+                  </Tag>
+                );
+              })}
+            </div>
+            <div className="filter-input-group">
+              <Label minWidth="70px">{t('릴리스')}</Label>
+              <Selector
+                size="sm"
+                items={filterReleaseIdsOptions}
+                onChange={v => {
+                  onChangeTestcaseFilter({ ...testcaseFilter, releaseIds: [...testcaseFilter.releaseIds, v] });
+                }}
+              />
+            </div>
+            <div className="testcase-filter-release-ids-list">
+              {testcaseFilter.releaseIds.map(releaseId => {
+                return (
+                  <Tag
+                    key={releaseId}
+                    border
+                    size="sm"
+                    onRemove={() => {
+                      onChangeTestcaseFilter({ ...testcaseFilter, releaseIds: testcaseFilter.releaseIds.filter(d => d !== releaseId) });
+                    }}
+                    text={releaseId}
+                  >
+                    {projectReleaseMap.get(releaseId)}
+                  </Tag>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -169,6 +344,12 @@ TestcaseNavigatorControl.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   selectedItemInfo: PropTypes.object.isRequired,
   width: PropTypes.number.isRequired,
+  testcaseFilter: PropTypes.shape({
+    ids: PropTypes.arrayOf(PropTypes.string),
+    name: PropTypes.string,
+    releaseIds: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
+  onChangeTestcaseFilter: PropTypes.func.isRequired,
 };
 
-export default TestcaseNavigatorControl;
+export default observer(TestcaseNavigatorControl);

@@ -118,6 +118,12 @@ function TestcaseNavigator({
     };
   });
 
+  const [testcaseFilter, setTestcaseFilter] = useState({
+    ids: [],
+    name: '',
+    releaseIds: [],
+  });
+
   const setDragInfo = info => {
     setDragChange(Date.now());
 
@@ -281,11 +287,13 @@ function TestcaseNavigator({
         users={users}
         userFilter={userFilter}
         selectedItemInfo={selectedItemInfo}
+        testcaseFilter={testcaseFilter}
         setMin={setMin}
         addTestcase={addTestcase}
         addTestcaseGroup={addTestcaseGroup}
         onChangeUserFilter={setUserFilter}
         onClickAllOpen={setAllOpen}
+        onChangeTestcaseFilter={setTestcaseFilter}
       />
       <div
         className="testcase-groups-content"
@@ -364,6 +372,7 @@ function TestcaseNavigator({
                     showTestResult={showTestResult}
                     watcherInfo={watcherInfo}
                     copyInfo={copyInfo}
+                    testcaseFilter={testcaseFilter}
                   />
                 );
               })}
