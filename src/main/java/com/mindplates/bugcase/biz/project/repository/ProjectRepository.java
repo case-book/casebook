@@ -9,6 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
+    String PROJECT_LIST_PROJECTION = "SELECT new Project(p.id, p.name, p.description, p.activated, p.token, p.aiEnabled, p.testcaseGroupSeq, p.testcaseSeq, p.testcaseSeq, (SELECT COUNT(tr.id) FROM Testrun tr WHERE tr.project.id = p.id), (SELECT COUNT(tc.id) FROM Testcase tc WHERE tc.project.id = p.id)) FROM Project p ";
+
+    @Query(value = PROJECT_LIST_PROJECTION + " WHERE p.space.id = :spaceId")
+    List<Project> findAllBySpaceId(Long spaceId);
+
+    @Query(value = PROJECT_LIST_PROJECTION + " INNER JOIN ProjectUser pu ON p.id = pu.project.id WHERE p.space.code = :spaceCode AND pu.user.id = :userId")
+    List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
 
     @Query(value = "SELECT p.id FROM Project p WHERE p.id = :id AND p.space.id = (SELECT s.id FROM Space s WHERE s.code = :spaceCode)")
     Optional<Long> findIdBySpaceCodeAndId(String spaceCode, Long id);
@@ -19,16 +26,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Optional<Project> findNameBySpaceCodeAndId(String spaceCode, Long id);
 
-    List<Project> findAllBySpaceCode(String spaceCode);
-
-    List<Project> findAllBySpaceId(Long spaceId);
-
     Long countBySpaceId(Long spaceId);
 
     @Query("SELECT p.aiEnabled FROM Project p WHERE p.id = :projectId")
     boolean findAiEnabledById(Long projectId);
-
-    List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
 
     @Modifying
     @Query("UPDATE Project p SET p.aiEnabled = false WHERE p.aiEnabled IS NULL")

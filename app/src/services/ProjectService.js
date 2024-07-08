@@ -3,20 +3,6 @@ import i18n from 'i18next';
 
 const ProjectService = {};
 
-ProjectService.selectProjectList = (spaceCode, successHandler, failHandler, loading = true) => {
-  return request.get(
-    `/api/${spaceCode}/projects`,
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-    null,
-    null,
-    loading,
-  );
-};
-
 ProjectService.selectMyProjectList = (spaceCode, successHandler, failHandler, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects/my`,

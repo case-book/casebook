@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -87,13 +88,34 @@ public class Project extends CommonEntity {
     @Column(updatable = false, insertable = false)
     private List<ProjectApplicant> applicants;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<ProjectRelease> projectReleases;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
     private List<ProjectMessageChannel> messageChannels;
+
+    @Transient
+    private Long testrunCount = 0L;
+
+    @Transient
+    private Long testcaseCount = 0L;
+
+    public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount, long testcaseCount) {
+
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.activated = activated;
+        this.token = token;
+        this.aiEnabled = aiEnabled;
+        this.testcaseGroupSeq = testcaseGroupSeq;
+        this.testcaseSeq = testcaseSeq;
+        this.testrunSeq = testrunSeq;
+        this.testrunCount = testrunCount;
+        this.testcaseCount = testcaseCount;
+    }
 
     public Map<String, List<ProjectUser>> getUsersByTag(List<TestrunUser> testrunUsers) {
         Map<String, List<ProjectUser>> result = new HashMap<>();

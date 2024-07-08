@@ -5,7 +5,7 @@ import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVar
 
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
-import Header from '@/pages/common/Header/Header';
+
 import Login from '@/pages/users/Login';
 import Join from '@/pages/users/Join';
 import MyInfoPage from '@/pages/users/MyInfoPage';
@@ -58,7 +58,6 @@ export {
   SpaceInfoPage,
   SpaceEditPage,
   Common,
-  Header,
   Login,
   Join,
   MyInfoPage,

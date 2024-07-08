@@ -59,6 +59,9 @@ public class ProjectService {
     private final ProjectMessageChannelRepository projectMessageChannelRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
 
+    // @PersistenceContext
+    // private EntityManager em;
+
     public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
         @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
         TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
@@ -120,22 +123,9 @@ public class ProjectService {
         return new ProjectDTO(project, true);
     }
 
-    public List<ProjectDTO> selectSpaceProjectList(String spaceCode) {
-        List<Project> projectList = projectRepository.findAllBySpaceCode(spaceCode);
-        return projectList.stream().map((project -> {
-            Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId());
-            Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceCode, project.getId());
-            return new ProjectDTO(project, testrunCount, testcaseCount);
-        })).collect(Collectors.toList());
-    }
-
     public List<ProjectDTO> selectSpaceProjectList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
-        return projectList.stream().map((project -> {
-            Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceId, project.getId());
-            Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceId, project.getId());
-            return new ProjectDTO(project, testrunCount, testcaseCount);
-        })).collect(Collectors.toList());
+        return projectList.stream().map((project -> new ProjectDTO(project, false))).collect(Collectors.toList());
     }
 
     public List<ProjectDTO> selectSpaceProjectDetailList(Long spaceId) {
@@ -144,12 +134,16 @@ public class ProjectService {
     }
 
     public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
+        /*
+        String jpql = "SELECT new Project(p.id, p.name, p.description, p.activated, p.token, p.aiEnabled, p.testcaseGroupSeq, p.testcaseSeq, p.testcaseSeq, (SELECT COUNT(tr.id) FROM Testrun tr WHERE tr.project.id = p.id), (SELECT COUNT(tc.id) FROM Testcase tc WHERE tc.project.id = p.id)) FROM Project p  INNER JOIN ProjectUser pu ON p.id = pu.project.id WHERE p.space.code = :spaceCode AND pu.user.id = :userId";
+        TypedQuery<Project> query = em.createQuery(jpql, Project.class);
+        query.setParameter("spaceCode", spaceCode);
+        query.setParameter("userId", userId);
+        List<Project> projectList = query.getResultList();
+        return projectList.stream().map((project -> new ProjectDTO(project, false))).collect(Collectors.toList());
+        */
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
-        return projectList.stream().map((project -> {
-            Long testrunCount = testrunService.selectProjectOpenedTestrunCount(spaceCode, project.getId());
-            Long testcaseCount = testcaseService.selectProjectTestcaseCount(spaceCode, project.getId());
-            return new ProjectDTO(project, testrunCount, testcaseCount);
-        })).collect(Collectors.toList());
+        return projectList.stream().map((project -> new ProjectDTO(project, false))).collect(Collectors.toList());
     }
 
 

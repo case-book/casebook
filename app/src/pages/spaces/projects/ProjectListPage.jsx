@@ -11,13 +11,13 @@ import SpaceService from '@/services/SpaceService';
 function ProjectListPage() {
   const { t } = useTranslation();
   const { spaceCode } = useParams();
-  const [space, setSpace] = useState(null);
+  const [spaceName, setSpaceName] = useState(null);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
 
   const getSpaceInfo = () => {
-    SpaceService.selectSpaceInfo(spaceCode, info => {
-      setSpace(info);
+    SpaceService.selectSpaceName(spaceCode, name => {
+      setSpaceName(name);
     });
   };
 
@@ -43,7 +43,7 @@ function ProjectListPage() {
           },
           {
             to: `/spaces/${spaceCode}/info`,
-            text: space?.name,
+            text: spaceName,
           },
           {
             to: `/spaces/${spaceCode}/projects`,

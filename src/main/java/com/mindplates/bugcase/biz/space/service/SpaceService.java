@@ -83,6 +83,9 @@ public class SpaceService {
         return spaceRepository.findCodeById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
+    public String selectSpaceName(String spaceCode) {
+        return spaceRepository.findNameByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
 
     @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE)
     public SpaceDTO selectSpaceInfo(String spaceCode) {

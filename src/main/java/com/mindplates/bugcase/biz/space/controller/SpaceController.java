@@ -104,6 +104,13 @@ public class SpaceController {
         return new SpaceResponse(spaceInfo, SessionUtil.getUserId(), spaceProjectList);
     }
 
+    @Operation(description = "스페이스 이름 조회")
+    @GetMapping("/{spaceCode}/name")
+    public String selectSpaceName(@PathVariable String spaceCode) {
+        return spaceService.selectSpaceName(spaceCode);
+    }
+
+
     @Operation(description = "스페이스 사용자 검색")
     @GetMapping("/{spaceCode}/users")
     public List<SimpleUserResponse> selectSpaceUserList(@PathVariable String spaceCode, @RequestParam(value = "query", required = false) String query) {

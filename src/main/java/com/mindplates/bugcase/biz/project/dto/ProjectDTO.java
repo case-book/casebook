@@ -52,6 +52,8 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
         this.testcaseSeq = project.getTestcaseSeq();
         this.testrunSeq = project.getTestrunSeq();
         this.aiEnabled = project.isAiEnabled();
+        this.testrunCount = project.getTestrunCount();
+        this.testcaseCount = project.getTestcaseCount();
 
         if (detail && project.getSpace() != null) {
             this.space = SpaceDTO.builder().id(project.getSpace().getId()).build();
@@ -82,11 +84,7 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
 
     }
 
-    public ProjectDTO(Project project, Long testrunCount, Long testcaseCount) {
-        this(project, false);
-        this.testrunCount = testrunCount;
-        this.testcaseCount = testcaseCount;
-    }
+
 
     @Override
     public Project toEntity() {

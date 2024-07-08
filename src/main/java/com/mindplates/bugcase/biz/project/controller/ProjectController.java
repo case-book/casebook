@@ -86,13 +86,6 @@ public class ProjectController {
     }
 
     @Operation(description = "스페이스 프로젝트 목록 조회")
-    @GetMapping("")
-    public List<ProjectListResponse> selectSpaceProjectList(@PathVariable String spaceCode) {
-        List<ProjectDTO> projectList = projectService.selectSpaceProjectList(spaceCode);
-        return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
-    }
-
-    @Operation(description = "스페이스 프로젝트 목록 조회")
     @GetMapping("/my")
     public List<ProjectListResponse> selectSpaceMyProjectList(@PathVariable String spaceCode) {
         List<ProjectDTO> projectList = projectService.selectSpaceMyProjectList(spaceCode, SessionUtil.getUserId());
@@ -121,7 +114,6 @@ public class ProjectController {
         projectService.deleteProjectInfo(spaceCode, project);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 
     @Operation(description = "프로젝트 이름 조회")

@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Logo } from '@/components';
 import ProjectMenu from '@/pages/common/Header/ProjectMenu';
 import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
+import './Menu.scss';
 import './ProjectHeader.scss';
 import MobileMenu from '@/pages/common/Header/MobileMenu';
 
