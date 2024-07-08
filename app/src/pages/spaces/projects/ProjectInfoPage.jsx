@@ -44,7 +44,7 @@ function ProjectInfoPage() {
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
-  const [space, setSpace] = useState(null);
+  const [spaceName, setSpaceName] = useState('');
   const [project, setProject] = useState(null);
   const [projectTokenList, setProjectTokenList] = useState([]);
   const [releases, setReleases] = useState([]);
@@ -65,8 +65,8 @@ function ProjectInfoPage() {
   });
 
   useEffect(() => {
-    SpaceService.selectSpaceInfo(spaceCode, info => {
-      setSpace(info);
+    SpaceService.selectSpaceName(spaceCode, name => {
+      setSpaceName(name);
     });
   }, [spaceCode]);
 
@@ -194,7 +194,7 @@ function ProjectInfoPage() {
             },
             {
               to: `/spaces/${spaceCode}/info`,
-              text: space?.name,
+              text: spaceName,
             },
             {
               to: `/spaces/${spaceCode}/projects`,

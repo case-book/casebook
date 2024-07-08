@@ -167,7 +167,7 @@ function ProjectEditPage({ type }) {
 
   const navigate = useNavigate();
 
-  const [space, setSpace] = useState(null);
+  const [spaceName, setSpaceName] = useState('');
   const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
   const [testcaseItemCategories, setTestcaseItemCategories] = useState([]);
   const [opened, setOpened] = useState(false);
@@ -232,8 +232,8 @@ function ProjectEditPage({ type }) {
   }, [type, projectId]);
 
   useEffect(() => {
-    SpaceService.selectSpaceInfo(spaceCode, info => {
-      setSpace(info);
+    SpaceService.selectSpaceName(spaceCode, name => {
+      setSpaceName(name);
     });
   }, [spaceCode]);
 
@@ -434,7 +434,7 @@ function ProjectEditPage({ type }) {
                   },
                   {
                     to: `/spaces/${spaceCode}/info`,
-                    text: space?.name,
+                    text: spaceName,
                   },
                   {
                     to: `/spaces/${spaceCode}/projects`,
@@ -460,7 +460,7 @@ function ProjectEditPage({ type }) {
                   },
                   {
                     to: `/spaces/${spaceCode}/info`,
-                    text: space?.name,
+                    text: spaceName,
                   },
                   {
                     to: `/spaces/${spaceCode}/projects`,
@@ -486,7 +486,7 @@ function ProjectEditPage({ type }) {
             <Block>
               <BlockRow>
                 <Label>{t('스페이스')}</Label>
-                <Text>{space?.name}</Text>
+                <Text>{spaceName}</Text>
               </BlockRow>
               <BlockRow>
                 <Label required>{t('이름')}</Label>
