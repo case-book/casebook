@@ -36,7 +36,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
     private List<TestcaseGroupDTO> testcaseGroups; // 삭제하고, 관련된 코드 변경 필요함
     private List<TestcaseTemplateDTO> testcaseTemplates;
     private List<ProjectUserDTO> users;
-    private List<ProjectReleaseDTO> projectReleases;
     private List<ProjectMessageChannelDTO> messageChannels;
 
 

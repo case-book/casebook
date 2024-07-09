@@ -76,13 +76,6 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable Long id) {
         ProjectDTO project = projectService.selectProjectInfo(spaceCode, id);
-
-        /*
-        if (!project.isActivated()) {
-            throw new ServiceException(HttpStatus.LOCKED);
-        }
-         */
-
         return new ProjectResponse(project, SessionUtil.getUserId());
     }
 
@@ -93,11 +86,9 @@ public class ProjectController {
         return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
 
-
     @Operation(description = "프로젝트 수정")
     @PutMapping("/{id}")
-    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id,
-        @Valid @RequestBody ProjectCreateRequest projectUpdateRequest) {
+    public ProjectResponse updateProjectInfo(@PathVariable String spaceCode, @PathVariable Long id, @Valid @RequestBody ProjectCreateRequest projectUpdateRequest) {
 
         if (!id.equals(projectUpdateRequest.getId())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
@@ -124,29 +115,6 @@ public class ProjectController {
         return ProjectResponse.builder().name(projectName).build();
     }
 
-    @PostMapping("/{id}/images")
-    public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("file") MultipartFile file,
-        @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
-        String path = projectFileService.createImage(id, file);
-        ProjectFileDTO testcaseFile = ProjectFileDTO.builder().project(ProjectDTO.builder().id(id).build()).name(name).size(size).type(type)
-            .path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.PROJECT).build();
-        ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
-        return new ProjectFileResponse(projectFile, spaceCode, id);
-    }
-
-    @GetMapping("/{id}/images/{imageId}")
-    public ResponseEntity<Resource> selectProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable Long imageId,
-        @RequestParam(value = "uuid") String uuid) {
-
-        ProjectFileDTO projectFile = projectFileService.selectProjectFile(id, imageId, uuid);
-        Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
-
-        ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(projectFile.getName(), StandardCharsets.UTF_8)
-            .build();
-
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream"))
-            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()).body(resource);
-    }
 
     @Operation(description = "프로젝트 탈퇴")
     @DeleteMapping("/{id}/users/my")
@@ -210,7 +178,7 @@ public class ProjectController {
     ) {
 
         ProjectReleaseDTO projectReleaseDTO = projectReleaseService.selectProjectRelease(releaseId);
-        return new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId());
+        return new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId(true));
     }
 
 
@@ -220,7 +188,7 @@ public class ProjectController {
         List<ProjectReleaseDTO> projectReleaseDTOs = projectReleaseService.selectProjectReleases(spaceCode, id);
         return projectReleaseDTOs
             .stream()
-            .map(projectReleaseDTO -> new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId()))
+            .map(projectReleaseDTO -> new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId(true)))
             .collect(Collectors.toList());
     }
 
@@ -231,7 +199,7 @@ public class ProjectController {
         @PathVariable long id,
         @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
         ProjectReleaseDTO projectReleaseDTO = projectReleaseCreateRequest.toDTO(id);
-        return new ProjectReleaseResponse(projectReleaseService.createProjectRelease(spaceCode, id, projectReleaseDTO), SessionUtil.getUserId());
+        return new ProjectReleaseResponse(projectReleaseService.createProjectRelease(spaceCode, id, projectReleaseDTO), SessionUtil.getUserId(true));
     }
 
     @Operation(description = "릴리스 수정")
@@ -243,7 +211,7 @@ public class ProjectController {
         @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
         ProjectReleaseDTO projectReleaseDTO = projectReleaseCreateRequest.toDTO(id);
         return new ProjectReleaseResponse(projectReleaseService.updateProjectRelease(spaceCode, id, releaseId, projectReleaseDTO),
-            SessionUtil.getUserId());
+            SessionUtil.getUserId(true));
     }
 
     @Operation(description = "릴리스 삭제")
@@ -257,5 +225,29 @@ public class ProjectController {
     public List<ProjectMessageChannelResponse> selectProjectMessageChannels(@PathVariable Long id) {
         List<ProjectMessageChannelDTO> projectMessageChannels = projectService.selectProjectMessageChannels(id);
         return projectMessageChannels.stream().map(ProjectMessageChannelResponse::new).collect(Collectors.toList());
+    }
+
+    @PostMapping("/{id}/images")
+    public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @RequestParam("file") MultipartFile file,
+        @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
+        String path = projectFileService.createImage(id, file);
+        ProjectFileDTO testcaseFile = ProjectFileDTO
+            .builder()
+            .project(ProjectDTO.builder().id(id).build())
+            .name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString())
+            .fileSourceType(FileSourceTypeCode.PROJECT)
+            .build();
+        ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
+        return new ProjectFileResponse(projectFile, spaceCode, id);
+    }
+
+    @GetMapping("/{id}/images/{imageId}")
+    public ResponseEntity<Resource> selectProjectImage(@PathVariable String spaceCode, @PathVariable Long id, @PathVariable Long imageId, @RequestParam(value = "uuid") String uuid) {
+
+        ProjectFileDTO projectFile = projectFileService.selectProjectFile(id, imageId, uuid);
+        Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(projectFile.getName(), StandardCharsets.UTF_8).build();
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream")).header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()).body(resource);
     }
 }

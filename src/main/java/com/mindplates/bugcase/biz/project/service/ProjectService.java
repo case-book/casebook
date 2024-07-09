@@ -240,19 +240,6 @@ public class ProjectService {
             updateProjectInfo.getUsers().stream().filter(projectUser -> projectUser.getCrud() == null || !projectUser.getCrud().equals("D"))
                 .collect(Collectors.toList()));
 
-        if (!projectInfo.getProjectReleases().isEmpty()) {
-            if (targetReleaseId == null) {
-                projectInfo.getProjectReleases().forEach(projectReleaseDTO -> {
-                    projectReleaseDTO.setIsTarget(false);
-                });
-            } else {
-                projectInfo.getProjectReleases().forEach(projectReleaseDTO -> {
-                    projectReleaseDTO.setIsTarget(projectReleaseDTO.getId().equals(targetReleaseId));
-                });
-            }
-
-        }
-
         // projectInfo의 messageChannels에 아이템 중 updateProjectInfo의 messageChannels에 없는 ID 모음
         List<Long> deleteMessageChannelIds = projectInfo.getMessageChannels().stream()
             .filter((projectMessageChannel -> updateProjectInfo.getMessageChannels().stream()
@@ -290,7 +277,8 @@ public class ProjectService {
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
         projectFileService.deleteProjectFile(project.getId());
-        for (ProjectReleaseDTO projectRelease : project.getProjectReleases()) {
+        List<ProjectReleaseDTO> projectReleases = projectReleaseService.selectProjectReleases(spaceCode, project.getId());;
+        for (ProjectReleaseDTO projectRelease : projectReleases) {
             projectReleaseService.deleteProjectRelease(spaceCode, project.getId(), projectRelease.getId());
         }
         List<TestrunDTO> testruns = testrunService.selectProjectAllTestrunList(spaceCode, project.getId());
