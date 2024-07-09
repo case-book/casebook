@@ -36,12 +36,11 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
     private List<TestcaseGroupDTO> testcaseGroups; // 삭제하고, 관련된 코드 변경 필요함
     private List<TestcaseTemplateDTO> testcaseTemplates;
     private List<ProjectUserDTO> users;
-    private List<ProjectApplicantDTO> applicants;
     private List<ProjectReleaseDTO> projectReleases;
     private List<ProjectMessageChannelDTO> messageChannels;
 
 
-    public ProjectDTO(Project project, boolean detail) {
+    public ProjectDTO(Project project) {
         this.id = project.getId();
         this.name = project.getName();
         this.description = project.getDescription();
@@ -55,35 +54,31 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
         this.testrunCount = project.getTestrunCount();
         this.testcaseCount = project.getTestcaseCount();
 
-        if (detail && project.getSpace() != null) {
+        if (project.getSpace() != null) {
             this.space = SpaceDTO.builder().id(project.getSpace().getId()).build();
+        }
+
+        if (project.getTestcaseTemplates() != null) {
+            this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateDTO::new).collect(Collectors.toList());
+        }
+
+        if (project.getUsers() != null) {
+            this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
         }
 
         if (project.getProjectReleases() != null) {
             this.projectReleases = project.getProjectReleases().stream().map(ProjectReleaseDTO::new).collect(Collectors.toList());
         }
-        if (detail && project.getUsers() != null) {
-            this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
-        }
 
-        if (detail && project.getTestcaseTemplates() != null) {
-            this.testcaseTemplates = project.getTestcaseTemplates().stream().map(TestcaseTemplateDTO::new).collect(Collectors.toList());
-        }
-
-        if (detail && project.getTestcaseGroups() != null) {
+        if (project.getTestcaseGroups() != null) {
             this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupDTO::new).collect(Collectors.toList());
         }
 
-        if (detail && project.getApplicants() != null) {
-            this.applicants = project.getApplicants().stream().map(ProjectApplicantDTO::new).collect(Collectors.toList());
-        }
-
-        if (detail && project.getMessageChannels() != null) {
+        if (project.getMessageChannels() != null) {
             this.messageChannels = project.getMessageChannels().stream().map(ProjectMessageChannelDTO::new).collect(Collectors.toList());
         }
 
     }
-
 
 
     @Override
@@ -120,12 +115,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
             project.setUsers(this.users.stream().map(projectUserDTO -> projectUserDTO.toEntity(project)).collect(Collectors.toList()));
         } else {
             project.setUsers(Collections.emptyList());
-        }
-
-        if (this.applicants != null) {
-            project.setApplicants(this.applicants.stream().map(projectApplicantDTO -> projectApplicantDTO.toEntity(project)).collect(Collectors.toList()));
-        } else {
-            project.setApplicants(Collections.emptyList());
         }
 
         if (this.projectReleases != null) {

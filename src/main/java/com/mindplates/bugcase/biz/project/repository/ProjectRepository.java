@@ -24,7 +24,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Optional<Project> findBySpaceCodeAndId(String spaceCode, Long id);
 
-    Optional<Project> findNameBySpaceCodeAndId(String spaceCode, Long id);
+    @Query(value = "SELECT p.name FROM Project p WHERE p.id = :id AND p.space.code = :spaceCode")
+    Optional<String> findNameBySpaceCodeAndId(String spaceCode, Long id);
 
     Long countBySpaceId(Long spaceId);
 

@@ -11,7 +11,7 @@ import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
 import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.config.vo.request.ConfigRequest;
 import com.mindplates.bugcase.biz.config.vo.response.ConfigInfoResponse;
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
@@ -72,7 +72,7 @@ public class AdminController {
     @GetMapping("/spaces/{spaceId}")
     public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {
         SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
-        List<ProjectDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceId);
+        List<ProjectListDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceId);
         return new SpaceResponse(space, spaceProjectList);
     }
 

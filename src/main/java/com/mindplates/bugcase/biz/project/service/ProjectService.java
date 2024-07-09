@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.project.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
@@ -109,7 +110,7 @@ public class ProjectService {
         ProjectUserDTO projectUser = ProjectUserDTO.builder().project(projectInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
         projectInfo.setUsers(Collections.singletonList(projectUser));
         Project project = projectInfo.toEntity();
-        return new ProjectDTO(projectRepository.save(project), true);
+        return new ProjectDTO(projectRepository.save(project));
     }
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
@@ -120,20 +121,20 @@ public class ProjectService {
         }
 
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new ProjectDTO(project, true);
+        return new ProjectDTO(project);
     }
 
-    public List<ProjectDTO> selectSpaceProjectList(Long spaceId) {
+    public List<ProjectListDTO> selectSpaceProjectList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
-        return projectList.stream().map((project -> new ProjectDTO(project, false))).collect(Collectors.toList());
+        return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
     public List<ProjectDTO> selectSpaceProjectDetailList(Long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
-        return projectList.stream().map((project -> new ProjectDTO(project, true))).collect(Collectors.toList());
+        return projectList.stream().map((ProjectDTO::new)).collect(Collectors.toList());
     }
 
-    public List<ProjectDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
+    public List<ProjectListDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
         /*
         String jpql = "SELECT new Project(p.id, p.name, p.description, p.activated, p.token, p.aiEnabled, p.testcaseGroupSeq, p.testcaseSeq, p.testcaseSeq, (SELECT COUNT(tr.id) FROM Testrun tr WHERE tr.project.id = p.id), (SELECT COUNT(tc.id) FROM Testcase tc WHERE tc.project.id = p.id)) FROM Project p  INNER JOIN ProjectUser pu ON p.id = pu.project.id WHERE p.space.code = :spaceCode AND pu.user.id = :userId";
         TypedQuery<Project> query = em.createQuery(jpql, Project.class);
@@ -143,15 +144,13 @@ public class ProjectService {
         return projectList.stream().map((project -> new ProjectDTO(project, false))).collect(Collectors.toList());
         */
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
-        return projectList.stream().map((project -> new ProjectDTO(project, false))).collect(Collectors.toList());
+        return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
 
-    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public ProjectDTO selectProjectName(String spaceCode, Long projectId) {
-        Project project = projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new ProjectDTO(project, true);
+
+    public String selectProjectName(String spaceCode, Long projectId) {
+        return projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
 
@@ -283,7 +282,7 @@ public class ProjectService {
         }));
 
         Project updateResult = mappingUtil.convert(projectInfo, Project.class);
-        return new ProjectDTO(projectRepository.save(updateResult), true);
+        return new ProjectDTO(projectRepository.save(updateResult));
 
     }
 

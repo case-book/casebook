@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.controller;
 
 import com.mindplates.bugcase.biz.ai.vo.response.LlmResponse;
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
@@ -94,7 +94,7 @@ public class SpaceController {
 
         Long userId = SessionUtil.getUserId();
 
-        List<ProjectDTO> spaceProjectList;
+        List<ProjectListDTO> spaceProjectList;
         if (userId != null && spaceInfo.getUsers().stream().anyMatch(spaceUser -> spaceUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(spaceUser.getRole()))) {
             spaceProjectList = projectService.selectSpaceProjectList(spaceInfo.getId());
         } else {

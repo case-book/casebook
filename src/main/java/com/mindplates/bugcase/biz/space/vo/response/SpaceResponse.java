@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.ai.vo.response.LlmResponse;
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
@@ -74,13 +74,13 @@ public class SpaceResponse {
         }
     }
 
-    public SpaceResponse(SpaceDTO space, List<ProjectDTO> projects) {
+    public SpaceResponse(SpaceDTO space, List<ProjectListDTO> projects) {
         this(space);
         this.applicants = space.getApplicants().stream().map(SpaceApplicantResponse::new).collect(Collectors.toList());
         this.projects = projects.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
 
-    public SpaceResponse(SpaceDTO space, Long userId, List<ProjectDTO> projects) {
+    public SpaceResponse(SpaceDTO space, Long userId, List<ProjectListDTO> projects) {
         this(space);
         if (userId != null && space.getUsers().stream().anyMatch(spaceUser -> spaceUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(spaceUser.getRole()))) {
             this.isAdmin = true;

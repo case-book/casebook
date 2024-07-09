@@ -7,6 +7,8 @@ import com.mindplates.bugcase.common.entity.CommonEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
@@ -26,7 +28,8 @@ public class ProjectUser extends CommonEntity {
     @Enumerated(EnumType.STRING)
     private UserRoleCode role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_USER__PROJECT"))
     private User user;
 

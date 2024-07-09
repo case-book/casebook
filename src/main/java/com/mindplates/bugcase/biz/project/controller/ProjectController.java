@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.controller;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectTokenDTO;
@@ -88,7 +89,7 @@ public class ProjectController {
     @Operation(description = "스페이스 프로젝트 목록 조회")
     @GetMapping("/my")
     public List<ProjectListResponse> selectSpaceMyProjectList(@PathVariable String spaceCode) {
-        List<ProjectDTO> projectList = projectService.selectSpaceMyProjectList(spaceCode, SessionUtil.getUserId());
+        List<ProjectListDTO> projectList = projectService.selectSpaceMyProjectList(spaceCode, SessionUtil.getUserId());
         return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
 
@@ -119,8 +120,8 @@ public class ProjectController {
     @Operation(description = "프로젝트 이름 조회")
     @GetMapping("/{id}/name")
     public ProjectResponse selectProjectName(@PathVariable String spaceCode, @PathVariable Long id) {
-        ProjectDTO project = projectService.selectProjectName(spaceCode, id);
-        return ProjectResponse.builder().name(project.getName()).build();
+        String projectName = projectService.selectProjectName(spaceCode, id);
+        return ProjectResponse.builder().name(projectName).build();
     }
 
     @PostMapping("/{id}/images")
