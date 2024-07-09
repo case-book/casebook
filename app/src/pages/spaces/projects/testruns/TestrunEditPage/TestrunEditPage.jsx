@@ -573,11 +573,6 @@ function TestrunEditPage({ type }) {
                 });
               }}
             />
-            {!(project?.messageChannels?.length > 0) && (
-              <EmptyContent className="empty-content">
-                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
-              </EmptyContent>
-            )}
             <Title
               border={false}
               marginBottom={false}

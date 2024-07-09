@@ -20,15 +20,19 @@ function ReleaseInfoPage() {
   const [release, setRelease] = useState({});
 
   useEffect(() => {
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
       const nextReleaseNameMap = {};
-      info.projectReleases.forEach(projectRelease => {
+      list.forEach(projectRelease => {
         nextReleaseNameMap[projectRelease.id] = projectRelease.name;
       });
       setReleaseNameMap(nextReleaseNameMap);
+    });
+
+    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
   }, [spaceCode, projectId]);
+
   useEffect(() => {
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, info => {
       setRelease(info);

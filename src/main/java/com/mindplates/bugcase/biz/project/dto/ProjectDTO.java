@@ -66,10 +66,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
             this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
         }
 
-        if (project.getProjectReleases() != null) {
-            this.projectReleases = project.getProjectReleases().stream().map(ProjectReleaseDTO::new).collect(Collectors.toList());
-        }
-
         if (project.getTestcaseGroups() != null) {
             this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupDTO::new).collect(Collectors.toList());
         }
@@ -115,12 +111,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
             project.setUsers(this.users.stream().map(projectUserDTO -> projectUserDTO.toEntity(project)).collect(Collectors.toList()));
         } else {
             project.setUsers(Collections.emptyList());
-        }
-
-        if (this.projectReleases != null) {
-            project.setProjectReleases(this.projectReleases.stream().map(projectReleaseDTO -> projectReleaseDTO.toEntity(project)).collect(Collectors.toList()));
-        } else {
-            project.setProjectReleases(Collections.emptyList());
         }
 
         if (this.messageChannels != null) {

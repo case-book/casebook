@@ -1,26 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Block,
-  Button,
-  CheckBox,
-  CloseIcon,
-  DatePicker,
-  EmptyContent,
-  Form,
-  Input,
-  Label,
-  Liner,
-  Page,
-  PageButtons,
-  PageContent,
-  PageTitle,
-  Radio,
-  Selector,
-  Tag,
-  Text,
-  TextArea,
-  Title,
-} from '@/components';
+import { Block, Button, CheckBox, CloseIcon, DatePicker, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Radio, Selector, Tag, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -770,11 +749,6 @@ function TestrunIterationEditPage({ type }) {
                 });
               }}
             />
-            {!(project?.messageChannels?.length > 0) && (
-              <EmptyContent className="empty-content">
-                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
-              </EmptyContent>
-            )}
             <Title
               border={false}
               marginBottom={false}

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, CloseIcon, DateRange, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
+import { Block, Button, CheckBox, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -526,11 +526,6 @@ function TestrunReservationEditPage({ type }) {
                 });
               }}
             />
-            {!(project?.messageChannels?.length > 0) && (
-              <EmptyContent className="empty-content">
-                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
-              </EmptyContent>
-            )}
             <Title
               border={false}
               marginBottom={false}

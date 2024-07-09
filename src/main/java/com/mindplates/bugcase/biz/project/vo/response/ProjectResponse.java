@@ -33,7 +33,6 @@ public class ProjectResponse {
     private List<TestcaseGroupResponse> testcaseGroups;
     private List<SimpleMemberResponse> users;
     private boolean isAdmin = false;
-    private List<ProjectReleaseResponse> projectReleases;
     private List<ProjectMessageChannelResponse> messageChannels;
     private boolean aiEnabled;
 
@@ -74,16 +73,6 @@ public class ProjectResponse {
 
         if (project.getTestcaseGroups() != null && !project.getTestcaseGroups().isEmpty()) {
             this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
-        }
-
-        if (project.getProjectReleases() != null) {
-            this.projectReleases = project.getProjectReleases()
-                .stream()
-                .map(projectReleaseDTO -> ProjectReleaseResponse.builder()
-                    .id(projectReleaseDTO.getId())
-                    .name(projectReleaseDTO.getName())
-                    .build())
-                .collect(Collectors.toList());
         }
 
         if (project.getMessageChannels() != null) {
