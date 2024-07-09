@@ -57,9 +57,7 @@ public class TestcaseDTO extends CommonDTO implements IDTO<Testcase> {
         if (testcase.getTestcaseProjectReleases() != null) {
             this.projectReleases = testcase.getTestcaseProjectReleases()
                 .stream()
-                // .map(testcaseProjectRelease -> new ProjectReleaseDTO(testcaseProjectRelease.getProjectRelease()))
                 .map(testcaseProjectRelease -> ProjectReleaseDTO.builder().id(testcaseProjectRelease.getProjectRelease().getId()).build())
-                .distinct()
                 .collect(Collectors.toList());
         }
         this.testerType = testcase.getTesterType();
