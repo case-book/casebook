@@ -505,14 +505,13 @@ public class TestcaseService {
         testcase.setSeqId(org.getSeqId());
         testcase.setContentUpdateDate(LocalDateTime.now());
 
-        org.getTestcaseProjectReleases().stream().filter((testcaseProjectRelease ->
-            testcase.getTestcaseProjectReleases()
+        org.getTestcaseProjectReleases()
+            .stream()
+            .filter((testcaseProjectRelease -> testcase.getTestcaseProjectReleases()
                 .stream()
-                .noneMatch(
-                    testcaseProjectRelease1 -> testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())
-                        && testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId()))
+                .noneMatch(testcaseProjectRelease1 -> testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId()) && testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId()))
         )).forEach(testcaseProjectRelease -> {
-            testcaseProjectReleaseRepository.delete(testcaseProjectRelease);
+            testcaseProjectReleaseRepository.deleteByTestcaseIdAndProjectReleaseId(testcaseProjectRelease.getTestcase().getId(), testcaseProjectRelease.getProjectRelease().getId());
         });
 
         testcaseRepository.save(testcase);

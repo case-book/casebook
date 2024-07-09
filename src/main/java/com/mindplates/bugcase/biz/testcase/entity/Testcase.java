@@ -80,7 +80,7 @@ public class Testcase extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestcaseItem> testcaseItems;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestcaseProjectRelease> testcaseProjectReleases;
 
