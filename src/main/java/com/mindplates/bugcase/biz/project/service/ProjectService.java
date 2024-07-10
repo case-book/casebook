@@ -6,9 +6,7 @@ import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.project.entity.ProjectMessageChannel;
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
-import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
@@ -18,7 +16,6 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
-import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
@@ -49,7 +46,6 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectFileService projectFileService;
     private final TestrunService testrunService;
-    private final TestcaseService testcaseService;
     private final TestcaseItemRepository testcaseItemRepository;
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final ProjectUserRepository projectUserRepository;
@@ -57,7 +53,6 @@ public class ProjectService {
     private final ProjectReleaseService projectReleaseService;
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
     private final MappingUtil mappingUtil;
-    private final ProjectMessageChannelRepository projectMessageChannelRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
 
     // @PersistenceContext
@@ -66,8 +61,8 @@ public class ProjectService {
     public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
         @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
         TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository, ProjectUserRepository projectUserRepository,
-        ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil, TestcaseService testcaseService,
-        ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository, ProjectMessageChannelRepository projectMessageChannelRepository,
+        ProjectTokenRepository projectTokenRepository, MappingUtil mappingUtil,
+        ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository,
         TestrunMessageChannelRepository testrunMessageChannelRepository) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
@@ -78,10 +73,8 @@ public class ProjectService {
         this.projectTokenRepository = projectTokenRepository;
         this.projectUserRepository = projectUserRepository;
         this.mappingUtil = mappingUtil;
-        this.testcaseService = testcaseService;
         this.projectReleaseService = projectReleaseService;
         this.testrunTestcaseGroupTestcaseRepository = testrunTestcaseGroupTestcaseRepository;
-        this.projectMessageChannelRepository = projectMessageChannelRepository;
         this.testrunMessageChannelRepository = testrunMessageChannelRepository;
     }
 
@@ -146,7 +139,6 @@ public class ProjectService {
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
-
 
 
     public String selectProjectName(String spaceCode, Long projectId) {
@@ -268,7 +260,10 @@ public class ProjectService {
             }
         }));
 
-        Project updateResult = mappingUtil.convert(projectInfo, Project.class);
+        projectReleaseService.updateProjectTargetRelease(projectInfo.getId(), targetReleaseId);
+
+
+        Project updateResult = projectInfo.toEntity();
         return new ProjectDTO(projectRepository.save(updateResult));
 
     }
@@ -277,13 +272,14 @@ public class ProjectService {
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
         projectFileService.deleteProjectFile(project.getId());
-        List<ProjectReleaseDTO> projectReleases = projectReleaseService.selectProjectReleases(spaceCode, project.getId());;
+        List<ProjectReleaseDTO> projectReleases = projectReleaseService.selectProjectReleases(spaceCode, project.getId());
         for (ProjectReleaseDTO projectRelease : projectReleases) {
             projectReleaseService.deleteProjectRelease(spaceCode, project.getId(), projectRelease.getId());
         }
         List<TestrunDTO> testruns = testrunService.selectProjectAllTestrunList(spaceCode, project.getId());
         testruns.forEach((testrunDTO -> testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId())));
-        projectRepository.delete(mappingUtil.convert(project, Project.class));
+        Project projectTarget = project.toEntity();
+        projectRepository.delete(projectTarget);
     }
 
 
@@ -310,11 +306,6 @@ public class ProjectService {
 
     public boolean selectIsProjectAdmin(Long projectId, Long userId) {
         return projectUserRepository.existsByProjectIdAndUserIdAndRole(projectId, userId, UserRoleCode.ADMIN);
-    }
-
-    public List<ProjectMessageChannelDTO> selectProjectMessageChannels(Long projectId) {
-        List<ProjectMessageChannel> projectMessageChannels = projectMessageChannelRepository.findAllByProjectId(projectId);
-        return projectMessageChannels.stream().map(ProjectMessageChannelDTO::new).collect(Collectors.toList());
     }
 
     @Transactional

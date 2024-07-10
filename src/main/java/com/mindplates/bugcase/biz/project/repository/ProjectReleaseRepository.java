@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.project.repository;
 
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,7 @@ public interface ProjectReleaseRepository extends JpaRepository<ProjectRelease, 
     Long countByProjectIdAndNameAndIdIsNot(long projectId, String name, long id);
 
     List<ProjectRelease> findByProjectIdAndIsTargetTrue(long projectId);
+
+    Optional<ProjectRelease> findByIdAndProjectId(long projectReleaseId, long projectId);
 
 }

@@ -234,7 +234,7 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
         }
 
         return this.messageChannels.stream().map(SpaceMessageChannelDTO::getId)
-            .filter((id -> updateMessageChannels.stream().noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(id)))))
+            .filter((id -> updateMessageChannels.stream().noneMatch((updateMessageChannel -> updateMessageChannel.getId() != null && updateMessageChannel.getId().equals(id)))))
             .collect(Collectors.toList());
 
     }
@@ -247,7 +247,7 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
             List<Long> deleteMessageChannelIds = this.messageChannels.stream()
                 .map(SpaceMessageChannelDTO::getId)
                 .filter((id -> messageChannels.stream()
-                    .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(id)))))
+                    .noneMatch((updateMessageChannel -> updateMessageChannel.getId() != null && updateMessageChannel.getId().equals(id)))))
                 .collect(Collectors.toList());
 
             this.messageChannels.removeIf((projectMessageChannel -> deleteMessageChannelIds.contains(projectMessageChannel.getId())));

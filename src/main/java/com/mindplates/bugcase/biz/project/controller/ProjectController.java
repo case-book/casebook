@@ -3,13 +3,11 @@ package com.mindplates.bugcase.biz.project.controller;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
-import com.mindplates.bugcase.biz.project.vo.response.ProjectMessageChannelResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -85,7 +83,6 @@ public class ProjectController {
         return new ProjectResponse(project, SessionUtil.getUserId());
     }
 
-
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{projectId}")
     public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable long projectId) {
@@ -94,7 +91,6 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @Operation(description = "프로젝트 이름 조회")
     @GetMapping("/{projectId}/name")
     public ProjectResponse selectProjectName(@PathVariable String spaceCode, @PathVariable long projectId) {
@@ -102,19 +98,11 @@ public class ProjectController {
         return ProjectResponse.builder().name(projectName).build();
     }
 
-
     @Operation(description = "프로젝트 탈퇴")
     @DeleteMapping("/{projectId}/users/my")
     public ResponseEntity<?> deleteProjectUserInfo(@PathVariable String spaceCode, @PathVariable long projectId) {
         projectService.deleteProjectUser(spaceCode, projectId, SessionUtil.getUserId());
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Operation(description = "프로젝트 메세지 채널 조회")
-    @GetMapping("/{projectId}/channels")
-    public List<ProjectMessageChannelResponse> selectProjectMessageChannels(@PathVariable String spaceCode, @PathVariable Long projectId) {
-        List<ProjectMessageChannelDTO> projectMessageChannels = projectService.selectProjectMessageChannels(projectId);
-        return projectMessageChannels.stream().map(ProjectMessageChannelResponse::new).collect(Collectors.toList());
     }
 
     @PostMapping("/{projectId}/images")

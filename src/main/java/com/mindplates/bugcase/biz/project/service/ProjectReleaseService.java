@@ -143,4 +143,23 @@ public class ProjectReleaseService {
     }
 
 
+    @Transactional
+    public void updateProjectTargetRelease(Long projectId, Long targetReleaseId) {
+        List<ProjectRelease> targetReleaseList = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
+        if (!targetReleaseList.isEmpty()) {
+            for (ProjectRelease projectRelease : targetReleaseList) {
+                if (!projectRelease.getId().equals(targetReleaseId)) {
+                    projectRelease.setIsTarget(false);
+                    projectReleaseRepository.save(projectRelease);
+                }
+            }
+        }
+
+        ProjectRelease targetRelease = projectReleaseRepository.findByIdAndProjectId(targetReleaseId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        if (!targetRelease.getIsTarget()) {
+            targetRelease.setIsTarget(true);
+            projectReleaseRepository.save(targetRelease);
+        }
+
+    }
 }
