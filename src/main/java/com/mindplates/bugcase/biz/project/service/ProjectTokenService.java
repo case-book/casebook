@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.project.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectTokenDTO;
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
 import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -30,29 +29,32 @@ public class ProjectTokenService {
     }
 
     @Transactional
-    public ProjectTokenDTO createProjectToken(ProjectTokenDTO projectTokenDTO) {
-        ProjectToken projectToken = ProjectToken.builder()
-            .project(Project.builder().id(projectTokenDTO.getProject().getId()).build())
-            .name(projectTokenDTO.getName())
-            .enabled(true)
-            .build();
+    public ProjectTokenDTO createProjectToken(long projectId, ProjectTokenDTO target) {
+        ProjectToken targetProjectToken = target.toEntity(projectId);
 
         String token = UUID.randomUUID().toString();
-        while (projectTokenRepository.countByToken(token) > 0) {
+        while (projectTokenRepository.existsByToken(token)) {
             token = UUID.randomUUID().toString();
         }
 
-        projectToken.setToken(token);
-        projectToken = projectTokenRepository.save(projectToken);
+        targetProjectToken.setToken(token);
+        targetProjectToken.setEnabled(true);
+        ProjectToken projectToken = projectTokenRepository.save(targetProjectToken);
         return new ProjectTokenDTO(projectToken);
     }
 
     @Transactional
-    public ProjectTokenDTO updateProjectToken(Long tokenId, ProjectTokenDTO updateProjectToken) {
-        ProjectToken projectToken = projectTokenRepository.findById(tokenId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        projectToken.setName(updateProjectToken.getName());
-        projectToken.setEnabled(updateProjectToken.isEnabled());
-        return new ProjectTokenDTO(projectTokenRepository.save(projectToken));
+    public ProjectTokenDTO updateProjectToken(ProjectTokenDTO target) {
+        ProjectToken targetProjectToken = projectTokenRepository.findById(target.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        if (!target.getProject().getId().equals(targetProjectToken.getProject().getId())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        targetProjectToken.setName(target.getName());
+        targetProjectToken.setEnabled(target.isEnabled());
+        ProjectToken projectToken = projectTokenRepository.save(targetProjectToken);
+        return new ProjectTokenDTO(projectToken);
     }
 
     @Transactional

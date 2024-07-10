@@ -12,7 +12,7 @@ public interface ProjectTokenRepository extends JpaRepository<ProjectToken, Long
 
     List<ProjectToken> findAllByProjectId(Long projectId);
 
-    Long countByToken(String token);
+    boolean existsByToken(String token);
 
 }
 

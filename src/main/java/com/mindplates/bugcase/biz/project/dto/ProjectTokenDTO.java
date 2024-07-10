@@ -1,11 +1,15 @@
 package com.mindplates.bugcase.biz.project.dto;
 
+import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
-
+import com.mindplates.bugcase.common.vo.IDTO;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Builder
@@ -13,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectTokenDTO extends CommonDTO {
+public class ProjectTokenDTO extends CommonDTO implements IDTO<ProjectToken> {
 
     private Long id;
     private ProjectDTO project;
@@ -31,4 +35,24 @@ public class ProjectTokenDTO extends CommonDTO {
         this.lastAccess = projectToken.getLastAccess();
     }
 
+    @Override
+    public ProjectToken toEntity() {
+        ProjectToken projectToken = ProjectToken.builder()
+            .name(this.name)
+            .enabled(this.enabled)
+            .build();
+
+        if (this.project != null) {
+            projectToken.setProject(Project.builder().id(this.project.getId()).build());
+        }
+
+        return projectToken;
+    }
+
+
+    public ProjectToken toEntity(long projectId) {
+        ProjectToken projectToken = toEntity();
+        projectToken.setProject(Project.builder().id(projectId).build());
+        return projectToken;
+    }
 }
