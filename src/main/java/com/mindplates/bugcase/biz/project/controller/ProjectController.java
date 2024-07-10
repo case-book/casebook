@@ -4,17 +4,12 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
-import com.mindplates.bugcase.biz.project.service.ProjectReleaseService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
-import com.mindplates.bugcase.biz.project.service.ProjectTokenService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
-import com.mindplates.bugcase.biz.project.vo.request.ProjectReleaseCreateRequest;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectMessageChannelResponse;
-import com.mindplates.bugcase.biz.project.vo.response.ProjectReleaseResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -53,11 +48,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    private final ProjectTokenService projectTokenService;
-
     private final ProjectFileService projectFileService;
-
-    private final ProjectReleaseService projectReleaseService;
 
     private final FileUtil fileUtil;
 
@@ -119,44 +110,6 @@ public class ProjectController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Operation(description = "프로젝트의 특정 릴리스 조회")
-    @GetMapping("/{projectId}/releases/{releaseId}")
-    public ProjectReleaseResponse selectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long releaseId) {
-        ProjectReleaseDTO projectRelease = projectReleaseService.selectProjectRelease(releaseId);
-        return new ProjectReleaseResponse(projectRelease, SessionUtil.getUserId(true));
-    }
-
-    @Operation(description = "프로젝트의 릴리스 목록 조회")
-    @GetMapping("/{projectId}/releases")
-    public List<ProjectReleaseResponse> getReleases(@PathVariable String spaceCode, @PathVariable long projectId) {
-        List<ProjectReleaseDTO> projectReleaseList = projectReleaseService.selectProjectReleases(spaceCode, projectId);
-        return projectReleaseList
-            .stream()
-            .map(projectReleaseDTO -> new ProjectReleaseResponse(projectReleaseDTO, SessionUtil.getUserId(true)))
-            .collect(Collectors.toList());
-    }
-
-    @Operation(description = "릴리스 생성")
-    @PostMapping("/{projectId}/releases")
-    public ProjectReleaseResponse createProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
-        ProjectReleaseDTO projectRelease = projectReleaseCreateRequest.toDTO(projectId);
-        return new ProjectReleaseResponse(projectReleaseService.createProjectRelease(spaceCode, projectId, projectRelease), SessionUtil.getUserId(true));
-    }
-
-    @Operation(description = "릴리스 수정")
-    @PutMapping("/{projectId}/releases/{releaseId}")
-    public ProjectReleaseResponse updateProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long releaseId,
-        @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
-        ProjectReleaseDTO projectRelease = projectReleaseService.updateProjectRelease(spaceCode, projectId, releaseId, projectReleaseCreateRequest.toDTO(projectId));
-        return new ProjectReleaseResponse(projectRelease, SessionUtil.getUserId(true));
-    }
-
-    @Operation(description = "릴리스 삭제")
-    @DeleteMapping("/{projectId}/releases/{releaseId}")
-    public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long releaseId) {
-        projectReleaseService.deleteProjectRelease(spaceCode, projectId, releaseId);
-    }
-
     @Operation(description = "프로젝트 메세지 채널 조회")
     @GetMapping("/{projectId}/channels")
     public List<ProjectMessageChannelResponse> selectProjectMessageChannels(@PathVariable String spaceCode, @PathVariable Long projectId) {
@@ -183,7 +136,6 @@ public class ProjectController {
         ProjectFileDTO projectFile = projectFileService.selectProjectFile(projectId, imageId, uuid);
         Resource resource = fileUtil.loadFileAsResource(projectFile.getPath());
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(projectFile.getName(), StandardCharsets.UTF_8).build();
-
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/octet-stream")).header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString()).body(resource);
     }
 }
