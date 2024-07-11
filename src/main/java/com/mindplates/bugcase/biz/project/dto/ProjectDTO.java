@@ -3,7 +3,6 @@ package com.mindplates.bugcase.biz.project.dto;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
@@ -37,7 +36,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
     private Long testcaseCount = 0L;
     private boolean aiEnabled;
     private SpaceDTO space;
-    private List<TestcaseGroupDTO> testcaseGroups; // 삭제하고, 관련된 코드 변경 필요함
     private List<TestcaseTemplateDTO> testcaseTemplates;
     private List<ProjectUserDTO> users;
     private List<ProjectMessageChannelDTO> messageChannels;
@@ -69,10 +67,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
             this.users = project.getUsers().stream().map(ProjectUserDTO::new).collect(Collectors.toList());
         }
 
-        if (project.getTestcaseGroups() != null) {
-            this.testcaseGroups = project.getTestcaseGroups().stream().map(TestcaseGroupDTO::new).collect(Collectors.toList());
-        }
-
         if (project.getMessageChannels() != null) {
             this.messageChannels = project.getMessageChannels().stream().map(ProjectMessageChannelDTO::new).collect(Collectors.toList());
         }
@@ -96,12 +90,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
 
         if (this.space != null) {
             project.setSpace(Space.builder().id(space.getId()).build());
-        }
-
-        if (this.testcaseGroups != null) {
-            project.setTestcaseGroups(this.testcaseGroups.stream().map(testcaseGroupDTO -> testcaseGroupDTO.toEntity(project)).collect(Collectors.toList()));
-        } else {
-            project.setTestcaseGroups(Collections.emptyList());
         }
 
         if (this.testcaseTemplates != null) {

@@ -12,6 +12,8 @@ public interface TestcaseGroupRepository extends JpaRepository<TestcaseGroup, Lo
 
     List<TestcaseGroup> findAllByProjectIdAndParentId(Long projectId, Long parentId);
 
+    List<TestcaseGroup> findAllByProjectId(Long projectId);
+
     Optional<TestcaseGroup> findByIdAndProjectId(Long id, Long projectId);
 
     @Modifying

@@ -202,7 +202,7 @@ public class TestrunReservation extends CommonEntity {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testcase.getId().equals(testrunTestcaseGroupTestcaseDTO.getId()));
                     }
                     return true;
                 });

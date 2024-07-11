@@ -66,6 +66,13 @@ public class TestcaseController {
     private final MappingUtil mappingUtil;
     private final ProjectFileService projectFileService;
 
+    @Operation(description = "테스트케이스 그룹 목록 조회")
+    @GetMapping("/groups")
+    public List<TestcaseGroupResponse> selectProjectTestcaseGroupList(@PathVariable String spaceCode, @PathVariable Long projectId) {
+        List<TestcaseGroupDTO> testcaseGroupList = testcaseService.selectTestcaseGroupList(projectId);
+        return testcaseGroupList.stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
+    }
+
     @Operation(description = "테스트케이스 목록 조회")
     @GetMapping("")
     public List<TestcaseSimpleResponse> selectProjectTestcaseList(@PathVariable String spaceCode, @PathVariable Long projectId) {
@@ -244,7 +251,8 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 AI 재구성")
     @PostMapping("/{testcaseId}/paraphrase")
-    public Mono<JsonNode> createParaphraseTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "modelId") long modelId) throws JsonProcessingException {
+    public Mono<JsonNode> createParaphraseTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "modelId") long modelId)
+        throws JsonProcessingException {
         return testcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId);
     }
 }

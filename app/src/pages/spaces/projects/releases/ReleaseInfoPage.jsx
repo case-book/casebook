@@ -8,6 +8,7 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import './ReleaseInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
+import TestcaseService from '@/services/TestcaseService';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -16,6 +17,7 @@ function ReleaseInfoPage() {
   const { spaceCode, projectId, releaseId } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
+  const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [releaseNameMap, setReleaseNameMap] = useState({});
   const [release, setRelease] = useState({});
 
@@ -31,6 +33,10 @@ function ReleaseInfoPage() {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
+
+    TestcaseService.selectTestcaseGroupList(spaceCode, projectId, list => {
+      setTestcaseGroups(list);
+    });
   }, [spaceCode, projectId]);
 
   useEffect(() => {
@@ -42,12 +48,12 @@ function ReleaseInfoPage() {
   const selectedTestcaseGroup = useMemo(
     () =>
       testcaseUtil.getSelectionFromTestcaseGroups(
-        (project?.testcaseGroups ?? []).map(group => ({
+        (testcaseGroups ?? []).map(group => ({
           ...group,
           testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId))),
         })),
       ),
-    [project, releaseId],
+    [project, releaseId, testcaseGroups],
   );
 
   const onDelete = () => {

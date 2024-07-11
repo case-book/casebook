@@ -258,8 +258,7 @@ public class TestrunIteration extends CommonEntity {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getTestcase().getId()
-                                .equals(testcase.getTestcase().getId()));
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO ->testcase.getId().equals(testrunTestcaseGroupTestcaseDTO.getId()));
                     }
                     return true;
                 });

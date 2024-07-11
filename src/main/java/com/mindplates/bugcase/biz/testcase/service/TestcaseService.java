@@ -94,6 +94,11 @@ public class TestcaseService {
     private final LlmService llmService;
     private final SpaceLlmPromptRepository spaceLlmPromptRepository;
 
+    public List<TestcaseGroupDTO> selectTestcaseGroupList(Long projectId) {
+        List<TestcaseGroup> testcaseGroups = testcaseGroupRepository.findAllByProjectId(projectId);
+        return testcaseGroups.stream().map((TestcaseGroupDTO::new)).collect(Collectors.toList());
+    }
+
     public List<TestcaseDTO> selectTestcaseItemListByCreationTime(Long projectId, LocalDateTime from, LocalDateTime to) {
         List<Testcase> testcases = testcaseRepository.findAllByProjectIdAndCreationDateBetween(projectId, from, to);
         return testcases.stream().map((TestcaseDTO::new)).collect(Collectors.toList());
@@ -146,7 +151,7 @@ public class TestcaseService {
 
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-        List<TestcaseGroup> testcaseGroups = project.getTestcaseGroups();
+        List<TestcaseGroup> testcaseGroups = testcaseGroupRepository.findAllByProjectId(projectId);
 
         TestcaseGroup targetGroup = testcaseGroups.stream().filter((testcaseGroup -> testcaseGroup.getId().equals(targetId))).findAny()
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -194,16 +199,16 @@ public class TestcaseService {
             targetGroup.setItemOrder(destinationGroup.getItemOrder() + 1);
         }
 
-        projectRepository.save(project);
+        testcaseGroupRepository.saveAll(testcaseGroups);
+
+
     }
 
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteTestcaseGroupInfo(String spaceCode, Long projectId, Long testcaseGroupId) {
-
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        List<TestcaseGroup> testcaseGroups = project.getTestcaseGroups();
+        List<TestcaseGroup> testcaseGroups = testcaseGroupRepository.findAllByProjectId(projectId);
         TestcaseGroup targetTestcaseGroup = testcaseGroups.stream().filter((testcaseGroup -> testcaseGroup.getId().equals(testcaseGroupId))).findAny()
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         long maxDepth = testcaseGroups.stream().mapToLong(TestcaseGroup::getDepth).max().orElse(0L);
@@ -509,10 +514,12 @@ public class TestcaseService {
             .stream()
             .filter((testcaseProjectRelease -> testcase.getTestcaseProjectReleases()
                 .stream()
-                .noneMatch(testcaseProjectRelease1 -> testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId()) && testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId()))
-        )).forEach(testcaseProjectRelease -> {
-            testcaseProjectReleaseRepository.deleteByTestcaseIdAndProjectReleaseId(testcaseProjectRelease.getTestcase().getId(), testcaseProjectRelease.getProjectRelease().getId());
-        });
+                .noneMatch(
+                    testcaseProjectRelease1 -> testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId()) && testcaseProjectRelease1.getProjectRelease().getId()
+                        .equals(testcaseProjectRelease.getProjectRelease().getId()))
+            )).forEach(testcaseProjectRelease -> {
+                testcaseProjectReleaseRepository.deleteByTestcaseIdAndProjectReleaseId(testcaseProjectRelease.getTestcase().getId(), testcaseProjectRelease.getProjectRelease().getId());
+            });
 
         testcaseRepository.save(testcase);
 

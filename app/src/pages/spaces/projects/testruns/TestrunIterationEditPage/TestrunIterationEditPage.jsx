@@ -27,6 +27,8 @@ import dateUtil from '@/utils/dateUtil';
 import './TestrunIterationEditPage.scss';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
+import TestcaseService from '@/services/TestcaseService';
+import { waitFor } from '@/utils/request';
 
 const labelMinWidth = '120px';
 
@@ -41,6 +43,8 @@ function TestrunIterationEditPage({ type }) {
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [project, setProject] = useState(null);
+
+  const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [spaceProfileList, setSpaceProfileList] = useState([]);
 
@@ -115,7 +119,7 @@ function TestrunIterationEditPage({ type }) {
   const selectAllTestcase = () => {
     const nextTestrun = {
       ...testrunIteration,
-      testcaseGroups: project.testcaseGroups?.map(d => {
+      testcaseGroups: testcaseGroups?.map(d => {
         return {
           testcaseGroupId: d.id,
           testcases: d.testcases?.map(item => {
@@ -130,47 +134,55 @@ function TestrunIterationEditPage({ type }) {
   };
 
   useEffect(() => {
-    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
-      setSpaceProfileList(profiles);
+    const promises = [];
+    promises.push(SpaceProfileService.selectSpaceProfileList(spaceCode));
+    promises.push(ProjectService.selectProjectInfo(spaceCode, projectId));
+    promises.push(TestcaseService.selectTestcaseGroupList(spaceCode, projectId));
 
-      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-        setProject(info);
-        if (isEdit) {
-          TestrunService.selectTestrunIterationInfo(spaceCode, projectId, testrunIterationId, data => {
-            setTestrunIteration({
-              ...data,
-              startTime: dateUtil.getHourMinuteTime(data.startTime),
-              reserveStartDateTime: dateUtil.getTime(data.reserveStartDateTime),
-              reserveEndDateTime: dateUtil.getTime(data.reserveEndDateTime),
-              messageChannels: data.messageChannels || [],
-            });
-          });
-        } else {
-          const defaultProfile = profiles.find(profile => profile.default);
+    waitFor(promises).then(responses => {
+      const profiles = responses[0].data;
+      const info = responses[1].data;
+      const list = responses[2].data;
+
+      setSpaceProfileList(profiles);
+      setProject(info);
+      setTestcaseGroups(list);
+
+      if (isEdit) {
+        TestrunService.selectTestrunIterationInfo(spaceCode, projectId, testrunIterationId, data => {
           setTestrunIteration({
-            ...testrunIteration,
-            testrunUsers: info.users?.map(d => {
-              return { userId: d.userId, email: d.email, name: d.name };
-            }),
-            testcaseGroups: info.testcaseGroups?.map(d => {
-              return {
-                testcaseGroupId: d.id,
-                testcases: d.testcases?.map(item => {
-                  return {
-                    testcaseId: item.id,
-                  };
-                }),
-              };
-            }),
-            profileIds: defaultProfile ? [defaultProfile.id] : [],
-            messageChannels: info.messageChannels?.map(d => {
-              return {
-                projectMessageChannelId: d.id,
-              };
-            }),
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            reserveStartDateTime: dateUtil.getTime(data.reserveStartDateTime),
+            reserveEndDateTime: dateUtil.getTime(data.reserveEndDateTime),
+            messageChannels: data.messageChannels || [],
           });
-        }
-      });
+        });
+      } else {
+        const defaultProfile = profiles.find(profile => profile.default);
+        setTestrunIteration({
+          ...testrunIteration,
+          testrunUsers: info.users?.map(d => {
+            return { userId: d.userId, email: d.email, name: d.name };
+          }),
+          testcaseGroups: list?.map(d => {
+            return {
+              testcaseGroupId: d.id,
+              testcases: d.testcases?.map(item => {
+                return {
+                  testcaseId: item.id,
+                };
+              }),
+            };
+          }),
+          profileIds: defaultProfile ? [defaultProfile.id] : [],
+          messageChannels: info.messageChannels?.map(d => {
+            return {
+              projectMessageChannelId: d.id,
+            };
+          }),
+        });
+      }
     });
   }, [type, projectId, testrunIterationId]);
 
@@ -712,7 +724,7 @@ function TestrunIterationEditPage({ type }) {
                       return (
                         <li key={d.testcaseGroupId}>
                           <div>
-                            {project.testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
+                            {testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
                             {d.testcases?.length > 0 && (
                               <span className="badge">
                                 <span>{d.testcases?.length}</span>
@@ -816,7 +828,7 @@ function TestrunIterationEditPage({ type }) {
       )}
       {testcaseSelectPopupOpened && (
         <TestcaseSelectPopup
-          testcaseGroups={project.testcaseGroups}
+          testcaseGroups={testcaseGroups}
           selectedTestcaseGroups={testrunIteration.testcaseGroups}
           users={project.users}
           selectedUsers={testrunIteration.testrunUsers}

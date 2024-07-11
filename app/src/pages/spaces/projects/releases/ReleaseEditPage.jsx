@@ -9,6 +9,7 @@ import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopu
 import PropTypes from 'prop-types';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './ReleaseEditPage.scss';
+import TestcaseService from '@/services/TestcaseService';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -17,6 +18,7 @@ function ReleaseEditPage({ type }) {
   const navigate = useNavigate();
   const { spaceCode, projectId, releaseId } = useParams();
   const [project, setProject] = useState(null);
+  const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [release, setRelease] = useState({});
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
   const [isTestcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
@@ -40,20 +42,23 @@ function ReleaseEditPage({ type }) {
     });
   };
 
-  const selectAllTestcase = () => setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(project?.testcaseGroups ?? []));
+  const selectAllTestcase = () => setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(testcaseGroups ?? []));
 
-  const selectedTestcaseGroupSummary = useMemo(
-    () => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, project?.testcaseGroups),
-    [currentSelectedTestcaseGroups, project?.testcaseGroups],
-  );
+  const selectedTestcaseGroupSummary = useMemo(() => testcaseUtil.getSelectedTestcaseGroupSummary(currentSelectedTestcaseGroups, testcaseGroups), [currentSelectedTestcaseGroups, testcaseGroups]);
 
   useEffect(() => {
     ProjectService.selectProjectInfo(spaceCode, projectId, info => {
       setProject(info);
     });
+
+    TestcaseService.selectTestcaseGroupList(spaceCode, projectId, list => {
+      setTestcaseGroups(list);
+    });
   }, [spaceCode, projectId]);
   useEffect(() => {
-    if (!isEdit) return;
+    if (!isEdit) {
+      return;
+    }
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, info => {
       setRelease(info);
     });
@@ -62,10 +67,13 @@ function ReleaseEditPage({ type }) {
   useEffect(() => {
     setCurrentSelectedTestcaseGroups(
       testcaseUtil.getSelectionFromTestcaseGroups(
-        (project?.testcaseGroups ?? []).map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId))) })),
+        (testcaseGroups ?? []).map(group => ({
+          ...group,
+          testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId))),
+        })),
       ),
     );
-  }, [project?.testcaseGroups, releaseId]);
+  }, [testcaseGroups, releaseId]);
 
   return (
     <Page className="release-edit-page">
@@ -211,7 +219,7 @@ function ReleaseEditPage({ type }) {
       </PageContent>
       {isTestcaseSelectPopupOpened && (
         <TestcaseSelectPopup
-          testcaseGroups={project?.testcaseGroups}
+          testcaseGroups={testcaseGroups}
           selectedTestcaseGroups={currentSelectedTestcaseGroups}
           onApply={setCurrentSelectedTestcaseGroups}
           setOpened={setTestcaseSelectPopupOpened}

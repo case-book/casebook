@@ -76,10 +76,6 @@ public class Project extends CommonEntity {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SELECT)
-    private List<TestcaseGroup> testcaseGroups;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
     private List<TestcaseTemplate> testcaseTemplates;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)

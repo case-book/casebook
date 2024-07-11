@@ -11,7 +11,6 @@ import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
@@ -130,24 +129,19 @@ public class ProjectService {
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
-
     public String selectProjectName(String spaceCode, Long projectId) {
         return projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
-
     public Long selectProjectId(String token) {
-        ProjectToken projectToken = projectTokenRepository.findByToken(token)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
+        ProjectToken projectToken = projectTokenRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "project.token.invalid"));
         return projectToken.getProject().getId();
     }
-
 
     public boolean existByName(String spaceCode, String name) {
         Long count = projectRepository.countBySpaceCodeAndName(spaceCode, name);
         return count > 0;
     }
-
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#updateProjectInfo.id}", value = CacheConfig.PROJECT)
@@ -155,35 +149,23 @@ public class ProjectService {
         ProjectDTO projectInfo = selectProjectInfo(spaceCode, updateProjectInfo.getId());
         projectInfo.updateInfo(updateProjectInfo);
         List<Long> deleteTestcaseTemplateIds = projectInfo.updateTestcaseTemplates(updateProjectInfo.getTestcaseTemplates());
-        deleteTestcaseTemplateList(deleteTestcaseTemplateIds, projectInfo);
+
+        for (Long deleteTestcaseTemplateId : deleteTestcaseTemplateIds) {
+            testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
+            testrunTestcaseGroupTestcaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
+            testcaseProjectReleaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
+            testcaseItemRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
+            testcaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
+        }
+
         projectInfo.updateUsers(updateProjectInfo.getUsers());
         List<Long> deleteMessageChannelIds = projectInfo.updateMessageChannels(updateProjectInfo.getMessageChannels());
         deleteMessageChannelIds.forEach((testrunMessageChannelRepository::deleteByProjectMessageChannelId));
         projectReleaseService.updateProjectTargetRelease(projectInfo.getId(), targetReleaseId);
         Project updateResult = projectInfo.toEntity();
         return new ProjectDTO(projectRepository.save(updateResult));
-
     }
 
-    private void deleteTestcaseTemplateList(List<Long> deleteTestcaseTemplateIds, ProjectDTO projectInfo) {
-        // 삭제된 템플릿을 사용하는 테스트케이스가 참조 중인, 릴리스 정보 삭제
-        for (Long deleteTestcaseTemplateId : deleteTestcaseTemplateIds) {
-            testcaseProjectReleaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
-        }
-
-        // 삭제된 템플릿을 사용하는 테스트케이스 아이템, 테스트 케이스, 테스트 케이스 코멘트, 테스트런 테스트케이스 삭제
-        for (TestcaseGroupDTO testcaseGroup : projectInfo.getTestcaseGroups()) {
-            testcaseGroup.getTestcases().forEach(testcaseDTO -> {
-                if (deleteTestcaseTemplateIds.contains(testcaseDTO.getTestcaseTemplate().getId())) {
-                    testcaseItemRepository.deleteByTestcaseId(testcaseDTO.getId());
-                    testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseId(testcaseDTO.getId());
-                    testrunTestcaseGroupTestcaseRepository.deleteByTestcaseId(testcaseDTO.getId());
-                    testcaseRepository.deleteById(testcaseDTO.getId());
-                }
-            });
-            testcaseGroup.getTestcases().removeIf(testcaseDTO -> deleteTestcaseTemplateIds.contains(testcaseDTO.getTestcaseTemplate().getId()));
-        }
-    }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
@@ -198,7 +180,6 @@ public class ProjectService {
         Project projectTarget = project.toEntity();
         projectRepository.delete(projectTarget);
     }
-
 
     public Long selectSpaceProjectCount(Long spaceId) {
         return projectRepository.countBySpaceId(spaceId);
@@ -229,6 +210,5 @@ public class ProjectService {
     public void updateProjectAiEnabledFalse() {
         projectRepository.updateProjectAiEnable();
     }
-
 
 }

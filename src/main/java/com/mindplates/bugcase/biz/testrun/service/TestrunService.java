@@ -328,7 +328,8 @@ public class TestrunService {
             List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
             testrun.getMessageChannels().forEach(testrunMessageChannel -> {
                 TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                messageChannelService.sendTestrunReOpenMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(), testers);
+                messageChannelService.sendTestrunReOpenMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(),
+                    testers);
             });
         }
 
@@ -479,7 +480,7 @@ public class TestrunService {
         } else if (target.equals(TesterChangeTargetCode.ALL)) {
             for (TestrunTestcaseGroup testcaseGroup : testrun.getTestcaseGroups()) {
                 for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
-                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && testcase.getTester() != null && testcase.getTester().getId().equals(testerId)) {
+                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTester() == null) || (testcase.getTester() != null && testcase.getTester().getId().equals(testerId)))) {
                         int index = random.nextInt(userIds.size());
                         testcase.setTester(User.builder().id(userIds.get(index)).build());
 
@@ -509,7 +510,7 @@ public class TestrunService {
     public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, Long testerId, Long actorId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        Long oldUserId = testrunTestcaseGroupTestcase.getTester().getId();
+        Long oldUserId = testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null;
         testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
 
         User actor = userRepository.findById(actorId).orElse(null);
@@ -607,7 +608,8 @@ public class TestrunService {
             });
 
             // 프로젝트의 모든 테스트케이스 템플릿 아이템 조회 및 정리
-            List<TestcaseTemplateItem> projectAllTestcaseTemplateItems = mappingUtil.convert(testcaseService.selectProjectTestcaseTemplateItemList(testrunDTO.getProject().getId()), TestcaseTemplateItem.class);
+            List<TestcaseTemplateItem> projectAllTestcaseTemplateItems = mappingUtil.convert(testcaseService.selectProjectTestcaseTemplateItemList(testrunDTO.getProject().getId()),
+                TestcaseTemplateItem.class);
             Map<Long, TestcaseTemplateItem> projectTestcaseTemplateItemMap = new HashMap<>();
             projectAllTestcaseTemplateItems.forEach(testcaseTemplateItem -> projectTestcaseTemplateItemMap.put(testcaseTemplateItem.getId(), testcaseTemplateItem));
 
