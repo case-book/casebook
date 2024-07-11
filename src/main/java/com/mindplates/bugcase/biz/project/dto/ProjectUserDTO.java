@@ -51,4 +51,9 @@ public class ProjectUserDTO extends CommonDTO implements IDTO<ProjectUser> {
         projectUser.setProject(project);
         return projectUser;
     }
+
+    public void updateInfo(ProjectUserDTO updateProjectUser) {
+        this.role = updateProjectUser.getRole();
+        this.tags = updateProjectUser.getTags();
+    }
 }

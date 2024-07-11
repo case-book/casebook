@@ -73,4 +73,34 @@ public class TestcaseTemplateDTO extends CommonDTO implements IDTO<TestcaseTempl
         testcaseTemplate.setProject(project);
         return testcaseTemplate;
     }
+
+    public void updateInfo(TestcaseTemplateDTO updateTestcaseTemplate) {
+        this.name = updateTestcaseTemplate.getName();
+        this.defaultTemplate = updateTestcaseTemplate.isDefaultTemplate();
+        this.defaultTesterType = updateTestcaseTemplate.getDefaultTesterType();
+        this.defaultTesterValue = updateTestcaseTemplate.getDefaultTesterValue();
+        this.crud = updateTestcaseTemplate.getCrud();
+
+        // updateTestcaseTemplateItems의 ID가 없는 경우, testcaseTemplateItems에 추가
+        updateTestcaseTemplate.getTestcaseTemplateItems().stream()
+            .filter(updateTestcaseTemplateItem -> updateTestcaseTemplateItem.getId() == null)
+            .forEach(updateTestcaseTemplateItem -> this.testcaseTemplateItems.add(updateTestcaseTemplateItem));
+
+        // updateTestcaseTemplateItems의 crud가 D인 템플릿을 testcaseTemplateItems에서 제거
+        this.testcaseTemplateItems.removeIf(testcaseTemplateItem -> updateTestcaseTemplate.getTestcaseTemplateItems().stream()
+            .anyMatch(updateTestcaseTemplateItem -> updateTestcaseTemplateItem.isDeleted() && updateTestcaseTemplateItem.getId().equals(testcaseTemplateItem.getId())));
+
+        // ID가 있고, crud가 D가 아닌 경우, testcaseTemplateItems을 업데이트
+        updateTestcaseTemplate.getTestcaseTemplateItems().stream()
+            .filter(updateTestcaseTemplateItem -> updateTestcaseTemplateItem.getId() != null && !updateTestcaseTemplateItem.isDeleted())
+            .forEach(updateTestcaseTemplateItem -> {
+                for (TestcaseTemplateItemDTO testcaseTemplateItem : this.testcaseTemplateItems) {
+                    if (testcaseTemplateItem.getId() != null && testcaseTemplateItem.getId().equals(updateTestcaseTemplateItem.getId())) {
+                        testcaseTemplateItem.updateInfo(updateTestcaseTemplateItem);
+                    }
+                }
+            });
+
+
+    }
 }

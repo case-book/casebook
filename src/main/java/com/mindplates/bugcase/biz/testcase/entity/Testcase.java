@@ -76,7 +76,8 @@ public class Testcase extends CommonEntity {
     @JoinColumn(name = "testcase_template_id", foreignKey = @ForeignKey(name = "FK_TESTCASE__TESTCASE_TEMPLATE"))
     private TestcaseTemplate testcaseTemplate;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase", cascade = CascadeType.ALL, orphanRemoval = true)
+    // 템플릿 삭제 시, 삭제 순서 오류로 수동으로 삭제하도록 CASECADE 제거
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testcase")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestcaseItem> testcaseItems;
 

@@ -84,4 +84,20 @@ public class TestcaseTemplateItemDTO extends CommonDTO implements IDTO<TestcaseT
         return testcaseTemplateItem;
 
     }
+
+    public void updateInfo(TestcaseTemplateItemDTO updateTestcaseTemplateItem) {
+        this.category = updateTestcaseTemplateItem.getCategory();
+        this.type = updateTestcaseTemplateItem.getType();
+        this.itemOrder = updateTestcaseTemplateItem.getItemOrder();
+        this.label = updateTestcaseTemplateItem.getLabel();
+        this.options = updateTestcaseTemplateItem.getOptions();
+        this.size = updateTestcaseTemplateItem.getSize();
+        this.defaultType = updateTestcaseTemplateItem.getDefaultType();
+        this.defaultValue = updateTestcaseTemplateItem.getDefaultValue();
+        this.description = updateTestcaseTemplateItem.getDescription();
+        this.example = updateTestcaseTemplateItem.getExample();
+        this.editable = updateTestcaseTemplateItem.getEditable();
+        this.systemLabel = updateTestcaseTemplateItem.getSystemLabel();
+        this.deleted = updateTestcaseTemplateItem.isDeleted();
+    }
 }
