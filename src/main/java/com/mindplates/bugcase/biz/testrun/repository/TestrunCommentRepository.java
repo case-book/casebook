@@ -22,6 +22,6 @@ public interface TestrunCommentRepository extends JpaRepository<TestrunComment, 
 
     Optional<TestrunComment> findByTestrunProjectIdAndTestrunIdAndId(Long projectId, Long testrunId, Long commentId);
 
-
+    void deleteByUserId(Long userId);
 }
 

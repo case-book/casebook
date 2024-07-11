@@ -39,13 +39,17 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testcase.id in (SELECT t.id from Testcase t where t.testcaseTemplate.id = :id)")
     void deleteByTestcaseTemplateId(@Param("id") Long id);
 
+    @Modifying
+    @Query("UPDATE TestrunTestcaseGroupTestcase ttgt SET ttgt.tester = NULL WHERE ttgt.tester.id = :userId")
+    void updateTesterNullByUserId(@Param("userId") Long userId);
 
     Optional<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
         Long projectId, Long testrunId, String seqId);
 
     List<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunIdAndAndTestResult(Long testrunId, TestResultCode testResultCode);
 
-    List<TestrunTestcaseGroupTestcase> findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(Long projectId, Long testcaseId, Long currentTestrunId, Pageable Pageable);
+    List<TestrunTestcaseGroupTestcase> findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(Long projectId, Long testcaseId, Long currentTestrunId,
+        Pageable Pageable);
 
 
 }

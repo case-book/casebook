@@ -1,8 +1,17 @@
 package com.mindplates.bugcase.biz.user.service;
 
+import com.mindplates.bugcase.biz.ai.repository.AiRequestHistoryRepository;
+import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
+import com.mindplates.bugcase.biz.space.repository.SpaceApplicantRepository;
+import com.mindplates.bugcase.biz.space.repository.SpaceUserRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunUserRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
+import com.mindplates.bugcase.biz.user.repository.UserTokenRepository;
 import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.EncryptUtil;
@@ -22,6 +31,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final EncryptUtil encryptUtil;
     private final MappingUtil mappingUtil;
+    private final SpaceApplicantRepository spaceApplicantRepository;
+    private final SpaceUserRepository spaceUserRepository;
+    private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
+    private final TestrunCommentRepository testrunCommentRepository;
+    private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
+    private final TestrunUserRepository testrunUserRepository;
+    private final ProjectUserRepository projectUserRepository;
+    private final AiRequestHistoryRepository aiRequestHistoryRepository;
+    private final UserTokenRepository userTokenRepository;
 
     public UserDTO selectUserInfo(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -95,6 +113,22 @@ public class UserService {
         targetUser.setUseYn(user.getUseYn());
         targetUser.setActivateYn(user.getActivateYn());
         return new UserDTO(userRepository.save(targetUser));
+    }
+
+    @Transactional
+    public void deleteUserByAdmin(Long userId) {
+        User targetUser = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        spaceApplicantRepository.deleteByUserId(userId);
+        spaceUserRepository.deleteByUserId(userId);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByUserId(userId);
+        testrunCommentRepository.deleteByUserId(userId);
+        testrunTestcaseGroupTestcaseRepository.updateTesterNullByUserId(userId);
+        testrunUserRepository.deleteByUserId(userId);
+        projectUserRepository.deleteByUserId(userId);
+        aiRequestHistoryRepository.updateTesterNullByUserId(userId);
+        userTokenRepository.deleteByUserId(userId);
+
+        userRepository.delete(targetUser);
     }
 
     @Transactional

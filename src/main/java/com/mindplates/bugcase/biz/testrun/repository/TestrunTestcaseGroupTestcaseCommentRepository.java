@@ -34,5 +34,6 @@ public interface TestrunTestcaseGroupTestcaseCommentRepository extends JpaReposi
         "(SELECT ttgt.id from TestrunTestcaseGroupTestcase ttgt where ttgt.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.testcaseTemplate.id = :testcaseTemplateId))")
     void deleteByTestcaseTemplateId(@Param("testcaseTemplateId") Long testcaseTemplateId);
 
+    void deleteByUserId(Long userId);
 }
 

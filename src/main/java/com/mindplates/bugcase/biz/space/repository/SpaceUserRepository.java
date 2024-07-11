@@ -22,6 +22,6 @@ public interface SpaceUserRepository extends JpaRepository<SpaceUser, Long> {
 
     boolean existsBySpaceCodeAndUserIdAndRole(String spaceCode, Long userId, UserRoleCode role);
 
-
+    void deleteByUserId(Long userId);
 }
 

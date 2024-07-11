@@ -11,6 +11,6 @@ public interface SpaceApplicantRepository extends JpaRepository<SpaceApplicant, 
     @Query("DELETE FROM SpaceApplicant sa WHERE sa.space.id = :spaceId AND sa.user.id = :userId")
     void deleteBySpaceIdAndUserId(Long spaceId, long userId);
 
-
+    void deleteByUserId(Long userId);
 }
 

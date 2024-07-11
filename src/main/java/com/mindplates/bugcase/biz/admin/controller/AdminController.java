@@ -101,6 +101,13 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "사용자 삭제")
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        userService.deleteUserByAdmin(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @Operation(description = "사용자 비밀번호 변경")
     @PutMapping("/users/{userId}/password")
     public ResponseEntity<?> updateUserInfo(@PathVariable Long userId, @Valid @RequestBody UpdatePasswordRequest updatePasswordRequest) {
