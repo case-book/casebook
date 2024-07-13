@@ -25,6 +25,10 @@ class TestcaseRenderStore {
     if (this.renderMap[testcase.seqId] !== undefined) return this.renderMap[testcase.seqId];
 
     const { ids = [], name = '', releaseIds = [] } = testcaseFilter;
+    if (ids.length === 0 && name === '' && releaseIds.length === 0) {
+      this.setRenderedBySeqId(testcase.seqId, true);
+      return true;
+    }
 
     // 각각의 조건은 AND로 묶여있음
     if (name && !testcase.name.includes(name)) {
@@ -47,7 +51,11 @@ class TestcaseRenderStore {
   checkRenderGroup = (group, testcaseFilter) => {
     if (this.renderMap[group.seqId] !== undefined) return this.renderMap[group.seqId];
 
-    const { name = '' } = testcaseFilter;
+    const { ids = [], name = '', releaseIds = [] } = testcaseFilter;
+    if (ids.length === 0 && name === '' && releaseIds.length === 0) {
+      this.setRenderedBySeqId(group.seqId, true);
+      return true;
+    }
 
     const isTestcaseRendered = group.testcases?.reduce?.((acc, testcase) => acc || this.checkRenderTestcase(testcase, testcaseFilter), false);
     const isChildrenRendered = group.children?.reduce?.((acc, child) => acc || this.checkRenderGroup(child, testcaseFilter), false);
@@ -58,6 +66,10 @@ class TestcaseRenderStore {
     }
 
     if (name && !group.name.includes(name)) {
+      this.setRenderedBySeqId(group.seqId, false);
+      return false;
+    }
+    if (!isTestcaseRendered) {
       this.setRenderedBySeqId(group.seqId, false);
       return false;
     }

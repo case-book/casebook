@@ -59,7 +59,7 @@ function TestcaseNavigatorControl({
   const filterNameInputRef = useRef(null); // transition을 활용하기 위해서 uncontrolled input을 사용
   const [isFilterFolded, setIsFilterFolded] = useState(false);
   const [filterIdsInput, setFilterIdsInput] = useState('');
-  const [filterIdStrings, setFilterIdStrings] = useState([]);
+  const [filterIdTags, setFilterIdTags] = useState([]);
   const [projectReleases, setProjectReleases] = useState([]);
 
   const {
@@ -82,7 +82,7 @@ function TestcaseNavigatorControl({
       return;
     }
     const deblanked = filterIdsInput.replace(/\s/g, '');
-    const nextFilterIdStrings = [...filterIdStrings, deblanked];
+    const nextFilterIdStrings = [...filterIdTags, deblanked];
     const nextFilterIds = getFilterIdsFromIdStrings(nextFilterIdStrings);
     if (!nextFilterIds) {
       dialogUtil.setMessage(
@@ -94,7 +94,7 @@ function TestcaseNavigatorControl({
     }
 
     setFilterIdsInput('');
-    setFilterIdStrings(nextFilterIdStrings);
+    setFilterIdTags(nextFilterIdStrings);
     onChangeTestcaseFilter({ ...testcaseFilter, ids: nextFilterIds });
   };
 
@@ -256,6 +256,7 @@ function TestcaseNavigatorControl({
             tip={t('필터 리셋')}
             onClick={() => {
               onChangeTestcaseFilter({ name: '', ids: [], releaseIds: [] });
+              setFilterIdTags([]);
               filterNameInputRef.current.value = '';
             }}
           >
@@ -284,14 +285,14 @@ function TestcaseNavigatorControl({
               </Button>
             </div>
             <div className="testcase-filter-ids-list">
-              {filterIdStrings.map(id => {
+              {filterIdTags.map(id => {
                 return (
                   <Tag
                     key={id}
                     border
                     size="sm"
                     onRemove={() => {
-                      const nextFilterIdStrings = filterIdStrings.filter(d => d !== id);
+                      const nextFilterIdStrings = filterIdTags.filter(d => d !== id);
                       const nextFilterIds = getFilterIdsFromIdStrings(nextFilterIdStrings);
                       if (!nextFilterIds) {
                         dialogUtil.setMessage(
@@ -301,7 +302,7 @@ function TestcaseNavigatorControl({
                         );
                         return;
                       }
-                      setFilterIdStrings(nextFilterIdStrings);
+                      setFilterIdTags(nextFilterIdStrings);
                       onChangeTestcaseFilter({ ...testcaseFilter, ids: nextFilterIds });
                     }}
                     text={id}
