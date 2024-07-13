@@ -10,9 +10,11 @@ import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectListResponse;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectResponse;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
+import com.mindplates.bugcase.framework.security.AllowProjectRole;
 import io.swagger.v3.oas.annotations.Operation;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -97,6 +99,7 @@ public class ProjectController {
         return ProjectResponse.builder().name(projectName).build();
     }
 
+    @AllowProjectRole(value = UserRoleCode.USER)
     @Operation(description = "프로젝트 탈퇴")
     @DeleteMapping("/{projectId}/users/my")
     public ResponseEntity<?> deleteProjectUserInfo(@PathVariable String spaceCode, @PathVariable long projectId) {

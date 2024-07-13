@@ -7,6 +7,7 @@ import com.mindplates.bugcase.framework.security.CustomAccessDeniedHandler;
 import com.mindplates.bugcase.framework.security.CustomAuthenticationEntryPoint;
 import com.mindplates.bugcase.framework.security.JwtAuthenticationFilter;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
+import com.mindplates.bugcase.framework.security.MethodFinder;
 import com.mindplates.bugcase.framework.security.ResourceVoter;
 import com.mindplates.bugcase.framework.security.UserTokenAuthenticationFilter;
 import com.mindplates.bugcase.framework.security.UserTokenProvider;
@@ -44,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final SpaceService spaceService;
     private final MessageSourceAccessor messageSourceAccessor;
     private final ProjectService projectService;
+    private final MethodFinder methodFinder;
 
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
@@ -57,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
         handler.setRoleHierarchy(roleHierarchy);
 
-        ResourceVoter resourceVoter = new ResourceVoter(spaceService, projectService);
+        ResourceVoter resourceVoter = new ResourceVoter(spaceService, projectService, methodFinder);
         resourceVoter.setExpressionHandler(handler);
 
         List<AccessDecisionVoter<? extends Object>> decisionVoters = Arrays.asList(resourceVoter);
