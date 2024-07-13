@@ -98,7 +98,7 @@ public class SpaceController {
         if (userId != null && spaceInfo.getUsers().stream().anyMatch(spaceUser -> spaceUser.getUser().getId().equals(userId) && UserRoleCode.ADMIN.equals(spaceUser.getRole()))) {
             spaceProjectList = projectService.selectSpaceProjectList(spaceInfo.getId());
         } else {
-            spaceProjectList = projectService.selectSpaceMyProjectList(spaceInfo.getCode(), userId);
+            spaceProjectList = projectService.selectUserSpaceProjectList(spaceInfo.getCode(), userId);
         }
 
         return new SpaceResponse(spaceInfo, SessionUtil.getUserId(), spaceProjectList);

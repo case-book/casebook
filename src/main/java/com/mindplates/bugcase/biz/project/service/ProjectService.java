@@ -24,6 +24,7 @@ import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +91,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDTO createProjectInfo(String spaceCode, ProjectDTO projectInfo, Long userId) {
+    public ProjectDTO createProjectInfo(String spaceCode, ProjectDTO projectInfo) {
+
+        long userId = SessionUtil.getUserId(true);
 
         if (existByName(spaceCode, projectInfo.getName())) {
             throw new ServiceException("error.project.duplicated");
@@ -138,7 +141,7 @@ public class ProjectService {
         return projectList.stream().map((ProjectDTO::new)).collect(Collectors.toList());
     }
 
-    public List<ProjectListDTO> selectSpaceMyProjectList(String spaceCode, Long userId) {
+    public List<ProjectListDTO> selectUserSpaceProjectList(String spaceCode, Long userId) {
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }

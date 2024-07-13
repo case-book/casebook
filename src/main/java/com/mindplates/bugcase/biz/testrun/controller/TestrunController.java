@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.testrun.controller;
 
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
@@ -89,7 +88,8 @@ public class TestrunController {
 
     @Operation(description = "종료된 테스트런 목록 조회")
     @GetMapping("/closed")
-    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end) {
+    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
+        @RequestParam(value = "end") LocalDateTime end) {
         return testrunService.selectClosedProjectTestrunList(spaceCode, projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
@@ -174,7 +174,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 상세 조회")
     @GetMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId, @PathVariable long testrunTestcaseGroupTestcaseId) {
+    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId,
+        @PathVariable long testrunTestcaseGroupTestcaseId) {
 
         TestrunDTO testrunDTO = testrunService.selectProjectTestrunInfo(testrunId);
         HashMap<String, String> variables = new HashMap<>();
@@ -231,7 +232,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 결과 아이템 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
+    public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
         List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.toDTO();
         List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
         return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
@@ -239,7 +241,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 결과 아이템 입력 (단건)")
     @PutMapping("/{testrunId}/testcases/{testrunTestcaseGroupTestcaseId}/items/{testcaseTemplateItemId}")
-    public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testcaseTemplateItemId,
+    public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @PathVariable long testcaseTemplateItemId,
         @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItems = testrunTestcaseGroupTestcaseItemRequest.toDTO();
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(testrunId, testrunTestcaseGroupTestcaseItems);
@@ -248,7 +251,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 결과 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
-    public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
+    public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId,
+        @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
         TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
 
         MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
@@ -266,7 +270,8 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 테스터 변경")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/tester")
-    public ResponseEntity<HttpStatus> updateTestrunTestcaseTester(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTester(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
         Long userId = SessionUtil.getUserId();
         testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunTesterRequest.getTesterId(), userId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -274,21 +279,25 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 테스터 랜덤 변경")
     @PutMapping("/{testrunId}/tester/random")
-    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
-        testrunService.updateTestrunTestcaseTesterRandom(spaceCode, projectId, testrunId, testrunTesterRandomChangeRequest.getTesterId(), testrunTesterRandomChangeRequest.getTargetId(), testrunTesterRandomChangeRequest.getTarget(), testrunTesterRandomChangeRequest.getReason());
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
+        testrunService.updateTestrunTestcaseTesterRandom(spaceCode, projectId, testrunId, testrunTesterRandomChangeRequest.getTesterId(), testrunTesterRandomChangeRequest.getTargetId(),
+            testrunTesterRandomChangeRequest.getTarget(), testrunTesterRandomChangeRequest.getReason());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 테스트케이스 코멘트 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
-    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
+    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
         TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentRequest.toDTO());
         return new TestrunTestcaseGroupTestcaseCommentResponse(result);
     }
 
     @Operation(description = "테스트런 테스트케이스 코멘트 삭제")
     @DeleteMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
-    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
+    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
         testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -302,34 +311,27 @@ public class TestrunController {
 
     @Operation(description = "프로젝트 테스트런 히스토리 조회")
     @GetMapping("/history")
-    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start, @RequestParam(value = "end") LocalDateTime end) {
+    public List<TestrunListResponse> selectTestrunHistoryList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
+        @RequestParam(value = "end") LocalDateTime end) {
         List<TestrunDTO> testruns = testrunService.selectProjectTestrunHistoryList(spaceCode, projectId, start, end);
         return testruns.stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
     @PostMapping("/{testrunId}/images")
-    public ProjectFileResponse createTestrunImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testrunId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
-        String path = projectFileService.createImage(projectId, file);
+    public ProjectFileResponse createTestrunImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testrunId, @RequestParam("file") MultipartFile file,
+        @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
 
-        ProjectFileDTO fileInfo = ProjectFileDTO
-            .builder()
-            .project(ProjectDTO.builder().id(projectId).build())
-            .name(name)
-            .size(size)
-            .type(type)
-            .path(path)
-            .uuid(UUID.randomUUID().toString())
-            .fileSourceType(FileSourceTypeCode.TESTRUN)
-            .fileSourceId(testrunId)
-            .build();
+        ProjectFileDTO projectFile = new ProjectFileDTO(projectId, name, size, type, UUID.randomUUID().toString(), FileSourceTypeCode.TESTRUN, file);
+        projectFile.setFileSourceId(testrunId);
 
-        ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
-        return new ProjectFileResponse(projectFile, spaceCode, projectId);
+        ProjectFileDTO result = projectFileService.createProjectFile(projectFile);
+        return new ProjectFileResponse(result, spaceCode, projectId);
     }
 
     @Operation(description = "테스트런 코멘트 입력")
     @PostMapping("/{testrunId}/comments")
-    public TestrunCommentResponse createTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunCommentRequest testrunCommentRequest) {
+    public TestrunCommentResponse createTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunCommentRequest testrunCommentRequest) {
         Long userId = SessionUtil.getUserId(true);
         TestrunCommentDTO result = testrunService.createTestrunComment(projectId, testrunId, userId, testrunCommentRequest.toDTO());
         return new TestrunCommentResponse(result);

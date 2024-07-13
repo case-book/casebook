@@ -55,7 +55,7 @@ public class ProjectController {
     @Operation(description = "프로젝트 생성")
     @PostMapping("")
     public ProjectResponse createProjectInfo(@PathVariable String spaceCode, @Valid @RequestBody ProjectCreateRequest projectCreateRequest) {
-        ProjectDTO project = projectService.createProjectInfo(spaceCode, projectCreateRequest.toDTO(), SessionUtil.getUserId());
+        ProjectDTO project = projectService.createProjectInfo(spaceCode, projectCreateRequest.toDTO());
         return new ProjectResponse(project, SessionUtil.getUserId());
     }
 
@@ -69,7 +69,8 @@ public class ProjectController {
     @Operation(description = "스페이스 프로젝트 목록 조회")
     @GetMapping("/my")
     public List<ProjectListResponse> selectSpaceMyProjectList(@PathVariable String spaceCode) {
-        List<ProjectListDTO> projectList = projectService.selectSpaceMyProjectList(spaceCode, SessionUtil.getUserId());
+        long userId = SessionUtil.getUserId(true);
+        List<ProjectListDTO> projectList = projectService.selectUserSpaceProjectList(spaceCode, userId);
         return projectList.stream().map(ProjectListResponse::new).collect(Collectors.toList());
     }
 
@@ -108,17 +109,10 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/images")
-    public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam("file") MultipartFile file,
-        @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
-        String path = projectFileService.createImage(projectId, file);
-        ProjectFileDTO testcaseFile = ProjectFileDTO
-            .builder()
-            .project(ProjectDTO.builder().id(projectId).build())
-            .name(name).size(size).type(type).path(path).uuid(UUID.randomUUID().toString())
-            .fileSourceType(FileSourceTypeCode.PROJECT)
-            .build();
-        ProjectFileDTO projectFile = projectFileService.createProjectFile(testcaseFile);
-        return new ProjectFileResponse(projectFile, spaceCode, projectId);
+    public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name,
+        @RequestParam("size") Long size, @RequestParam("type") String type) {
+        ProjectFileDTO result = projectFileService.createProjectFile(new ProjectFileDTO(projectId, name, size, type, UUID.randomUUID().toString(), FileSourceTypeCode.PROJECT, file));
+        return new ProjectFileResponse(result, spaceCode, projectId);
     }
 
     @GetMapping("/{projectId}/images/{imageId}")

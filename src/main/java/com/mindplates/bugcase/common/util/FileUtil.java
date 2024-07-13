@@ -2,14 +2,6 @@ package com.mindplates.bugcase.common.util;
 
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.framework.config.FileConfig;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,21 +10,29 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Slf4j
 public class FileUtil {
+
     private final Path fileStorageLocation;
 
 
     public FileUtil(FileConfig fileConfig) {
         this.fileStorageLocation = Paths.get(fileConfig.getUploadDir()).toAbsolutePath().normalize();
 
-
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
-            throw new ServiceException("image.upload.failed");
+            throw new ServiceException("error.image.upload.failed");
         }
     }
 
@@ -43,11 +43,11 @@ public class FileUtil {
             try {
                 Files.createDirectories(projectUploadDir.normalize());
             } catch (Exception ex) {
-                throw new ServiceException("image.upload.failed");
+                throw new ServiceException("error.image.upload.failed");
             }
         }
 
-        Path path = projectUploadDir.resolve(file.getOriginalFilename());
+        Path path = projectUploadDir.resolve(Objects.requireNonNull(file.getOriginalFilename()));
         while (Files.exists(path)) {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             path = projectUploadDir.resolve(File.separator + file.getOriginalFilename() + "." + timestamp.getTime());
@@ -69,7 +69,7 @@ public class FileUtil {
                 log.error("File delete error", e);
 
             }
-            throw new ServiceException("image.upload.failed");
+            throw new ServiceException("error.image.upload.failed");
         }
 
     }

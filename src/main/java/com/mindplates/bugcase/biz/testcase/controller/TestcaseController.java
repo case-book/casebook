@@ -204,14 +204,12 @@ public class TestcaseController {
     }
 
     @PostMapping("/{testcaseId}/images")
-    public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
-        @RequestParam("file") MultipartFile file, @RequestParam("name") String name, @RequestParam("size") Long size,
-        @RequestParam("type") String type) {
-        String path = projectFileService.createImage(projectId, file);
-        ProjectFileDTO fileInfo = ProjectFileDTO.builder().project(ProjectDTO.builder().id(projectId).build()).name(name).size(size).type(type)
-            .path(path).uuid(UUID.randomUUID().toString()).fileSourceType(FileSourceTypeCode.TESTCASE).fileSourceId(testcaseId).build();
-        ProjectFileDTO projectFile = projectFileService.createProjectFile(fileInfo);
-        return new ProjectFileResponse(projectFile, spaceCode, projectId);
+    public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file,
+        @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
+        ProjectFileDTO projectFile = new ProjectFileDTO(projectId, name, size, type, UUID.randomUUID().toString(), FileSourceTypeCode.TESTCASE, file);
+        projectFile.setFileSourceId(testcaseId);
+        ProjectFileDTO result = projectFileService.createProjectFile(projectFile);
+        return new ProjectFileResponse(result, spaceCode, projectId);
     }
 
     @Operation(description = "테스트케이스 복사")
