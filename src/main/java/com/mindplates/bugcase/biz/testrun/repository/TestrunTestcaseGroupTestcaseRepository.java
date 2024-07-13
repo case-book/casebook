@@ -56,5 +56,9 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.project.id = :projectId)")
     void deleteByProjectId(@Param("projectId") Long projectId);
 
+    @Modifying
+    @Query("UPDATE TestrunTestcaseGroupTestcase ttgt SET ttgt.tester.id = NULL WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.project.id = :projectId) AND  ttgt.tester.id = :userId")
+    void updateProjectTesterNullByUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
+
 }
 

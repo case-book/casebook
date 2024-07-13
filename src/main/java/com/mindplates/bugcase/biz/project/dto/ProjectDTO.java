@@ -201,7 +201,7 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
         });
 
         // updateUsers의 CRUD가 D인 경우, 해당 ID를 가진 사용자를 this.users에서 제거
-        this.users.removeIf(projectUser -> updateUsers.stream().anyMatch(updateProjectUser -> updateProjectUser.getId().equals(projectUser.getId()) && "D".equals(updateProjectUser.getCrud())));
+        this.users.removeIf(projectUser -> updateUsers.stream().anyMatch(updateProjectUser -> projectUser.getId().equals(updateProjectUser.getId()) && "D".equals(updateProjectUser.getCrud())));
 
         // updateUsers의 ID가 없는 경우, this.users에 추가
         updateUsers.stream().filter(updateProjectUser -> updateProjectUser.getId() == null).forEach(updateProjectUser -> this.users.add(updateProjectUser));

@@ -175,7 +175,10 @@ public class ProjectService {
         projectInfo.updateUsers(updateProjectInfo.getUsers());
         List<Long> deleteMessageChannelIds = projectInfo.updateMessageChannels(updateProjectInfo.getMessageChannels());
         deleteMessageChannelIds.forEach((testrunMessageChannelRepository::deleteByProjectMessageChannelId));
-        projectReleaseService.updateProjectTargetRelease(projectInfo.getId(), targetReleaseId);
+        if (targetReleaseId != null) {
+            projectReleaseService.updateProjectTargetRelease(projectInfo.getId(), targetReleaseId);
+        }
+
         Project updateResult = projectInfo.toEntity();
         return new ProjectDTO(projectRepository.save(updateResult));
     }
@@ -207,6 +210,8 @@ public class ProjectService {
         if (adminCount < 1L) {
             throw new ServiceException("no.project.admin.exist");
         }
+
+        testrunService.deleteProjectTestrunUser(spaceCode, projectId, userId);
 
         projectRepository.save(project);
     }

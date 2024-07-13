@@ -1067,5 +1067,14 @@ public class TestrunService {
         testrunRepository.deleteByProjectId(projectId);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteProjectTestrunUser(String spaceCode, long projectId, long userId) {
+        testrunCommentRepository.updateProjectTestrunCommentUserNullByUserId(projectId, userId);
+        testrunTestcaseGroupTestcaseCommentRepository.updateProjectTestrunTestcaseGroupTestcaseCommentUserNullByUserId(projectId, userId);
+        testrunTestcaseGroupTestcaseRepository.updateProjectTesterNullByUserId(projectId, userId);
+        testrunUserRepository.deleteByProjectIdAndUserId(projectId, userId);
+    }
+
 
 }

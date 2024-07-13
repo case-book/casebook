@@ -28,5 +28,9 @@ public interface TestrunCommentRepository extends JpaRepository<TestrunComment, 
     @Query("DELETE FROM TestrunComment tc WHERE tc.testrun.id IN (SELECT t.id FROM Testrun t WHERE t.project.id = :projectId)")
     void deleteByProjectId(@Param("projectId") Long projectId);
 
+    @Modifying
+    @Query("UPDATE TestrunComment tc SET tc.user.id = NULL WHERE tc.testrun.id IN (SELECT t.id FROM Testrun t WHERE t.project.id = :projectId) AND  tc.user.id = :userId")
+    void updateProjectTestrunCommentUserNullByUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
+
 }
 
