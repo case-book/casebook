@@ -28,5 +28,10 @@ public interface TestrunTestcaseGroupTestcaseItemRepository extends JpaRepositor
     @Query("DELETE FROM TestrunTestcaseGroupTestcaseItem ttgti WHERE ttgti.testrunTestcaseGroupTestcase.id IN " +
             "(SELECT ttgt.id from TestrunTestcaseGroupTestcase ttgt where ttgt.testrunTestcaseGroup.id in (SELECT ttg.id from TestrunTestcaseGroup ttg where ttg.testcaseGroup.id in (:ids)))")
     void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);
+
+    @Modifying
+    @Query("DELETE FROM TestrunTestcaseGroupTestcaseItem ttgti WHERE ttgti.testrunTestcaseGroupTestcase.id IN (SELECT ttgt.id FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.project.id = :projectId))")
+    void deleteByProjectId(@Param("projectId") Long projectId);
+
 }
 

@@ -50,5 +50,9 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     List<Testrun> findAllByOpenedTrueAndEndDateTimeNotNull();
 
+
+    @Modifying
+    @Query("DELETE FROM Testrun tr WHERE tr.project.id = :projectId")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 }
 

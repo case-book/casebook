@@ -22,5 +22,9 @@ public interface TestrunIterationRepository extends JpaRepository<TestrunIterati
     @Query("UPDATE TestrunIteration tri SET tri.filteringUserCursor = :filteringUserCursor, tri.currentFilteringUserIds = :currentFilteringUserIds WHERE tri.id = :testrunIterationId")
     void updateTestrunIterationUserCursor(@Param("testrunIterationId") Long testrunIterationId, @Param("filteringUserCursor") Integer filteringUserCursor, @Param("currentFilteringUserIds") List<Long> currentFilteringUserIds );
 
+    @Modifying
+    @Query("DELETE FROM TestrunIteration ti WHERE ti.project.id = :projectId")
+    void deleteByProjectId(@Param("projectId") Long projectId);
+
 }
 

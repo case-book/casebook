@@ -8,8 +8,8 @@ spring:
     active: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3606/bug_case?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
-    username: bug_case_app
+    url: jdbc:mysql://localhost:3606/casebook?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
+    username: casebook_app
     password: admin1234
   jpa:
     hibernate:

@@ -86,8 +86,7 @@ public class ProjectController {
     @Operation(description = "프로젝트 삭제")
     @DeleteMapping("/{projectId}")
     public ResponseEntity<?> deleteProjectInfo(@PathVariable String spaceCode, @PathVariable long projectId) {
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
-        projectService.deleteProjectInfo(spaceCode, project);
+        projectService.deleteProjectInfo(spaceCode, projectId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

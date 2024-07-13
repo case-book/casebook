@@ -19,5 +19,10 @@ public interface TestrunMessageChannelRepository extends JpaRepository<TestrunMe
     void deleteByProjectMessageChannelId(@Param("projectMessageChannelId") Long projectMessageChannelId);
 
 
+
+
+    @Modifying
+    @Query("DELETE FROM TestrunMessageChannel tmc WHERE tmc.messageChannel.id IN (SELECT pmc.id FROM ProjectMessageChannel pmc WHERE pmc.project.id = :projectId)")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 }
 

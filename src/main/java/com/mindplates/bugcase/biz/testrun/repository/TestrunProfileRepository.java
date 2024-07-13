@@ -17,6 +17,9 @@ public interface TestrunProfileRepository extends JpaRepository<TestrunProfile, 
     @Query("DELETE FROM TestrunProfile tp WHERE tp.profile.id = :profileId")
     void deleteByProfileId(@Param("profileId") Long profileId);
 
+    @Modifying
+    @Query("DELETE FROM TestrunProfile tp WHERE tp.testrun.id IN (SELECT tr.id FROM Testrun tr WHERE tr.project.id = :projectId) OR tp.testrunReservation.id IN (SELECT tr.id FROM TestrunReservation tr WHERE tr.project.id = :projectId) OR tp.testrunIteration.id IN (SELECT tr.id FROM TestrunIteration tr WHERE tr.project.id = :projectId)")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 
 }
 

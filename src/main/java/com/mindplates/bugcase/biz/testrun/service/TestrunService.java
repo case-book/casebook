@@ -480,7 +480,8 @@ public class TestrunService {
         } else if (target.equals(TesterChangeTargetCode.ALL)) {
             for (TestrunTestcaseGroup testcaseGroup : testrun.getTestcaseGroups()) {
                 for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
-                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTester() == null) || (testcase.getTester() != null && testcase.getTester().getId().equals(testerId)))) {
+                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTester() == null) || (testcase.getTester() != null && testcase.getTester().getId()
+                        .equals(testerId)))) {
                         int index = random.nextInt(userIds.size());
                         testcase.setTester(User.builder().id(userIds.get(index)).build());
 
@@ -1047,6 +1048,23 @@ public class TestrunService {
         }
 
 
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteProjectTestrun(String spaceCode, long projectId) {
+        testrunMessageChannelRepository.deleteByProjectId(projectId);
+        testrunHookRepository.deleteByProjectId(projectId);
+        testrunProfileRepository.deleteByProjectId(projectId);
+        testrunCommentRepository.deleteByProjectId(projectId);
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByProjectId(projectId);
+        testrunTestcaseGroupTestcaseItemRepository.deleteByProjectId(projectId);
+        testrunTestcaseGroupTestcaseRepository.deleteByProjectId(projectId);
+        testrunUserRepository.deleteByProjectId(projectId);
+        testrunTestcaseGroupRepository.deleteByProjectId(projectId);
+        testrunReservationRepository.deleteByProjectId(projectId);
+        testrunIterationRepository.deleteByProjectId(projectId);
+        testrunRepository.deleteByProjectId(projectId);
     }
 
 

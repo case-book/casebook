@@ -103,7 +103,7 @@ public class SpaceService {
     public void deleteSpaceInfo(SpaceDTO space) {
         List<ProjectDTO> projects = projectService.selectSpaceProjectDetailList(space.getId());
         for (ProjectDTO project : projects) {
-            projectService.deleteProjectInfo(space.getCode(), project);
+            projectService.deleteProjectInfo(space.getCode(), project.getId());
         }
 
         // 자식으로 설정되어 있지 않은 데이터 삭제

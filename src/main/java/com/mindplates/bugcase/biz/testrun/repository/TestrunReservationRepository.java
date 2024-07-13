@@ -23,5 +23,9 @@ public interface TestrunReservationRepository extends JpaRepository<TestrunReser
     @Query("UPDATE TestrunReservation trr SET trr.testrun.id = null WHERE trr.testrun.id = :testrunId")
     void updateTestrunReservationTestrunId(@Param("testrunId") Long testrunId);
 
+
+    @Modifying
+    @Query("DELETE FROM TestrunReservation tr WHERE tr.project.id = :projectId")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 }
 

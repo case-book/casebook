@@ -52,5 +52,9 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
         Pageable Pageable);
 
 
+    @Modifying
+    @Query("DELETE FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.project.id = :projectId)")
+    void deleteByProjectId(@Param("projectId") Long projectId);
+
 }
 

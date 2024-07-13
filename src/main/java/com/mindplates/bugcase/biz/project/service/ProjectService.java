@@ -2,20 +2,21 @@ package com.mindplates.bugcase.biz.project.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
+import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
@@ -40,7 +41,12 @@ public class ProjectService {
     private final SpaceRepository spaceRepository;
     private final ProjectRepository projectRepository;
     private final ProjectFileService projectFileService;
+
+    private final TestcaseService testcaseService;
+
     private final TestrunService testrunService;
+
+    private final TestcaseGroupRepository testcaseGroupRepository;
     private final TestcaseRepository testcaseRepository;
     private final TestcaseItemRepository testcaseItemRepository;
     private final ProjectUserRepository projectUserRepository;
@@ -50,20 +56,25 @@ public class ProjectService {
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
+    private final ProjectReleaseRepository projectReleaseRepository;
 
 
     public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
-        @Lazy TestrunService testrunService, TestcaseItemRepository testcaseItemRepository,
+        @Lazy TestrunService testrunService, TestcaseService testcaseService, TestcaseItemRepository testcaseItemRepository,
         ProjectUserRepository projectUserRepository,
         ProjectTokenRepository projectTokenRepository,
         ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository,
         TestrunMessageChannelRepository testrunMessageChannelRepository, TestcaseRepository testcaseRepository,
         TestcaseProjectReleaseRepository testcaseProjectReleaseRepository,
-        TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository) {
+        TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository,
+        TestcaseGroupRepository testcaseGroupRepository,
+
+        ProjectReleaseRepository projectReleaseRepository) {
         this.spaceRepository = spaceRepository;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
         this.testrunService = testrunService;
+        this.testcaseService = testcaseService;
         this.testcaseItemRepository = testcaseItemRepository;
         this.projectTokenRepository = projectTokenRepository;
         this.projectUserRepository = projectUserRepository;
@@ -73,6 +84,9 @@ public class ProjectService {
         this.testcaseRepository = testcaseRepository;
         this.testcaseProjectReleaseRepository = testcaseProjectReleaseRepository;
         this.testrunTestcaseGroupTestcaseCommentRepository = testrunTestcaseGroupTestcaseCommentRepository;
+        this.testcaseGroupRepository = testcaseGroupRepository;
+        this.projectReleaseRepository = projectReleaseRepository;
+
     }
 
     @Transactional
@@ -169,16 +183,15 @@ public class ProjectService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
-    public void deleteProjectInfo(String spaceCode, ProjectDTO project) {
+    public void deleteProjectInfo(String spaceCode, long projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         projectFileService.deleteProjectFile(project.getId());
-        List<ProjectReleaseDTO> projectReleases = projectReleaseService.selectProjectReleases(spaceCode, project.getId());
-        for (ProjectReleaseDTO projectRelease : projectReleases) {
-            projectReleaseService.deleteProjectRelease(spaceCode, project.getId(), projectRelease.getId());
-        }
-        List<TestrunDTO> testruns = testrunService.selectProjectAllTestrunList(spaceCode, project.getId());
-        testruns.forEach((testrunDTO -> testrunService.deleteProjectTestrunInfo(spaceCode, project.getId(), testrunDTO.getId())));
-        Project projectTarget = project.toEntity();
-        projectRepository.delete(projectTarget);
+        testrunService.deleteProjectTestrun(spaceCode, project.getId());
+        testcaseProjectReleaseRepository.deleteByProjectId(project.getId());
+        projectReleaseRepository.deleteByProjectId(project.getId());
+        projectTokenRepository.deleteByProjectId(project.getId());
+        testcaseService.deleteByProjectId(project.getId());
+        projectRepository.delete(project);
     }
 
     public Long selectSpaceProjectCount(Long spaceId) {

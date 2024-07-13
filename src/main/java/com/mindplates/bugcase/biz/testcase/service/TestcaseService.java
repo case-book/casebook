@@ -666,4 +666,9 @@ public class TestcaseService {
     }
 
 
+    public void deleteByProjectId(Long projectId) {
+        testcaseItemRepository.deleteByProjectId(projectId);
+        testcaseRepository.deleteByProjectId(projectId);
+        testcaseGroupRepository.deleteByProjectId(projectId);
+    }
 }
