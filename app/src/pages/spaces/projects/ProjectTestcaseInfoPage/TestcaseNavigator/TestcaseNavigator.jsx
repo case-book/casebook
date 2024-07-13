@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, startTransition, useCallback } from 'react';
 import { Button, EmptyContent } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
@@ -246,6 +246,12 @@ function TestcaseNavigator({
     });
   };
 
+  const onChangeTestcaseFilter = useCallback(filter => {
+    startTransition(() => {
+      setTestcaseFilter(filter);
+    });
+  }, []);
+
   useEffect(() => {
     if (selectedItemInfo.time && scroller.current) {
       setTimeout(() => {
@@ -293,7 +299,7 @@ function TestcaseNavigator({
         addTestcaseGroup={addTestcaseGroup}
         onChangeUserFilter={setUserFilter}
         onClickAllOpen={setAllOpen}
-        onChangeTestcaseFilter={setTestcaseFilter}
+        onChangeTestcaseFilter={onChangeTestcaseFilter}
       />
       <div
         className="testcase-groups-content"

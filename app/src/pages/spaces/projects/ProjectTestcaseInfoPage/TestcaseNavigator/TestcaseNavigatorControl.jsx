@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Button, Liner, Selector, Input, Label, Tag } from '@/components';
@@ -56,6 +56,7 @@ function TestcaseNavigatorControl({
   onChangeTestcaseFilter,
 }) {
   const { t } = useTranslation();
+  const filterNameInputRef = useRef(null); // transition을 활용하기 위해서 uncontrolled input을 사용
   const [isFilterFolded, setIsFilterFolded] = useState(false);
   const [filterIdsInput, setFilterIdsInput] = useState('');
   const [filterIdStrings, setFilterIdStrings] = useState([]);
@@ -239,14 +240,25 @@ function TestcaseNavigatorControl({
       <div className="testcase-filter-group">
         <div className="always-show-filter">
           <Input
-            value={testcaseFilter.name}
+            onRef={node => {
+              filterNameInputRef.current = node;
+            }}
+            value={null}
             size="sm"
             placeholder={t('테스트케이스 이름')}
             onChange={value => {
               onChangeTestcaseFilter({ ...testcaseFilter, name: value });
             }}
           />
-          <Button size="xs" rounded tip={t('필터 리셋')} onClick={() => onChangeTestcaseFilter({ name: '', ids: [], releaseIds: [] })}>
+          <Button
+            size="xs"
+            rounded
+            tip={t('필터 리셋')}
+            onClick={() => {
+              onChangeTestcaseFilter({ name: '', ids: [], releaseIds: [] });
+              filterNameInputRef.current.value = '';
+            }}
+          >
             <i className="fa-solid fa-rotate-left" />
           </Button>
           <Button size="xs" rounded tip={t('필터 확장/축소')} onClick={() => setIsFilterFolded(prev => !prev)}>
