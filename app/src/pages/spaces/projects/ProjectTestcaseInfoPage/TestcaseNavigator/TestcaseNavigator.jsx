@@ -9,9 +9,11 @@ import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
-import './TestcaseNavigator.scss';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 import TestcaseNavigatorControl from './TestcaseNavigatorControl';
+import { useTestcaseFilter } from './testcaseFilterUtils';
+import './TestcaseNavigator.scss';
 
 function TestcaseNavigator({
   testcaseGroups,
@@ -118,11 +120,7 @@ function TestcaseNavigator({
     };
   });
 
-  const [testcaseFilter, setTestcaseFilter] = useState({
-    ids: [],
-    name: '',
-    releaseIds: [],
-  });
+  const { testcaseFilter, setTestcaseFilter } = useTestcaseFilter(testcaseGroups);
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -497,4 +495,4 @@ TestcaseNavigator.propTypes = {
   copyTestcase: PropTypes.func,
 };
 
-export default TestcaseNavigator;
+export default observer(TestcaseNavigator);
