@@ -94,6 +94,12 @@ public class Testcase extends CommonEntity {
     @Column(name = "content_update_date")
     private LocalDateTime contentUpdateDate;
 
+    public Testcase(long id, String seqId, String name) {
+        this.id = id;
+        this.seqId = seqId;
+        this.name = name;
+    }
+
     public int assignTester(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, List<TestrunUser> testrunUsers, Random random,
         int currentSeq) {
         if (this.testcaseItems != null) {
@@ -144,14 +150,12 @@ public class Testcase extends CommonEntity {
         this.testerValue = testcase.getTesterValue();
         this.contentUpdateDate = LocalDateTime.now();
 
-
-
         this.testcaseProjectReleases.removeIf(testcaseProjectRelease ->
-                testcase.getTestcaseProjectReleases()
-                    .stream()
-                    .noneMatch(testcaseProjectRelease1 ->
-                        testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId())
-                            && testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())));
+            testcase.getTestcaseProjectReleases()
+                .stream()
+                .noneMatch(testcaseProjectRelease1 ->
+                    testcaseProjectRelease1.getProjectRelease().getId().equals(testcaseProjectRelease.getProjectRelease().getId())
+                        && testcaseProjectRelease1.getTestcase().getId().equals(testcaseProjectRelease.getTestcase().getId())));
 
         for (TestcaseProjectRelease nextTestcaseProjectRelease : testcase.getTestcaseProjectReleases()) {
             if (this.testcaseProjectReleases

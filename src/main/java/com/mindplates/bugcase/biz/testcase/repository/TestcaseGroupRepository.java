@@ -12,9 +12,14 @@ public interface TestcaseGroupRepository extends JpaRepository<TestcaseGroup, Lo
 
     List<TestcaseGroup> findAllByProjectIdAndParentId(Long projectId, Long parentId);
 
+    int countByProjectIdAndParentId(Long projectId, Long parentId);
+
     List<TestcaseGroup> findAllByProjectId(Long projectId);
 
     Optional<TestcaseGroup> findByIdAndProjectId(Long id, Long projectId);
+
+    @Query(value = "SELECT tg.depth FROM TestcaseGroup tg WHERE tg.id = :id AND tg.project.id = :projectId")
+    Optional<Long> findDepthByIdAndProjectId(Long id, Long projectId);
 
     @Modifying
     @Query("DELETE FROM TestcaseGroup tg WHERE tg.id = :id")

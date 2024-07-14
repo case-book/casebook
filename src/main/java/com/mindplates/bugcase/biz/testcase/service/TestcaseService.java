@@ -13,6 +13,7 @@ import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
 import com.mindplates.bugcase.biz.space.entity.SpaceLlmPrompt;
 import com.mindplates.bugcase.biz.space.repository.SpaceLlmPromptRepository;
@@ -21,6 +22,7 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupWithTestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseNameDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
@@ -95,6 +97,7 @@ public class TestcaseService {
     private final OpenAIClientService openAIClientService;
     private final LlmService llmService;
     private final SpaceLlmPromptRepository spaceLlmPromptRepository;
+    private final ProjectService projectService;
 
     @Cacheable(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public List<TestcaseGroupDTO> selectTestcaseGroupList(Long projectId) {
@@ -124,28 +127,26 @@ public class TestcaseService {
 
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     @Transactional
-    public TestcaseGroupWithTestcaseDTO createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroupDTO testcaseGroupDTO) {
+    public TestcaseGroupDTO createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroupDTO testcaseGroupDTO) {
+        int groupSeq = projectService.increaseTestcaseGroupSeq(projectId);
 
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        int groupSeq = project.getTestcaseGroupSeq() + 1;
-        project.setTestcaseGroupSeq(groupSeq);
         testcaseGroupDTO.setSeqId("G" + groupSeq);
-        testcaseGroupDTO.setName(testcaseGroupDTO.getName() + "-" + groupSeq);
+        testcaseGroupDTO.setName(testcaseGroupDTO.getDefaultName(groupSeq));
 
         if (testcaseGroupDTO.getParentId() != null) {
-            TestcaseGroup testcaseGroupExist = testcaseGroupRepository.findByIdAndProjectId(testcaseGroupDTO.getParentId(), projectId)
-                .orElseThrow(() -> new ServiceException("testcase.parent.group.notExist"));
-            testcaseGroupDTO.setDepth(testcaseGroupExist.getDepth() + 1);
+            long depth = testcaseGroupRepository.findDepthByIdAndProjectId(testcaseGroupDTO.getParentId(), projectId).orElseThrow(() -> new ServiceException("error.testcase.parent.group.notExist"));
+            testcaseGroupDTO.setDepth(depth + 1);
         } else {
             testcaseGroupDTO.setDepth(0L);
         }
 
-        List<TestcaseGroup> sameParentGroups = testcaseGroupRepository.findAllByProjectIdAndParentId(projectId, testcaseGroupDTO.getParentId());
-        testcaseGroupDTO.setItemOrder(sameParentGroups.size());
+        int sameParentGroupsCount = testcaseGroupRepository.countByProjectIdAndParentId(projectId, testcaseGroupDTO.getParentId());
+        testcaseGroupDTO.setItemOrder(sameParentGroupsCount);
 
-        TestcaseGroup result = testcaseGroupRepository.save(mappingUtil.convert(testcaseGroupDTO, TestcaseGroup.class));
-        projectRepository.save(project);
-        return new TestcaseGroupWithTestcaseDTO(result);
+        TestcaseGroup entity = testcaseGroupDTO.toEntity();
+        TestcaseGroup result = testcaseGroupRepository.save(entity);
+
+        return new TestcaseGroupDTO(result);
     }
 
     @Transactional
@@ -471,6 +472,11 @@ public class TestcaseService {
         }
 
         return new TestcaseDTO(testcase, createdUser, lastUpdatedUser);
+    }
+
+    public List<TestcaseNameDTO> selectProjectTestcaseNameList(Long projectId) {
+        List<Testcase> testcases = testcaseRepository.findNameByProjectId(projectId);
+        return testcases.stream().map(TestcaseNameDTO::new).collect(Collectors.toList());
     }
 
     public List<TestcaseDTO> selectProjectTestcaseList(Long projectId) {

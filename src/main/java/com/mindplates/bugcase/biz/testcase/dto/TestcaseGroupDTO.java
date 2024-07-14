@@ -39,7 +39,10 @@ public class TestcaseGroupDTO extends CommonDTO implements IDTO<TestcaseGroup> {
         this.description = testcaseGroup.getDescription();
         this.itemOrder = testcaseGroup.getItemOrder();
         this.project = ProjectDTO.builder().id(testcaseGroup.getProject().getId()).build();
-        this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseDTO::new).collect(Collectors.toList());
+        if (testcaseGroup.getTestcases() != null) {
+            this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseDTO::new).collect(Collectors.toList());
+        }
+
     }
 
 
@@ -68,5 +71,9 @@ public class TestcaseGroupDTO extends CommonDTO implements IDTO<TestcaseGroup> {
         testcaseGroup.setProject(project);
         return testcaseGroup;
 
+    }
+
+    public String getDefaultName(int groupSeq) {
+        return this.name + "-" + groupSeq;
     }
 }

@@ -2,13 +2,13 @@ package com.mindplates.bugcase.biz.testcase.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.vo.response.ProjectFileResponse;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupWithTestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseNameDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
@@ -27,6 +27,7 @@ import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseTestcaseGroupChang
 import com.mindplates.bugcase.biz.testcase.vo.request.TestcaseUpdateRequest;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseItemResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseNameResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestrunTestcaseGroupTestcaseResultResponse;
@@ -34,7 +35,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.util.MappingUtil;
-import com.mindplates.bugcase.framework.config.CacheConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -68,6 +67,12 @@ public class TestcaseController {
     private final MappingUtil mappingUtil;
     private final ProjectFileService projectFileService;
 
+    @Operation(description = "테스트케이스 ID, SEQ, 이름 조회")
+    @GetMapping("")
+    public List<TestcaseNameResponse> selectProjectTestcaseNameList(@PathVariable String spaceCode, @PathVariable Long projectId) {
+        List<TestcaseNameDTO> testcaseList = testcaseService.selectProjectTestcaseNameList(projectId);
+        return testcaseList.stream().map((TestcaseNameResponse::new)).collect(Collectors.toList());
+    }
 
     @Operation(description = "테스트케이스 그룹 목록 조회")
     @GetMapping("/groups")
@@ -76,22 +81,32 @@ public class TestcaseController {
         return testcaseGroupList.stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
     }
 
-    @Operation(description = "테스트케이스 목록 조회")
-    @GetMapping("")
-    public List<TestcaseSimpleResponse> selectProjectTestcaseList(@PathVariable String spaceCode, @PathVariable Long projectId) {
-        List<TestcaseDTO> testcaseList = testcaseService.selectProjectTestcaseList(projectId);
-        return mappingUtil.convert(testcaseList, TestcaseSimpleResponse.class);
-    }
 
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
-    public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId,
-        @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
-        TestcaseGroupDTO testcaseGroupDTO = mappingUtil.convert(testcaseGroupRequest, TestcaseGroupDTO.class);
-        testcaseGroupDTO.setProject(ProjectDTO.builder().id(projectId).build());
-        TestcaseGroupWithTestcaseDTO testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupDTO);
-        return mappingUtil.convert(testcaseGroup, TestcaseGroupResponse.class);
+    public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {
+        TestcaseGroupDTO testcaseGroup = testcaseService.createTestcaseGroupInfo(spaceCode, projectId, testcaseGroupRequest.toDTO(projectId));
+        return new TestcaseGroupResponse(testcaseGroup);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Operation(description = "테스트케이스 그룹 이름 변경")
     @PutMapping("/groups/{groupId}/name")

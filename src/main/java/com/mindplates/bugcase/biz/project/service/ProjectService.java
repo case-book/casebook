@@ -45,7 +45,7 @@ public class ProjectService {
     public ProjectService(
         @Lazy SpaceService spaceService,
         @Lazy TestrunService testrunService,
-        TestcaseService testcaseService,
+        @Lazy TestcaseService testcaseService,
         ProjectRepository projectRepository,
         ProjectFileService projectFileService,
         ProjectUserRepository projectUserRepository,
@@ -198,6 +198,16 @@ public class ProjectService {
     @Transactional
     public void updateProjectAiEnabledFalse() {
         projectRepository.updateProjectAiEnable();
+    }
+
+    @Transactional
+    public int increaseTestcaseGroupSeq(long projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int groupSeq = project.getTestcaseGroupSeq() + 1;
+        project.setTestcaseGroupSeq(groupSeq);
+        projectRepository.save(project);
+
+        return groupSeq;
     }
 
 }
