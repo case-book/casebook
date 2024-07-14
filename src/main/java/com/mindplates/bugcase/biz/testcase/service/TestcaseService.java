@@ -666,9 +666,18 @@ public class TestcaseService {
     }
 
 
-    public void deleteByProjectId(Long projectId) {
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteByProjectId(String spaceCode, Long projectId) {
         testcaseItemRepository.deleteByProjectId(projectId);
         testcaseRepository.deleteByProjectId(projectId);
         testcaseGroupRepository.deleteByProjectId(projectId);
+    }
+
+    @Transactional
+    public void deleteTestcaseByTestcaseTemplateId(long testcaseTemplateId) {
+        testcaseProjectReleaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
+        testcaseItemRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
+        testcaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
     }
 }

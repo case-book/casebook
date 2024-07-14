@@ -1069,11 +1069,27 @@ public class TestrunService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteTestrunGroupByTestcaseTemplateId(String spaceCode, long projectId, long testcaseTemplateId) {
+        testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
+        testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
+        testrunTestcaseGroupTestcaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectTestrunUser(String spaceCode, long projectId, long userId) {
         testrunCommentRepository.updateProjectTestrunCommentUserNullByUserId(projectId, userId);
         testrunTestcaseGroupTestcaseCommentRepository.updateProjectTestrunTestcaseGroupTestcaseCommentUserNullByUserId(projectId, userId);
         testrunTestcaseGroupTestcaseRepository.updateProjectTesterNullByUserId(projectId, userId);
         testrunUserRepository.deleteByProjectIdAndUserId(projectId, userId);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public void deleteTestrunMessageChannel(String spaceCode, long projectId, List<Long> messageChannelIds) {
+        if (messageChannelIds != null && !messageChannelIds.isEmpty()) {
+            messageChannelIds.forEach((testrunMessageChannelRepository::deleteByProjectMessageChannelId));
+        }
     }
 
 

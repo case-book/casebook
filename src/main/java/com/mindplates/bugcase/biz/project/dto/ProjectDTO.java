@@ -172,6 +172,10 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
             }
         }
 
+        if (this.testcaseTemplates.isEmpty()) {
+            throw new ServiceException("error.project.testcase.template.required");
+        }
+
         // this.testcaseTemplates를 반복하면서, defaultTemplate이 true인 것이 1개 이상인지 확인
         boolean found = false;
         for (TestcaseTemplateDTO testcaseTemplate : this.testcaseTemplates) {
@@ -182,7 +186,7 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
             }
         }
 
-        if (!found && !this.testcaseTemplates.isEmpty()) {
+        if (!found) {
             this.testcaseTemplates.get(0).setDefaultTemplate(true);
         }
 

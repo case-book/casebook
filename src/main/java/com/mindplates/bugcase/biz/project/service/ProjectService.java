@@ -5,21 +5,13 @@ import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectToken;
-import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectTokenRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
-import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
+import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseItemRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
-import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.UserRoleCode;
@@ -39,54 +31,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ProjectService {
 
-    private final SpaceRepository spaceRepository;
+
+    private final SpaceService spaceService;
     private final ProjectRepository projectRepository;
     private final ProjectFileService projectFileService;
-
     private final TestcaseService testcaseService;
-
     private final TestrunService testrunService;
-
-    private final TestcaseGroupRepository testcaseGroupRepository;
-    private final TestcaseRepository testcaseRepository;
-    private final TestcaseItemRepository testcaseItemRepository;
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
     private final ProjectReleaseService projectReleaseService;
-    private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
-    private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
-    private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
-    private final TestrunMessageChannelRepository testrunMessageChannelRepository;
-    private final ProjectReleaseRepository projectReleaseRepository;
 
-
-    public ProjectService(SpaceRepository spaceRepository, ProjectRepository projectRepository, ProjectFileService projectFileService,
-        @Lazy TestrunService testrunService, TestcaseService testcaseService, TestcaseItemRepository testcaseItemRepository,
+    public ProjectService(
+        @Lazy SpaceService spaceService,
+        @Lazy TestrunService testrunService,
+        TestcaseService testcaseService,
+        ProjectRepository projectRepository,
+        ProjectFileService projectFileService,
         ProjectUserRepository projectUserRepository,
         ProjectTokenRepository projectTokenRepository,
-        ProjectReleaseService projectReleaseService, TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository,
-        TestrunMessageChannelRepository testrunMessageChannelRepository, TestcaseRepository testcaseRepository,
-        TestcaseProjectReleaseRepository testcaseProjectReleaseRepository,
-        TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository,
-        TestcaseGroupRepository testcaseGroupRepository,
-
-        ProjectReleaseRepository projectReleaseRepository) {
-        this.spaceRepository = spaceRepository;
+        ProjectReleaseService projectReleaseService
+    ) {
+        this.spaceService = spaceService;
         this.projectRepository = projectRepository;
         this.projectFileService = projectFileService;
         this.testrunService = testrunService;
         this.testcaseService = testcaseService;
-        this.testcaseItemRepository = testcaseItemRepository;
         this.projectTokenRepository = projectTokenRepository;
         this.projectUserRepository = projectUserRepository;
         this.projectReleaseService = projectReleaseService;
-        this.testrunTestcaseGroupTestcaseRepository = testrunTestcaseGroupTestcaseRepository;
-        this.testrunMessageChannelRepository = testrunMessageChannelRepository;
-        this.testcaseRepository = testcaseRepository;
-        this.testcaseProjectReleaseRepository = testcaseProjectReleaseRepository;
-        this.testrunTestcaseGroupTestcaseCommentRepository = testrunTestcaseGroupTestcaseCommentRepository;
-        this.testcaseGroupRepository = testcaseGroupRepository;
-        this.projectReleaseRepository = projectReleaseRepository;
 
     }
 
@@ -99,7 +71,6 @@ public class ProjectService {
             throw new ServiceException("error.project.duplicated");
         }
 
-        // projectInfo.getTestcaseTemplates()에서 default가 2개 이상이면 Exception
         long defaultTemplateCount = projectInfo.getTestcaseTemplates().stream().filter(TestcaseTemplateDTO::isDefaultTemplate).count();
         if (defaultTemplateCount < 1) {
             throw new ServiceException("error.default.template.not.exist");
@@ -108,7 +79,7 @@ public class ProjectService {
             throw new ServiceException("error.default.template.count.over");
         }
 
-        Long spaceId = spaceRepository.findIdByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Long spaceId = spaceService.selectSpaceIdByCode(spaceCode);
         projectInfo.setSpace(SpaceDTO.builder().id(spaceId).build());
         projectInfo.setTestcaseSeq(0);
         projectInfo.setTestcaseGroupSeq(0);
@@ -121,7 +92,7 @@ public class ProjectService {
     }
 
     @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public ProjectDTO selectProjectInfo(String spaceCode, Long projectId) {
+    public ProjectDTO selectProjectInfo(String spaceCode, long projectId) {
         Long id = projectRepository.findIdBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (id == null) {
             throw new ServiceException(HttpStatus.NOT_FOUND);
@@ -131,22 +102,22 @@ public class ProjectService {
         return new ProjectDTO(project);
     }
 
-    public List<ProjectListDTO> selectSpaceProjectList(Long spaceId) {
+    public List<ProjectListDTO> selectSpaceProjectList(long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
-    public List<ProjectDTO> selectSpaceProjectDetailList(Long spaceId) {
+    public List<ProjectDTO> selectSpaceProjectDetailList(long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
         return projectList.stream().map((ProjectDTO::new)).collect(Collectors.toList());
     }
 
-    public List<ProjectListDTO> selectUserSpaceProjectList(String spaceCode, Long userId) {
+    public List<ProjectListDTO> selectUserSpaceProjectList(String spaceCode, long userId) {
         List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
-    public String selectProjectName(String spaceCode, Long projectId) {
+    public String selectProjectName(String spaceCode, long projectId) {
         return projectRepository.findNameBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
@@ -168,16 +139,13 @@ public class ProjectService {
         List<Long> deleteTestcaseTemplateIds = projectInfo.updateTestcaseTemplates(updateProjectInfo.getTestcaseTemplates());
 
         for (Long deleteTestcaseTemplateId : deleteTestcaseTemplateIds) {
-            testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
-            testrunTestcaseGroupTestcaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
-            testcaseProjectReleaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
-            testcaseItemRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
-            testcaseRepository.deleteByTestcaseTemplateId(deleteTestcaseTemplateId);
+            testrunService.deleteTestrunGroupByTestcaseTemplateId(spaceCode, projectInfo.getId(), deleteTestcaseTemplateId);
+            testcaseService.deleteTestcaseByTestcaseTemplateId(deleteTestcaseTemplateId);
         }
 
         projectInfo.updateUsers(updateProjectInfo.getUsers());
         List<Long> deleteMessageChannelIds = projectInfo.updateMessageChannels(updateProjectInfo.getMessageChannels());
-        deleteMessageChannelIds.forEach((testrunMessageChannelRepository::deleteByProjectMessageChannelId));
+        testrunService.deleteTestrunMessageChannel(spaceCode, projectInfo.getId(), deleteMessageChannelIds);
         if (targetReleaseId != null) {
             projectReleaseService.updateProjectTargetRelease(projectInfo.getId(), targetReleaseId);
         }
@@ -188,15 +156,14 @@ public class ProjectService {
 
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#project.id}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectInfo(String spaceCode, long projectId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         projectFileService.deleteProjectFile(project.getId());
         testrunService.deleteProjectTestrun(spaceCode, project.getId());
-        testcaseProjectReleaseRepository.deleteByProjectId(project.getId());
-        projectReleaseRepository.deleteByProjectId(project.getId());
+        projectReleaseService.deleteProjectRelease(spaceCode, project.getId());
         projectTokenRepository.deleteByProjectId(project.getId());
-        testcaseService.deleteByProjectId(project.getId());
+        testcaseService.deleteByProjectId(spaceCode, project.getId());
         projectRepository.delete(project);
     }
 
@@ -206,7 +173,7 @@ public class ProjectService {
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public void deleteProjectUser(String spaceCode, Long projectId, Long userId) {
+    public void deleteProjectUser(String spaceCode, long projectId, long userId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         project.getUsers().removeIf((projectUser -> projectUser.getUser().getId().equals(userId)));
         long adminCount = project.getUsers().stream().filter((projectUser -> projectUser.getRole().equals(UserRoleCode.ADMIN))).count();
@@ -219,11 +186,11 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
-    public boolean selectIsProjectMember(Long projectId, Long userId) {
+    public boolean selectIsProjectMember(long projectId, long userId) {
         return projectUserRepository.existsByProjectIdAndUserId(projectId, userId);
     }
 
-    public boolean selectIsProjectAdmin(Long projectId, Long userId) {
+    public boolean selectIsProjectAdmin(long projectId, long userId) {
         return projectUserRepository.existsByProjectIdAndUserIdAndRole(projectId, userId, UserRoleCode.ADMIN);
     }
 

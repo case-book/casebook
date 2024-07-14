@@ -162,4 +162,13 @@ public class ProjectReleaseService {
         }
 
     }
+
+    @Transactional
+    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+    public void deleteProjectRelease(String spaceCode, long projectId) {
+        testcaseProjectReleaseRepository.deleteByProjectId(projectId);
+        projectReleaseRepository.deleteByProjectId(projectId);
+    }
+
+
 }
