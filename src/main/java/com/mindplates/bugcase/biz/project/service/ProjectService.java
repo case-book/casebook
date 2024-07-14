@@ -33,13 +33,14 @@ public class ProjectService {
 
 
     private final SpaceService spaceService;
-    private final ProjectRepository projectRepository;
-    private final ProjectFileService projectFileService;
     private final TestcaseService testcaseService;
     private final TestrunService testrunService;
+    private final ProjectFileService projectFileService;
+    private final ProjectReleaseService projectReleaseService;
+    private final ProjectRepository projectRepository;
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
-    private final ProjectReleaseService projectReleaseService;
+
 
     public ProjectService(
         @Lazy SpaceService spaceService,
@@ -140,7 +141,7 @@ public class ProjectService {
 
         for (Long deleteTestcaseTemplateId : deleteTestcaseTemplateIds) {
             testrunService.deleteTestrunGroupByTestcaseTemplateId(spaceCode, projectInfo.getId(), deleteTestcaseTemplateId);
-            testcaseService.deleteTestcaseByTestcaseTemplateId(deleteTestcaseTemplateId);
+            testcaseService.deleteTestcaseByTestcaseTemplateId(projectInfo.getId(), deleteTestcaseTemplateId);
         }
 
         projectInfo.updateUsers(updateProjectInfo.getUsers());

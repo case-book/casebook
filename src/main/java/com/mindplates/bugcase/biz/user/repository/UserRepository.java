@@ -2,12 +2,11 @@ package com.mindplates.bugcase.biz.user.repository;
 
 
 import com.mindplates.bugcase.biz.user.entity.User;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -22,6 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateUserLastSeen(Long userId, LocalDateTime lastSeen);
 
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT new User(u.id, u.activeSystemRole, u.name, u.email, u.language) FROM User u WHERE u.id = :userId")
+    Optional<User> findUserDetailById(Long userId);
 
 
 }

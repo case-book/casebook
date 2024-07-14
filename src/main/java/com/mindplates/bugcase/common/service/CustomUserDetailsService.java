@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
-        User user = userRepository.findById(Long.parseLong(id)).orElseThrow(() -> new ServiceException(HttpStatus.UNAUTHORIZED));
+        User user = userRepository.findUserDetailById(Long.parseLong(id)).orElseThrow(() -> new ServiceException(HttpStatus.UNAUTHORIZED));
 
         return SecurityUser.builder()
             .id(user.getId())

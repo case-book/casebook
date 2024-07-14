@@ -3,10 +3,20 @@ package com.mindplates.bugcase.biz.user.entity;
 import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -83,5 +93,13 @@ public class User extends CommonEntity {
 
     @Column(name = "avatar_info", length = ColumnsDef.TEXT)
     private String avatarInfo;
+
+    public User(Long id, SystemRole activeSystemRole, String name, String email, String language) {
+        this.id = id;
+        this.activeSystemRole = activeSystemRole;
+        this.name = name;
+        this.email = email;
+        this.language = language;
+    }
 
 }

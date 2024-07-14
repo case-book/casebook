@@ -34,6 +34,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.util.MappingUtil;
+import com.mindplates.bugcase.framework.config.CacheConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -65,6 +67,7 @@ public class TestcaseController {
     private final TestrunService testrunService;
     private final MappingUtil mappingUtil;
     private final ProjectFileService projectFileService;
+
 
     @Operation(description = "테스트케이스 그룹 목록 조회")
     @GetMapping("/groups")

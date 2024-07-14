@@ -64,6 +64,8 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -94,6 +96,7 @@ public class TestcaseService {
     private final LlmService llmService;
     private final SpaceLlmPromptRepository spaceLlmPromptRepository;
 
+    @Cacheable(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public List<TestcaseGroupDTO> selectTestcaseGroupList(Long projectId) {
         List<TestcaseGroup> testcaseGroups = testcaseGroupRepository.findAllByProjectId(projectId);
         return testcaseGroups.stream().map((TestcaseGroupDTO::new)).collect(Collectors.toList());
@@ -119,8 +122,8 @@ public class TestcaseService {
         }
     }
 
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public TestcaseGroupWithTestcaseDTO createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroupDTO testcaseGroupDTO) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -146,7 +149,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void updateProjectTestcaseGroupOrderInfo(String spaceCode, Long projectId, Long targetId, Long destinationId, boolean toChildren) {
 
         Project project = projectRepository.findBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -206,7 +209,7 @@ public class TestcaseService {
 
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void deleteTestcaseGroupInfo(String spaceCode, Long projectId, Long testcaseGroupId) {
         List<TestcaseGroup> testcaseGroups = testcaseGroupRepository.findAllByProjectId(projectId);
         TestcaseGroup targetTestcaseGroup = testcaseGroups.stream().filter((testcaseGroup -> testcaseGroup.getId().equals(testcaseGroupId))).findAny()
@@ -265,7 +268,10 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @Caching(evict = {
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+        @CacheEvict(key = "{#projectId, #testcaseId}", value = CacheConfig.PROJECT_TESTCASE),
+    })
     public void deleteTestcaseInfo(String spaceCode, Long projectId, Long testcaseId) {
 
         List<ProjectFile> files = projectFileRepository
@@ -284,7 +290,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseGroupWithTestcaseDTO updateTestcaseGroupName(String spaceCode, Long projectId, Long groupId, String name) {
         TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -294,7 +300,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseGroupWithTestcaseDTO updateTestcaseGroupInfo(String spaceCode, Long projectId, Long groupId, String name, String description) {
         TestcaseGroup testcaseGroup = testcaseGroupRepository.findByIdAndProjectId(groupId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -305,7 +311,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseDTO createTestcaseInfo(String spaceCode, Long projectId, TestcaseDTO testcase) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int testcaseSeq = project.getTestcaseSeq() + 1;
@@ -369,7 +375,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void updateTestcaseTestcaseGroupInfo(String spaceCode, Long projectId, Long targetTestcaseId, Long destinationGroupId) {
 
         Testcase targetTestcase = testcaseRepository.findById(targetTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -386,7 +392,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void updateTestcaseOrderInfo(String spaceCode, Long projectId, Long targetTestcaseId, Long destinationTestcaseId) {
         Testcase destinationTestcase = testcaseRepository.findById(destinationTestcaseId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -406,7 +412,10 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @Caching(evict = {
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+        @CacheEvict(key = "{#projectId, #testcaseId}", value = CacheConfig.PROJECT_TESTCASE),
+    })
     public TestcaseSimpleDTO updateTestcaseName(String spaceCode, Long projectId, Long testcaseId, String name) {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setName(name);
@@ -415,7 +424,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseSimpleDTO updateTestcaseNameAndDescription(String spaceCode, Long projectId, Long testcaseId, String name, String description) {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setName(name);
@@ -425,7 +434,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseSimpleDTO createTestcaseRelease(String spaceCode, Long projectId, Long testcaseId, Long releaseId) {
         Testcase testcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Optional<TestcaseProjectRelease> testcaseProjectRelease = testcaseProjectReleaseRepository.findById(
@@ -448,6 +457,7 @@ public class TestcaseService {
         return new TestcaseSimpleDTO(testcase);
     }
 
+    @Cacheable(key = "{#projectId, #testcaseId}", value = CacheConfig.PROJECT_TESTCASE)
     public TestcaseDTO selectTestcaseInfo(Long projectId, Long testcaseId) {
         Testcase testcase = testcaseRepository.findByIdAndProjectId(testcaseId, projectId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -504,7 +514,10 @@ public class TestcaseService {
 
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @Caching(evict = {
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+        @CacheEvict(key = "{#projectId, #testcase.id}", value = CacheConfig.PROJECT_TESTCASE),
+    })
     public TestcaseDTO updateTestcaseInfo(String spaceCode, Long projectId, Testcase testcase) {
         Testcase org = testcaseRepository.findById(testcase.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         testcase.setSeqId(org.getSeqId());
@@ -527,7 +540,10 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @Caching(evict = {
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+        @CacheEvict(key = "{#projectId, #testcaseItem.testcase.id}", value = CacheConfig.PROJECT_TESTCASE),
+    })
     public TestcaseItemDTO updateTestcaseItem(String spaceCode, Long projectId, TestcaseItem testcaseItem) {
         TestcaseItem org = testcaseItemRepository.findById(testcaseItem.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if ("text".equals(testcaseItem.getType())) {
@@ -549,7 +565,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseGroupDTO copyTestcaseGroupInfo(String spaceCode, Long projectId, Long testcaseGroupId, String targetType, Long targetId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int testcaseSeq = project.getTestcaseSeq();
@@ -601,7 +617,7 @@ public class TestcaseService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseDTO copyTestcaseInfo(String spaceCode, Long projectId, Long testcaseId, String targetType, Long targetId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int testcaseSeq = project.getTestcaseSeq() + 1;
@@ -667,7 +683,7 @@ public class TestcaseService {
 
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void deleteByProjectId(String spaceCode, Long projectId) {
         testcaseItemRepository.deleteByProjectId(projectId);
         testcaseRepository.deleteByProjectId(projectId);
@@ -675,7 +691,8 @@ public class TestcaseService {
     }
 
     @Transactional
-    public void deleteTestcaseByTestcaseTemplateId(long testcaseTemplateId) {
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
+    public void deleteTestcaseByTestcaseTemplateId(Long projectId, long testcaseTemplateId) {
         testcaseProjectReleaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
         testcaseItemRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
         testcaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
