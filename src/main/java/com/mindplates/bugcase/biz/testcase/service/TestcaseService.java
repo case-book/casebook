@@ -204,7 +204,8 @@ public class TestcaseService {
     public void deleteTestcaseGroupInfo(String spaceCode, Long projectId, Long testcaseGroupId) {
         List<TestcaseGroupDTO> testcaseGroups = testcaseCachedService.selectTestcaseGroupList(projectId);
 
-        TestcaseGroupDTO targetTestcaseGroup = testcaseGroups.stream().filter((testcaseGroup -> testcaseGroup.getId().equals(testcaseGroupId))).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseGroupDTO targetTestcaseGroup = testcaseGroups.stream().filter((testcaseGroup -> testcaseGroup.getId().equals(testcaseGroupId))).findAny()
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         long maxDepth = testcaseGroups.stream().mapToLong(TestcaseGroupDTO::getDepth).max().orElse(0L);
 
         Map<Long, List<TestcaseGroupDTO>> deletedTargets = new HashMap<>();
@@ -218,7 +219,8 @@ public class TestcaseService {
             if (parentList != null) {
                 parentList.forEach((parentGroup -> {
                     List<TestcaseGroupDTO> children = testcaseGroups.stream()
-                        .filter((testcaseGroup -> testcaseGroup.getParentId() != null && testcaseGroup.getDepth().equals(childrenDepth) && parentGroup.getId().equals(testcaseGroup.getParentId()))).collect(Collectors.toList());
+                        .filter((testcaseGroup -> testcaseGroup.getParentId() != null && testcaseGroup.getDepth().equals(childrenDepth) && parentGroup.getId().equals(testcaseGroup.getParentId())))
+                        .collect(Collectors.toList());
                     List<TestcaseGroupDTO> currentList = deletedTargets.get(childrenDepth);
                     if (currentList == null) {
                         currentList = new ArrayList<>();
@@ -303,15 +305,14 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseDTO createTestcaseInfo(String spaceCode, Long projectId, TestcaseDTO testcase) {
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        int testcaseSeq = project.getTestcaseSeq() + 1;
-        project.setTestcaseSeq(testcaseSeq);
+
+        int testcaseSeq = projectService.increaseTestcaseSeq(projectId);
+
         testcase.setSeqId("TC" + testcaseSeq);
         testcase.setName(testcase.getName() + "-" + testcaseSeq);
-        testcase.setProject(ProjectDTO.builder().id(projectId).build());
 
         TestcaseTemplate defaultTestcaseTemplate = testcaseTemplateRepository.findAllByProjectIdAndDefaultTemplateTrue(projectId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "testcase.default.template.notExist"));
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "error.testcase.default.template.notExist"));
         testcase.setTestcaseTemplate(TestcaseTemplateDTO.builder().id(defaultTestcaseTemplate.getId()).build());
         testcase.setTesterType(defaultTestcaseTemplate.getDefaultTesterType());
         testcase.setTesterValue(defaultTestcaseTemplate.getDefaultTesterValue());
@@ -348,15 +349,14 @@ public class TestcaseService {
         testcase.setItemOrder(maxItemOrder);
         testcase.setClosed(false);
 
-        projectRepository.save(project);
-        Testcase result = testcaseRepository.save(mappingUtil.convert(testcase, Testcase.class));
+        Testcase result = testcaseRepository.save(testcase.toEntity());
 
-        List<ProjectRelease> targetReleases = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
-        if (targetReleases.size() > 0) {
+        List<Long> targetReleases = projectReleaseRepository.findIdByProjectIdAndIsTargetTrue(projectId);
+        if (!targetReleases.isEmpty()) {
             TestcaseProjectRelease testcaseProjectRelease = TestcaseProjectRelease
                 .builder()
                 .testcase(Testcase.builder().id(result.getId()).build())
-                .projectRelease(targetReleases.get(0))
+                .projectRelease(ProjectRelease.builder().id(targetReleases.get(0)).build())
                 .build();
 
             testcaseProjectReleaseRepository.save(testcaseProjectRelease);
@@ -377,21 +377,10 @@ public class TestcaseService {
     @Transactional
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void updateTestcaseOrderInfo(String spaceCode, Long projectId, Long targetTestcaseId, Long destinationTestcaseId) {
-        Testcase destinationTestcase = testcaseRepository.findById(destinationTestcaseId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        TestcaseGroup destinationTestcaseGroup = destinationTestcase.getTestcaseGroup();
-        destinationTestcaseGroup.getTestcases().stream().forEach(testcase -> {
-            if (testcase.getItemOrder() > destinationTestcase.getItemOrder()) {
-                testcase.setItemOrder(testcase.getItemOrder() + 1);
-            }
-        });
-
-        Testcase targetTestcase = testcaseRepository.findById(targetTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        targetTestcase.setTestcaseGroup(destinationTestcase.getTestcaseGroup());
-        targetTestcase.setItemOrder(destinationTestcase.getItemOrder() + 1);
-
-        testcaseGroupRepository.save(destinationTestcaseGroup);
-        testcaseRepository.save(targetTestcase);
+        Integer destinationTestcaseItemOrder = testcaseRepository.findItemOrderByTestcaseId(destinationTestcaseId);
+        Long destinationTestcaseGroupId = testcaseRepository.findTestcaseGroupIdByTestcaseId(destinationTestcaseId);
+        testcaseRepository.increaseTestcaseItemOrderByTestcaseGroupIdAndItemOrder(destinationTestcaseGroupId, destinationTestcaseItemOrder);
+        testcaseRepository.updateTestcaseGroupAndOrder(targetTestcaseId, destinationTestcaseGroupId, destinationTestcaseItemOrder + 1);
     }
 
     @Transactional

@@ -18,7 +18,7 @@ public class TestcaseGroupResponse {
     private String name;
     private String description;
     private Integer itemOrder;
-    private List<TestcaseSimpleResponse> testcases;
+    private List<TestcaseListResponse> testcases;
 
     public TestcaseGroupResponse(TestcaseGroupDTO testcaseGroup) {
         this.id = testcaseGroup.getId();
@@ -29,7 +29,7 @@ public class TestcaseGroupResponse {
         this.description = testcaseGroup.getDescription();
         this.itemOrder = testcaseGroup.getItemOrder();
         if (testcaseGroup.getTestcases() != null) {
-            this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseSimpleResponse::new).collect(Collectors.toList());
+            this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseListResponse::new).collect(Collectors.toList());
         }
 
     }

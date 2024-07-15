@@ -20,6 +20,9 @@ public interface ProjectReleaseRepository extends JpaRepository<ProjectRelease, 
 
     List<ProjectRelease> findByProjectIdAndIsTargetTrue(long projectId);
 
+    @Query("SELECT pr.id FROM ProjectRelease pr WHERE pr.project.id = :projectId AND pr.isTarget = true")
+    List<Long> findIdByProjectIdAndIsTargetTrue(long projectId);
+
     Optional<ProjectRelease> findByIdAndProjectId(long projectReleaseId, long projectId);
 
 

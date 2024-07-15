@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,7 +37,7 @@ public class TestcaseResponse {
         if (testcase.getProjectReleases() != null) {
             this.projectReleaseIds = testcase.getProjectReleases()
                 .stream()
-                .map(projectReleaseDTO -> projectReleaseDTO.getId())
+                .map(ProjectReleaseDTO::getId)
                 .distinct()
                 .collect(Collectors.toList());
         }

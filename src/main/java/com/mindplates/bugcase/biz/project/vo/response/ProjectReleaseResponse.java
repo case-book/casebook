@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
-import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseSimpleResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseListResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ public class ProjectReleaseResponse {
     private Boolean isTarget;
     private String description;
     private ProjectResponse project;
-    private List<TestcaseSimpleResponse> testcases;
+    private List<TestcaseListResponse> testcases;
     private LocalDateTime creationDate;
 
     public ProjectReleaseResponse(ProjectReleaseDTO projectReleaseDTO, long userId) {
@@ -29,6 +29,6 @@ public class ProjectReleaseResponse {
         this.description = projectReleaseDTO.getDescription();
         this.project = new ProjectResponse(projectReleaseDTO.getProject(), userId);
         this.creationDate = projectReleaseDTO.getCreationDate();
-        this.testcases = projectReleaseDTO.getTestcases().stream().map(TestcaseSimpleResponse::new).collect(Collectors.toList());
+        this.testcases = projectReleaseDTO.getTestcases().stream().map(TestcaseListResponse::new).collect(Collectors.toList());
     }
 }

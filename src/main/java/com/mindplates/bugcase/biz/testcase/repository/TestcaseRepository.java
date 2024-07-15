@@ -50,5 +50,19 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Modifying
     @Query("UPDATE Testcase t SET t.itemOrder = t.itemOrder + 1 WHERE t.testcaseGroup.id = :testcaseGroupId")
     void increaseTestcaseItemOrderByTestcaseGroupId(long testcaseGroupId);
+
+    @Modifying
+    @Query("UPDATE Testcase t SET t.itemOrder = t.itemOrder + 1 WHERE t.testcaseGroup.id = :testcaseGroupId AND t.itemOrder > :itemOrder")
+    void increaseTestcaseItemOrderByTestcaseGroupIdAndItemOrder(long testcaseGroupId, int itemOrder);
+
+    @Query(value = "SELECT t.itemOrder FROM Testcase t WHERE t.id = :testcaseId")
+    Integer findItemOrderByTestcaseId(Long testcaseId);
+
+    @Query(value = "SELECT t.testcaseGroup.id FROM Testcase t WHERE t.id = :testcaseId")
+    Long findTestcaseGroupIdByTestcaseId(Long testcaseId);
+
+    @Modifying
+    @Query("UPDATE Testcase t SET t.testcaseGroup.id = :testcaseGroupId, t.itemOrder = :itemOrder  WHERE t.id = :testcaseId")
+    void updateTestcaseGroupAndOrder(long testcaseId, long testcaseGroupId, int itemOrder);
 }
 

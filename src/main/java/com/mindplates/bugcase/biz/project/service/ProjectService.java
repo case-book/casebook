@@ -203,4 +203,14 @@ public class ProjectService {
         return groupSeq;
     }
 
+    @Transactional
+    public int increaseTestcaseSeq(long projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int testcaseSeq = project.getTestcaseSeq() + 1;
+        project.setTestcaseSeq(testcaseSeq);
+        projectRepository.save(project);
+
+        return testcaseSeq;
+    }
+
 }
