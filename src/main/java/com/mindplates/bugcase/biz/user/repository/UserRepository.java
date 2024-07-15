@@ -20,6 +20,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.lastSeen = :lastSeen WHERE u.id = :userId")
     void updateUserLastSeen(Long userId, LocalDateTime lastSeen);
 
+    @Modifying
+    @Query("SELECT u.id, u.name, u.email FROM User u WHERE u.id = :userId")
+    Optional<User> findNameById(long userId);
+
     Optional<User> findByEmail(String email);
 
 

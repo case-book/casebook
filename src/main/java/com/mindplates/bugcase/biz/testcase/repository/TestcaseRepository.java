@@ -64,5 +64,8 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Modifying
     @Query("UPDATE Testcase t SET t.testcaseGroup.id = :testcaseGroupId, t.itemOrder = :itemOrder  WHERE t.id = :testcaseId")
     void updateTestcaseGroupAndOrder(long testcaseId, long testcaseGroupId, int itemOrder);
+
+    int countByTestcaseGroupId(long testcaseGroupId);
+
 }
 

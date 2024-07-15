@@ -170,11 +170,11 @@ public class OpenAIClientService {
 
         Map<String, Object> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", prompt.getSystemRole());
+        systemMessage.put("content", prompt.getSystemRole() + prefix + "\n" + prompt.getPrompt() + postfix);
 
         Map<String, Object> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content", prefix + prompt.getPrompt() + postfix + ":" + targetContent);
+        message.put("content",  targetContent);
 
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
         messages.add(systemMessage);

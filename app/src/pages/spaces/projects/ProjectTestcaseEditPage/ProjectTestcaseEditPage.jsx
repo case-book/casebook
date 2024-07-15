@@ -313,8 +313,7 @@ function ProjectTestcaseEditPage() {
     } else if (sourceType === 'group') {
       TestcaseService.copyTestcaseGroup(spaceCode, projectId, sourceId, targetType, targetId, info => {
         const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
-        const nextTestcaseGroups = nextAllTestcaseGroups?.slice(0) || [];
-        nextTestcaseGroups.push(info);
+        nextAllTestcaseGroups.push(info);
         setAllTestcaseGroups(nextAllTestcaseGroups);
 
         setSelectedItemInfo({
@@ -504,37 +503,27 @@ function ProjectTestcaseEditPage() {
       isLoading: true,
     });
     return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId, d => {
-      if (d.length > 12) {
-        try {
-          const string = d.substring(8, d.length - 4);
-          const items = JSON.parse(string);
+      try {
+        const items = JSON.parse(d);
 
-          // items가 array인지 확인
-          if (!Array.isArray(items)) {
-            setParaphraseInfo({
-              testcaseId,
-              result: false,
-              isLoading: false,
-            });
-            dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
-            return;
-          }
-
-          setParaphraseInfo({
-            testcaseId,
-            result: true,
-            isLoading: false,
-            items,
-          });
-        } catch (e) {
+        // items가 array인지 확인
+        if (!Array.isArray(items)) {
           setParaphraseInfo({
             testcaseId,
             result: false,
             isLoading: false,
           });
-          console.error(e);
+          dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
+          return;
         }
-      } else {
+
+        setParaphraseInfo({
+          testcaseId,
+          result: true,
+          isLoading: false,
+          items,
+        });
+      } catch (e) {
         setParaphraseInfo({
           testcaseId,
           result: false,

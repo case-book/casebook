@@ -80,7 +80,7 @@ public class UserController {
     @Operation(description = "내 정보 조회")
     @GetMapping("/my")
     public MyInfoResponse selectUserInfo(@AuthenticationPrincipal SecurityUser securityUser) {
-        UserDTO user = userService.selectUserInfo(securityUser.getId());
+        UserDTO user = userService.getUserInfo(securityUser.getId());
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(securityUser.getId());
         return new MyInfoResponse(user, null, null, spaces);
     }
@@ -88,7 +88,7 @@ public class UserController {
     @Operation(description = "내 정보 조회")
     @GetMapping("/my/detail")
     public MyDetailInfoResponse selectMyDetailInfo(@AuthenticationPrincipal SecurityUser securityUser) {
-        UserDTO user = userService.selectUserInfo(securityUser.getId());
+        UserDTO user = userService.getUserInfo(securityUser.getId());
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(securityUser.getId());
         return new MyDetailInfoResponse(user, spaces);
     }
@@ -119,7 +119,7 @@ public class UserController {
     @Operation(description = "내 알림 정보 조회")
     @GetMapping("/my/notifications")
     public NotificationInfoResponse selectUserNotificationList(@RequestParam(value = "pageNo") int pageNo) {
-        UserDTO user = userService.selectUserInfo(SessionUtil.getUserId());
+        UserDTO user = userService.getUserInfo(SessionUtil.getUserId());
         LocalDateTime currentLastSeen = user.getLastSeen();
         List<NotificationDTO> notifications = notificationService.selectUserNotificationList(SessionUtil.getUserId(), pageNo, NOTIFICATION_PAGE_SIZE);
         if (pageNo == 0) {
@@ -132,7 +132,7 @@ public class UserController {
     @Operation(description = "내 알림 카운트 조회")
     @GetMapping("/my/notifications/count")
     public Long selectUserNotificationCount() {
-        UserDTO user = userService.selectUserInfo(SessionUtil.getUserId());
+        UserDTO user = userService.getUserInfo(SessionUtil.getUserId());
         return notificationService.selectUserNotificationCount(SessionUtil.getUserId(), user.getLastSeen(), NOTIFICATION_PAGE_SIZE);
     }
 
@@ -161,7 +161,7 @@ public class UserController {
         } catch (ExpiredJwtException e) {
             userId = Long.parseLong(e.getClaims().getSubject());
         }
-        UserDTO user = userService.selectUserInfo(userId);
+        UserDTO user = userService.getUserInfo(userId);
         List<String> roleList = Arrays.asList(user.getActiveSystemRole().toString().split(","));
         LocalDateTime currentDateTime = LocalDateTime.now();
         RefreshTokenDTO updatedRefreshToken = refreshTokenService.validateAndUpdateToken(userId, refreshToken, currentDateTime);

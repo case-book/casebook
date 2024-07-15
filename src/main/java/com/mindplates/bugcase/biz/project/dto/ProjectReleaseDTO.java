@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.project.dto;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseListDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
 import com.mindplates.bugcase.common.dto.CommonDTO;
@@ -26,7 +26,7 @@ public class ProjectReleaseDTO extends CommonDTO implements IDTO<ProjectRelease>
     private Boolean isTarget;
     private String description;
     private ProjectDTO project;
-    private List<TestcaseSimpleDTO> testcases;
+    private List<TestcaseListDTO> testcases;
     private LocalDateTime creationDate;
 
     public ProjectReleaseDTO(ProjectRelease projectRelease) {
@@ -42,7 +42,7 @@ public class ProjectReleaseDTO extends CommonDTO implements IDTO<ProjectRelease>
         if (projectRelease.getTestcaseProjectReleases() != null) {
             this.testcases = projectRelease.getTestcaseProjectReleases()
                 .stream()
-                .map(testcaseProjectRelease -> new TestcaseSimpleDTO(testcaseProjectRelease.getTestcase()))
+                .map(testcaseProjectRelease -> new TestcaseListDTO(testcaseProjectRelease.getTestcase()))
                 .distinct()
                 .collect(Collectors.toList());
         }

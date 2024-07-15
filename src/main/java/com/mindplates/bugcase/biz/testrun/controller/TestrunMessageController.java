@@ -40,7 +40,7 @@ public class TestrunMessageController {
         String sessionId = headerAccessor.getSessionId();
 
         Long userId = Long.parseLong((String) attributes.get("USER-ID"));
-        UserDTO user = userService.selectUserInfo(userId);
+        UserDTO user = userService.getUserInfo(userId);
 
         // 이미 참가 중인 사용자가의 새로운 세션인지의 여부
         boolean isAlreadyJoinedUser = testrunService.isExistParticipant(testrunId, userId);

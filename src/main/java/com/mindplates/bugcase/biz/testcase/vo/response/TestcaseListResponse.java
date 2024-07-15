@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseListDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ public class TestcaseListResponse {
         this.creationDate = testcase.getCreationDate();
     }
 
-    public TestcaseListResponse(TestcaseSimpleDTO testcase) {
+    public TestcaseListResponse(TestcaseListDTO testcase) {
         this.id = testcase.getId();
         this.seqId = testcase.getSeqId();
         if (testcase.getTestcaseGroup() != null) {

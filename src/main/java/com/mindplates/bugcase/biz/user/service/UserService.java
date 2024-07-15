@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +42,20 @@ public class UserService {
     private final ProjectUserRepository projectUserRepository;
     private final AiRequestHistoryRepository aiRequestHistoryRepository;
     private final UserTokenRepository userTokenRepository;
+    private final UserCachedService userCachedService;
 
-    @Cacheable(key = "{#userId}", value = CacheConfig.USER)
+
+    public UserDTO getUserInfo(Long userId) {
+        return userCachedService.getUserInfo(userId);
+    }
+
+
     public UserDTO selectUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new UserDTO(user);
+        try {
+            return userCachedService.getUserInfo(userId);
+        } catch (ServiceException e) {
+            return null;
+        }
     }
 
 

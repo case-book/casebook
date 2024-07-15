@@ -52,7 +52,7 @@ public class ProjectRelease extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT_RELEASE__PROJECT"))
     private Project project;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "projectRelease", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "projectRelease", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestcaseProjectRelease> testcaseProjectReleases;
 

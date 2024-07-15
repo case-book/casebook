@@ -993,14 +993,10 @@ public class TestrunService {
     }
 
 
-    public List<TestrunTestcaseGroupTestcaseDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId,
-        Long currentTestrunId, Integer pageNo) {
+    public List<TestrunTestcaseGroupTestcaseDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId, Long currentTestrunId, Integer pageNo) {
         Pageable pageInfo = PageRequest.of(Optional.ofNullable(pageNo).orElse(0), 10);
-        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(
-            projectId,
-            testcaseId, currentTestrunId, pageInfo);
-        return list.stream().map(TestrunTestcaseGroupTestcaseDTO::new)
-            .collect(Collectors.toList());
+        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(projectId, testcaseId, currentTestrunId, pageInfo);
+        return list.stream().map(TestrunTestcaseGroupTestcaseDTO::new).collect(Collectors.toList());
     }
 
     @Transactional

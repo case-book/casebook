@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
         try {
-            UserDTO user = userService.selectUserInfo(Long.parseLong(id));
+            UserDTO user = userService.getUserInfo(Long.parseLong(id));
 
             return SecurityUser.builder()
                 .id(user.getId())

@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class TestcaseResponse {
     private LocalDateTime creationDate;
     private LocalDateTime lastUpdateDate;
 
-    public TestcaseResponse(TestcaseDTO testcase) {
+    public TestcaseResponse(TestcaseDTO testcase, UserDTO createdUser, UserDTO lastUpdatedUser) {
         this.id = testcase.getId();
         this.projectId = testcase.getProject().getId();
         this.seqId = testcase.getSeqId();
@@ -48,8 +49,8 @@ public class TestcaseResponse {
         this.description = testcase.getDescription();
         this.testerType = testcase.getTesterType();
         this.testerValue = testcase.getTesterValue();
-        this.createdUserName = testcase.getCreatedUserName();
-        this.lastUpdatedUserName = testcase.getLastUpdatedUserName();
+        this.createdUserName = createdUser != null ? createdUser.getName() : "";
+        this.lastUpdatedUserName = lastUpdatedUser != null ? lastUpdatedUser.getName() : "";
         this.creationDate = testcase.getCreationDate();
         this.lastUpdateDate = testcase.getLastUpdateDate();
     }

@@ -89,7 +89,7 @@ public class AdminController {
     @Operation(description = "사용자 조회")
     @GetMapping("/users/{userId}")
     public UserDetailResponse selectUserInfo(@PathVariable Long userId) {
-        UserDTO user = userService.selectUserInfo(userId);
+        UserDTO user = userService.getUserInfo(userId);
         List<SpaceDTO> userSpaceList = spaceService.selectUserSpaceList(user.getId());
         return new UserDetailResponse(user, userSpaceList);
     }

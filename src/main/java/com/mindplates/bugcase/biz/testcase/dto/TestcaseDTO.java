@@ -69,39 +69,6 @@ public class TestcaseDTO extends CommonDTO implements IDTO<Testcase> {
         this.lastUpdatedBy = testcase.getLastUpdatedBy();
     }
 
-    public TestcaseDTO(Testcase testcase, User createdUser, User lastUpdatedUser) {
-        this.id = testcase.getId();
-        this.seqId = testcase.getSeqId();
-        this.testcaseGroup = TestcaseGroupDTO.builder().id(testcase.getTestcaseGroup().getId()).build();
-        this.name = testcase.getName();
-        this.description = testcase.getDescription();
-        this.itemOrder = testcase.getItemOrder();
-        this.closed = testcase.getClosed();
-        this.testcaseTemplate = new TestcaseTemplateDTO(testcase.getTestcaseTemplate());
-        this.testcaseItems = testcase.getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList());
-        this.project = ProjectDTO.builder().id(testcase.getProject().getId()).build();
-        if (testcase.getTestcaseProjectReleases() != null) {
-            this.projectReleases = testcase.getTestcaseProjectReleases()
-                .stream()
-                .map(testcaseProjectRelease -> new ProjectReleaseDTO(testcaseProjectRelease.getProjectRelease()))
-                .distinct()
-                .collect(Collectors.toList());
-        }
-        this.testerType = testcase.getTesterType();
-        this.testerValue = testcase.getTesterValue();
-        this.contentUpdateDate = testcase.getContentUpdateDate();
-        this.creationDate = testcase.getCreationDate();
-        this.lastUpdateDate = testcase.getLastUpdateDate();
-        if (createdUser != null) {
-            this.createdUserName = createdUser.getName();
-        }
-
-        if (lastUpdatedUser != null) {
-            this.lastUpdatedUserName = lastUpdatedUser.getName();
-        }
-    }
-
-
     @Override
     public Testcase toEntity() {
         Testcase testcase = Testcase.builder()
