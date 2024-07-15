@@ -161,7 +161,7 @@ function TestcaseNavigator({
             setContextMenuInfo({
               type,
               id,
-              x: e.pageX,
+              x: e.pageX + 20,
               y: e.pageY,
               name,
             });
@@ -172,7 +172,7 @@ function TestcaseNavigator({
         setContextMenuInfo({
           type,
           id,
-          x: e.pageX,
+          x: e.pageX + 20,
           y: e.pageY,
           name,
         });
