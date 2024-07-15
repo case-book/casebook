@@ -35,7 +35,7 @@ public class SpaceMessageChannelHeaderRequest implements IRequestVO<SpaceMessage
     public Map<String, String> toMap() {
         Map<String, String> map = new HashMap<>();
         map.put("key", dataKey);
-        map.put("value", dataValue); 
+        map.put("value", dataValue);
         return map;
     }
 }

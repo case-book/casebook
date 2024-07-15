@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserCachedService {
 
     private final UserRepository userRepository;
-    
+
 
     @Cacheable(key = "{#userId}", value = CacheConfig.USER)
     public UserDTO getUserInfo(Long userId) {

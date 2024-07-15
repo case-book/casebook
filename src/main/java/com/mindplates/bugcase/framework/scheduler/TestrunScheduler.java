@@ -707,7 +707,8 @@ public class TestrunScheduler {
                     }
 
                     testrunDTO.getMessageChannels().forEach(testrunMessageChannel -> {
-                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunDTO.getId(), testrunDTO.getName(), project.getUsers(), userRemainCount);
+                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunDTO.getId(),
+                            testrunDTO.getName(), project.getUsers(), userRemainCount);
                     });
                 }
 

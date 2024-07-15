@@ -1,13 +1,11 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Builder
 @Getter

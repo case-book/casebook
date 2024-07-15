@@ -174,7 +174,7 @@ public class OpenAIClientService {
 
         Map<String, Object> message = new HashMap<>();
         message.put("role", "user");
-        message.put("content",  targetContent);
+        message.put("content", targetContent);
 
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
         messages.add(systemMessage);

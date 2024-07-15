@@ -8,7 +8,6 @@ import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.vo.IDTO;
 import java.time.LocalDateTime;

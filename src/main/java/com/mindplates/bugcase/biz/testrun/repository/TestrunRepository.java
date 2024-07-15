@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     Optional<Testrun> findAllByProjectIdAndId(Long projectId, Long testrunId);
+
     Optional<Testrun> findAllByProjectIdAndSeqId(Long projectId, String seqId);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);

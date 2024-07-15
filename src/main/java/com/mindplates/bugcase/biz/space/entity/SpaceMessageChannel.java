@@ -71,7 +71,7 @@ public class SpaceMessageChannel extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<SpaceMessageChannelHeader> headers;
 
-    @OneToMany(fetch = FetchType.EAGER,mappedBy = "spaceMessageChannel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "spaceMessageChannel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<SpaceMessageChannelPayload> payloads;
 

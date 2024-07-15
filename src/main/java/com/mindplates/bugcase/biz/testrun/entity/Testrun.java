@@ -174,7 +174,8 @@ public class Testrun extends CommonEntity {
             });
         }
 
-        this.messageChannels.removeIf(messageChannel -> testrun.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
+        this.messageChannels.removeIf(
+            messageChannel -> testrun.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
         if (testrun.messageChannels != null) {
             // testrun의 messageChannels를 반복하면서, ID가 있으면 업데이트, 없으면 추가
             this.messageChannels.addAll(testrun.messageChannels.stream().filter(targetMessageChannel -> targetMessageChannel.getId() == null).collect(Collectors.toList()));
@@ -322,7 +323,8 @@ public class Testrun extends CommonEntity {
                     testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
                         testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
                         if (!CollectionUtils.isEmpty(testrunTestcaseGroupTestcase.getTestcaseItems())) {
-                            testrunTestcaseGroupTestcase.getTestcaseItems().forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem.setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
+                            testrunTestcaseGroupTestcase.getTestcaseItems()
+                                .forEach(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem.setTestrunTestcaseGroupTestcase(testrunTestcaseGroupTestcase));
                         }
                     });
                 }
@@ -330,7 +332,8 @@ public class Testrun extends CommonEntity {
         }
     }
 
-    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap, Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, Random random, Boolean autoTestcaseNotAssignedTester) {
+    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap, Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap,
+        Random random, Boolean autoTestcaseNotAssignedTester) {
         int currentSeq = random.nextInt(testrunUsers.size());
         for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
             if (testrunTestcaseGroup.getTestcases() != null) {

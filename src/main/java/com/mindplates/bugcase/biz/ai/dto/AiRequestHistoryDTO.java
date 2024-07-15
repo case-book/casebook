@@ -2,8 +2,6 @@ package com.mindplates.bugcase.biz.ai.dto;
 
 
 import com.mindplates.bugcase.biz.ai.entity.AiRequestHistory;
-import com.mindplates.bugcase.biz.ai.entity.Llm;
-import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;

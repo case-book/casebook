@@ -4,16 +4,15 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter

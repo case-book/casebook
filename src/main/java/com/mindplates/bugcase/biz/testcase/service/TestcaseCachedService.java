@@ -6,7 +6,6 @@ import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseRepository;
-import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.framework.config.CacheConfig;

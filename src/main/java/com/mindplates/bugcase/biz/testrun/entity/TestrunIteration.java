@@ -199,7 +199,8 @@ public class TestrunIteration extends CommonEntity {
                 });
         });
 
-        this.messageChannels.removeIf(messageChannel -> testrunIteration.messageChannels.stream().noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
+        this.messageChannels.removeIf(messageChannel -> testrunIteration.messageChannels.stream()
+            .noneMatch(targetMessageChannel -> targetMessageChannel.getId() != null && targetMessageChannel.getId().equals(messageChannel.getId())));
         if (testrunIteration.messageChannels != null) {
             // testrun의 messageChannels를 반복하면서, ID가 있으면 업데이트, 없으면 추가
             this.messageChannels.addAll(testrunIteration.messageChannels.stream().filter(targetMessageChannel -> targetMessageChannel.getId() == null).collect(Collectors.toList()));
@@ -258,7 +259,7 @@ public class TestrunIteration extends CommonEntity {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcaseDTO ->testcase.getId().equals(testrunTestcaseGroupTestcaseDTO.getId()));
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testcase.getId().equals(testrunTestcaseGroupTestcaseDTO.getId()));
                     }
                     return true;
                 });

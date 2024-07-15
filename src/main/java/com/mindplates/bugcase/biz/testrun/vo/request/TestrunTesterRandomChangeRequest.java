@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class TestrunTesterRandomChangeRequest {
 
-    
+
     private Long testerId;
 
     @NotNull

@@ -7,5 +7,6 @@ import lombok.Data;
 
 @Data
 public class SystemInfoRequest {
+
     private List<ConfigRequest> configRequests;
 }

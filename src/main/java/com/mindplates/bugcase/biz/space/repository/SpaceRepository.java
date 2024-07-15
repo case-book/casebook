@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface SpaceRepository extends JpaRepository<Space, Long> {
 
-    static String LIST_PROJECTION = "SELECT new Space(s.id, s.name, s.code, s.activated, s.allowSearch, s.allowAutoJoin, s.description, (SELECT COUNT(p.id) FROM Project p WHERE p.space.id = s.id), (SELECT COUNT(sp.id) FROM SpaceUser sp WHERE sp.space.id = s.id)) FROM Space s ";
-    static String USER_LIST_PROJECTION = "SELECT new Space(s.id, s.name, s.code, s.activated, s.allowSearch, s.allowAutoJoin, s.description, (SELECT COUNT(p.id) FROM Project p WHERE p.space.id = s.id), (SELECT COUNT(sp.id) FROM SpaceUser sp WHERE sp.space.id = s.id), EXISTS(SELECT sp.id FROM SpaceUser sp WHERE sp.space.id = s.id AND sp.user.id = :userId) , EXISTS(SELECT sp.id FROM SpaceUser sp WHERE sp.space.id = s.id AND sp.user.id = :userId AND sp.role = 'ADMIN')) FROM Space s ";
+    String LIST_PROJECTION = "SELECT new Space(s.id, s.name, s.code, s.activated, s.allowSearch, s.allowAutoJoin, s.description, (SELECT COUNT(p.id) FROM Project p WHERE p.space.id = s.id), (SELECT COUNT(sp.id) FROM SpaceUser sp WHERE sp.space.id = s.id)) FROM Space s ";
+    String USER_LIST_PROJECTION = "SELECT new Space(s.id, s.name, s.code, s.activated, s.allowSearch, s.allowAutoJoin, s.description, (SELECT COUNT(p.id) FROM Project p WHERE p.space.id = s.id), (SELECT COUNT(sp.id) FROM SpaceUser sp WHERE sp.space.id = s.id), EXISTS(SELECT sp.id FROM SpaceUser sp WHERE sp.space.id = s.id AND sp.user.id = :userId) , EXISTS(SELECT sp.id FROM SpaceUser sp WHERE sp.space.id = s.id AND sp.user.id = :userId AND sp.role = 'ADMIN')) FROM Space s ";
 
 
     @Query(LIST_PROJECTION)

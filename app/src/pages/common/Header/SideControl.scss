@@ -42,16 +42,16 @@
       font-family: Cairo, NanumSquareNeo, sans-serif;
       font-weight: bold;
       background-color: var(--danger-color);
-      color : var(--white-color);
+      color: var(--white-color);
       line-height: 100%;
       padding: 2px;
       border-radius: 4px;
-      top : -10px;
+      top: -10px;
     }
 
     &:hover {
       .admin-flag {
-        top : -11px;
+        top: -11px;
       }
     }
     > a {

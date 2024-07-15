@@ -4,13 +4,12 @@ import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseItemResponse;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -58,7 +57,6 @@ public class TestrunTestcaseGroupTestcaseResponse {
         if (testrunTestcaseGroupTestcase.getTester() != null) {
             this.testerId = testrunTestcaseGroupTestcase.getTester().getId();
         }
-
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems() != null && !testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().isEmpty()) {
             this.testcaseItems = testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemResponse::new).collect(Collectors.toList());

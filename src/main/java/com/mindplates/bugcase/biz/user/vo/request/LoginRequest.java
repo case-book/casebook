@@ -1,9 +1,8 @@
 package com.mindplates.bugcase.biz.user.vo.request;
 
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 public class LoginRequest {

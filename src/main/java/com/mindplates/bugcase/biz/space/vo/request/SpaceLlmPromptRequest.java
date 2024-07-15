@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.space.vo.request;
 
-import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
 import com.mindplates.bugcase.common.vo.IRequestVO;

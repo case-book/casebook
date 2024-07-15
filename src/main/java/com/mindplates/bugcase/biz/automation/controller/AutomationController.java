@@ -31,7 +31,7 @@ public class AutomationController {
         @PathVariable long testrunSeqNumber,
         @PathVariable long testcaseSeqNumber,
         @Valid @RequestBody TestResultRequest testResultRequest) {
-        
+
         boolean done = testrunService.updateTestrunTestcaseResult(projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
         testrunService.sendTestrunStatusChangeMessage(projectToken, testrunSeqNumber, testcaseSeqNumber, done);
         return new ResponseEntity<>(HttpStatus.OK);

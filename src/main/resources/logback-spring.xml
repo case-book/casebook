@@ -1,49 +1,49 @@
 <configuration>
 
-    <property name="PROJECT_NAME" value="casebook"/>
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
+    </layout>
+  </appender>
 
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
-        </layout>
+  <property name="PROJECT_NAME" value="casebook"/>
+
+  <springProfile name="production">
+    <property name="LOG_DIR" value="${log.dir}"/>
+    <property name="LOG_PATH_NAME" value="${LOG_DIR}/${PROJECT_NAME}.log"/>
+  </springProfile>
+
+  <springProfile name="production">
+    <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="FILE">
+      <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
+      </encoder>
+      <file>${LOG_PATH_NAME}</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH_NAME}.%d{yyyyMMdd}</fileNamePattern>
+        <maxHistory>30</maxHistory>
+      </rollingPolicy>
     </appender>
+  </springProfile>
 
-    <springProfile name="production">
-        <property name="LOG_DIR" value="${log.dir}"/>
-        <property name="LOG_PATH_NAME" value="${LOG_DIR}/${PROJECT_NAME}.log"/>
-    </springProfile>
+  <springProfile name="development">
+    <logger level="INFO" name="org.springframework"/>
+    <logger level="DEBUG" name="com.mindplates.bugcase.Application"/>
+    <logger name="com.mindplates.bugcase"/>
+    <!--
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
+    -->
+    <root level="error">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
 
-    <springProfile name="production">
-        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${LOG_PATH_NAME}</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${LOG_PATH_NAME}.%d{yyyyMMdd}</fileNamePattern>
-                <maxHistory>30</maxHistory>
-            </rollingPolicy>
-            <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] [%F]%M\(%L\) : %m%n</pattern>
-            </encoder>
-        </appender>
-    </springProfile>
-
-    <springProfile name="development">
-        <logger name="org.springframework" level="INFO"/>
-        <logger name="com.mindplates.bugcase.Application" level="DEBUG"/>
-        <logger name="com.mindplates.bugcase"/>
-        <!--
-        <logger name="org.hibernate.SQL" level="DEBUG"/>
-        <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
-        -->
-        <root level="error">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="production">
-        <logger name="org.springframework" level="INFO"/>
-        <root level="error" additivity="false">
-            <appender-ref ref="FILE"/>
-        </root>
-    </springProfile>
+  <springProfile name="production">
+    <logger level="INFO" name="org.springframework"/>
+    <root additivity="false" level="error">
+      <appender-ref ref="FILE"/>
+    </root>
+  </springProfile>
 
 </configuration>

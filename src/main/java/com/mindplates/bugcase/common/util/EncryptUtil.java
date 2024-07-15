@@ -1,11 +1,10 @@
 package com.mindplates.bugcase.common.util;
 
 import com.mindplates.bugcase.common.exception.ServiceException;
-import org.springframework.stereotype.Component;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import org.springframework.stereotype.Component;
 
 @Component
 public class EncryptUtil {

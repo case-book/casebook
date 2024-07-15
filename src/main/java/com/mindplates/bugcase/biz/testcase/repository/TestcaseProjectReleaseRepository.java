@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TestcaseProjectReleaseRepository extends JpaRepository<TestcaseProjectRelease, TestcaseProjectReleaseId> {
+
     @Modifying
     @Query("DELETE FROM TestcaseProjectRelease tpr WHERE tpr.projectRelease.id = :id")
     void deleteByProjectReleaseId(@Param("id") Long id);

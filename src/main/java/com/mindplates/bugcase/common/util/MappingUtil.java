@@ -1,11 +1,10 @@
 package com.mindplates.bugcase.common.util;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -19,8 +18,8 @@ public class MappingUtil {
 
     public <T> List<T> convert(List<?> originObjects, Class<T> targetType) {
         return originObjects
-                .stream()
-                .map(p -> convert(p, targetType))
-                .collect(Collectors.toList());
+            .stream()
+            .map(p -> convert(p, targetType))
+            .collect(Collectors.toList());
     }
 }

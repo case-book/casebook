@@ -3,9 +3,8 @@ package com.mindplates.bugcase.biz.user.vo.request;
 
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.SystemRole;
-import lombok.Data;
-
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class UpdateMyInfoRequest {

@@ -63,7 +63,8 @@ public class TestrunIterationDTO extends CommonDTO {
         this.name = testrunIteration.getName();
         this.description = testrunIteration.getDescription();
         if (testrunIteration.getProject() != null && testrunIteration.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrunIteration.getProject().getId()).space(SpaceDTO.builder().id(testrunIteration.getProject().getSpace().getId()).code(testrunIteration.getProject().getSpace().getCode()).build()).build();
+            this.project = ProjectDTO.builder().id(testrunIteration.getProject().getId())
+                .space(SpaceDTO.builder().id(testrunIteration.getProject().getSpace().getId()).code(testrunIteration.getProject().getSpace().getCode()).build()).build();
         }
 
         if (testrunIteration.getProject() != null && testrunIteration.getProject().getSpace() == null) {

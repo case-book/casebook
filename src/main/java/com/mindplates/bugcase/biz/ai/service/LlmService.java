@@ -13,7 +13,6 @@ import com.mindplates.bugcase.biz.ai.repository.LlmRepository;
 import com.mindplates.bugcase.biz.ai.repository.OpenAiModelRepository;
 import com.mindplates.bugcase.biz.ai.repository.OpenAiRepository;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.MappingUtil;

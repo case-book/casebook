@@ -1,13 +1,12 @@
 package com.mindplates.bugcase.framework.converter;
 
-import org.apache.commons.lang3.StringUtils;
+import static java.util.Collections.emptyList;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.util.Arrays;
 import java.util.List;
-
-import static java.util.Collections.emptyList;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import org.apache.commons.lang3.StringUtils;
 
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {

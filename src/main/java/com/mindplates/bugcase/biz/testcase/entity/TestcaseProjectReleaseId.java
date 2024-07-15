@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
 import java.io.Serializable;
-import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
-import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.dto.CommonDTO;
@@ -23,7 +22,8 @@ public class TestrunUserDTO extends CommonDTO {
 
     public TestrunUserDTO(TestrunUser testrunUser) {
         this.id = testrunUser.getId();
-        this.user = UserDTO.builder().id(testrunUser.getUser().getId()).email(testrunUser.getUser().getEmail()).name(testrunUser.getUser().getName()).avatarInfo(testrunUser.getUser().getAvatarInfo()).build();
+        this.user = UserDTO.builder().id(testrunUser.getUser().getId()).email(testrunUser.getUser().getEmail()).name(testrunUser.getUser().getName()).avatarInfo(testrunUser.getUser().getAvatarInfo())
+            .build();
     }
 
 }

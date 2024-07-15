@@ -1,12 +1,11 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface TestrunTestcaseGroupRepository extends JpaRepository<TestrunTestcaseGroup, Long> {
 

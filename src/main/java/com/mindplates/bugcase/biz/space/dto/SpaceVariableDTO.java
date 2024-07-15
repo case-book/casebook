@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.space.dto;
 
-import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
 import com.mindplates.bugcase.biz.space.entity.SpaceVariable;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import java.time.LocalDateTime;

@@ -4,15 +4,14 @@ import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.common.dto.CommonDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor
@@ -58,7 +57,8 @@ public class TestrunReservationDTO extends CommonDTO {
         this.creationDate = testrunReservation.getCreationDate();
         this.lastUpdateDate = testrunReservation.getLastUpdateDate();
         if (testrunReservation.getProject() != null && testrunReservation.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrunReservation.getProject().getId()).space(SpaceDTO.builder().id(testrunReservation.getProject().getSpace().getId()).code(testrunReservation.getProject().getSpace().getCode()).build()).build();
+            this.project = ProjectDTO.builder().id(testrunReservation.getProject().getId())
+                .space(SpaceDTO.builder().id(testrunReservation.getProject().getSpace().getId()).code(testrunReservation.getProject().getSpace().getCode()).build()).build();
         }
 
         if (testrunReservation.getProject() != null && testrunReservation.getProject().getSpace() == null) {
@@ -76,7 +76,6 @@ public class TestrunReservationDTO extends CommonDTO {
             this.messageChannels = testrunReservation.getMessageChannels().stream().map(TestrunMessageChannelDTO::new).collect(Collectors.toList());
         }
     }
-
 
 
     public TestrunReservationDTO(TestrunReservation testrunReservation, boolean detail) {

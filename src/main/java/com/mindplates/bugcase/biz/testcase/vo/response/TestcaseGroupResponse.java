@@ -1,11 +1,10 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

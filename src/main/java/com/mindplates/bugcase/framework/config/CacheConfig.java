@@ -74,7 +74,8 @@ public class CacheConfig {
         cacheConfigurations.put(PROJECT, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(PROJECT_EXPIRE_SEC)));
         cacheConfigurations.put(SPACE_VARIABLE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_VARIABLE_EXPIRE_SEC)));
         cacheConfigurations.put(SPACE_PROFILE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_PROFILE_EXPIRE_SEC)));
-        cacheConfigurations.put(SPACE_PROFILE_VARIABLE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_PROFILE_VARIABLE_EXPIRE_SEC)));
+        cacheConfigurations.put(SPACE_PROFILE_VARIABLE,
+            RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(SPACE_PROFILE_VARIABLE_EXPIRE_SEC)));
         cacheConfigurations.put(TESTCASE_GROUPS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(TESTCASE_GROUPS_EXPIRE_SEC)));
         cacheConfigurations.put(PROJECT_TESTCASE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(PROJECT_TESTCASE_EXPIRE_SEC)));
         cacheConfigurations.put(USER, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(USER_EXPIRE_SEC)));

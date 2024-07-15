@@ -19,13 +19,13 @@ public class TestrunTestcaseGroupTestcaseItemRequest {
     public TestrunTestcaseGroupTestcaseItemDTO toDTO() {
 
         return TestrunTestcaseGroupTestcaseItemDTO.builder()
-                .id(id)
-                .testcaseTemplateItem(TestcaseTemplateItemDTO.builder().id(testcaseTemplateItemId).build())
-                .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseId).build())
-                .type(type)
-                .value(value)
-                .text(text)
-                .build();
+            .id(id)
+            .testcaseTemplateItem(TestcaseTemplateItemDTO.builder().id(testcaseTemplateItemId).build())
+            .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseId).build())
+            .type(type)
+            .value(value)
+            .text(text)
+            .build();
     }
 
 

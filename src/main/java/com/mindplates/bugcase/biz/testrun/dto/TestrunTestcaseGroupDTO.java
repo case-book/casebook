@@ -3,13 +3,12 @@ package com.mindplates.bugcase.biz.testrun.dto;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @NoArgsConstructor
@@ -40,14 +39,14 @@ public class TestrunTestcaseGroupDTO extends CommonDTO {
         }
 
         this.testcaseGroup = TestcaseGroupDTO.builder()
-                .id(testrunTestcaseGroup.getTestcaseGroup().getId())
-                .seqId(testrunTestcaseGroup.getTestcaseGroup().getSeqId())
-                .parentId(testrunTestcaseGroup.getTestcaseGroup().getParentId())
-                .depth(testrunTestcaseGroup.getTestcaseGroup().getDepth())
-                .name(testrunTestcaseGroup.getTestcaseGroup().getName())
-                .description(testrunTestcaseGroup.getTestcaseGroup().getDescription())
-                .itemOrder(testrunTestcaseGroup.getTestcaseGroup().getItemOrder())
-                .build();
+            .id(testrunTestcaseGroup.getTestcaseGroup().getId())
+            .seqId(testrunTestcaseGroup.getTestcaseGroup().getSeqId())
+            .parentId(testrunTestcaseGroup.getTestcaseGroup().getParentId())
+            .depth(testrunTestcaseGroup.getTestcaseGroup().getDepth())
+            .name(testrunTestcaseGroup.getTestcaseGroup().getName())
+            .description(testrunTestcaseGroup.getTestcaseGroup().getDescription())
+            .itemOrder(testrunTestcaseGroup.getTestcaseGroup().getItemOrder())
+            .build();
 
         if (testrunTestcaseGroup.getTestcases() != null) {
             this.testcases = testrunTestcaseGroup.getTestcases().stream().map(TestrunTestcaseGroupTestcaseDTO::new).collect(Collectors.toList());

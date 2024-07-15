@@ -3,7 +3,7 @@ import { Button, EmptyContent, Modal, ModalBody, ModalFooter, ModalHeader, Testc
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { cloneDeep } from 'lodash';
-import { TestcaseGroupPropTypes, SelectedTestcaseGroupPropTypes } from '@/proptypes';
+import { SelectedTestcaseGroupPropTypes, TestcaseGroupPropTypes } from '@/proptypes';
 import testcaseUtil from '@/utils/testcaseUtil';
 import useStores from '@/hooks/useStores';
 import moment from 'moment/moment';

@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
@@ -92,7 +91,8 @@ public class Project extends CommonEntity {
     @Transient
     private Long testcaseCount = 0L;
 
-    public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount, long testcaseCount) {
+    public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount,
+        long testcaseCount) {
 
         this.id = id;
         this.name = name;

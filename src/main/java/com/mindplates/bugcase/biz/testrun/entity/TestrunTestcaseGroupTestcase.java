@@ -80,7 +80,9 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         this.testResult = TestResultCode.UNTESTED;
         if (!testrunUsers.isEmpty()) {
             // 아이템 중에서 systemLabel이 AUTOMATION이 아이템 찾기
-            TestcaseItem automationItem = items != null ? items.stream().filter(item -> item.getTestcaseTemplateItem().getSystemLabel() != null && "AUTOMATION".equals(item.getTestcaseTemplateItem().getSystemLabel())).findFirst().orElse(null) : null;
+            TestcaseItem automationItem =
+                items != null ? items.stream().filter(item -> item.getTestcaseTemplateItem().getSystemLabel() != null && "AUTOMATION".equals(item.getTestcaseTemplateItem().getSystemLabel()))
+                    .findFirst().orElse(null) : null;
             boolean isAutomationItem = automationItem != null && "Y".equals(automationItem.getValue());
 
             if (!(autoTestcaseNotAssignedTester && isAutomationItem)) {

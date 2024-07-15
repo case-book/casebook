@@ -6,7 +6,8 @@ import lombok.Data;
 @Builder
 @Data
 public class SlackMessage {
-	private String text;
-	private String username;
-	private String icon_url;
+
+    private String text;
+    private String username;
+    private String icon_url;
 }
