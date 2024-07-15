@@ -21,7 +21,7 @@ public interface TestrunTestcaseGroupTestcaseCommentRepository extends JpaReposi
 
     @Modifying
     @Query("DELETE FROM TestrunTestcaseGroupTestcaseComment ttgtc WHERE ttgtc.testrunTestcaseGroupTestcase.id IN " +
-        "(SELECT ttgt.id from TestrunTestcaseGroupTestcase ttgt where ttgt.testrunTestcaseGroup.id in (SELECT ttg.id from TestrunTestcaseGroup ttg where ttg.testcaseGroup.id in (:ids)))")
+        "(SELECT ttgt.id from TestrunTestcaseGroupTestcase ttgt where ttgt.testcase.id in (SELECT t.id from Testcase t where t.testcaseGroup.id in (:ids)))")
     void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);
 
     @Modifying

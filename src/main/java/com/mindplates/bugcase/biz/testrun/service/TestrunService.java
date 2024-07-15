@@ -9,6 +9,7 @@ import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
+import com.mindplates.bugcase.biz.project.service.ProjectCachedService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
@@ -16,6 +17,7 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
+import com.mindplates.bugcase.biz.testcase.service.TestcaseCachedService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
@@ -102,7 +104,9 @@ public class TestrunService {
     private final TestrunReservationRepository testrunReservationRepository;
     private final TestrunIterationRepository testrunIterationRepository;
     private final TestcaseService testcaseService;
+    private final TestcaseCachedService testcaseCachedService;
     private final ProjectService projectService;
+    private final ProjectCachedService projectCachedService;
     private final TestrunTestcaseGroupRepository testrunTestcaseGroupRepository;
     private final TestrunUserRepository testrunUserRepository;
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
@@ -448,7 +452,7 @@ public class TestrunService {
             throw new ServiceException("error.no.rest.tester");
         }
 
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
 
         String beforeUserName = project.getUsers()
             .stream()
@@ -522,7 +526,7 @@ public class TestrunService {
             actorName = "";
         }
 
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
 
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -690,7 +694,7 @@ public class TestrunService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT)
     public TestrunDTO updateTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
-        Project project = mappingUtil.convert(projectService.selectProjectInfo(spaceCode, testrunDTO.getProject().getId()), Project.class);
+        Project project = mappingUtil.convert(projectCachedService.selectProjectInfo(spaceCode, testrunDTO.getProject().getId()), Project.class);
         Testrun updateTestrun = mappingUtil.convert(testrunDTO, Testrun.class);
         Testrun targetTestrun = testrunRepository.findById(updateTestrun.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
@@ -713,7 +717,7 @@ public class TestrunService {
                     for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
                         testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
                         Testcase testcase = mappingUtil.convert(
-                            testcaseService
+                            testcaseCachedService
                                 .selectTestcaseInfo(updateTestrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId()),
                             Testcase.class);
                         if (testrunTestcaseGroupTestcase.getId() == null) {
@@ -1008,7 +1012,7 @@ public class TestrunService {
 
     public void notifyTestrun(String spaceCode, Long projectId, Long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
 
         LocalDateTime testrunEndDateTime = testrun.getEndDateTime();
         // testrunEndDateTime과 현재 시간과의 시간 차이를 분으로 계산

@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.common.service;
 
-import com.mindplates.bugcase.biz.user.entity.User;
-import com.mindplates.bugcase.biz.user.repository.UserRepository;
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import lombok.AllArgsConstructor;
@@ -15,20 +15,27 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
-        User user = userRepository.findUserDetailById(Long.parseLong(id)).orElseThrow(() -> new ServiceException(HttpStatus.UNAUTHORIZED));
+        try {
+            UserDTO user = userService.selectUserInfo(Long.parseLong(id));
 
-        return SecurityUser.builder()
-            .id(user.getId())
-            .roles(user.getActiveSystemRole().toString())
-            .name(user.getName())
-            .email(user.getEmail())
-            .language(user.getLanguage())
-            .build();
+            return SecurityUser.builder()
+                .id(user.getId())
+                .roles(user.getActiveSystemRole().toString())
+                .name(user.getName())
+                .email(user.getEmail())
+                .language(user.getLanguage())
+                .build();
+
+        } catch (Exception e) {
+            throw new ServiceException(HttpStatus.UNAUTHORIZED);
+
+        }
+
 
     }
 

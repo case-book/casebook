@@ -46,5 +46,9 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Modifying
     @Query("DELETE FROM Testcase t WHERE t.project.id = :projectId")
     void deleteByProjectId(@Param("projectId") Long projectId);
+
+    @Modifying
+    @Query("UPDATE Testcase t SET t.itemOrder = t.itemOrder + 1 WHERE t.testcaseGroup.id = :testcaseGroupId")
+    void increaseTestcaseItemOrderByTestcaseGroupId(long testcaseGroupId);
 }
 

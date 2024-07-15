@@ -22,7 +22,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
-        format_sql: true
+        # format_sql: true
         enable_lazy_load_no_trans: true
         type: trace
   redis:

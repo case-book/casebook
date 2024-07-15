@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.framework.scheduler;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.service.ProjectCachedService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
@@ -56,6 +57,8 @@ public class TestrunScheduler {
     private final SpaceService spaceService;
 
     private final ProjectService projectService;
+
+    private final ProjectCachedService projectCachedService;
 
     private final MessageChannelService messageChannelService;
 
@@ -678,7 +681,7 @@ public class TestrunScheduler {
             if (isSameTimeUntilMinute(now, last30) || isSameTimeUntilMinute(now, last60) || isSameTimeUntilMinute(now, halfTime)) {
                 String spaceCode = testrunDTO.getProject().getSpace().getCode();
                 Long projectId = testrunDTO.getProject().getId();
-                ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+                ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
 
                 if (testrunDTO.getMessageChannels() != null && !testrunDTO.getMessageChannels().isEmpty()) {
 

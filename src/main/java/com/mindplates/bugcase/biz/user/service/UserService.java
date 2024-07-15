@@ -16,10 +16,13 @@ import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.EncryptUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
+import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +44,9 @@ public class UserService {
     private final AiRequestHistoryRepository aiRequestHistoryRepository;
     private final UserTokenRepository userTokenRepository;
 
-    public UserDTO selectUserInfo(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    @Cacheable(key = "{#userId}", value = CacheConfig.USER)
+    public UserDTO selectUserInfo(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new UserDTO(user);
     }
 
@@ -87,6 +91,8 @@ public class UserService {
         return new UserDTO(userRepository.save(mappingUtil.convert(user, User.class)));
     }
 
+
+    @CacheEvict(key = "{#userId}", value = CacheConfig.USER)
     @Transactional
     public UserDTO updateUser(Long userId, UserDTO user) {
         User targetUser = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -101,6 +107,7 @@ public class UserService {
         return new UserDTO(userRepository.save(targetUser));
     }
 
+    @CacheEvict(key = "{#userId}", value = CacheConfig.USER)
     @Transactional
     public UserDTO updateUserByAdmin(Long userId, UserDTO user) {
         User targetUser = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -115,6 +122,7 @@ public class UserService {
         return new UserDTO(userRepository.save(targetUser));
     }
 
+    @CacheEvict(key = "{#userId}", value = CacheConfig.USER)
     @Transactional
     public void deleteUserByAdmin(Long userId) {
         User targetUser = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -131,6 +139,7 @@ public class UserService {
         userRepository.delete(targetUser);
     }
 
+    @CacheEvict(key = "{#userId}", value = CacheConfig.USER)
     @Transactional
     public UserDTO updateUserPassword(Long userId, String currentPassword, String newPassword) {
         User userInfo = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -152,6 +161,7 @@ public class UserService {
         return new UserDTO(userRepository.save(userInfo));
     }
 
+    @CacheEvict(key = "{#userId}", value = CacheConfig.USER)
     @Transactional
     public UserDTO updateUserPasswordByAdmin(Long userId, String newPassword) {
         User userInfo = userRepository.findById(userId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -165,6 +175,7 @@ public class UserService {
         return new UserDTO(userRepository.save(userInfo));
     }
 
+    @CacheEvict(key = "{#userId}", value = CacheConfig.USER)
     @Transactional
     public void updateUserLastSeen(Long userId, LocalDateTime lastSeen) {
         userRepository.updateUserLastSeen(userId, lastSeen);

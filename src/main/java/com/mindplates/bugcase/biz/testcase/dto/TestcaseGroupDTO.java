@@ -76,4 +76,6 @@ public class TestcaseGroupDTO extends CommonDTO implements IDTO<TestcaseGroup> {
     public String getDefaultName(int groupSeq) {
         return this.name + "-" + groupSeq;
     }
+
+
 }

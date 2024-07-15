@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.project.controller;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
+import com.mindplates.bugcase.biz.project.service.ProjectCachedService;
 import com.mindplates.bugcase.biz.project.service.ProjectFileService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.project.vo.request.ProjectCreateRequest;
@@ -48,6 +49,8 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
+    private final ProjectCachedService projectCachedService;
+
     private final ProjectFileService projectFileService;
 
     private final FileUtil fileUtil;
@@ -62,7 +65,7 @@ public class ProjectController {
     @Operation(description = "프로젝트 조회")
     @GetMapping("/{projectId}")
     public ProjectResponse selectProjectInfo(@PathVariable String spaceCode, @PathVariable long projectId) {
-        ProjectDTO project = projectService.selectProjectInfo(spaceCode, projectId);
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
         return new ProjectResponse(project, SessionUtil.getUserId());
     }
 

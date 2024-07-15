@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,6 +40,8 @@ public class ProjectService {
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
 
+    private final ProjectCachedService projectCachedService;
+
 
     public ProjectService(
         @Lazy SpaceService spaceService,
@@ -50,7 +51,8 @@ public class ProjectService {
         ProjectFileService projectFileService,
         ProjectUserRepository projectUserRepository,
         ProjectTokenRepository projectTokenRepository,
-        ProjectReleaseService projectReleaseService
+        ProjectReleaseService projectReleaseService,
+        ProjectCachedService projectCachedService
     ) {
         this.spaceService = spaceService;
         this.projectRepository = projectRepository;
@@ -60,6 +62,7 @@ public class ProjectService {
         this.projectTokenRepository = projectTokenRepository;
         this.projectUserRepository = projectUserRepository;
         this.projectReleaseService = projectReleaseService;
+        this.projectCachedService = projectCachedService;
 
     }
 
@@ -92,16 +95,6 @@ public class ProjectService {
         return new ProjectDTO(projectRepository.save(project));
     }
 
-    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
-    public ProjectDTO selectProjectInfo(String spaceCode, long projectId) {
-        Long id = projectRepository.findIdBySpaceCodeAndId(spaceCode, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        if (id == null) {
-            throw new ServiceException(HttpStatus.NOT_FOUND);
-        }
-
-        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new ProjectDTO(project);
-    }
 
     public List<ProjectListDTO> selectSpaceProjectList(long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
@@ -135,7 +128,7 @@ public class ProjectService {
     @Transactional
     @CacheEvict(key = "{#spaceCode,#updateProjectInfo.id}", value = CacheConfig.PROJECT)
     public ProjectDTO updateProjectInfo(String spaceCode, ProjectDTO updateProjectInfo, Long targetReleaseId) {
-        ProjectDTO projectInfo = selectProjectInfo(spaceCode, updateProjectInfo.getId());
+        ProjectDTO projectInfo = projectCachedService.selectProjectInfo(spaceCode, updateProjectInfo.getId());
         projectInfo.updateInfo(updateProjectInfo);
         List<Long> deleteTestcaseTemplateIds = projectInfo.updateTestcaseTemplates(updateProjectInfo.getTestcaseTemplates());
 
