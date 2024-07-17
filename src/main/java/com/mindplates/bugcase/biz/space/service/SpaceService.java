@@ -405,5 +405,11 @@ public class SpaceService {
         }));
     }
 
+    @Transactional
+    public void deleteSpaceUser(long userId) {
+        spaceApplicantRepository.deleteByUserId(userId);
+        spaceUserRepository.deleteByUserId(userId);
+    }
+
 
 }

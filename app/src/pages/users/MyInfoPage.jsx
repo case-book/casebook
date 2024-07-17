@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, TokenList, Tr, UserAvatar } from '@/components';
+import { Block, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Td, Text, Th, THead, Title, TokenList, Tr, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import BlockRow from '@/components/BlockRow/BlockRow';
@@ -176,28 +176,35 @@ function MyInfoPage() {
           </Block>
           <Title>{t('참여중인 스페이스')}</Title>
           <Block>
-            <Table cols={['100%', '200px']} border>
-              <THead>
-                <Tr>
-                  <Th align="left">{t('스페이스 명')}</Th>
-                  <Th align="center">{t('권한')}</Th>
-                </Tr>
-              </THead>
-              <Tbody>
-                {user?.spaces?.map(space => {
-                  return (
-                    <Tr key={space.id}>
-                      <Td>
-                        <Link to={`/spaces/${space.code}/info`}>{space.name}</Link>
-                      </Td>
-                      <Td align="center">
-                        <Tag uppercase>{space.isAdmin ? t('관리자') : t('멤버')}</Tag>
-                      </Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
+            {(!user?.spaces || user?.spaces?.length <= 0) && (
+              <EmptyContent border fill>
+                <div>{t('참여 중인 스페이스가 없습니다.')}</div>
+              </EmptyContent>
+            )}
+            {user?.spaces?.length > 0 && (
+              <Table cols={['100%', '200px']} border>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('스페이스 명')}</Th>
+                    <Th align="center">{t('권한')}</Th>
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {user?.spaces?.map(space => {
+                    return (
+                      <Tr key={space.id}>
+                        <Td>
+                          <Link to={`/spaces/${space.code}/info`}>{space.name}</Link>
+                        </Td>
+                        <Td align="center">
+                          <Tag uppercase>{space.isAdmin ? t('관리자') : t('멤버')}</Tag>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            )}
           </Block>
           <Title paddingBottom={false} border={false} marginBottom={false}>
             {t('관리')}

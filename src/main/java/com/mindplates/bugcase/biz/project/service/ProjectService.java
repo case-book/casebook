@@ -213,4 +213,9 @@ public class ProjectService {
         return testcaseSeq;
     }
 
+    @Transactional
+    public void deleteProjectUser(long userId) {
+        projectUserRepository.deleteByUserId(userId);
+    }
+
 }

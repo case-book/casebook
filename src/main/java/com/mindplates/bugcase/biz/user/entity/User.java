@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.user.entity;
 
+import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.SystemRole;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
@@ -100,6 +101,23 @@ public class User extends CommonEntity {
         this.name = name;
         this.email = email;
         this.language = language;
+    }
+
+    public void update(UserDTO user, boolean isAdmin) {
+        this.name = user.getName();
+        this.language = user.getLanguage();
+        this.country = user.getCountry();
+        this.timezone = user.getTimezone();
+        this.avatarInfo = user.getAvatarInfo();
+        if (this.systemRole.equals(SystemRole.ROLE_ADMIN)) {
+            this.activeSystemRole = user.getActiveSystemRole();
+        }
+
+        if (isAdmin) {
+            this.systemRole = user.getSystemRole();
+            this.useYn = user.getUseYn();
+            this.activateYn = user.getActivateYn();
+        }
     }
 
 }

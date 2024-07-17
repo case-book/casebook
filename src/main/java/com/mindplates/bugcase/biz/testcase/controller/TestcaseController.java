@@ -79,7 +79,6 @@ public class TestcaseController {
         return testcaseGroupList.stream().map(TestcaseGroupResponse::new).collect(Collectors.toList());
     }
 
-
     @Operation(description = "테스트케이스 그룹 생성")
     @PostMapping("/groups")
     public TestcaseGroupResponse updateProjectTestcaseGroupOrderInfo(@PathVariable String spaceCode, @PathVariable Long projectId, @Valid @RequestBody TestcaseGroupRequest testcaseGroupRequest) {

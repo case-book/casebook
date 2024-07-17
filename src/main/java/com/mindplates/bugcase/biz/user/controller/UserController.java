@@ -95,8 +95,7 @@ public class UserController {
 
     @Operation(description = "내 정보 변경")
     @PutMapping("/my")
-    public ResponseEntity<?> updateMyInfo(@Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest,
-        @AuthenticationPrincipal SecurityUser securityUser) {
+    public ResponseEntity<?> updateMyInfo(@Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest, @AuthenticationPrincipal SecurityUser securityUser) {
         userService.updateUser(securityUser.getId(), updateMyInfoRequest.toDTO());
 
         String[] patterns = {"space*", "project*"};
@@ -107,8 +106,7 @@ public class UserController {
 
     @Operation(description = "비밀번호 변경")
     @PutMapping("/my/changePassword")
-    public ResponseEntity<?> updateMyPasswordInfo(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest,
-        @AuthenticationPrincipal SecurityUser securityUser) {
+    public ResponseEntity<?> updateMyPasswordInfo(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest, @AuthenticationPrincipal SecurityUser securityUser) {
         if (!updatePasswordRequest.getNextPassword().equals(updatePasswordRequest.getNextPasswordConfirm())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST, "user.password.confirm.not.matched");
         }
@@ -125,8 +123,12 @@ public class UserController {
         if (pageNo == 0) {
             userService.updateUserLastSeen(user.getId(), LocalDateTime.now());
         }
-        return NotificationInfoResponse.builder().lastSeen(currentLastSeen).hasNext(notifications.size() >= NOTIFICATION_PAGE_SIZE).pageNo(pageNo)
-            .notifications(notifications.stream().map(NotificationResponse::new).collect(Collectors.toList())).build();
+        return NotificationInfoResponse.builder()
+            .lastSeen(currentLastSeen)
+            .hasNext(notifications.size() >= NOTIFICATION_PAGE_SIZE)
+            .pageNo(pageNo)
+            .notifications(notifications.stream().map(NotificationResponse::new).collect(Collectors.toList()))
+            .build();
     }
 
     @Operation(description = "내 알림 카운트 조회")
