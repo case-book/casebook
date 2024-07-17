@@ -15,8 +15,8 @@ import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
-import com.mindplates.bugcase.biz.space.entity.SpaceLlmPrompt;
 import com.mindplates.bugcase.biz.space.repository.SpaceLlmPromptRepository;
+import com.mindplates.bugcase.biz.space.service.SpaceLlmPromptService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
@@ -87,7 +87,7 @@ public class TestcaseService {
     private final ProjectReleaseRepository projectReleaseRepository;
     private final OpenAIClientService openAIClientService;
     private final LlmService llmService;
-    private final SpaceLlmPromptRepository spaceLlmPromptRepository;
+    private final SpaceLlmPromptService spaceLlmPromptService;
     private final ProjectService projectService;
     private TestcaseCachedService testcaseCachedService;
 
@@ -582,11 +582,6 @@ public class TestcaseService {
         return new TestcaseDTO(result);
     }
 
-    public SpaceLlmPromptDTO selectSpaceActiveLlmPrompt(String spaceCode) {
-        SpaceLlmPrompt spaceLlmPrompt = spaceLlmPromptRepository.findBySpaceCodeAndActivatedTrue(spaceCode)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "error.project.llm.prompt.not.activated"));
-        return spaceLlmPrompt == null ? null : new SpaceLlmPromptDTO(spaceLlmPrompt);
-    }
 
     @Transactional
     public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
@@ -597,7 +592,7 @@ public class TestcaseService {
             throw new ServiceException(HttpStatus.FORBIDDEN, "error.project.ai.not.activated");
         }
 
-        SpaceLlmPromptDTO activePrompt = selectSpaceActiveLlmPrompt(spaceCode);
+        SpaceLlmPromptDTO activePrompt = spaceLlmPromptService.selectActivatedLlmPromptInfo(spaceCode);
 
         OpenAiDTO openAi = llmService.selectOpenAiInfo(modelId, spaceCode);
         OpenAiModelDTO openAiModel = openAi.getModels().stream().filter(model -> model.getId().equals(modelId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));

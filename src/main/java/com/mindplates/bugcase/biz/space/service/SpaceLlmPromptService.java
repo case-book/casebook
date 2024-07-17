@@ -4,11 +4,11 @@ import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
 import com.mindplates.bugcase.biz.space.entity.SpaceLlmPrompt;
 import com.mindplates.bugcase.biz.space.repository.SpaceLlmPromptRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class SpaceLlmPromptService {
 
     private final SpaceLlmPromptRepository spaceLlmPromptRepository;
-    private final MappingUtil mappingUtil;
 
     @Transactional
     public SpaceLlmPromptDTO createSpaceLlmPrompt(SpaceLlmPromptDTO llmPrompt) {
-        SpaceLlmPrompt result = spaceLlmPromptRepository.save(mappingUtil.convert(llmPrompt, SpaceLlmPrompt.class));
+        SpaceLlmPrompt result = spaceLlmPromptRepository.save(llmPrompt.toEntity());
         return new SpaceLlmPromptDTO(result);
     }
 
@@ -34,7 +33,7 @@ public class SpaceLlmPromptService {
         }
 
         List<SpaceLlmPrompt> all = spaceLlmPromptRepository.findAll();
-        List<SpaceLlmPrompt> list = llmPrompts.stream().map(llmPrompt -> mappingUtil.convert(llmPrompt, SpaceLlmPrompt.class)).collect(Collectors.toList());
+        List<SpaceLlmPrompt> list = llmPrompts.stream().map(SpaceLlmPromptDTO::toEntity).collect(Collectors.toList());
         all.stream().filter(llmPrompt -> list.stream().noneMatch(item -> item.getId().equals(llmPrompt.getId()))).forEach(spaceLlmPromptRepository::delete);
         spaceLlmPromptRepository.saveAll(list);
     }
@@ -50,6 +49,12 @@ public class SpaceLlmPromptService {
             return new SpaceLlmPromptDTO(list.get(0));
         }
         return null;
+    }
+
+    public SpaceLlmPromptDTO selectActivatedLlmPromptInfo(String spaceCode) {
+        SpaceLlmPrompt spaceLlmPrompt = spaceLlmPromptRepository.findBySpaceCodeAndActivatedTrue(spaceCode)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "error.project.llm.prompt.not.activated"));
+        return spaceLlmPrompt == null ? null : new SpaceLlmPromptDTO(spaceLlmPrompt);
     }
 
 }
