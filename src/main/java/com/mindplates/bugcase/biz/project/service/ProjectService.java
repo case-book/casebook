@@ -194,7 +194,8 @@ public class ProjectService {
     }
 
     @Transactional
-    public int increaseTestcaseGroupSeq(long projectId) {
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public int increaseTestcaseGroupSeq(String spaceCode, long projectId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int groupSeq = project.getTestcaseGroupSeq() + 1;
         project.setTestcaseGroupSeq(groupSeq);
@@ -204,13 +205,25 @@ public class ProjectService {
     }
 
     @Transactional
-    public int increaseTestcaseSeq(long projectId) {
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public int increaseTestcaseSeq(String spaceCode, long projectId) {
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         int testcaseSeq = project.getTestcaseSeq() + 1;
         project.setTestcaseSeq(testcaseSeq);
         projectRepository.save(project);
 
         return testcaseSeq;
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
+    public int increaseTestrunSeq(String spaceCode, long projectId) {
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        int testrunSeq = project.getTestrunSeq() == null ? 1 : project.getTestrunSeq() + 1;
+        project.setTestrunSeq(testrunSeq);
+        projectRepository.save(project);
+
+        return testrunSeq;
     }
 
     @Transactional

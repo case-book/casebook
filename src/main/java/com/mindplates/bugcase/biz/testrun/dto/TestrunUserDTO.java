@@ -1,8 +1,13 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestrunUserDTO extends CommonDTO {
+public class TestrunUserDTO extends CommonDTO implements IDTO<TestrunUser> {
 
     private Long id;
     private UserDTO user;
@@ -26,4 +31,45 @@ public class TestrunUserDTO extends CommonDTO {
             .build();
     }
 
+    @Override
+    public TestrunUser toEntity() {
+        TestrunUser testrunUser = TestrunUser
+            .builder()
+            .id(id)
+            .user(User.builder().id(user.getId()).build())
+            .build();
+
+        if (testrun != null) {
+            testrunUser.setTestrun(Testrun.builder().id(testrun.getId()).build());
+        }
+
+        if (testrunReservation != null) {
+            testrunUser.setTestrunReservation(TestrunReservation.builder().id(testrunReservation.getId()).build());
+        }
+
+        if (testrunIteration != null) {
+            testrunUser.setTestrunIteration(TestrunIteration.builder().id(testrunIteration.getId()).build());
+        }
+
+        return testrunUser;
+    }
+
+
+    public TestrunUser toEntity(Testrun testrun) {
+        TestrunUser testrunUser = toEntity();
+        testrunUser.setTestrun(testrun);
+        return testrunUser;
+    }
+
+    public TestrunUser toEntity(TestrunReservation testrunReservation) {
+        TestrunUser testrunUser = toEntity();
+        testrunUser.setTestrunReservation(testrunReservation);
+        return testrunUser;
+    }
+
+    public TestrunUser toEntity(TestrunIteration testrunIteration) {
+        TestrunUser testrunUser = toEntity();
+        testrunUser.setTestrunIteration(testrunIteration);
+        return testrunUser;
+    }
 }

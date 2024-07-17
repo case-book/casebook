@@ -3,11 +3,14 @@ package com.mindplates.bugcase.biz.testrun.dto;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
+import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -19,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
+public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<TestrunTestcaseGroupTestcase> {
 
     private Long id;
     private TestrunTestcaseGroupDTO testrunTestcaseGroup;
@@ -92,4 +95,33 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO {
     }
 
 
+    @Override
+    public TestrunTestcaseGroupTestcase toEntity() {
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = TestrunTestcaseGroupTestcase.builder()
+            .id(id)
+            .testcase(Testcase.builder().id(testcase.getId()).build())
+            .testResult(testResult)
+            .build();
+
+        if (testrunTestcaseGroup != null) {
+            testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(TestrunTestcaseGroup.builder().id(testrunTestcaseGroup.getId()).build());
+        }
+
+        if (tester != null) {
+            testrunTestcaseGroupTestcase.setTester(User.builder().id(tester.getId()).build());
+        }
+
+        if (testcaseItems != null) {
+            testrunTestcaseGroupTestcase.setTestcaseItems(testcaseItems.stream().map(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem.toEntity(testrunTestcaseGroupTestcase)).collect(Collectors.toList()));
+        }
+
+        return testrunTestcaseGroupTestcase;
+    }
+
+    public TestrunTestcaseGroupTestcase toEntity(TestrunTestcaseGroup testrunTestcaseGroup) {
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = toEntity();
+        testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
+        return testrunTestcaseGroupTestcase;
+
+    }
 }

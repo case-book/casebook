@@ -128,6 +128,71 @@ public class TestrunService {
     private final MessageSourceAccessor messageSourceAccessor;
     private final Random random = new Random();
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT)
+    public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
+
+        long projectId = testrunDTO.getProject().getId();
+        // 프로젝트 TESTRUN SEQ 증가
+        int currentTestrunSeq = projectService.increaseTestrunSeq(spaceCode, testrunDTO.getProject().getId());
+        Project project = projectCachedService.selectProjectInfo(spaceCode, projectId).toEntity();
+
+        // 테스트런 정보 생성 및 카운트 초기 생성
+        // Testrun testrun = mappingUtil.convert(testrunDTO, Testrun.class);
+        Testrun testrun = testrunDTO.toEntity(project);
+        testrun.initializeCreateInfo(currentTestrunSeq);
+
+        List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
+        if (!testrunUsers.isEmpty()) {
+            // 프로젝트의 모든 테스트케이스 조회 및 정리
+            List<Testcase> projectAllTestcases = mappingUtil.convert(testcaseService.selectProjectTestcaseList(testrunDTO.getProject().getId()), Testcase.class);
+            Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
+            projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
+
+            // 프로젝트의 모든 테스트케이스 아이템 조회 및 정리
+            List<TestcaseItem> projectAllTestcaseItems = mappingUtil.convert(testcaseService.selectProjectTestcaseItemList(testrunDTO.getProject().getId()), TestcaseItem.class);
+            Map<Long, List<TestcaseItem>> idTestcaseItemListMap = new HashMap<>();
+            projectAllTestcaseItems.forEach(testcaseItem -> {
+                if (!idTestcaseItemListMap.containsKey(testcaseItem.getTestcase().getId())) {
+                    List<TestcaseItem> testcaseItemList = new ArrayList<>();
+                    idTestcaseItemListMap.put(testcaseItem.getTestcase().getId(), testcaseItemList);
+                }
+                idTestcaseItemListMap.get(testcaseItem.getTestcase().getId()).add(testcaseItem);
+            });
+
+            // 프로젝트의 모든 테스트케이스 템플릿 아이템 조회 및 정리
+            List<TestcaseTemplateItem> projectAllTestcaseTemplateItems = mappingUtil.convert(testcaseService.selectProjectTestcaseTemplateItemList(testrunDTO.getProject().getId()),
+                TestcaseTemplateItem.class);
+            Map<Long, TestcaseTemplateItem> projectTestcaseTemplateItemMap = new HashMap<>();
+            projectAllTestcaseTemplateItems.forEach(testcaseTemplateItem -> projectTestcaseTemplateItemMap.put(testcaseTemplateItem.getId(), testcaseTemplateItem));
+
+            // 테스트케이스, 테스트케이스 아이템, 테스트케이스 템플릿으로 테스트런 테스트케이스 정보 초기화
+            testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, random, testrunDTO.getAutoTestcaseNotAssignedTester());
+        }
+
+        // 시작 전 훅 호출
+        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+        });
+
+        Testrun result = testrunRepository.save(testrun);
+
+        if (result.getMessageChannels() != null) {
+            List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
+            result.getMessageChannels().forEach(channel -> {
+                ProjectMessageChannel projectMessageChannel = projectMessageChannelRepository.findById(channel.getMessageChannel().getId()).orElse(null);
+                SpaceMessageChannel messageChannel = projectMessageChannel.getMessageChannel();
+                SpaceMessageChannelDTO spaceMessageChannelDTO = new SpaceMessageChannelDTO(messageChannel);
+
+                if (spaceMessageChannelDTO != null) {
+                    messageChannelService.sendTestrunStartMessage(spaceMessageChannelDTO, spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
+                }
+            });
+        }
+
+        return new TestrunDTO(result);
+    }
+
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -580,70 +645,7 @@ public class TestrunService {
         testrunIterationRepository.updateTestrunIterationExpired(testrunId, expired);
     }
 
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT)
-    public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
 
-        // 프로젝트 TESTRUN SEQ 증가
-        Project project = projectRepository.findBySpaceCodeAndId(spaceCode, testrunDTO.getProject().getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        int currentTestrunSeq = (project.getTestrunSeq() == null ? 0 : project.getTestrunSeq()) + 1;
-        project.setTestrunSeq(currentTestrunSeq);
-        projectRepository.save(project);
-
-        // 테스트런 정보 생성 및 카운트 초기 생성
-        Testrun testrun = mappingUtil.convert(testrunDTO, Testrun.class);
-        testrun.initializeCreateInfo(project, currentTestrunSeq);
-
-        List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
-        if (!testrunUsers.isEmpty()) {
-            // 프로젝트의 모든 테스트케이스 조회 및 정리
-            List<Testcase> projectAllTestcases = mappingUtil.convert(testcaseService.selectProjectTestcaseList(testrunDTO.getProject().getId()), Testcase.class);
-            Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
-            projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
-
-            // 프로젝트의 모든 테스트케이스 아이템 조회 및 정리
-            List<TestcaseItem> projectAllTestcaseItems = mappingUtil.convert(testcaseService.selectProjectTestcaseItemList(testrunDTO.getProject().getId()), TestcaseItem.class);
-            Map<Long, List<TestcaseItem>> idTestcaseItemListMap = new HashMap<>();
-            projectAllTestcaseItems.forEach(testcaseItem -> {
-                if (!idTestcaseItemListMap.containsKey(testcaseItem.getTestcase().getId())) {
-                    List<TestcaseItem> testcaseItemList = new ArrayList<>();
-                    idTestcaseItemListMap.put(testcaseItem.getTestcase().getId(), testcaseItemList);
-                }
-                idTestcaseItemListMap.get(testcaseItem.getTestcase().getId()).add(testcaseItem);
-            });
-
-            // 프로젝트의 모든 테스트케이스 템플릿 아이템 조회 및 정리
-            List<TestcaseTemplateItem> projectAllTestcaseTemplateItems = mappingUtil.convert(testcaseService.selectProjectTestcaseTemplateItemList(testrunDTO.getProject().getId()),
-                TestcaseTemplateItem.class);
-            Map<Long, TestcaseTemplateItem> projectTestcaseTemplateItemMap = new HashMap<>();
-            projectAllTestcaseTemplateItems.forEach(testcaseTemplateItem -> projectTestcaseTemplateItemMap.put(testcaseTemplateItem.getId(), testcaseTemplateItem));
-
-            // 테스트케이스, 테스트케이스 아이템, 테스트케이스 템플릿으로 테스트런 테스트케이스 정보 초기화
-            testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, random, testrunDTO.getAutoTestcaseNotAssignedTester());
-        }
-
-        // 시작 전 훅 호출
-        testrun.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHook -> {
-            testrunHook.request(httpRequestUtil);
-        });
-
-        Testrun result = testrunRepository.save(testrun);
-
-        if (result.getMessageChannels() != null) {
-            List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
-            result.getMessageChannels().forEach(channel -> {
-                ProjectMessageChannel projectMessageChannel = projectMessageChannelRepository.findById(channel.getMessageChannel().getId()).orElse(null);
-                SpaceMessageChannel messageChannel = projectMessageChannel.getMessageChannel();
-                SpaceMessageChannelDTO spaceMessageChannelDTO = new SpaceMessageChannelDTO(messageChannel);
-
-                if (spaceMessageChannelDTO != null) {
-                    messageChannelService.sendTestrunStartMessage(spaceMessageChannelDTO, spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
-                }
-            });
-        }
-
-        return new TestrunDTO(result);
-    }
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)

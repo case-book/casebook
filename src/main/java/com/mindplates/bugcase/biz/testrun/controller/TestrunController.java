@@ -103,6 +103,7 @@ public class TestrunController {
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
     public ResponseEntity<HttpStatus> createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
+
         TestrunDTO testrun = testrunRequest.toDTO();
 
         if (testrun.getTestrunUsers() == null || testrun.getTestrunUsers().isEmpty()) {

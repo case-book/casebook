@@ -115,7 +115,7 @@ public class TestcaseService {
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     @Transactional
     public TestcaseGroupDTO createTestcaseGroupInfo(String spaceCode, Long projectId, TestcaseGroupDTO testcaseGroupDTO) {
-        int groupSeq = projectService.increaseTestcaseGroupSeq(projectId);
+        int groupSeq = projectService.increaseTestcaseGroupSeq(spaceCode, projectId);
 
         testcaseGroupDTO.setSeqId("G" + groupSeq);
         testcaseGroupDTO.setName(testcaseGroupDTO.getDefaultName(groupSeq));
@@ -301,7 +301,7 @@ public class TestcaseService {
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseDTO createTestcaseInfo(String spaceCode, Long projectId, TestcaseDTO testcase) {
 
-        int testcaseSeq = projectService.increaseTestcaseSeq(projectId);
+        int testcaseSeq = projectService.increaseTestcaseSeq(spaceCode, projectId);
 
         testcase.setSeqId("TC" + testcaseSeq);
         testcase.setName(testcase.getName() + "-" + testcaseSeq);
@@ -551,7 +551,7 @@ public class TestcaseService {
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public TestcaseDTO copyTestcaseInfo(String spaceCode, Long projectId, Long testcaseId, String pasteTargetType, Long pasteTargetId) {
 
-        int testcaseSeq = projectService.increaseTestcaseSeq(projectId);
+        int testcaseSeq = projectService.increaseTestcaseSeq(spaceCode, projectId);
 
         Testcase sourceTestcase = testcaseRepository.findById(testcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestcaseDTO copiedTestcase = new TestcaseDTO(sourceTestcase);

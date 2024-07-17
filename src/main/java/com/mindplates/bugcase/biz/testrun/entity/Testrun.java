@@ -67,12 +67,6 @@ public class Testrun extends CommonEntity {
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
 
-    @OneToMany(mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TestrunUser> testrunUsers;
-
-    @OneToMany(mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TestrunTestcaseGroup> testcaseGroups;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
     private Project project;
@@ -124,6 +118,12 @@ public class Testrun extends CommonEntity {
 
     @Column(name = "auto_testcase_not_assigned_tester")
     private Boolean autoTestcaseNotAssignedTester;
+
+    @OneToMany(mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestrunUser> testrunUsers;
+
+    @OneToMany(mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestrunTestcaseGroup> testcaseGroups;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "testrun")
     @Fetch(value = FetchMode.SUBSELECT)
@@ -305,8 +305,7 @@ public class Testrun extends CommonEntity {
                 .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)));
     }
 
-    public void initializeCreateInfo(Project project, int currentTestrunSeq) {
-        this.project = project;
+    public void initializeCreateInfo(int currentTestrunSeq) {
         this.seqId = "R" + currentTestrunSeq;
         this.opened = true;
         this.totalTestcaseCount = calculateTotalTestcaseCount();

@@ -33,8 +33,8 @@ public class RestTemplateConfig {
             factory.setProxy(proxy);
         }
 
-        factory.setConnectTimeout(30 * 1000);
-        factory.setReadTimeout(30 * 1000);
+        factory.setConnectTimeout(3 * 1000);
+        factory.setReadTimeout(3 * 1000);
 
         RestTemplate restTemplate = new RestTemplate(factory);
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
