@@ -24,7 +24,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunParticipantDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
@@ -35,7 +34,6 @@ import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunParticipant;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
@@ -46,7 +44,6 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunParticipantRedisRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunProfileRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunReservationRepository;
@@ -83,9 +80,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,14 +94,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import javax.persistence.criteria.CriteriaBuilder;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TestrunService {
 
-    private final TestrunParticipantRedisRepository testrunParticipantRedisRepository;
+
     private final TestrunRepository testrunRepository;
     private final TestrunReservationRepository testrunReservationRepository;
     private final TestrunIterationRepository testrunIterationRepository;
@@ -219,15 +212,6 @@ public class TestrunService {
     }
 
 
-
-
-
-
-
-
-
-
-
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(long testrunTestcaseGroupTestcaseId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -248,7 +232,6 @@ public class TestrunService {
     private void checkIsTestrunClosed(Testrun testrun) {
         testrun.validateOpened();
     }
-
 
 
     public List<TestrunDTO> selectClosedProjectTestrunList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
@@ -313,9 +296,6 @@ public class TestrunService {
         List<Testrun> list = testrunRepository.findAllByDeadlineCloseTrueAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(endDateTime);
         return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
     }
-
-
-
 
 
     public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
@@ -729,7 +709,6 @@ public class TestrunService {
     }
 
 
-
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
     public TestrunReservationDTO createTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
@@ -908,58 +887,6 @@ public class TestrunService {
         return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
     }
 
-    private String getParticipantId(String spaceCode, Long projectId, Long testrunId, Long userId, String sessionId) {
-        return spaceCode + "-" + projectId + "-" + testrunId + "-" + userId + "-" + sessionId;
-    }
-
-    @Transactional
-    public TestrunParticipantDTO createTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, UserDTO user, String sessionId) {
-        TestrunParticipant participant = TestrunParticipant.builder()
-            .id(getParticipantId(spaceCode, projectId, testrunId, user.getId(), sessionId))
-            .spaceCode(spaceCode)
-            .projectId(projectId)
-            .testrunId(testrunId)
-            .sessionId(sessionId)
-            .userId(user.getId())
-            .userName(user.getName())
-            .userEmail(user.getEmail())
-            .build();
-
-        return new TestrunParticipantDTO(testrunParticipantRedisRepository.save(participant));
-    }
-
-    @Transactional
-    public void deleteTestrunParticipantInfo(TestrunParticipantDTO testrunParticipantDTO) {
-        testrunParticipantRedisRepository
-            .findById(testrunParticipantDTO.getId())
-            .ifPresent(testrunParticipantRedisRepository::delete);
-    }
-
-    public List<TestrunParticipantDTO> selectTestrunParticipantList(String spaceCode, Long projectId, Long testrunId) {
-        List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository
-            .findAllBySpaceCodeAndProjectIdAndTestrunId(spaceCode, projectId, testrunId);
-        return testrunParticipants.stream().map(TestrunParticipantDTO::new).collect(Collectors.toList());
-    }
-
-    public TestrunParticipantDTO selectTestrunParticipantInfo(String spaceCode, Long projectId, Long testrunId, Long userId, String sessionId) {
-        Optional<TestrunParticipant> testrunParticipant = testrunParticipantRedisRepository.findById(
-            getParticipantId(spaceCode, projectId, testrunId, userId, sessionId));
-        if (testrunParticipant.isPresent()) {
-            return new TestrunParticipantDTO(testrunParticipant.get());
-        }
-        return null;
-
-    }
-
-    public boolean isExistParticipant(Long testrunId, Long userId) {
-        List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository.findAllByTestrunIdAndUserId(testrunId, userId);
-        return testrunParticipants.size() > 0;
-    }
-
-    public List<TestrunParticipantDTO> selectTestrunParticipantList(Long userId, String sessionId) {
-        List<TestrunParticipant> testrunParticipants = testrunParticipantRedisRepository.findAllByUserIdAndSessionId(userId, sessionId);
-        return testrunParticipants.stream().map(TestrunParticipantDTO::new).collect(Collectors.toList());
-    }
 
     public List<Long> selectTestcaseIncludeTestrunList(String projectToken, Long testcaseSeqNumber) {
         Long projectId = projectService.selectProjectId(projectToken);
@@ -1069,7 +996,6 @@ public class TestrunService {
             throw new ServiceException(HttpStatus.UNAUTHORIZED);
         }
     }
-
 
 
     public List<TestrunTestcaseGroupTestcaseDTO> selectUntestedTestrunTestcaseGroupTestcaseList(Long testrunId) {

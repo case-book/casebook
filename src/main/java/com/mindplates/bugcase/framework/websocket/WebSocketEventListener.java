@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.framework.websocket;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunParticipantDTO;
-import com.mindplates.bugcase.biz.testrun.service.TestrunService;
+import com.mindplates.bugcase.biz.testrun.service.TestrunParticipantService;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
 import java.util.List;
@@ -16,12 +16,11 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @Slf4j
 public class WebSocketEventListener {
 
-    private final TestrunService testrunService;
-
+    private final TestrunParticipantService testrunParticipantService;
     private final MessageSendService messageSendService;
 
-    public WebSocketEventListener(TestrunService testrunService, MessageSendService messageSendService) {
-        this.testrunService = testrunService;
+    public WebSocketEventListener(TestrunParticipantService testrunParticipantService, MessageSendService messageSendService) {
+        this.testrunParticipantService = testrunParticipantService;
         this.messageSendService = messageSendService;
     }
 
@@ -34,11 +33,11 @@ public class WebSocketEventListener {
             String sessionId = headerAccessor.getSessionId();
             if (userIdString != null) {
                 Long userId = Long.parseLong(userIdString);
-                List<TestrunParticipantDTO> participants = testrunService.selectTestrunParticipantList(userId, sessionId);
+                List<TestrunParticipantDTO> participants = testrunParticipantService.selectTestrunParticipantList(userId, sessionId);
 
                 for (TestrunParticipantDTO participant : participants) {
-                    testrunService.deleteTestrunParticipantInfo(participant);
-                    boolean isExist = testrunService.isExistParticipant(participant.getTestrunId(), participant.getUserId());
+                    testrunParticipantService.deleteTestrunParticipantInfo(participant);
+                    boolean isExist = testrunParticipantService.isExistParticipant(participant.getTestrunId(), participant.getUserId());
                     if (!isExist) {
                         MessageData participantData = MessageData.builder().type("TESTRUN-USER-LEAVE").build();
                         participantData.addData("participant", participant);
