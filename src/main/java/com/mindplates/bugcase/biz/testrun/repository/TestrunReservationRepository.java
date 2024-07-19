@@ -12,6 +12,7 @@ public interface TestrunReservationRepository extends JpaRepository<TestrunReser
     List<TestrunReservation> findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId,
         Boolean expired);
 
+    @Query(value = "SELECT new TestrunReservation(tr.id, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.expired, tr.deadlineClose, tr.autoTestcaseNotAssignedTester, tr.testcaseGroupCount, tr.testcaseCount, tr.testrun.id, tr.selectCreatedTestcase, tr.selectUpdatedTestcase) FROM TestrunReservation tr WHERE tr.expired = false")
     List<TestrunReservation> findAllByExpiredFalse();
 
     @Modifying

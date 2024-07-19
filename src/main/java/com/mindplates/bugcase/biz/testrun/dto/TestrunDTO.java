@@ -62,16 +62,9 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
         this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
-        if (testrun.getProject() != null && testrun.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrun.getProject().getId())
-                .space(SpaceDTO.builder().id(testrun.getProject().getSpace().getId()).code(testrun.getProject().getSpace().getCode()).build())
-                .build();
-        }
-
-        if (testrun.getProject() != null && testrun.getProject().getSpace() == null) {
+        if (testrun.getProject() != null) {
             this.project = ProjectDTO.builder().id(testrun.getProject().getId()).build();
         }
-
         this.days = testrun.getDays();
         this.excludeHoliday = testrun.getExcludeHoliday();
         this.startTime = testrun.getStartTime();

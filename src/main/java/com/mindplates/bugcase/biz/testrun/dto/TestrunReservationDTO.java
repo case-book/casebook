@@ -49,26 +49,25 @@ public class TestrunReservationDTO extends CommonDTO {
         this.endDateTime = testrunReservation.getEndDateTime();
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
-        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester() != null && testrunReservation.getAutoTestcaseNotAssignedTester();
         this.testcaseGroupCount = Optional.ofNullable(testrunReservation.getTestcaseGroupCount()).orElse(0);
         this.testcaseCount = Optional.ofNullable(testrunReservation.getTestcaseCount()).orElse(0);
         this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();
         this.selectUpdatedTestcase = testrunReservation.getSelectUpdatedTestcase();
         this.creationDate = testrunReservation.getCreationDate();
         this.lastUpdateDate = testrunReservation.getLastUpdateDate();
-        if (testrunReservation.getProject() != null && testrunReservation.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrunReservation.getProject().getId())
-                .space(SpaceDTO.builder().id(testrunReservation.getProject().getSpace().getId()).code(testrunReservation.getProject().getSpace().getCode()).build()).build();
-        }
 
-        if (testrunReservation.getProject() != null && testrunReservation.getProject().getSpace() == null) {
+        if (testrunReservation.getProject() != null) {
             this.project = ProjectDTO.builder().id(testrunReservation.getProject().getId()).build();
         }
         if (testrunReservation.getTestrun() != null) {
             this.testrun = TestrunDTO.builder().id(testrunReservation.getTestrun().getId()).build();
         }
 
-        this.profiles = testrunReservation.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+        if (testrunReservation.getProfiles() != null) {
+            this.profiles = testrunReservation.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+        }
+
         if (testrunReservation.getHooks() != null) {
             this.hooks = testrunReservation.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
         }
@@ -81,7 +80,10 @@ public class TestrunReservationDTO extends CommonDTO {
     public TestrunReservationDTO(TestrunReservation testrunReservation, boolean detail) {
         this(testrunReservation);
         if (detail) {
-            testrunUsers = testrunReservation.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
+            if (testrunReservation.getTestrunUsers() != null) {
+                testrunUsers = testrunReservation.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
+            }
+
             if (testrunReservation.getTestcaseGroups() != null) {
                 testcaseGroups = testrunReservation.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
             }

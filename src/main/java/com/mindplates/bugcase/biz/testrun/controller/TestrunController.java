@@ -80,26 +80,6 @@ public class TestrunController {
 
     private final HttpRequestUtil httpRequestUtil;
 
-    @Operation(description = "진행중인 테스트런 목록 조회")
-    @GetMapping("")
-    public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
-        return testrunService.selectOpenedProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
-    }
-
-    @Operation(description = "종료된 테스트런 목록 조회")
-    @GetMapping("/closed")
-    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
-        @RequestParam(value = "end") LocalDateTime end) {
-        return testrunService.selectClosedProjectTestrunList(spaceCode, projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
-    }
-
-    @Operation(description = "최근 종료된 TOP 3 테스트런 목록 조회")
-    @GetMapping("/closed/latest")
-    public List<TestrunListResponse> selectLatestClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
-        return testrunService.selectLatestClosedProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
-    }
-
-
     @Operation(description = "프로젝트 테스트런 생성")
     @PostMapping("")
     public ResponseEntity<HttpStatus> createTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunCreateRequest testrunRequest) {
@@ -124,6 +104,32 @@ public class TestrunController {
         });
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @Operation(description = "진행중인 테스트런 목록 조회")
+    @GetMapping("")
+    public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
+        return testrunService.selectOpenedProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+    @Operation(description = "종료된 테스트런 목록 조회")
+    @GetMapping("/closed")
+    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
+        @RequestParam(value = "end") LocalDateTime end) {
+        return testrunService.selectClosedProjectTestrunList(spaceCode, projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "최근 종료된 TOP 3 테스트런 목록 조회")
+    @GetMapping("/closed/latest")
+    public List<TestrunListResponse> selectLatestClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
+        return testrunService.selectLatestClosedProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
 
@@ -236,7 +242,7 @@ public class TestrunController {
     public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
         @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
         List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.toDTO();
-        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(testrunTestcaseGroupTestcaseItems);
+        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(spaceCode, projectId, testrunTestcaseGroupTestcaseItems);
         return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
     }
 
@@ -246,7 +252,7 @@ public class TestrunController {
         @PathVariable long testcaseTemplateItemId,
         @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItems = testrunTestcaseGroupTestcaseItemRequest.toDTO();
-        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(testrunId, testrunTestcaseGroupTestcaseItems);
+        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseItems);
         return new TestrunTestcaseGroupTestcaseItemResponse(testrunTestcaseGroupTestcaseItemList);
     }
 
@@ -254,7 +260,7 @@ public class TestrunController {
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
     public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId,
         @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
-        TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
+        TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
 
         MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
         participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);

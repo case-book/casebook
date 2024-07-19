@@ -18,6 +18,9 @@ public interface SpaceRepository extends JpaRepository<Space, Long> {
     @Query(value = "SELECT s.code FROM Space s WHERE s.id = :spaceId")
     Optional<String> findCodeById(Long spaceId);
 
+    @Query(value = "SELECT s.code FROM Space s WHERE s.id = (SELECT p.space.id FROM Project p WHERE p.id =: projectId)")
+    Optional<String> findCodeByProjectId(Long projectId);
+
     @Query(value = "SELECT s.name FROM Space s WHERE s.code = :spaceCode")
     Optional<String> findNameByCode(String spaceCode);
 

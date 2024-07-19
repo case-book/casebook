@@ -11,6 +11,10 @@ public interface TestrunIterationRepository extends JpaRepository<TestrunIterati
 
     List<TestrunIteration> findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByReserveStartDateTimeDescIdDesc(String spaceCode, Long projectId, Boolean expired);
 
+    // List<TestrunIteration> findAllByExpiredFalse();
+
+    // @Query(value = "SELECT new TestrunIteration(ti.id, ti.name, ti.description, ti.project.id, ti.reserveStartDateTime, ti.reserveEndDateTime, ti.testrunIterationTimeType, ti.excludeHoliday, ti.durationHours, ti.expired, ti.days, ti.startTime, ti.date, ti.week, ti.day, ti.testrunIterationUserFilterType, ti.testrunIterationUserFilterSelectRule, ti.filteringUserCount, ti.testcaseGroupCount, ti.testcaseCount, ti.deadlineClose, ti.autoTestcaseNotAssignedTester) FROM TestrunIteration ti WHERE ti.expired = false")
+    @Query(value = "SELECT new TestrunIteration(ti.id, ti.name, ti.description, ti.project.id, ti.reserveStartDateTime, ti.reserveEndDateTime, ti.testrunIterationTimeType, ti.excludeHoliday, ti.durationHours, ti.expired, ti.days, ti.startTime, ti.date, ti.week, ti.day, ti.testrunIterationUserFilterType, ti.testrunIterationUserFilterSelectRule, ti.filteringUserCount, ti.testcaseGroupCount, ti.testcaseCount, ti.deadlineClose, ti.autoTestcaseNotAssignedTester) FROM TestrunIteration ti WHERE ti.expired = false")
     List<TestrunIteration> findAllByExpiredFalse();
 
     @Modifying

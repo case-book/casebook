@@ -58,16 +58,8 @@ public class TestrunIteration extends CommonEntity {
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunIteration", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<TestrunUser> testrunUsers;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunIteration", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<TestrunTestcaseGroup> testcaseGroups;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_ITERATION__PROJECT"))
     private Project project;
 
     @Column(name = "reserve_start_date_time")
@@ -157,6 +149,71 @@ public class TestrunIteration extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunMessageChannel> messageChannels;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunIteration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunUser> testrunUsers;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunIteration", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunTestcaseGroup> testcaseGroups;
+
+    public TestrunIteration(
+        long id,
+        String name,
+        String description,
+        long projectId,
+        LocalDateTime reserveStartDateTime,
+        LocalDateTime reserveEndDateTime,
+        TestrunIterationTimeTypeCode testrunIterationTimeType,
+        Boolean excludeHoliday,
+        Integer durationHours,
+        Boolean expired,
+        String days,
+        LocalTime startTime,
+        Integer date,
+        Integer week,
+        Integer day,
+        TestrunIterationUserFilterTypeCode testrunIterationUserFilterType,
+        TestrunIterationUserFilterSelectRuleCode testrunIterationUserFilterSelectRule,
+        Integer filteringUserCount,
+        Integer testcaseGroupCount,
+        Integer testcaseCount,
+        Boolean deadlineClose,
+        Boolean autoTestcaseNotAssignedTester
+
+    ) {
+
+        this.id = id;
+        this.name = name;
+        this.project = Project.builder().id(projectId).build();
+        this.description = description;
+        this.reserveStartDateTime = reserveStartDateTime;
+        this.reserveEndDateTime = reserveEndDateTime;
+        this.testrunIterationTimeType = testrunIterationTimeType;
+        this.excludeHoliday = excludeHoliday;
+        this.durationHours = durationHours;
+        this.expired = expired;
+        this.days = days;
+        this.startTime = startTime;
+        this.date = date;
+        this.week = week;
+        this.day = day;
+        this.testrunIterationUserFilterType = testrunIterationUserFilterType;
+        this.testrunIterationUserFilterSelectRule = testrunIterationUserFilterSelectRule;
+        this.filteringUserCount = filteringUserCount;
+        this.testcaseGroupCount = testcaseGroupCount;
+        this.testcaseCount = testcaseCount;
+        this.deadlineClose = deadlineClose;
+        if (autoTestcaseNotAssignedTester != null) {
+            this.autoTestcaseNotAssignedTester = autoTestcaseNotAssignedTester;
+        } else {
+            this.autoTestcaseNotAssignedTester = false;
+        }
+
+
+
+    }
+
     public void updateInfo(TestrunIteration testrunIteration) {
         this.expired = false;
         this.name = testrunIteration.getName();
@@ -167,7 +224,7 @@ public class TestrunIteration extends CommonEntity {
         this.excludeHoliday = testrunIteration.getExcludeHoliday();
         this.durationHours = testrunIteration.getDurationHours();
         this.deadlineClose = testrunIteration.getDeadlineClose();
-        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester() != null && testrunIteration.getAutoTestcaseNotAssignedTester();
         this.startTime = testrunIteration.getStartTime();
         this.days = testrunIteration.getDays();
         this.date = testrunIteration.getDate();

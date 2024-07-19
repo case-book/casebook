@@ -50,11 +50,13 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER) //
+    @Fetch(value = FetchMode.JOIN) //
     @JoinColumn(name = "testrun_testcase_group_id", foreignKey = @ForeignKey(name = "FK_TTGT__TESTRUN_TESTCASE_GROUP"))
     private TestrunTestcaseGroup testrunTestcaseGroup;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH) //
+    @Fetch(value = FetchMode.JOIN) //
     @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_TTGT__TESTCASE"))
     private Testcase testcase;
 

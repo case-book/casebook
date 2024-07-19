@@ -165,6 +165,14 @@ public class ProjectService {
         return projectRepository.countBySpaceId(spaceId);
     }
 
+    public long selectSpaceId(Long projectId) {
+        return projectRepository.findSpaceIdByProjectId(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
+
+    public String selectSpaceCode(Long projectId) {
+        return projectRepository.findSpaceCodeByProjectId(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
+
     @Transactional
     @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectUser(String spaceCode, long projectId, long userId) {

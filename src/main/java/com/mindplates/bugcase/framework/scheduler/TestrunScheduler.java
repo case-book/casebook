@@ -66,7 +66,7 @@ public class TestrunScheduler {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
+    private TestrunDTO getTestrun(SpaceDTO spaceDTO, TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
         TestrunDTO testrun = TestrunDTO
             .builder()
             .name(testrunReservationDTO.getName())
@@ -164,14 +164,13 @@ public class TestrunScheduler {
         return testrun;
     }
 
-    private TestrunDTO getTestrun(TestrunIterationDTO testrunIterationDTO, LocalDateTime startDateTime, int currentMonth, int currentWeek) {
-        SpaceDTO space = SpaceDTO.builder().id(testrunIterationDTO.getProject().getSpace().getId())
-            .code(testrunIterationDTO.getProject().getSpace().getCode()).build();
+    private TestrunDTO getTestrun(SpaceDTO spaceDTO, TestrunIterationDTO testrunIterationDTO, LocalDateTime startDateTime, int currentMonth, int currentWeek) {
+
         TestrunDTO testrun = TestrunDTO
             .builder()
             .name(testrunIterationDTO.getName())
             .description(testrunIterationDTO.getDescription())
-            .project(ProjectDTO.builder().id(testrunIterationDTO.getProject().getId()).space(space).build())
+            .project(ProjectDTO.builder().id(testrunIterationDTO.getProject().getId()).space(spaceDTO).build())
             .startDateTime(startDateTime)
             .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
             .deadlineClose(testrunIterationDTO.getDeadlineClose())
@@ -462,7 +461,7 @@ public class TestrunScheduler {
         testrun.setTestcaseGroups(testcaseGroups);
 
         // testrunService.updateTestrunIterationCursor(testrunIterationDTO.getId(), testrunIterationDTO.getFilteringUserCursor(), testrunIterationDTO.getCurrentFilteringUserIds());
-        testrunService.updateTestrunIterationInfo(space.getCode(), testrunIterationDTO, true);
+        testrunService.updateTestrunIterationInfo(spaceDTO.getCode(), testrunIterationDTO, true);
 
         return testrun;
     }
@@ -476,12 +475,15 @@ public class TestrunScheduler {
         List<TestrunReservationDTO> testrunReservationList = testrunService.selectReserveTestrunList();
         testrunReservationList.forEach((testrunReservation -> {
 
+            SpaceDTO spaceDTO = spaceService.selectSpaceInfoByProjectId(testrunReservation.getProject().getId());
+
             Long testrunReservationId = testrunReservation.getId();
             LocalDateTime startDateTime = testrunReservation.getStartDateTime();
 
             if (now.isAfter(startDateTime)) {
-                TestrunDTO testrun = getTestrun(testrunReservation, now);
-                TestrunDTO result = testrunService.createTestrunInfo(testrunReservation.getProject().getSpace().getCode(), testrun);
+                TestrunReservationDTO target = testrunService.selectTestrunReservationInfo(testrunReservation.getId());
+                TestrunDTO testrun = getTestrun(spaceDTO, target, now);
+                TestrunDTO result = testrunService.createTestrunInfo(spaceDTO.getCode(), testrun);
                 testrunService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
 
                 // 시작 후 훅 호출
@@ -498,8 +500,7 @@ public class TestrunScheduler {
         testrunIterationList.forEach((testrunIterationDTO -> {
 
             Long testrunIterationId = testrunIterationDTO.getId();
-            Long spaceId = testrunIterationDTO.getProject().getSpace().getId();
-            SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceId);
+            SpaceDTO spaceDTO = spaceService.selectSpaceInfoByProjectId(testrunIterationDTO.getProject().getId());
 
             Locale spaceLocale = spaceDTO.getCountry() != null ? new Locale(spaceDTO.getCountry()) : Locale.US;
             WeekFields weekFields = WeekFields.of(spaceLocale);
@@ -554,12 +555,11 @@ public class TestrunScheduler {
 
             boolean isHoliday = holidays.stream().anyMatch((holidayDTO -> {
 
-                if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType()) || HolidayTypeCode.SPECIFIED_DATE.equals(
-                    holidayDTO.getHolidayType())) {
+                if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType()) || HolidayTypeCode.SPECIFIED_DATE.equals(holidayDTO.getHolidayType())) {
                     String holiday = null;
                     if (HolidayTypeCode.YEARLY.equals(holidayDTO.getHolidayType())) {
                         holiday = nowYear + holidayDTO.getDate();
-                    } else if (HolidayTypeCode.SPECIFIED_DATE.equals(holidayDTO.getHolidayType())) {
+                    } else {
                         holiday = holidayDTO.getDate();
                     }
                     return nowDay.equals(holiday);
@@ -614,7 +614,9 @@ public class TestrunScheduler {
 
             if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
-                TestrunDTO testrun = getTestrun(testrunIterationDTO, now, currentMonth, currentWeek);
+
+                TestrunIterationDTO target = testrunService.selectTestrunIterationInfo(testrunIterationDTO.getId());
+                TestrunDTO testrun = getTestrun(spaceDTO, target, now, currentMonth, currentWeek);
                 TestrunDTO result = testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
 
                 // 시작 후 훅 호출
@@ -638,7 +640,8 @@ public class TestrunScheduler {
         LocalDateTime now = LocalDateTime.now();
         List<TestrunDTO> testrunList = testrunService.selectDeadlineTestrunList(now);
         testrunList.forEach((testrunDTO -> {
-            TestrunDTO result = testrunService.updateProjectTestrunStatusClosed(testrunDTO.getProject().getSpace().getCode(), testrunDTO.getProject().getId(),
+            String spaceCode = projectService.selectSpaceCode(testrunDTO.getProject().getId());
+            TestrunDTO result = testrunService.updateProjectTestrunStatusClosed(spaceCode, testrunDTO.getProject().getId(),
                 testrunDTO.getId());
 
             // 종료 후 훅 호출

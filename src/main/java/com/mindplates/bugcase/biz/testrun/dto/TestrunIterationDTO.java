@@ -62,12 +62,7 @@ public class TestrunIterationDTO extends CommonDTO {
         this.id = testrunIteration.getId();
         this.name = testrunIteration.getName();
         this.description = testrunIteration.getDescription();
-        if (testrunIteration.getProject() != null && testrunIteration.getProject().getSpace() != null) {
-            this.project = ProjectDTO.builder().id(testrunIteration.getProject().getId())
-                .space(SpaceDTO.builder().id(testrunIteration.getProject().getSpace().getId()).code(testrunIteration.getProject().getSpace().getCode()).build()).build();
-        }
-
-        if (testrunIteration.getProject() != null && testrunIteration.getProject().getSpace() == null) {
+        if (testrunIteration.getProject() != null) {
             this.project = ProjectDTO.builder().id(testrunIteration.getProject().getId()).build();
         }
         this.reserveStartDateTime = testrunIteration.getReserveStartDateTime();
@@ -82,7 +77,7 @@ public class TestrunIterationDTO extends CommonDTO {
         this.week = testrunIteration.getWeek();
         this.day = testrunIteration.getDay();
         this.deadlineClose = testrunIteration.getDeadlineClose();
-        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
+        this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester() != null && testrunIteration.getAutoTestcaseNotAssignedTester();
         this.testrunIterationUserFilterType = testrunIteration.getTestrunIterationUserFilterType();
         this.testrunIterationUserFilterSelectRule = testrunIteration.getTestrunIterationUserFilterSelectRule();
         this.filteringUserCount = testrunIteration.getFilteringUserCount();
@@ -91,8 +86,14 @@ public class TestrunIterationDTO extends CommonDTO {
 
         this.testcaseGroupCount = Optional.ofNullable(testrunIteration.getTestcaseGroupCount()).orElse(0);
         this.testcaseCount = Optional.ofNullable(testrunIteration.getTestcaseCount()).orElse(0);
-        this.testrunUserCount = testrunIteration.getTestrunUsers().size();
-        this.profiles = testrunIteration.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+        if (testrunIteration.getTestrunUsers() != null) {
+            this.testrunUserCount = testrunIteration.getTestrunUsers().size();
+        }
+
+        if (testrunIteration.getProfiles() != null) {
+            this.profiles = testrunIteration.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+        }
+
         if (testrunIteration.getHooks() != null) {
             this.hooks = testrunIteration.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
         }

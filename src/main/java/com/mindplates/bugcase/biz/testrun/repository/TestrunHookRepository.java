@@ -14,7 +14,7 @@ public interface TestrunHookRepository extends JpaRepository<TestrunHook, Long> 
     void deleteByTestrunId(@Param("testrunId") Long testrunId);
 
     @Modifying
-    @Query("DELETE FROM TestrunHook th WHERE th.testrun.id IN (SELECT tr.id FROM Testrun tr WHERE tr.project.id = :projectId) OR th.testrun.id IN (SELECT tr.id FROM TestrunReservation tr WHERE tr.project.id = :projectId) OR th.testrun.id IN (SELECT tr.id FROM TestrunIteration tr WHERE tr.project.id = :projectId)")
+    @Query("DELETE FROM TestrunHook th WHERE th.testrun.id IN (SELECT tr.id FROM Testrun tr WHERE tr.project.id = :projectId) OR th.testrunReservation.id IN (SELECT tr.id FROM TestrunReservation tr WHERE tr.project.id = :projectId) OR th.testrunIteration.id IN (SELECT tr.id FROM TestrunIteration tr WHERE tr.project.id = :projectId)")
     void deleteByProjectId(@Param("projectId") Long projectId);
 }
 
