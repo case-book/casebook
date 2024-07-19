@@ -19,7 +19,6 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseCachedService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
@@ -31,7 +30,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommen
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
@@ -40,7 +38,6 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
@@ -119,7 +116,6 @@ public class TestrunService {
     private final MessageChannelService messageChannelService;
     private final MessageSendService messageSendService;
     private final ProjectRepository projectRepository;
-    private final TestrunCommentRepository testrunCommentRepository;
     private final TestrunProfileRepository testrunProfileRepository;
     private final UserRepository userRepository;
     private final TestrunHookRepository testrunHookRepository;
@@ -127,6 +123,8 @@ public class TestrunService {
     private final ProjectMessageChannelRepository projectMessageChannelRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
     private final MessageSourceAccessor messageSourceAccessor;
+    private final TestrunCommentService testrunCommentService;
+
     private final Random random = new Random();
 
     @Autowired
@@ -341,7 +339,8 @@ public class TestrunService {
         testrunMessageChannelRepository.deleteByTestrunId(testrunId);
         testrunHookRepository.deleteByTestrunId(testrunId);
         testrunProfileRepository.deleteByTestrunId(testrunId);
-        testrunCommentRepository.deleteByTestrunId(testrunId);
+
+        testrunCommentService.deleteProjectTestrunComment(testrunId);
         testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
         testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
@@ -968,35 +967,6 @@ public class TestrunService {
         return testcaseGroups;
     }
 
-    @Transactional
-    public TestrunCommentDTO createTestrunComment(long projectId, long testrunId, long userId, TestrunCommentDTO testrunCommentDTO) {
-        testrunRepository.findAllByProjectIdAndId(projectId, testrunId).orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST));
-        TestrunComment testrunComment = TestrunComment.builder().comment(testrunCommentDTO.getComment())
-            .testrun(Testrun.builder().id(testrunId).build()).user(User.builder().id(userId).build())
-            .build();
-        TestrunComment comment = testrunCommentRepository.save(testrunComment);
-        User user = userRepository.findById(comment.getUser().getId()).orElseThrow(() -> new ServiceException(HttpStatus.BAD_REQUEST));
-        comment.setUser(user);
-        return new TestrunCommentDTO(comment);
-    }
-
-    public List<TestrunCommentDTO> selectTestrunCommentList(Long projectId, Long testrunId) {
-        List<TestrunComment> testrunCommentList = testrunCommentRepository
-            .findAllByTestrunProjectIdAndTestrunIdOrderByCreationDateAsc(projectId, testrunId);
-        return testrunCommentList.stream().map(TestrunCommentDTO::new).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void deleteTestrunCommentInfo(Long projectId, Long testrunId, Long commentId) {
-        TestrunComment testrunComment = testrunCommentRepository.findByTestrunProjectIdAndTestrunIdAndId(projectId, testrunId, commentId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        if (SessionUtil.getUserId() != null && SessionUtil.getUserId().equals(testrunComment.getUser().getId())) {
-            testrunCommentRepository.delete(testrunComment);
-        } else {
-            throw new ServiceException(HttpStatus.UNAUTHORIZED);
-        }
-    }
-
 
     public List<TestrunTestcaseGroupTestcaseDTO> selectUntestedTestrunTestcaseGroupTestcaseList(Long testrunId) {
         List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestrunTestcaseGroupTestrunIdAndAndTestResult(
@@ -1072,7 +1042,7 @@ public class TestrunService {
         testrunMessageChannelRepository.deleteByProjectId(projectId);
         testrunHookRepository.deleteByProjectId(projectId);
         testrunProfileRepository.deleteByProjectId(projectId);
-        testrunCommentRepository.deleteByProjectId(projectId);
+        testrunCommentService.deleteProjectComment(projectId);
         testrunTestcaseGroupTestcaseCommentRepository.deleteByProjectId(projectId);
         testrunTestcaseGroupTestcaseItemRepository.deleteByProjectId(projectId);
         testrunTestcaseGroupTestcaseRepository.deleteByProjectId(projectId);
@@ -1094,7 +1064,7 @@ public class TestrunService {
     @Transactional
     public void deleteTestrunByUserId(long userId) {
         testrunTestcaseGroupTestcaseCommentRepository.deleteByUserId(userId);
-        testrunCommentRepository.deleteByUserId(userId);
+        testrunCommentService.deleteUserTestrunComment(userId);
         testrunTestcaseGroupTestcaseRepository.updateTesterNullByUserId(userId);
         testrunUserRepository.deleteByUserId(userId);
     }
@@ -1102,7 +1072,7 @@ public class TestrunService {
     @Transactional
     // @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectTestrunUser(String spaceCode, long projectId, long userId) {
-        testrunCommentRepository.updateProjectTestrunCommentUserNullByUserId(projectId, userId);
+        testrunCommentService.deleteProjectTestrunUserComment(projectId, userId);
         testrunTestcaseGroupTestcaseCommentRepository.updateProjectTestrunTestcaseGroupTestcaseCommentUserNullByUserId(projectId, userId);
         testrunTestcaseGroupTestcaseRepository.updateProjectTesterNullByUserId(projectId, userId);
         testrunUserRepository.deleteByProjectIdAndUserId(projectId, userId);

@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
@@ -31,7 +34,7 @@ public class TestrunComment extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testrun_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_COMMENT__TESTRUN"))
     private Testrun testrun;
 

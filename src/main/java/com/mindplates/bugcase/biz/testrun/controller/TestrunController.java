@@ -14,6 +14,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
+import com.mindplates.bugcase.biz.testrun.service.TestrunCommentService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunCommentRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunCreateRequest;
@@ -70,6 +71,8 @@ public class TestrunController {
 
     private final TestrunService testrunService;
 
+    private final TestrunCommentService testrunCommentService;
+
     private final ProjectFileService projectFileService;
 
     private final MessageSendService messageSendService;
@@ -112,11 +115,6 @@ public class TestrunController {
     public List<TestrunListResponse> selectTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
         return testrunService.selectOpenedProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
-
-
-
-
-
 
 
     @Operation(description = "종료된 테스트런 목록 조회")
@@ -242,7 +240,8 @@ public class TestrunController {
     public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
         @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
         List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.toDTO();
-        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(spaceCode, projectId, testrunTestcaseGroupTestcaseItems);
+        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(spaceCode, projectId,
+            testrunTestcaseGroupTestcaseItems);
         return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
     }
 
@@ -252,7 +251,8 @@ public class TestrunController {
         @PathVariable long testcaseTemplateItemId,
         @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItems = testrunTestcaseGroupTestcaseItemRequest.toDTO();
-        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseItems);
+        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(spaceCode, projectId, testrunId,
+            testrunTestcaseGroupTestcaseItems);
         return new TestrunTestcaseGroupTestcaseItemResponse(testrunTestcaseGroupTestcaseItemList);
     }
 
@@ -340,21 +340,22 @@ public class TestrunController {
     public TestrunCommentResponse createTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
         @Valid @RequestBody TestrunCommentRequest testrunCommentRequest) {
         Long userId = SessionUtil.getUserId(true);
-        TestrunCommentDTO result = testrunService.createTestrunComment(projectId, testrunId, userId, testrunCommentRequest.toDTO());
+        TestrunCommentDTO result = testrunCommentService.createTestrunComment(projectId, testrunId, userId, testrunCommentRequest.toDTO());
         return new TestrunCommentResponse(result);
     }
 
     @Operation(description = "테스트런 코멘트 목록 조회")
     @GetMapping("/{testrunId}/comments")
     public List<TestrunCommentResponse> selectTestrunCommentList(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
-        List<TestrunCommentDTO> testrunCommentList = testrunService.selectTestrunCommentList(projectId, testrunId);
+        List<TestrunCommentDTO> testrunCommentList = testrunCommentService.selectTestrunCommentList(projectId, testrunId);
         return testrunCommentList.stream().map(TestrunCommentResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "테스트런 코멘트 삭제")
     @DeleteMapping("/{testrunId}/comments/{commentId}")
     public ResponseEntity<HttpStatus> deleteTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long commentId) {
-        testrunService.deleteTestrunCommentInfo(projectId, testrunId, commentId);
+        long userId = SessionUtil.getUserId(true);
+        testrunCommentService.deleteTestrunCommentInfo(projectId, testrunId, commentId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
