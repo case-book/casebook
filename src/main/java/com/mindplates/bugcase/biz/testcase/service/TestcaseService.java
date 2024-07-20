@@ -15,7 +15,6 @@ import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
-import com.mindplates.bugcase.biz.space.repository.SpaceLlmPromptRepository;
 import com.mindplates.bugcase.biz.space.service.SpaceLlmPromptService;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;

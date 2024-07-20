@@ -13,7 +13,6 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupReposit
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunUserRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,7 +73,8 @@ public class TestrunReservationService {
         return testrunReservationDTO;
     }
 
-    public List<TestrunTestcaseGroupDTO> selectConditionalTestcaseGroups(TestrunReservationDTO testrunReservationDTO, LocalDateTime now, List<TestrunTestcaseGroupDTO> pTestcaseGroups, Map<Long, ArrayList<Long>> testcaseGroupIdMap, TestrunDTO testrun) {
+    public List<TestrunTestcaseGroupDTO> selectConditionalTestcaseGroups(TestrunReservationDTO testrunReservationDTO, LocalDateTime now, List<TestrunTestcaseGroupDTO> pTestcaseGroups,
+        Map<Long, ArrayList<Long>> testcaseGroupIdMap, TestrunDTO testrun) {
 
         List<TestrunTestcaseGroupDTO> testcaseGroups = pTestcaseGroups == null ? new ArrayList<>() : pTestcaseGroups;
 
@@ -177,6 +177,16 @@ public class TestrunReservationService {
         testrunUserRepository.deleteByTestrunReservationId(testrunReservationId);
         testrunTestcaseGroupRepository.deleteByTestrunReservationId(testrunReservationId);
         testrunReservationRepository.deleteById(testrunReservationId);
+    }
+
+    @Transactional
+    public void updateTestrunReferenceNull(long testrunId) {
+        testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
+    }
+
+    @Transactional
+    public void deleteByProjectId(long projectId) {
+        testrunReservationRepository.deleteByProjectId(projectId);
     }
 
 

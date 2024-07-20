@@ -112,7 +112,8 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<T
         }
 
         if (testcaseItems != null) {
-            testrunTestcaseGroupTestcase.setTestcaseItems(testcaseItems.stream().map(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem.toEntity(testrunTestcaseGroupTestcase)).collect(Collectors.toList()));
+            testrunTestcaseGroupTestcase.setTestcaseItems(
+                testcaseItems.stream().map(testrunTestcaseGroupTestcaseItem -> testrunTestcaseGroupTestcaseItem.toEntity(testrunTestcaseGroupTestcase)).collect(Collectors.toList()));
         }
 
         return testrunTestcaseGroupTestcase;

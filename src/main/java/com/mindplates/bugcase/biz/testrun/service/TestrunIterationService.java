@@ -113,5 +113,10 @@ public class TestrunIterationService {
         return new TestrunIterationDTO(result);
     }
 
+    @Transactional
+    public void deleteByProjectId(long projectId) {
+        testrunIterationRepository.deleteByProjectId(projectId);
+    }
+
 
 }

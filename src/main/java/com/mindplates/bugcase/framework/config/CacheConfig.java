@@ -51,7 +51,6 @@ public class CacheConfig {
     public static final int PROJECT_TESTCASE_EXPIRE_SEC = 60 * 60 * 24 * 7;
 
 
-
     public static final String USER = "user";
     public static final int USER_EXPIRE_SEC = 60 * 60 * 24 * 7;
 

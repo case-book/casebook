@@ -18,12 +18,12 @@ public interface TestrunReservationRepository extends JpaRepository<TestrunReser
     List<TestrunReservation> findAllByExpiredFalse();
 
     @Modifying
-    @Query("UPDATE TestrunReservation trr SET trr.expired = :expired, trr.testrun.id = :referenceTestrunId WHERE trr.id = :testrunReservationId")
+    @Query("UPDATE TestrunReservation tr SET tr.expired = :expired, tr.testrun.id = :referenceTestrunId WHERE tr.id = :testrunReservationId")
     void updateTestrunReservationExpired(@Param("testrunReservationId") Long testrunReservationId, @Param("expired") Boolean expired,
         @Param("referenceTestrunId") Long referenceTestrunId);
 
     @Modifying
-    @Query("UPDATE TestrunReservation trr SET trr.testrun.id = null WHERE trr.testrun.id = :testrunId")
+    @Query("UPDATE TestrunReservation tr SET tr.testrun.id = null WHERE tr.testrun.id = :testrunId")
     void updateTestrunReservationTestrunId(@Param("testrunId") Long testrunId);
 
 

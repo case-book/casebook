@@ -33,11 +33,9 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseCom
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunIterationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunProfileRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunRepository;
-import com.mindplates.bugcase.biz.testrun.repository.TestrunReservationRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
@@ -70,11 +68,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -93,8 +89,6 @@ public class TestrunService {
 
 
     private final TestrunRepository testrunRepository;
-    private final TestrunReservationRepository testrunReservationRepository;
-    private final TestrunIterationRepository testrunIterationRepository;
     private final TestcaseService testcaseService;
     private final TestcaseCachedService testcaseCachedService;
     private final ProjectService projectService;
@@ -118,6 +112,8 @@ public class TestrunService {
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
     private final MessageSourceAccessor messageSourceAccessor;
     private final TestrunCommentService testrunCommentService;
+    private final TestrunReservationService testrunReservationService;
+    private final TestrunIterationService testrunIterationService;
 
     private final Random random = new Random();
 
@@ -269,7 +265,8 @@ public class TestrunService {
         testrunProfileRepository.deleteByTestrunId(testrunId);
 
         testrunCommentService.deleteProjectTestrunComment(testrunId);
-        testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
+        testrunReservationService.updateTestrunReferenceNull(testrunId);
+
         projectFileRepository.deleteByProjectFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
         testrunTestcaseGroupTestcaseCommentRepository.deleteByTestrunId(testrunId);
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestrunId(testrunId);
@@ -288,8 +285,6 @@ public class TestrunService {
         }));
 
     }
-
-
 
 
     @Transactional
@@ -789,8 +784,8 @@ public class TestrunService {
         testrunTestcaseGroupTestcaseRepository.deleteByProjectId(projectId);
         testrunUserRepository.deleteByProjectId(projectId);
         testrunTestcaseGroupRepository.deleteByProjectId(projectId);
-        testrunReservationRepository.deleteByProjectId(projectId);
-        testrunIterationRepository.deleteByProjectId(projectId);
+        testrunReservationService.deleteByProjectId(projectId);
+        testrunIterationService.deleteByProjectId(projectId);
         testrunRepository.deleteByProjectId(projectId);
     }
 

@@ -68,7 +68,6 @@ public class TestrunReservationController {
         return testrunReservationList.stream().map(TestrunReservationListResponse::new).collect(Collectors.toList());
     }
 
-
     @Operation(description = "예약 테스트런 상세 조회")
     @GetMapping("/{testrunReservationId}")
     public TestrunReservationResponse selectTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {

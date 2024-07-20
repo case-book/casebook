@@ -11,7 +11,6 @@ import com.mindplates.bugcase.framework.security.MethodFinder;
 import com.mindplates.bugcase.framework.security.ResourceVoter;
 import com.mindplates.bugcase.framework.security.UserTokenAuthenticationFilter;
 import com.mindplates.bugcase.framework.security.UserTokenProvider;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

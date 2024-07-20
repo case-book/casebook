@@ -86,9 +86,8 @@ public class TestrunIterationDTO extends CommonDTO implements IDTO<TestrunIterat
             this.testrunUserCount = testrunIteration.getTestrunUserCount().longValue();
         }
 
-
         if (testrunIteration.getTestrunUsers() != null) {
-            this.testrunUserCount = (long)testrunIteration.getTestrunUsers().size();
+            this.testrunUserCount = (long) testrunIteration.getTestrunUsers().size();
         }
 
         if (testrunIteration.getProfiles() != null) {
