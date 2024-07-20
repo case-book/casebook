@@ -41,7 +41,7 @@ public class TestrunIterationListResponse {
     private Boolean autoTestcaseNotAssignedTester;
     private Integer testcaseGroupCount;
     private Integer testcaseCount;
-    private Integer testrunUserCount;
+    private Long testrunUserCount;
 
     public TestrunIterationListResponse(TestrunIterationDTO testrunIteration) {
         this.id = testrunIteration.getId();

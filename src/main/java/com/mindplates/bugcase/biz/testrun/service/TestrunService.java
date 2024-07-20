@@ -21,7 +21,6 @@ import com.mindplates.bugcase.biz.testcase.service.TestcaseCachedService;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
@@ -31,7 +30,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
@@ -250,40 +248,12 @@ public class TestrunService {
         return list.stream().map(TestrunReservationDTO::new).collect(Collectors.toList());
     }
 
-    public List<TestrunIterationDTO> selectProjectTestrunIterationList(String spaceCode, long projectId, Boolean expired) {
-        List<TestrunIteration> list = testrunIterationRepository
-            .findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByReserveStartDateTimeDescIdDesc(spaceCode, projectId, expired);
-        return list.stream().map(TestrunIterationDTO::new).collect(Collectors.toList());
-    }
 
     public List<TestrunReservationDTO> selectReserveTestrunList() {
         List<TestrunReservation> list = testrunReservationRepository.findAllByExpiredFalse();
         return list.stream().map((testrun -> new TestrunReservationDTO(testrun, false))).collect(Collectors.toList());
     }
 
-    public List<TestrunIterationDTO> selectTestrunIterationList() {
-
-        /*
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<TestrunIterationDTO> cq = cb.createQuery(TestrunIterationDTO.class);
-        Root<TestrunIteration> testrunIteration = cq.from(TestrunIteration.class);
-        cq.select(cb.construct(TestrunIterationDTO.class,
-            testrunIteration.get("id"),
-            testrunIteration.get("email"))
-        );
-
-        TypedQuery<TestrunIterationDTO> query = entityManager.createQuery(cq);
-        return query.getResultList();
-        */
-
-        List<TestrunIteration> list = testrunIterationRepository.findAllByExpiredFalse();
-        return list.stream().map((testrun -> new TestrunIterationDTO(testrun, false))).collect(Collectors.toList());
-    }
-
-    public TestrunIterationDTO selectTestrunIterationInfo(long id) {
-        TestrunIteration testrunIteration = testrunIterationRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestrunIterationDTO(testrunIteration, true);
-    }
 
     public TestrunReservationDTO selectTestrunReservationInfo(long id) {
         TestrunReservation testrunReservation = testrunReservationRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -321,11 +291,6 @@ public class TestrunService {
         return testrunReservationDTO;
     }
 
-    public TestrunIterationDTO selectProjectTestrunIterationInfo(long testrunIterationId) {
-        TestrunIteration testrunIteration = testrunIterationRepository.findById(testrunIterationId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestrunIterationDTO(testrunIteration, true);
-    }
 
     @Transactional
     @Caching(evict = {
@@ -373,17 +338,6 @@ public class TestrunService {
         testrunReservationRepository.deleteById(testrunReservationId);
     }
 
-    @Transactional
-    @Caching(evict = {
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
-    })
-    public void deleteProjectTestrunIterationInfo(String spaceCode, long projectId, long testrunIterationId) {
-        testrunTestcaseGroupTestcaseRepository.deleteByTestrunIterationId(testrunIterationId);
-        testrunUserRepository.deleteByTestrunIterationId(testrunIterationId);
-        testrunTestcaseGroupRepository.deleteByTestrunIterationId(testrunIterationId);
-        testrunIterationRepository.deleteById(testrunIterationId);
-    }
 
     @Transactional
     @Caching(evict = {
@@ -702,11 +656,6 @@ public class TestrunService {
         testrunReservationRepository.updateTestrunReservationExpired(testrunId, reserveExpired, referenceTestrunId);
     }
 
-    @Transactional
-    public void updateTestrunIterationExpired(Long testrunId, Boolean expired) {
-        testrunIterationRepository.updateTestrunIterationExpired(testrunId, expired);
-    }
-
 
     @Transactional
     @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
@@ -716,27 +665,6 @@ public class TestrunService {
         return new TestrunReservationDTO(result, true);
     }
 
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
-    public TestrunIterationDTO createTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration) {
-        int testcaseGroupCount = 0;
-        int testcaseCount = 0;
-        for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrunIteration.getTestcaseGroups()) {
-            testcaseGroupCount += 1;
-            testrunTestcaseGroup.setTestrunIteration(testrunIteration);
-            if (testrunTestcaseGroup.getTestcases() != null) {
-                for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
-                    testcaseCount += 1;
-                    testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
-                }
-            }
-        }
-        testrunIteration.setTestcaseGroupCount(testcaseGroupCount);
-        testrunIteration.setTestcaseCount(testcaseCount);
-        testrunIteration.setExpired(false);
-        TestrunIteration result = testrunIterationRepository.save(mappingUtil.convert(testrunIteration, TestrunIteration.class));
-        return new TestrunIterationDTO(result, true);
-    }
 
     private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
         return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
@@ -822,40 +750,6 @@ public class TestrunService {
         return new TestrunReservationDTO(result);
     }
 
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
-    public TestrunIterationDTO updateTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration, boolean updateIterationInfo) {
-        TestrunIteration newTestrunIteration = mappingUtil.convert(testrunIteration, TestrunIteration.class);
-        TestrunIteration targetTestrunIteration = testrunIterationRepository
-            .findById(testrunIteration.getId())
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        targetTestrunIteration.updateInfo(newTestrunIteration);
-        targetTestrunIteration.updateTester(testrunIteration.getTestrunUsers());
-        if (updateIterationInfo) {
-            targetTestrunIteration.updateIterationInfo(testrunIteration);
-        }
-
-        // 삭제된 테스트런 테스트케이스 그룹 및 테스트케이스 제거
-        targetTestrunIteration.updateTestcaseGroups(newTestrunIteration.getTestcaseGroups());
-
-        int testcaseGroupCount = targetTestrunIteration.getTestcaseGroups().size();
-        int testcaseCount = targetTestrunIteration.getTestcaseGroups().stream()
-            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
-            .reduce(0, Integer::sum);
-
-        targetTestrunIteration.setTestcaseGroupCount(testcaseGroupCount);
-        targetTestrunIteration.setTestcaseCount(testcaseCount);
-
-        List<Long> currentFilteringUserIds = targetTestrunIteration.getCurrentFilteringUserIds();
-        if (currentFilteringUserIds != null) {
-            currentFilteringUserIds.removeIf((userId) -> testrunIteration.getTestrunUsers().stream()
-                .noneMatch((testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId))));
-        }
-
-        TestrunIteration result = testrunIterationRepository.save(targetTestrunIteration);
-        return new TestrunIterationDTO(result);
-    }
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
         List<Testrun> testruns = testrunRepository

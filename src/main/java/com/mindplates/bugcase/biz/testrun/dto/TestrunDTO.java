@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.testrun.dto;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.dto.CommonDTO;
@@ -118,9 +117,6 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
             .reserveResultId(reserveResultId)
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
-
-
-
             .build();
 
         if (testrunUsers != null) {

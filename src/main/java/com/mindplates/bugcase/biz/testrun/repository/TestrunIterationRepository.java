@@ -9,12 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface TestrunIterationRepository extends JpaRepository<TestrunIteration, Long> {
 
-    List<TestrunIteration> findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByReserveStartDateTimeDescIdDesc(String spaceCode, Long projectId, Boolean expired);
+    String TESTRUN_ITERATION_LIST_PROJECTION = "SELECT new TestrunIteration(ti.id, ti.name, ti.description, ti.project.id, ti.reserveStartDateTime, ti.reserveEndDateTime, ti.testrunIterationTimeType, ti.excludeHoliday, ti.durationHours, ti.expired, ti.days, ti.startTime, ti.date, ti.week, ti.day, ti.testrunIterationUserFilterType, ti.testrunIterationUserFilterSelectRule, ti.filteringUserCount, ti.testcaseGroupCount, ti.testcaseCount, ti.deadlineClose, ti.autoTestcaseNotAssignedTester, (SELECT COUNT(tu.id) FROM TestrunUser tu WHERE tu.testrunIteration.id = ti.id)) FROM TestrunIteration ti ";
 
-    // List<TestrunIteration> findAllByExpiredFalse();
+    @Query(value = TESTRUN_ITERATION_LIST_PROJECTION + " WHERE ti.project.id = :projectId AND ti.expired = :expired ORDER BY ti.reserveStartDateTime DESC, ti.id DESC")
+    List<TestrunIteration> findAllByProjectIdAndExpiredOrderByReserveStartDateTimeDescIdDesc(Long projectId, Boolean expired);
 
-    // @Query(value = "SELECT new TestrunIteration(ti.id, ti.name, ti.description, ti.project.id, ti.reserveStartDateTime, ti.reserveEndDateTime, ti.testrunIterationTimeType, ti.excludeHoliday, ti.durationHours, ti.expired, ti.days, ti.startTime, ti.date, ti.week, ti.day, ti.testrunIterationUserFilterType, ti.testrunIterationUserFilterSelectRule, ti.filteringUserCount, ti.testcaseGroupCount, ti.testcaseCount, ti.deadlineClose, ti.autoTestcaseNotAssignedTester) FROM TestrunIteration ti WHERE ti.expired = false")
-    @Query(value = "SELECT new TestrunIteration(ti.id, ti.name, ti.description, ti.project.id, ti.reserveStartDateTime, ti.reserveEndDateTime, ti.testrunIterationTimeType, ti.excludeHoliday, ti.durationHours, ti.expired, ti.days, ti.startTime, ti.date, ti.week, ti.day, ti.testrunIterationUserFilterType, ti.testrunIterationUserFilterSelectRule, ti.filteringUserCount, ti.testcaseGroupCount, ti.testcaseCount, ti.deadlineClose, ti.autoTestcaseNotAssignedTester) FROM TestrunIteration ti WHERE ti.expired = false")
+    @Query(value = TESTRUN_ITERATION_LIST_PROJECTION + " WHERE ti.expired = false")
     List<TestrunIteration> findAllByExpiredFalse();
 
     @Modifying

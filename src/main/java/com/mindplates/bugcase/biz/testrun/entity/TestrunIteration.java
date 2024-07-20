@@ -29,6 +29,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -157,6 +158,9 @@ public class TestrunIteration extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunTestcaseGroup> testcaseGroups;
 
+    @Transient
+    private Long testrunUserCount;
+
     public TestrunIteration(
         long id,
         String name,
@@ -179,8 +183,8 @@ public class TestrunIteration extends CommonEntity {
         Integer testcaseGroupCount,
         Integer testcaseCount,
         Boolean deadlineClose,
-        Boolean autoTestcaseNotAssignedTester
-
+        Boolean autoTestcaseNotAssignedTester,
+        Long testrunUserCount
     ) {
 
         this.id = id;
@@ -209,9 +213,7 @@ public class TestrunIteration extends CommonEntity {
         } else {
             this.autoTestcaseNotAssignedTester = false;
         }
-
-
-
+        this.testrunUserCount = testrunUserCount;
     }
 
     public void updateInfo(TestrunIteration testrunIteration) {

@@ -44,7 +44,7 @@ public class TestrunIterationResponse {
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Integer testcaseCount;
-    private Integer testrunUserCount;
+    private Long testrunUserCount;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
     private List<TestrunMessageChannelResponse> messageChannels;

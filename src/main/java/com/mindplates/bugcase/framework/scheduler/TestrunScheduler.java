@@ -16,6 +16,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
+import com.mindplates.bugcase.biz.testrun.service.TestrunIterationService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
@@ -53,6 +54,7 @@ import org.springframework.stereotype.Component;
 public class TestrunScheduler {
 
     private final TestrunService testrunService;
+    private final TestrunIterationService testrunIterationService;
 
     private final SpaceService spaceService;
 
@@ -461,7 +463,7 @@ public class TestrunScheduler {
         testrun.setTestcaseGroups(testcaseGroups);
 
         // testrunService.updateTestrunIterationCursor(testrunIterationDTO.getId(), testrunIterationDTO.getFilteringUserCursor(), testrunIterationDTO.getCurrentFilteringUserIds());
-        testrunService.updateTestrunIterationInfo(spaceDTO.getCode(), testrunIterationDTO, true);
+        testrunIterationService.updateTestrunIterationInfo(spaceDTO.getCode(), testrunIterationDTO, true);
 
         return testrun;
     }
@@ -496,7 +498,7 @@ public class TestrunScheduler {
         }));
 
         // 반복 테스트런
-        List<TestrunIterationDTO> testrunIterationList = testrunService.selectTestrunIterationList();
+        List<TestrunIterationDTO> testrunIterationList = testrunIterationService.selectTestrunIterationList();
         testrunIterationList.forEach((testrunIterationDTO -> {
 
             Long testrunIterationId = testrunIterationDTO.getId();
@@ -615,7 +617,7 @@ public class TestrunScheduler {
             if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartTime.equals(startTime)) {
                 // if ((reserveStartDateTime == null || now.isAfter(reserveStartDateTime)) && (reserveEndDateTime == null || now.isBefore(reserveEndDateTime)) && nowStartHour.equals(startHour)) { // FOR TEST
 
-                TestrunIterationDTO target = testrunService.selectTestrunIterationInfo(testrunIterationDTO.getId());
+                TestrunIterationDTO target = testrunIterationService.selectTestrunIterationInfo(testrunIterationDTO.getId());
                 TestrunDTO testrun = getTestrun(spaceDTO, target, now, currentMonth, currentWeek);
                 TestrunDTO result = testrunService.createTestrunInfo(testrun.getProject().getSpace().getCode(), testrun);
 
@@ -628,7 +630,7 @@ public class TestrunScheduler {
             }
 
             if (reserveEndDateTime != null && now.isAfter(reserveEndDateTime)) {
-                testrunService.updateTestrunIterationExpired(testrunIterationId, true);
+                testrunIterationService.updateTestrunIterationExpired(testrunIterationId, true);
             }
 
         }));
