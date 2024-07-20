@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class TestrunIterationService {
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
 
     @Transactional
+    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_ITERATIONS)
     public TestrunIterationDTO createTestrunIterationInfo(TestrunIterationDTO testrunIteration) {
         int testcaseGroupCount = 0;
         int testcaseCount = 0;
@@ -57,6 +59,7 @@ public class TestrunIterationService {
         return list.stream().map(TestrunIterationDTO::new).collect(Collectors.toList());
     }
 
+    @Cacheable(key="'not_expired'", value = CacheConfig.TESTRUN_ITERATIONS)
     public List<TestrunIterationDTO> selectTestrunIterationList() {
         List<TestrunIteration> list = testrunIterationRepository.findAllByExpiredFalse();
         return list.stream().map((TestrunIterationDTO::new)).collect(Collectors.toList());
@@ -68,6 +71,7 @@ public class TestrunIterationService {
     }
 
     @Transactional
+    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_ITERATIONS)
     public void deleteProjectTestrunIterationInfo(String spaceCode, long projectId, long testrunIterationId) {
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunIterationId(testrunIterationId);
         testrunUserRepository.deleteByTestrunIterationId(testrunIterationId);
@@ -76,12 +80,13 @@ public class TestrunIterationService {
     }
 
     @Transactional
+    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_ITERATIONS)
     public void updateTestrunIterationExpired(Long testrunId, Boolean expired) {
         testrunIterationRepository.updateTestrunIterationExpired(testrunId, expired);
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#testrunIteration.project.id}", value = CacheConfig.PROJECT)
+    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_ITERATIONS)
     public TestrunIterationDTO updateTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration, boolean updateIterationInfo) {
 
         TestrunIteration newTestrunIteration = testrunIteration.toEntity();
@@ -114,6 +119,7 @@ public class TestrunIterationService {
     }
 
     @Transactional
+    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_ITERATIONS)
     public void deleteByProjectId(long projectId) {
         testrunIterationRepository.deleteByProjectId(projectId);
     }

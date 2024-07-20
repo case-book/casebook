@@ -70,7 +70,7 @@ public class TestrunScheduler {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    private TestrunDTO getTestrun(SpaceDTO spaceDTO, TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
+    private TestrunDTO getTestrun(TestrunReservationDTO testrunReservationDTO, LocalDateTime now) {
         TestrunDTO testrun = TestrunDTO
             .builder()
             .name(testrunReservationDTO.getName())
@@ -374,7 +374,7 @@ public class TestrunScheduler {
                     }
                 } else {
                     Long lastUserId = null;
-                    if (userIds.size() > 0) {
+                    if (!userIds.isEmpty()) {
                         lastUserId = userIds.get(userIds.size() - 1);
                     }
 
@@ -407,31 +407,30 @@ public class TestrunScheduler {
 
             testrunIterationDTO.setCurrentFilteringUserIds(userIds);
 
-            userIds.stream().forEach(userId -> {
-                TestrunUserDTO testrunUser = testrunIterationDTO.getTestrunUsers().stream()
-                    .filter(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId)).findFirst().orElse(null);
-                if (testrunUser != null) {
-                    testrunUserList.add(TestrunUserDTO
-                        .builder()
-                        .testrun(testrun)
-                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                        .build());
-                }
+            userIds.forEach(userId -> {
+                testrunIterationDTO.getTestrunUsers().stream()
+                    .filter(testrunUserDTO -> testrunUserDTO.getUser().getId().equals(userId))
+                    .findFirst()
+                    .ifPresent(testrunUser ->
+                        testrunUserList.add(TestrunUserDTO
+                            .builder()
+                            .testrun(testrun)
+                            .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                            .build()
+                        )
+                    );
             });
-
 
         } else {
 
             // 필터가 없으면 모든 테스트런 사용자 추가
-            if (testrunIterationDTO.getTestrunUsers() != null) {
-                for (TestrunUserDTO testrunUser : testrunIterationDTO.getTestrunUsers()) {
-                    testrunUserList.add(TestrunUserDTO
-                        .builder()
-                        .testrun(testrun)
-                        .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
-                        .build()
-                    );
-                }
+            for (TestrunUserDTO testrunUser : testrunIterationDTO.getTestrunUsers()) {
+                testrunUserList.add(TestrunUserDTO
+                    .builder()
+                    .testrun(testrun)
+                    .user(UserDTO.builder().id(testrunUser.getUser().getId()).build())
+                    .build()
+                );
             }
 
         }
@@ -478,16 +477,14 @@ public class TestrunScheduler {
         // 예약 테스트런
         List<TestrunReservationDTO> testrunReservationList = testrunReservationService.selectReserveTestrunList();
         testrunReservationList.forEach((testrunReservation -> {
-
-            SpaceDTO spaceDTO = spaceService.selectSpaceInfoByProjectId(testrunReservation.getProject().getId());
-
+            String spaceCode = projectService.selectSpaceCode(testrunReservation.getProject().getId());
             Long testrunReservationId = testrunReservation.getId();
             LocalDateTime startDateTime = testrunReservation.getStartDateTime();
 
             if (now.isAfter(startDateTime)) {
                 TestrunReservationDTO target = testrunReservationService.selectTestrunReservationInfo(testrunReservation.getId());
-                TestrunDTO testrun = getTestrun(spaceDTO, target, now);
-                TestrunDTO result = testrunService.createTestrunInfo(spaceDTO.getCode(), testrun);
+                TestrunDTO testrun = getTestrun(target, now);
+                TestrunDTO result = testrunService.createTestrunInfo(spaceCode, testrun);
                 testrunReservationService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
 
                 // 시작 후 훅 호출
@@ -504,7 +501,8 @@ public class TestrunScheduler {
         testrunIterationList.forEach((testrunIterationDTO -> {
 
             Long testrunIterationId = testrunIterationDTO.getId();
-            SpaceDTO spaceDTO = spaceService.selectSpaceInfoByProjectId(testrunIterationDTO.getProject().getId());
+            String spaceCode = projectService.selectSpaceCode(testrunIterationDTO.getProject().getId());
+            SpaceDTO spaceDTO = spaceService.selectSpaceInfo(spaceCode);
 
             Locale spaceLocale = spaceDTO.getCountry() != null ? new Locale(spaceDTO.getCountry()) : Locale.US;
             WeekFields weekFields = WeekFields.of(spaceLocale);
@@ -642,7 +640,7 @@ public class TestrunScheduler {
     @Scheduled(cron = "0 * * * * *")
     public void closeTestrunScheduler() {
         LocalDateTime now = LocalDateTime.now();
-        List<TestrunDTO> testrunList = testrunService.selectDeadlineTestrunList(now);
+        List<TestrunDTO> testrunList = testrunService.selectToBeClosedTestrunList(now);
         testrunList.forEach((testrunDTO -> {
             String spaceCode = projectService.selectSpaceCode(testrunDTO.getProject().getId());
             TestrunDTO result = testrunService.updateProjectTestrunStatusClosed(spaceCode, testrunDTO.getProject().getId(),

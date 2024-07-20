@@ -120,7 +120,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
 
@@ -185,7 +185,7 @@ public class TestrunService {
         return new TestrunDTO(result);
     }
 
-    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS)
+    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
     public List<TestrunDTO> selectOpenedProjectTestrunList(String spaceCode, long projectId) {
         List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true);
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
@@ -232,9 +232,9 @@ public class TestrunService {
     }
 
 
-    public List<TestrunDTO> selectDeadlineTestrunList(LocalDateTime endDateTime) {
-        List<Testrun> list = testrunRepository.findAllByDeadlineCloseTrueAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(endDateTime);
-        return list.stream().map((testrun -> new TestrunDTO(testrun, true))).collect(Collectors.toList());
+    public List<TestrunDTO> selectToBeClosedTestrunList(LocalDateTime endDateTime) {
+        List<Testrun> list = testrunRepository.findToBeClosedTestrunList(endDateTime);
+        return list.stream().map((TestrunDTO::new)).collect(Collectors.toList());
     }
 
 
@@ -254,7 +254,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public void deleteProjectTestrunInfo(String spaceCode, long projectId, long testrunId) {
         List<ProjectFile> files = projectFileRepository
@@ -290,7 +290,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public TestrunDTO updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -319,7 +319,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public void updateProjectTestrunStatusOpened(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -349,7 +349,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public List<TestrunTestcaseGroupTestcaseItemDTO> updateTestrunTestcaseGroupTestcaseItems(String spaceCode, long projectId,
         List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems) {
@@ -361,7 +361,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(String spaceCode, long projectId, long testrunId,
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
@@ -375,7 +375,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public TestrunStatusDTO updateTestrunTestcaseResult(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -411,7 +411,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public boolean updateTestrunTestcaseResult(String spaceCode, long projectId, String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, TestResultCode resultCode,
         String comment) {
@@ -458,7 +458,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public void updateTestrunTestcaseTesterRandom(String spaceCode, long projectId, long testrunId, Long testerId, Long targetId,
         TesterChangeTargetCode target, String reason) {
@@ -539,7 +539,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, Long testerId, Long actorId) {
         TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
@@ -620,7 +620,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public TestrunDTO updateTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
         Project project = mappingUtil.convert(projectCachedService.selectProjectInfo(spaceCode, testrunDTO.getProject().getId()), Project.class);
@@ -772,7 +772,7 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
     })
     public void deleteProjectTestrun(String spaceCode, long projectId) {
         testrunMessageChannelRepository.deleteByProjectId(projectId);

@@ -138,6 +138,34 @@ public class Testrun extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunMessageChannel> messageChannels;
 
+    public Testrun(Long id, String seqId, String name, String description, long projectId,
+        LocalDateTime startDateTime, LocalDateTime endDateTime, boolean opened, int totalTestcaseCount,
+        int passedTestcaseCount, int failedTestcaseCount, int untestableTestcaseCount, LocalDateTime closedDate,
+        String days, Boolean excludeHoliday, LocalTime startTime, Integer durationHours,
+        Boolean reserveExpired, Long reserveResultId, Boolean deadlineClose, Boolean autoTestcaseNotAssignedTester) {
+        this.id = id;
+        this.seqId = seqId;
+        this.name = name;
+        this.description = description;
+        this.project = Project.builder().id(projectId).build();
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.opened = opened;
+        this.totalTestcaseCount = totalTestcaseCount;
+        this.passedTestcaseCount = passedTestcaseCount;
+        this.failedTestcaseCount = failedTestcaseCount;
+        this.untestableTestcaseCount = untestableTestcaseCount;
+        this.closedDate = closedDate;
+        this.days = days;
+        this.excludeHoliday = excludeHoliday;
+        this.startTime = startTime;
+        this.durationHours = durationHours;
+        this.reserveExpired = reserveExpired;
+        this.reserveResultId = reserveResultId;
+        this.deadlineClose = deadlineClose;
+        this.autoTestcaseNotAssignedTester = autoTestcaseNotAssignedTester;
+    }
+
     public void updateInfo(Testrun testrun) {
         this.name = (testrun.getName());
         this.description = (testrun.getDescription());

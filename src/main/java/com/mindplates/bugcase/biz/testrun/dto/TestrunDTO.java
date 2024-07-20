@@ -72,7 +72,11 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
-        this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+
+        if (testrun.getProfiles() != null) {
+            this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
+        }
+
         if (testrun.getHooks() != null) {
             this.hooks = testrun.getHooks().stream().map(TestrunHookDTO::new).collect(Collectors.toList());
         }
@@ -84,8 +88,15 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
     public TestrunDTO(Testrun testrun, boolean detail) {
         this(testrun);
         if (detail) {
-            testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
-            testcaseGroups = testrun.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
+            if (testrun.getTestrunUsers() != null) {
+                testrunUsers = testrun.getTestrunUsers().stream().map(TestrunUserDTO::new).collect(Collectors.toList());
+            }
+
+            if (testrun.getTestcaseGroups() != null) {
+                testcaseGroups = testrun.getTestcaseGroups().stream().map(TestrunTestcaseGroupDTO::new).collect(Collectors.toList());
+            }
+
+
         }
     }
 

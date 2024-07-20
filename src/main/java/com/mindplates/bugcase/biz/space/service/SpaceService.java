@@ -79,12 +79,6 @@ public class SpaceService {
         return new SpaceDTO(space);
     }
 
-    public SpaceDTO selectSpaceInfoByProjectId(Long projectId) {
-        long spaceId = projectService.selectSpaceId(projectId);
-        Space space = spaceRepository.findById(spaceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new SpaceDTO(space);
-    }
-
     public String selectSpaceCode(Long id) {
         return spaceRepository.findCodeById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }

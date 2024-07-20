@@ -32,7 +32,9 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     Long countByProjectSpaceIdAndProjectIdAndOpenedTrue(Long spaceId, Long projectId);
 
-    List<Testrun> findAllByDeadlineCloseTrueAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(LocalDateTime endDateTime);
+
+    @Query(value = "SELECT new Testrun(tr.id, tr.seqId, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.opened, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount, tr.closedDate, tr.days, tr.excludeHoliday, tr.startTime, tr.durationHours, tr.reserveExpired, tr.reserveResultId, tr.deadlineClose, tr.autoTestcaseNotAssignedTester) FROM Testrun tr WHERE tr.deadlineClose = true AND tr.opened = true AND tr.endDateTime IS NOT NULL AND tr.endDateTime < :endDateTime")
+    List<Testrun> findToBeClosedTestrunList(LocalDateTime endDateTime);
 
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")

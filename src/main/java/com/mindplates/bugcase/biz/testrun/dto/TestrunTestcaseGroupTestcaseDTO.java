@@ -35,18 +35,10 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<T
     public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase) {
 
         this.id = testrunTestcaseGroupTestcase.getId();
-        this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder()
-            .id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId())
-            .build();
+        this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId()).build();
 
         if (testrunTestcaseGroupTestcase != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup() != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun() != null) {
-            this.testrunTestcaseGroup
-                .setTestrun(TestrunDTO
-                    .builder()
-                    .id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun().getId())
-                    .seqId(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun().getSeqId())
-                    .build()
-                );
+            this.testrunTestcaseGroup.setTestrun(TestrunDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun().getId()).build());
         }
 
         this.testcase = TestcaseDTO.builder()
@@ -62,13 +54,11 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<T
         this.testcase.setLastUpdateDate(testrunTestcaseGroupTestcase.getTestcase().getLastUpdateDate());
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate() != null) {
-            this.testcase.setTestcaseTemplate(
-                TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build());
+            this.testcase.setTestcaseTemplate(TestcaseTemplateDTO.builder().id(testrunTestcaseGroupTestcase.getTestcase().getTestcaseTemplate().getId()).build());
         }
 
         if (testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems() != null) {
-            this.testcase.setTestcaseItems(
-                testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()));
+            this.testcase.setTestcaseItems(testrunTestcaseGroupTestcase.getTestcase().getTestcaseItems().stream().map(TestcaseItemDTO::new).collect(Collectors.toList()));
             if (testrunTestcaseGroupTestcase.getTestcaseItems() != null) {
                 this.testcaseItems = testrunTestcaseGroupTestcase.getTestcaseItems().stream().map(TestrunTestcaseGroupTestcaseItemDTO::new)
                     .collect(Collectors.toList());

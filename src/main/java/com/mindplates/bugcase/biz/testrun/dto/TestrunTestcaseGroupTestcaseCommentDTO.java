@@ -22,12 +22,14 @@ public class TestrunTestcaseGroupTestcaseCommentDTO extends CommonDTO {
     public TestrunTestcaseGroupTestcaseCommentDTO(TestrunTestcaseGroupTestcaseComment testrunTestcaseGroupTestcaseComment) {
         this.id = testrunTestcaseGroupTestcaseComment.getId();
         this.comment = testrunTestcaseGroupTestcaseComment.getComment();
-        this.testrunTestcaseGroupTestcase = TestrunTestcaseGroupTestcaseDTO.builder()
-            .id(testrunTestcaseGroupTestcaseComment.getTestrunTestcaseGroupTestcase().getId()).build();
+        this.testrunTestcaseGroupTestcase = TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseComment.getTestrunTestcaseGroupTestcase().getId()).build();
         if (testrunTestcaseGroupTestcaseComment.getUser() != null) {
-            this.user = UserDTO.builder().id(testrunTestcaseGroupTestcaseComment.getUser().getId())
-                .name(testrunTestcaseGroupTestcaseComment.getUser().getName()).email(testrunTestcaseGroupTestcaseComment.getUser().getEmail())
-                .avatarInfo(testrunTestcaseGroupTestcaseComment.getUser().getAvatarInfo()).build();
+            this.user = UserDTO.builder()
+                .id(testrunTestcaseGroupTestcaseComment.getUser().getId())
+                .name(testrunTestcaseGroupTestcaseComment.getUser().getName())
+                .email(testrunTestcaseGroupTestcaseComment.getUser().getEmail())
+                .avatarInfo(testrunTestcaseGroupTestcaseComment.getUser().getAvatarInfo())
+                .build();
         }
         this.creationDate = testrunTestcaseGroupTestcaseComment.getCreationDate();
         this.lastUpdateDate = testrunTestcaseGroupTestcaseComment.getLastUpdateDate();
