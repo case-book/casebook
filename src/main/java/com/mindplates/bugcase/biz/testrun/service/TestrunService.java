@@ -13,7 +13,6 @@ import com.mindplates.bugcase.biz.project.service.ProjectCachedService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
@@ -22,15 +21,12 @@ import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
@@ -124,9 +120,6 @@ public class TestrunService {
     private final TestrunCommentService testrunCommentService;
 
     private final Random random = new Random();
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Transactional
     @Caching(evict = {
@@ -242,23 +235,6 @@ public class TestrunService {
         return list.stream().map(TestrunDTO::new).collect(Collectors.toList());
     }
 
-    public List<TestrunReservationDTO> selectProjectReserveTestrunList(String spaceCode, long projectId, Boolean expired) {
-        List<TestrunReservation> list = testrunReservationRepository
-            .findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByStartDateTimeDescIdDesc(spaceCode, projectId, expired);
-        return list.stream().map(TestrunReservationDTO::new).collect(Collectors.toList());
-    }
-
-
-    public List<TestrunReservationDTO> selectReserveTestrunList() {
-        List<TestrunReservation> list = testrunReservationRepository.findAllByExpiredFalse();
-        return list.stream().map((testrun -> new TestrunReservationDTO(testrun, false))).collect(Collectors.toList());
-    }
-
-
-    public TestrunReservationDTO selectTestrunReservationInfo(long id) {
-        TestrunReservation testrunReservation = testrunReservationRepository.findById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return new TestrunReservationDTO(testrunReservation, true);
-    }
 
     public List<TestrunDTO> selectDeadlineTestrunList(LocalDateTime endDateTime) {
         List<Testrun> list = testrunRepository.findAllByDeadlineCloseTrueAndEndDateTimeNotNullAndEndDateTimeBeforeAndOpenedTrue(endDateTime);
@@ -276,19 +252,6 @@ public class TestrunService {
     public TestrunDTO selectProjectTestrunInfo(long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         return new TestrunDTO(testrun, true);
-    }
-
-    public TestrunReservationDTO selectProjectTestrunReservationInfo(long testrunReservationId) {
-        TestrunReservation testrunReservation = testrunReservationRepository.findById(testrunReservationId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        TestrunReservationDTO testrunReservationDTO = new TestrunReservationDTO(testrunReservation, true);
-        LocalDateTime now = LocalDateTime.now();
-        List<TestrunTestcaseGroupDTO> conditionalTestcaseGroupList = this
-            .selectConditionalTestcaseGroups(testrunReservationDTO, now, null, new HashMap<>(), null);
-        testrunReservationDTO.setConditionalTestcaseGroupList(conditionalTestcaseGroupList);
-
-        return testrunReservationDTO;
     }
 
 
@@ -326,17 +289,7 @@ public class TestrunService {
 
     }
 
-    @Transactional
-    @Caching(evict = {
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.OPENED_TESTRUNS),
-    })
-    public void deleteProjectTestrunReservationInfo(String spaceCode, long projectId, long testrunReservationId) {
-        testrunTestcaseGroupTestcaseRepository.deleteByTestrunReservationId(testrunReservationId);
-        testrunUserRepository.deleteByTestrunReservationId(testrunReservationId);
-        testrunTestcaseGroupRepository.deleteByTestrunReservationId(testrunReservationId);
-        testrunReservationRepository.deleteById(testrunReservationId);
-    }
+
 
 
     @Transactional
@@ -651,20 +604,6 @@ public class TestrunService {
         testrunTestcaseGroupTestcaseCommentRepository.deleteById(testrunTestcaseGroupTestcaseCommentId);
     }
 
-    @Transactional
-    public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired, Long referenceTestrunId) {
-        testrunReservationRepository.updateTestrunReservationExpired(testrunId, reserveExpired, referenceTestrunId);
-    }
-
-
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
-    public TestrunReservationDTO createTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
-        TestrunReservation result = testrunReservationRepository.save(mappingUtil.convert(testrunReservation, TestrunReservation.class));
-        result.updateTestcaseCount();
-        return new TestrunReservationDTO(result, true);
-    }
-
 
     private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
         return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
@@ -733,23 +672,6 @@ public class TestrunService {
         return new TestrunDTO(result, true);
     }
 
-    @Transactional
-    @CacheEvict(key = "{#spaceCode,#testrunReservation.project.id}", value = CacheConfig.PROJECT)
-    public TestrunReservationDTO updateTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
-        TestrunReservation newTestrunReservation = mappingUtil.convert(testrunReservation, TestrunReservation.class);
-
-        TestrunReservation targetTestrunReservation = testrunReservationRepository.findById(testrunReservation.getId())
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        targetTestrunReservation.updateInfo(newTestrunReservation);
-        targetTestrunReservation.updateTestrunUsers(newTestrunReservation.getTestrunUsers());
-        targetTestrunReservation.updateTestcaseGroups(newTestrunReservation.getTestcaseGroups());
-        targetTestrunReservation.updateTestcaseAndGroupCount();
-
-        TestrunReservation result = testrunReservationRepository.save(targetTestrunReservation);
-        return new TestrunReservationDTO(result);
-    }
-
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
         List<Testrun> testruns = testrunRepository
@@ -784,81 +706,6 @@ public class TestrunService {
     public List<Long> selectTestcaseIncludeTestrunList(String projectToken, Long testcaseSeqNumber) {
         Long projectId = projectService.selectProjectId(projectToken);
         return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
-    }
-
-    public List<TestrunTestcaseGroupDTO> selectConditionalTestcaseGroups(TestrunReservationDTO testrunReservationDTO, LocalDateTime now,
-        List<TestrunTestcaseGroupDTO> pTestcaseGroups, Map<Long, ArrayList<Long>> testcaseGroupIdMap, TestrunDTO testrun) {
-
-        List<TestrunTestcaseGroupDTO> testcaseGroups = pTestcaseGroups == null ? new ArrayList<>() : pTestcaseGroups;
-
-        List<TestcaseDTO> conditionalTestcaseList = new ArrayList<>();
-        Map<Long, Boolean> conditionalTestcaseIdMap = new HashMap<>();
-        if (testrunReservationDTO.getSelectCreatedTestcase() != null && testrunReservationDTO.getSelectCreatedTestcase()) {
-            List<TestcaseDTO> createdTestcaseList = testcaseService
-                .selectTestcaseItemListByCreationTime(testrunReservationDTO.getProject().getId(), testrunReservationDTO.getCreationDate(), now);
-            for (TestcaseDTO testcaseDTO : createdTestcaseList) {
-                conditionalTestcaseList.add(testcaseDTO);
-                conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
-            }
-        }
-
-        if (testrunReservationDTO.getSelectUpdatedTestcase() != null && testrunReservationDTO.getSelectUpdatedTestcase()) {
-            List<TestcaseDTO> updateDateTestcaseList = testcaseService
-                .selectTestcaseItemListByContentUpdateDate(testrunReservationDTO.getProject().getId(), testrunReservationDTO.getCreationDate(), now);
-
-            for (TestcaseDTO testcaseDTO : updateDateTestcaseList) {
-                if (!conditionalTestcaseIdMap.containsKey(testcaseDTO.getId())) {
-                    conditionalTestcaseList.add(testcaseDTO);
-                    conditionalTestcaseIdMap.put(testcaseDTO.getId(), true);
-                }
-            }
-        }
-
-        if (CollectionUtils.isEmpty(conditionalTestcaseList)) {
-            conditionalTestcaseList.forEach(testcaseDTO -> {
-                Long testcaseGroupId = testcaseDTO.getTestcaseGroup().getId();
-                Long testcaseId = testcaseDTO.getId();
-                if (!testcaseGroupIdMap.containsKey(testcaseGroupId)) {
-                    TestrunTestcaseGroupDTO testrunTestcaseGroupDTO = TestrunTestcaseGroupDTO.builder()
-                        .testrun(testrun)
-                        .testcaseGroup(testcaseDTO.getTestcaseGroup())
-                        .testcases(new ArrayList<>())
-                        .build();
-                    testcaseGroups.add(testrunTestcaseGroupDTO);
-                    testcaseGroupIdMap.put(testcaseGroupId, new ArrayList<>());
-                }
-
-                ArrayList<Long> testcaseIds = testcaseGroupIdMap.get(testcaseGroupId);
-                if (!testcaseIds.contains(testcaseId)) {
-                    TestrunTestcaseGroupDTO testcaseGroup = testcaseGroups.stream()
-                        .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getTestcaseGroup().getId().equals(testcaseGroupId))
-                        .findFirst()
-                        .orElse(null);
-                    if (testcaseGroup != null) {
-                        TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO = TestrunTestcaseGroupTestcaseDTO.builder()
-                            .testrunTestcaseGroup(testcaseGroup)
-                            .testcase(testcaseDTO)
-                            .build();
-
-                        testrunTestcaseGroupTestcaseDTO.setTestcaseItems(
-                            testcaseDTO.getTestcaseItems()
-                                .stream()
-                                .map(testcaseItemDTO -> TestrunTestcaseGroupTestcaseItemDTO.builder()
-                                    .testcaseTemplateItem(testcaseItemDTO.getTestcaseTemplateItem())
-                                    .testrunTestcaseGroupTestcase(testrunTestcaseGroupTestcaseDTO)
-                                    .type(testcaseItemDTO.getType())
-                                    .value(testcaseItemDTO.getValue())
-                                    .text(testcaseItemDTO.getText())
-                                    .build()
-                                ).collect(Collectors.toList()));
-                        testcaseGroup.getTestcases().add(testrunTestcaseGroupTestcaseDTO);
-                        testcaseIds.add(testcaseId);
-                    }
-                }
-            });
-        }
-
-        return testcaseGroups;
     }
 
 

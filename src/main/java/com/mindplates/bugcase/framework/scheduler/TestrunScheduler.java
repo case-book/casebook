@@ -17,6 +17,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunIterationService;
+import com.mindplates.bugcase.biz.testrun.service.TestrunReservationService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
@@ -54,6 +55,7 @@ import org.springframework.stereotype.Component;
 public class TestrunScheduler {
 
     private final TestrunService testrunService;
+    private final TestrunReservationService testrunReservationService;
     private final TestrunIterationService testrunIterationService;
 
     private final SpaceService spaceService;
@@ -160,7 +162,7 @@ public class TestrunScheduler {
             }));
         }
 
-        testrunService.selectConditionalTestcaseGroups(testrunReservationDTO, now, testcaseGroups, testcaseGroupIdMap, testrun);
+        testrunReservationService.selectConditionalTestcaseGroups(testrunReservationDTO, now, testcaseGroups, testcaseGroupIdMap, testrun);
         testrun.setTestcaseGroups(testcaseGroups);
 
         return testrun;
@@ -474,7 +476,7 @@ public class TestrunScheduler {
         String nowStartTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
 
         // 예약 테스트런
-        List<TestrunReservationDTO> testrunReservationList = testrunService.selectReserveTestrunList();
+        List<TestrunReservationDTO> testrunReservationList = testrunReservationService.selectReserveTestrunList();
         testrunReservationList.forEach((testrunReservation -> {
 
             SpaceDTO spaceDTO = spaceService.selectSpaceInfoByProjectId(testrunReservation.getProject().getId());
@@ -483,10 +485,10 @@ public class TestrunScheduler {
             LocalDateTime startDateTime = testrunReservation.getStartDateTime();
 
             if (now.isAfter(startDateTime)) {
-                TestrunReservationDTO target = testrunService.selectTestrunReservationInfo(testrunReservation.getId());
+                TestrunReservationDTO target = testrunReservationService.selectTestrunReservationInfo(testrunReservation.getId());
                 TestrunDTO testrun = getTestrun(spaceDTO, target, now);
                 TestrunDTO result = testrunService.createTestrunInfo(spaceDTO.getCode(), testrun);
-                testrunService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
+                testrunReservationService.updateTestrunReserveExpired(testrunReservationId, true, result.getId());
 
                 // 시작 후 훅 호출
                 result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {

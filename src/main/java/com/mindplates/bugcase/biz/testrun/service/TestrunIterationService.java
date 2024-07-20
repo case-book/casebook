@@ -29,7 +29,8 @@ public class TestrunIterationService {
     private final TestrunUserRepository testrunUserRepository;
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
 
-    public TestrunIterationDTO createTestrunIterationInfo(String spaceCode, TestrunIterationDTO testrunIteration) {
+    @Transactional
+    public TestrunIterationDTO createTestrunIterationInfo(TestrunIterationDTO testrunIteration) {
         int testcaseGroupCount = 0;
         int testcaseCount = 0;
         for (TestrunTestcaseGroupDTO testrunTestcaseGroup : testrunIteration.getTestcaseGroups()) {
@@ -66,6 +67,7 @@ public class TestrunIterationService {
         return new TestrunIterationDTO(testrunIteration, true);
     }
 
+    @Transactional
     public void deleteProjectTestrunIterationInfo(String spaceCode, long projectId, long testrunIterationId) {
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunIterationId(testrunIterationId);
         testrunUserRepository.deleteByTestrunIterationId(testrunIterationId);

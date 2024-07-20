@@ -9,10 +9,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface TestrunReservationRepository extends JpaRepository<TestrunReservation, Long> {
 
-    List<TestrunReservation> findAllByProjectSpaceCodeAndProjectIdAndExpiredOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId,
-        Boolean expired);
+    String TESTRUN_RESERVATION_LIST_PROJECTION = "SELECT new TestrunReservation(tr.id, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.expired, tr.deadlineClose, tr.autoTestcaseNotAssignedTester, tr.testcaseGroupCount, tr.testcaseCount, tr.testrun.id, tr.selectCreatedTestcase, tr.selectUpdatedTestcase) FROM TestrunReservation tr ";
 
-    @Query(value = "SELECT new TestrunReservation(tr.id, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.expired, tr.deadlineClose, tr.autoTestcaseNotAssignedTester, tr.testcaseGroupCount, tr.testcaseCount, tr.testrun.id, tr.selectCreatedTestcase, tr.selectUpdatedTestcase) FROM TestrunReservation tr WHERE tr.expired = false")
+    @Query(value = TESTRUN_RESERVATION_LIST_PROJECTION + " WHERE tr.project.id = :projectId AND tr.expired = :expired ORDER BY tr.startDateTime DESC, tr.id DESC")
+    List<TestrunReservation> findAllByProjectIdAndExpiredOrderByStartDateTimeDescIdDesc(Long projectId, Boolean expired);
+
+    @Query(value = TESTRUN_RESERVATION_LIST_PROJECTION + " WHERE tr.expired = false")
     List<TestrunReservation> findAllByExpiredFalse();
 
     @Modifying

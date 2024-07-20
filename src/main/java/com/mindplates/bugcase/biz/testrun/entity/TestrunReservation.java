@@ -56,14 +56,6 @@ public class TestrunReservation extends CommonEntity {
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<TestrunUser> testrunUsers;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<TestrunTestcaseGroup> testcaseGroups;
-
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
 
@@ -109,6 +101,14 @@ public class TestrunReservation extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunMessageChannel> messageChannels;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunUser> testrunUsers;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunTestcaseGroup> testcaseGroups;
 
     public TestrunReservation(Long id,
         String name,

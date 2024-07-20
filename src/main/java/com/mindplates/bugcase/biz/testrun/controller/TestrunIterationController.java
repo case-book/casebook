@@ -50,8 +50,8 @@ public class TestrunIterationController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        TestrunIterationDTO testrunIteration = testrunIterationRequest.buildEntity();
-        TestrunIterationDTO createdTestrunIteration = testrunIterationService.createTestrunIterationInfo(spaceCode, testrunIteration);
+        TestrunIterationDTO testrunIteration = testrunIterationRequest.toDTO();
+        TestrunIterationDTO createdTestrunIteration = testrunIterationService.createTestrunIterationInfo(testrunIteration);
 
         return new TestrunIterationListResponse(createdTestrunIteration);
     }
@@ -61,7 +61,7 @@ public class TestrunIterationController {
     @PutMapping("/{testrunId}")
     public ResponseEntity<HttpStatus> updateTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
         @Valid @RequestBody TestrunIterationRequest testrunIterationRequest) {
-        TestrunIterationDTO testrunIterationDTO = testrunIterationRequest.buildEntity();
+        TestrunIterationDTO testrunIterationDTO = testrunIterationRequest.toDTO();
 
         int testcaseCount = testrunIterationDTO.getTestcaseGroups().stream()
             .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
