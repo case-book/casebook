@@ -117,7 +117,6 @@ function ContentManager({
                 setIsEdit(false);
               });
             }}
-            releases={releases}
             onCancel={onCancel}
             getPopupContent={getPopupContent}
             onChangeTestcaseNameAndDescription={onChangeTestcaseNameAndDescription}
