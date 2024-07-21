@@ -27,6 +27,7 @@ public class TestcaseItemDTO extends CommonDTO implements IDTO<TestcaseItem> {
 
     public TestcaseItemDTO(TestcaseItem testcaseItem) {
         this.id = testcaseItem.getId();
+        /*
         this.testcaseTemplateItem = TestcaseTemplateItemDTO.builder()
             .id(testcaseItem.getTestcaseTemplateItem().getId())
             .category(testcaseItem.getTestcaseTemplateItem().getCategory())
@@ -46,6 +47,8 @@ public class TestcaseItemDTO extends CommonDTO implements IDTO<TestcaseItem> {
             .systemLabel(testcaseItem.getTestcaseTemplateItem().getSystemLabel())
             .deleted(testcaseItem.getTestcaseTemplateItem().isDeleted())
             .build();
+         */
+        this.testcaseTemplateItem = TestcaseTemplateItemDTO.builder().id(testcaseItem.getTestcaseTemplateItem().getId()).build();
         this.testcase = TestcaseDTO.builder().id(testcaseItem.getTestcase().getId()).build();
         this.type = testcaseItem.getType();
         this.value = testcaseItem.getValue();

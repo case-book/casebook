@@ -1,9 +1,11 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,30 +13,27 @@ import org.springframework.data.repository.query.Param;
 
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
-    Optional<Testrun> findAllByProjectIdAndId(Long projectId, Long testrunId);
+    String TESTRUN_LIST_PROJECTION = "SELECT new Testrun(tr.id, tr.seqId, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.opened, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount, tr.closedDate, tr.days, tr.excludeHoliday, tr.startTime, tr.durationHours, tr.reserveExpired, tr.reserveResultId, tr.deadlineClose, tr.autoTestcaseNotAssignedTester) FROM Testrun tr ";
 
     Optional<Testrun> findAllByProjectIdAndSeqId(Long projectId, String seqId);
 
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdOrderByEndDateTimeDescIdDesc(String spaceCode, Long projectId);
-
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened);
 
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedAndStartDateTimeAfterAndStartDateTimeBeforeOrProjectSpaceCodeAndProjectIdAndOpenedAndEndDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(
-        String spaceCode1, Long projectId1, boolean opened1, LocalDateTime start1, LocalDateTime end1, String spaceCode2, Long projectId2,
-        boolean opened2, LocalDateTime start2, LocalDateTime end2);
+    @Query(TESTRUN_LIST_PROJECTION
+        + " WHERE tr.project.id = :projectId AND tr.opened = :opened AND ((tr.startDateTime >= :start AND tr.startDateTime < :end) OR (tr.endDateTime >= :start AND tr.endDateTime < :end)) ORDER BY tr.startDateTime DESC, tr.id DESC")
+    List<Testrun> findProjectTestrunByOpenedAndRange(Long projectId, boolean opened, LocalDateTime start, LocalDateTime end);
 
-    List<Testrun> findTop3ByProjectSpaceCodeAndProjectIdAndOpenedOrderByEndDateTimeDesc(String spaceCode, Long projectId, boolean opened);
+    @Query(TESTRUN_LIST_PROJECTION + " WHERE tr.project.id = :projectId AND tr.opened = :opened ORDER BY tr.endDateTime DESC")
+    List<Testrun> findTopNProjectTestrunByOpened(Long projectId, boolean opened, Pageable pageable);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode,
         Long projectId, LocalDateTime start, LocalDateTime end);
 
-    Long countByProjectSpaceCodeAndProjectIdAndOpenedTrue(String spaceCode, Long projectId);
-
-    Long countByProjectSpaceIdAndProjectIdAndOpenedTrue(Long spaceId, Long projectId);
-
-
-    @Query(value = "SELECT new Testrun(tr.id, tr.seqId, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.opened, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount, tr.closedDate, tr.days, tr.excludeHoliday, tr.startTime, tr.durationHours, tr.reserveExpired, tr.reserveResultId, tr.deadlineClose, tr.autoTestcaseNotAssignedTester) FROM Testrun tr WHERE tr.deadlineClose = true AND tr.opened = true AND tr.endDateTime IS NOT NULL AND tr.endDateTime < :endDateTime")
+    @Query(value = TESTRUN_LIST_PROJECTION + " WHERE tr.deadlineClose = true AND tr.opened = true AND tr.endDateTime IS NOT NULL AND tr.endDateTime < :endDateTime")
     List<Testrun> findToBeClosedTestrunList(LocalDateTime endDateTime);
+
+    @Query(value = TESTRUN_LIST_PROJECTION + " WHERE tr.opened = true AND tr.endDateTime IS NOT NULL")
+    List<Testrun> findAllByOpenedTrueAndEndDateTimeNotNull();
 
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")
@@ -51,7 +50,15 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
         "                                                                                  AND t.project.id = :projectId ))) ")
     List<Long> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
 
-    List<Testrun> findAllByOpenedTrueAndEndDateTimeNotNull();
+
+
+
+    @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO(tr.id, tr.seqId, ttgt.id) FROM Testrun tr INNER JOIN TestrunTestcaseGroup ttg ON tr.id = ttg.testrun.id INNER JOIN TestrunTestcaseGroupTestcase ttgt ON ttg.id = ttgt.testrunTestcaseGroup.id WHERE ttgt.id = :testrunTestcaseGroupTestcaseId")
+    TestrunTestcaseGroupTestcaseIdTestrunIdDTO findTestrunTestcaseGroupTestcaseId(long testrunTestcaseGroupTestcaseId);
+
+    @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO(tr.id, tr.seqId, ttgt.id) FROM Testrun tr INNER JOIN TestrunTestcaseGroup ttg ON tr.id = ttg.testrun.id INNER JOIN TestrunTestcaseGroupTestcase ttgt ON ttg.id = ttgt.testrunTestcaseGroup.id WHERE ttgt.id IN (:testrunTestcaseGroupTestcaseIds)")
+    List<TestrunTestcaseGroupTestcaseIdTestrunIdDTO> findTestrunTestcaseGroupTestcaseIdsList(List<Long> testrunTestcaseGroupTestcaseIds);
+
 
 
     @Modifying

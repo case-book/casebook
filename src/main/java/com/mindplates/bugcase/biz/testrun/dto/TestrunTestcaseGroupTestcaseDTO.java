@@ -33,11 +33,18 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<T
     private UserDTO tester;
 
     public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase) {
+        this(testrunTestcaseGroupTestcase, null);
+    }
 
+    public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo) {
         this.id = testrunTestcaseGroupTestcase.getId();
         this.testrunTestcaseGroup = TestrunTestcaseGroupDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getId()).build();
 
-        if (testrunTestcaseGroupTestcase != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup() != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun() != null) {
+        if (testrunInfo != null) {
+            this.testrunTestcaseGroup.setTestrun(
+                TestrunDTO.builder().id(testrunInfo.getTestrunId()).seqId(testrunInfo.getSeqId()).build()
+            );
+        } else if (testrunTestcaseGroupTestcase.getTestrunTestcaseGroup() != null && testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun() != null) {
             this.testrunTestcaseGroup.setTestrun(TestrunDTO.builder().id(testrunTestcaseGroupTestcase.getTestrunTestcaseGroup().getTestrun().getId()).build());
         }
 
@@ -74,8 +81,8 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<T
         }
     }
 
-    public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, User createdUser, User lastUpdatedUser) {
-        this(testrunTestcaseGroupTestcase);
+    public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, UserDTO createdUser, UserDTO lastUpdatedUser, TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo) {
+        this(testrunTestcaseGroupTestcase, testrunInfo);
         if (createdUser != null) {
             this.testcase.setCreatedUserName(createdUser.getName());
         }

@@ -3,6 +3,9 @@ package com.mindplates.bugcase.biz.testrun.entity;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
@@ -75,32 +78,40 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_TESTCASE_GROUP_TESTCASE__USER"))
     private User tester;
 
+    public TestrunTestcaseGroupTestcase(long id, Long testerId, TestResultCode testResult) {
+        this.id = id;
+        if (testerId != null) {
+            this.tester = User.builder().id(testerId).build();
+        }
+        this.testResult = testResult;
+    }
 
-    public int assignTester(Project project, Testcase testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester) {
+
+    public int assignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
-        List<TestcaseItem> items = testcase.getTestcaseItems();
+        List<TestcaseItemDTO> items = testcase.getTestcaseItems();
         this.testResult = TestResultCode.UNTESTED;
         if (!testrunUsers.isEmpty()) {
             // 아이템 중에서 systemLabel이 AUTOMATION이 아이템 찾기
-            TestcaseItem automationItem =
+            TestcaseItemDTO automationItem =
                 items != null ? items.stream().filter(item -> item.getTestcaseTemplateItem().getSystemLabel() != null && "AUTOMATION".equals(item.getTestcaseTemplateItem().getSystemLabel()))
                     .findFirst().orElse(null) : null;
             boolean isAutomationItem = automationItem != null && "Y".equals(automationItem.getValue());
 
-            if (!(autoTestcaseNotAssignedTester && isAutomationItem)) {
+            if (!(autoTestcaseNotAssignedTester != null && autoTestcaseNotAssignedTester && isAutomationItem)) {
                 currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
             }
 
         }
         if (!CollectionUtils.isEmpty(items)) {
-            for (TestcaseItem testcaseItem : items) {
+            for (TestcaseItemDTO testcaseItem : items) {
                 if (testcaseItem.getValue() == null) {
                     continue;
                 }
-                TestcaseTemplateItem testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
+                TestcaseTemplateItemDTO testcaseTemplateItem = testcaseItem.getTestcaseTemplateItem();
                 if (TestcaseItemType.USER.equals(testcaseTemplateItem.getType())) {
                     TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem = TestrunTestcaseGroupTestcaseItem.builder()
-                        .testcaseTemplateItem(testcaseTemplateItem)
+                        .testcaseTemplateItem(testcaseTemplateItem.toEntity())
                         .testrunTestcaseGroupTestcase(this)
                         .type("value")
                         .build();
@@ -128,7 +139,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         return currentSeq;
     }
 
-    public int reAssignTester(Project project, Testcase testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
+    public int reAssignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         boolean removedUser = testrunUsers.stream()
             .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(this.tester != null ? this.tester.getId() : null));
@@ -142,7 +153,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         return currentSeq;
     }
 
-    private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, Testcase testcase,
+    private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, TestcaseDTO testcase,
         int currentSeq) {
         // 테스터 입력
         if ("tag".equals(testcase.getTesterType())) {

@@ -234,27 +234,31 @@ function TestrunExecutePage() {
 
     const testcaseGroup = testrun?.testcaseGroups.find(d => d.testcases?.find(testcase => testcase.id === testrunTestcaseGroupTestcaseId));
 
-    TestrunService.selectTestrunTestcaseGroupTestcase(
-      spaceCode,
-      projectId,
-      testrunId,
-      testcaseGroup.id,
-      testrunTestcaseGroupTestcaseId,
-      info => {
-        if (loading) {
-          setTimeout(() => {
-            setContentLoading(false);
-          }, 200);
-        }
+    if (testcaseGroup) {
+      TestrunService.selectTestrunTestcaseGroupTestcase(
+        spaceCode,
+        projectId,
+        testrunId,
+        testcaseGroup.id,
+        testrunTestcaseGroupTestcaseId,
+        info => {
+          if (loading) {
+            setTimeout(() => {
+              setContentLoading(false);
+            }, 200);
+          }
 
-        setContent(info);
-      },
-      () => {
-        if (loading) {
-          setContentLoading(false);
-        }
-      },
-    );
+          setContent(info);
+        },
+        () => {
+          if (loading) {
+            setContentLoading(false);
+          }
+        },
+      );
+    } else {
+      setContentLoading(false);
+    }
   };
 
   const getContent = (loading = true) => {

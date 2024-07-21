@@ -10,11 +10,13 @@ import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunListDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunProfileDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseUserTestResultDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunIterationService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunReservationService;
@@ -670,31 +672,30 @@ public class TestrunScheduler {
     @Scheduled(cron = "0 * * * * *")
     public void testrunNotificationScheduler() {
         LocalDateTime now = LocalDateTime.now();
-        List<TestrunDTO> testrunList = testrunService.selectOpenedTestrunList();
+        List<TestrunListDTO> testrunList = testrunService.selectOpenedTestrunList();
 
         // 절반이 수행된 테스트런 알림 발송
-        testrunList.forEach((testrunDTO -> {
+        testrunList.forEach((testrunListDTO -> {
 
-            LocalDateTime last30 = testrunDTO.getEndDateTime().minusMinutes(30);
-            LocalDateTime last60 = testrunDTO.getEndDateTime().minusMinutes(60);
+            LocalDateTime last30 = testrunListDTO.getEndDateTime().minusMinutes(30);
+            LocalDateTime last60 = testrunListDTO.getEndDateTime().minusMinutes(60);
             LocalDateTime halfTime = null;
-            if (testrunDTO.getStartDateTime() != null) {
-                long spanMinutes = ChronoUnit.MINUTES.between(testrunDTO.getStartDateTime(), testrunDTO.getEndDateTime());
-                halfTime = testrunDTO.getStartDateTime().plusMinutes(spanMinutes / 2);
+            if (testrunListDTO.getStartDateTime() != null) {
+                long spanMinutes = ChronoUnit.MINUTES.between(testrunListDTO.getStartDateTime(), testrunListDTO.getEndDateTime());
+                halfTime = testrunListDTO.getStartDateTime().plusMinutes(spanMinutes / 2);
             }
 
             if (isSameTimeUntilMinute(now, last30) || isSameTimeUntilMinute(now, last60) || isSameTimeUntilMinute(now, halfTime)) {
-                String spaceCode = testrunDTO.getProject().getSpace().getCode();
-                Long projectId = testrunDTO.getProject().getId();
+                Long projectId = testrunListDTO.getProject().getId();
+                String spaceCode = projectService.selectSpaceCode(projectId);
                 ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
+                List<TestrunMessageChannelDTO> testrunMessageChannelList = testrunService.selectTestrunMessageChannelList(testrunListDTO.getId());
 
-                if (testrunDTO.getMessageChannels() != null && !testrunDTO.getMessageChannels().isEmpty()) {
-
+                if (!testrunMessageChannelList.isEmpty()) {
                     Map<Long, Integer> userRemainCount = new HashMap<>();
-                    List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectUntestedTestrunTestcaseGroupTestcaseList(
-                        testrunDTO.getId());
-                    for (TestrunTestcaseGroupTestcaseDTO testrunTestcaseGroupTestcaseDTO : list) {
-                        Long testerId = testrunTestcaseGroupTestcaseDTO.getTester() != null ? testrunTestcaseGroupTestcaseDTO.getTester().getId() : null;
+                    List<TestrunTestcaseGroupTestcaseUserTestResultDTO> untestedTestcaseList = testrunService.selectUntestedTestrunTestcaseGroupTestcaseList(testrunListDTO.getId());
+                    for (TestrunTestcaseGroupTestcaseUserTestResultDTO userTestrunResult : untestedTestcaseList) {
+                        Long testerId = userTestrunResult.getTester() != null ? userTestrunResult.getTester().getId() : null;
                         if (userRemainCount.containsKey(testerId)) {
                             userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
                         } else {
@@ -704,16 +705,15 @@ public class TestrunScheduler {
 
                     String message;
                     if (isSameTimeUntilMinute(now, last30)) {
-                        message = messageSourceAccessor.getMessage("testrun.30m.left", new Object[]{testrunDTO.getName()});
+                        message = messageSourceAccessor.getMessage("testrun.30m.left", new Object[]{testrunListDTO.getName()});
                     } else if (isSameTimeUntilMinute(now, last60)) {
-                        message = messageSourceAccessor.getMessage("testrun.60m.left", new Object[]{testrunDTO.getName()});
+                        message = messageSourceAccessor.getMessage("testrun.60m.left", new Object[]{testrunListDTO.getName()});
                     } else {
-                        message = messageSourceAccessor.getMessage("testrun.half.time.left", new Object[]{testrunDTO.getName()});
+                        message = messageSourceAccessor.getMessage("testrun.half.time.left", new Object[]{testrunListDTO.getName()});
                     }
 
-                    testrunDTO.getMessageChannels().forEach(testrunMessageChannel -> {
-                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunDTO.getId(),
-                            testrunDTO.getName(), project.getUsers(), userRemainCount);
+                    testrunMessageChannelList.forEach(testrunMessageChannel -> {
+                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunListDTO.getId(), testrunListDTO.getName(), project.getUsers(), userRemainCount);
                     });
                 }
 

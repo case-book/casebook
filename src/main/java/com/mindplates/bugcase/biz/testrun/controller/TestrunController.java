@@ -10,6 +10,7 @@ import com.mindplates.bugcase.biz.space.service.SpaceVariableService;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunListDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
@@ -119,23 +120,27 @@ public class TestrunController {
 
     @Operation(description = "종료된 테스트런 목록 조회")
     @GetMapping("/closed")
-    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
-        @RequestParam(value = "end") LocalDateTime end) {
-        return testrunService.selectClosedProjectTestrunList(spaceCode, projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    public List<TestrunListResponse> selectClosedTestrunList(
+        @PathVariable String spaceCode,
+        @PathVariable long projectId,
+        @RequestParam(value = "start") LocalDateTime start,
+        @RequestParam(value = "end") LocalDateTime end
+    ) {
+        return testrunService.selectClosedProjectTestrunList(projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "최근 종료된 TOP 3 테스트런 목록 조회")
     @GetMapping("/closed/latest")
     public List<TestrunListResponse> selectLatestClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
-        return testrunService.selectLatestClosedProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
+        return testrunService.selectLatestClosedTop3ProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
 
     @Operation(description = "테스트런 변경")
     @PutMapping("/{testrunId}")
     public TestrunListResponse updateTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @Valid @RequestBody TestrunUpdateRequest testrunRequest) {
-        TestrunDTO testrun = testrunRequest.toDTO();
-        return new TestrunListResponse(testrunService.updateTestrunInfo(spaceCode, testrun));
+        TestrunListDTO testrun = testrunService.updateTestrunInfo(spaceCode, testrunRequest.toDTO());
+        return new TestrunListResponse(testrun);
     }
 
 
@@ -179,61 +184,23 @@ public class TestrunController {
 
     @Operation(description = "테스트런 테스트케이스 상세 조회")
     @GetMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId,
-        @PathVariable long testrunTestcaseGroupTestcaseId) {
-
-        TestrunDTO testrunDTO = testrunService.selectProjectTestrunInfo(testrunId);
-        HashMap<String, String> variables = new HashMap<>();
-        List<SpaceVariableDTO> spaceVariables = spaceVariableService.selectSpaceVariableList(spaceCode);
-        List<SpaceProfileVariableDTO> spaceProfileVariables = spaceProfileVariableService.selectSpaceProfileVariableList(spaceCode);
-
-        spaceVariables.forEach(spaceVariable -> {
-
-            testrunDTO.getProfiles().forEach(profile -> {
-
-                Optional<SpaceProfileVariableDTO> spaceProfileVariableDTO = spaceProfileVariables
-                    .stream()
-                    .filter((spaceProfileVariable) ->
-                        spaceProfileVariable.getSpaceVariable().getId().equals(spaceVariable.getId())
-                            && spaceProfileVariable.getSpaceProfile().getId().equals(profile.getProfile().getId())
-                    ).findFirst();
-
-                if (spaceProfileVariableDTO.isPresent() && spaceProfileVariableDTO.get().getValue() != null) {
-                    variables.put(spaceVariable.getName(), spaceProfileVariableDTO.get().getValue());
-                }
-            });
-        });
-
-        TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(testrunTestcaseGroupTestcaseId);
-
-        if (testcase.getTestcase().getName() != null && testcase.getTestcase().getName().contains("{{")) {
-            variables.forEach((key, value) -> {
-                testcase.getTestcase().setName(testcase.getTestcase().getName().replace("{{" + key + "}}", value));
-            });
-        }
-
-        if (testcase.getTestcase().getDescription() != null && testcase.getTestcase().getDescription().contains("{{")) {
-            variables.forEach((key, value) -> {
-                testcase.getTestcase().setDescription(testcase.getTestcase().getDescription().replace("{{" + key + "}}", value));
-            });
-        }
-
-        testcase.getTestcase().getTestcaseItems().forEach(testcaseItem -> {
-            if (testcaseItem.getValue() != null && testcaseItem.getValue().contains("{{")) {
-                variables.forEach((key, value) -> {
-                    testcaseItem.setValue(testcaseItem.getValue().replace("{{" + key + "}}", value));
-                });
-            }
-
-            if (testcaseItem.getText() != null && testcaseItem.getText().contains("{{")) {
-                variables.forEach((key, value) -> {
-                    testcaseItem.setText(testcaseItem.getText().replace("{{" + key + "}}", value));
-                });
-            }
-        });
-
+    public TestrunTestcaseGroupTestcaseResponse selectTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupId, @PathVariable long testrunTestcaseGroupTestcaseId) {
+        TestrunTestcaseGroupTestcaseDTO testcase = testrunService.selectTestrunTestcaseGroupTestcaseInfo(spaceCode, testrunId, testrunTestcaseGroupTestcaseId);
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Operation(description = "테스트런 결과 아이템 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")

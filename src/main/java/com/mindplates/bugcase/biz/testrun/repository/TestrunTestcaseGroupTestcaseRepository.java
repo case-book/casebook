@@ -46,7 +46,8 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     Optional<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
         Long projectId, Long testrunId, String seqId);
 
-    List<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunIdAndAndTestResult(Long testrunId, TestResultCode testResultCode);
+    @Query("SELECT new TestrunTestcaseGroupTestcase(ttgt.id, ttgt.tester.id, ttgt.testResult) FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testResult = :testResultCode AND ttgt.testrunTestcaseGroup IN (SELECT ttg.id FROM TestrunTestcaseGroup ttg WHERE ttg.testrun.id = :testrunId)")
+    List<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunIdAndTestResult(Long testrunId, TestResultCode testResultCode);
 
     List<TestrunTestcaseGroupTestcase> findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(Long projectId, Long testcaseId, Long currentTestrunId,
         Pageable Pageable);

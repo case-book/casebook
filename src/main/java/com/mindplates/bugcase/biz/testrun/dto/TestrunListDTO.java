@@ -1,24 +1,26 @@
-package com.mindplates.bugcase.biz.testrun.vo.response;
+package com.mindplates.bugcase.biz.testrun.dto;
 
-import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunListDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
+import com.mindplates.bugcase.common.dto.CommonDTO;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestrunListResponse {
+@Data
+public class TestrunListDTO extends CommonDTO {
 
     private Long id;
     private String seqId;
     private String name;
     private String description;
+    private ProjectDTO project;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private boolean opened;
@@ -36,7 +38,7 @@ public class TestrunListResponse {
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
 
-    public TestrunListResponse(TestrunDTO testrun) {
+    public TestrunListDTO(Testrun testrun) {
         this.id = testrun.getId();
         this.seqId = testrun.getSeqId();
         this.name = testrun.getName();
@@ -49,29 +51,9 @@ public class TestrunListResponse {
         this.failedTestcaseCount = testrun.getFailedTestcaseCount();
         this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
         this.closedDate = testrun.getClosedDate();
-        this.days = testrun.getDays();
-        this.excludeHoliday = testrun.getExcludeHoliday();
-        this.startTime = testrun.getStartTime();
-        this.durationHours = testrun.getDurationHours();
-        this.reserveExpired = testrun.getReserveExpired();
-        this.reserveResultId = testrun.getReserveResultId();
-        this.deadlineClose = testrun.getDeadlineClose();
-        this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
-    }
-
-    public TestrunListResponse(TestrunListDTO testrun) {
-        this.id = testrun.getId();
-        this.seqId = testrun.getSeqId();
-        this.name = testrun.getName();
-        this.description = testrun.getDescription();
-        this.startDateTime = testrun.getStartDateTime();
-        this.endDateTime = testrun.getEndDateTime();
-        this.opened = testrun.isOpened();
-        this.totalTestcaseCount = testrun.getTotalTestcaseCount();
-        this.passedTestcaseCount = testrun.getPassedTestcaseCount();
-        this.failedTestcaseCount = testrun.getFailedTestcaseCount();
-        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
-        this.closedDate = testrun.getClosedDate();
+        if (testrun.getProject() != null) {
+            this.project = ProjectDTO.builder().id(testrun.getProject().getId()).build();
+        }
         this.days = testrun.getDays();
         this.excludeHoliday = testrun.getExcludeHoliday();
         this.startTime = testrun.getStartTime();

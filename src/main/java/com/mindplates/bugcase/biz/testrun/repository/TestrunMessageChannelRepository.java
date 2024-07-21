@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
 import com.mindplates.bugcase.biz.testrun.entity.TestrunMessageChannel;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,5 +21,7 @@ public interface TestrunMessageChannelRepository extends JpaRepository<TestrunMe
     @Modifying
     @Query("DELETE FROM TestrunMessageChannel tmc WHERE tmc.messageChannel.id IN (SELECT pmc.id FROM ProjectMessageChannel pmc WHERE pmc.project.id = :projectId)")
     void deleteByProjectId(@Param("projectId") Long projectId);
+
+    List<TestrunMessageChannel> findAllByTestrunId(long testrunId);
 }
 
