@@ -287,6 +287,7 @@ function TestcaseNavigator({
     <div className={`testcase-groups-wrapper g-no-select ${min ? 'min' : ''}`} ref={ref}>
       <TestcaseNavigatorControl
         min={min}
+        width={width}
         user={user}
         users={users}
         userFilter={userFilter}

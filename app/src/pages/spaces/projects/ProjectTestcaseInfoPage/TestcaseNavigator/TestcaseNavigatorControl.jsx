@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Button, Liner, Selector, Input, Label, Tag } from '@/components';
+import { Button, Liner, Selector, Input, Label, Tag, Title } from '@/components';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ReleaseService from '@/services/ReleaseService';
@@ -74,6 +74,8 @@ function TestcaseNavigatorControl({
   }, [projectReleases]);
 
   const projectReleaseMap = useMemo(() => new Map(projectReleases.map(release => [release.id, release.name])), [projectReleases]);
+
+  const isFiltered = useMemo(() => testcaseFilter.ids.length > 0 || testcaseFilter.name || testcaseFilter.releaseIds.length > 0, [testcaseFilter]);
 
   const onAddFilterIds = () => {
     if (!filterIdsInput || !/^\d+(?:\s*-\s*\d+)?$/.test(filterIdsInput)) {
@@ -238,7 +240,39 @@ function TestcaseNavigatorControl({
         )}
       </div>
       <div className="testcase-filter-group">
-        <div className="always-show-filter">
+        <Title
+          border={false}
+          paddingBottom={false}
+          marginBottom={false}
+          icon={false}
+          type="h3"
+          control={
+            <div className="testcase-filter-title-control">
+              <Button
+                size="xs"
+                rounded
+                onClick={() => {
+                  onChangeTestcaseFilter({ name: '', ids: [], releaseIds: [] });
+                  setFilterIdTags([]);
+                  filterNameInputRef.current.value = '';
+                }}
+                tip={t('필터 리셋')}
+                color={isFiltered ? 'primary' : 'white'}
+                disabled={!isFiltered}
+              >
+                <i className={`fa-solid ${isFiltered ? 'fa-filter-circle-xmark' : 'fa-filter'}`} />
+              </Button>
+              <Button size="xs" rounded tip={t('필터 확장/축소')} onClick={() => setIsFilterFolded(prev => !prev)}>
+                <i className={`fa-solid fa-${isFilterFolded ? 'chevron-down' : 'chevron-up'}`} />
+              </Button>
+            </div>
+          }
+        >
+          {t('테스트케이스 필터')}
+        </Title>
+
+        <div className="filter-input-group">
+          <Label minWidth="70px">{t('이름')}</Label>
           <Input
             onRef={node => {
               filterNameInputRef.current = node;
@@ -250,21 +284,6 @@ function TestcaseNavigatorControl({
               onChangeTestcaseFilter({ ...testcaseFilter, name: value });
             }}
           />
-          <Button
-            size="xs"
-            rounded
-            tip={t('필터 리셋')}
-            onClick={() => {
-              onChangeTestcaseFilter({ name: '', ids: [], releaseIds: [] });
-              setFilterIdTags([]);
-              filterNameInputRef.current.value = '';
-            }}
-          >
-            <i className="fa-solid fa-rotate-left" />
-          </Button>
-          <Button size="xs" rounded tip={t('필터 확장/축소')} onClick={() => setIsFilterFolded(prev => !prev)}>
-            <i className={`fa-solid fa-${isFilterFolded ? 'chevron-down' : 'chevron-up'}`} />
-          </Button>
         </div>
         {!isFilterFolded && (
           <div className="foldable-filter">

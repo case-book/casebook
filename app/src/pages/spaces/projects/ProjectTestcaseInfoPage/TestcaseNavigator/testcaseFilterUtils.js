@@ -64,11 +64,11 @@ class TestcaseRenderStore {
       this.setRenderedBySeqId(group.seqId, true);
       return true;
     }
-
-    if (name && !group.name.includes(name)) {
-      this.setRenderedBySeqId(group.seqId, false);
-      return false;
+    if (name && group.name.includes(name)) {
+      this.setRenderedBySeqId(group.seqId, true);
+      return true;
     }
+
     if (!isTestcaseRendered) {
       this.setRenderedBySeqId(group.seqId, false);
       return false;
