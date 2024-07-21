@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { intersection } from 'lodash';
 import { action, makeObservable, observable } from 'mobx';
 
+const MAX_ID_RANGE_END = 2000;
+
 class TestcaseRenderStore {
   renderMap = {};
 
@@ -81,6 +83,7 @@ class TestcaseRenderStore {
 
 const testcaseRenderStore = new TestcaseRenderStore();
 
+// TestcaseRenderStore를 초기화하고, testcaseFilter를 관리하는 훅
 function useTestcaseFilter(groups) {
   const [testcaseFilter, setTestcaseFilter] = useState({
     ids: [],
@@ -95,6 +98,7 @@ function useTestcaseFilter(groups) {
   return { testcaseFilter, setTestcaseFilter };
 }
 
+// TestcaseRenderStore를 사용해서, 각 테스트케이스를 렌더링 해야할지 판단하는 함수를 반환하는 훅
 function useShouldRender(testcaseOrGroup, testcaseFilter) {
   const { checkRenderGroup, checkRenderTestcase } = testcaseRenderStore;
 
@@ -106,4 +110,33 @@ function useShouldRender(testcaseOrGroup, testcaseFilter) {
   return shouldRender;
 }
 
-export { useTestcaseFilter, useShouldRender };
+const getFilterIdsFromIdStrings = idStrings => {
+  let isParsedRangeValid = true;
+  const parsedIds = idStrings.map(idString => {
+    const [[rangeStartString], [rangeEndString] = []] = idString.matchAll(/(\d+)/g);
+    const rangeStart = Number(rangeStartString);
+    const rangeEnd = rangeEndString ? Number(rangeEndString) : null;
+    if (rangeStart > MAX_ID_RANGE_END || rangeStart < 1) {
+      isParsedRangeValid = false;
+    }
+    if (rangeEnd && (rangeEnd > MAX_ID_RANGE_END || rangeStart >= rangeEnd || rangeEnd < 1)) {
+      isParsedRangeValid = false;
+    }
+    return [rangeStart, rangeEnd];
+  });
+
+  if (!isParsedRangeValid) return null;
+
+  const idSet = parsedIds.reduce((set, [rangeStart, rangeEnd]) => {
+    if (!rangeEnd) {
+      set.add(rangeStart);
+      return set;
+    }
+    Array.from({ length: rangeEnd - rangeStart + 1 }, (_, i) => rangeStart + i).forEach(i => set.add(i));
+    return set;
+  }, new Set());
+
+  return [...idSet];
+};
+
+export { useTestcaseFilter, useShouldRender, getFilterIdsFromIdStrings, MAX_ID_RANGE_END };
