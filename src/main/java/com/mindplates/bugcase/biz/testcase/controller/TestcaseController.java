@@ -28,6 +28,7 @@ import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseNameResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestrunTestcaseGroupTestcaseResultResponse;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
@@ -223,7 +224,7 @@ public class TestcaseController {
     @GetMapping("/{testcaseId}/testrun/result/history")
     public List<TestrunTestcaseGroupTestcaseResultResponse> selectTestcaseTestrunHistory(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId,
         @RequestParam(required = false) Integer pageNo, @RequestParam(required = false) Long currentTestrunId) {
-        List<TestrunTestcaseGroupTestcaseDTO> list = testrunService.selectTestcaseTestrunResultHistory(spaceCode, projectId, testcaseId, currentTestrunId, pageNo);
+        List<TestrunTestcaseGroupTestcaseHistoryDTO> list = testrunService.selectTestcaseTestrunResultHistory(spaceCode, projectId, testcaseId, currentTestrunId, pageNo);
         return list.stream().map(TestrunTestcaseGroupTestcaseResultResponse::new).collect(Collectors.toList());
     }
 

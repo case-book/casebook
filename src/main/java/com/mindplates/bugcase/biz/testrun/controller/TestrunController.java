@@ -72,15 +72,9 @@ public class TestrunController {
 
     private final TestrunService testrunService;
 
-    private final TestrunCommentService testrunCommentService;
-
     private final ProjectFileService projectFileService;
 
     private final MessageSendService messageSendService;
-
-    private final SpaceVariableService spaceVariableService;
-
-    private final SpaceProfileVariableService spaceProfileVariableService;
 
     private final HttpRequestUtil httpRequestUtil;
 
@@ -300,30 +294,6 @@ public class TestrunController {
 
         ProjectFileDTO result = projectFileService.createProjectFile(projectFile);
         return new ProjectFileResponse(result, spaceCode, projectId);
-    }
-
-    @Operation(description = "테스트런 코멘트 입력")
-    @PostMapping("/{testrunId}/comments")
-    public TestrunCommentResponse createTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @Valid @RequestBody TestrunCommentRequest testrunCommentRequest) {
-        Long userId = SessionUtil.getUserId(true);
-        TestrunCommentDTO result = testrunCommentService.createTestrunComment(projectId, testrunId, userId, testrunCommentRequest.toDTO());
-        return new TestrunCommentResponse(result);
-    }
-
-    @Operation(description = "테스트런 코멘트 목록 조회")
-    @GetMapping("/{testrunId}/comments")
-    public List<TestrunCommentResponse> selectTestrunCommentList(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId) {
-        List<TestrunCommentDTO> testrunCommentList = testrunCommentService.selectTestrunCommentList(projectId, testrunId);
-        return testrunCommentList.stream().map(TestrunCommentResponse::new).collect(Collectors.toList());
-    }
-
-    @Operation(description = "테스트런 코멘트 삭제")
-    @DeleteMapping("/{testrunId}/comments/{commentId}")
-    public ResponseEntity<HttpStatus> deleteTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long commentId) {
-        long userId = SessionUtil.getUserId(true);
-        testrunCommentService.deleteTestrunCommentInfo(projectId, testrunId, commentId, userId);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 훅 실행")

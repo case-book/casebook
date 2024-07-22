@@ -64,7 +64,7 @@ public class ResourceVoter extends WebExpressionVoter {
             HttpServletRequest request = fi.getRequest();
 
             Method methodInfo = methodFinder.findMethod(fi);
-            AllowProjectRole allowProjectRoleAnnotation = methodInfo.getAnnotation(AllowProjectRole.class);
+            AllowProjectRole allowProjectRoleAnnotation = methodInfo != null ? methodInfo.getAnnotation(AllowProjectRole.class) : null;
 
             boolean allPass = allPassPatterns.stream().anyMatch((pattern) -> pattern.matcher(request.getRequestURI()).matches());
             if (allPass) {
@@ -143,7 +143,7 @@ public class ResourceVoter extends WebExpressionVoter {
                         }
 
                         // 어노테이션에 USER가 허용된 경우, 프로젝트 멤버인 경우 허용
-                        if (allowProjectRoleAnnotation.value().equals(UserRoleCode.USER)) {
+                        if (allowProjectRoleAnnotation != null && allowProjectRoleAnnotation.value().equals(UserRoleCode.USER)) {
                             if (projectService.selectIsProjectMember(projectId, userId)) {
                                 return ACCESS_GRANTED;
                             }

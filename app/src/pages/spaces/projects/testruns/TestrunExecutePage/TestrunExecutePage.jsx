@@ -134,8 +134,6 @@ function TestrunExecutePage() {
         return;
       }
 
-      join();
-
       setTestrun(info);
 
       if (!info.opened) {
@@ -186,6 +184,7 @@ function TestrunExecutePage() {
       return;
     }
     getTestrunInfo();
+    join();
   }, [project, testrunId]);
 
   useEffect(() => {
@@ -263,6 +262,7 @@ function TestrunExecutePage() {
 
   const getContent = (loading = true) => {
     if (type === ITEM_TYPE.TESTCASE) {
+      console.log(3);
       getTestcase(Number(id), loading);
       watch(id);
     } else {
@@ -284,7 +284,7 @@ function TestrunExecutePage() {
     } else {
       setContent(null);
     }
-  }, [testrun, id]);
+  }, [testrun.id, id]);
 
   const onClosed = () => {
     dialogUtil.setConfirm(
@@ -355,24 +355,6 @@ function TestrunExecutePage() {
     return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, pType, file);
   };
 
-  /*
-  const onSaveTestResultItems = nextContent => {
-    TestrunService.updateTestrunResultItems(
-      spaceCode,
-      projectId,
-      testrunId,
-      nextContent?.testrunTestcaseGroupId || content.testrunTestcaseGroupId,
-      nextContent.id || content.id,
-      {
-        testrunTestcaseGroupTestcaseItemRequests: nextContent ? nextContent.testrunTestcaseItems : content.testrunTestcaseItems,
-      },
-      () => {
-        getTestrunInfo();
-      },
-    );
-  };
-   */
-
   const onSaveTestResultItem = target => {
     TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, () => {
       // getTestrunInfo();
@@ -386,8 +368,6 @@ function TestrunExecutePage() {
         dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('테스트 완료'), t('모든 테스트케이스의 결과가 입력되었습니다. 테스트런 리포트 화면으로 이동합니다.'), () => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/reports/${testrunId}`);
         });
-      } else {
-        getTestrunInfo();
       }
     });
   };

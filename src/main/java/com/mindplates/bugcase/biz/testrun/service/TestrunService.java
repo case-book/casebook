@@ -33,6 +33,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseUserTestResultDTO;
@@ -374,7 +375,6 @@ public class TestrunService {
 
     public TestrunTestcaseGroupTestcaseDTO selectTestrunTestcaseGroupTestcaseInfo(String spaceCode, long testrunId, long testrunTestcaseGroupTestcaseId) {
 
-
         List<TestrunProfile> testrunProfiles = testrunProfileRepository.findByTestrunId(testrunId);
         HashMap<String, String> variables = new HashMap<>();
         List<SpaceVariableDTO> spaceVariables = spaceVariableService.selectSpaceVariableList(spaceCode);
@@ -414,7 +414,6 @@ public class TestrunService {
             }
         }
 
-
         if (testcase.getName() != null && testcase.getName().contains("{{")) {
             variables.forEach((key, value) -> {
                 testcase.setName(testcase.getName().replace("{{" + key + "}}", value));
@@ -444,6 +443,20 @@ public class TestrunService {
         TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo =  testrunRepository.findTestrunTestcaseGroupTestcaseId(testrunTestcaseGroupTestcase.getId());
 
         return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase, createdUser, lastUpdatedUser, testrunInfo);
+    }
+
+    public List<TestrunTestcaseGroupTestcaseHistoryDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId, Long currentTestrunId, Integer pageNo) {
+        Pageable pageInfo = PageRequest.of(Optional.ofNullable(pageNo).orElse(0), 10);
+        List<TestrunTestcaseGroupTestcaseHistoryDTO> testrunTestcaseGroupTestcaseHistoryList = testrunTestcaseGroupTestcaseRepository.selectTopNTestrunTestcaseGroupTestcaseHistoryList(testcaseId, currentTestrunId, pageInfo);
+        List<TestrunTestcaseGroupTestcaseIdTestrunIdDTO> testrunTestcaseGroupTestcaseIdsList = testrunRepository.findTestrunTestcaseGroupTestcaseIdsList(testrunTestcaseGroupTestcaseHistoryList.stream().map(TestrunTestcaseGroupTestcaseHistoryDTO::getId).collect(Collectors.toList()));
+
+        testrunTestcaseGroupTestcaseHistoryList.forEach(testcaseGroupTestcaseHistory -> {
+            testrunTestcaseGroupTestcaseIdsList.stream()
+                .filter(testrunTestcaseGroupTestcaseIdTestrunIdDTO -> testrunTestcaseGroupTestcaseIdTestrunIdDTO.getTestrunTestcaseGroupTestcaseId().equals(testcaseGroupTestcaseHistory.getId()))
+                .findAny().ifPresent(testrunInfo -> testcaseGroupTestcaseHistory.setTestrunSeqId(testrunInfo.getSeqId()));
+        });
+
+        return testrunTestcaseGroupTestcaseHistoryList;
     }
 
 
@@ -817,20 +830,7 @@ public class TestrunService {
 
 
 
-    public List<TestrunTestcaseGroupTestcaseDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId, Long currentTestrunId, Integer pageNo) {
-        Pageable pageInfo = PageRequest.of(Optional.ofNullable(pageNo).orElse(0), 10);
-        List<TestrunTestcaseGroupTestcase> list = testrunTestcaseGroupTestcaseRepository.findAllByTestcaseProjectIdAndTestcaseIdAndTestrunTestcaseGroupTestrunIdNotOrderByCreationDateDesc(projectId,
-            testcaseId, currentTestrunId, pageInfo);
 
-        List<TestrunTestcaseGroupTestcaseIdTestrunIdDTO> testrunTestcaseGroupTestcaseIdsList = testrunRepository.findTestrunTestcaseGroupTestcaseIdsList(list.stream().map(TestrunTestcaseGroupTestcase::getId).collect(Collectors.toList()));
-
-        return list.stream().map(testrunTestcaseGroupTestcase -> {
-            TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo = testrunTestcaseGroupTestcaseIdsList.stream()
-                .filter(testrunTestcaseGroupTestcaseIdTestrunIdDTO -> testrunTestcaseGroupTestcaseIdTestrunIdDTO.getTestrunTestcaseGroupTestcaseId().equals(testrunTestcaseGroupTestcase.getId()))
-                .findAny().orElse(null);
-            return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase, testrunInfo);
-        }).collect(Collectors.toList());
-    }
 
     @Transactional
     public TestrunHookDTO updateTestrunHook(TestrunHookDTO testrunHook) {
