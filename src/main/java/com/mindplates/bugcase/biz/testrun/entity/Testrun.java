@@ -311,13 +311,13 @@ public class Testrun extends CommonEntity {
             });
     }
 
-    public void updateResult(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, TestResultCode testResultCode) {
-        if (!Objects.isNull(testrunTestcaseGroupTestcase.getTestResult())) {
-            if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
+    public void updateTestSummaryCount(TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase, TestResultCode testResultCode) {
+        if (!Objects.isNull(targetTestrunTestcaseGroupTestcase.getTestResult())) {
+            if (targetTestrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
                 this.passedTestcaseCount = this.passedTestcaseCount - 1;
-            } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
+            } else if (targetTestrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)) {
                 this.failedTestcaseCount = this.failedTestcaseCount - 1;
-            } else if (testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.UNTESTABLE)) {
+            } else if (targetTestrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.UNTESTABLE)) {
                 this.untestableTestcaseCount = this.untestableTestcaseCount - 1;
             }
         }

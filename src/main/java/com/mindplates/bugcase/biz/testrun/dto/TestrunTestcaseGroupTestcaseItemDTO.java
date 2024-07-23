@@ -27,7 +27,7 @@ public class TestrunTestcaseGroupTestcaseItemDTO extends CommonDTO implements ID
 
     public TestrunTestcaseGroupTestcaseItemDTO(TestrunTestcaseGroupTestcaseItem testrunTestcaseGroupTestcaseItem) {
         this.id = testrunTestcaseGroupTestcaseItem.getId();
-        this.testcaseTemplateItem = new TestcaseTemplateItemDTO(testrunTestcaseGroupTestcaseItem.getTestcaseTemplateItem());
+        this.testcaseTemplateItem = TestcaseTemplateItemDTO.builder().id(testrunTestcaseGroupTestcaseItem.getTestcaseTemplateItem().getId()).build();
         this.testrunTestcaseGroupTestcase = TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseItem.getTestrunTestcaseGroupTestcase().getId()).build();
         this.type = testrunTestcaseGroupTestcaseItem.getType();
         this.value = testrunTestcaseGroupTestcaseItem.getValue();

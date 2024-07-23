@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
+import com.mindplates.bugcase.biz.testrun.dto.TestrunCountSummaryDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import java.time.LocalDateTime;
@@ -16,6 +17,9 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     String TESTRUN_LIST_PROJECTION = "SELECT new Testrun(tr.id, tr.seqId, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.opened, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount, tr.closedDate, tr.days, tr.excludeHoliday, tr.startTime, tr.durationHours, tr.reserveExpired, tr.reserveResultId, tr.deadlineClose, tr.autoTestcaseNotAssignedTester) FROM Testrun tr ";
 
     Optional<Testrun> findAllByProjectIdAndSeqId(Long projectId, String seqId);
+
+    @Query("SELECT tr.id FROM Testrun tr WHERE tr.project.id = :projectId AND tr.seqId = :seqId")
+    Optional<Long> findTestrunIdByProjectIdAndSeqId(Long projectId, String seqId);
 
     List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(String spaceCode, Long projectId, boolean opened);
 
@@ -35,6 +39,9 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     @Query(value = TESTRUN_LIST_PROJECTION + " WHERE tr.opened = true AND tr.endDateTime IS NOT NULL")
     List<Testrun> findAllByOpenedTrueAndEndDateTimeNotNull();
 
+    @Query(value = "SELECT tr.opened FROM Testrun tr WHERE tr.id = :testrunId")
+    boolean findOpenedById(Long testrunId);
+
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.id = :testrunId")
     void deleteById(@Param("testrunId") Long testrunId);
@@ -51,8 +58,6 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     List<Long> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
 
 
-
-
     @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO(tr.id, tr.seqId, ttgt.id) FROM Testrun tr INNER JOIN TestrunTestcaseGroup ttg ON tr.id = ttg.testrun.id INNER JOIN TestrunTestcaseGroupTestcase ttgt ON ttg.id = ttgt.testrunTestcaseGroup.id WHERE ttgt.id = :testrunTestcaseGroupTestcaseId")
     TestrunTestcaseGroupTestcaseIdTestrunIdDTO findTestrunTestcaseGroupTestcaseId(long testrunTestcaseGroupTestcaseId);
 
@@ -60,9 +65,19 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     List<TestrunTestcaseGroupTestcaseIdTestrunIdDTO> findTestrunTestcaseGroupTestcaseIdsList(List<Long> testrunTestcaseGroupTestcaseIds);
 
 
-
     @Modifying
     @Query("DELETE FROM Testrun tr WHERE tr.project.id = :projectId")
     void deleteByProjectId(@Param("projectId") Long projectId);
+
+    @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunCountSummaryDTO(tr.id, tr.seqId, tr.name, tr.project.id, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount) FROM Testrun tr WHERE tr.id = :testrunId")
+    TestrunCountSummaryDTO findTestrunCountSummary(long testrunId);
+
+    @Modifying
+    @Query("UPDATE Testrun tr SET tr.opened = :opened WHERE tr.id = :testrunId")
+    void updateTestrunOpened(@Param("testrunId") long testrunId, @Param("opened") boolean opened);
+
+    @Modifying
+    @Query("UPDATE Testrun tr SET tr.passedTestcaseCount = :passedTestcaseCount, tr.failedTestcaseCount = :failedTestcaseCount, tr.untestableTestcaseCount = :untestableTestcaseCount WHERE tr.id = :testrunId")
+    void updateTestrunCountSummary(@Param("testrunId") long testrunId, @Param("passedTestcaseCount") int passedTestcaseCount, @Param("failedTestcaseCount") int failedTestcaseCount, @Param("untestableTestcaseCount") int untestableTestcaseCount);
 }
 

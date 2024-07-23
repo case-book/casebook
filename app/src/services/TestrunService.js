@@ -378,22 +378,6 @@ TestrunService.updateTestrunStatusOpened = (spaceCode, projectId, testrunId, suc
   );
 };
 
-TestrunService.updateTestrunResultItems = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testrunResult, successHandler, failHandler, loading = true) => {
-  return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}`,
-    testrunResult,
-    res => {
-      if (successHandler) {
-        successHandler(res);
-      }
-    },
-    failHandler,
-    null,
-    null,
-    loading,
-  );
-};
-
 TestrunService.updateTestrunResultItem = (spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testcaseTemplateItemId, testrunItem, successHandler, failHandler, loading = false) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/testcases/${testrunTestcaseGroupTestcaseId}/items/${testcaseTemplateItemId}`,

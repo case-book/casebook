@@ -183,34 +183,9 @@ public class TestrunController {
         return new TestrunTestcaseGroupTestcaseResponse(testcase);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Operation(description = "테스트런 결과 아이템 입력")
-    @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}")
-    public List<TestrunTestcaseGroupTestcaseItemResponse> updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @Valid @RequestBody TestrunResultItemsRequest testrunResultItemsRequest) {
-        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItems = testrunResultItemsRequest.toDTO();
-        List<TestrunTestcaseGroupTestcaseItemDTO> testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItems(spaceCode, projectId,
-            testrunTestcaseGroupTestcaseItems);
-        return testrunTestcaseGroupTestcaseItemList.stream().map(TestrunTestcaseGroupTestcaseItemResponse::new).collect(Collectors.toList());
-    }
-
     @Operation(description = "테스트런 결과 아이템 입력 (단건)")
     @PutMapping("/{testrunId}/testcases/{testrunTestcaseGroupTestcaseId}/items/{testcaseTemplateItemId}")
-    public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @PathVariable long testcaseTemplateItemId,
-        @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
+    public TestrunTestcaseGroupTestcaseItemResponse updateTestrunResultItems(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testcaseTemplateItemId, @Valid @RequestBody TestrunTestcaseGroupTestcaseItemRequest testrunTestcaseGroupTestcaseItemRequest) {
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItems = testrunTestcaseGroupTestcaseItemRequest.toDTO();
         TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItemList = testrunService.updateTestrunTestcaseGroupTestcaseItem(spaceCode, projectId, testrunId,
             testrunTestcaseGroupTestcaseItems);
@@ -219,22 +194,29 @@ public class TestrunController {
 
     @Operation(description = "테스트런 결과 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
-    public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId,
-        @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
-        TestrunStatusDTO testrunStatusDTO = testrunService.updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
-
-        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
-        participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);
-        participantData.addData("testResult", testrunResultRequest.getTestResult());
-        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
-
-        MessageData testrunResultChangeData = MessageData.builder().type("TESTRUN-RESULT-CHANGED").build();
-        testrunResultChangeData.addData("testrunId", testrunId);
-        testrunResultChangeData.addData("testrunStatus", testrunStatusDTO);
-        messageSendService.sendTo("projects/" + projectId, testrunResultChangeData);
-
-        return testrunStatusDTO.isDone();
+    public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
+        return testrunService.updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Operation(description = "테스트런 테스트케이스 테스터 변경")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/tester")

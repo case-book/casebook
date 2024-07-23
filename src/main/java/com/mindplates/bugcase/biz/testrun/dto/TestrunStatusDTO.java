@@ -21,13 +21,13 @@ public class TestrunStatusDTO extends CommonDTO {
     private int untestableTestcaseCount;
 
 
-    public TestrunStatusDTO(Testrun testrun, boolean done) {
-        this.id = testrun.getId();
-        this.done = done;
-        this.totalTestcaseCount = testrun.getTotalTestcaseCount();
-        this.passedTestcaseCount = testrun.getPassedTestcaseCount();
-        this.failedTestcaseCount = testrun.getFailedTestcaseCount();
-        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
+    public TestrunStatusDTO(TestrunCountSummaryDTO testrunCountSummary) {
+        this.id = testrunCountSummary.getId();
+        this.done = testrunCountSummary.isDone();
+        this.totalTestcaseCount = testrunCountSummary.getTotalTestcaseCount();
+        this.passedTestcaseCount = testrunCountSummary.getPassedTestcaseCount();
+        this.failedTestcaseCount = testrunCountSummary.getFailedTestcaseCount();
+        this.untestableTestcaseCount = testrunCountSummary.getUntestableTestcaseCount();
     }
 
 }

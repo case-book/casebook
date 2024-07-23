@@ -38,9 +38,7 @@ public class AutomationController {
 
         Long projectId = projectService.selectProjectId(projectToken);
         String spaceCode = spaceService.selectSpaceCodeByProjectId(projectId);
-        boolean done = testrunService.updateTestrunTestcaseResult(spaceCode, projectId, projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(),
-            testResultRequest.getComment());
-        testrunService.sendTestrunStatusChangeMessage(projectToken, testrunSeqNumber, testcaseSeqNumber, done);
+        testrunService.updateTestrunTestcaseResult(spaceCode, projectId, projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

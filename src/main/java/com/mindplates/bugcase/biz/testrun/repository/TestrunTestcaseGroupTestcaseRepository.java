@@ -66,5 +66,8 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     @Query("UPDATE TestrunTestcaseGroupTestcase ttgt SET ttgt.tester.id = NULL WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.project.id = :projectId) AND  ttgt.tester.id = :userId")
     void updateProjectTesterNullByUserId(@Param("projectId") Long projectId, @Param("userId") Long userId);
 
+    @Query("SELECT ttgt.id FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testrunTestcaseGroup.testrun.project.id = :projectId AND ttgt.testrunTestcaseGroup.testrun.id = :testrunId AND ttgt.testcase.seqId = :seqId")
+    Optional<Long> findTestrunTestcaseGroupTestcaseIdByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(Long projectId, Long testrunId, String seqId);
+
 }
 
