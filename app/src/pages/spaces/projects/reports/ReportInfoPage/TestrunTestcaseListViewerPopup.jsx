@@ -29,8 +29,6 @@ function TestrunTestcaseListViewerPopup({ testcaseGroups, users, onItemClick, se
     };
   }, [resultViewOpened]);
 
-  console.log(status);
-
   return (
     <Modal
       className="testrun-testcase-list-viewer-popup-wrapper"

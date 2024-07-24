@@ -198,43 +198,43 @@ public class TestrunController {
         return testrunService.updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Operation(description = "테스트런 테스트케이스 테스터 변경")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/tester")
-    public ResponseEntity<HttpStatus> updateTestrunTestcaseTester(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
-        Long userId = SessionUtil.getUserId();
-        testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunTesterRequest.getTesterId(), userId);
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTester(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId, @Valid @RequestBody TestrunTesterRequest testrunTesterRequest) {
+        testrunService.updateTestrunTestcaseTester(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunTesterRequest.getTesterId(), SessionUtil.getUserId(true));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(description = "테스트런 테스트케이스 테스터 랜덤 변경")
     @PutMapping("/{testrunId}/tester/random")
-    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
-        testrunService.updateTestrunTestcaseTesterRandom(spaceCode, projectId, testrunId, testrunTesterRandomChangeRequest.getTesterId(), testrunTesterRandomChangeRequest.getTargetId(),
-            testrunTesterRandomChangeRequest.getTarget(), testrunTesterRandomChangeRequest.getReason());
+    public ResponseEntity<HttpStatus> updateTestrunTestcaseTesterRandom(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTesterRandomChangeRequest testrunTesterRandomChangeRequest) {
+        testrunService.updateTestrunTestcaseTesterRandom(spaceCode, projectId, testrunId, testrunTesterRandomChangeRequest.getTesterId(), testrunTesterRandomChangeRequest.getTargetId(), testrunTesterRandomChangeRequest.getTarget(), testrunTesterRandomChangeRequest.getReason());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Operation(description = "테스트런 테스트케이스 코멘트 입력")
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")

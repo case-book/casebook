@@ -36,6 +36,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseTesterDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseUserTestResultDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
@@ -80,7 +81,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -535,6 +535,129 @@ public class TestrunService {
         updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, resultCode);
     }
 
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
+    public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, long testerId, long actorId) {
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Long beforeUserId = testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null;
+        testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
+
+        User actor = userRepository.findById(actorId).orElse(null);
+        String actorName;
+        if (actor != null) {
+            actorName = actor.getName();
+        } else {
+            actorName = "";
+        }
+
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
+        String testrunName = testrunRepository.findNameById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
+        if (!testrunMessageChannels.isEmpty()) {
+            validateOpened(testrunId);
+            String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(beforeUserId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
+            String afterUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
+
+            testrunMessageChannels.forEach(testrunMessageChannel -> {
+                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunName, testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, actorName);
+            });
+        }
+
+        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-TESTER-CHANGED").build();
+        participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);
+        participantData.addData("testerId", testerId);
+        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
+
+        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
+    public void updateTestrunTestcaseTesterRandom(String spaceCode, long projectId, long testrunId, Long testerId, Long targetId, TesterChangeTargetCode target, String reason) {
+
+        validateOpened(testrunId);
+
+        String testrunName = testrunRepository.findNameById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
+
+        List<Long> userIds = new ArrayList<>();
+        List<TestrunUser> testrunUsers = testrunUserRepository.findByTestrunId(testrunId);
+        testrunUsers.forEach((testrunUser -> {
+            if (!testrunUser.getUser().getId().equals(testerId)) {
+                userIds.add(testrunUser.getUser().getId());
+            }
+        }));
+
+        if (userIds.isEmpty()) {
+            throw new ServiceException("error.no.rest.tester");
+        }
+
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
+
+        String beforeUserName = project.getUsers()
+            .stream()
+            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))
+            .map(projectUserDTO -> projectUserDTO.getUser().getName())
+            .findAny().orElse("");
+
+        if (target.equals(TesterChangeTargetCode.ONE)) {
+            int index = random.nextInt(userIds.size());
+            TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(targetId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+            testrunTestcaseGroupTestcase.setTester(User.builder().id(userIds.get(index)).build());
+
+            String afterUserName = project.getUsers().stream()
+                .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
+                .map(projectUserDTO -> projectUserDTO.getUser().getName())
+                .findAny().orElse("");
+
+            if (!testrunMessageChannels.isEmpty()) {
+                testrunMessageChannels.forEach(testrunMessageChannel -> {
+                    TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrunName, testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                });
+            }
+
+            MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-TESTER-CHANGED").build();
+            participantData.addData("testrunTestcaseGroupTestcaseId", targetId);
+            participantData.addData("testerId", userIds.get(index));
+            messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
+
+            testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
+        } else if (target.equals(TesterChangeTargetCode.ALL)) {
+
+            List<TestrunTestcaseGroupTestcaseTesterDTO> targetTestcaseTesterList = testrunTestcaseGroupTestcaseRepository.findTestrunTestcaseGroupTestcaseByTesterId(testrunId, testerId);
+                for (TestrunTestcaseGroupTestcaseTesterDTO testcase : targetTestcaseTesterList) {
+                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTesterId() == null) || (testcase.getTesterId() != null && testcase.getTesterId().equals(testerId)))) {
+                        int index = random.nextInt(userIds.size());
+                        long nextTesterId = userIds.get(index);
+                        testrunTestcaseGroupTestcaseRepository.updateTesterById(testcase.getId(), nextTesterId);
+
+                        String afterUserName = project.getUsers().stream()
+                            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(nextTesterId))
+                            .map(projectUserDTO -> projectUserDTO.getUser().getName())
+                            .findAny().orElse("");
+
+                        if (!testrunMessageChannels.isEmpty()) {
+                            testrunMessageChannels.forEach(testrunMessageChannel -> {
+                                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                                messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(),
+                                    testrunName, testcase.getTestcaseName(), beforeUserName, afterUserName, reason);
+                            });
+                        }
+
+                        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-TESTER-CHANGED").build();
+                        participantData.addData("testrunTestcaseGroupTestcaseId", testcase.getId());
+                        participantData.addData("testerId", nextTesterId);
+                        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
+                    }
+                }
+
+                testrunUserRepository.deleteByTestrunIdAndUserId(testrunId, testerId);
+        }
+
+    }
+
 
 
 
@@ -638,130 +761,9 @@ public class TestrunService {
 
 
 
-    @Transactional
-    @Caching(evict = {
-        // @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
-    })
-    public void updateTestrunTestcaseTesterRandom(String spaceCode, long projectId, long testrunId, Long testerId, Long targetId,
-        TesterChangeTargetCode target, String reason) {
 
-        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        validateOpened(testrunId);
 
-        List<Long> userIds = new ArrayList<>();
-        testrun.getTestrunUsers().forEach((testrunUser -> {
-            if (!testrunUser.getUser().getId().equals(testerId)) {
-                userIds.add(testrunUser.getUser().getId());
-            }
-        }));
 
-        if (userIds.isEmpty()) {
-            throw new ServiceException("error.no.rest.tester");
-        }
-
-        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
-
-        String beforeUserName = project.getUsers()
-            .stream()
-            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))
-            .map(projectUserDTO -> projectUserDTO.getUser().getName())
-            .findAny().orElse("");
-
-        if (target.equals(TesterChangeTargetCode.ONE)) {
-
-            int index = random.nextInt(userIds.size());
-            TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(targetId)
-                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-            testrunTestcaseGroupTestcase.setTester(User.builder().id(userIds.get(index)).build());
-
-            String afterUserName = project.getUsers().stream()
-                .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
-                .map(projectUserDTO -> projectUserDTO.getUser().getName())
-                .findAny().orElse("");
-
-            if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
-                testrun.getMessageChannels().forEach(testrunMessageChannel -> {
-                    TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrun.getName(),
-                        testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
-                });
-            }
-
-            testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
-        } else if (target.equals(TesterChangeTargetCode.ALL)) {
-            for (TestrunTestcaseGroup testcaseGroup : testrun.getTestcaseGroups()) {
-                for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
-                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTester() == null) || (testcase.getTester() != null && testcase.getTester().getId()
-                        .equals(testerId)))) {
-                        int index = random.nextInt(userIds.size());
-                        testcase.setTester(User.builder().id(userIds.get(index)).build());
-
-                        String afterUserName = project.getUsers().stream()
-                            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(userIds.get(index)))
-                            .map(projectUserDTO -> projectUserDTO.getUser().getName())
-                            .findAny().orElse("");
-
-                        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
-                            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
-                                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                                messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(),
-                                    testrun.getName(), testcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
-                            });
-                        }
-                    }
-                }
-            }
-
-            testrun.getTestrunUsers().removeIf((testrunUser -> testrunUser.getUser().getId().equals(testerId)));
-            testrunRepository.save(testrun);
-        }
-
-    }
-
-    @Transactional
-    @Caching(evict = {
-        // @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
-    })
-    public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, Long testerId, Long actorId) {
-        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        Long oldUserId = testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null;
-        testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
-
-        User actor = userRepository.findById(actorId).orElse(null);
-        String actorName;
-        if (actor != null) {
-            actorName = actor.getName();
-        } else {
-            actorName = "";
-        }
-
-        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
-
-        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
-
-            validateOpened(testrunId);
-            String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(oldUserId))
-                .map(projectUserDTO -> projectUserDTO.getUser().getName())
-                .findAny().orElse("");
-            String afterUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))
-                .map(projectUserDTO -> projectUserDTO.getUser().getName())
-                .findAny().orElse("");
-
-            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
-                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId,
-                    testrun.getName(), testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName,
-                    actorName);
-            });
-        }
-
-        testrunTestcaseGroupTestcaseRepository.save(testrunTestcaseGroupTestcase);
-    }
 
     @Transactional
     public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(long testrunId,

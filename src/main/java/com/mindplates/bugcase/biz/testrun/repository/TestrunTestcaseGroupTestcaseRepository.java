@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseTesterDTO;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import java.util.List;
@@ -68,6 +69,13 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
 
     @Query("SELECT ttgt.id FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testrunTestcaseGroup.testrun.project.id = :projectId AND ttgt.testrunTestcaseGroup.testrun.id = :testrunId AND ttgt.testcase.seqId = :seqId")
     Optional<Long> findTestrunTestcaseGroupTestcaseIdByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(Long projectId, Long testrunId, String seqId);
+
+    @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseTesterDTO(ttgt.id, ttgt.testcase.name , ttgt.tester.id, ttgt.testResult) FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testrunTestcaseGroup.testrun.id = :testrunId AND ttgt.tester.id = :testerId")
+    List<TestrunTestcaseGroupTestcaseTesterDTO> findTestrunTestcaseGroupTestcaseByTesterId(long testrunId, Long testerId);
+
+    @Modifying
+    @Query("UPDATE TestrunTestcaseGroupTestcase ttgt SET ttgt.tester.id = :testerId WHERE ttgt.id = :testrunTestcaseGroupTestcaseId")
+    void updateTesterById(@Param("testrunTestcaseGroupTestcaseId") Long testrunTestcaseGroupTestcaseId, @Param("testerId") Long testerId);
 
 }
 

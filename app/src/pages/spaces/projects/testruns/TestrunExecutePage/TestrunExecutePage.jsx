@@ -262,7 +262,6 @@ function TestrunExecutePage() {
 
   const getContent = (loading = true) => {
     if (type === ITEM_TYPE.TESTCASE) {
-      console.log(3);
       getTestcase(Number(id), loading);
       watch(id);
     } else {
@@ -409,28 +408,30 @@ function TestrunExecutePage() {
       }
 
       case 'TESTRUN-USER-LEAVE': {
-        const nextParicipants = lastParicipants.current.slice(0);
-        const userIndex = nextParicipants.findIndex(d => d.id === data?.data?.participant.id);
+        if (lastParicipants.current) {
+          const nextParicipants = lastParicipants.current?.slice(0);
+          const userIndex = nextParicipants.findIndex(d => d.id === data?.data?.participant.id);
 
-        if (userIndex > -1) {
-          nextParicipants.splice(userIndex, 1);
+          if (userIndex > -1) {
+            nextParicipants.splice(userIndex, 1);
 
-          setParicipants(nextParicipants);
-          lastParicipants.current = nextParicipants;
-        }
+            setParicipants(nextParicipants);
+            lastParicipants.current = nextParicipants;
+          }
 
-        const nextWatcherInfo = { ...watcherInfo };
+          const nextWatcherInfo = { ...watcherInfo };
 
-        const testcaseIds = Object.keys(nextWatcherInfo);
-        for (let inx = testcaseIds.length - 1; inx >= 0; inx -= 1) {
-          for (let jnx = nextWatcherInfo[testcaseIds[inx]].length - 1; jnx >= 0; jnx -= 1) {
-            if (nextWatcherInfo[testcaseIds[inx]][jnx].userId === data?.data?.participant.userId) {
-              nextWatcherInfo[testcaseIds[inx]].splice(jnx, 1);
+          const testcaseIds = Object.keys(nextWatcherInfo);
+          for (let inx = testcaseIds.length - 1; inx >= 0; inx -= 1) {
+            for (let jnx = nextWatcherInfo[testcaseIds[inx]].length - 1; jnx >= 0; jnx -= 1) {
+              if (nextWatcherInfo[testcaseIds[inx]][jnx].userId === data?.data?.participant.userId) {
+                nextWatcherInfo[testcaseIds[inx]].splice(jnx, 1);
+              }
             }
           }
-        }
 
-        setWatcherInfo(nextWatcherInfo);
+          setWatcherInfo(nextWatcherInfo);
+        }
 
         break;
       }
@@ -475,6 +476,12 @@ function TestrunExecutePage() {
 
         setTestrun(nextTestrun);
 
+        if (type === ITEM_TYPE.TESTCASE && Number(id) === content.id) {
+          const nextContent = { ...content };
+          nextContent.testResult = data.data.testResult;
+          setContent(nextContent);
+        }
+
         const filteredTestcaseGroups = nextTestrun.testcaseGroups?.map(d => {
           return {
             ...d,
@@ -503,6 +510,26 @@ function TestrunExecutePage() {
         const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
         setTestcaseGroups(groups);
 
+        break;
+      }
+
+      case 'TESTRUN-TESTCASE-TESTER-CHANGED': {
+        const nextTestrun = { ...testrun };
+        for (let i = 0; i < nextTestrun.testcaseGroups.length; i += 1) {
+          const target = nextTestrun.testcaseGroups[i].testcases?.find(testcase => testcase.id === data.data.testrunTestcaseGroupTestcaseId);
+          if (target) {
+            target.testerId = data.data.testerId;
+            break;
+          }
+        }
+
+        if (type === ITEM_TYPE.TESTCASE && data.data.testrunTestcaseGroupTestcaseId === content.id) {
+          const nextContent = { ...content };
+          nextContent.testerId = data.data.testerId;
+          setContent(nextContent);
+        }
+
+        setTestrun(nextTestrun);
         break;
       }
 

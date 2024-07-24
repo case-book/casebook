@@ -79,5 +79,8 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     @Modifying
     @Query("UPDATE Testrun tr SET tr.passedTestcaseCount = :passedTestcaseCount, tr.failedTestcaseCount = :failedTestcaseCount, tr.untestableTestcaseCount = :untestableTestcaseCount WHERE tr.id = :testrunId")
     void updateTestrunCountSummary(@Param("testrunId") long testrunId, @Param("passedTestcaseCount") int passedTestcaseCount, @Param("failedTestcaseCount") int failedTestcaseCount, @Param("untestableTestcaseCount") int untestableTestcaseCount);
+
+    @Query("SELECT tr.name FROM Testrun tr WHERE tr.id = :testrunId")
+    Optional<String> findNameById(long testrunId);
 }
 
