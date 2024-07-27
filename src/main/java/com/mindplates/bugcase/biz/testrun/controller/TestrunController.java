@@ -236,21 +236,10 @@ public class TestrunController {
 
 
 
-    @Operation(description = "테스트런 테스트케이스 코멘트 입력")
-    @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
-    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
-        TestrunTestcaseGroupTestcaseCommentDTO result = testrunService.updateTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentRequest.toDTO());
-        return new TestrunTestcaseGroupTestcaseCommentResponse(result);
-    }
 
-    @Operation(description = "테스트런 테스트케이스 코멘트 삭제")
-    @DeleteMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
-    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
-        @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
-        testrunService.deleteTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+
+
+
 
     @Operation(description = "사용자에게 할당된 테스트런 목록 조회")
     @GetMapping("/assigned")

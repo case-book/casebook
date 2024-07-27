@@ -444,7 +444,7 @@ TestrunService.updateTestrunTesterRandom = (spaceCode, projectId, testrunId, tes
 
 TestrunService.updateTestrunTestcaseComment = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, comment, successHandler, failHandler, loading = true) => {
   return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,
     comment,
     res => {
       successHandler(res);
@@ -478,7 +478,7 @@ TestrunService.deleteTestrunTestcaseComment = (
   loading = true,
 ) => {
   return request.del(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments/${testrunTestcaseGroupTestcaseCommentId}`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments/${testrunTestcaseGroupTestcaseCommentId}`,
     null,
     res => {
       successHandler(res);

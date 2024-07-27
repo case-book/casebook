@@ -1,8 +1,12 @@
 package com.mindplates.bugcase.biz.testrun.service;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunComment;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;
+import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseCommentRepository;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserCachedService;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -21,6 +25,7 @@ public class TestrunCommentService {
 
     private final TestrunCommentRepository testrunCommentRepository;
     private final UserCachedService userCachedService;
+    private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
 
 
     @Transactional
@@ -67,5 +72,17 @@ public class TestrunCommentService {
         testrunCommentRepository.deleteByTestrunId(testrunId);
     }
 
+
+    @Transactional
+    public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(long testrunId, TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment, long userId) {
+        UserDTO currentUser = userCachedService.getUserInfo(userId);
+        TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository.save(testrunTestcaseGroupTestcaseComment.toEntity(currentUser.toEntity()));
+        return new TestrunTestcaseGroupTestcaseCommentDTO(comment);
+    }
+
+    @Transactional
+    public void deleteTestrunTestcaseGroupTestcaseComment(long testrunId, Long testrunTestcaseGroupTestcaseCommentId) {
+        testrunTestcaseGroupTestcaseCommentRepository.deleteById(testrunTestcaseGroupTestcaseCommentId);
+    }
 
 }

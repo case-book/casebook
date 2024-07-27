@@ -765,24 +765,9 @@ public class TestrunService {
 
 
 
-    @Transactional
-    public TestrunTestcaseGroupTestcaseCommentDTO updateTestrunTestcaseGroupTestcaseComment(long testrunId,
-        TestrunTestcaseGroupTestcaseCommentDTO testrunTestcaseGroupTestcaseComment) {
-        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        validateOpened(testrunId);
-        User currentUser = userRepository.findById(SessionUtil.getUserId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        testrunTestcaseGroupTestcaseComment.setUser(new UserDTO(currentUser));
-        TestrunTestcaseGroupTestcaseComment comment = testrunTestcaseGroupTestcaseCommentRepository
-            .save(mappingUtil.convert(testrunTestcaseGroupTestcaseComment, TestrunTestcaseGroupTestcaseComment.class));
-        return new TestrunTestcaseGroupTestcaseCommentDTO(comment);
-    }
 
-    @Transactional
-    public void deleteTestrunTestcaseGroupTestcaseComment(long testrunId, Long testrunTestcaseGroupTestcaseCommentId) {
-        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        validateOpened(testrunId);
-        testrunTestcaseGroupTestcaseCommentRepository.deleteById(testrunTestcaseGroupTestcaseCommentId);
-    }
+
+
 
 
     private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
