@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.testrun.repository;
 
-import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
-import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

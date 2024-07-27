@@ -179,7 +179,6 @@ public class Testcase extends CommonEntity {
         // 기존 testcaseItems를 순회하면서, testcaseItemById에 있는 경우 update, 없는 경우 remove
         this.testcaseItems.removeIf(testcaseItem -> testcaseItemById.get(testcaseItem.getId()) == null);
 
-
         for (TestcaseItem testcaseItem : this.testcaseItems) {
             TestcaseItemDTO testcaseItemDTO = testcaseItemById.get(testcaseItem.getId());
             if (testcaseItemDTO != null) {

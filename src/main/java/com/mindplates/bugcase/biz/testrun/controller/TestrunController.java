@@ -85,7 +85,7 @@ public class TestrunController {
         result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
             testrunHook.request(httpRequestUtil);
             testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
-            testrunService.updateTestrunHook(testrunHook);
+            testrunService.updateTestrunHookResult(testrunHook);
         });
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -150,7 +150,7 @@ public class TestrunController {
         result.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
             testrunHook.request(httpRequestUtil);
             testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
-            testrunService.updateTestrunHook(testrunHook);
+            testrunService.updateTestrunHookResult(testrunHook);
         });
 
         return new ResponseEntity<>(HttpStatus.OK);

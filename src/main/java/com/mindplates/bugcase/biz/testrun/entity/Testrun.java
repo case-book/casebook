@@ -349,7 +349,6 @@ public class Testrun extends CommonEntity {
     }
 
 
-
     public void initializeCreateInfo(int currentTestrunSeq) {
         this.seqId = "R" + currentTestrunSeq;
         this.opened = true;

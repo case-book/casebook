@@ -493,7 +493,7 @@ public class TestrunScheduler {
                 result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
                     testrunHook.request(httpRequestUtil);
                     testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
-                    testrunService.updateTestrunHook(testrunHook);
+                    testrunService.updateTestrunHookResult(testrunHook);
                 });
             }
         }));
@@ -627,7 +627,7 @@ public class TestrunScheduler {
                 result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
                     testrunHook.request(httpRequestUtil);
                     testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
-                    testrunService.updateTestrunHook(testrunHook);
+                    testrunService.updateTestrunHookResult(testrunHook);
                 });
             }
 
@@ -652,7 +652,7 @@ public class TestrunScheduler {
             result.getTestrunHookList(TestrunHookTiming.AFTER_END).forEach(testrunHook -> {
                 testrunHook.request(httpRequestUtil);
                 testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
-                testrunService.updateTestrunHook(testrunHook);
+                testrunService.updateTestrunHookResult(testrunHook);
             });
         }));
     }
@@ -713,7 +713,8 @@ public class TestrunScheduler {
                     }
 
                     testrunMessageChannelList.forEach(testrunMessageChannel -> {
-                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunListDTO.getId(), testrunListDTO.getName(), project.getUsers(), userRemainCount);
+                        messageChannelService.sendTestrunRemainInfo(testrunMessageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, message, testrunListDTO.getId(),
+                            testrunListDTO.getName(), project.getUsers(), userRemainCount);
                     });
                 }
 

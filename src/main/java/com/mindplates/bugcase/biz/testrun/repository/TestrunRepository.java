@@ -58,7 +58,7 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
         "                                                    WHERE ttgt.testcase.id IN (SELECT t.id FROM Testcase t " +
         "                                                                                WHERE t.seqId = :seqId " +
         "                                                                                  AND t.project.id = :projectId ))) ")
-    List<Long> findAllByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
+    List<Long> findTestrunSeqNoByProjectIdAndTestcaseSeqId(Long projectId, String seqId);
 
 
     @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO(tr.id, tr.seqId, ttgt.id) FROM Testrun tr INNER JOIN TestrunTestcaseGroup ttg ON tr.id = ttg.testrun.id INNER JOIN TestrunTestcaseGroupTestcase ttgt ON ttg.id = ttgt.testrunTestcaseGroup.id WHERE ttgt.id = :testrunTestcaseGroupTestcaseId")
@@ -81,7 +81,8 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
     @Modifying
     @Query("UPDATE Testrun tr SET tr.passedTestcaseCount = :passedTestcaseCount, tr.failedTestcaseCount = :failedTestcaseCount, tr.untestableTestcaseCount = :untestableTestcaseCount WHERE tr.id = :testrunId")
-    void updateTestrunCountSummary(@Param("testrunId") long testrunId, @Param("passedTestcaseCount") int passedTestcaseCount, @Param("failedTestcaseCount") int failedTestcaseCount, @Param("untestableTestcaseCount") int untestableTestcaseCount);
+    void updateTestrunCountSummary(@Param("testrunId") long testrunId, @Param("passedTestcaseCount") int passedTestcaseCount, @Param("failedTestcaseCount") int failedTestcaseCount,
+        @Param("untestableTestcaseCount") int untestableTestcaseCount);
 
     @Query("SELECT tr.name FROM Testrun tr WHERE tr.id = :testrunId")
     Optional<String> findNameById(long testrunId);

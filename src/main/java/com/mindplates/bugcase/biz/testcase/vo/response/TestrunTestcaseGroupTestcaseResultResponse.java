@@ -1,9 +1,7 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO;
 import com.mindplates.bugcase.common.code.TestResultCode;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

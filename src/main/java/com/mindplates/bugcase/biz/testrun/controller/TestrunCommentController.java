@@ -35,7 +35,8 @@ public class TestrunCommentController {
 
     @Operation(description = "테스트런 코멘트 입력")
     @PostMapping
-    public TestrunCommentResponse createTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunCommentRequest testrunCommentRequest) {
+    public TestrunCommentResponse createTestrunComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunCommentRequest testrunCommentRequest) {
         TestrunCommentDTO testrunComment = testrunCommentService.createTestrunComment(projectId, testrunId, SessionUtil.getUserId(true), testrunCommentRequest.toDTO());
         return new TestrunCommentResponse(testrunComment);
     }
@@ -57,14 +58,17 @@ public class TestrunCommentController {
 
     @Operation(description = "테스트런 테스트케이스 코멘트 입력")
     @PutMapping("/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments")
-    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
-        TestrunTestcaseGroupTestcaseCommentDTO result = testrunCommentService.updateTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentRequest.toDTO(), SessionUtil.getUserId(true));
+    public TestrunTestcaseGroupTestcaseCommentResponse updateTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunTestcaseGroupTestcaseCommentRequest testrunTestcaseGroupTestcaseCommentRequest) {
+        TestrunTestcaseGroupTestcaseCommentDTO result = testrunCommentService.updateTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentRequest.toDTO(),
+            SessionUtil.getUserId(true));
         return new TestrunTestcaseGroupTestcaseCommentResponse(result);
     }
 
     @Operation(description = "테스트런 테스트케이스 코멘트 삭제")
     @DeleteMapping("/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/comments/{testrunTestcaseGroupTestcaseCommentId}")
-    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
+    public ResponseEntity<HttpStatus> deleteTestrunTestcaseComment(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @PathVariable long testrunTestcaseGroupTestcaseCommentId) {
         testrunCommentService.deleteTestrunTestcaseGroupTestcaseComment(testrunId, testrunTestcaseGroupTestcaseCommentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

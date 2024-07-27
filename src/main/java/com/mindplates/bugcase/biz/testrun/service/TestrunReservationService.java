@@ -42,7 +42,7 @@ public class TestrunReservationService {
     private final TestrunTestcaseGroupTestcaseRepository testrunTestcaseGroupTestcaseRepository;
 
     @Transactional
-    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @CacheEvict(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public TestrunReservationDTO createTestrunReservationInfo(TestrunReservationDTO testrunReservation) {
         TestrunReservation result = testrunReservationRepository.save(testrunReservation.toEntity());
         result.updateTestcaseCount();
@@ -55,7 +55,7 @@ public class TestrunReservationService {
     }
 
 
-    @Cacheable(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @Cacheable(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public List<TestrunReservationDTO> selectReserveTestrunList() {
         List<TestrunReservation> list = testrunReservationRepository.findAllByExpiredFalse();
         return list.stream().map((testrun -> new TestrunReservationDTO(testrun, false))).collect(Collectors.toList());
@@ -155,14 +155,14 @@ public class TestrunReservationService {
 
 
     @Transactional
-    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @CacheEvict(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public void updateTestrunReserveExpired(Long testrunId, Boolean reserveExpired, Long referenceTestrunId) {
         testrunReservationRepository.updateTestrunReservationExpired(testrunId, reserveExpired, referenceTestrunId);
     }
 
 
     @Transactional
-    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @CacheEvict(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public TestrunReservationDTO updateTestrunReservationInfo(String spaceCode, TestrunReservationDTO testrunReservation) {
         TestrunReservation newTestrunReservation = testrunReservation.toEntity();
 
@@ -179,7 +179,7 @@ public class TestrunReservationService {
     }
 
     @Transactional
-    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @CacheEvict(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public void deleteProjectTestrunReservationInfo(String spaceCode, long projectId, long testrunReservationId) {
         testrunTestcaseGroupTestcaseRepository.deleteByTestrunReservationId(testrunReservationId);
         testrunUserRepository.deleteByTestrunReservationId(testrunReservationId);
@@ -188,13 +188,13 @@ public class TestrunReservationService {
     }
 
     @Transactional
-    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @CacheEvict(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public void updateTestrunReferenceNull(long testrunId) {
         testrunReservationRepository.updateTestrunReservationTestrunId(testrunId);
     }
 
     @Transactional
-    @CacheEvict(key="'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
+    @CacheEvict(key = "'not_expired'", value = CacheConfig.TESTRUN_RESERVATIONS)
     public void deleteByProjectId(long projectId) {
         testrunReservationRepository.deleteByProjectId(projectId);
     }

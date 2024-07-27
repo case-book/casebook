@@ -70,7 +70,6 @@ public class CacheConfig {
     public static final int TESTRUN_ITERATIONS_EXPIRE_SEC = 60 * 60 * 24 * 7;
 
 
-
     private final RedisConnectionFactory connectionFactory;
 
 

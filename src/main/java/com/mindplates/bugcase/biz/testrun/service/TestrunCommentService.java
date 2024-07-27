@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.testrun.service;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunCommentDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
-import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunCommentRepository;

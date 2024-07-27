@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
-import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;

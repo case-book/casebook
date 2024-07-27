@@ -81,7 +81,8 @@ public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<T
         }
     }
 
-    public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, UserDTO createdUser, UserDTO lastUpdatedUser, TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo) {
+    public TestrunTestcaseGroupTestcaseDTO(TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase, UserDTO createdUser, UserDTO lastUpdatedUser,
+        TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo) {
         this(testrunTestcaseGroupTestcase, testrunInfo);
         if (createdUser != null) {
             this.testcase.setCreatedUserName(createdUser.getName());

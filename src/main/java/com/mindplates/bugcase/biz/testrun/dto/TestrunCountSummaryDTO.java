@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class TestrunCountSummaryDTO {
+
     private Long id;
     private String seqId;
     private String name;
@@ -38,7 +39,7 @@ public class TestrunCountSummaryDTO {
         return this.totalTestcaseCount <= this.passedTestcaseCount + this.failedTestcaseCount + this.untestableTestcaseCount;
     }
 
-    public void updateCount (TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase, TestResultCode testResultCode) {
+    public void updateCount(TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase, TestResultCode testResultCode) {
         if (!Objects.isNull(targetTestrunTestcaseGroupTestcase.getTestResult())) {
             if (targetTestrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)) {
                 this.passedTestcaseCount--;

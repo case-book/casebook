@@ -39,7 +39,6 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseItemDT
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseTesterDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseUserTestResultDTO;
 import com.mindplates.bugcase.biz.testrun.entity.Testrun;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunMessageChannel;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunProfile;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
@@ -69,7 +68,6 @@ import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.service.MessageChannelService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -113,7 +111,6 @@ public class TestrunService {
     private final TestrunTestcaseGroupTestcaseItemRepository testrunTestcaseGroupTestcaseItemRepository;
     private final TestrunTestcaseGroupTestcaseCommentRepository testrunTestcaseGroupTestcaseCommentRepository;
     private final ProjectFileRepository projectFileRepository;
-    private final MappingUtil mappingUtil;
     private final FileUtil fileUtil;
     private final MessageChannelService messageChannelService;
     private final MessageSendService messageSendService;
@@ -757,73 +754,25 @@ public class TestrunService {
 
     }
 
+    @Transactional
+    public TestrunHookDTO updateTestrunHookResult(TestrunHookDTO testrunHook) {
+        return new TestrunHookDTO(testrunHookRepository.save(testrunHook.toEntity()));
+    }
 
     public List<TestrunDTO> selectToBeClosedTestrunList(LocalDateTime endDateTime) {
         List<Testrun> list = testrunRepository.findToBeClosedTestrunList(endDateTime);
         return list.stream().map((TestrunDTO::new)).collect(Collectors.toList());
     }
 
-
     public List<TestrunMessageChannelDTO> selectTestrunMessageChannelList(long testrunId) {
         List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
         return testrunMessageChannels.stream().map(TestrunMessageChannelDTO::new).collect(Collectors.toList());
     }
 
-
-    public void sendTestrunStatusChangeMessage(String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, boolean done) {
-        Long projectId = projectService.selectProjectId(projectToken);
-        Testrun testrun = testrunRepository.findAllByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
-
-        TestrunCountSummaryDTO countSummary = testrunRepository.findTestrunCountSummary(testrun.getId());
-        countSummary.setDone(done);
-
-        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository
-            .findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(projectId, testrun.getId(),
-                "TC" + testcaseSeqNumber)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
-
-        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
-        participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcase.getId());
-        participantData.addData("testResult", testrunTestcaseGroupTestcase.getTestResult());
-        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrun.getId(), participantData);
-
-        MessageData testrunResultChangeData = MessageData.builder().type("TESTRUN-RESULT-CHANGED").build();
-        testrunResultChangeData.addData("testrunId", testrun.getId());
-        testrunResultChangeData.addData("testrunStatus", new TestrunStatusDTO(countSummary));
-        messageSendService.sendTo("projects/" + projectId, testrunResultChangeData);
-    }
-
-
-    private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
-        return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
-            .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester() != null)
-            .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
-            .distinct()
-            .map(userId -> {
-                ProjectUser projectUser = project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
-                return ProjectUserDTO.builder().id(projectUser.getId()).role(projectUser.getRole())
-                    .user(UserDTO.builder().id(projectUser.getUser().getId()).name(projectUser.getUser().getName()).build())
-                    .project(ProjectDTO.builder().id(projectUser.getProject().getId()).build())
-                    .tags(projectUser.getTags()).build();
-
-            }).collect(Collectors.toList());
-    }
-
-
     public List<Long> selectTestcaseIncludeTestrunList(String projectToken, Long testcaseSeqNumber) {
         Long projectId = projectService.selectProjectId(projectToken);
-        return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
+        return testrunRepository.findTestrunSeqNoByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
     }
-
-
-    @Transactional
-    public TestrunHookDTO updateTestrunHook(TestrunHookDTO testrunHook) {
-        TestrunHook target = mappingUtil.convert(testrunHook, TestrunHook.class);
-        testrunHookRepository.save(target);
-        return new TestrunHookDTO(target);
-    }
-
 
     @Transactional
     @Caching(evict = {
@@ -848,7 +797,6 @@ public class TestrunService {
     }
 
     @Transactional
-    // @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteTestrunGroupByTestcaseTemplateId(String spaceCode, long projectId, long testcaseTemplateId) {
         testrunTestcaseGroupTestcaseCommentRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
         testrunTestcaseGroupTestcaseItemRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
@@ -864,7 +812,6 @@ public class TestrunService {
     }
 
     @Transactional
-    // @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteProjectTestrunUser(String spaceCode, long projectId, long userId) {
         testrunCommentService.deleteProjectTestrunUserComment(projectId, userId);
         testrunTestcaseGroupTestcaseCommentRepository.updateProjectTestrunTestcaseGroupTestcaseCommentUserNullByUserId(projectId, userId);
@@ -873,11 +820,25 @@ public class TestrunService {
     }
 
     @Transactional
-    // @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT)
     public void deleteTestrunMessageChannel(String spaceCode, long projectId, List<Long> messageChannelIds) {
         if (messageChannelIds != null && !messageChannelIds.isEmpty()) {
             messageChannelIds.forEach((testrunMessageChannelRepository::deleteByProjectMessageChannelId));
         }
+    }
+
+    private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
+        return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
+            .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester() != null)
+            .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
+            .distinct()
+            .map(userId -> {
+                ProjectUser projectUser = project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
+                return ProjectUserDTO.builder().id(projectUser.getId()).role(projectUser.getRole())
+                    .user(UserDTO.builder().id(projectUser.getUser().getId()).name(projectUser.getUser().getName()).build())
+                    .project(ProjectDTO.builder().id(projectUser.getProject().getId()).build())
+                    .tags(projectUser.getTags()).build();
+
+            }).collect(Collectors.toList());
     }
 
 
