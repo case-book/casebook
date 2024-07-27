@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -25,9 +27,12 @@ public class FileUtil {
 
     private final Path fileStorageLocation;
 
+    private final List<String> allowedExtensions;
+
 
     public FileUtil(FileConfig fileConfig) {
         this.fileStorageLocation = Paths.get(fileConfig.getUploadDir()).toAbsolutePath().normalize();
+        this.allowedExtensions = Arrays.asList(fileConfig.getAllowedExtension().split(","));
 
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -100,6 +105,14 @@ public class FileUtil {
         } catch (MalformedURLException ex) {
             return null;
         }
+    }
+
+    public String createImage(Long projectId, MultipartFile file) {
+        if (allowedExtensions.stream().noneMatch(p -> Objects.requireNonNull(file.getOriginalFilename()).endsWith(p))) {
+            throw new ServiceException("error.image.upload.now.supported.extension");
+        }
+
+        return storeFile(projectId, file);
     }
 
 }

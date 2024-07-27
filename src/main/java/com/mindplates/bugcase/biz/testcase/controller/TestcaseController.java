@@ -198,9 +198,7 @@ public class TestcaseController {
     @PostMapping("/{testcaseId}/images")
     public ProjectFileResponse createTestcaseItemImage(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam("file") MultipartFile file,
         @RequestParam("name") String name, @RequestParam("size") Long size, @RequestParam("type") String type) {
-        ProjectFileDTO projectFile = new ProjectFileDTO(projectId, name, size, type, UUID.randomUUID().toString(), FileSourceTypeCode.TESTCASE, file);
-        projectFile.setFileSourceId(testcaseId);
-        ProjectFileDTO result = projectFileService.createProjectFile(projectFile);
+        ProjectFileDTO result = projectFileService.createProjectTestcaseFile(projectId, testcaseId, name, size, type, file);
         return new ProjectFileResponse(result, spaceCode, projectId);
     }
 

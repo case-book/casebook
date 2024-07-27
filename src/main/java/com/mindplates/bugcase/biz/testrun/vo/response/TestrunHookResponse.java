@@ -2,15 +2,18 @@ package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
+import com.mindplates.bugcase.common.vo.TestrunHookResult;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class TestrunHookResponse {
@@ -27,6 +30,8 @@ public class TestrunHookResponse {
     private Long testrunIterationId;
     private Integer retryCount;
     private String result;
+    private String message;
+
 
     public TestrunHookResponse(TestrunHookDTO testrunHookDTO) {
         this.id = testrunHookDTO.getId();
@@ -50,6 +55,11 @@ public class TestrunHookResponse {
         this.retryCount = testrunHookDTO.getRetryCount();
         this.result = testrunHookDTO.getResult();
 
+    }
+
+    public TestrunHookResponse(TestrunHookDTO testrunHookDTO, TestrunHookResult testrunHookResult) {
+        this(testrunHookDTO);
+        this.message = testrunHookResult.getMessage();
     }
 
 

@@ -348,13 +348,7 @@ public class Testrun extends CommonEntity {
             .reduce(0, Integer::sum);
     }
 
-    public boolean containsTester(Long userId) {
-        return testcaseGroups
-            .stream()
-            .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
-                .stream()
-                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)));
-    }
+
 
     public void initializeCreateInfo(int currentTestrunSeq) {
         this.seqId = "R" + currentTestrunSeq;

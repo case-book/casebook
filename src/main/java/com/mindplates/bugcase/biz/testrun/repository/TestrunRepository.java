@@ -30,11 +30,14 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
     @Query(TESTRUN_LIST_PROJECTION + " WHERE tr.project.id = :projectId AND tr.opened = :opened ORDER BY tr.endDateTime DESC")
     List<Testrun> findTopNProjectTestrunByOpened(Long projectId, boolean opened, Pageable pageable);
 
-    List<Testrun> findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(String spaceCode,
-        Long projectId, LocalDateTime start, LocalDateTime end);
+    @Query(TESTRUN_LIST_PROJECTION + " WHERE tr.project.id = :projectId AND tr.startDateTime >= :start AND tr.endDateTime < :end ORDER BY tr.startDateTime DESC, tr.id DESC")
+    List<Testrun> findAllByProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(Long projectId, LocalDateTime start, LocalDateTime end);
 
     @Query(value = TESTRUN_LIST_PROJECTION + " WHERE tr.deadlineClose = true AND tr.opened = true AND tr.endDateTime IS NOT NULL AND tr.endDateTime < :endDateTime")
     List<Testrun> findToBeClosedTestrunList(LocalDateTime endDateTime);
+
+    @Query(value = "SELECT tr.endDateTime FROM Testrun tr WHERE tr.id = :testrunId")
+    Optional<LocalDateTime> findEndDateTimeById(long testrunId);
 
     @Query(value = TESTRUN_LIST_PROJECTION + " WHERE tr.opened = true AND tr.endDateTime IS NOT NULL")
     List<Testrun> findAllByOpenedTrueAndEndDateTimeNotNull();

@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.vo.IDTO;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,15 +41,12 @@ public class ProjectFileDTO extends CommonDTO implements IDTO<ProjectFile> {
         this.fileSourceId = projectFile.getFileSourceId();
     }
 
-    public ProjectFileDTO(long projectId, String name, Long size, String type, String uuid, FileSourceTypeCode fileSourceType, MultipartFile file) {
-
+    public ProjectFileDTO(long projectId, String name, Long size, String type, MultipartFile file) {
         this.project = ProjectDTO.builder().id(projectId).build();
+        this.uuid = UUID.randomUUID().toString();
         this.name = name;
-        this.path = path;
         this.size = size;
         this.type = type;
-        this.uuid = uuid;
-        this.fileSourceType = fileSourceType;
         this.file = file;
     }
 

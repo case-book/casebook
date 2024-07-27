@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.project.service;
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
 import com.mindplates.bugcase.biz.project.repository.ProjectFileRepository;
+import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.framework.config.FileConfig;
@@ -10,9 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProjectFileService {
 
     private final ProjectFileRepository projectFileRepository;
-    private final List<String> allowedExtensions;
     private final Path fileStorageLocation;
     private final FileUtil fileUtil;
 
@@ -31,7 +29,6 @@ public class ProjectFileService {
         this.fileUtil = fileUtil;
         this.projectFileRepository = projectFileRepository;
         this.fileStorageLocation = Paths.get(fileConfig.getUploadDir()).toAbsolutePath().normalize();
-        this.allowedExtensions = Arrays.asList(fileConfig.getAllowedExtension().split(","));
 
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -40,11 +37,31 @@ public class ProjectFileService {
         }
     }
 
-    public ProjectFileDTO createProjectFile(ProjectFileDTO projectFileInfo) {
-        String path = createImage(projectFileInfo.getProject().getId(), projectFileInfo.getFile());
-        projectFileInfo.setPath(path);
-        ProjectFile projectFile = projectFileRepository.save(projectFileInfo.toEntity());
-        return new ProjectFileDTO(projectFile);
+    private ProjectFileDTO createFile(long projectId, String name, Long size, String type, MultipartFile file) {
+        ProjectFileDTO projectFile = new ProjectFileDTO(projectId, name, size, type, file);
+        String path = fileUtil.createImage(projectId, file);
+        projectFile.setPath(path);
+        return projectFile;
+    }
+
+    public ProjectFileDTO createProjectFile(long projectId, String name, Long size, String type, MultipartFile multipartFile) {
+        ProjectFileDTO file = createFile(projectId, name, size, type, multipartFile);
+        file.setFileSourceType(FileSourceTypeCode.PROJECT);
+        return new ProjectFileDTO(projectFileRepository.save(file.toEntity()));
+    }
+
+    public ProjectFileDTO createProjectTestrunFile(long projectId, long testrunId, String name, Long size, String type, MultipartFile multipartFile) {
+        ProjectFileDTO file = createFile(projectId, name, size, type, multipartFile);
+        file.setFileSourceType(FileSourceTypeCode.TESTRUN);
+        file.setFileSourceId(testrunId);
+        return new ProjectFileDTO(projectFileRepository.save(file.toEntity()));
+    }
+
+    public ProjectFileDTO createProjectTestcaseFile(long projectId, long testcaseId, String name, Long size, String type, MultipartFile multipartFile) {
+        ProjectFileDTO file = createFile(projectId, name, size, type, multipartFile);
+        file.setFileSourceType(FileSourceTypeCode.TESTCASE);
+        file.setFileSourceId(testcaseId);
+        return new ProjectFileDTO(projectFileRepository.save(file.toEntity()));
     }
 
     public ProjectFileDTO selectProjectFile(Long projectId, Long imageId, String uuid) {
@@ -66,14 +83,6 @@ public class ProjectFileService {
             }
             projectFileRepository.delete(projectFile);
         }));
-    }
-
-    public String createImage(Long projectId, MultipartFile file) {
-        if (allowedExtensions.stream().noneMatch(p -> Objects.requireNonNull(file.getOriginalFilename()).endsWith(p))) {
-            throw new ServiceException("error.image.upload.now.supported.extension");
-        }
-
-        return fileUtil.storeFile(projectId, file);
     }
 
 

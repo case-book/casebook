@@ -159,4 +159,15 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
         testrun.setProject(project);
         return testrun;
     }
+
+    public boolean containsTester(Long userId) {
+        if (testcaseGroups == null) {
+            return false;
+        }
+        return testcaseGroups
+            .stream()
+            .anyMatch(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases()
+                .stream()
+                .anyMatch(testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)));
+    }
 }

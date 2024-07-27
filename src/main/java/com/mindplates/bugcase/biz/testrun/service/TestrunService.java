@@ -31,7 +31,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunHookDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunListDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunMessageChannelDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunStatusDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseCommentDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseIdTestrunIdDTO;
@@ -44,7 +44,6 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunMessageChannel;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunProfile;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
-import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
@@ -71,7 +70,6 @@ import com.mindplates.bugcase.common.service.MessageChannelService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.MappingUtil;
-import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -90,7 +88,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.io.Resource;
@@ -138,6 +135,7 @@ public class TestrunService {
     private final SpaceVariableService spaceVariableService;
     private final UserCachedService userCachedService;
     private final CacheManager cacheManager;
+    private final TestrunCachedService testrunCachedService;
 
     private final Random random = new Random();
 
@@ -151,7 +149,8 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
     public TestrunDTO createTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
 
@@ -167,7 +166,7 @@ public class TestrunService {
         List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
         if (!testrunUsers.isEmpty()) {
             // 프로젝트의 모든 테스트케이스 조회 및 정리
-            List<Testcase> projectAllTestcases = testcaseRepository.findByProjectId(projectId);;
+            List<Testcase> projectAllTestcases = testcaseRepository.findByProjectId(projectId);
             Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
             projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
 
@@ -213,12 +212,6 @@ public class TestrunService {
         return new TestrunDTO(result);
     }
 
-    @Cacheable(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
-    public List<TestrunListDTO> selectOpenedProjectTestrunList(String spaceCode, long projectId) {
-        List<Testrun> list = testrunRepository.findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true);
-        return list.stream().map(TestrunListDTO::new).collect(Collectors.toList());
-    }
-
     public List<TestrunListDTO> selectClosedProjectTestrunList(long projectId, LocalDateTime start, LocalDateTime end) {
         List<Testrun> list = testrunRepository.findProjectTestrunByOpenedAndRange(projectId, false, start, end);
         return list.stream().map(TestrunListDTO::new).collect(Collectors.toList());
@@ -242,8 +235,8 @@ public class TestrunService {
 
     @Transactional
     @Caching(evict = {
-        // @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
     public TestrunListDTO updateTestrunInfo(String spaceCode, TestrunDTO testrunDTO) {
 
@@ -295,7 +288,8 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
     public void deleteProjectTestrunInfo(String spaceCode, long projectId, long testrunId) {
         List<ProjectFile> files = projectFileRepository.findAllByProjectIdAndFileSourceTypeAndFileSourceId(projectId, FileSourceTypeCode.TESTRUN, testrunId);
@@ -327,7 +321,8 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
     public TestrunDTO updateProjectTestrunStatusClosed(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -358,7 +353,8 @@ public class TestrunService {
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
     public void updateProjectTestrunStatusOpened(String spaceCode, long projectId, long testrunId) {
         Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
@@ -377,7 +373,8 @@ public class TestrunService {
             List<ProjectUserDTO> testers = getTester(project, testrun.getTestcaseGroups());
             testrun.getMessageChannels().forEach(testrunMessageChannel -> {
                 TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                messageChannelService.sendTestrunReOpenMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(), testers);
+                messageChannelService.sendTestrunReOpenMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, testrun.getProject().getId(), testrun.getId(), testrun.getName(),
+                    testers);
             });
         }
 
@@ -397,7 +394,8 @@ public class TestrunService {
             testrunProfiles.forEach(profile -> {
                 Optional<SpaceProfileVariableDTO> spaceProfileVariableDTO = spaceProfileVariables
                     .stream()
-                    .filter((spaceProfileVariable) -> spaceProfileVariable.getSpaceVariable().getId().equals(spaceVariable.getId()) && spaceProfileVariable.getSpaceProfile().getId().equals(profile.getProfile().getId())).findFirst();
+                    .filter((spaceProfileVariable) -> spaceProfileVariable.getSpaceVariable().getId().equals(spaceVariable.getId()) && spaceProfileVariable.getSpaceProfile().getId()
+                        .equals(profile.getProfile().getId())).findFirst();
 
                 if (spaceProfileVariableDTO.isPresent() && spaceProfileVariableDTO.get().getValue() != null) {
                     variables.put(spaceVariable.getName(), spaceProfileVariableDTO.get().getValue());
@@ -412,7 +410,7 @@ public class TestrunService {
         UserDTO createdUser = null;
         if (testcase.getCreatedBy() != null) {
             try {
-                createdUser =  userCachedService.getUserInfo(testcase.getCreatedBy());
+                createdUser = userCachedService.getUserInfo(testcase.getCreatedBy());
             } catch (Exception e) {
                 // ignore
             }
@@ -420,7 +418,7 @@ public class TestrunService {
         UserDTO lastUpdatedUser = null;
         if (testcase.getLastUpdatedBy() != null) {
             try {
-                lastUpdatedUser =  userCachedService.getUserInfo(testcase.getLastUpdatedBy());
+                lastUpdatedUser = userCachedService.getUserInfo(testcase.getLastUpdatedBy());
             } catch (Exception e) {
                 // ignore
             }
@@ -452,15 +450,17 @@ public class TestrunService {
             }
         });
 
-        TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo =  testrunRepository.findTestrunTestcaseGroupTestcaseId(testrunTestcaseGroupTestcase.getId());
+        TestrunTestcaseGroupTestcaseIdTestrunIdDTO testrunInfo = testrunRepository.findTestrunTestcaseGroupTestcaseId(testrunTestcaseGroupTestcase.getId());
 
         return new TestrunTestcaseGroupTestcaseDTO(testrunTestcaseGroupTestcase, createdUser, lastUpdatedUser, testrunInfo);
     }
 
     public List<TestrunTestcaseGroupTestcaseHistoryDTO> selectTestcaseTestrunResultHistory(String spaceCode, long projectId, long testcaseId, Long currentTestrunId, Integer pageNo) {
         Pageable pageInfo = PageRequest.of(Optional.ofNullable(pageNo).orElse(0), 10);
-        List<TestrunTestcaseGroupTestcaseHistoryDTO> testrunTestcaseGroupTestcaseHistoryList = testrunTestcaseGroupTestcaseRepository.selectTopNTestrunTestcaseGroupTestcaseHistoryList(testcaseId, currentTestrunId, pageInfo);
-        List<TestrunTestcaseGroupTestcaseIdTestrunIdDTO> testrunTestcaseGroupTestcaseIdsList = testrunRepository.findTestrunTestcaseGroupTestcaseIdsList(testrunTestcaseGroupTestcaseHistoryList.stream().map(TestrunTestcaseGroupTestcaseHistoryDTO::getId).collect(Collectors.toList()));
+        List<TestrunTestcaseGroupTestcaseHistoryDTO> testrunTestcaseGroupTestcaseHistoryList = testrunTestcaseGroupTestcaseRepository.selectTopNTestrunTestcaseGroupTestcaseHistoryList(testcaseId,
+            currentTestrunId, pageInfo);
+        List<TestrunTestcaseGroupTestcaseIdTestrunIdDTO> testrunTestcaseGroupTestcaseIdsList = testrunRepository.findTestrunTestcaseGroupTestcaseIdsList(
+            testrunTestcaseGroupTestcaseHistoryList.stream().map(TestrunTestcaseGroupTestcaseHistoryDTO::getId).collect(Collectors.toList()));
 
         testrunTestcaseGroupTestcaseHistoryList.forEach(testcaseGroupTestcaseHistory -> {
             testrunTestcaseGroupTestcaseIdsList.stream()
@@ -472,8 +472,12 @@ public class TestrunService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
-    public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(String spaceCode, long projectId, long testrunId, TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
+    })
+    public TestrunTestcaseGroupTestcaseItemDTO updateTestrunTestcaseGroupTestcaseItem(String spaceCode, long projectId, long testrunId,
+        TestrunTestcaseGroupTestcaseItemDTO testrunTestcaseGroupTestcaseItem) {
         validateOpened(testrunId);
         TestrunTestcaseGroupTestcaseItem target = testrunTestcaseGroupTestcaseItem.toEntity();
         TestrunTestcaseGroupTestcaseItem result = testrunTestcaseGroupTestcaseItemRepository.save(target);
@@ -484,14 +488,14 @@ public class TestrunService {
     public boolean updateTestrunTestcaseResult(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
         validateOpened(testrunId);
 
-        TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         TestrunCountSummaryDTO countSummary = testrunRepository.findTestrunCountSummary(testrunId);
         countSummary.updateCount(targetTestrunTestcaseGroupTestcase, testResultCode);
         testrunRepository.updateTestrunCountSummary(testrunId, countSummary.getPassedTestcaseCount(), countSummary.getFailedTestcaseCount(), countSummary.getUntestableTestcaseCount());
         targetTestrunTestcaseGroupTestcase.setTestResult(testResultCode);
         testrunTestcaseGroupTestcaseRepository.save(targetTestrunTestcaseGroupTestcase);
-
 
         MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
         participantData.addData("testrunTestcaseGroupTestcaseId", testrunTestcaseGroupTestcaseId);
@@ -511,9 +515,14 @@ public class TestrunService {
                 projectCache.evictIfPresent(spaceCode + "," + projectId);
             }
 
-            Cache projectOpenedTestrunsCache = cacheManager.getCache(CacheConfig.PROJECT_OPENED_TESTRUNS);
-            if (projectOpenedTestrunsCache != null) {
-                projectOpenedTestrunsCache.evictIfPresent(spaceCode + "," + projectId);
+            Cache projectOpenedSimpleTestrunsCache = cacheManager.getCache(CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS);
+            if (projectOpenedSimpleTestrunsCache != null) {
+                projectOpenedSimpleTestrunsCache.evictIfPresent(spaceCode + "," + projectId);
+            }
+
+            Cache projectOpenedDetailTestrunsCache = cacheManager.getCache(CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS);
+            if (projectOpenedDetailTestrunsCache != null) {
+                projectOpenedDetailTestrunsCache.evictIfPresent(spaceCode + "," + projectId);
             }
 
             List<TestrunMessageChannel> messageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
@@ -530,15 +539,21 @@ public class TestrunService {
 
     @Transactional
     public void updateTestrunTestcaseResult(String spaceCode, long projectId, String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, TestResultCode resultCode, String comment) {
-        long testrunId = testrunRepository.findTestrunIdByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
-        long testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseRepository.findTestrunTestcaseGroupTestcaseIdByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(projectId, testrunId, "TC" + testcaseSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
+        long testrunId = testrunRepository.findTestrunIdByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
+        long testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseRepository.findTestrunTestcaseGroupTestcaseIdByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
+            projectId, testrunId, "TC" + testcaseSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
         updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, resultCode);
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS),
+    })
     public void updateTestrunTestcaseTester(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, long testerId, long actorId) {
-        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Long beforeUserId = testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null;
         testrunTestcaseGroupTestcase.setTester(User.builder().id(testerId).build());
 
@@ -555,12 +570,15 @@ public class TestrunService {
         List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
         if (!testrunMessageChannels.isEmpty()) {
             validateOpened(testrunId);
-            String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(beforeUserId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
-            String afterUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId)).map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
+            String beforeUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(beforeUserId))
+                .map(projectUserDTO -> projectUserDTO.getUser().getName()).findAny().orElse("");
+            String afterUserName = project.getUsers().stream().filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId)).map(projectUserDTO -> projectUserDTO.getUser().getName())
+                .findAny().orElse("");
 
             testrunMessageChannels.forEach(testrunMessageChannel -> {
                 TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunName, testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, actorName);
+                messageChannelService.sendTestrunTesterChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId,
+                    testrunName, testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, actorName);
             });
         }
 
@@ -573,7 +591,10 @@ public class TestrunService {
     }
 
     @Transactional
-    @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS)
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS),
+    })
     public void updateTestrunTestcaseTesterRandom(String spaceCode, long projectId, long testrunId, Long testerId, Long targetId, TesterChangeTargetCode target, String reason) {
 
         validateOpened(testrunId);
@@ -614,7 +635,8 @@ public class TestrunService {
             if (!testrunMessageChannels.isEmpty()) {
                 testrunMessageChannels.forEach(testrunMessageChannel -> {
                     TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrunName, testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
+                    messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, targetId, testrunName,
+                        testrunTestcaseGroupTestcase.getTestcase().getName(), beforeUserName, afterUserName, reason);
                 });
             }
 
@@ -627,73 +649,113 @@ public class TestrunService {
         } else if (target.equals(TesterChangeTargetCode.ALL)) {
 
             List<TestrunTestcaseGroupTestcaseTesterDTO> targetTestcaseTesterList = testrunTestcaseGroupTestcaseRepository.findTestrunTestcaseGroupTestcaseByTesterId(testrunId, testerId);
-                for (TestrunTestcaseGroupTestcaseTesterDTO testcase : targetTestcaseTesterList) {
-                    if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTesterId() == null) || (testcase.getTesterId() != null && testcase.getTesterId().equals(testerId)))) {
-                        int index = random.nextInt(userIds.size());
-                        long nextTesterId = userIds.get(index);
-                        testrunTestcaseGroupTestcaseRepository.updateTesterById(testcase.getId(), nextTesterId);
+            for (TestrunTestcaseGroupTestcaseTesterDTO testcase : targetTestcaseTesterList) {
+                if (TestResultCode.UNTESTED.equals(testcase.getTestResult()) && ((testerId == null && testcase.getTesterId() == null) || (testcase.getTesterId() != null && testcase.getTesterId()
+                    .equals(testerId)))) {
+                    int index = random.nextInt(userIds.size());
+                    long nextTesterId = userIds.get(index);
+                    testrunTestcaseGroupTestcaseRepository.updateTesterById(testcase.getId(), nextTesterId);
 
-                        String afterUserName = project.getUsers().stream()
-                            .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(nextTesterId))
-                            .map(projectUserDTO -> projectUserDTO.getUser().getName())
-                            .findAny().orElse("");
+                    String afterUserName = project.getUsers().stream()
+                        .filter(projectUserDTO -> projectUserDTO.getUser().getId().equals(nextTesterId))
+                        .map(projectUserDTO -> projectUserDTO.getUser().getName())
+                        .findAny().orElse("");
 
-                        if (!testrunMessageChannels.isEmpty()) {
-                            testrunMessageChannels.forEach(testrunMessageChannel -> {
-                                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                                messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(),
-                                    testrunName, testcase.getTestcaseName(), beforeUserName, afterUserName, reason);
-                            });
-                        }
-
-                        MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-TESTER-CHANGED").build();
-                        participantData.addData("testrunTestcaseGroupTestcaseId", testcase.getId());
-                        participantData.addData("testerId", nextTesterId);
-                        messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
+                    if (!testrunMessageChannels.isEmpty()) {
+                        testrunMessageChannels.forEach(testrunMessageChannel -> {
+                            TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                            messageChannelService.sendTestrunTesterRandomChangeMessage(messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId, testrunId, testcase.getId(),
+                                testrunName, testcase.getTestcaseName(), beforeUserName, afterUserName, reason);
+                        });
                     }
-                }
 
-                testrunUserRepository.deleteByTestrunIdAndUserId(testrunId, testerId);
+                    MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-TESTER-CHANGED").build();
+                    participantData.addData("testrunTestcaseGroupTestcaseId", testcase.getId());
+                    participantData.addData("testerId", nextTesterId);
+                    messageSendService.sendTo("projects/" + projectId + "/testruns/" + testrunId, participantData);
+                }
+            }
+
+            testrunUserRepository.deleteByTestrunIdAndUserId(testrunId, testerId);
         }
 
     }
 
 
+    public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
+        List<TestrunDTO> projectOpenedTestruns = testrunCachedService.selectOpenedProjectTestrunDetailList(spaceCode, projectId);
+
+        return projectOpenedTestruns
+            .stream()
+            .filter(testrun -> testrun.containsTester(userId))
+            .peek(testrun -> {
+                List<TestrunTestcaseGroupDTO> userTestcaseGroupList = testrun.getTestcaseGroups()
+                    .stream()
+                    .filter(
+                        testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()
+                            .anyMatch((testrunTestcaseGroupTestcase -> userId
+                                .equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null))))
+                    .peek((testrunTestcaseGroup -> {
+                        List<TestrunTestcaseGroupTestcaseDTO> userTestcaseList = testrunTestcaseGroup.getTestcases().stream()
+                            .filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)))
+                            .collect(Collectors.toList());
+                        testrunTestcaseGroup.setTestcases(userTestcaseList);
+                    })).collect(Collectors.toList());
+                testrun.setTestcaseGroups(userTestcaseGroupList);
+            })
+            .collect(Collectors.toList());
+
+    }
+
+    public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
+        List<Testrun> list = testrunRepository.findAllByProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(projectId, start, end);
+        return list.stream().map(testrun -> new TestrunDTO(testrun, false)).collect(Collectors.toList());
+    }
+
+    public void notifyTestrun(String spaceCode, Long projectId, Long testrunId) {
+        LocalDateTime testrunEndDateTime = testrunRepository.findEndDateTimeById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        String testrunName = testrunRepository.findNameById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
+        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
+
+        // testrunEndDateTime과 현재 시간과의 시간 차이를 분으로 계산
+        long diffMinutes = 0;
+        if (testrunEndDateTime != null) {
+            diffMinutes = Duration.between(LocalDateTime.now(), testrunEndDateTime).toMinutes();
+        }
+
+        if (!testrunMessageChannels.isEmpty()) {
+
+            Map<Long, Integer> userRemainCount = new HashMap<>();
+            List<TestrunTestcaseGroupTestcaseUserTestResultDTO> list = selectUntestedTestrunTestcaseGroupTestcaseList(testrunId);
+            for (TestrunTestcaseGroupTestcaseUserTestResultDTO userTestResult : list) {
+                Long testerId = userTestResult.getTester() != null ? userTestResult.getTester().getId() : null;
+                if (userRemainCount.containsKey(testerId)) {
+                    userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
+                } else {
+                    userRemainCount.put(testerId, 1);
+                }
+
+            }
+
+            String message;
+            if (diffMinutes > 0) {
+                message = messageSourceAccessor.getMessage("testrun.m.left", new Object[]{testrunName, diffMinutes});
+            } else {
+                message = messageSourceAccessor.getMessage("testrun.remain.info", new Object[]{testrunName});
+            }
+
+            testrunMessageChannels.forEach(testrunMessageChannel -> {
+                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
+                messageChannelService.sendTestrunRemainInfo(
+                    messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId,
+                    message, testrunId, testrunName, project.getUsers(), userRemainCount);
+            });
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 
 
     public List<TestrunDTO> selectToBeClosedTestrunList(LocalDateTime endDateTime) {
@@ -702,35 +764,10 @@ public class TestrunService {
     }
 
 
-    public List<TestrunDTO> selectProjectTestrunHistoryList(String spaceCode, long projectId, LocalDateTime start, LocalDateTime end) {
-        List<Testrun> list = testrunRepository
-            .findAllByProjectSpaceCodeAndProjectIdAndStartDateTimeAfterAndEndDateTimeBeforeOrderByStartDateTimeDescIdDesc(spaceCode, projectId, start,
-                end);
-        return list.stream().map(testrun -> new TestrunDTO(testrun, false)).collect(Collectors.toList());
-    }
-
-
-
     public List<TestrunMessageChannelDTO> selectTestrunMessageChannelList(long testrunId) {
         List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);
         return testrunMessageChannels.stream().map(TestrunMessageChannelDTO::new).collect(Collectors.toList());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void sendTestrunStatusChangeMessage(String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, boolean done) {
@@ -758,18 +795,6 @@ public class TestrunService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     private List<ProjectUserDTO> getTester(Project project, List<TestrunTestcaseGroup> testcaseGroups) {
         return testcaseGroups.stream().flatMap(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream())
             .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester() != null)
@@ -786,45 +811,10 @@ public class TestrunService {
     }
 
 
-    public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
-        List<Testrun> testruns = testrunRepository
-            .findAllByProjectSpaceCodeAndProjectIdAndOpenedOrderByStartDateTimeDescIdDesc(spaceCode, projectId, true);
-
-        List<Testrun> list = testruns
-            .stream()
-            .filter(testrun -> testrun.containsTester(userId))
-            .map(testrun -> {
-                List<TestrunTestcaseGroup> userTestcaseGroupList = testrun.getTestcaseGroups()
-                    .stream()
-                    .filter(
-                        testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases().stream()
-                            .anyMatch((testrunTestcaseGroupTestcase -> userId
-                                .equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null))))
-                    .map((testrunTestcaseGroup -> {
-                        List<TestrunTestcaseGroupTestcase> userTestcaseList = testrunTestcaseGroup.getTestcases().stream()
-                            .filter((testrunTestcaseGroupTestcase -> userId.equals(testrunTestcaseGroupTestcase.getTester() != null ? testrunTestcaseGroupTestcase.getTester().getId() : null)))
-                            .collect(Collectors.toList());
-                        testrunTestcaseGroup.setTestcases(userTestcaseList);
-                        return testrunTestcaseGroup;
-                    })).collect(Collectors.toList());
-                testrun.setTestcaseGroups(userTestcaseGroupList);
-                return testrun;
-            })
-            .collect(Collectors.toList());
-
-        return list.stream().map(testrun -> new TestrunDTO(testrun, true)).collect(Collectors.toList());
-    }
-
-
     public List<Long> selectTestcaseIncludeTestrunList(String projectToken, Long testcaseSeqNumber) {
         Long projectId = projectService.selectProjectId(projectToken);
         return testrunRepository.findAllByProjectIdAndTestcaseSeqId(projectId, "TC" + testcaseSeqNumber);
     }
-
-
-
-
-
 
 
     @Transactional
@@ -834,53 +824,13 @@ public class TestrunService {
         return new TestrunHookDTO(target);
     }
 
-    public void notifyTestrun(String spaceCode, Long projectId, Long testrunId) {
-        Testrun testrun = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        ProjectDTO project = projectCachedService.selectProjectInfo(spaceCode, projectId);
-
-        LocalDateTime testrunEndDateTime = testrun.getEndDateTime();
-        // testrunEndDateTime과 현재 시간과의 시간 차이를 분으로 계산
-        long diffMinutes = 0;
-        if (testrunEndDateTime != null) {
-            diffMinutes = Duration.between(LocalDateTime.now(), testrunEndDateTime).toMinutes();
-        }
-
-        if (testrun.getMessageChannels() != null && !testrun.getMessageChannels().isEmpty()) {
-
-            Map<Long, Integer> userRemainCount = new HashMap<>();
-            List<TestrunTestcaseGroupTestcaseUserTestResultDTO> list = selectUntestedTestrunTestcaseGroupTestcaseList(testrun.getId());
-            for (TestrunTestcaseGroupTestcaseUserTestResultDTO userTestResult : list) {
-                Long testerId = userTestResult.getTester() != null ? userTestResult.getTester().getId() : null;
-                if (userRemainCount.containsKey(testerId)) {
-                    userRemainCount.put(testerId, userRemainCount.get(testerId) + 1);
-                } else {
-                    userRemainCount.put(testerId, 1);
-                }
-
-            }
-
-            String message;
-            if (diffMinutes > 0) {
-                message = messageSourceAccessor.getMessage("testrun.m.left", new Object[]{testrun.getName(), diffMinutes});
-            } else {
-                message = messageSourceAccessor.getMessage("testrun.remain.info", new Object[]{testrun.getName()});
-            }
-
-            testrun.getMessageChannels().forEach(testrunMessageChannel -> {
-                TestrunMessageChannelDTO messageChannel = new TestrunMessageChannelDTO(testrunMessageChannel);
-                messageChannelService.sendTestrunRemainInfo(
-                    messageChannel.getMessageChannel().getMessageChannel(), spaceCode, projectId,
-                    message, testrun.getId(), testrun.getName(), project.getUsers(), userRemainCount);
-            });
-        }
-
-
-    }
 
     @Transactional
     @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS),
+
     })
     public void deleteProjectTestrun(String spaceCode, long projectId) {
         testrunMessageChannelRepository.deleteByProjectId(projectId);

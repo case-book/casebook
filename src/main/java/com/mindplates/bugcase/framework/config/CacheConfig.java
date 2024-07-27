@@ -55,8 +55,11 @@ public class CacheConfig {
     public static final int USER_EXPIRE_SEC = 60 * 60 * 24 * 7;
 
 
-    public static final String PROJECT_OPENED_TESTRUNS = "project_opened_testruns";
-    public static final int PROJECT_OPENED_TESTRUNS_EXPIRE_SEC = 60 * 60 * 24;
+    public static final String PROJECT_OPENED_SIMPLE_TESTRUNS = "project_opened_simple_testruns";
+    public static final int PROJECT_OPENED_SIMPLE_TESTRUNS_EXPIRE_SEC = 60 * 60 * 24;
+
+    public static final String PROJECT_OPENED_DETAIL_TESTRUNS = "project_opened_detail_testruns";
+    public static final int PROJECT_OPENED_DETAIL_TESTRUNS_EXPIRE_SEC = 60 * 60 * 24;
 
 
     public static final String TESTRUN_RESERVATIONS = "testrun_reservations";
@@ -93,8 +96,10 @@ public class CacheConfig {
         cacheConfigurations.put(TESTCASE_GROUPS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(TESTCASE_GROUPS_EXPIRE_SEC)));
         cacheConfigurations.put(PROJECT_TESTCASE, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(PROJECT_TESTCASE_EXPIRE_SEC)));
         cacheConfigurations.put(USER, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(USER_EXPIRE_SEC)));
-        cacheConfigurations.put(PROJECT_OPENED_TESTRUNS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(
-            PROJECT_OPENED_TESTRUNS_EXPIRE_SEC)));
+        cacheConfigurations.put(PROJECT_OPENED_SIMPLE_TESTRUNS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(
+            PROJECT_OPENED_SIMPLE_TESTRUNS_EXPIRE_SEC)));
+        cacheConfigurations.put(PROJECT_OPENED_DETAIL_TESTRUNS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(
+            PROJECT_OPENED_DETAIL_TESTRUNS_EXPIRE_SEC)));
         cacheConfigurations.put(TESTRUN_RESERVATIONS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(
             TESTRUN_RESERVATIONS_EXPIRE_SEC)));
         cacheConfigurations.put(TESTRUN_ITERATIONS, RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader()).entryTtl(Duration.ofSeconds(

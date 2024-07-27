@@ -107,14 +107,14 @@ public class ProjectController {
     @Operation(description = "프로젝트 탈퇴")
     @DeleteMapping("/{projectId}/users/my")
     public ResponseEntity<?> deleteProjectUserInfo(@PathVariable String spaceCode, @PathVariable long projectId) {
-        projectService.deleteProjectUser(spaceCode, projectId, SessionUtil.getUserId());
+        projectService.deleteProjectUser(spaceCode, projectId, SessionUtil.getUserId(true));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/{projectId}/images")
     public ProjectFileResponse createProjectImage(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam("file") MultipartFile file, @RequestParam("name") String name,
         @RequestParam("size") Long size, @RequestParam("type") String type) {
-        ProjectFileDTO result = projectFileService.createProjectFile(new ProjectFileDTO(projectId, name, size, type, UUID.randomUUID().toString(), FileSourceTypeCode.PROJECT, file));
+        ProjectFileDTO result = projectFileService.createProjectFile(projectId, name, size, type, file);
         return new ProjectFileResponse(result, spaceCode, projectId);
     }
 
