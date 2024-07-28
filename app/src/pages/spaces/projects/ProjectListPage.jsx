@@ -16,14 +16,14 @@ function ProjectListPage() {
   const [projects, setProjects] = useState([]);
 
   const getSpaceInfo = () => {
-    SpaceService.selectSpaceName(spaceCode, name => {
+    SpaceService.selectSpaceName(spaceCode || 'MOSOL', name => {
       setSpaceName(name);
     });
   };
 
   useEffect(() => {
     getSpaceInfo();
-    ProjectService.selectMyProjectList(spaceCode, list => {
+    ProjectService.selectMyProjectList(spaceCode || 'MOSOL', list => {
       setProjects(list);
     });
   }, [spaceCode]);

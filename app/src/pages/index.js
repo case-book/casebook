@@ -50,6 +50,7 @@ import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIt
 import ReleaseListPage from './spaces/projects/releases/ReleaseListPage';
 import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
 import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
+import MainPage from './main/MainPage/MainPage';
 
 export {
   ProjectDashBoardPage,
@@ -95,4 +96,5 @@ export {
   ReleaseInfoPage,
   SpaceVariableEditPage,
   AiHistoryListPage,
+  MainPage,
 };

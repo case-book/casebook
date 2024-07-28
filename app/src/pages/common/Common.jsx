@@ -27,7 +27,7 @@ function Common() {
     configStore: { releasePopup, closeReleasePopup, version, setVersion },
     socketStore: { topics, messageHandlers, addTopic, removeTopic, addMessageHandler, removeMessageHandler, setSocketClient },
     controlStore: { requestLoading, confirm, message, error, requestMessages },
-    contextStore: { spaceCode, projectId, setSpaceCode, setProjectId },
+    contextStore: { spaceCode, projectId, setProjectId },
   } = useStores();
 
   const { t } = useTranslation();
@@ -53,7 +53,7 @@ function Common() {
     }
 
     if (spaceCode !== nextSpaceCode) {
-      setSpaceCode(nextSpaceCode);
+      // setSpaceCode(nextSpaceCode);
     }
 
     if (projectId !== nextProjectId) {

@@ -1,0 +1,65 @@
+.space-info-wrapper {
+  display: flex;
+  line-height: 1;
+  padding: 16px;
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  > div {
+    align-self: flex-start;
+  }
+  .space-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+
+    border-radius: 4px;
+    margin-right: 8px;
+    flex-grow: 0;
+    > span {
+      align-self: center;
+      font-size: 18px;
+    }
+  }
+
+  .space-and-user-info {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+    .space-info {
+      font-size: 16px;
+      display: flex;
+      flex-grow: 1;
+      overflow: hidden;
+
+      > span {
+        align-self: center;
+
+        &.space-name {
+
+
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .bullet {
+        font-size: 13px;
+        margin-left: 4px;
+      }
+    }
+
+    .user-info {
+      font-size: 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
