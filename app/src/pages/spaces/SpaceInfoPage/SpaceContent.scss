@@ -44,6 +44,27 @@
     }
   }
 
+  .prompts {
+    list-style: disc;
+    padding: 0;
+    margin: 0 0 0 2rem;
+
+    > li {
+      > div {
+        padding: 4px 0;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+        > div {
+          align-self: center;
+        }
+      }
+    }
+  }
+
   table.applicant-list {
     td {
       &.message {
@@ -116,22 +137,21 @@
       &.request-status {
         white-space: nowrap;
         > div {
-          width: 50px;
           text-align: center;
-          padding: 6px;
+          padding: 6px 10px;
         }
 
         &.REQUEST,
         &.REQUEST_AGAIN {
           > div {
-            background-color: var(--warning-color);
+            background-color: var(--primary-color);
             color: var(--primary-text-color);
           }
         }
 
         &.APPROVAL {
           > div {
-            _background-color: var(--primary-color);
+            background-color: var(--primary-color);
             _color: var(--primary-text-color);
           }
         }

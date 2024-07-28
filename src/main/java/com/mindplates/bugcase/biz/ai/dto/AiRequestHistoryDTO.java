@@ -2,10 +2,11 @@ package com.mindplates.bugcase.biz.ai.dto;
 
 
 import com.mindplates.bugcase.biz.ai.entity.AiRequestHistory;
-import com.mindplates.bugcase.biz.ai.entity.Llm;
-import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
+import com.mindplates.bugcase.biz.ai.entity.OpenAiModel;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ import org.springframework.http.HttpStatus;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AiRequestHistoryDTO extends CommonDTO {
+public class AiRequestHistoryDTO extends CommonDTO implements IDTO<AiRequestHistory> {
 
     Long id;
     private OpenAiModelDTO aiModel;
@@ -40,5 +41,18 @@ public class AiRequestHistoryDTO extends CommonDTO {
                 .name(aiRequestHistory.getRequester().getName())
                 .build();
         }
+    }
+
+    @Override
+    public AiRequestHistory toEntity() {
+        return AiRequestHistory.builder()
+            .id(id)
+            .model(OpenAiModel.builder().id(aiModel.getId()).build())
+            .httpStatus(httpStatus)
+            .request(request)
+            .response(response)
+            .requester(User.builder().id(requester.getId()).build())
+            .build();
+
     }
 }

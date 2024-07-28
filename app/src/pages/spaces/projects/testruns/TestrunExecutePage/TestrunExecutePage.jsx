@@ -134,8 +134,6 @@ function TestrunExecutePage() {
         return;
       }
 
-      join();
-
       setTestrun(info);
 
       if (!info.opened) {
@@ -160,6 +158,10 @@ function TestrunExecutePage() {
                 return true;
               }
 
+              if (tester === 'none') {
+                return !testcase.testerId;
+              }
+
               return String(testcase.testerId) === String(tester);
             }) || [],
         };
@@ -182,6 +184,7 @@ function TestrunExecutePage() {
       return;
     }
     getTestrunInfo();
+    join();
   }, [project, testrunId]);
 
   useEffect(() => {
@@ -201,6 +204,10 @@ function TestrunExecutePage() {
         testcases: d.testcases?.filter(testcase => {
           if (tester === '') {
             return true;
+          }
+
+          if (tester === 'none') {
+            return !testcase.testerId;
           }
 
           return String(testcase.testerId) === String(tester);
@@ -226,27 +233,31 @@ function TestrunExecutePage() {
 
     const testcaseGroup = testrun?.testcaseGroups.find(d => d.testcases?.find(testcase => testcase.id === testrunTestcaseGroupTestcaseId));
 
-    TestrunService.selectTestrunTestcaseGroupTestcase(
-      spaceCode,
-      projectId,
-      testrunId,
-      testcaseGroup.id,
-      testrunTestcaseGroupTestcaseId,
-      info => {
-        if (loading) {
-          setTimeout(() => {
-            setContentLoading(false);
-          }, 200);
-        }
+    if (testcaseGroup) {
+      TestrunService.selectTestrunTestcaseGroupTestcase(
+        spaceCode,
+        projectId,
+        testrunId,
+        testcaseGroup.id,
+        testrunTestcaseGroupTestcaseId,
+        info => {
+          if (loading) {
+            setTimeout(() => {
+              setContentLoading(false);
+            }, 200);
+          }
 
-        setContent(info);
-      },
-      () => {
-        if (loading) {
-          setContentLoading(false);
-        }
-      },
-    );
+          setContent(info);
+        },
+        () => {
+          if (loading) {
+            setContentLoading(false);
+          }
+        },
+      );
+    } else {
+      setContentLoading(false);
+    }
   };
 
   const getContent = (loading = true) => {
@@ -272,7 +283,7 @@ function TestrunExecutePage() {
     } else {
       setContent(null);
     }
-  }, [testrun, id]);
+  }, [testrun.id, id]);
 
   const onClosed = () => {
     dialogUtil.setConfirm(
@@ -343,24 +354,6 @@ function TestrunExecutePage() {
     return TestrunService.createImage(spaceCode, projectId, testrunId, name, size, pType, file);
   };
 
-  /*
-  const onSaveTestResultItems = nextContent => {
-    TestrunService.updateTestrunResultItems(
-      spaceCode,
-      projectId,
-      testrunId,
-      nextContent?.testrunTestcaseGroupId || content.testrunTestcaseGroupId,
-      nextContent.id || content.id,
-      {
-        testrunTestcaseGroupTestcaseItemRequests: nextContent ? nextContent.testrunTestcaseItems : content.testrunTestcaseItems,
-      },
-      () => {
-        getTestrunInfo();
-      },
-    );
-  };
-   */
-
   const onSaveTestResultItem = target => {
     TestrunService.updateTestrunResultItem(spaceCode, projectId, testrunId, target.testrunTestcaseGroupTestcaseId, target.testcaseTemplateItemId, target, () => {
       // getTestrunInfo();
@@ -374,8 +367,6 @@ function TestrunExecutePage() {
         dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('테스트 완료'), t('모든 테스트케이스의 결과가 입력되었습니다. 테스트런 리포트 화면으로 이동합니다.'), () => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/reports/${testrunId}`);
         });
-      } else {
-        getTestrunInfo();
       }
     });
   };
@@ -417,28 +408,30 @@ function TestrunExecutePage() {
       }
 
       case 'TESTRUN-USER-LEAVE': {
-        const nextParicipants = lastParicipants.current.slice(0);
-        const userIndex = nextParicipants.findIndex(d => d.id === data?.data?.participant.id);
+        if (lastParicipants.current) {
+          const nextParicipants = lastParicipants.current?.slice(0);
+          const userIndex = nextParicipants.findIndex(d => d.id === data?.data?.participant.id);
 
-        if (userIndex > -1) {
-          nextParicipants.splice(userIndex, 1);
+          if (userIndex > -1) {
+            nextParicipants.splice(userIndex, 1);
 
-          setParicipants(nextParicipants);
-          lastParicipants.current = nextParicipants;
-        }
+            setParicipants(nextParicipants);
+            lastParicipants.current = nextParicipants;
+          }
 
-        const nextWatcherInfo = { ...watcherInfo };
+          const nextWatcherInfo = { ...watcherInfo };
 
-        const testcaseIds = Object.keys(nextWatcherInfo);
-        for (let inx = testcaseIds.length - 1; inx >= 0; inx -= 1) {
-          for (let jnx = nextWatcherInfo[testcaseIds[inx]].length - 1; jnx >= 0; jnx -= 1) {
-            if (nextWatcherInfo[testcaseIds[inx]][jnx].userId === data?.data?.participant.userId) {
-              nextWatcherInfo[testcaseIds[inx]].splice(jnx, 1);
+          const testcaseIds = Object.keys(nextWatcherInfo);
+          for (let inx = testcaseIds.length - 1; inx >= 0; inx -= 1) {
+            for (let jnx = nextWatcherInfo[testcaseIds[inx]].length - 1; jnx >= 0; jnx -= 1) {
+              if (nextWatcherInfo[testcaseIds[inx]][jnx].userId === data?.data?.participant.userId) {
+                nextWatcherInfo[testcaseIds[inx]].splice(jnx, 1);
+              }
             }
           }
-        }
 
-        setWatcherInfo(nextWatcherInfo);
+          setWatcherInfo(nextWatcherInfo);
+        }
 
         break;
       }
@@ -483,6 +476,12 @@ function TestrunExecutePage() {
 
         setTestrun(nextTestrun);
 
+        if (type === ITEM_TYPE.TESTCASE && Number(id) === content.id) {
+          const nextContent = { ...content };
+          nextContent.testResult = data.data.testResult;
+          setContent(nextContent);
+        }
+
         const filteredTestcaseGroups = nextTestrun.testcaseGroups?.map(d => {
           return {
             ...d,
@@ -490,6 +489,10 @@ function TestrunExecutePage() {
               d.testcases?.filter(testcase => {
                 if (tester === '') {
                   return true;
+                }
+
+                if (tester === 'none') {
+                  return !testcase.testerId;
                 }
 
                 return String(testcase.testerId) === String(tester);
@@ -507,6 +510,26 @@ function TestrunExecutePage() {
         const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
         setTestcaseGroups(groups);
 
+        break;
+      }
+
+      case 'TESTRUN-TESTCASE-TESTER-CHANGED': {
+        const nextTestrun = { ...testrun };
+        for (let i = 0; i < nextTestrun.testcaseGroups.length; i += 1) {
+          const target = nextTestrun.testcaseGroups[i].testcases?.find(testcase => testcase.id === data.data.testrunTestcaseGroupTestcaseId);
+          if (target) {
+            target.testerId = data.data.testerId;
+            break;
+          }
+        }
+
+        if (type === ITEM_TYPE.TESTCASE && data.data.testrunTestcaseGroupTestcaseId === content.id) {
+          const nextContent = { ...content };
+          nextContent.testerId = data.data.testerId;
+          setContent(nextContent);
+        }
+
+        setTestrun(nextTestrun);
         break;
       }
 

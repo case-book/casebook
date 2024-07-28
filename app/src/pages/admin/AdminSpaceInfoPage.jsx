@@ -31,7 +31,7 @@ function AdminSpaceInfoPage() {
           },
           {
             to: '/admin',
-            text: t('관리'),
+            text: t('시스템 관리'),
           },
           {
             to: '/admin/spaces',

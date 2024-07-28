@@ -17,12 +17,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class TestrunUpdateRequest implements IRequestVO<TestrunDTO> {
 
     private Long id;
+    @NotBlank
     private String name;
     private String description;
     private Long projectId;
@@ -36,6 +38,7 @@ public class TestrunUpdateRequest implements IRequestVO<TestrunDTO> {
     private LocalDateTime startTime;
     private int durationHours;
     private boolean deadlineClose;
+    private Boolean autoTestcaseNotAssignedTester;
     private List<Long> profileIds;
     private List<TestrunHookRequest> hooks;
     private List<TestrunMessageChannelRequest> messageChannels;
@@ -56,6 +59,7 @@ public class TestrunUpdateRequest implements IRequestVO<TestrunDTO> {
             .startTime(startTime != null ? startTime.toLocalTime() : null)
             .durationHours(durationHours)
             .deadlineClose(deadlineClose)
+            .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
             .build();
 
         if (hooks != null) {

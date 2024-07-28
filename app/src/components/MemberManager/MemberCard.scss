@@ -1,14 +1,18 @@
 .member-card-wrapper {
   position: relative;
-  &.selected {
-    background-color: var(--primary-color);
-    color: var(--primary-text-color);
-  }
 
   .user-name {
     padding-left: 1rem;
     padding-right: 1rem;
     padding-bottom: 0;
+
+    .selected-mark {
+      position: absolute;
+      top: 2px;
+      right: 8px;
+      color: var(--text-color);
+      font-size: 20px;
+    }
 
     .user-card-content {
       display: flex;
@@ -40,7 +44,6 @@
           }
 
           .email {
-
             font-size: 12px;
             font-weight: normal;
           }
@@ -79,7 +82,6 @@
     > div {
       padding-top: 0;
     }
-
 
     .tag-info {
       display: flex;

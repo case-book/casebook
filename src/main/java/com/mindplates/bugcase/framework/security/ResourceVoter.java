@@ -1,9 +1,18 @@
 package com.mindplates.bugcase.framework.security;
 
+
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.common.code.SystemRole;
+import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.vo.SecurityUser;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -13,13 +22,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class ResourceVoter extends WebExpressionVoter {
@@ -34,10 +36,12 @@ public class ResourceVoter extends WebExpressionVoter {
 
     private final SpaceService spaceService;
     private final ProjectService projectService;
+    private final MethodFinder methodFinder;
     List<Pattern> allPassPatterns = Arrays.asList(
-            Pattern.compile("^/api/users/my/?(.*)?$"),
-            Pattern.compile("^/api/spaces/(.*)/accessible$"), // 스페이스 참여 가능 여부 확인
-            Pattern.compile("^/api/spaces/(.*)/applicants$") // 스페이스 참여
+        Pattern.compile("^/api/users/my/?(.*)?$"),
+        Pattern.compile("^/api/spaces/(.*)/users/my$"),
+        Pattern.compile("^/api/spaces/(.*)/accessible$"), // 스페이스 참여 가능 여부 확인
+        Pattern.compile("^/api/spaces/(.*)/applicants$") // 스페이스 참여
     );
 
     @Override
@@ -58,6 +62,9 @@ public class ResourceVoter extends WebExpressionVoter {
             Long userId = user.getId();
 
             HttpServletRequest request = fi.getRequest();
+
+            Method methodInfo = methodFinder.findMethod(fi);
+            AllowProjectRole allowProjectRoleAnnotation = methodInfo != null ? methodInfo.getAnnotation(AllowProjectRole.class) : null;
 
             boolean allPass = allPassPatterns.stream().anyMatch((pattern) -> pattern.matcher(request.getRequestURI()).matches());
             if (allPass) {
@@ -134,6 +141,14 @@ public class ResourceVoter extends WebExpressionVoter {
                         if (projectService.selectIsProjectAdmin(projectId, userId)) {
                             return ACCESS_GRANTED;
                         }
+
+                        // 어노테이션에 USER가 허용된 경우, 프로젝트 멤버인 경우 허용
+                        if (allowProjectRoleAnnotation != null && allowProjectRoleAnnotation.value().equals(UserRoleCode.USER)) {
+                            if (projectService.selectIsProjectMember(projectId, userId)) {
+                                return ACCESS_GRANTED;
+                            }
+                        }
+
                     } catch (Exception e) {
                         return ACCESS_DENIED;
                     }

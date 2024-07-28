@@ -4,14 +4,13 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 
 @Builder
 @Getter
@@ -42,7 +41,7 @@ public class TestrunIterationListResponse {
     private Boolean autoTestcaseNotAssignedTester;
     private Integer testcaseGroupCount;
     private Integer testcaseCount;
-    private Integer testrunUserCount;
+    private Long testrunUserCount;
 
     public TestrunIterationListResponse(TestrunIterationDTO testrunIteration) {
         this.id = testrunIteration.getId();

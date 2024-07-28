@@ -3,7 +3,7 @@ package com.mindplates.bugcase.biz.project.service;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import com.mindplates.bugcase.biz.project.repository.ProjectReleaseRepository;
-import com.mindplates.bugcase.biz.testcase.dto.TestcaseSimpleDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseListDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
 import com.mindplates.bugcase.biz.testcase.repository.TestcaseProjectReleaseRepository;
@@ -47,7 +47,7 @@ public class ProjectReleaseService {
         List<Testcase> testcases = testcaseRepository.findByIdIn(projectReleaseDTO
             .getTestcases()
             .stream()
-            .map(TestcaseSimpleDTO::getId)
+            .map(TestcaseListDTO::getId)
             .collect(Collectors.toList())
         );
 
@@ -80,7 +80,7 @@ public class ProjectReleaseService {
         List<Long> testcaseIds = projectReleaseDTO
             .getTestcases()
             .stream()
-            .map(TestcaseSimpleDTO::getId)
+            .map(TestcaseListDTO::getId)
             .collect(Collectors.toList());
 
         List<Testcase> testcases = testcaseRepository.findByIdIn(testcaseIds);
@@ -140,6 +140,34 @@ public class ProjectReleaseService {
     public void deleteProjectRelease(String spaceCode, long projectId, long releaseId) {
         testcaseProjectReleaseRepository.deleteByProjectReleaseId(releaseId);
         projectReleaseRepository.deleteById(releaseId);
+    }
+
+
+    @Transactional
+    public void updateProjectTargetRelease(Long projectId, Long targetReleaseId) {
+        List<ProjectRelease> targetReleaseList = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
+        if (!targetReleaseList.isEmpty()) {
+            for (ProjectRelease projectRelease : targetReleaseList) {
+                if (!projectRelease.getId().equals(targetReleaseId)) {
+                    projectRelease.setIsTarget(false);
+                    projectReleaseRepository.save(projectRelease);
+                }
+            }
+        }
+
+        ProjectRelease targetRelease = projectReleaseRepository.findByIdAndProjectId(targetReleaseId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        if (!targetRelease.getIsTarget()) {
+            targetRelease.setIsTarget(true);
+            projectReleaseRepository.save(targetRelease);
+        }
+
+    }
+
+    @Transactional
+    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+    public void deleteProjectRelease(String spaceCode, long projectId) {
+        testcaseProjectReleaseRepository.deleteByProjectId(projectId);
+        projectReleaseRepository.deleteByProjectId(projectId);
     }
 
 

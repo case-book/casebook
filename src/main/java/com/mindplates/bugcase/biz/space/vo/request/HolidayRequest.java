@@ -3,10 +3,9 @@ package com.mindplates.bugcase.biz.space.vo.request;
 import com.mindplates.bugcase.biz.space.dto.HolidayDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
-import lombok.Data;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import lombok.Data;
 
 @Data
 public class HolidayRequest {

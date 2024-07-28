@@ -45,7 +45,7 @@ function CommentList({ className, comments, onDeleteComment }) {
                     <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   </div>
 
-                  <div>{comment.user?.name}</div>
+                  <div>{comment.user?.name || 'UNKNOWN'}</div>
                   {onDeleteComment && comment.user?.id === userId && (
                     <>
                       <div>

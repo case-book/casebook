@@ -27,7 +27,6 @@
         white-space: nowrap;
         height: 100%;
 
-
         > li {
           display: inline-flex;
           height: 100%;
@@ -36,7 +35,7 @@
           width: calc((100% - 20px) / 3);
           border: 1px solid var(--border-light-color);
           border-radius: 4px;
-          box-shadow: 0 0 4px rgba(0,0,0,0.1);
+          box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 
           @media (max-width: 1200px) {
             width: calc((100% - 10px) / 2);
@@ -253,7 +252,7 @@
   .testrun-history-content {
     border: 1px solid var(--border-light-color);
     border-radius: 4px;
-    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
     > div {
       padding: 0 1rem 1rem;
     }

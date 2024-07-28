@@ -1,6 +1,8 @@
 package com.mindplates.bugcase.biz.automation.controller;
 
 import com.mindplates.bugcase.biz.automation.request.TestResultRequest;
+import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AutomationController {
 
     private final TestrunService testrunService;
+    private final ProjectService projectService;
+    private final SpaceService spaceService;
 
     @Operation(description = "API 이용하여 테스트런 결과를 등록합니다.")
     @PostMapping("/testruns/{testrunSeqNumber}/testcases/{testcaseSeqNumber}")
@@ -31,9 +35,10 @@ public class AutomationController {
         @PathVariable long testrunSeqNumber,
         @PathVariable long testcaseSeqNumber,
         @Valid @RequestBody TestResultRequest testResultRequest) {
-        
-        boolean done = testrunService.updateTestrunTestcaseResult(projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
-        testrunService.sendTestrunStatusChangeMessage(projectToken, testrunSeqNumber, testcaseSeqNumber, done);
+
+        Long projectId = projectService.selectProjectId(projectToken);
+        String spaceCode = spaceService.selectSpaceCodeByProjectId(projectId);
+        testrunService.updateTestrunTestcaseResult(spaceCode, projectId, projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

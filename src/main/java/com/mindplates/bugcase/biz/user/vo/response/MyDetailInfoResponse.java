@@ -5,13 +5,12 @@ import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.SystemRole;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Builder
@@ -56,7 +55,7 @@ public class MyDetailInfoResponse {
     public MyDetailInfoResponse(UserDTO user, List<SpaceDTO> spaces) {
         this(user);
         if (spaces != null) {
-            this.spaces = spaces.stream().map(spaceDTO -> new SpaceListResponse(spaceDTO, user.getId())).collect(Collectors.toList());
+            this.spaces = spaces.stream().map(SpaceListResponse::new).collect(Collectors.toList());
         }
     }
 }

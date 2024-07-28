@@ -7,10 +7,11 @@ import com.mindplates.bugcase.framework.security.CustomAccessDeniedHandler;
 import com.mindplates.bugcase.framework.security.CustomAuthenticationEntryPoint;
 import com.mindplates.bugcase.framework.security.JwtAuthenticationFilter;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
+import com.mindplates.bugcase.framework.security.MethodFinder;
 import com.mindplates.bugcase.framework.security.ResourceVoter;
 import com.mindplates.bugcase.framework.security.UserTokenAuthenticationFilter;
 import com.mindplates.bugcase.framework.security.UserTokenProvider;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final SpaceService spaceService;
     private final MessageSourceAccessor messageSourceAccessor;
     private final ProjectService projectService;
+    private final MethodFinder methodFinder;
 
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
@@ -57,10 +59,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
         handler.setRoleHierarchy(roleHierarchy);
 
-        ResourceVoter resourceVoter = new ResourceVoter(spaceService, projectService);
+        ResourceVoter resourceVoter = new ResourceVoter(spaceService, projectService, methodFinder);
         resourceVoter.setExpressionHandler(handler);
 
-        List<AccessDecisionVoter<? extends Object>> decisionVoters = Arrays.asList(resourceVoter);
+        List<AccessDecisionVoter<? extends Object>> decisionVoters = Collections.singletonList(resourceVoter);
         return new AffirmativeBased(decisionVoters);
     }
 
@@ -68,40 +70,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         // 인증 및 인가 예외 처리
         web.ignoring()
-                // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()) // favicon.ico 등의 인증을 시도하지 않음
-                .mvcMatchers(HttpMethod.OPTIONS, "/(.*)")
-                .regexMatchers("^(?!/?api).+$")
-                .mvcMatchers("/api/configs/systems/**")
-                .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh")
-                .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
-                .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
-                .mvcMatchers("/api/**/projects/**/images/**")
-                .mvcMatchers("/ws/**");
+            // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()) // favicon.ico 등의 인증을 시도하지 않음
+            .mvcMatchers(HttpMethod.OPTIONS, "/(.*)")
+            .regexMatchers("^(?!/?api).+$")
+            .mvcMatchers("/api/configs/systems/**")
+            .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh")
+            .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
+            .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
+            .mvcMatchers("/api/**/projects/**/images/**")
+            .mvcMatchers("/ws/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/**")
-                .authenticated()
-                .accessDecisionManager(accessDecisionManager())
-                .and()
-                .formLogin().disable()
-                .addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
+            .and()
+            .csrf()
+            .disable()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .exceptionHandling()
+            .authenticationEntryPoint(authenticationEntryPoint)
+            .accessDeniedHandler(accessDeniedHandler)
+            .and()
+            .authorizeRequests()
+            .antMatchers("/api/**")
+            .authenticated()
+            .accessDecisionManager(accessDecisionManager())
+            .and()
+            .formLogin().disable()
+            .addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
     }
 
 

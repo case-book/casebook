@@ -22,11 +22,11 @@ public class ProjectUserRequest implements IRequestVO<ProjectUserDTO> {
 
     public ProjectUserDTO toDTO(ProjectDTO project) {
         return ProjectUserDTO.builder()
-                .id(id)
-                .user(UserDTO.builder().id(userId).build())
-                .role(role)
-                .crud(crud)
-                .tags(tags)
-                .project(project).build();
+            .id(id)
+            .user(UserDTO.builder().id(userId).build())
+            .role(role)
+            .crud(crud)
+            .tags(tags)
+            .project(project).build();
     }
 }

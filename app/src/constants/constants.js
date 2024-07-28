@@ -611,6 +611,13 @@ const LLM_TYPE_CODE = {
   OPENAI: 'OPENAI',
 };
 
+const LLM_CONFIGS = {
+  LLM_PROMPT: '프롬프트',
+  LLM_SYSTEM_ROLE: '시스템 롤',
+  LLM_PREFIX: 'PRE 프롬프트',
+  LLM_POSTFIX: 'POST 프롬프트',
+};
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -645,4 +652,5 @@ export {
   HTTP_METHOD,
   CHANNEL_TYPE_CODE,
   LLM_TYPE_CODE,
+  LLM_CONFIGS,
 };

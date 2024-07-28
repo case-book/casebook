@@ -1,10 +1,8 @@
 package com.mindplates.bugcase.framework.config;
 
-import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.framework.converter.LongToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateTimeConverter;
-import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +25,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+
     @Value("${spring.profiles.active}")
     private String activeProfile;
     @Value("${bug-case.corsUrls}")

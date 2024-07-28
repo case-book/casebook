@@ -2,7 +2,11 @@ package com.mindplates.bugcase.biz.project.repository;
 
 import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,4 +20,13 @@ public interface ProjectReleaseRepository extends JpaRepository<ProjectRelease, 
 
     List<ProjectRelease> findByProjectIdAndIsTargetTrue(long projectId);
 
+    @Query("SELECT pr.id FROM ProjectRelease pr WHERE pr.project.id = :projectId AND pr.isTarget = true")
+    List<Long> findIdByProjectIdAndIsTargetTrue(long projectId);
+
+    Optional<ProjectRelease> findByIdAndProjectId(long projectReleaseId, long projectId);
+
+
+    @Modifying
+    @Query("DELETE FROM ProjectRelease pr WHERE pr.project.id = :projectId")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 }

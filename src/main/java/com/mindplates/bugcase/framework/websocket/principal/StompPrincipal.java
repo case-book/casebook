@@ -1,8 +1,7 @@
 package com.mindplates.bugcase.framework.websocket.principal;
 
-import lombok.AllArgsConstructor;
-
 import java.security.Principal;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class StompPrincipal implements Principal {

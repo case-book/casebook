@@ -6,7 +6,6 @@ import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunProfileRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,6 @@ public class SpaceProfileService {
     private final SpaceProfileRepository spaceProfileRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
     private final TestrunProfileRepository testrunProfileRepository;
-    private final MappingUtil mappingUtil;
 
     private boolean existByName(long spaceId, String name) {
         Long count = spaceProfileRepository.countBySpaceIdAndName(spaceId, name);
@@ -62,9 +60,8 @@ public class SpaceProfileService {
             throw new ServiceException("error.space.profile.code.duplicated");
         }
 
-        SpaceProfile spaceProfile = mappingUtil.convert(createSpaceProfileInfo, SpaceProfile.class);
-        spaceProfileRepository.save(spaceProfile);
-        return new SpaceProfileDTO(spaceProfile);
+        SpaceProfile result = spaceProfileRepository.save(createSpaceProfileInfo.toEntity());
+        return new SpaceProfileDTO(result);
     }
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE_PROFILE)

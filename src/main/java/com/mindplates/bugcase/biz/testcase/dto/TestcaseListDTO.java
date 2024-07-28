@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestcaseSimpleDTO extends CommonDTO {
+public class TestcaseListDTO extends CommonDTO {
 
     private Long id;
     private String seqId;
@@ -32,7 +32,7 @@ public class TestcaseSimpleDTO extends CommonDTO {
     private String testerValue;
     private LocalDateTime contentUpdateDate;
 
-    public TestcaseSimpleDTO(Testcase testcase) {
+    public TestcaseListDTO(Testcase testcase) {
         this.id = testcase.getId();
         this.seqId = testcase.getSeqId();
         if (testcase.getTestcaseGroup() != null) {

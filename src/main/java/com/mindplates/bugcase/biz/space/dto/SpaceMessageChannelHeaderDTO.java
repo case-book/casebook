@@ -1,7 +1,9 @@
 package com.mindplates.bugcase.biz.space.dto;
 
+import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
 import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannelHeader;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpaceMessageChannelHeaderDTO extends CommonDTO {
+public class SpaceMessageChannelHeaderDTO extends CommonDTO implements IDTO<SpaceMessageChannelHeader> {
 
     private Long id;
     private SpaceMessageChannelDTO spaceMessageChannel;
@@ -27,5 +29,22 @@ public class SpaceMessageChannelHeaderDTO extends CommonDTO {
 
         this.dataKey = spaceMessageChannelHeader.getDataKey();
         this.dataValue = spaceMessageChannelHeader.getDataValue();
+    }
+
+    @Override
+    public SpaceMessageChannelHeader toEntity() {
+        return SpaceMessageChannelHeader.builder()
+            .id(id)
+            .spaceMessageChannel(SpaceMessageChannel.builder().id(spaceMessageChannel.getId()).build())
+            .dataKey(dataKey)
+            .dataValue(dataValue)
+            .build();
+    }
+
+    public SpaceMessageChannelHeader toEntity(SpaceMessageChannel spaceMessageChannel) {
+        SpaceMessageChannelHeader spaceMessageChannelHeader = toEntity();
+        spaceMessageChannelHeader.setSpaceMessageChannel(spaceMessageChannel);
+        return spaceMessageChannelHeader;
+
     }
 }

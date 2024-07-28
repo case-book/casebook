@@ -1,17 +1,17 @@
 package com.mindplates.bugcase.biz.admin.controller;
 
+import com.mindplates.bugcase.biz.admin.util.PropertiesUtil;
 import com.mindplates.bugcase.biz.admin.vo.request.SystemInfoRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UpdatePasswordRequest;
 import com.mindplates.bugcase.biz.admin.vo.request.UserUpdateRequest;
-import com.mindplates.bugcase.biz.admin.vo.response.PromptInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.SystemInfoResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserDetailResponse;
 import com.mindplates.bugcase.biz.admin.vo.response.UserListResponse;
-import com.mindplates.bugcase.biz.config.dto.LlmPromptDTO;
-import com.mindplates.bugcase.biz.config.service.LlmPromptService;
-import com.mindplates.bugcase.biz.config.vo.request.LlmPromptRequest;
-import com.mindplates.bugcase.biz.config.vo.response.LlmPromptResponse;
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
+import com.mindplates.bugcase.biz.config.service.ConfigService;
+import com.mindplates.bugcase.biz.config.vo.request.ConfigRequest;
+import com.mindplates.bugcase.biz.config.vo.response.ConfigInfoResponse;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
@@ -21,10 +21,8 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.service.RedisService;
-import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +59,7 @@ public class AdminController {
 
     private final RedisService redisService;
 
-    private final LlmPromptService llmPromptService;
-
-    private final AiConfig aiConfig;
+    private final ConfigService configService;
 
     @Operation(description = "모든 스페이스 조회")
     @GetMapping("/spaces")
@@ -76,7 +72,7 @@ public class AdminController {
     @GetMapping("/spaces/{spaceId}")
     public SpaceResponse selectSpaceInfo(@PathVariable Long spaceId) {
         SpaceDTO space = spaceService.selectSpaceInfo(spaceId);
-        List<ProjectDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceId);
+        List<ProjectListDTO> spaceProjectList = projectService.selectSpaceProjectList(spaceId);
         return new SpaceResponse(space, spaceProjectList);
     }
 
@@ -93,7 +89,7 @@ public class AdminController {
     @Operation(description = "사용자 조회")
     @GetMapping("/users/{userId}")
     public UserDetailResponse selectUserInfo(@PathVariable Long userId) {
-        UserDTO user = userService.selectUserInfo(userId);
+        UserDTO user = userService.getUserInfo(userId);
         List<SpaceDTO> userSpaceList = spaceService.selectUserSpaceList(user.getId());
         return new UserDetailResponse(user, userSpaceList);
     }
@@ -102,6 +98,13 @@ public class AdminController {
     @PutMapping("/users/{userId}")
     public ResponseEntity<?> updateUserPasswordInfo(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
         userService.updateUserByAdmin(userId, userUpdateRequest.toDTO());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "사용자 삭제")
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        userService.deleteUserByAdmin(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -131,23 +134,16 @@ public class AdminController {
         });
 
         Map<String, String> redis = new HashMap<>();
+        Map<String, String> keyspaceInfo = PropertiesUtil.getInfo(keyspace.get());
+        Map<String, String> memoryInfo = PropertiesUtil.getInfo(memory.get());
+        redis.putAll(keyspaceInfo);
+        redis.putAll(memoryInfo);
 
-        Properties keyspaceProperties = keyspace.get();
-        getInfo(redis, keyspaceProperties);
-
-        Properties memoryProperties = memory.get();
-        getInfo(redis, memoryProperties);
-
-        Map<String, String> system = new HashMap<>();
-        Properties properties = System.getProperties();
-        getInfo(system, properties);
-
-        List<LlmPromptDTO> llmPrompts = llmPromptService.selectLlmPromptList();
+        Map<String, String> system = PropertiesUtil.getInfo(System.getProperties());
 
         return SystemInfoResponse.builder()
             .redis(redis)
             .system(system)
-            .llmPrompts(llmPrompts.stream().map(LlmPromptResponse::new).collect(Collectors.toList()))
             .build();
     }
 
@@ -174,30 +170,13 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private void getInfo(Map<String, String> info, Properties memoryProperties) {
-        Enumeration<String> memoryEnums = (Enumeration<String>) memoryProperties.propertyNames();
-        while (memoryEnums.hasMoreElements()) {
-            String key = memoryEnums.nextElement();
-            String value = memoryProperties.getProperty(key);
-            info.put(key, value);
-        }
-    }
 
-    @Operation(description = "시스템 정보 조회")
-    @GetMapping("/prompts/default")
-    public PromptInfoResponse selectDefaultPromptInfo() {
-        return PromptInfoResponse.builder()
-            .prompt(aiConfig.getPrompt())
-            .postPrompt(aiConfig.getPostPrompt())
-            .systemRole(aiConfig.getSystemRole())
-            .build();
-    }
-
-    @Operation(description = "시스템 정보 변경")
-    @PutMapping("/system/info")
-    public ResponseEntity<?> updateSystemInfo(@Valid @RequestBody SystemInfoRequest updateSystemInfo) {
-        llmPromptService.saveLlmPromptList(updateSystemInfo.getLlmPrompts().stream().map(LlmPromptRequest::toDTO).collect(Collectors.toList()));
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/llm/config")
+    public List<ConfigInfoResponse> updateLlmConfig(@Valid @RequestBody SystemInfoRequest updateSystemInfo) {
+        List<ConfigDTO> target = updateSystemInfo.getConfigRequests().stream().map(ConfigRequest::toDTO).collect(Collectors.toList());
+        configService.updateConfigInfo(target);
+        List<ConfigDTO> list = configService.selectLlmConfigList();
+        return list.stream().map(ConfigInfoResponse::new).collect(Collectors.toList());
     }
 
 

@@ -3,6 +3,11 @@ package com.mindplates.bugcase.framework.websocket.interceptor;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.security.JwtTokenProvider;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,16 +22,11 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Component
 @AllArgsConstructor
 @Slf4j
 public class FilterChannelInterceptor implements ChannelInterceptor {
+
     public static final Pattern USER_SUB_PATTERN = Pattern.compile("^/sub/users/(.*)?$");
     @Autowired
     private JwtTokenProvider jwtTokenProvider;

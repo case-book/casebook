@@ -5,7 +5,7 @@ import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVar
 
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
-import Header from '@/pages/common/Header/Header';
+
 import Login from '@/pages/users/Login';
 import Join from '@/pages/users/Join';
 import MyInfoPage from '@/pages/users/MyInfoPage';
@@ -22,12 +22,14 @@ import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 import ProjectTestcaseEditPage from '@/pages/spaces/projects/ProjectTestcaseEditPage/ProjectTestcaseEditPage';
 
 import SystemInfoPage from '@/pages/admin/SystemInfoPage';
-import SystemEditPage from '@/pages/admin/SystemEditPage';
+import SystemConfigInfoPage from '@/pages/admin/SystemConfigInfoPage';
+import SystemEditPage from '@/pages/admin/SystemConfigEditPage';
 import SetUpPage from '@/pages/admin/SetUpPage';
 import UserListPage from '@/pages/admin/UserListPage';
 import UserInfoPage from '@/pages/admin/UserInfoPage';
 import UserEditPage from '@/pages/admin/UserEditPage';
 import AdminIndexInfoPage from '@/pages/admin/AdminIndexInfoPage/AdminIndexInfoPage';
+import AiHistoryListPage from '@/pages/admin/AiHistoryListPage';
 
 import AdminSpaceListPage from '@/pages/admin/AdminSpaceListPage';
 import AdminSpaceInfoPage from '@/pages/admin/AdminSpaceInfoPage';
@@ -56,7 +58,6 @@ export {
   SpaceInfoPage,
   SpaceEditPage,
   Common,
-  Header,
   Login,
   Join,
   MyInfoPage,
@@ -68,6 +69,7 @@ export {
   ProjectBugInfoPage,
   ProjectTestcaseEditPage,
   SystemInfoPage,
+  SystemConfigInfoPage,
   SystemEditPage,
   SetUpPage,
   UserListPage,
@@ -92,4 +94,5 @@ export {
   ReleaseEditPage,
   ReleaseInfoPage,
   SpaceVariableEditPage,
+  AiHistoryListPage,
 };

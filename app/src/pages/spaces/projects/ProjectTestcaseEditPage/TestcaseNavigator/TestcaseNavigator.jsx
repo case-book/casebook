@@ -137,7 +137,7 @@ function TestcaseNavigator({
       dialogUtil.setConfirm(
         MESSAGE_CATEGORY.WARNING,
         t('변경된 데이터가 저장되지 않았습니다.'),
-        <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
+        <div>{t('변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?')}</div>,
         () => {
           onSelect(info);
         },
@@ -155,13 +155,13 @@ function TestcaseNavigator({
         dialogUtil.setConfirm(
           MESSAGE_CATEGORY.WARNING,
           t('변경된 데이터가 저장되지 않았습니다.'),
-          <div>변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?</div>,
+          <div>{t('변경 후 저장되지 않은 데이터가 있습니다. 저장하지 않고, 다른 데이터를 불러오시겠습니까?')}</div>,
           () => {
             onSelect({ id, type });
             setContextMenuInfo({
               type,
               id,
-              x: e.pageX,
+              x: e.pageX + 20,
               y: e.pageY,
               name,
             });
@@ -172,7 +172,7 @@ function TestcaseNavigator({
         setContextMenuInfo({
           type,
           id,
-          x: e.pageX,
+          x: e.pageX + 20,
           y: e.pageY,
           name,
         });
@@ -359,6 +359,10 @@ function TestcaseNavigator({
                   {
                     userId: '',
                     name: t('전체'),
+                  },
+                  {
+                    userId: 'none',
+                    name: t('미지정'),
                   },
                 ]
                   .concat(users)

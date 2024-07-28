@@ -9,10 +9,11 @@ import org.springframework.security.config.annotation.web.socket.AbstractSecurit
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class SocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+
     @Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         messages
-                .simpDestMatchers("/ws/**/**").permitAll();
+            .simpDestMatchers("/ws/**/**").permitAll();
     }
 
     @Override

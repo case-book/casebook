@@ -32,10 +32,18 @@ const STATIC_MENUS = [
     selectedAlias: [/^\/admin\/*/],
     list: [
       {
-        key: 'systems',
-        to: '/systems',
+        key: '/systems/info',
+        to: '/systems/info',
+        name: i18n.t('시스템 정보'),
+        description: i18n.t('시스템 정보를 확인합니다.'),
+        icon: <i className="fa-solid fa-gear" />,
+        admin: true,
+      },
+      {
+        key: '/systems/config',
+        to: '/systems/config',
         name: i18n.t('시스템 설정'),
-        description: i18n.t('시스템 정보를 확인하고, 캐시 데이터를 관리합니다.'),
+        description: i18n.t('시스템 설정 정보를 확인하고, 변경합니다.'),
         icon: <i className="fa-solid fa-gear" />,
         admin: true,
       },
@@ -55,6 +63,14 @@ const STATIC_MENUS = [
         icon: <i className="fa-solid fa-box-archive" />,
         admin: true,
       },
+      {
+        key: 'ai-history',
+        to: '/ai-history',
+        name: i18n.t('LLM API 이력 조회'),
+        description: i18n.t('LLM API를 이용한 처리 결과 이력을 조회합니다.'),
+        icon: <i className="fa-solid fa-box-archive" />,
+        admin: true,
+      },
     ],
   },
 ];
@@ -62,8 +78,14 @@ const STATIC_MENUS = [
 const ADMIN_MENUS = [
   {
     key: 'systems',
-    to: '/admin/systems',
+    to: '/admin/systems/info',
+    name: i18n.t('시스템 정보'),
+  },
+  {
+    key: 'systems',
+    to: '/admin/systems/config',
     name: i18n.t('시스템 설정'),
+    separator: true,
   },
   {
     key: 'users',
@@ -74,6 +96,12 @@ const ADMIN_MENUS = [
     key: 'spaces',
     to: '/admin/spaces',
     name: i18n.t('스페이스 관리'),
+    separator: true,
+  },
+  {
+    key: 'ai',
+    to: '/admin/ai-history',
+    name: i18n.t('LLM API 이력 조회'),
   },
 ];
 

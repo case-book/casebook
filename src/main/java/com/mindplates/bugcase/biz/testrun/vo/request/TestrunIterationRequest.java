@@ -15,6 +15,7 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +24,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class TestrunIterationRequest {
+public class TestrunIterationRequest implements IRequestVO<TestrunIterationDTO> {
 
     private Long id;
     private String name;
@@ -51,7 +52,9 @@ public class TestrunIterationRequest {
     private List<TestrunHookRequest> hooks;
     private List<TestrunMessageChannelRequest> messageChannels;
 
-    public TestrunIterationDTO buildEntity() {
+
+    @Override
+    public TestrunIterationDTO toDTO() {
 
         TestrunIterationDTO testrunIteration = TestrunIterationDTO.builder()
             .id(id)
@@ -150,6 +153,4 @@ public class TestrunIterationRequest {
 
         return testrunIteration;
     }
-
-
 }

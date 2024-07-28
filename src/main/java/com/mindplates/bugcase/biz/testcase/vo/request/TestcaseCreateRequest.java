@@ -1,16 +1,16 @@
 package com.mindplates.bugcase.biz.testcase.vo.request;
 
-import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectReleaseId;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class TestcaseCreateRequest {
+public class TestcaseCreateRequest implements IRequestVO<TestcaseDTO> {
 
     private Long id;
     private Long testcaseGroupId;
@@ -18,27 +18,27 @@ public class TestcaseCreateRequest {
     private Integer itemOrder;
     private List<Long> projectReleaseIds;
 
-    public Testcase buildEntity() {
 
-        Testcase testcase = Testcase.builder()
+    @Override
+    public TestcaseDTO toDTO() {
+        TestcaseDTO testcase = TestcaseDTO.builder()
             .id(id)
-            .testcaseGroup(TestcaseGroup.builder().id(testcaseGroupId).build())
+            .testcaseGroup(TestcaseGroupDTO.builder().id(testcaseGroupId).build())
             .name(name)
             .itemOrder(itemOrder)
             .build();
 
-        testcase.setTestcaseProjectReleases(
-            projectReleaseIds.stream()
-                .map(projectReleaseId -> {
-                    return TestcaseProjectRelease.builder()
-
-                        .testcase(Testcase.builder().id(testcase.getId()).build())
-                        .projectRelease(ProjectRelease.builder().id(projectReleaseId).build())
-                        .build();
-                })
-                .collect(Collectors.toList())
-        );
+        if (projectReleaseIds != null) {
+            testcase.setProjectReleases(projectReleaseIds.stream().map(projectReleaseId -> ProjectReleaseDTO.builder().id(projectReleaseId).build()).collect(Collectors.toList()));
+        }
 
         return testcase;
+    }
+
+    public TestcaseDTO toDTO(long projectId, long testcaseGroupId) {
+        TestcaseDTO testcaseDTO = toDTO();
+        testcaseDTO.getTestcaseGroup().setId(testcaseGroupId);
+        testcaseDTO.setProject(ProjectDTO.builder().id(projectId).build());
+        return testcaseDTO;
     }
 }

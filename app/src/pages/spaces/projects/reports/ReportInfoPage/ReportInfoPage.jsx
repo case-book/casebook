@@ -329,13 +329,13 @@ function ReportInfoPage() {
                     <div />
                   </div>
                   <div className="tester-summary scrollbar-sm">
-                    {testerProgressList.map(testerProgress => {
+                    {testerProgressList.map((testerProgress, inx) => {
                       const testedCount = testerProgress.TOTAL_COUNT - testerProgress.UNTESTED;
                       const totalCount = testerProgress.TOTAL_COUNT;
                       const testedPercentage = Math.round((testedCount / totalCount) * 1000) / 10;
 
                       return (
-                        <div className="summary-box tester" key={testerProgress.name}>
+                        <div className="summary-box tester" key={inx}>
                           <div className="count-info">
                             <div className="user-icon">
                               <UserAvatar avatarInfo={testerProgress.avatarInfo} size={36} rounded fill outline />

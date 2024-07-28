@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TestcaseProjectReleaseRepository extends JpaRepository<TestcaseProjectRelease, TestcaseProjectReleaseId> {
+
     @Modifying
     @Query("DELETE FROM TestcaseProjectRelease tpr WHERE tpr.projectRelease.id = :id")
     void deleteByProjectReleaseId(@Param("id") Long id);
@@ -21,7 +22,18 @@ public interface TestcaseProjectReleaseRepository extends JpaRepository<Testcase
     @Query("DELETE FROM TestcaseProjectRelease tpr WHERE tpr.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.testcaseGroup.id IN (:ids))")
     void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);
 
+    @Modifying
+    @Query("DELETE FROM TestcaseProjectRelease tpr WHERE tpr.testcase.id = :testcaseId AND tpr.projectRelease.id = :projectReleaseId")
+    void deleteByTestcaseIdAndProjectReleaseId(@Param("testcaseId") Long testcaseId, @Param("projectReleaseId") Long projectReleaseId);
 
+
+    @Modifying
+    @Query("DELETE FROM TestcaseProjectRelease tpr WHERE tpr.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.testcaseTemplate.id = :id)")
+    void deleteByTestcaseTemplateId(Long id);
+
+    @Modifying
+    @Query("DELETE FROM TestcaseProjectRelease tpr WHERE tpr.projectRelease.id IN (SELECT pr.id FROM ProjectRelease pr WHERE pr.project.id = :projectId)")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 
 }
 

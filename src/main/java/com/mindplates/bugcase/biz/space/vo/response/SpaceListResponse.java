@@ -1,8 +1,11 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
-import com.mindplates.bugcase.common.code.UserRoleCode;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -20,10 +23,10 @@ public class SpaceListResponse {
     private Boolean isMember;
     private Boolean isAdmin;
     private Long projectCount;
-    private Integer userCount;
+    private Long userCount;
     private String description;
 
-    public SpaceListResponse(SpaceDTO space, Long userId) {
+    public SpaceListResponse(SpaceDTO space) {
         this.id = space.getId();
         this.name = space.getName();
         this.code = space.getCode();
@@ -31,18 +34,10 @@ public class SpaceListResponse {
         this.allowSearch = space.isAllowSearch();
         this.allowAutoJoin = space.isAllowAutoJoin();
         this.projectCount = space.getProjectCount();
-        this.userCount = space.getUsers() != null ? space.getUsers().size() : 0;
-        if (userId != null && space.getUsers() != null) {
-            this.isMember = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId)));
-        }
-        if (userId != null && space.getUsers() != null) {
-            this.isAdmin = space.getUsers().stream().anyMatch((spaceUser -> UserRoleCode.ADMIN.equals(spaceUser.getRole()) && spaceUser.getUser().getId().equals(userId)));
-        }
+        this.userCount = space.getUserCount();
+        this.isMember = space.isMember();
+        this.isAdmin = space.isAdmin();
         this.description = space.getDescription();
-    }
-
-    public SpaceListResponse(SpaceDTO space) {
-        this(space, null);
     }
 
 

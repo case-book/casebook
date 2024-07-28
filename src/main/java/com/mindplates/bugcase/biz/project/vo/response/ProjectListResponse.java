@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
-import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,7 @@ public class ProjectListResponse {
     private int bugCount;
     private long testrunCount;
 
-    public ProjectListResponse(ProjectDTO project) {
+    public ProjectListResponse(ProjectListDTO project) {
         this.id = project.getId();
         this.name = project.getName();
         this.description = project.getDescription();

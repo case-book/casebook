@@ -24,9 +24,14 @@ function ProjectTestcaseEditPage() {
   const [llms, setLlms] = useState([]);
   const [tags, setTags] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
+  const [allTestcaseGroups, setAllTestcaseGroups] = useState([]);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [releases, setReleases] = useState([]);
   const [paraphraseInfo, setParaphraseInfo] = useState({});
+  const [countSummary, setCountSummary] = useState({
+    testcaseGroupCount: 0,
+    testcaseCount: 0,
+  });
   const { query, setQuery: setSelectedItemInfo } = useQueryString();
 
   const selectedItemInfo = useMemo(() => {
@@ -74,6 +79,12 @@ function ProjectTestcaseEditPage() {
     });
   };
 
+  const getTestcaseGroups = () => {
+    TestcaseService.selectTestcaseGroupList(spaceCode, projectId, list => {
+      setAllTestcaseGroups(list);
+    });
+  };
+
   const getTestcase = testcaseId => {
     setContentLoading(true);
 
@@ -111,15 +122,11 @@ function ProjectTestcaseEditPage() {
 
   const [min, setMin] = useState(false);
 
-  const [countSummary, setCountSummary] = useState({
-    testcaseGroupCount: 0,
-    testcaseCount: 0,
-  });
-
   useEffect(() => {
     window.scrollTo(0, 0);
     getLlms();
     getProject();
+    getTestcaseGroups();
     getReleases();
   }, [spaceCode, projectId]);
 
@@ -172,15 +179,15 @@ function ProjectTestcaseEditPage() {
   }, [selectedItemInfo.id]);
 
   useEffect(() => {
-    if (project?.testcaseGroups?.length > 0) {
+    if (allTestcaseGroups?.length > 0) {
       setCountSummary({
-        testcaseGroupCount: project?.testcaseGroups?.length || 0,
-        testcaseCount: project?.testcaseGroups?.reduce((count, next) => {
+        testcaseGroupCount: allTestcaseGroups?.length || 0,
+        testcaseCount: allTestcaseGroups?.reduce((count, next) => {
           return count + (next?.testcases?.length || 0);
         }, 0),
       });
 
-      const nextGroups = testcaseUtil.getTestcaseTreeData(project?.testcaseGroups);
+      const nextGroups = testcaseUtil.getTestcaseTreeData(allTestcaseGroups);
       setTestcaseGroups(nextGroups);
     } else {
       setCountSummary({
@@ -190,7 +197,7 @@ function ProjectTestcaseEditPage() {
 
       setTestcaseGroups([]);
     }
-  }, [project]);
+  }, [allTestcaseGroups]);
 
   useEffect(() => {
     getContent();
@@ -205,7 +212,7 @@ function ProjectTestcaseEditPage() {
     };
 
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP && selectedItemInfo.id) {
-      const selectedGroup = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
+      const selectedGroup = allTestcaseGroups.find(d => d.id === selectedItemInfo.id);
 
       testcaseGroup = {
         parentId: selectedGroup.id,
@@ -215,11 +222,9 @@ function ProjectTestcaseEditPage() {
     }
 
     TestcaseService.createTestcaseGroup(spaceCode, projectId, testcaseGroup, info => {
-      const nextProject = { ...project };
-      const nextTestcaseGroups = nextProject.testcaseGroups?.slice(0) || [];
-      nextTestcaseGroups.push(info);
-      nextProject.testcaseGroups = nextTestcaseGroups;
-      setProject(nextProject);
+      const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+      nextAllTestcaseGroups.push(info);
+      setAllTestcaseGroups(nextAllTestcaseGroups);
 
       if (focus) {
         setSelectedItemInfo({
@@ -235,9 +240,9 @@ function ProjectTestcaseEditPage() {
     let group = null;
 
     if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP && selectedItemInfo.id) {
-      group = project.testcaseGroups.find(d => d.id === selectedItemInfo.id);
+      group = allTestcaseGroups.find(d => d.id === selectedItemInfo.id);
     } else if (selectedItemInfo.type === ITEM_TYPE.TESTCASE && selectedItemInfo.id) {
-      group = project.testcaseGroups.find(d => {
+      group = allTestcaseGroups.find(d => {
         return d.testcases?.findIndex(item => item.id === selectedItemInfo.id) > -1;
       });
     }
@@ -254,13 +259,13 @@ function ProjectTestcaseEditPage() {
     };
 
     TestcaseService.createTestcase(spaceCode, projectId, group.id, testcase, info => {
-      const nextProject = { ...project };
-      const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === group.id);
+      const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+      const nextTestcaseGroup = nextAllTestcaseGroups.find(d => d.id === group.id);
       if (!nextTestcaseGroup.testcases) {
         nextTestcaseGroup.testcases = [];
       }
       nextTestcaseGroup.testcases.push(info);
-      setProject(nextProject);
+      setAllTestcaseGroups(nextAllTestcaseGroups);
 
       if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP) {
         setContent({ ...nextTestcaseGroup });
@@ -279,8 +284,8 @@ function ProjectTestcaseEditPage() {
   const copyTestcase = (sourceType, sourceId, targetType, targetId) => {
     if (sourceType === 'case') {
       TestcaseService.copyTestcase(spaceCode, projectId, sourceId, targetType, targetId, info => {
-        const nextProject = { ...project };
-        const nextTestcaseGroup = nextProject.testcaseGroups.find(d => d.id === info.testcaseGroupId);
+        const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+        const nextTestcaseGroup = nextAllTestcaseGroups.find(d => d.id === info.testcaseGroupId);
         if (!nextTestcaseGroup.testcases) {
           nextTestcaseGroup.testcases = [];
         }
@@ -293,7 +298,7 @@ function ProjectTestcaseEditPage() {
         });
 
         nextTestcaseGroup.testcases.push(info);
-        setProject(nextProject);
+        setAllTestcaseGroups(nextAllTestcaseGroups);
 
         if (selectedItemInfo.type === ITEM_TYPE.TESTCASE_GROUP) {
           setContent({ ...nextTestcaseGroup });
@@ -307,11 +312,9 @@ function ProjectTestcaseEditPage() {
       });
     } else if (sourceType === 'group') {
       TestcaseService.copyTestcaseGroup(spaceCode, projectId, sourceId, targetType, targetId, info => {
-        const nextProject = { ...project };
-        const nextTestcaseGroups = nextProject.testcaseGroups?.slice(0) || [];
-        nextTestcaseGroups.push(info);
-        nextProject.testcaseGroups = nextTestcaseGroups;
-        setProject(nextProject);
+        const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+        nextAllTestcaseGroups.push(info);
+        setAllTestcaseGroups(nextAllTestcaseGroups);
 
         setSelectedItemInfo({
           id: info.id,
@@ -325,15 +328,15 @@ function ProjectTestcaseEditPage() {
   const onPositionChange = changeInfo => {
     if (changeInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && changeInfo.destinationType === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseGroupOrders(spaceCode, projectId, changeInfo, () => {
-        getProject();
+        getTestcaseGroups();
       });
     } else if (changeInfo.targetType === ITEM_TYPE.TESTCASE && changeInfo.destinationType === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseTestcaseGroup(spaceCode, projectId, changeInfo.targetId, changeInfo, () => {
-        getProject();
+        getTestcaseGroups();
       });
     } else if (changeInfo.targetType === ITEM_TYPE.TESTCASE && changeInfo.destinationType === ITEM_TYPE.TESTCASE) {
       TestcaseService.updateTestcaseOrder(spaceCode, projectId, changeInfo.targetId, changeInfo, () => {
-        getProject();
+        getTestcaseGroups();
       });
     }
   };
@@ -353,7 +356,7 @@ function ProjectTestcaseEditPage() {
               time: null,
             });
 
-            getProject();
+            getTestcaseGroups();
           });
         } else if (type === ITEM_TYPE.TESTCASE) {
           TestcaseService.deleteTestcase(spaceCode, projectId, id, () => {
@@ -363,7 +366,7 @@ function ProjectTestcaseEditPage() {
               time: null,
             });
 
-            getProject();
+            getTestcaseGroups();
           });
         }
       },
@@ -377,21 +380,21 @@ function ProjectTestcaseEditPage() {
   const onChangeTestcaseGroupName = (type, id, name) => {
     if (type === ITEM_TYPE.TESTCASE_GROUP) {
       TestcaseService.updateTestcaseGroupName(spaceCode, projectId, id, name, info => {
-        const nextProject = { ...project };
-        const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
+        const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+        const inx = nextAllTestcaseGroups.findIndex(d => d.id === info.id);
         if (inx > -1) {
-          nextProject.testcaseGroups[inx] = info;
-          setProject(nextProject);
+          nextAllTestcaseGroups[inx] = info;
+          setAllTestcaseGroups(nextAllTestcaseGroups);
         }
       });
     } else if (type === ITEM_TYPE.TESTCASE) {
       TestcaseService.updateTestcaseName(spaceCode, projectId, id, name, info => {
-        const nextProject = { ...project };
-        const nextGroup = project?.testcaseGroups.find(d => d.id === info.testcaseGroupId);
+        const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+        const nextGroup = nextAllTestcaseGroups.find(d => d.id === info.testcaseGroupId);
         const inx = nextGroup.testcases.findIndex(d => d.id === info.id);
         if (inx > -1) {
           nextGroup.testcases[inx] = info;
-          setProject(nextProject);
+          setAllTestcaseGroups(nextAllTestcaseGroups);
         }
       });
     }
@@ -399,12 +402,12 @@ function ProjectTestcaseEditPage() {
 
   const onChangeTestcaseNameAndDescription = (id, name, description, handler) => {
     TestcaseService.updateTestcaseNameAndDescription(spaceCode, projectId, id, name, description, info => {
-      const nextProject = { ...project };
-      const nextGroup = project?.testcaseGroups.find(d => d.id === info.testcaseGroupId);
+      const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+      const nextGroup = nextAllTestcaseGroups.find(d => d.id === info.testcaseGroupId);
       const inx = nextGroup.testcases.findIndex(d => d.id === info.id);
       if (inx > -1) {
         nextGroup.testcases[inx] = info;
-        setProject(nextProject);
+        setAllTestcaseGroups(nextAllTestcaseGroups);
 
         setContent({ ...nextGroup });
 
@@ -425,8 +428,8 @@ function ProjectTestcaseEditPage() {
         setTimeout(() => {
           setContentLoading(false);
         }, 200);
-        const nextProject = { ...project };
-        const nextGroup = nextProject.testcaseGroups.find(g => g.id === result.testcaseGroupId);
+        const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+        const nextGroup = nextAllTestcaseGroups.find(g => g.id === result.testcaseGroupId);
         const index = nextGroup.testcases.findIndex(d => d.id === result.id);
         if (index > -1) {
           nextGroup.testcases[index] = result;
@@ -440,7 +443,7 @@ function ProjectTestcaseEditPage() {
           setContent({ ...nextGroup });
         }
 
-        setProject(nextProject);
+        setAllTestcaseGroups(nextAllTestcaseGroups);
         setContentChanged(false);
         if (handler) {
           handler();
@@ -477,11 +480,11 @@ function ProjectTestcaseEditPage() {
 
   const onSaveTestcaseGroup = (groupInfo, handler) => {
     TestcaseService.updateTestcaseGroup(spaceCode, projectId, groupInfo.id, groupInfo, info => {
-      const nextProject = { ...project };
-      const inx = project?.testcaseGroups.findIndex(d => d.id === info.id);
+      const nextAllTestcaseGroups = allTestcaseGroups.slice(0);
+      const inx = nextAllTestcaseGroups.findIndex(d => d.id === info.id);
       if (inx > -1) {
-        nextProject.testcaseGroups[inx] = info;
-        setProject(nextProject);
+        nextAllTestcaseGroups[inx] = info;
+        setAllTestcaseGroups(nextAllTestcaseGroups);
       }
       setContentChanged(false);
       if (handler) {
@@ -500,37 +503,27 @@ function ProjectTestcaseEditPage() {
       isLoading: true,
     });
     return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId, d => {
-      if (d.length > 12) {
-        try {
-          const string = d.substring(8, d.length - 4);
-          const items = JSON.parse(string);
+      try {
+        const items = JSON.parse(d);
 
-          // items가 array인지 확인
-          if (!Array.isArray(items)) {
-            setParaphraseInfo({
-              testcaseId,
-              result: false,
-              isLoading: false,
-            });
-            dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
-            return;
-          }
-
-          setParaphraseInfo({
-            testcaseId,
-            result: true,
-            isLoading: false,
-            items,
-          });
-        } catch (e) {
+        // items가 array인지 확인
+        if (!Array.isArray(items)) {
           setParaphraseInfo({
             testcaseId,
             result: false,
             isLoading: false,
           });
-          console.error(e);
+          dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
+          return;
         }
-      } else {
+
+        setParaphraseInfo({
+          testcaseId,
+          result: true,
+          isLoading: false,
+          items,
+        });
+      } catch (e) {
         setParaphraseInfo({
           testcaseId,
           result: false,

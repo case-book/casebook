@@ -46,7 +46,7 @@ function RequestBuilderPopup({ path, setOpened }) {
 
   useEffect(() => {
     if (selectedSpace) {
-      ProjectService.selectProjectList(selectedSpace.code, list => {
+      ProjectService.selectMyProjectList(selectedSpace.code, list => {
         setProjectList(list);
       });
     }

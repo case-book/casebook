@@ -13,10 +13,8 @@ import com.mindplates.bugcase.biz.ai.repository.LlmRepository;
 import com.mindplates.bugcase.biz.ai.repository.OpenAiModelRepository;
 import com.mindplates.bugcase.biz.ai.repository.OpenAiRepository;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,6 @@ public class LlmService {
     private final OpenAiModelRepository openAiModelRepository;
     private final OpenAiRepository openAiRepository;
     private final AiRequestHistoryRepository aiRequestHistoryRepository;
-    private final MappingUtil mappingUtil;
 
     @Transactional
     public LlmDTO createLlm(String name, String url, String apiKey, Long spaceId) {
@@ -65,7 +62,7 @@ public class LlmService {
     }
 
     public AiRequestHistoryDTO createAiRequestHistoryInfo(AiRequestHistoryDTO aiRequestHistory) {
-        AiRequestHistory result = aiRequestHistoryRepository.save(mappingUtil.convert(aiRequestHistory, AiRequestHistory.class));
+        AiRequestHistory result = aiRequestHistoryRepository.save(aiRequestHistory.toEntity());
         return new AiRequestHistoryDTO(result);
     }
 

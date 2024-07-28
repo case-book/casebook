@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class TestResultRequest {
+
     @NotBlank
     private TestResultCode result;
     private String comment;

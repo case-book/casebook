@@ -8,8 +8,8 @@ spring:
     active: default
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3606/bug_case?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
-    username: bug_case_app
+    url: jdbc:mysql://localhost:3606/casebook?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
+    username: casebook_app
     password: admin1234
   jpa:
     hibernate:
@@ -17,12 +17,12 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     generate-ddl: true
-    #show-sql: true
+    show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
-        #format_sql: true
+        # format_sql: true
         enable_lazy_load_no_trans: true
         type: trace
   redis:
@@ -42,6 +42,8 @@ spring:
     secret: CHANGE_THIS_SECRET
     expireMinutes: 1440
     refreshExpireMinutes: 20160
+scheduler:
+  enabled: false
 server:
   port: 8080
   error:
@@ -58,11 +60,13 @@ file:
   upload-dir: c:/fileupload/
   allowed-extension: bmp,jpeg,png,jpg,gif,webp,svg
 proxy:
-  enabled : false
+  enabled: false
   host:
   port:
 openai:
-  default :
-    systemRole : You are an expert test engineer.
-    prompt : JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변경한다.\n문장의 맞춤법이 틀린 경우 올바르게 수정한다.\n변경하는 모든 문장이 하나의 관점에서 일관된 형태의 문장이 되도록 문장에 포함된 단어, 문장의 어조, 어미 일관되게 재구성한다.\n제공되는 문장이 HTML인 경우, HTML 문법이 최대한 유지되도록 변경한다.\n
-    postPrompt : 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.
+  default:
+    LLM_SYSTEM_ROLE: You are an expert test engineer.
+    LLM_PREFIX: JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변경한다.
+    LLM_PROMPT: 문장의 맞춤법이 틀린 경우 올바르게 수정한다.\n변경하는 모든 문장이 하나의 관점에서 일관된 형태의 문장이 되도록 문장에 포함된 단어, 문장의 어조, 어미 일관되게 재구성한다.\n제공되는 문장이 HTML인 경우, HTML 문법이 최대한 유지되도록 변경한다.\n
+    LLM_POSTFIX: 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.
+

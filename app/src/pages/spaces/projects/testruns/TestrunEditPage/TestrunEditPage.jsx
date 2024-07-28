@@ -37,6 +37,8 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import './TestrunEditPage.scss';
 import ReleaseService from '@/services/ReleaseService';
 import SpaceProfileService from '@/services/SpaceProfileService';
+import TestcaseService from '@/services/TestcaseService';
+import { waitFor } from '@/utils/request';
 
 const labelMinWidth = '160px';
 
@@ -63,6 +65,8 @@ function TestrunEditPage({ type }) {
   });
 
   const [project, setProject] = useState(null);
+
+  const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [releases, setReleases] = useState([]);
 
@@ -113,9 +117,9 @@ function TestrunEditPage({ type }) {
   });
 
   const selectedTestcaseGroupSummary = useMemo(() => {
-    if (!testrun?.testcaseGroups || !project?.testcaseGroups) return [];
-    return testcaseUtil.getSelectedTestcaseGroupSummary(testrun.testcaseGroups, project.testcaseGroups);
-  }, [testrun?.testcaseGroups, project?.testcaseGroups]);
+    if (!testrun?.testcaseGroups || !testcaseGroups) return [];
+    return testcaseUtil.getSelectedTestcaseGroupSummary(testrun.testcaseGroups, testcaseGroups);
+  }, [testrun?.testcaseGroups, testcaseGroups]);
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -132,7 +136,7 @@ function TestrunEditPage({ type }) {
   };
 
   const selectAllTestcase = () => {
-    const initSelectedGroups = project.testcaseGroups?.map(d => {
+    const initSelectedGroups = testcaseGroups?.map(d => {
       return {
         testcaseGroupId: d.id,
         testcases: d.testcases?.map(item => {
@@ -151,25 +155,34 @@ function TestrunEditPage({ type }) {
   };
 
   useEffect(() => {
-    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
+    const promises = [];
+    promises.push(SpaceProfileService.selectSpaceProfileList(spaceCode));
+    promises.push(ProjectService.selectProjectInfo(spaceCode, projectId));
+    promises.push(TestcaseService.selectTestcaseGroupList(spaceCode, projectId));
+
+    waitFor(promises).then(responses => {
+      const profiles = responses[0].data;
+      const info = responses[1].data;
+      const list = responses[2].data;
+
       setSpaceProfileList(profiles);
+      setProject(info);
+      setTestcaseGroups(list);
 
-      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-        setProject(info);
-        if (isEdit) {
-          TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
-            setTestrun({
-              ...data,
-              startTime: dateUtil.getHourMinuteTime(data.startTime),
-              startDateTime: dateUtil.getTime(data.startDateTime),
-              endDateTime: dateUtil.getTime(data.endDateTime),
-              messageChannels: data.messageChannels || [],
-            });
+      if (isEdit) {
+        TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, data => {
+          setTestrun({
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            startDateTime: dateUtil.getTime(data.startDateTime),
+            endDateTime: dateUtil.getTime(data.endDateTime),
+            messageChannels: data.messageChannels || [],
           });
-          return;
-        }
+        });
+      } else {
+        const defaultProfile = profiles.find(profile => profile.default);
 
-        const initSelectedGroups = info.testcaseGroups?.map(d => {
+        const initSelectedGroups = list?.map(d => {
           return {
             testcaseGroupId: d.id,
             testcases: d.testcases?.map(item => {
@@ -179,8 +192,6 @@ function TestrunEditPage({ type }) {
             }),
           };
         });
-
-        const defaultProfile = profiles.find(profile => profile.default);
 
         setTestrun({
           ...testrun,
@@ -195,12 +206,12 @@ function TestrunEditPage({ type }) {
             };
           }),
         });
-      });
+      }
     });
   }, [isEdit, projectId, testrunId]);
 
   useEffect(() => {
-    if (isEdit || !releaseId || !project?.testcaseGroups) return;
+    if (isEdit || !releaseId || !testcaseGroups) return;
 
     ReleaseService.selectReleaseList(spaceCode, projectId, list => {
       setReleases(list);
@@ -208,7 +219,7 @@ function TestrunEditPage({ type }) {
 
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
       const nextTestcaseGroups = testcaseUtil.getSelectionForTestrunEdit(
-        project.testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))) })),
+        testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))) })),
       );
 
       setTestrun(prev => ({
@@ -218,7 +229,7 @@ function TestrunEditPage({ type }) {
         testcaseGroups: nextTestcaseGroups,
       }));
     });
-  }, [isEdit, spaceCode, projectId, releaseId, project?.testcaseGroups]);
+  }, [isEdit, spaceCode, projectId, releaseId, testcaseGroups]);
 
   const onSubmit = e => {
     e.preventDefault();
@@ -573,11 +584,6 @@ function TestrunEditPage({ type }) {
                 });
               }}
             />
-            {!(project?.messageChannels?.length > 0) && (
-              <EmptyContent className="empty-content">
-                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
-              </EmptyContent>
-            )}
             <Title
               border={false}
               marginBottom={false}
@@ -645,7 +651,7 @@ function TestrunEditPage({ type }) {
       )}
       {testcaseSelectPopupOpened && (
         <TestcaseSelectPopup
-          testcaseGroups={project.testcaseGroups}
+          testcaseGroups={testcaseGroups}
           selectedTestcaseGroups={testrun.testcaseGroups}
           users={project.users}
           selectedUsers={testrun.testrunUsers}

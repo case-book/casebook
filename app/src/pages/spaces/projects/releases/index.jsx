@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ReleaseListPage, ReleaseEditPage, ReleaseInfoPage } from '@/pages';
+import { ReleaseEditPage, ReleaseInfoPage, ReleaseListPage } from '@/pages';
 
 function ReleasesRoutes() {
   return (

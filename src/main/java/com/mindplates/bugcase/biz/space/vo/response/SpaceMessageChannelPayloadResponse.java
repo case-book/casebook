@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.space.vo.response;
 
-import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

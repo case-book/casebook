@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
@@ -39,8 +39,6 @@ function UserHeaderControl({ className }) {
   });
 
   const [notificationOpen, setNotificationOpen] = useState(false);
-
-  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
 
   const [notificationChangeEffect, setNotificationChangeEffect] = useState(false);
 
@@ -123,28 +121,26 @@ function UserHeaderControl({ className }) {
       {isAdmin && (
         <div className="notification-menu side-menu-item admin-menu-item">
           <div
+            className="menu-button"
             onClick={() => {
-              setAdminMenuOpen(!adminMenuOpen);
+              navigate('/admin');
             }}
           >
-            {t('관리')}
+            <span>{t('시스템 관리')}</span>
           </div>
-          <ul className={`admin-menu ${adminMenuOpen ? 'opened' : ''}`}>
+          <div className="hover-area" />
+          <ul className="admin-menu">
             <div className="arrow">
               <div />
             </div>
             {ADMIN_MENUS.map(d => {
               return (
-                <li key={d.to}>
-                  <Link
-                    to={d.to}
-                    onClick={() => {
-                      setAdminMenuOpen(false);
-                    }}
-                  >
-                    {d.name}
-                  </Link>
-                </li>
+                <React.Fragment key={d.to}>
+                  <li key={d.to}>
+                    <Link to={d.to}>{d.name}</Link>
+                  </li>
+                  {d.separator && <div className="separator" />}
+                </React.Fragment>
               );
             })}
           </ul>

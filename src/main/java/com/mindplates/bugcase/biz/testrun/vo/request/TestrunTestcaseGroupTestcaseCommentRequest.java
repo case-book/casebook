@@ -16,9 +16,9 @@ public class TestrunTestcaseGroupTestcaseCommentRequest {
     public TestrunTestcaseGroupTestcaseCommentDTO toDTO() {
 
         return TestrunTestcaseGroupTestcaseCommentDTO.builder()
-                .id(id)
-                .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseId).build())
-                .comment(comment).build();
+            .id(id)
+            .testrunTestcaseGroupTestcase(TestrunTestcaseGroupTestcaseDTO.builder().id(testrunTestcaseGroupTestcaseId).build())
+            .comment(comment).build();
 
     }
 

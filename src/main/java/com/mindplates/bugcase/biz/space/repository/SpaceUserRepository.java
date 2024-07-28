@@ -2,14 +2,16 @@ package com.mindplates.bugcase.biz.space.repository;
 
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
 import com.mindplates.bugcase.common.code.UserRoleCode;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface SpaceUserRepository extends JpaRepository<SpaceUser, Long> {
 
-    List<SpaceUser> findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(String spaceCode, String name, String spaceCode2, String email);
+    @Query("SELECT su FROM SpaceUser su JOIN FETCH su.user WHERE su.space.code = :spaceCode AND (su.user.name LIKE %:query% OR su.user.email LIKE %:query%)")
+    List<SpaceUser> findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(String spaceCode, String query);
 
+    @Query("SELECT su FROM SpaceUser su JOIN FETCH su.user WHERE su.space.code = :spaceCode")
     List<SpaceUser> findAllBySpaceCode(String spaceCode);
 
     boolean existsBySpaceIdAndUserId(Long spaceId, Long userId);
@@ -20,6 +22,6 @@ public interface SpaceUserRepository extends JpaRepository<SpaceUser, Long> {
 
     boolean existsBySpaceCodeAndUserIdAndRole(String spaceCode, Long userId, UserRoleCode role);
 
-
+    void deleteByUserId(Long userId);
 }
 

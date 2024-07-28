@@ -4,18 +4,18 @@ import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserTokenDTO;
 import com.mindplates.bugcase.biz.user.service.UserTokenService;
 import com.mindplates.bugcase.common.vo.SecurityUser;
+import java.util.Base64;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Base64;
-
 @RequiredArgsConstructor
 @Component
 public class UserTokenProvider {
+
     private final UserTokenService userTokenService;
 
     public Authentication getAuthentication(String token) {
@@ -25,12 +25,12 @@ public class UserTokenProvider {
         UserDTO user = userTokenDTO.getUser();
 
         UserDetails userDetails = SecurityUser.builder()
-                .id(user.getId())
-                .roles(user.getActiveSystemRole().toString())
-                .name(user.getName())
-                .email(user.getEmail())
-                .language(user.getLanguage())
-                .build();
+            .id(user.getId())
+            .roles(user.getActiveSystemRole().toString())
+            .name(user.getName())
+            .email(user.getEmail())
+            .language(user.getLanguage())
+            .build();
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 

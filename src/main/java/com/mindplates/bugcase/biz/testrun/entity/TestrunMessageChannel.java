@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.ProjectMessageChannel;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

@@ -1,10 +1,23 @@
 package com.mindplates.bugcase.biz.testcase.entity;
 
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
@@ -37,5 +50,12 @@ public class TestcaseItem extends CommonEntity {
 
     @Column(columnDefinition = "text", name = "text")
     private String text;
+
+    public void update(TestcaseItemDTO testcaseItem) {
+        this.testcaseTemplateItem = TestcaseTemplateItem.builder().id(testcaseItem.getTestcaseTemplateItem().getId()).build();
+        this.type = testcaseItem.getType();
+        this.value = testcaseItem.getValue();
+        this.text = testcaseItem.getText();
+    }
 
 }

@@ -80,7 +80,7 @@ public class UserController {
     @Operation(description = "내 정보 조회")
     @GetMapping("/my")
     public MyInfoResponse selectUserInfo(@AuthenticationPrincipal SecurityUser securityUser) {
-        UserDTO user = userService.selectUserInfo(securityUser.getId());
+        UserDTO user = userService.getUserInfo(securityUser.getId());
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(securityUser.getId());
         return new MyInfoResponse(user, null, null, spaces);
     }
@@ -88,15 +88,14 @@ public class UserController {
     @Operation(description = "내 정보 조회")
     @GetMapping("/my/detail")
     public MyDetailInfoResponse selectMyDetailInfo(@AuthenticationPrincipal SecurityUser securityUser) {
-        UserDTO user = userService.selectUserInfo(securityUser.getId());
+        UserDTO user = userService.getUserInfo(securityUser.getId());
         List<SpaceDTO> spaces = spaceService.selectUserSpaceList(securityUser.getId());
         return new MyDetailInfoResponse(user, spaces);
     }
 
     @Operation(description = "내 정보 변경")
     @PutMapping("/my")
-    public ResponseEntity<?> updateMyInfo(@Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest,
-        @AuthenticationPrincipal SecurityUser securityUser) {
+    public ResponseEntity<?> updateMyInfo(@Valid @RequestBody UpdateMyInfoRequest updateMyInfoRequest, @AuthenticationPrincipal SecurityUser securityUser) {
         userService.updateUser(securityUser.getId(), updateMyInfoRequest.toDTO());
 
         String[] patterns = {"space*", "project*"};
@@ -107,8 +106,7 @@ public class UserController {
 
     @Operation(description = "비밀번호 변경")
     @PutMapping("/my/changePassword")
-    public ResponseEntity<?> updateMyPasswordInfo(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest,
-        @AuthenticationPrincipal SecurityUser securityUser) {
+    public ResponseEntity<?> updateMyPasswordInfo(@Valid @RequestBody UpdatePasswordRequest updatePasswordRequest, @AuthenticationPrincipal SecurityUser securityUser) {
         if (!updatePasswordRequest.getNextPassword().equals(updatePasswordRequest.getNextPasswordConfirm())) {
             throw new ServiceException(HttpStatus.BAD_REQUEST, "user.password.confirm.not.matched");
         }
@@ -119,20 +117,24 @@ public class UserController {
     @Operation(description = "내 알림 정보 조회")
     @GetMapping("/my/notifications")
     public NotificationInfoResponse selectUserNotificationList(@RequestParam(value = "pageNo") int pageNo) {
-        UserDTO user = userService.selectUserInfo(SessionUtil.getUserId());
+        UserDTO user = userService.getUserInfo(SessionUtil.getUserId());
         LocalDateTime currentLastSeen = user.getLastSeen();
         List<NotificationDTO> notifications = notificationService.selectUserNotificationList(SessionUtil.getUserId(), pageNo, NOTIFICATION_PAGE_SIZE);
         if (pageNo == 0) {
             userService.updateUserLastSeen(user.getId(), LocalDateTime.now());
         }
-        return NotificationInfoResponse.builder().lastSeen(currentLastSeen).hasNext(notifications.size() >= NOTIFICATION_PAGE_SIZE).pageNo(pageNo)
-            .notifications(notifications.stream().map(NotificationResponse::new).collect(Collectors.toList())).build();
+        return NotificationInfoResponse.builder()
+            .lastSeen(currentLastSeen)
+            .hasNext(notifications.size() >= NOTIFICATION_PAGE_SIZE)
+            .pageNo(pageNo)
+            .notifications(notifications.stream().map(NotificationResponse::new).collect(Collectors.toList()))
+            .build();
     }
 
     @Operation(description = "내 알림 카운트 조회")
     @GetMapping("/my/notifications/count")
     public Long selectUserNotificationCount() {
-        UserDTO user = userService.selectUserInfo(SessionUtil.getUserId());
+        UserDTO user = userService.getUserInfo(SessionUtil.getUserId());
         return notificationService.selectUserNotificationCount(SessionUtil.getUserId(), user.getLastSeen(), NOTIFICATION_PAGE_SIZE);
     }
 
@@ -161,7 +163,7 @@ public class UserController {
         } catch (ExpiredJwtException e) {
             userId = Long.parseLong(e.getClaims().getSubject());
         }
-        UserDTO user = userService.selectUserInfo(userId);
+        UserDTO user = userService.getUserInfo(userId);
         List<String> roleList = Arrays.asList(user.getActiveSystemRole().toString().split(","));
         LocalDateTime currentDateTime = LocalDateTime.now();
         RefreshTokenDTO updatedRefreshToken = refreshTokenService.validateAndUpdateToken(userId, refreshToken, currentDateTime);

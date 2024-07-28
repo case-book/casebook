@@ -12,6 +12,7 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseDTO;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class TestrunReservationRequest {
+public class TestrunReservationRequest implements IRequestVO<TestrunReservationDTO> {
 
     private Long id;
     private Long projectId;
@@ -39,7 +40,8 @@ public class TestrunReservationRequest {
     private List<TestrunMessageChannelRequest> messageChannels;
 
 
-    public TestrunReservationDTO buildEntity() {
+    @Override
+    public TestrunReservationDTO toDTO() {
 
         TestrunReservationDTO testrunReservation = TestrunReservationDTO.builder()
             .id(id)
@@ -129,6 +131,4 @@ public class TestrunReservationRequest {
 
         return testrunReservation;
     }
-
-
 }

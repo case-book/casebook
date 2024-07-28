@@ -55,6 +55,17 @@ SpaceService.selectSpaceInfo = (spaceCode, successHandler, failHandler) => {
   );
 };
 
+SpaceService.selectSpaceName = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/name`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 SpaceService.selectSpaceAccessibleInfo = (spaceId, successHandler, failHandler) => {
   return request.get(
     `/api/spaces/${spaceId}/accessible`,

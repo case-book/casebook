@@ -2,10 +2,9 @@ package com.mindplates.bugcase.biz.config.vo.request;
 
 
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
-import lombok.Data;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class SetUpRequest {
@@ -15,6 +14,7 @@ public class SetUpRequest {
 
     @Data
     public static class AdminUser {
+
         @NotBlank
         @Email
         private String email;
