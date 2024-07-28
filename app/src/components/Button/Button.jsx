@@ -49,7 +49,7 @@ Button.propTypes = {
   shadow: PropTypes.bool,
   color: PropTypes.string,
   rounded: PropTypes.bool,
-  size: PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl', 'xxl']),
+  size: PropTypes.oneOf(['xxs', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl']),
   outline: PropTypes.bool,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,

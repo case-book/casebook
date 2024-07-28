@@ -12,12 +12,20 @@
   &.size-xs {
     padding: 4px;
     font-size: 10px;
+
+    .remove-button {
+      margin-left: 4px;
+    }
   }
 
   &.size-sm {
     padding: 8px;
     font-size: 12px;
     height: $sm-height;
+
+    .remove-button {
+      margin-left: 4px;
+    }
   }
 
   &.size-md {
