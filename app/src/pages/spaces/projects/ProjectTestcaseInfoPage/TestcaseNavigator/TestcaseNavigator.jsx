@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, EmptyContent, Liner, Selector } from '@/components';
+import React, { useEffect, useRef, useState, startTransition, useCallback } from 'react';
+import { Button, EmptyContent } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
 import TestcaseNavigatorContextMenu from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorContextMenu';
@@ -9,8 +9,11 @@ import { getOption, setOption } from '@/utils/storageUtil';
 import TestcaseGroupSetting from '@/pages/spaces/projects/ProjectTestcaseInfoPage/TestcaseNavigator/TestcaseNavigatorSetting';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
-import './TestcaseNavigator.scss';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
+import TestcaseNavigatorControl from './TestcaseNavigatorControl';
+import { useTestcaseFilter } from './testcaseFilterUtils';
+import './TestcaseNavigator.scss';
 
 function TestcaseNavigator({
   testcaseGroups,
@@ -116,6 +119,8 @@ function TestcaseNavigator({
       },
     };
   });
+
+  const { testcaseFilter, setTestcaseFilter } = useTestcaseFilter(testcaseGroups);
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -239,6 +244,12 @@ function TestcaseNavigator({
     });
   };
 
+  const onChangeTestcaseFilter = useCallback(filter => {
+    startTransition(() => {
+      setTestcaseFilter(filter);
+    });
+  }, []);
+
   useEffect(() => {
     if (selectedItemInfo.time && scroller.current) {
       setTimeout(() => {
@@ -274,137 +285,21 @@ function TestcaseNavigator({
 
   return (
     <div className={`testcase-groups-wrapper g-no-select ${min ? 'min' : ''}`} ref={ref}>
-      <div className="testcase-manage-button">
-        <div className="left">
-          <div className="controller">
-            <div>
-              <div className="bg" />
-              <span className="controller-button start-button">
-                <i className="fa-solid fa-gamepad" />
-              </span>
-              {!min && (
-                <div className="vertical">
-                  <span
-                    className="controller-button"
-                    onClick={() => {
-                      setAllOpen(false);
-                    }}
-                  >
-                    <div className="all-open-toggle">
-                      <div className="tree-icon">
-                        <i className="fa-solid fa-folder-minus" />
-                      </div>
-                      <div className="all-text">
-                        <span>ALL</span>
-                      </div>
-                    </div>
-                  </span>
-                  <span className="controller-button center-button" />
-                  <span
-                    className="controller-button"
-                    onClick={() => {
-                      setAllOpen(true);
-                    }}
-                  >
-                    <div className="all-open-toggle">
-                      <div className="tree-icon">
-                        <i className="fa-solid fa-folder-plus" />
-                      </div>
-                      <div className="all-text">
-                        <span>ALL</span>
-                      </div>
-                    </div>
-                  </span>
-                </div>
-              )}
-              <div className="horizontal">
-                <span
-                  className="controller-button"
-                  onClick={() => {
-                    setMin(true);
-                  }}
-                >
-                  <i className="fa-solid fa-minimize" />
-                </span>
-                <span className="controller-button center-button" />
-                <span
-                  className="controller-button"
-                  onClick={() => {
-                    setMin(false);
-                  }}
-                >
-                  <i className="fa-solid fa-maximize" />
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-        {user && (
-          <div className="navigation-filter">
-            <div className="label">{t('테스터')}</div>
-            <div>
-              <Button
-                size="xs"
-                className="my-button"
-                onClick={() => {
-                  setUserFilter(user.id);
-                }}
-              >
-                MY
-              </Button>
-              <Selector
-                className="selector"
-                size="xs"
-                items={[
-                  {
-                    userId: '',
-                    name: t('전체'),
-                  },
-                ]
-                  .concat(users)
-                  .map(d => {
-                    return {
-                      key: d.userId,
-                      value: d.name,
-                    };
-                  })}
-                value={userFilter}
-                onChange={val => {
-                  setUserFilter(val);
-                }}
-              />
-            </div>
-          </div>
-        )}
-        {addTestcase && addTestcaseGroup && (
-          <div className={`navigation-controller ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
-            {addTestcaseGroup && (
-              <Button
-                size="xs"
-                onClick={() => {
-                  addTestcaseGroup(true);
-                }}
-                color="white"
-              >
-                <i className="fa-solid fa-folder-plus" /> <span className="button-text">{t('그룹')}</span>
-              </Button>
-            )}
-            <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
-            <Button
-              className="add-testcase-button"
-              size="xs"
-              onClick={() => {
-                addTestcase(true);
-              }}
-              disabled={!selectedItemInfo.type}
-              color="white"
-            >
-              <i className="small-icon fa-solid fa-plus" />
-              <i className="fa-solid fa-flask" /> <span className="button-text">{t('테스트케이스')}</span>
-            </Button>
-          </div>
-        )}
-      </div>
+      <TestcaseNavigatorControl
+        min={min}
+        width={width}
+        user={user}
+        users={users}
+        userFilter={userFilter}
+        selectedItemInfo={selectedItemInfo}
+        testcaseFilter={testcaseFilter}
+        setMin={setMin}
+        addTestcase={addTestcase}
+        addTestcaseGroup={addTestcaseGroup}
+        onChangeUserFilter={setUserFilter}
+        onClickAllOpen={setAllOpen}
+        onChangeTestcaseFilter={onChangeTestcaseFilter}
+      />
       <div
         className="testcase-groups-content"
         onClick={() => {
@@ -482,6 +377,7 @@ function TestcaseNavigator({
                     showTestResult={showTestResult}
                     watcherInfo={watcherInfo}
                     copyInfo={copyInfo}
+                    testcaseFilter={testcaseFilter}
                   />
                 );
               })}
@@ -600,4 +496,4 @@ TestcaseNavigator.propTypes = {
   copyTestcase: PropTypes.func,
 };
 
-export default TestcaseNavigator;
+export default observer(TestcaseNavigator);
