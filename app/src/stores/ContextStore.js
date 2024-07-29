@@ -9,6 +9,8 @@ export default class ContextStore {
 
   collapsed = null;
 
+  hoverMenu = null;
+
   constructor() {
     makeObservable(this, {
       space: observable,
@@ -21,6 +23,8 @@ export default class ContextStore {
       setRefreshProjectList: action,
       collapsed: observable,
       setCollapsed: action,
+      hoverMenu: observable,
+      setHoverMenu: action,
     });
   }
 
@@ -38,6 +42,10 @@ export default class ContextStore {
 
   setCollapsed = collapsed => {
     this.collapsed = collapsed;
+  };
+
+  setHoverMenu = hoverMenu => {
+    this.hoverMenu = hoverMenu;
   };
 
   get isProjectSelected() {

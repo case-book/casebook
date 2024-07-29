@@ -93,4 +93,14 @@ ul.project-menu-wrapper {
       }
     }
   }
+
+  .hover-menu {
+    position: fixed;
+    bottom : 0;
+    right : 0;
+    font-size: 48px;
+    color: black;
+    font-weight: bold;
+    padding: 24px 48px;
+  }
 }

@@ -15,10 +15,12 @@ function ProjectMenu({ className, closeMobileMenu }) {
       isLogin,
       user: { activeSystemRole },
     },
-    contextStore: { spaceCode, projectId, isProjectSelected, collapsed },
+    contextStore: { spaceCode, projectId, isProjectSelected, collapsed, hoverMenu, setHoverMenu },
   } = useStores();
 
   console.log(spaceCode, projectId, activeSystemRole);
+
+  console.log(hoverMenu);
 
   const location = useLocation();
 
@@ -66,6 +68,12 @@ function ProjectMenu({ className, closeMobileMenu }) {
                   closeMobileMenu();
                 }
               }}
+              onMouseEnter={() => {
+                setHoverMenu(t(`메뉴.${d.name}`));
+              }}
+              onMouseLeave={() => {
+                setHoverMenu(null);
+              }}
             >
               <div className="menu-icon">{d.icon}</div>
               <div className="text">
@@ -85,6 +93,12 @@ function ProjectMenu({ className, closeMobileMenu }) {
                             closeMobileMenu();
                           }
                         }}
+                        onMouseEnter={() => {
+                          setHoverMenu(info.name);
+                        }}
+                        onMouseLeave={() => {
+                          setHoverMenu(null);
+                        }}
                       >
                         <div className="menu-icon">{info.icon}</div>
                         <div className="text">{info.name}</div>
@@ -97,6 +111,7 @@ function ProjectMenu({ className, closeMobileMenu }) {
           </li>
         );
       })}
+      {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
     </ul>
   );
 }
