@@ -41,10 +41,14 @@ export default class ContextStore {
   };
 
   get isProjectSelected() {
-    return !!this.spaceCode && !!this.projectId && Number.isInteger(this.projectId);
+    return !!this.space?.code && !!this.projectId && Number.isInteger(this.projectId);
   }
 
   get isSpaceSelected() {
-    return !!this.spaceCode;
+    return !!this.space?.code;
+  }
+
+  get spaceCode() {
+    return this.space?.code;
   }
 }

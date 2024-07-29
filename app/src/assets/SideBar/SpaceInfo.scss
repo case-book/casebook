@@ -1,10 +1,11 @@
 .space-info-wrapper {
   display: flex;
   line-height: 1;
-  padding: 16px;
+  padding: 0 16px;
+  margin-bottom: 16px;
   cursor: pointer;
   &:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    _background-color: rgba(0, 0, 0, 0.1);
   }
   > div {
     align-self: flex-start;

@@ -3,30 +3,38 @@ import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { Liner } from '@/components';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 
 import './ProjectMenu.scss';
+import classNames from 'classnames';
 
 function ProjectMenu({ className, closeMobileMenu }) {
   const {
-    userStore: { isLogin },
-    themeStore: { theme },
-    contextStore: { spaceCode, projectId, isProjectSelected },
+    userStore: {
+      isLogin,
+      user: { activeSystemRole },
+    },
+    contextStore: { spaceCode, projectId, isProjectSelected, collapsed },
   } = useStores();
+
+  console.log(spaceCode, projectId, activeSystemRole);
 
   const location = useLocation();
 
   const { t } = useTranslation();
 
   const list = MENUS.filter(d => d.pc)
-    .filter(d => d.project === isProjectSelected)
-    .filter(d => !d.admin)
+    .filter(d => {
+      if (d.admin) {
+        return activeSystemRole === 'ROLE_ADMIN';
+      }
+      return true;
+    })
     .filter(d => d.login === undefined || d.login === isLogin);
 
   return (
-    <ul className={`project-menu-wrapper common-menu-wrapper ${className} ${isProjectSelected ? 'project-selected' : ''} ${list?.length > 0 ? '' : 'no-menu'}`}>
+    <ul className={classNames('project-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
       {list.map((d, inx) => {
         let isSelected = false;
         if (d.project) {
@@ -59,32 +67,27 @@ function ProjectMenu({ className, closeMobileMenu }) {
                 }
               }}
             >
-              <span className="text">
+              <div className="menu-icon">{d.icon}</div>
+              <div className="text">
                 {t(`메뉴.${d.name}`)}
                 <span />
-              </span>
+              </div>
             </Link>
-            <div className="cursor">
-              <div />
-            </div>
-            <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px" />
             {d.list && (
               <ul className="sub-menu">
-                <div className="arrow">
-                  <div />
-                </div>
                 {d.list?.map(info => {
                   return (
                     <li key={info.key}>
                       <Link
-                        to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : d.to}
+                        to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
                         onClick={() => {
                           if (closeMobileMenu) {
                             closeMobileMenu();
                           }
                         }}
                       >
-                        {info.name}
+                        <div className="menu-icon">{info.icon}</div>
+                        <div className="text">{info.name}</div>
                       </Link>
                     </li>
                   );

@@ -1,31 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Card, EmptyContent, Page, PageContent, PageTitle } from '@/components';
+import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import './ProjectListPage.scss';
 import { MENUS } from '@/constants/menu';
 import SpaceService from '@/services/SpaceService';
+import useStores from '@/hooks/useStores';
 
 function ProjectListPage() {
+  const {
+    contextStore: { space },
+  } = useStores();
+
   const { t } = useTranslation();
-  const { spaceCode } = useParams();
   const [spaceName, setSpaceName] = useState(null);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
 
+  const spaceCode = useMemo(() => {
+    return space?.code;
+  }, [space?.code]);
+
   const getSpaceInfo = () => {
-    SpaceService.selectSpaceName(spaceCode || 'MOSOL', name => {
+    SpaceService.selectSpaceName(spaceCode, name => {
       setSpaceName(name);
     });
   };
 
   useEffect(() => {
-    getSpaceInfo();
-    ProjectService.selectMyProjectList(spaceCode || 'MOSOL', list => {
-      setProjects(list);
-    });
+    if (spaceCode) {
+      getSpaceInfo();
+      ProjectService.selectMyProjectList(space?.code, list => {
+        setProjects(list);
+      });
+    }
   }, [spaceCode]);
 
   return (
@@ -186,5 +196,4 @@ function ProjectListPage() {
     </Page>
   );
 }
-
-export default ProjectListPage;
+export default observer(ProjectListPage);

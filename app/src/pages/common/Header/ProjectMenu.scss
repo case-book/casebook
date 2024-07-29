@@ -1,5 +1,50 @@
-.project-menu-wrapper {
+ul.project-menu-wrapper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &.collapsed {
+    > li {
+      > a {
+        .menu-icon {
+          margin-right: 0;
+        }
+        .text {
+          display: none;
+        }
+      }
+    }
+  }
+
   > li {
+    position: relative;
+    &:hover {
+      background-color: #111;
+      color: white;
+    }
+
+    > a {
+      color: white;
+      padding: 4px 16px;
+
+      display: flex;
+      .menu-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        justify-content: center;
+        border-radius: 4px;
+        margin-right: 8px;
+        font-size: 16px;
+        i {
+          align-self: center;
+        }
+      }
+
+      .text {
+        align-self: center;
+      }
+    }
     &:hover {
       .sub-menu {
         display: block;
@@ -11,39 +56,33 @@
     white-space: nowrap;
     list-style: none;
     margin: 0;
-    top: calc(60px);
-    left: -34px;
-    background-color: white;
-    padding: 10px;
+    top: 0;
+    left: 100%;
+    background-color: #111;
+    padding: 8px;
     display: none;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
 
-    .arrow {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border: 1px solid var(--border-color);
-      border-right: none;
-      border-bottom: none;
-      top: -6px;
-      left: calc(50% - 5px);
-      transform: rotate(45deg);
-      background-color: var(--theme-color);
-    }
-
-    li {
+    > li {
       cursor: pointer;
 
       > a {
-        font-weight: normal !important;
-        color: var(--text-color);
-        padding: 5px 8px;
-        display: inline-block;
+        color: white;
+        padding: 4px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        .menu-icon {
+          margin-right: 8px;
+          min-width: 18px;
+        }
       }
+
       &:last-child {
-        margin-bottom: 0;
+        > a {
+          margin-bottom: 0;
+        }
       }
+
       &:hover {
         text-decoration: underline;
         background-color: var(--primary-color);

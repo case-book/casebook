@@ -4,12 +4,15 @@ import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 import './SpaceInfo.scss';
 import useStores from '@/hooks/useStores';
+import { SpacePropTypes } from '@/proptypes';
 
-function SpaceInfo({ className }) {
+function SpaceInfo({ className, spaces }) {
   const {
     userStore: { user },
     contextStore: { space, collapsed },
   } = useStores();
+
+  console.log(spaces);
 
   return (
     <div className={classNames('space-info-wrapper', className)}>
@@ -35,10 +38,12 @@ function SpaceInfo({ className }) {
 
 SpaceInfo.defaultProps = {
   className: '',
+  spaces: [],
 };
 
 SpaceInfo.propTypes = {
   className: PropTypes.string,
+  spaces: PropTypes.arrayOf(SpacePropTypes),
 };
 
 export default observer(SpaceInfo);

@@ -102,12 +102,7 @@
       }
     }
 
-    .project-menu {
-      flex-grow: 1;
-      @media (max-width: 768px) {
-        display: none;
-      }
-    }
+
 
     .user-header-control {
       @media (max-width: 768px) {
@@ -117,8 +112,7 @@
     }
 
     @media (max-width: 1024px) {
-      .back-navigator,
-      .project-menu {
+      .back-navigator {
         _display: none;
       }
     }

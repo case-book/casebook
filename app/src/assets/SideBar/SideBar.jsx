@@ -5,14 +5,19 @@ import SpaceService from '@/services/SpaceService';
 import useStores from '@/hooks/useStores';
 import './SideBar.scss';
 import SpaceInfo from '@/assets/SideBar/SpaceInfo';
+import ProjectService from '@/services/ProjectService';
+import ProjectMenu from '@/pages/common/Header/ProjectMenu';
+import { Logo } from '@/components';
+import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
 
 function SideBar() {
   const {
-    contextStore: { setSpace, collapsed, setCollapsed },
+    contextStore: { space, setSpace, collapsed, setCollapsed },
   } = useStores();
 
   const [spaces, setSpaces] = useState([]);
-  const [currentSpace, setCurrentSpace] = useState(null);
+  const [projects, setProjects] = useState([]);
+
   const getMySpaceList = () => {
     const spaceCode = localStorage.getItem('spaceCode');
     SpaceService.selectMySpaceList(
@@ -20,9 +25,9 @@ function SideBar() {
       list => {
         setSpaces(list);
         if (list.length > 0 && list.find(d => d.spaceCode === spaceCode)) {
-          setCurrentSpace(list.find(d => d.spaceCode === spaceCode));
+          setSpace(list.find(d => d.spaceCode === spaceCode));
         } else if (list.length > 0) {
-          setCurrentSpace(list[0]);
+          setSpace(list[0]);
           localStorage.setItem('spaceCode', list[0].spaceCode);
         }
       },
@@ -31,14 +36,20 @@ function SideBar() {
   };
 
   useEffect(() => {
+    const lastCollapsed = localStorage.getItem('collapsed');
+    if (lastCollapsed) {
+      setCollapsed(lastCollapsed === 'true');
+    }
     getMySpaceList();
   }, []);
 
   useEffect(() => {
-    if (currentSpace) {
-      setSpace(currentSpace);
+    if (space?.code) {
+      ProjectService.selectMyProjectList(space?.code, list => {
+        setProjects(list);
+      });
     }
-  }, [currentSpace]);
+  }, [space]);
 
   useEffect(() => {
     if (collapsed) {
@@ -48,20 +59,20 @@ function SideBar() {
     }
   }, [collapsed]);
 
-  console.log(spaces);
+  console.log(projects);
 
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
-      {currentSpace && <SpaceInfo space={currentSpace} />}
-      <div className="collapse">
-        <button
-          onClick={() => {
-            setCollapsed(!collapsed);
-          }}
-        >
-          {collapsed && <i className="fa-solid fa-angle-right" />}
-          {!collapsed && <i className="fa-solid fa-angle-left" />}
-        </button>
+      {!collapsed && (
+        <div className="size-bar-logo">
+          <Logo size="sm" color="white" hand={false} />
+        </div>
+      )}
+      <SpaceInfo spaces={spaces} />
+
+      <ProjectMenu />
+      <div className="side-bar-bottom">
+        <UserHeaderControl />
       </div>
     </nav>
   );
