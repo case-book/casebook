@@ -50,50 +50,11 @@ ul.project-menu-wrapper {
       }
     }
   }
-  .sub-menu {
-    position: absolute;
-    white-space: nowrap;
-    list-style: none;
-    margin: 0;
-    top: 0;
-    left: 100%;
-    background-color: #111;
-    padding: 8px;
-    display: none;
-    border: 1px solid var(--border-color);
-
-    > li {
-      cursor: pointer;
-
-      > a {
-        color: white;
-        padding: 4px 8px;
-        margin-bottom: 4px;
-        display: flex;
-        .menu-icon {
-          margin-right: 8px;
-          min-width: 18px;
-        }
-      }
-
-      &:last-child {
-        > a {
-          margin-bottom: 0;
-        }
-      }
-
-      &:hover {
-        > a {
-          color: var(--yellow-color);
-        }
-      }
-    }
-  }
 
   .hover-menu {
     position: fixed;
-    bottom : 0;
-    right : 0;
+    bottom: 0;
+    right: 0;
     font-size: 48px;
     color: black;
     font-weight: bold;

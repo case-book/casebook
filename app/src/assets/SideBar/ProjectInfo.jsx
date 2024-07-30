@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './ProjectInfo.scss';
 import ProjectService from '@/services/ProjectService';
+import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 
 function ProjectInfo({ className }) {
   const {
@@ -59,26 +60,28 @@ function ProjectInfo({ className }) {
           )}
         </Link>
         {collapsed && (
-          <ul className="collapsed-project-list">
-            {projects?.map(project => {
-              return (
-                <li
-                  key={project.id}
-                  className={classNames({ selected: projectId === project.id })}
-                  onMouseEnter={() => {
-                    setHoverMenu(project.name);
-                  }}
-                  onMouseLeave={() => {
-                    setHoverMenu(null);
-                  }}
-                >
-                  <Link to={`/spaces/${space.code}/projects/${project.id}`}>
-                    <div className="text">{project.name}</div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <SideOverlayMenu className="collapsed-project-list">
+            <ul>
+              {projects?.map(project => {
+                return (
+                  <li
+                    key={project.id}
+                    className={classNames({ selected: projectId === project.id })}
+                    onMouseEnter={() => {
+                      setHoverMenu(project.name);
+                    }}
+                    onMouseLeave={() => {
+                      setHoverMenu(null);
+                    }}
+                  >
+                    <Link to={`/spaces/${space.code}/projects/${project.id}`}>
+                      <div className="text">{project.name}</div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </SideOverlayMenu>
         )}
       </div>
       <div className={classNames('project-list', { opened: projectListOpened })}>

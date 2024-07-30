@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import './ProjectMenu.scss';
 import classNames from 'classnames';
+import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 
 function ProjectMenu({ className, closeMobileMenu }) {
   const {
@@ -82,31 +83,33 @@ function ProjectMenu({ className, closeMobileMenu }) {
               </div>
             </Link>
             {d.list && (
-              <ul className="sub-menu">
-                {d.list?.map(info => {
-                  return (
-                    <li key={info.key}>
-                      <Link
-                        to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
-                        onClick={() => {
-                          if (closeMobileMenu) {
-                            closeMobileMenu();
-                          }
-                        }}
-                        onMouseEnter={() => {
-                          setHoverMenu(info.name);
-                        }}
-                        onMouseLeave={() => {
-                          setHoverMenu(null);
-                        }}
-                      >
-                        <div className="menu-icon">{info.icon}</div>
-                        <div className="text">{info.name}</div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+              <SideOverlayMenu className="sub-menu">
+                <ul>
+                  {d.list?.map(info => {
+                    return (
+                      <li key={info.key}>
+                        <Link
+                          to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
+                          onClick={() => {
+                            if (closeMobileMenu) {
+                              closeMobileMenu();
+                            }
+                          }}
+                          onMouseEnter={() => {
+                            setHoverMenu(info.name);
+                          }}
+                          onMouseLeave={() => {
+                            setHoverMenu(null);
+                          }}
+                        >
+                          <div className="menu-icon">{info.icon}</div>
+                          <div className="text">{info.name}</div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </SideOverlayMenu>
             )}
           </li>
         );

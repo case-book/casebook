@@ -1,0 +1,46 @@
+.side-overlay-menu-wrapper {
+  position: absolute;
+  white-space: nowrap;
+  list-style: none;
+  margin: 0;
+  top: 0;
+  left: 100%;
+  background-color: #111;
+  padding: 16px 8px;
+  display: none;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    > li {
+      cursor: pointer;
+
+      > a {
+        color: white;
+        padding: 4px 8px;
+        margin-bottom: 4px;
+        display: flex;
+        font-size: 14px;
+
+        .menu-icon {
+          margin-right: 8px;
+          min-width: 18px;
+        }
+      }
+
+      &:last-child {
+        > a {
+          margin-bottom: 0;
+        }
+      }
+
+      &.selected,
+      &:hover {
+        > a {
+          color: var(--yellow-color);
+        }
+      }
+    }
+  }
+}
