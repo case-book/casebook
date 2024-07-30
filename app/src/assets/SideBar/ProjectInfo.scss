@@ -1,0 +1,182 @@
+.project-info-wrapper {
+  .project-menu {
+    position: relative;
+    a {
+      color: white;
+      padding: 4px 16px;
+      display: flex;
+      > div {
+        align-self: center;
+
+        &.open-list {
+          flex-grow: 1;
+          text-align: right;
+
+          .bullet {
+            font-size: 13px;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            justify-content: center;
+            border-radius: 4px;
+            &:hover {
+              background-color: var(--yellow-color);
+              color: #111;
+            }
+            i {
+              align-self: center;
+            }
+          }
+        }
+      }
+
+      &:hover {
+        background-color: var(--primary-color);
+
+        > a {
+          color: var(--primary-text-color);
+        }
+      }
+
+      .menu-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        justify-content: center;
+        border-radius: 4px;
+        margin-right: 8px;
+        font-size: 16px;
+        i {
+          align-self: center;
+        }
+      }
+
+      .text {
+        align-self: center;
+      }
+    }
+
+    .collapsed-project-list {
+      position: absolute;
+      white-space: nowrap;
+      list-style: none;
+      margin: 0;
+      top: 0;
+      left: 100%;
+      background-color: #111;
+      padding: 8px;
+      display: none;
+
+      > li {
+        cursor: pointer;
+
+        > a {
+          color: white;
+          padding: 4px 8px;
+          margin-bottom: 4px;
+          display: flex;
+          font-size: 14px;
+
+          .menu-icon {
+            margin-right: 8px;
+            min-width: 18px;
+          }
+        }
+
+        &:last-child {
+          > a {
+            margin-bottom: 0;
+          }
+        }
+
+        &.selected,
+        &:hover {
+          > a {
+            color: var(--yellow-color);
+          }
+        }
+      }
+    }
+
+    &:hover {
+      .collapsed-project-list {
+        display: block;
+      }
+    }
+  }
+
+  &.collapsed {
+    .project-menu {
+      > a {
+        .text {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .project-list {
+    padding: 0 16px 0 32px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+
+    &.opened {
+      display: block;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 16px 0;
+      align-self: center;
+      white-space: nowrap;
+
+      > li {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 2px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        a {
+          color: white;
+          vertical-align: top;
+          width: 100%;
+          display: block;
+          padding: 2px;
+
+          &:hover {
+            color: var(--yellow-color);
+          }
+          .dot {
+            display: inline-block;
+            margin-right: 4px;
+            > div {
+              align-self: center;
+              width: 4px;
+              height: 4px;
+              background-color: white;
+              border-radius: 50%;
+              position: relative;
+              top: -2px;
+            }
+          }
+        }
+
+        &.selected {
+          > a {
+            color: var(--yellow-color);
+          }
+        }
+      }
+    }
+  }
+
+  &.collapsed {
+    .project-list {
+      display: none;
+    }
+  }
+}

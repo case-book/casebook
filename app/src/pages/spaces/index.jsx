@@ -11,7 +11,7 @@ function SpacesRoutes() {
       <Route path="/:spaceCode/edit" element={<SpaceEditPage type="edit" />} />
       <Route path="/:spaceCode/info" element={<SpaceInfoPage />} />
       <Route path="/:spaceCode/variables" element={<SpaceVariableEditPage />} />
-      <Route path="/" element={<SpaceListPage />} />
+      <Route path="/search" element={<SpaceListPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>
   );

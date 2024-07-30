@@ -26,7 +26,6 @@ ul.project-menu-wrapper {
     > a {
       color: white;
       padding: 4px 16px;
-
       display: flex;
       .menu-icon {
         width: 32px;
@@ -84,11 +83,8 @@ ul.project-menu-wrapper {
       }
 
       &:hover {
-        text-decoration: underline;
-        background-color: var(--primary-color);
-
         > a {
-          color: var(--primary-text-color);
+          color: var(--yellow-color);
         }
       }
     }

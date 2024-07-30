@@ -5,18 +5,17 @@ import SpaceService from '@/services/SpaceService';
 import useStores from '@/hooks/useStores';
 import './SideBar.scss';
 import SpaceInfo from '@/assets/SideBar/SpaceInfo';
-import ProjectService from '@/services/ProjectService';
 import ProjectMenu from '@/pages/common/Header/ProjectMenu';
 import { Logo } from '@/components';
 import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
+import ProjectInfo from '@/assets/SideBar/ProjectInfo';
 
 function SideBar() {
   const {
-    contextStore: { space, setSpace, collapsed, setCollapsed },
+    contextStore: { setSpace, collapsed, setCollapsed },
   } = useStores();
 
   const [spaces, setSpaces] = useState([]);
-  const [projects, setProjects] = useState([]);
 
   const getMySpaceList = () => {
     const spaceCode = localStorage.getItem('spaceCode');
@@ -44,22 +43,12 @@ function SideBar() {
   }, []);
 
   useEffect(() => {
-    if (space?.code) {
-      ProjectService.selectMyProjectList(space?.code, list => {
-        setProjects(list);
-      });
-    }
-  }, [space]);
-
-  useEffect(() => {
     if (collapsed) {
       document.body.classList.add('collapsed');
     } else {
       document.body.classList.remove('collapsed');
     }
   }, [collapsed]);
-
-  console.log(projects);
 
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
@@ -69,7 +58,7 @@ function SideBar() {
         </div>
       )}
       <SpaceInfo spaces={spaces} />
-
+      <ProjectInfo />
       <ProjectMenu />
       <div className="side-bar-bottom">
         <UserHeaderControl />
