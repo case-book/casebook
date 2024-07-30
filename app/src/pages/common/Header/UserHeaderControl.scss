@@ -285,9 +285,39 @@
             line-height: 100%;
             padding: 0 1rem;
 
+            > div.theme-selector {
+              text-align: right;
+              margin-top: 8px;
+
+              > span {
+                font-size: 11px;
+                display: inline-block;
+                padding: 4px 6px;
+                background-color: var(--light-color);
+                cursor: pointer;
+                color: var(--text-color);
+
+                &:first-child {
+                  border-radius: 6px 0 0 6px;
+                  border: 1px solid var(--border-light-color);
+                  border-right: none;
+                }
+                &:last-child {
+                  border-radius: 0 6px 6px 0;
+                  border: 1px solid var(--border-light-color);
+                  border-left: none;
+                }
+                &.selected {
+                  background-color: var(--primary-color);
+                  color: var(--primary-text-empahsis-color);
+                  font-weight: bold;
+                }
+              }
+            }
+
             &.user-info {
               padding: 0.5rem 1rem;
-              color: black;
+              color: var(--text-color);
 
               > div {
                 display: flex;

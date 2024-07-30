@@ -12,7 +12,6 @@ import { debounce } from 'lodash';
 import './App.scss';
 import { useTranslation } from 'react-i18next';
 import GuestHeader from '@/pages/common/Header/GuestHeader';
-import ProjectHeader from '@/pages/common/Header/ProjectHeader';
 import ApiRoutes from '@/pages/apis';
 import SideBar from '@/assets/SideBar/SideBar';
 import ProjectListPage from '@/pages/spaces/projects/ProjectListPage';
@@ -92,8 +91,8 @@ function App() {
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
-          {!(isLogin && isProjectSelected) && <GuestHeader />}
-          {isLogin && isProjectSelected && <ProjectHeader />}
+          {!isLogin && <GuestHeader />}
+
           <main className="main-content">
             {isLogin && (
               <Routes location={location}>

@@ -11,11 +11,13 @@ import { setToken } from '@/utils/request';
 import './UserHeaderControl.scss';
 import NotificationList from '@/components/NotificationList/NotificationList';
 import classNames from 'classnames';
+import { THEMES } from '@/constants/constants';
 
 function UserHeaderControl({ className }) {
   const {
     userStore: { isAdmin, user, setUser, notificationCount, setNotificationCount },
     contextStore: { collapsed, setCollapsed },
+    themeStore: { theme, setTheme },
   } = useStores();
 
   const navigate = useNavigate();
@@ -250,6 +252,26 @@ function UserHeaderControl({ className }) {
                   </div>
 
                   <hr />
+                </li>
+                <li>
+                  <div className="theme-selector">
+                    <span
+                      className={theme === THEMES.LIGHT ? 'selected' : ''}
+                      onClick={() => {
+                        setTheme(THEMES.LIGHT);
+                      }}
+                    >
+                      <i className="fa-solid fa-lightbulb" /> LIGHT
+                    </span>
+                    <span
+                      className={theme === THEMES.DARK ? 'selected' : ''}
+                      onClick={() => {
+                        setTheme(THEMES.DARK);
+                      }}
+                    >
+                      <i className="fa-solid fa-moon" /> DARK
+                    </span>
+                  </div>
                 </li>
                 <li>
                   <Link
