@@ -74,7 +74,8 @@
   }
 
   .project-list {
-    padding: 0 16px 0 32px;
+    padding: 0 0 0 32px;
+    width: calc(100% + 1px);
     max-height: 300px;
     overflow-y: auto;
     display: none;
@@ -115,7 +116,7 @@
               align-self: center;
               width: 4px;
               height: 4px;
-              background-color: white;
+              background-color: var(--theme-color);
               border-radius: 50%;
               position: relative;
               top: -2px;
@@ -125,7 +126,12 @@
 
         &.selected {
           > a {
-            color: var(--yellow-color);
+            background-color: var(--theme-color);
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 15px;
+            padding: 4px 2px;
+            border-radius: 4px 0 0 4px;
           }
         }
       }
