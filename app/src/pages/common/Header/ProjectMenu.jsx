@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
-
-import './ProjectMenu.scss';
 import classNames from 'classnames';
 import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
+import './ProjectMenu.scss';
+import { ProjectPropTypes } from '@/proptypes';
+import CloseIcon from '../../../components/CloseIcon/CloseIcon';
 
-function ProjectMenu({ className, closeMobileMenu }) {
+function ProjectMenu({ className, projects }) {
   const {
     userStore: {
       isLogin,
@@ -19,11 +20,11 @@ function ProjectMenu({ className, closeMobileMenu }) {
     contextStore: { spaceCode, projectId, isProjectSelected, collapsed, hoverMenu, setHoverMenu },
   } = useStores();
 
-  console.log(spaceCode, projectId, activeSystemRole);
-
-  console.log(hoverMenu);
+  const navigate = useNavigate();
 
   const location = useLocation();
+
+  const [projectSelector, setProjectSelector] = useState(null);
 
   const { t } = useTranslation();
 
@@ -35,6 +36,41 @@ function ProjectMenu({ className, closeMobileMenu }) {
       return true;
     })
     .filter(d => d.login === undefined || d.login === isLogin);
+
+  const onMenuClick = (menu, e) => {
+    e.preventDefault();
+    if (menu.project) {
+      if (!projectId) {
+        setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${menu.to}`);
+        return;
+      }
+      navigate(`/spaces/${spaceCode}/projects/${projectId}${menu.to}`);
+    } else {
+      navigate(menu.to);
+    }
+  };
+
+  const onSubMenuClick = (menu, subMenu, e) => {
+    e.preventDefault();
+    if (menu.project) {
+      if (!projectId) {
+        setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${menu.to}${subMenu.to}`);
+        return;
+      }
+
+      navigate(`/spaces/${spaceCode}/projects/${projectId}${menu.to}${subMenu.to}`);
+    } else {
+      navigate(`${menu.to}${subMenu.to}`);
+    }
+  };
+
+  const onMenuMouseEnter = menu => {
+    setHoverMenu(t(`메뉴.${menu.name}`));
+  };
+
+  const onMenuMouseLeave = () => {
+    setHoverMenu(null);
+  };
 
   return (
     <ul className={classNames('project-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
@@ -64,17 +100,9 @@ function ProjectMenu({ className, closeMobileMenu }) {
           >
             <Link
               to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
-              onClick={() => {
-                if (closeMobileMenu) {
-                  closeMobileMenu();
-                }
-              }}
-              onMouseEnter={() => {
-                setHoverMenu(t(`메뉴.${d.name}`));
-              }}
-              onMouseLeave={() => {
-                setHoverMenu(null);
-              }}
+              onClick={e => onMenuClick(d, e)}
+              onMouseEnter={() => onMenuMouseEnter(d)}
+              onMouseLeave={() => onMenuMouseLeave()}
             >
               <div className="menu-icon">{d.icon}</div>
               <div className="text">
@@ -90,17 +118,9 @@ function ProjectMenu({ className, closeMobileMenu }) {
                       <li key={info.key}>
                         <Link
                           to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
-                          onClick={() => {
-                            if (closeMobileMenu) {
-                              closeMobileMenu();
-                            }
-                          }}
-                          onMouseEnter={() => {
-                            setHoverMenu(info.name);
-                          }}
-                          onMouseLeave={() => {
-                            setHoverMenu(null);
-                          }}
+                          onClick={e => onSubMenuClick(d, info, e)}
+                          onMouseEnter={() => onMenuMouseEnter(info)}
+                          onMouseLeave={() => onMenuMouseLeave()}
                         >
                           <div className="menu-icon">{info.icon}</div>
                           <div className="text">{info.name}</div>
@@ -115,18 +135,52 @@ function ProjectMenu({ className, closeMobileMenu }) {
         );
       })}
       {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
+      {projectSelector && (
+        <div className="project-selector">
+          <div>
+            <div>
+              <h3>
+                {t('프로젝트를 선택해주세요.')}
+                <CloseIcon className="close-button" onClick={() => setProjectSelector(null)} />
+              </h3>
+              <div>
+                <ul>
+                  {projects.map(project => {
+                    return (
+                      <li
+                        key={project.id}
+                        className={classNames({ selected: projectId === project.id })}
+                        onClick={() => {
+                          navigate(projectSelector.replace('{{PROJECT_ID}}', project.id));
+                          setProjectSelector(null);
+                        }}
+                      >
+                        <div>
+                          <div className="text">
+                            <div>{project.name}</div>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </ul>
   );
 }
 
 ProjectMenu.defaultProps = {
   className: '',
-  closeMobileMenu: null,
+  projects: [],
 };
 
 ProjectMenu.propTypes = {
   className: PropTypes.string,
-  closeMobileMenu: PropTypes.func,
+  projects: PropTypes.arrayOf(ProjectPropTypes),
 };
 
 export default observer(ProjectMenu);

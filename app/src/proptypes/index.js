@@ -121,6 +121,11 @@ const TestcaseGroupSettingPropTypes = PropTypes.shape({
   }),
 });
 
+const ProjectPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+});
+
 const SpacePropTypes = PropTypes.shape({
   name: PropTypes.string,
   code: PropTypes.string,
@@ -255,4 +260,5 @@ export {
   ProjectReleasePropTypes,
   LlmPropTypes,
   ParaphraseInfoPropTypes,
+  ProjectPropTypes,
 };

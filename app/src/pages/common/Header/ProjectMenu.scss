@@ -1,3 +1,12 @@
+@keyframes rotate {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
 ul.project-menu-wrapper {
   list-style: none;
   padding: 0;
@@ -59,5 +68,82 @@ ul.project-menu-wrapper {
     color: black;
     font-weight: bold;
     padding: 24px 48px;
+  }
+
+  .project-selector {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.3);
+    > div {
+      align-self: center;
+      width: 100%;
+      > div {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: var(--modal-background-color);
+        border-radius: 4px;
+
+        h3 {
+          color: var(--text-color);
+          text-align: center;
+          padding: 24px;
+          margin: 0;
+          position: relative;
+          .close-button {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+          }
+        }
+        > div {
+          padding: 0 24px 24px;
+          > ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            > li {
+              flex: 1 0 calc(25% - 16px);
+              box-sizing: border-box;
+              background-color: var(--box-color);
+              border: 1px solid rgba(0, 0, 0, 0.1);
+              cursor: pointer;
+
+              &:hover {
+                background-color: var(--yellow-color);
+              }
+
+              &:nth-last-child(1):nth-child(4n + 1),
+              &:nth-last-child(1):nth-child(4n + 2),
+              &:nth-last-child(1):nth-child(4n + 3),
+              &:nth-last-child(2):nth-child(4n + 1),
+              &:nth-last-child(2):nth-child(4n + 2),
+              &:nth-last-child(3):nth-child(4n + 1) {
+                flex: 0 0 calc(25% - 6px);
+              }
+
+              > div {
+                height: 80px;
+                color: var(--text-color);
+                text-align: center;
+                display: flex;
+
+                > div {
+                  align-self: center;
+                  text-align: center;
+                  width: 100%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }

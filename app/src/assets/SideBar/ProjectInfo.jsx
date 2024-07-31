@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -6,26 +6,17 @@ import useStores from '@/hooks/useStores';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './ProjectInfo.scss';
-import ProjectService from '@/services/ProjectService';
 import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
+import { ProjectPropTypes } from '@/proptypes';
 
-function ProjectInfo({ className }) {
+function ProjectInfo({ className, projects }) {
   const {
     contextStore: { space, collapsed, projectId, setHoverMenu },
   } = useStores();
 
   const { t } = useTranslation();
 
-  const [projects, setProjects] = useState([]);
   const [projectListOpened, setProjectListOpened] = useState(true);
-
-  useEffect(() => {
-    if (space?.code) {
-      ProjectService.selectMyProjectList(space?.code, list => {
-        setProjects(list);
-      });
-    }
-  }, [space]);
 
   return (
     <div className={classNames('project-info-wrapper', className, { collapsed })}>
@@ -115,10 +106,12 @@ function ProjectInfo({ className }) {
 
 ProjectInfo.defaultProps = {
   className: '',
+  projects: [],
 };
 
 ProjectInfo.propTypes = {
   className: PropTypes.string,
+  projects: PropTypes.arrayOf(ProjectPropTypes),
 };
 
 export default observer(ProjectInfo);
