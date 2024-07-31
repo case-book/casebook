@@ -78,6 +78,12 @@ ul.project-menu-wrapper {
     left: 0;
     display: flex;
     background-color: rgba(0, 0, 0, 0.3);
+
+    &.collapsed {
+      > div {
+        padding-left: 50px;
+      }
+    }
     > div {
       align-self: center;
       width: 100%;

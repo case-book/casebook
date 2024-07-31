@@ -136,7 +136,7 @@ function ProjectMenu({ className, projects }) {
       })}
       {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
       {projectSelector && (
-        <div className="project-selector" onClick={() => setProjectSelector(null)}>
+        <div className={classNames('project-selector', { collapsed })} onClick={() => setProjectSelector(null)}>
           <div>
             <div onClick={e => e.stopPropagation()}>
               <h3>
