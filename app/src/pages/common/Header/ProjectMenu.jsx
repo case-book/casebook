@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 import './ProjectMenu.scss';
 import { ProjectPropTypes } from '@/proptypes';
-import CloseIcon from '../../../components/CloseIcon/CloseIcon';
+import { CloseIcon } from '@/components';
 
 function ProjectMenu({ className, projects }) {
   const {
@@ -136,11 +136,11 @@ function ProjectMenu({ className, projects }) {
       })}
       {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
       {projectSelector && (
-        <div className="project-selector">
+        <div className="project-selector" onClick={() => setProjectSelector(null)}>
           <div>
-            <div>
+            <div onClick={e => e.stopPropagation()}>
               <h3>
-                {t('프로젝트를 선택해주세요.')}
+                {t('프로젝트 선택')}
                 <CloseIcon className="close-button" onClick={() => setProjectSelector(null)} />
               </h3>
               <div>
@@ -155,11 +155,7 @@ function ProjectMenu({ className, projects }) {
                           setProjectSelector(null);
                         }}
                       >
-                        <div>
-                          <div className="text">
-                            <div>{project.name}</div>
-                          </div>
-                        </div>
+                        <div>{project.name}</div>
                       </li>
                     );
                   })}
