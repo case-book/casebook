@@ -59,7 +59,6 @@ function App() {
 
   return (
     <div className={`app-wrapper theme-${theme} ${isLogin && isProjectSelected ? 'project-selected' : ''}`}>
-      <SideBar />
       <Common />
       {(tried === null || setUp == null) && (
         <div className="tried-content">
@@ -88,11 +87,12 @@ function App() {
           </div>
         </div>
       )}
+
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
+          <SideBar />
           {!isLogin && <GuestHeader />}
-
           <main className="main-content">
             {isLogin && (
               <Routes location={location}>
