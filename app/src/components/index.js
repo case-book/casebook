@@ -66,6 +66,7 @@ import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
 import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary';
 import MultiSelector from './MultiSelector/MultiSelector';
 import VariableInput from './VariableInput/VariableInput';
+import PathIcon from './PathIcon/PathIcon';
 
 export {
   Selector,
@@ -136,4 +137,5 @@ export {
   TestcaseSelectorSummary,
   MultiSelector,
   VariableInput,
+  PathIcon,
 };

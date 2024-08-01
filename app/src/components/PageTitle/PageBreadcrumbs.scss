@@ -1,0 +1,59 @@
+.page-breadcrumbs-wrapper {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  background-color: var(--lighter-color);
+  padding: 0 10px;
+  box-sizing: border-box;
+  height: 40px;
+  > div {
+    align-self: center;
+  }
+  > .breadcrumbs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    display: flex;
+    box-sizing: border-box;
+
+    li {
+      align-self: center;
+
+      .bullet {
+        margin: 0 4px;
+        > svg {
+          position: relative;
+          top: -1px;
+        }
+      }
+
+      a {
+        display: inline-block;
+        border-bottom: 1px solid transparent;
+        color: var(--text-color);
+        padding: 10px 4px;
+        box-sizing: border-box;
+        &:hover {
+          color: var(--link-color);
+          border-bottom: 1px solid var(--link-color);
+        }
+      }
+    }
+  }
+  > .list-icon {
+    height: 100%;
+    padding: 0 10px;
+    display: inline-flex;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    &:hover {
+      color: var(--link-color);
+      border-bottom: 1px solid var(--link-color);
+    }
+    > span {
+      align-self: center;
+      position: relative;
+      top: -1px;
+    }
+  }
+}

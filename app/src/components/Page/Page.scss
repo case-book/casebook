@@ -3,32 +3,10 @@
   position: relative;
   padding: 0;
   flex-direction: column;
-  max-width: $max-page-width;
-  margin: 0 auto 40px;
-  min-height: calc(100vh - 140px);
-  border-radius: 10px;
+  min-height: 100vh;
   display: flex;
   overflow: visible;
   box-sizing: border-box;
-
-  @media (max-width: 1660px) {
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    min-height: calc(100vh - 120px);
-  }
-
-  @media (max-width: 1024px) {
-    min-height: calc(100vh - 110px);
-  }
-
-  @media (max-width: 768px) {
-    border: none;
-    box-shadow: none;
-  }
-
-  @media (max-width: 768px) {
-  }
 
   &.info-page {
     border: 1px solid var(--border-light-color);
@@ -39,17 +17,11 @@
     background-color: transparent;
     border-radius: 0;
     border: none;
-    min-height: calc(100vh - 100px - 40px);
-
-    @media (max-width: 1660px) {
-      min-height: calc(100vh - 100px - 20px);
-    }
   }
 
   &.wide {
     max-width: none;
-    margin: 20px 20px !important;
-    min-height: calc(100vh - 100px);
+
     .page-title-wrapper {
       > div {
         max-width: none;
@@ -67,7 +39,6 @@
     background-color: var(--theme-color);
     border-radius: 0;
     border: none;
-    min-height: calc(100vh - 100px);
   }
 
   &.colored {
@@ -92,33 +63,9 @@
 
 .project-selected {
   .page-wrapper {
-    min-height: calc(100vh - 100px);
-
-    @media (max-width: 1024px) {
-      min-height: calc(100vh - 100px);
-    }
-
     &.info-page {
       border: 1px solid var(--border-light-color);
       box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
-      margin: 20px auto 20px;
-      min-height: calc(100vh - 120px);
-
-      @media (max-width: 1660px) {
-        margin: 20px;
-      }
-
-      @media (max-width: 1024px) {
-        margin: 10px;
-        min-height: calc(100vh - 100px);
-      }
-
-      @media (max-width: 768px) {
-        border: none;
-        box-shadow: none;
-        margin: 0;
-        min-height: calc(100vh - 80px);
-      }
     }
   }
 }

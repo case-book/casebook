@@ -108,7 +108,7 @@ const ADMIN_MENUS = [
 const MENUS = [
   {
     key: 'dashboard',
-    to: '',
+    to: '/',
     icon: <i className="fa-solid fa-gauge" />,
     color: '#ffbc4b',
     name: i18n.t('대시보드'),
