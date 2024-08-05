@@ -31,14 +31,15 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
                 return (
                   <li key={inx}>
                     <Button
-                      size="sm"
-                      color={d.color || 'white'}
+                      size="md"
+                      outline={false}
+                      color={d.color || 'blue'}
                       onClick={() => {
                         navigate(d.to);
                       }}
                     >
-                      {d.icon && <span className="icon">{d.icon}</span>}
                       <span>{d.text}</span>
+                      <span className="icon">{d.icon || <i className="fa-solid fa-arrow-right" />}</span>
                     </Button>
                     {links.length - 1 > inx && <Liner display="inline-block" width="1px" height="12px" color="light" margin="0 5px" />}
                   </li>

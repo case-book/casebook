@@ -113,7 +113,7 @@ function ReleaseInfoPage() {
               {t('새 테스트런')}
             </Button>
             <Button onClick={() => navigate('edit')} color="primary">
-              {t('편집')}
+              {t('변경')}
             </Button>
           </div>
         }

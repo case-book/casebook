@@ -23,6 +23,7 @@ import useStores from '@/hooks/useStores';
 import './SpaceContent.scss';
 import moment from 'moment';
 import dateUtil from '@/utils/dateUtil';
+import MessageChannelViewerPopup from '@/pages/spaces/MessageChannelEditPopup/MessageChannelViewerPopup';
 
 function SpaceContent({ space, onRefresh }) {
   const { t } = useTranslation();
@@ -45,6 +46,8 @@ function SpaceContent({ space, onRefresh }) {
     { key: 'ADMIN', value: t('관리자') },
     { key: 'USER', value: t('사용자') },
   ]);
+
+  const [selectedMessageChannel, setSelectedMessageChannel] = useState(null);
 
   const approve = applicantId => {
     SpaceService.approveSpaceJoinRequest(spaceCode, applicantId, () => {
@@ -139,9 +142,12 @@ function SpaceContent({ space, onRefresh }) {
           isAdmin || space?.admin
             ? [
                 {
+                  to: `/spaces/${spaceCode}/variables`,
+                  text: t('스페이스 변수 관리'),
+                },
+                {
                   to: `/spaces/${spaceCode}/edit`,
-                  text: t('편집'),
-                  color: 'primary',
+                  text: t('변경'),
                 },
               ]
             : null
@@ -153,9 +159,7 @@ function SpaceContent({ space, onRefresh }) {
         {space?.name}
       </PageTitle>
       <PageContent className="space-info-content">
-        <Title border={false} marginBottom={false}>
-          {t('스페이스 정보')}
-        </Title>
+        <Title>{t('스페이스 정보')}</Title>
         <Block>
           <BlockRow>
             <Label>{t('이름')}</Label>
@@ -215,7 +219,7 @@ function SpaceContent({ space, onRefresh }) {
         <Title>{t('메세지 채널')}</Title>
         <Block>
           {!(space.messageChannels?.length > 0) && (
-            <EmptyContent className="empty-content">
+            <EmptyContent className="empty-content" border>
               <div>{t('등록된 메세지 채널이 없습니다.')}</div>
             </EmptyContent>
           )}
@@ -229,7 +233,17 @@ function SpaceContent({ space, onRefresh }) {
                         {CHANNEL_TYPE_CODE[messageChannel.messageChannelType]}
                       </Tag>
                     </div>
-                    <div>{messageChannel.name}</div>
+                    <div>
+                      <Link
+                        to={`/spaces/${space.code}/message-channels/${messageChannel.id}`}
+                        onClick={e => {
+                          e.preventDefault();
+                          setSelectedMessageChannel(messageChannel);
+                        }}
+                      >
+                        {messageChannel.name}
+                      </Link>
+                    </div>
                   </li>
                 );
               })}
@@ -239,7 +253,7 @@ function SpaceContent({ space, onRefresh }) {
         <Title>{t('LLM API 설정')}</Title>
         <Block>
           {!(space.llms?.length > 0) && (
-            <EmptyContent className="empty-content">
+            <EmptyContent className="empty-content" border>
               <div>{t('등록된 API 설정이 없습니다.')}</div>
             </EmptyContent>
           )}
@@ -304,7 +318,7 @@ function SpaceContent({ space, onRefresh }) {
             </Title>
             <Block>
               {(!applicants || applicants?.length < 1) && (
-                <EmptyContent className="empty-content">
+                <EmptyContent className="empty-content" border>
                   <div>{t('참여 요청이 없습니다.')}</div>
                 </EmptyContent>
               )}
@@ -380,7 +394,7 @@ function SpaceContent({ space, onRefresh }) {
         </Title>
         <Block className="space-project-block">
           {space.holidays?.length < 1 && (
-            <EmptyContent className="empty-content">
+            <EmptyContent className="empty-content" border>
               <div>{t('등록된 휴일이 없습니다.')}</div>
             </EmptyContent>
           )}
@@ -437,7 +451,7 @@ function SpaceContent({ space, onRefresh }) {
         </Title>
         <Block className="space-project-block">
           {space?.projects?.length < 1 && (
-            <EmptyContent className="empty-content">
+            <EmptyContent className="empty-content" border>
               <div>{t('프로젝트가 없습니다.')}</div>
             </EmptyContent>
           )}
@@ -485,39 +499,19 @@ function SpaceContent({ space, onRefresh }) {
         <Title paddingBottom={false} border={false} marginBottom={false}>
           {t('관리')}
         </Title>
-        <Block>
-          <BlockRow>
-            <Label>{t('스페이스 변수')}</Label>
-            <Text>
-              <Button
-                size="sm"
-                color="primary"
-                onClick={() => {
-                  navigate(`/spaces/${spaceCode}/variables`);
-                }}
-              >
-                {t('스페이스 변수 관리')}
-              </Button>
-            </Text>
-          </BlockRow>
+        <Block className="danger-box">
           <BlockRow>
             <Label>{t('스페이스 탈퇴')}</Label>
-            <Text>
-              <Button size="sm" color="warning" onClick={withdraw}>
-                {t('스페이스 탈퇴')}
-              </Button>
-            </Text>
+            <Button size="sm" color="warning" onClick={withdraw}>
+              {t('스페이스에서 탈퇴합니다.')}
+            </Button>
           </BlockRow>
-          {(isAdmin || space?.admin) && (
-            <BlockRow>
-              <Label>{t('스페이스 삭제')}</Label>
-              <Text>
-                <Button size="sm" color="danger" onClick={onDelete}>
-                  {t('스페이스 삭제')}
-                </Button>
-              </Text>
-            </BlockRow>
-          )}
+          <BlockRow>
+            <Label>{t('스페이스 삭제')}</Label>
+            <Button size="sm" color="danger" onClick={onDelete}>
+              {t('스페이스를 삭제합니다.')}
+            </Button>
+          </BlockRow>
         </Block>
         <PageButtons
           onBack={() => {
@@ -533,6 +527,7 @@ function SpaceContent({ space, onRefresh }) {
           onCancelIcon=""
         />
       </PageContent>
+      {selectedMessageChannel && <MessageChannelViewerPopup messageChannel={selectedMessageChannel} setOpened={() => setSelectedMessageChannel(null)} />}
     </>
   );
 }

@@ -1,4 +1,4 @@
-.message-channel-edit-popup-wrapper {
+.message-channel-popup-wrapper {
   .modal-body {
     padding-top: 24px !important;
   }
@@ -29,6 +29,12 @@
 
   .sub-content {
     padding: 16px 8px;
+
+    .json {
+      white-space: pre-wrap;
+      border: 1px solid var(--border-color);
+      padding: 1rem;
+    }
   }
 
   .payload {

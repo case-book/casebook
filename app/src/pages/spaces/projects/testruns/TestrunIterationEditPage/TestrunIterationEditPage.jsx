@@ -266,7 +266,7 @@ function TestrunIterationEditPage({ type }) {
     <>
       <Page className="testrun-iteration-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('반복 테스트런 편집') : t('반복 테스트런 생성')}
+          name={isEdit ? t('반복 테스트런 변경') : t('반복 테스트런 생성')}
           breadcrumbs={[
             {
               to: '/',
@@ -294,7 +294,7 @@ function TestrunIterationEditPage({ type }) {
             },
             {
               to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/new`,
-              text: isEdit ? t('편집') : t('생성'),
+              text: isEdit ? t('변경') : t('생성'),
             },
           ]}
           onListClick={() => {

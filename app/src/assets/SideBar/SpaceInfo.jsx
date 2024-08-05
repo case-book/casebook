@@ -61,7 +61,7 @@ function SpaceInfo({ className, spaces }) {
               <ul>
                 {spaces.map(info => {
                   return (
-                    <li>
+                    <li key={info.code}>
                       <Link
                         className="space-selector-item"
                         to={`/spaces/${space.code}/info`}

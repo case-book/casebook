@@ -31,13 +31,13 @@
 }
 
 .btn-wrapper {
-  border-radius: 4px;
+  border-radius: 2px;
   background-color: transparent;
   border: none;
   padding: 0 12px;
   cursor: pointer;
   align-self: center;
-  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 6%);
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 8%);
   white-space: nowrap;
   position: relative;
 
@@ -130,6 +130,10 @@
   &.btn-primary {
     background-color: var(--primary-color);
     color: var(--primary-text-color);
+
+    &.btn-outline {
+      border: 1px solid var(--primary-color);
+    }
   }
 
   &.btn-transparent {
@@ -146,14 +150,19 @@
     background-color: $white;
     color: $black;
 
-    &.btn-outline {
-      border: 1px solid var(--input-border-color);
-    }
-
     &:hover {
       background-color: var(--primary-color);
       color: var(--primary-text-color);
       border: 1px solid var(--border-color-hover);
+    }
+
+    &.btn-outline {
+      border: 1px solid var(--border-color);
+      &:hover {
+        background-color: $white;
+        color: $black;
+        border: 1px solid var(--border-color-hover);
+      }
     }
 
     &.disabled:hover {
@@ -196,8 +205,12 @@
   }
 
   &.btn-blue {
-    background-color: $blue;
+    background-color: var(--link-color);
     color: $white;
+
+    &.btn-outline {
+      border: 1px solid var(--link-hover-color);
+    }
   }
 
   &.btn-yellow {

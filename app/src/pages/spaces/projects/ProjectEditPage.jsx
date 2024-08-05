@@ -420,7 +420,7 @@ function ProjectEditPage({ type }) {
     <>
       <Page className="project-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('프로젝트 편집') : t('프로젝트 생성')}
+          name={isEdit ? t('프로젝트 변경') : t('프로젝트 생성')}
           breadcrumbs={
             isEdit
               ? [
@@ -446,7 +446,7 @@ function ProjectEditPage({ type }) {
                   },
                   {
                     to: `/spaces/${spaceCode}/edit`,
-                    text: t('편집'),
+                    text: t('변경'),
                   },
                 ]
               : [

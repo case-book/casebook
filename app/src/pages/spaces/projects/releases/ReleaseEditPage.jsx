@@ -102,7 +102,7 @@ function ReleaseEditPage({ type }) {
           },
           {
             to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/releases/new`,
-            text: isEdit ? `${t('편집')}` : t('생성'),
+            text: isEdit ? `${t('변경')}` : t('생성'),
           },
         ]}
         onListClick={() => {

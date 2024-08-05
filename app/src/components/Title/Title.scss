@@ -18,11 +18,14 @@
       align-self: center;
       @include title;
 
-      i {
+      > span.title-icon {
+        line-height: 1;
         margin-right: 2px;
-        font-size: 18px;
-        position: relative;
-        top: 1px;
+        i {
+          line-height: 1;
+          align-self: center;
+          font-size: 18px;
+        }
       }
     }
     .control {

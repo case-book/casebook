@@ -67,6 +67,7 @@ import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary'
 import MultiSelector from './MultiSelector/MultiSelector';
 import VariableInput from './VariableInput/VariableInput';
 import PathIcon from './PathIcon/PathIcon';
+import Pill from './Pill/Pill';
 
 export {
   Selector,
@@ -138,4 +139,5 @@ export {
   MultiSelector,
   VariableInput,
   PathIcon,
+  Pill,
 };

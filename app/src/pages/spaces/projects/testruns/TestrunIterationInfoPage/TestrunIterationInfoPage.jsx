@@ -151,7 +151,7 @@ function TestrunIterationInfoPage() {
           links={[
             {
               to: `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/edit`,
-              text: t('편집'),
+              text: t('변경'),
               color: 'primary',
             },
           ]}
