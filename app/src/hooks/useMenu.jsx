@@ -11,7 +11,6 @@ const useQueryString = () => {
       isLogin,
       user: { activeSystemRole },
     },
-    contextStore: { isProjectSelected },
   } = useStores();
 
   const pathInfo = useMemo(() => {
@@ -25,6 +24,17 @@ const useQueryString = () => {
         menu: match[3] || '',
       };
     }
+
+    const projectsPattern = /\/spaces\/([a-zA-Z0-9_]+)\/projects/;
+    const projectsMatch = location.pathname.match(projectsPattern);
+
+    if (projectsMatch) {
+      return {
+        spaceCode: projectsMatch[1],
+        menu: 'projects',
+      };
+    }
+
     return null; // 패턴이 일치하지 않는 경우 null 반환
   }, [location.pathname]);
 
@@ -39,12 +49,16 @@ const useQueryString = () => {
       .filter(d => d.login === undefined || d.login === isLogin);
   }, [activeSystemRole, isLogin]);
 
-  console.log(location.pathname);
-  console.log(pathInfo);
-
   let menu;
-  if (isProjectSelected) {
+  if (pathInfo) {
     menu = menus?.find(d => d.project && d.to === `/${pathInfo?.menu}`);
+    if (!menu) {
+      menu = {
+        key: pathInfo.menu,
+        to: `/${pathInfo.menu}`,
+        project: false,
+      };
+    }
   }
 
   return menu;

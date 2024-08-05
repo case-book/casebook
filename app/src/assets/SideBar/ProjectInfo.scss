@@ -1,10 +1,20 @@
 .project-info-wrapper {
   .project-menu {
     position: relative;
+
+    &.selected {
+      > a {
+        color: var(--white-color);
+        font-weight: bold;
+        opacity: 1;
+      }
+    }
+
     a {
       color: white;
       padding: 4px 16px;
       display: flex;
+      opacity: 0.8;
       > div {
         align-self: center;
 
@@ -31,10 +41,10 @@
       }
 
       &:hover {
-        background-color: var(--primary-color);
+        background-color: #111;
 
         > a {
-          color: var(--primary-text-color);
+          color: white;
         }
       }
 

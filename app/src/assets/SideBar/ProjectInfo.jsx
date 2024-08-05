@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import './ProjectInfo.scss';
 import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 import { ProjectPropTypes } from '@/proptypes';
+import useMenu from '@/hooks/useMenu';
 
 function ProjectInfo({ className, projects }) {
   const {
@@ -18,10 +19,12 @@ function ProjectInfo({ className, projects }) {
 
   const [projectListOpened, setProjectListOpened] = useState(true);
 
+  const menu = useMenu();
+
   return (
     <div className={classNames('project-info-wrapper', className, { collapsed })}>
       <div
-        className="project-menu"
+        className={classNames('project-menu', { selected: menu?.key === 'projects' })}
         onMouseEnter={() => {
           setHoverMenu(t('메뉴.프로젝트'));
         }}

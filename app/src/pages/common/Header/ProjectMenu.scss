@@ -32,8 +32,17 @@ ul.project-menu-wrapper {
       color: white;
     }
 
+    &.selected {
+      > a {
+        color: var(--white-color);
+        font-weight: bold;
+        opacity: 1;
+      }
+    }
+
     > a {
-      color: white;
+      color: var(--white-color);
+      opacity: 0.8;
       padding: 4px 16px;
       display: flex;
       .menu-icon {

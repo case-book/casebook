@@ -19,28 +19,6 @@
     border: none;
   }
 
-  &.wide {
-    max-width: none;
-
-    .page-title-wrapper {
-      > div {
-        max-width: none;
-      }
-    }
-
-    .page-content-wrapper {
-      max-width: none;
-    }
-  }
-
-  &.pure {
-    margin: 0;
-    max-width: none;
-    background-color: var(--theme-color);
-    border-radius: 0;
-    border: none;
-  }
-
   &.colored {
     width: 100%;
     min-height: 100vh;

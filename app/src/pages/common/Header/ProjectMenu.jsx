@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
@@ -10,6 +10,7 @@ import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 import './ProjectMenu.scss';
 import { ProjectPropTypes } from '@/proptypes';
 import { CloseIcon } from '@/components';
+import useMenu from '@/hooks/useMenu';
 
 function ProjectMenu({ className, projects }) {
   const {
@@ -19,10 +20,9 @@ function ProjectMenu({ className, projects }) {
     },
     contextStore: { spaceCode, projectId, isProjectSelected, collapsed, hoverMenu, setHoverMenu },
   } = useStores();
+  const menu = useMenu();
 
   const navigate = useNavigate();
-
-  const location = useLocation();
 
   const [projectSelector, setProjectSelector] = useState(null);
 
@@ -37,35 +37,35 @@ function ProjectMenu({ className, projects }) {
     })
     .filter(d => d.login === undefined || d.login === isLogin);
 
-  const onMenuClick = (menu, e) => {
+  const onMenuClick = (d, e) => {
     e.preventDefault();
-    if (menu.project) {
+    if (d.project) {
       if (!projectId) {
-        setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${menu.to}`);
+        setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${d.to}`);
         return;
       }
-      navigate(`/spaces/${spaceCode}/projects/${projectId}${menu.to}`);
+      navigate(`/spaces/${spaceCode}/projects/${projectId}${d.to}`);
     } else {
-      navigate(menu.to);
+      navigate(d.to);
     }
   };
 
-  const onSubMenuClick = (menu, subMenu, e) => {
+  const onSubMenuClick = (d, subMenu, e) => {
     e.preventDefault();
-    if (menu.project) {
+    if (d.project) {
       if (!projectId) {
-        setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${menu.to}${subMenu.to}`);
+        setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${d.to}${subMenu.to}`);
         return;
       }
 
-      navigate(`/spaces/${spaceCode}/projects/${projectId}${menu.to}${subMenu.to}`);
+      navigate(`/spaces/${spaceCode}/projects/${projectId}${d.to}${subMenu.to}`);
     } else {
-      navigate(`${menu.to}${subMenu.to}`);
+      navigate(`${d.to}${subMenu.to}`);
     }
   };
 
-  const onMenuMouseEnter = menu => {
-    setHoverMenu(t(`메뉴.${menu.name}`));
+  const onMenuMouseEnter = d => {
+    setHoverMenu(t(`메뉴.${d.name}`));
   };
 
   const onMenuMouseLeave = () => {
@@ -75,25 +75,10 @@ function ProjectMenu({ className, projects }) {
   return (
     <ul className={classNames('project-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
       {list.map((d, inx) => {
-        let isSelected = false;
-        if (d.project) {
-          isSelected = location.pathname === `/spaces/${spaceCode}/projects/${projectId}${d.to}`;
-        }
-
-        if (!isSelected && d.selectedAlias) {
-          isSelected = d.selectedAlias.reduce((p, c) => {
-            return p || c.test(location.pathname);
-          }, false);
-        }
-
-        if (!isSelected) {
-          isSelected = location.pathname === d.to;
-        }
-
         return (
           <li
             key={inx}
-            className={isSelected ? 'selected' : ''}
+            className={classNames({ selected: d?.key === menu?.key })}
             style={{
               animationDelay: `${inx * 0.1}s`,
             }}

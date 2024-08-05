@@ -2,24 +2,31 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
-import './SpaceInfo.scss';
+import { useTranslation } from 'react-i18next';
 import useStores from '@/hooks/useStores';
 import { SpacePropTypes } from '@/proptypes';
 import { Link } from 'react-router-dom';
 import { Liner } from '@/components';
+import './SpaceInfo.scss';
 
 function SpaceInfo({ className, spaces }) {
   const {
     contextStore: { space, setSpace, collapsed },
   } = useStores();
 
+  const { t } = useTranslation();
   const [spaceSelectorOpened, setSpaceSelectorOpened] = useState(false);
   const [spaceMenuOpened, setSpaceMenuOpened] = useState(false);
 
   return (
     <div className={classNames('space-info-wrapper', className)}>
       <div>
-        <div className="space-icon">
+        <div
+          className={classNames('space-icon', { collapsed })}
+          onClick={() => {
+            setSpaceMenuOpened(!spaceMenuOpened);
+          }}
+        >
           <span>{space?.name && space?.name[0]}</span>
         </div>
       </div>
@@ -41,7 +48,7 @@ function SpaceInfo({ className, spaces }) {
       )}
       {spaceSelectorOpened && (
         <div
-          className="space-popup-menu space-selector"
+          className={classNames('space-popup-menu space-selector')}
           onClick={() => {
             setSpaceSelectorOpened(false);
           }}
@@ -81,7 +88,7 @@ function SpaceInfo({ className, spaces }) {
       )}
       {spaceMenuOpened && (
         <div
-          className="space-popup-menu"
+          className={classNames('space-popup-menu', { collapsed })}
           onClick={() => {
             setSpaceMenuOpened(false);
           }}
@@ -99,7 +106,7 @@ function SpaceInfo({ className, spaces }) {
                       e.stopPropagation();
                     }}
                   >
-                    스페이스 정보
+                    {t('스페이스 정보')}
                   </Link>
                   <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 4px" />
                   <Link
@@ -108,7 +115,7 @@ function SpaceInfo({ className, spaces }) {
                       e.stopPropagation();
                     }}
                   >
-                    관리
+                    {t('관리')}
                   </Link>
                 </li>
                 <li>
@@ -118,7 +125,7 @@ function SpaceInfo({ className, spaces }) {
                       e.stopPropagation();
                     }}
                   >
-                    <i className="fa-solid fa-plus" /> 스페이스 검색
+                    <i className="fa-solid fa-plus" /> {t('스페이스 검색')}
                   </Link>
                 </li>
                 <li>
@@ -128,7 +135,7 @@ function SpaceInfo({ className, spaces }) {
                       e.stopPropagation();
                     }}
                   >
-                    <i className="fa-solid fa-plus" /> 스페이스 생성
+                    <i className="fa-solid fa-plus" /> {t('스페이스 생성')}
                   </Link>
                 </li>
               </ul>

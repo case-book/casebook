@@ -4,12 +4,12 @@ import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
 import './Page.scss';
 
-function Page({ className, children, colored, list, wide, pure }) {
+function Page({ className, children, colored, list }) {
   const {
     themeStore: { theme },
   } = useStores();
 
-  return <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} ${wide ? 'wide' : ''} ${pure ? 'pure' : ''} theme-${theme}`}>{children}</div>;
+  return <div className={`page-wrapper ${className} ${colored ? 'colored' : ''} ${list ? 'list-page' : 'info-page'} theme-${theme}`}>{children}</div>;
 }
 
 Page.defaultProps = {
@@ -17,8 +17,6 @@ Page.defaultProps = {
   children: '',
   colored: false,
   list: false,
-  wide: false,
-  pure: false,
 };
 
 Page.propTypes = {
@@ -26,8 +24,6 @@ Page.propTypes = {
   children: PropTypes.node,
   colored: PropTypes.bool,
   list: PropTypes.bool,
-  wide: PropTypes.bool,
-  pure: PropTypes.bool,
 };
 
 export default observer(Page);
