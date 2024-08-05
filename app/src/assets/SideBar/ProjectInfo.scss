@@ -18,24 +18,29 @@
       > div {
         align-self: center;
 
-        &.open-list {
+        &.text {
           flex-grow: 1;
-          text-align: right;
+        }
 
-          .bullet {
-            font-size: 13px;
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            justify-content: center;
-            border-radius: 4px;
-            &:hover {
-              background-color: var(--yellow-color);
-              color: #111;
-            }
-            i {
-              align-self: center;
-            }
+        &.open-list {
+          flex-grow: 0;
+          text-align: right;
+          margin-left: 4px;
+        }
+
+        .bullet {
+          font-size: 13px;
+          width: 24px;
+          height: 24px;
+          display: inline-flex;
+          justify-content: center;
+          border-radius: 4px;
+          &:hover {
+            background-color: var(--yellow-color);
+            color: #111;
+          }
+          i {
+            align-self: center;
           }
         }
       }
@@ -99,7 +104,7 @@
       > a {
         color: var(--white-color);
         &:hover {
-          color : var(--yellow-color)
+          color: var(--yellow-color);
         }
       }
     }
@@ -114,6 +119,7 @@
       > li {
         width: 100%;
         margin-bottom: 2px;
+        padding-right: 10px;
         &:last-child {
           margin-bottom: 0;
         }
@@ -123,9 +129,30 @@
           vertical-align: top;
           width: 100%;
           display: block;
-          padding: 2px;
+          padding: 4px 2px;
           text-overflow: ellipsis;
           overflow: hidden;
+          .project-name {
+            position: relative;
+            .testrun-count {
+              position: absolute;
+              left: -12px;
+              top: -4px;
+              width: 14px;
+              height: 14px;
+              display: inline-flex;
+              justify-content: center;
+              background-color: var(--link-color);
+              color: var(--white-color);
+              border-radius: 50%;
+              font-size: 12px;
+              font-weight: normal;
+              font-family: AzeretMono, sans-serif;
+              > span {
+                align-self: center;
+              }
+            }
+          }
 
           &:hover {
             color: var(--yellow-color);
@@ -146,8 +173,8 @@
         }
 
         &.selected {
+          background-color: var(--theme-color);
           > a {
-            background-color: var(--theme-color);
             color: var(--text-color);
             font-weight: bold;
             font-size: 15px;

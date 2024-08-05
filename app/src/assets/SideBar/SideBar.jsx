@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import SpaceService from '@/services/SpaceService';
@@ -47,11 +47,15 @@ function SideBar() {
     getMySpaceList();
   }, []);
 
+  const getProjectList = useCallback(() => {
+    ProjectService.selectMyProjectList(space?.code, list => {
+      setProjects(list);
+    });
+  }, [space?.code]);
+
   useEffect(() => {
     if (space?.code || refreshProjectTime) {
-      ProjectService.selectMyProjectList(space?.code, list => {
-        setProjects(list);
-      });
+      getProjectList();
     }
   }, [space, refreshProjectTime]);
 
@@ -78,7 +82,7 @@ function SideBar() {
         </div>
       )}
       <SpaceInfo spaces={spaces} />
-      <ProjectInfo projects={projects} />
+      <ProjectInfo projects={projects} onRefresh={getProjectList} />
       <ProjectMenu projects={projects} />
       <div className="side-bar-bottom">
         <UserHeaderControl />

@@ -503,13 +503,13 @@ function SpaceContent({ space, onRefresh }) {
           <BlockRow>
             <Label>{t('스페이스 탈퇴')}</Label>
             <Button size="sm" color="warning" onClick={withdraw}>
-              {t('스페이스에서 탈퇴합니다.')}
+              {t('스페이스 탈퇴')}
             </Button>
           </BlockRow>
           <BlockRow>
             <Label>{t('스페이스 삭제')}</Label>
             <Button size="sm" color="danger" onClick={onDelete}>
-              {t('스페이스를 삭제합니다.')}
+              {t('스페이스 삭제')}
             </Button>
           </BlockRow>
         </Block>

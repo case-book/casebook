@@ -10,7 +10,7 @@ import { ProjectPropTypes } from '@/proptypes';
 import useMenu from '@/hooks/useMenu';
 import './ProjectInfo.scss';
 
-function ProjectInfo({ className, projects }) {
+function ProjectInfo({ className, projects, onRefresh }) {
   const {
     contextStore: { space, collapsed, projectId, setHoverMenu },
   } = useStores();
@@ -39,6 +39,20 @@ function ProjectInfo({ className, projects }) {
             <i className="fa-solid fa-book" />
           </div>
           <div className="text">{t('메뉴.프로젝트')}</div>
+          {!collapsed && (
+            <div className="refresh">
+              <span
+                className="bullet"
+                onClick={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  onRefresh();
+                }}
+              >
+                <i className="fa-solid fa-rotate-right" />
+              </span>
+            </div>
+          )}
           {!collapsed && (
             <div className="open-list">
               <span
@@ -80,7 +94,6 @@ function ProjectInfo({ className, projects }) {
           </SideOverlayMenu>
         )}
       </div>
-
       <div className={classNames('project-list', { opened: projectListOpened })}>
         {projects?.length === 0 && (
           <div className="create-project">
@@ -125,7 +138,14 @@ function ProjectInfo({ className, projects }) {
                     <div className="dot">
                       <div />
                     </div>
-                    {project.name}
+                    <span className="project-name">
+                      {project.name}
+                      {project.testrunCount > 0 && (
+                        <span className="testrun-count">
+                          <span>{project.testrunCount}</span>
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </li>
               );
@@ -145,6 +165,7 @@ ProjectInfo.defaultProps = {
 ProjectInfo.propTypes = {
   className: PropTypes.string,
   projects: PropTypes.arrayOf(ProjectPropTypes),
+  onRefresh: PropTypes.func.isRequired,
 };
 
 export default observer(ProjectInfo);

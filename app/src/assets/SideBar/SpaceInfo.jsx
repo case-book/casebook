@@ -73,9 +73,11 @@ function SpaceInfo({ className, spaces }) {
                       >
                         <div>
                           <div>{info.name}</div>
-                          <div>
-                            <i className="fa-solid fa-check-to-slot" />
-                          </div>
+                          {info.code === space.code && (
+                            <div>
+                              <i className="fa-solid fa-check-to-slot" />
+                            </div>
+                          )}
                         </div>
                       </Link>
                     </li>

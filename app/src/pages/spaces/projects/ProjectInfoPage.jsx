@@ -399,23 +399,19 @@ function ProjectInfoPage() {
           <Title paddingBottom={false} border={false} marginBottom={false}>
             {t('관리')}
           </Title>
-          <Block>
+          <Block className="danger-box">
             <BlockRow>
               <Label>{t('프로젝트 탈퇴')}</Label>
-              <Text>
-                <Button size="sm" color="warning" onClick={onWithdraw}>
-                  {t('프로젝트 탈퇴')}
-                </Button>
-              </Text>
+              <Button size="sm" color="warning" onClick={onWithdraw}>
+                {t('프로젝트 탈퇴')}
+              </Button>
             </BlockRow>
             {(isAdmin || project?.admin) && (
               <BlockRow>
                 <Label>{t('프로젝트 삭제')}</Label>
-                <Text>
-                  <Button size="sm" color="danger" onClick={onDelete}>
-                    {t('프로젝트 삭제')}
-                  </Button>
-                </Text>
+                <Button size="sm" color="danger" onClick={onDelete}>
+                  {t('프로젝트 삭제')}
+                </Button>
               </BlockRow>
             )}
           </Block>
