@@ -4,7 +4,6 @@ import Liner from '@/components/Liner/Liner';
 import { observer } from 'mobx-react';
 import './PageTitle.scss';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components';
 import PageBreadcrumbs from '@/components/PageTitle/PageBreadcrumbs';
 import useMenu from '@/hooks/useMenu';
 
@@ -30,17 +29,14 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
               {links.map((d, inx) => {
                 return (
                   <li key={inx}>
-                    <Button
-                      size="md"
-                      outline={false}
-                      color={d.color || 'blue'}
+                    <button
                       onClick={() => {
                         navigate(d.to);
                       }}
                     >
                       <span>{d.text}</span>
                       <span className="icon">{d.icon || <i className="fa-solid fa-arrow-right" />}</span>
-                    </Button>
+                    </button>
                     {links.length - 1 > inx && <Liner display="inline-block" width="1px" height="12px" color="light" margin="0 5px" />}
                   </li>
                 );

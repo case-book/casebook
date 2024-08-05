@@ -8,17 +8,6 @@
   overflow: visible;
   box-sizing: border-box;
 
-  &.info-page {
-    border: 1px solid var(--border-light-color);
-    box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
-  }
-
-  &.list-page {
-    background-color: transparent;
-    border-radius: 0;
-    border: none;
-  }
-
   &.colored {
     width: 100%;
     min-height: 100vh;

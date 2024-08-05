@@ -38,10 +38,13 @@ function ProjectListPage() {
     }
   }, [spaceCode]);
 
+  const projectMenu = useMemo(() => {
+    return MENUS.filter(d => d.project);
+  }, []);
+
   return (
-    <Page className="project-list-page-wrapper" list>
+    <Page className="project-list-page-wrapper">
       <PageTitle
-        collapse
         breadcrumbs={[
           {
             to: '/',
@@ -64,18 +67,13 @@ function ProjectListPage() {
           {
             to: `/spaces/${spaceCode}/variables`,
             text: t('변수 관리'),
-            color: 'primary',
           },
           {
             to: `/spaces/${spaceCode}/projects/new`,
             text: t('새 프로젝트'),
-            color: 'primary',
             icon: <i className="fa-solid fa-plus" />,
           },
         ]}
-        onListClick={() => {
-          navigate('/spaces');
-        }}
       >
         {t('프로젝트')}
       </PageTitle>
@@ -164,7 +162,7 @@ function ProjectListPage() {
                       </div>
                       <div className="side-menu">
                         <ul>
-                          {MENUS.map((menu, inx) => {
+                          {projectMenu.map((menu, inx) => {
                             return (
                               <li
                                 key={inx}

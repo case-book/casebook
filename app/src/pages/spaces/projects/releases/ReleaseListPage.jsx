@@ -25,7 +25,7 @@ function ReleaseListPage() {
   }, [spaceCode, projectId]);
 
   return (
-    <Page className="release-list-page-wrapper" list>
+    <Page className="release-list-page-wrapper">
       <PageTitle
         borderBottom={false}
         marginBottom={false}

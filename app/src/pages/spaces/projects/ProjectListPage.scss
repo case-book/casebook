@@ -85,7 +85,7 @@
             text-align: center;
             @include title;
             &:hover {
-              color: var(--primary-color);
+              color: var(--link-color);
               cursor: pointer;
             }
           }
@@ -181,10 +181,10 @@
                     }
 
                     &.tr-count {
-                      color: var(--warning-color);
+                      color: var(--link-color);
                       &:hover {
                         color: var(--white-color);
-                        background-color: var(--warning-color);
+                        background-color: var(--link-color);
                         transition: 0.3s all;
                         .icon {
                           color: var(--white-color);

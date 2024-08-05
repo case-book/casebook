@@ -33,7 +33,6 @@ function TestRunTestcaseManager({
   onSaveResult,
   onRandomTester,
   onSaveTester,
-  setWide,
   testrunId,
 }) {
   const {
@@ -63,16 +62,6 @@ function TestRunTestcaseManager({
       return getOption('testrun', 'manager', 'layout') || 'RIGHT';
     })(),
   );
-
-  useEffect(() => {
-    if (resultLayoutPosition === 'RIGHT') {
-      if (setWide) {
-        setWide(true);
-      }
-    } else if (setWide) {
-      setWide(false);
-    }
-  }, [resultLayoutPosition]);
 
   useEffect(() => {
     if (testcaseManagerContentElement.current) {
@@ -357,7 +346,6 @@ TestRunTestcaseManager.defaultProps = {
   onSaveTester: null,
   onRandomTester: null,
   onSaveTestResultItem: null,
-  setWide: null,
   spaceCode: null,
   projectId: null,
   project: null,
@@ -433,7 +421,6 @@ TestRunTestcaseManager.propTypes = {
   onSaveTester: PropTypes.func,
   onRandomTester: PropTypes.func,
   onSaveTestResultItem: PropTypes.func,
-  setWide: PropTypes.func,
 };
 
 export default observer(TestRunTestcaseManager);

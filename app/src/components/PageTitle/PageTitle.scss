@@ -1,6 +1,7 @@
 .page-title-wrapper {
   height: 80px;
   position: relative;
+  border-bottom: 1px solid var(--border-light-color);
 
   > div {
     display: flex;
@@ -83,7 +84,14 @@
       display: inline-block;
 
       button {
-        padding-right: 10px;
+        border: none;
+        outline: none;
+        background-color: var(--link-color);
+        color: var(--white-color);
+        padding: 6px 12px;
+        border-radius: 8px 0 8px 0;
+        cursor: pointer;
+        position: relative;
 
         .icon {
           display: inline-flex;
@@ -93,9 +101,21 @@
           justify-content: center;
           background-color: rgba(0, 0, 0, 0.2);
           border-radius: 50%;
+          transition: transform 0.2s ease, background-color 0.2s;
+          position: relative;
           i {
             align-self: center;
             font-size: 10px;
+          }
+        }
+
+        &:hover {
+          background-color: var(--link-hover-color);
+          .icon {
+            transform: scale(1.8);
+            left: 4px;
+            transition: transform 0.2s ease, background-color 0.2s;
+            background-color: var(--link-color);
           }
         }
       }

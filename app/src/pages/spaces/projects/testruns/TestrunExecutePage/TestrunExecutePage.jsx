@@ -40,8 +40,6 @@ function TestrunExecutePage() {
 
   const navigate = useNavigate();
 
-  const [wide, setWide] = useState(false);
-
   const [min, setMin] = useState(false);
 
   const [countSummary, setCountSummary] = useState({
@@ -555,7 +553,7 @@ function TestrunExecutePage() {
   }, [user, paricipants, watcherInfo, testrun, socketClient]);
 
   return (
-    <Page className="testrun-execute-page-wrapper" wide={wide}>
+    <Page className="testrun-execute-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {
@@ -661,7 +659,6 @@ function TestrunExecutePage() {
                 projectId={projectId}
                 project={project}
                 testrunId={testrunId}
-                setWide={setWide}
                 contentLoading={contentLoading}
                 content={content || {}}
                 testcaseTemplates={project?.testcaseTemplates}

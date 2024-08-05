@@ -23,7 +23,7 @@ function AdminSpaceListPage() {
   }, []);
 
   return (
-    <Page className="admin-space-list-page-wrapper" list>
+    <Page className="admin-space-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {
