@@ -3,18 +3,21 @@ import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import SpaceService from '@/services/SpaceService';
 import useStores from '@/hooks/useStores';
-import './SideBar.scss';
+import { useNavigate } from 'react-router-dom';
 import SpaceInfo from '@/assets/SideBar/SpaceInfo';
 import ProjectMenu from '@/pages/common/Header/ProjectMenu';
 import { Logo } from '@/components';
 import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
 import ProjectInfo from '@/assets/SideBar/ProjectInfo';
 import ProjectService from '@/services/ProjectService';
+import './SideBar.scss';
 
 function SideBar() {
   const {
-    contextStore: { space, setSpace, collapsed, setCollapsed },
+    contextStore: { space, setSpace, collapsed, setCollapsed, refreshProjectTime },
   } = useStores();
+
+  const navigate = useNavigate();
 
   const [spaces, setSpaces] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -45,12 +48,12 @@ function SideBar() {
   }, []);
 
   useEffect(() => {
-    if (space?.code) {
+    if (space?.code || refreshProjectTime) {
       ProjectService.selectMyProjectList(space?.code, list => {
         setProjects(list);
       });
     }
-  }, [space]);
+  }, [space, refreshProjectTime]);
 
   useEffect(() => {
     if (collapsed) {
@@ -64,7 +67,14 @@ function SideBar() {
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
       {!collapsed && (
         <div className="size-bar-logo">
-          <Logo size="sm" color="white" hand={false} />
+          <Logo
+            size="sm"
+            color="white"
+            hand={false}
+            onClick={() => {
+              navigate('/');
+            }}
+          />
         </div>
       )}
       <SpaceInfo spaces={spaces} />

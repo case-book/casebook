@@ -85,7 +85,7 @@
 
   .project-list {
     padding: 0 0 0 32px;
-    width: calc(100% + 1px);
+    width: calc(100% + 2px);
     max-height: 300px;
     overflow-y: auto;
     display: none;
@@ -93,6 +93,17 @@
     &.opened {
       display: block;
     }
+
+    .create-project {
+      padding: 8px;
+      > a {
+        color: var(--white-color);
+        &:hover {
+          color : var(--yellow-color)
+        }
+      }
+    }
+
     ul {
       list-style: none;
       padding: 0;

@@ -3,12 +3,12 @@ import { observer } from 'mobx-react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 import useStores from '@/hooks/useStores';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import './ProjectInfo.scss';
 import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 import { ProjectPropTypes } from '@/proptypes';
 import useMenu from '@/hooks/useMenu';
+import './ProjectInfo.scss';
 
 function ProjectInfo({ className, projects }) {
   const {
@@ -18,6 +18,8 @@ function ProjectInfo({ className, projects }) {
   const { t } = useTranslation();
 
   const [projectListOpened, setProjectListOpened] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const menu = useMenu();
 
@@ -68,7 +70,7 @@ function ProjectInfo({ className, projects }) {
                       setHoverMenu(null);
                     }}
                   >
-                    <Link to={`/spaces/${space.code}/projects/${project.id}`}>
+                    <Link to={`/spaces/${space?.code}/projects/${project.id}`}>
                       <div className="text">{project.name}</div>
                     </Link>
                   </li>
@@ -78,30 +80,58 @@ function ProjectInfo({ className, projects }) {
           </SideOverlayMenu>
         )}
       </div>
+
       <div className={classNames('project-list', { opened: projectListOpened })}>
-        <ul>
-          {projects.map(project => {
-            return (
-              <li
-                key={project.id}
-                className={classNames({ selected: projectId === project.id })}
-                onMouseEnter={() => {
-                  setHoverMenu(project.name);
-                }}
-                onMouseLeave={() => {
-                  setHoverMenu(null);
-                }}
-              >
-                <Link to={`/spaces/${space.code}/projects/${project.id}`}>
-                  <div className="dot">
-                    <div />
-                  </div>
-                  {project.name}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        {projects?.length === 0 && (
+          <div className="create-project">
+            <Link to={`/spaces/${space?.code}/projects/new`}>
+              <i className="fa-solid fa-plus" />
+              {t('새 프로젝트')}
+            </Link>
+          </div>
+        )}
+        {projects?.length > 0 && (
+          <ul>
+            {projects.map(project => {
+              return (
+                <li
+                  key={project.id}
+                  className={classNames({ selected: projectId === project.id })}
+                  onMouseEnter={() => {
+                    setHoverMenu(project.name);
+                  }}
+                  onMouseLeave={() => {
+                    setHoverMenu(null);
+                  }}
+                >
+                  <Link
+                    to={`/spaces/${space.code}/projects/${project.id}`}
+                    onClick={e => {
+                      e.preventDefault();
+                      if (!menu) {
+                        navigate(`/spaces/${space.code}/projects/${project.id}`);
+                      } else if (menu.project) {
+                        const pattern = /\/spaces\/[a-zA-Z0-9_]+\/projects\/\d+(?:\/([a-zA-Z0-9_]+))?/;
+                        const match = location.pathname.match(pattern);
+                        if (match) {
+                          const path = match[1];
+                          navigate(`/spaces/${space.code}/projects/${project.id}/${path || ''}`);
+                        }
+                      } else {
+                        navigate(`/spaces/${space.code}/projects/${project.id}`);
+                      }
+                    }}
+                  >
+                    <div className="dot">
+                      <div />
+                    </div>
+                    {project.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );

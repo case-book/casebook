@@ -64,7 +64,7 @@ function SpaceInfo({ className, spaces }) {
                     <li key={info.code}>
                       <Link
                         className="space-selector-item"
-                        to={`/spaces/${space.code}/info`}
+                        to={`/spaces/${info.code}/info`}
                         onClick={e => {
                           e.stopPropagation();
                           setSpace(info);
