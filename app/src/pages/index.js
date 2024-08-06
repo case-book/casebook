@@ -51,6 +51,7 @@ import ReleaseListPage from './spaces/projects/releases/ReleaseListPage';
 import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
 import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
 import MainPage from './main/MainPage/MainPage';
+import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
 
 export {
   ProjectDashBoardPage,
@@ -97,4 +98,5 @@ export {
   SpaceVariableEditPage,
   AiHistoryListPage,
   MainPage,
+  SpaceDashboardPage,
 };

@@ -482,6 +482,10 @@ public class TestrunService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
+    })
     public boolean updateTestrunTestcaseResult(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
         validateOpened(testrunId);
 
@@ -535,6 +539,10 @@ public class TestrunService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
+    })
     public void updateTestrunTestcaseResult(String spaceCode, long projectId, String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, TestResultCode resultCode, String comment) {
         long testrunId = testrunRepository.findTestrunIdByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber)
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
@@ -710,7 +718,7 @@ public class TestrunService {
     }
 
     public void notifyTestrun(String spaceCode, Long projectId, Long testrunId) {
-        LocalDateTime testrunEndDateTime = testrunRepository.findEndDateTimeById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        LocalDateTime testrunEndDateTime = testrunRepository.findEndDateTimeById(testrunId).orElse(null);
         String testrunName = testrunRepository.findNameById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         List<TestrunMessageChannel> testrunMessageChannels = testrunMessageChannelRepository.findAllByTestrunId(testrunId);

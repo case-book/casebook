@@ -39,7 +39,6 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
-
     private final ProjectCachedService projectCachedService;
 
 
@@ -100,6 +99,7 @@ public class ProjectService {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
+
 
     public List<ProjectDTO> selectSpaceProjectDetailList(long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
@@ -163,10 +163,6 @@ public class ProjectService {
 
     public Long selectSpaceProjectCount(Long spaceId) {
         return projectRepository.countBySpaceId(spaceId);
-    }
-
-    public long selectSpaceId(Long projectId) {
-        return projectRepository.findSpaceIdByProjectId(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
     public String selectSpaceCode(Long projectId) {

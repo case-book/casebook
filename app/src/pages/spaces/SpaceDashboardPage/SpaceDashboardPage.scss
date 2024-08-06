@@ -1,0 +1,260 @@
+.space-dashboard-page-wrapper {
+  .project-testrun-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    > li {
+      .project-name {
+        padding: 4px 16px;
+        margin-bottom: 8px;
+        font-size: 16px;
+        > span {
+          margin-left: 8px;
+        }
+      }
+
+      > .testruns {
+        list-style: none;
+        padding: 0;
+        margin: 0 16px;
+        > li {
+          display: inline-flex;
+          width: calc((100% - 4rem) / 5);
+          margin-right: 1rem;
+          margin-bottom: 1rem;
+
+          &:nth-child(5n) {
+            margin-right: 0;
+          }
+
+          @media (max-width: 2800px) {
+            width: calc((100% - 3rem) / 4);
+
+            &:nth-child(5n) {
+              margin-right: 1rem;
+            }
+
+            &:nth-child(4n) {
+              margin-right: 0;
+            }
+          }
+
+          @media (max-width: 2300px) {
+            width: calc((100% - 2rem) / 3);
+
+            &:nth-child(5n) {
+              margin-right: 1rem;
+            }
+
+            &:nth-child(4n) {
+              margin-right: 1rem;
+            }
+
+            &:nth-child(3n) {
+              margin-right: 0;
+            }
+          }
+
+          @media (max-width: 1800px) {
+            width: calc((100% - 1rem) / 2);
+
+            &:nth-child(5n) {
+              margin-right: 1rem;
+            }
+
+            &:nth-child(4n) {
+              margin-right: 1rem;
+            }
+
+            &:nth-child(3n) {
+              margin-right: 1rem;
+            }
+
+            &:nth-child(2n) {
+              margin-right: 0;
+            }
+          }
+
+          @media (max-width: 1250px) {
+            width: 100%;
+
+            margin-right: 0;
+          }
+
+          .testrun-card {
+            > div {
+              display: flex;
+              flex-direction: column;
+            }
+            .testrun-name {
+              font-size: 20px;
+              flex-grow: 0;
+              padding: 2rem 1rem 1rem;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              text-align: center;
+              font-weight: bold;
+              font-family: LINESeed, sans-serif;
+              > a {
+                color: var(--text-color);
+                &:hover {
+                  color: var(--link-color);
+                }
+              }
+            }
+
+            .testrun-content {
+              display: flex;
+              > .pie {
+                width: 200px;
+                height: 200px;
+              }
+
+              > .testrun-info {
+                flex-grow: 1;
+                padding-right: 20px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                .total-progress {
+                  display: flex;
+                  gap: 8px;
+                  > div {
+                    align-self: center;
+                  }
+
+                  .label {
+                    white-space: nowrap;
+                  }
+
+                  .progress-percentage {
+                    font-weight: bold;
+                    white-space: nowrap;
+                  }
+
+                  .progress-count {
+                    flex-grow: 1;
+                    justify-content: flex-end;
+                    display: flex;
+                    gap: 8px;
+                    white-space: nowrap;
+
+                    > div {
+                      align-self: center;
+                    }
+                  }
+                }
+
+                .time-info {
+                  display: flex;
+                  gap: 4px;
+                  margin-top: 4px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+
+                  .past {
+                    color: var(--danger-color);
+                  }
+                }
+
+                .my-test {
+                  flex-grow: 1;
+                  margin-top: 16px;
+                  display: flex;
+                  flex-direction: column;
+
+                  .my-test-title {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 8px;
+                    white-space: nowrap;
+
+                    > div {
+                      align-self: center;
+                    }
+                    .line-1 {
+                      > div {
+                        height: 1px;
+                        width: 10px;
+                        background-color: var(--gray-color);
+                      }
+                    }
+
+                    .line-2 {
+                      flex: 1;
+                      > div {
+                        height: 1px;
+                        background-color: var(--gray-color);
+                      }
+                    }
+                  }
+
+                  .my-test-summary {
+                    display: flex;
+                    flex-grow: 1;
+                    > div {
+                      flex: 1 1 0;
+                      line-height: 1;
+                      display: flex;
+                      flex-direction: column;
+
+                      .title {
+                        text-align: center;
+                        > span {
+                          display: inline-block;
+                          padding: 4px 8px;
+                          border-radius: 4px;
+                          white-space: nowrap;
+                        }
+
+                        &.done {
+                          > span {
+                            background-color: var(--primary-color);
+                            color: var(--primary-text-color);
+                          }
+                        }
+
+                        &.remains {
+                          > span {
+                            background-color: var(--danger-color);
+                            color: var(--white-color);
+                          }
+                        }
+                      }
+
+                      .value {
+                        text-align: center;
+                        font-family: Rowdies, NotoSans, sans-serif;
+                        font-size: 36px;
+                        flex-grow: 1;
+                        display: flex;
+                        justify-content: center;
+                        cursor: pointer;
+                        > span {
+                          align-self: center;
+                        }
+
+                        &:hover {
+                          color: var(--link-color);
+                        }
+                      }
+                    }
+                  }
+                }
+
+                .controls {
+                  text-align: right;
+                  padding-top: 4px;
+                  padding-bottom: 10px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

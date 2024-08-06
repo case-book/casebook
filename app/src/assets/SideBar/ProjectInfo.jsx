@@ -26,6 +26,22 @@ function ProjectInfo({ className, projects, onRefresh }) {
   return (
     <div className={classNames('project-info-wrapper', className, { collapsed })}>
       <div
+        className={classNames('project-menu', { selected: location.pathname === `/spaces/${space?.code}/dashboard` })}
+        onMouseEnter={() => {
+          setHoverMenu(t('메뉴.대시보드'));
+        }}
+        onMouseLeave={() => {
+          setHoverMenu(null);
+        }}
+      >
+        <Link to={`/spaces/${space?.code}/dashboard`}>
+          <div className="menu-icon">
+            <i className="fa-solid fa-gauge" />
+          </div>
+          <div className="text">{t('메뉴.대시보드')}</div>
+        </Link>
+      </div>
+      <div
         className={classNames('project-menu', { selected: menu?.key === 'projects' })}
         onMouseEnter={() => {
           setHoverMenu(t('메뉴.프로젝트'));

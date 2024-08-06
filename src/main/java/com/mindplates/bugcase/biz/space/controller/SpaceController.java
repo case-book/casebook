@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.space.controller;
 import com.mindplates.bugcase.biz.ai.vo.response.LlmResponse;
 import com.mindplates.bugcase.biz.project.dto.ProjectListDTO;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.project.vo.response.ProjectTestrunResponse;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
@@ -16,6 +17,9 @@ import com.mindplates.bugcase.biz.space.vo.response.SpaceAccessibleResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceListResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceMessageChannelResponse;
 import com.mindplates.bugcase.biz.space.vo.response.SpaceResponse;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.service.TestrunCachedService;
+import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleUserResponse;
 import com.mindplates.bugcase.common.code.HolidayTypeCode;
 import com.mindplates.bugcase.common.code.UserRoleCode;
@@ -25,6 +29,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -50,6 +55,8 @@ public class SpaceController {
 
     private final SpaceService spaceService;
     private final ProjectService projectService;
+    private final TestrunCachedService testrunCachedService;
+    private final TestrunService testrunService;
 
     @Operation(description = "스페이스 검색")
     @GetMapping("")
@@ -203,6 +210,21 @@ public class SpaceController {
         } catch (Exception e) {
             throw new ServiceException("holiday.format.invalid");
         }
+    }
+
+    @Operation(description = "사용자에게 할당된 테스트런 목록 조회")
+    @GetMapping("/{spaceCode}/testruns/my")
+    public List<ProjectTestrunResponse> selectUserAssignedTestrunList(@PathVariable String spaceCode) {
+        long userId = SessionUtil.getUserId(true);
+        List<ProjectListDTO> projectList = projectService.selectUserSpaceProjectList(spaceCode, userId);
+
+        List<ProjectTestrunResponse> projectTestrunList = new ArrayList<>();
+        for (ProjectListDTO project : projectList) {
+            List<TestrunDTO> testruns = testrunService.selectUserAssignedTestrunList(spaceCode, project.getId(), userId);
+            projectTestrunList.add(new ProjectTestrunResponse(project, testruns));
+        }
+
+        return projectTestrunList;
     }
 
 

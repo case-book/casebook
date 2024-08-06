@@ -12,9 +12,14 @@
   &.size-xs {
     padding: 4px;
     font-size: 11px;
+    height: 20px;
 
     .remove-button {
       margin-left: 4px;
+    }
+
+    &.rounded {
+      border-radius: 8px;
     }
   }
 
@@ -26,18 +31,30 @@
     .remove-button {
       margin-left: 4px;
     }
+
+    &.rounded {
+      border-radius: 8px;
+    }
   }
 
   &.size-md {
     padding: 10px;
     font-size: 14px;
     height: $md-height;
+
+    &.rounded {
+      border-radius: 12px;
+    }
   }
 
   &.size-lg {
     padding: 10px;
     font-size: 14px;
     height: $lg-height;
+
+    &.rounded {
+      border-radius: 16px;
+    }
   }
 
   &.border {
@@ -48,9 +65,7 @@
     text-transform: uppercase;
   }
 
-  &.rounded {
-    border-radius: 4px;
-  }
+
 
   &.color-black {
     background-color: var(--black-color);

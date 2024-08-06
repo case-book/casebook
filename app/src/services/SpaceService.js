@@ -195,4 +195,19 @@ SpaceService.selectSpaceLlmList = (spaceCode, successHandler, failHandler) => {
   );
 };
 
+SpaceService.selectSpaceTestrunDetailList = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/testruns/my`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    i18n.t('스페이스에서 진행 중인 테스트런 목록을 가져옵니다.'),
+  );
+};
+
 export default SpaceService;
