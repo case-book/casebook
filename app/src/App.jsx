@@ -91,7 +91,7 @@ function App() {
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
-          <SideBar />
+          {isLogin && <SideBar />}
           {!isLogin && <GuestHeader />}
           <main className="main-content">
             {isLogin && (

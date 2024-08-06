@@ -8,6 +8,7 @@ import './ProjectListPage.scss';
 import { MENUS } from '@/constants/menu';
 import SpaceService from '@/services/SpaceService';
 import useStores from '@/hooks/useStores';
+import classNames from 'classnames';
 
 function ProjectListPage() {
   const {
@@ -145,7 +146,7 @@ function ProjectListPage() {
                             </div>
                             <div>
                               <div
-                                className="tr-count"
+                                className={classNames('tr-count', { 'has-testrun': project.testrunCount > 0 })}
                                 onClick={() => {
                                   navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
                                 }}

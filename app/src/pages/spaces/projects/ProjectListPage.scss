@@ -212,7 +212,9 @@
                     }
 
                     &.tr-count {
-                      color: var(--link-color);
+                      &.has-testrun {
+                        color: var(--link-color);
+                      }
                       &:hover {
                         color: var(--white-color);
                         background-color: var(--link-color);

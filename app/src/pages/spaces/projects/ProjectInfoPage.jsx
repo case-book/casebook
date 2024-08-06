@@ -41,6 +41,7 @@ function ProjectInfoPage() {
   const { t } = useTranslation();
   const {
     userStore: { isAdmin },
+    contextStore: { setRefreshProjectList },
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
@@ -127,6 +128,7 @@ function ProjectInfoPage() {
       <div>{t('@ 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { projectName: project.name })}</div>,
       () => {
         ProjectService.deleteProject(spaceCode, project, () => {
+          setRefreshProjectList();
           navigate(`/spaces/${spaceCode}/projects`);
         });
       },
@@ -144,6 +146,7 @@ function ProjectInfoPage() {
       <div>{t('프로젝트를 탈퇴하면, @ 프로젝트에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?', { projectName: project.name })}</div>,
       () => {
         ProjectService.withdrawProject(spaceCode, project, () => {
+          setRefreshProjectList();
           navigate(`/spaces/${spaceCode}/projects`);
         });
       },

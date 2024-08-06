@@ -29,7 +29,7 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
@@ -593,10 +593,18 @@ function ProjectEditPage({ type }) {
                         <div>
                           <Selector
                             minWidth="100%"
+                            size="md"
                             items={spaceMessageChannelList.map(d => {
                               return {
                                 key: d.id,
-                                value: d.name,
+                                value: (
+                                  <div className="message-channel-item">
+                                    <Tag size="xs" color="white" border>
+                                      {CHANNEL_TYPE_CODE[d.messageChannelType]}
+                                    </Tag>
+                                    <div>{d.name}</div>
+                                  </div>
+                                ),
                               };
                             })}
                             value={channel.spaceMessageChannelId}

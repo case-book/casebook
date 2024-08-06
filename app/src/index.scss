@@ -201,7 +201,10 @@ body {
   font-family: 'NanumSquareNeo', 'NotoSans', 'NanumGothic', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-left: 220px;
+
+  &.side-bar-ready {
+    padding-left: 220px;
+  }
 
   &.collapsed {
     padding-left: 70px;

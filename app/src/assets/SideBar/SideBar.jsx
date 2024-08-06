@@ -60,6 +60,7 @@ function SideBar() {
   }, [space, refreshProjectTime]);
 
   useEffect(() => {
+    document.body.classList.add('side-bar-ready');
     if (collapsed) {
       document.body.classList.add('collapsed');
     } else {
