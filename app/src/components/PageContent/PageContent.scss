@@ -3,12 +3,8 @@
   position: relative;
   width: 100%;
   flex-direction: column;
-  padding: 20px 40px;
+  padding: 20px;
   background-color: var(--page-background-color);
-
-  @media (max-width: 1660px) {
-    padding: 20px;
-  }
 
   @media (max-width: 640px) {
     background-color: var(--theme-color);

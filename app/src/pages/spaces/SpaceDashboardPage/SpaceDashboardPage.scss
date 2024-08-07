@@ -90,19 +90,13 @@
             .testrun-name {
               font-size: 20px;
               flex-grow: 0;
-              padding: 2rem 1rem 1rem;
+              padding: 1.5rem 1rem 1rem;
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
               text-align: center;
               font-weight: bold;
               font-family: LINESeed, sans-serif;
-              > a {
-                color: var(--text-color);
-                &:hover {
-                  color: var(--link-color);
-                }
-              }
             }
 
             .testrun-content {
@@ -195,11 +189,15 @@
                   .my-test-summary {
                     display: flex;
                     flex-grow: 1;
+                    border: 1px solid var(--border-light-color);
+                    margin-bottom: 8px;
                     > div {
+                      padding: 1rem 0;
                       flex: 1 1 0;
                       line-height: 1;
                       display: flex;
                       flex-direction: column;
+                      background-color: var(--lighter-color);
 
                       .title {
                         text-align: center;

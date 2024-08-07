@@ -156,7 +156,9 @@ function SpaceDashboardPage() {
                           <Card className="testrun-card" border>
                             <div>
                               <div className="testrun-name">
-                                <Link to={`/spaces/${spaceCode}/projects/${projectTestrun.id}/testruns/${testrun.id}`}>{testrun.name}</Link>
+                                <Link className="hoverable" to={`/spaces/${spaceCode}/projects/${projectTestrun.id}/testruns/${testrun.id}`}>
+                                  {testrun.name}
+                                </Link>
                               </div>
                               <div className="testrun-content">
                                 <div className="pie">

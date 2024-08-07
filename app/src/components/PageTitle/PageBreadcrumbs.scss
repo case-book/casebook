@@ -18,9 +18,11 @@
     font-size: 12px;
     display: flex;
     box-sizing: border-box;
+    overflow: hidden;
 
     li {
       align-self: center;
+      white-space: nowrap;
 
       .bullet {
         margin: 0 4px;

@@ -83,38 +83,43 @@ function ProjectMenu({ className, projects }) {
               animationDelay: `${inx * 0.1}s`,
             }}
           >
-            <Link
-              to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
-              onClick={e => onMenuClick(d, e)}
-              onMouseEnter={() => onMenuMouseEnter(d)}
-              onMouseLeave={() => onMenuMouseLeave()}
-            >
-              <div className="menu-icon">{d.icon}</div>
-              <div className="text">
-                {t(`메뉴.${d.name}`)}
-                <span />
-              </div>
-            </Link>
-            {d.list && (
-              <SideOverlayMenu className="sub-menu">
-                <ul>
-                  {d.list?.map(info => {
-                    return (
-                      <li key={info.key}>
-                        <Link
-                          to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
-                          onClick={e => onSubMenuClick(d, info, e)}
-                          onMouseEnter={() => onMenuMouseEnter(info)}
-                          onMouseLeave={() => onMenuMouseLeave()}
-                        >
-                          <div className="menu-icon">{info.icon}</div>
-                          <div className="text">{info.name}</div>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </SideOverlayMenu>
+            {d.separator && <div className="separator" />}
+            {!d.separator && (
+              <>
+                <Link
+                  to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+                  onClick={e => onMenuClick(d, e)}
+                  onMouseEnter={() => onMenuMouseEnter(d)}
+                  onMouseLeave={() => onMenuMouseLeave()}
+                >
+                  <div className="menu-icon">{d.icon}</div>
+                  <div className="text">
+                    {t(`메뉴.${d.name}`)}
+                    <span />
+                  </div>
+                </Link>
+                {d.list && (
+                  <SideOverlayMenu className="sub-menu">
+                    <ul>
+                      {d.list?.map(info => {
+                        return (
+                          <li key={info.key}>
+                            <Link
+                              to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
+                              onClick={e => onSubMenuClick(d, info, e)}
+                              onMouseEnter={() => onMenuMouseEnter(info)}
+                              onMouseLeave={() => onMenuMouseLeave()}
+                            >
+                              <div className="menu-icon">{info.icon}</div>
+                              <div className="text">{info.name}</div>
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </SideOverlayMenu>
+                )}
+              </>
             )}
           </li>
         );

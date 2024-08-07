@@ -197,6 +197,10 @@ const MENUS = [
     project: true,
   },
   {
+    separator: true,
+    pc: true,
+  },
+  {
     key: 'admin',
     to: '/admin',
     icon: <i className="fa-solid fa-gears" />,

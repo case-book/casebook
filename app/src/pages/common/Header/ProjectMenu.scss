@@ -32,6 +32,13 @@ ul.project-menu-wrapper {
       color: white;
     }
 
+    .separator {
+      height: 1px;
+      background-color: var(--white-color);
+      opacity: 0.6;
+      margin: 4px 20px;
+    }
+
     &.selected {
       > a {
         color: var(--white-color);
