@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Card, EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, Tag, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
-
+import { observer } from 'mobx-react';
 import TestrunService from '@/services/TestrunService';
-import './SpaceDashboardPage.scss';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import dateUtil from '@/utils/dateUtil';
 import SpaceService from '@/services/SpaceService';
 import useStores from '@/hooks/useStores';
+import './SpaceDashboardPage.scss';
 
 function SpaceDashboardPage() {
   const { t } = useTranslation();
@@ -25,6 +25,10 @@ function SpaceDashboardPage() {
 
   useEffect(() => {
     SpaceService.selectSpaceTestrunDetailList(spaceCode, data => {
+      if (!spaceCode) {
+        return;
+      }
+
       setProjectTestruns(
         data.map(d => {
           return {
@@ -62,20 +66,20 @@ function SpaceDashboardPage() {
                 ...testrun,
                 pies,
                 summary: {
-                  totalCount: testrun.testcaseGroups.reduce((acc, cur) => {
+                  totalCount: testrun.testcaseGroups?.reduce((acc, cur) => {
                     return (
                       acc +
-                      cur.testcases.reduce((s, testcase) => {
+                      (cur.testcases?.reduce((s, testcase) => {
                         return s + (testcase.testerId === user.id ? 1 : 0);
-                      }, 0)
+                      }, 0) || 0)
                     );
                   }, 0),
-                  doneCount: testrun.testcaseGroups.reduce((acc, cur) => {
+                  doneCount: testrun.testcaseGroups?.reduce((acc, cur) => {
                     return (
                       acc +
-                      cur.testcases.reduce((s, testcase) => {
+                      (cur.testcases?.reduce((s, testcase) => {
                         return s + (testcase.testerId === user.id && testcase.testResult !== 'UNTESTED' ? 1 : 0);
-                      }, 0)
+                      }, 0) || 0)
                     );
                   }, 0),
                 },
@@ -87,13 +91,13 @@ function SpaceDashboardPage() {
     });
   }, [spaceCode]);
 
-  const onNotify = (projectId, testrunId) => {
-    TestrunService.notifyTestrunProgress(spaceCode, projectId, testrunId, () => {});
-  };
-
   const list = useMemo(() => {
     return projectTestruns.filter(projectTestrun => projectTestrun.testruns.length > 0);
   }, [projectTestruns]);
+
+  const onNotify = (projectId, testrunId) => {
+    TestrunService.notifyTestrunProgress(spaceCode, projectId, testrunId, () => {});
+  };
 
   return (
     <Page className="space-dashboard-page-wrapper">
@@ -348,4 +352,4 @@ SpaceDashboardPage.defaultProps = {};
 
 SpaceDashboardPage.propTypes = {};
 
-export default SpaceDashboardPage;
+export default observer(SpaceDashboardPage);

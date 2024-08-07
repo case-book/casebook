@@ -686,6 +686,9 @@ public class TestrunService {
 
     }
 
+    public List<TestrunDTO> selectOpenedProjectTestrunList(String spaceCode, long projectId) {
+        return testrunCachedService.selectOpenedProjectTestrunDetailList(spaceCode, projectId);
+    }
 
     public List<TestrunDTO> selectUserAssignedTestrunList(String spaceCode, long projectId, Long userId) {
         List<TestrunDTO> projectOpenedTestruns = testrunCachedService.selectOpenedProjectTestrunDetailList(spaceCode, projectId);

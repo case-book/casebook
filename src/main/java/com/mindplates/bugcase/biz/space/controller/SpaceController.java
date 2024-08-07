@@ -220,7 +220,7 @@ public class SpaceController {
 
         List<ProjectTestrunResponse> projectTestrunList = new ArrayList<>();
         for (ProjectListDTO project : projectList) {
-            List<TestrunDTO> testruns = testrunService.selectUserAssignedTestrunList(spaceCode, project.getId(), userId);
+            List<TestrunDTO> testruns = testrunService.selectOpenedProjectTestrunList(spaceCode, project.getId());
             projectTestrunList.add(new ProjectTestrunResponse(project, testruns));
         }
 

@@ -100,6 +100,11 @@ public class ProjectService {
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
+    public List<ProjectListDTO> selectSpaceProjectList(String spaceCode) {
+        List<Project> projectList = projectRepository.findAllBySpaceCode(spaceCode);
+        return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
+    }
+
 
     public List<ProjectDTO> selectSpaceProjectDetailList(long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
