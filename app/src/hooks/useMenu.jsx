@@ -14,7 +14,7 @@ const useQueryString = () => {
   } = useStores();
 
   const pathInfo = useMemo(() => {
-    const pattern = /\/spaces\/([a-zA-Z0-9_]+)\/projects\/(\d+)(?:\/([a-zA-Z0-9_]+))?/;
+    const pattern = /\/spaces\/([a-zA-Z0-9_]+)\/projects\/(\d+)(?:\/([a-zA-Z0-9_]+))(?:\/([a-zA-Z0-9_]+))?/;
     const match = location.pathname.match(pattern);
 
     if (match) {
@@ -22,6 +22,7 @@ const useQueryString = () => {
         spaceCode: match[1],
         projectId: match[2],
         menu: match[3] || '',
+        submenu: match[4] || '',
       };
     }
 
@@ -50,18 +51,24 @@ const useQueryString = () => {
   }, [activeSystemRole, isLogin]);
 
   let menu;
+  let submenu;
+
   if (pathInfo) {
     menu = menus?.find(d => d.project && d.to === `/${pathInfo?.menu}`);
+    if (pathInfo.submenu) {
+      submenu = menu.list?.find(d => d.to === `/${pathInfo.submenu}`);
+    }
     if (!menu) {
+      const projectPattern = /\/spaces\/[a-zA-Z0-9_]+\/projects\/\d+(?:\/([a-zA-Z0-9_]+))?/;
       menu = {
         key: pathInfo.menu,
         to: `/${pathInfo.menu}`,
-        project: false,
+        project: !!location.pathname.match(projectPattern),
       };
     }
   }
 
-  return menu;
+  return { menu, submenu };
 };
 
 export default useQueryString;

@@ -107,17 +107,6 @@ const ADMIN_MENUS = [
 
 const MENUS = [
   {
-    key: 'dashboard',
-    to: '/',
-    icon: <i className="fa-solid fa-gauge" />,
-    color: '#ffbc4b',
-    name: i18n.t('대시보드'),
-    admin: false,
-    pc: true,
-    login: true,
-    project: true,
-  },
-  {
     key: 'testcases',
     to: '/testcases',
     icon: <i className="fa-solid fa-vial-virus" />,
@@ -159,6 +148,13 @@ const MENUS = [
         to: '/iterations',
         icon: <i className="fa-solid fa-clock-rotate-left" />,
         name: i18n.t('반복 테스트런'),
+        admin: false,
+      },
+      {
+        key: 'history',
+        to: '/history',
+        icon: <i className="fa-solid fa-timeline" />,
+        name: i18n.t('테스트런 히스토리'),
         admin: false,
       },
     ],

@@ -13,7 +13,6 @@ import MyEditPage from '@/pages/users/MyEditPage';
 import PasswordChangePage from '@/pages/users/PasswordChangePage';
 import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
-import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
 
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
@@ -52,9 +51,9 @@ import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
 import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
 import MainPage from './main/MainPage/MainPage';
 import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
+import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';
 
 export {
-  ProjectDashBoardPage,
   SpaceListPage,
   Message,
   SpaceInfoPage,
@@ -99,4 +98,5 @@ export {
   AiHistoryListPage,
   MainPage,
   SpaceDashboardPage,
+  TestrunHistoryPage,
 };

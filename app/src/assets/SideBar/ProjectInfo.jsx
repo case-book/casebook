@@ -21,7 +21,7 @@ function ProjectInfo({ className, projects, onRefresh }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const menu = useMenu();
+  const { menu, submenu } = useMenu();
 
   return (
     <div className={classNames('project-info-wrapper', className, { collapsed })}>
@@ -138,16 +138,11 @@ function ProjectInfo({ className, projects, onRefresh }) {
                     onClick={e => {
                       e.preventDefault();
                       if (!menu) {
-                        navigate(`/spaces/${space.code}/projects/${project.id}`);
+                        navigate(`/spaces/${space.code}/projects/${project.id}/testcases`);
                       } else if (menu.project) {
-                        const pattern = /\/spaces\/[a-zA-Z0-9_]+\/projects\/\d+(?:\/([a-zA-Z0-9_]+))?/;
-                        const match = location.pathname.match(pattern);
-                        if (match) {
-                          const path = match[1];
-                          navigate(`/spaces/${space.code}/projects/${project.id}/${path || ''}`);
-                        }
+                        navigate(`/spaces/${space.code}/projects/${project.id}${menu.to || ''}${submenu?.to || ''}`);
                       } else {
-                        navigate(`/spaces/${space.code}/projects/${project.id}`);
+                        navigate(`/spaces/${space.code}/projects/${project.id}/testcases`);
                       }
                     }}
                   >

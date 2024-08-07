@@ -9,7 +9,7 @@ import useMenu from '@/hooks/useMenu';
 
 function PageTitle({ className, children, links, control, onListClick, breadcrumbs, borderBottom, marginBottom }) {
   const navigate = useNavigate();
-  const menu = useMenu();
+  const { menu, submenu } = useMenu();
 
   return (
     <>
@@ -18,7 +18,7 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
         <div>
           <div className="menu-icon">
             <span>
-              <span>{menu?.icon || <i className="fa-solid fa-book" />}</span>
+              <span>{submenu?.icon || menu?.icon || <i className="fa-solid fa-book" />}</span>
             </span>
           </div>
           <div className="page-title-info">

@@ -20,7 +20,7 @@ function ProjectMenu({ className, projects }) {
     },
     contextStore: { spaceCode, projectId, isProjectSelected, collapsed, hoverMenu, setHoverMenu },
   } = useStores();
-  const menu = useMenu();
+  const { menu } = useMenu();
 
   const navigate = useNavigate();
 
