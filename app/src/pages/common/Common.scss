@@ -90,19 +90,24 @@
   .request-messages {
     text-align: center;
     > div {
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      background-color: var(--theme-color);
+      display: inline-block;
+      border-radius: 20px;
+      padding: 1rem;
+      > div {
+        text-align: left;
+        > span {
+          display: inline-block;
+          padding: 0.75rem 1rem;
+          border-radius: 5px;
+          font-size: 14px;
+          line-height: 100%;
+          font-weight: bold;
 
-      > span {
-        background-color: var(--theme-color);
-        display: inline-block;
-        padding: 0.75rem 1rem;
-        border-radius: 5px;
-        font-size: 14px;
-        line-height: 100%;
-        font-weight: bold;
-
-        i {
-          margin-right: 0.5rem;
+          i {
+            margin-right: 0.5rem;
+          }
         }
       }
     }

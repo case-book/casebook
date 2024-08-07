@@ -80,7 +80,7 @@ function ProjectMenu({ className, projects }) {
             key={inx}
             className={classNames({ selected: d?.key === menu?.key })}
             style={{
-              animationDelay: `${inx * 0.1}s`,
+              animationDelay: `${inx * 0.05}s`,
             }}
           >
             {d.separator && <div className="separator" />}

@@ -141,7 +141,7 @@ function Common() {
     () =>
       debounce(val => {
         setLoading(val);
-      }, 200),
+      }, 500),
     [setLoading],
   );
 
@@ -154,7 +154,7 @@ function Common() {
       setLoading(true);
     } else {
       setLoadingDebounce(false);
-      setLoading(false);
+      // setLoading(false);
     }
   }, [requestLoading]);
 
@@ -244,16 +244,18 @@ function Common() {
           </div>
           {requestMessages?.length > 0 && (
             <div className="request-messages">
-              {requestMessages.map(info => {
-                return (
-                  <div key={info.id}>
-                    <span>
-                      <i className="fa-solid fa-volume-high" />
-                      {info.message}
-                    </span>
-                  </div>
-                );
-              })}
+              <div>
+                {requestMessages.map(info => {
+                  return (
+                    <div key={info.id}>
+                      <span>
+                        <i className="fa-solid fa-volume-high" />
+                        {info.message}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

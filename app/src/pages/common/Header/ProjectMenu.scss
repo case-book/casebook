@@ -1,9 +1,11 @@
-@keyframes rotate {
+@keyframes leftToRight {
   from {
-    transform: rotateY(0deg);
+    transform: translateX(-40%);
+    opacity: 0;
   }
   to {
-    transform: rotateY(360deg);
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
@@ -27,6 +29,9 @@ ul.project-menu-wrapper {
 
   > li {
     position: relative;
+    animation: leftToRight 0.2s ease-in-out;
+    animation-fill-mode: forwards;
+    opacity: 0;
     &:hover {
       background-color: #111;
       color: white;
