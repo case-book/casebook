@@ -1,107 +1,46 @@
 import React from 'react';
 import i18n from 'i18next';
 
-const STATIC_MENUS = [
-  {
-    key: 'space',
-    to: '/',
-    icon: <i className="fas fa-home-alt" />,
-    name: i18n.t('스페이스'),
-    admin: false,
-    pc: true,
-    selectedAlias: [/^\/$/, /^\/spaces\/[A-Z]+(\/)?(edit|info)$/],
-  },
-  {
-    key: 'project',
-    to: '/projects',
-    icon: <i className="fas fa-home-alt" />,
-    name: i18n.t('프로젝트'),
-    admin: false,
-    pc: true,
-    prefixSpace: true,
-    selectedAlias: [/^\/spaces\/[\dA-Z]+\/projects$/],
-  },
-  {
-    key: 'admin',
-    to: '/admin',
-    icon: <i className="fas fa-home-alt" />,
-    name: i18n.t('관리'),
-    admin: true,
-    pc: true,
-    prefixSpace: false,
-    selectedAlias: [/^\/admin\/*/],
-    list: [
-      {
-        key: '/systems/info',
-        to: '/systems/info',
-        name: i18n.t('시스템 정보'),
-        description: i18n.t('시스템 정보를 확인합니다.'),
-        icon: <i className="fa-solid fa-gear" />,
-        admin: true,
-      },
-      {
-        key: '/systems/config',
-        to: '/systems/config',
-        name: i18n.t('시스템 설정'),
-        description: i18n.t('시스템 설정 정보를 확인하고, 변경합니다.'),
-        icon: <i className="fa-solid fa-gear" />,
-        admin: true,
-      },
-      {
-        key: 'users',
-        to: '/users',
-        name: i18n.t('사용자 관리'),
-        description: i18n.t('시스템에 등록된 모든 사용자 정보를 조회하고, 관리합니다.'),
-        icon: <i className="fa-solid fa-universal-access" />,
-        admin: true,
-      },
-      {
-        key: 'spaces',
-        to: '/spaces',
-        name: i18n.t('스페이스 관리'),
-        description: i18n.t('모든 스페이스 정보를 확인하고, 관리합니다.'),
-        icon: <i className="fa-solid fa-box-archive" />,
-        admin: true,
-      },
-      {
-        key: 'ai-history',
-        to: '/ai-history',
-        name: i18n.t('LLM API 이력 조회'),
-        description: i18n.t('LLM API를 이용한 처리 결과 이력을 조회합니다.'),
-        icon: <i className="fa-solid fa-box-archive" />,
-        admin: true,
-      },
-    ],
-  },
-];
-
 const ADMIN_MENUS = [
   {
-    key: 'systems',
-    to: '/admin/systems/info',
+    key: '/systems/info',
+    to: '/systems/info',
     name: i18n.t('시스템 정보'),
+    description: i18n.t('시스템 정보를 확인합니다.'),
+    icon: <i className="fa-solid fa-circle-info" />,
+    admin: true,
   },
   {
-    key: 'systems',
-    to: '/admin/systems/config',
+    key: '/systems/config',
+    to: '/systems/config',
     name: i18n.t('시스템 설정'),
-    separator: true,
+    description: i18n.t('시스템 설정 정보를 확인하고, 변경합니다.'),
+    icon: <i className="fa-solid fa-gear" />,
+    admin: true,
   },
   {
     key: 'users',
-    to: '/admin/users',
+    to: '/users',
     name: i18n.t('사용자 관리'),
+    description: i18n.t('시스템에 등록된 모든 사용자 정보를 조회하고, 관리합니다.'),
+    icon: <i className="fa-solid fa-universal-access" />,
+    admin: true,
   },
   {
     key: 'spaces',
-    to: '/admin/spaces',
+    to: '/spaces',
     name: i18n.t('스페이스 관리'),
-    separator: true,
+    description: i18n.t('모든 스페이스 정보를 확인하고, 관리합니다.'),
+    icon: <i className="fa-solid fa-box-archive" />,
+    admin: true,
   },
   {
-    key: 'ai',
-    to: '/admin/ai-history',
+    key: 'ai-history',
+    to: '/ai-history',
     name: i18n.t('LLM API 이력 조회'),
+    description: i18n.t('LLM API를 이용한 처리 결과 이력을 조회합니다.'),
+    icon: <i className="fa-solid fa-brain" />,
+    admin: true,
   },
 ];
 
@@ -251,4 +190,4 @@ const MENUS = [
   },
 ];
 
-export { STATIC_MENUS, MENUS, ADMIN_MENUS };
+export { ADMIN_MENUS, MENUS };
