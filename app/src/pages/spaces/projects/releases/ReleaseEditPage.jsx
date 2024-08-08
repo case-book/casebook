@@ -2,14 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Block, BlockRow, Button, CheckBox, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import PropTypes from 'prop-types';
 import testcaseUtil from '@/utils/testcaseUtil';
-import './ReleaseEditPage.scss';
 import TestcaseService from '@/services/TestcaseService';
+import './ReleaseEditPage.scss';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -22,10 +23,22 @@ function ReleaseEditPage({ type }) {
   const [release, setRelease] = useState({});
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
   const [isTestcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get('name') ?? null;
 
   const isEdit = useMemo(() => {
     return type === 'edit';
   }, [type]);
+
+  useEffect(() => {
+    if (!isEdit && name) {
+      setRelease({
+        ...release,
+        isTarget: true,
+        name,
+      });
+    }
+  }, [name]);
 
   const handleSubmit = e => {
     e.preventDefault();
