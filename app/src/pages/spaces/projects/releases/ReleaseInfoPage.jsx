@@ -9,6 +9,7 @@ import './ReleaseInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import TestcaseService from '@/services/TestcaseService';
+import dateUtil from '@/utils/dateUtil';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -135,18 +136,26 @@ function ReleaseInfoPage() {
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="baseline">
-              {t('타겟 릴리즈')}
+              {t('타겟 릴리스')}
             </Label>
             <Text>
               <div>{release.isTarget ? 'Y' : 'N'}</div>
               <div className="target-description">
-                {t('테스트케이스 생성이나 변경 시 타겟 릴리즈로 설정된 릴리즈가 해당 테스트케이스에 설정되어 있지 않다면, 자동으로 테스트케이스에 릴리즈로 추가하는지 됩니다.')}
+                {t('테스트케이스 생성이나 변경 시 타겟 릴리스로 설정된 릴리스가 해당 테스트케이스에 설정되어 있지 않다면, 저장 시 해당 테스트케이스에 릴리스를 추가할지 사용자에게 확인합니다.')}
               </div>
             </Text>
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('설명')}</Label>
             <Text whiteSpace="pre-wrap">{release.description}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={LABEL_MIN_WIDTH}>{t('생성')}</Label>
+            <Text whiteSpace="pre-wrap">{dateUtil.getDateString(release.creationDate)}</Text>
+          </BlockRow>
+          <BlockRow>
+            <Label minWidth={LABEL_MIN_WIDTH}>{t('마지막 변경')}</Label>
+            <Text whiteSpace="pre-wrap">{dateUtil.getDateString(release.lastUpdateDate)}</Text>
           </BlockRow>
           <BlockRow>
             <Label minWidth={LABEL_MIN_WIDTH}>{t('테스트케이스')}</Label>

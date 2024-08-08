@@ -461,8 +461,8 @@ function ProjectTestcaseEditPage() {
     if (targetRelease && !info.projectReleaseIds.includes(targetRelease.id)) {
       dialogUtil.setConfirm(
         MESSAGE_CATEGORY.WARNING,
-        t('타켓 릴리즈 추가 확인'),
-        t('설정된 프로젝트의 타켓 릴리즈가 현재 테스트케이스에 추가되어 있지 않습니다. 테스트케이스에 타켓 릴리즈를 추가하시겠습니까?'),
+        t('타켓 릴리스 추가 확인'),
+        t('설정된 프로젝트의 타켓 릴리스가 현재 테스트케이스에 추가되어 있지 않습니다. 테스트케이스에 타켓 릴리스를 추가하시겠습니까?'),
         () => {
           info.projectReleaseIds.push(targetRelease.id);
           updateTestcase(info, handler);

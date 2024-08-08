@@ -168,7 +168,7 @@ function ReleaseListPage() {
                       </div>
                     </div>
                     <div className="buttons">
-                      <Button className="create-next-release-button" tip={t('다음 릴리즈 생성')} onClick={() => createNextReleaseButtonClick(release.name)}>
+                      <Button className="create-next-release-button" tip={t('다음 릴리스 생성')} onClick={() => createNextReleaseButtonClick(release.name)}>
                         <i className="fa-solid fa-plus" />
                         <i className="fa-solid fa-code-branch" />
                       </Button>

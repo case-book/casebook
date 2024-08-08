@@ -553,7 +553,7 @@ function ProjectEditPage({ type }) {
               </BlockRow>
               {isEdit && (
                 <BlockRow>
-                  <Label>{t('타겟 릴리즈')}</Label>
+                  <Label>{t('타겟 릴리스')}</Label>
                   <Selector
                     items={[{ key: null, value: t('없음') }].concat(
                       releases.map(release => {

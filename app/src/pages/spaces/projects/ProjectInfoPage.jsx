@@ -251,7 +251,7 @@ function ProjectInfoPage() {
               <Text>{project?.aiEnabled ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
-              <Label>{t('타겟 릴리즈')}</Label>
+              <Label>{t('타겟 릴리스')}</Label>
               <Text>{targetRelease?.name}</Text>
             </BlockRow>
           </Block>
