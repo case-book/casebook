@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { STATIC_MENUS } from '@/constants/menu';
+import { ADMIN_MENUS } from '@/constants/menu';
 import './AdminIndexInfoPage.scss';
 
 function AdminIndexInfoPage() {
@@ -33,18 +33,20 @@ function AdminIndexInfoPage() {
       >
         {t('시스템 관리')}
       </PageTitle>
-      <PageContent className="page-content">
+      <PageContent className="page-content" flex>
         <ul>
-          {STATIC_MENUS.find(d => d.key === 'admin').list.map(d => {
+          {ADMIN_MENUS.map(d => {
             return (
               <li key={d.to}>
-                <div className="link">
-                  <Link to={`/admin${d.to}`}>
+                <Link to={`/admin${d.to}`}>
+                  <div>
                     <span className="icon">{d.icon}</span>
-                    <span className="name">{d.name}</span>
-                  </Link>
-                </div>
-                <div className="description">{d.description}</div>
+                    <div className="link">
+                      <span className="name">{d.name}</span>
+                    </div>
+                    <div className="description">{d.description}</div>
+                  </div>
+                </Link>
               </li>
             );
           })}

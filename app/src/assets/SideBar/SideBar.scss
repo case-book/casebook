@@ -1,0 +1,28 @@
+.side-bar-wrapper {
+  width: 220px;
+  background: #a50034;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  justify-content: space-between;
+  z-index: 2;
+  border-right: 1px solid transparent;
+
+  &.collapsed {
+    width: 70px;
+    padding-top: 16px;
+  }
+
+  .size-bar-logo {
+    padding: 16px 0;
+  }
+
+  .side-bar-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}

@@ -2,14 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Block, BlockRow, Button, CheckBox, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, TestcaseSelectorSummary, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import TestcaseSelectPopup from '@/assets/TestcaseSelectPopup/TestcaseSelectPopup';
 import PropTypes from 'prop-types';
 import testcaseUtil from '@/utils/testcaseUtil';
-import './ReleaseEditPage.scss';
 import TestcaseService from '@/services/TestcaseService';
+import './ReleaseEditPage.scss';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -22,10 +23,22 @@ function ReleaseEditPage({ type }) {
   const [release, setRelease] = useState({});
   const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
   const [isTestcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get('name') ?? null;
 
   const isEdit = useMemo(() => {
     return type === 'edit';
   }, [type]);
+
+  useEffect(() => {
+    if (!isEdit && name) {
+      setRelease({
+        ...release,
+        isTarget: true,
+        name,
+      });
+    }
+  }, [name]);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -102,7 +115,7 @@ function ReleaseEditPage({ type }) {
           },
           {
             to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/releases/${releaseId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/releases/new`,
-            text: isEdit ? `${t('편집')}` : t('생성'),
+            text: isEdit ? `${t('변경')}` : t('생성'),
           },
         ]}
         onListClick={() => {
@@ -139,7 +152,7 @@ function ReleaseEditPage({ type }) {
             </BlockRow>
             <BlockRow>
               <Label minWidth={LABEL_MIN_WIDTH} verticalAlign="baseline">
-                {t('타겟 릴리즈')}
+                {t('타겟 릴리스')}
               </Label>
               <div>
                 <CheckBox
@@ -154,7 +167,7 @@ function ReleaseEditPage({ type }) {
                   }
                 />
                 <div className="target-description">
-                  {t('테스트케이스 생성이나 변경 시 타겟 릴리즈로 설정된 릴리즈가 해당 테스트케이스에 설정되어 있지 않다면, 자동으로 테스트케이스에 릴리즈로 추가됩니다.')}
+                  {t('테스트케이스 생성이나 변경 시 타겟 릴리스로 설정된 릴리스가 해당 테스트케이스에 설정되어 있지 않다면, 저장 시 해당 테스트케이스에 릴리스를 추가할지 사용자에게 확인합니다.')}
                 </div>
               </div>
             </BlockRow>

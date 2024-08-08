@@ -119,7 +119,7 @@ function TestrunListPage() {
   }, [user?.id, projectId, testruns]);
 
   return (
-    <Page className="testrun-list-page-wrapper" list>
+    <Page className="testrun-list-page-wrapper">
       <PageTitle
         className="page-title"
         breadcrumbs={[

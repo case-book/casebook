@@ -104,7 +104,7 @@ function ReportListPage() {
   }, [spaceCode, projectId, period]);
 
   return (
-    <Page className="report-list-page-wrapper" list>
+    <Page className="report-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {

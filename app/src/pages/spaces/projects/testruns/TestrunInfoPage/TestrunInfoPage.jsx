@@ -197,7 +197,7 @@ function TestrunInfoPage() {
                   navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
                 }}
               >
-                {t('편집')}
+                {t('변경')}
               </Button>
             </div>
           }

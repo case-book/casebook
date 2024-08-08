@@ -4,6 +4,7 @@ import {
   Message,
   TestrunEditPage,
   TestrunExecutePage,
+  TestrunHistoryPage,
   TestrunInfoPage,
   TestrunIterationEditPage,
   TestrunIterationInfoPage,
@@ -30,6 +31,7 @@ function TestrunsRoutes() {
       <Route path="/iterations/new" element={<TestrunIterationEditPage />} />
       <Route path="/iterations" element={<TestrunIterationListPage />} />
       <Route path="/" element={<TestrunListPage />} />
+      <Route path="/history" element={<TestrunHistoryPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>
   );

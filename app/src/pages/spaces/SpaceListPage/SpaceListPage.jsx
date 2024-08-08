@@ -45,7 +45,7 @@ function SpaceListPage() {
   }, [text, isMine]);
 
   return (
-    <Page className="space-list-page-wrapper" pure>
+    <Page className="space-list-page-wrapper">
       <PageContent className="page-content">
         <div className="search-opener">
           <Button

@@ -202,6 +202,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  &.side-bar-ready {
+    padding-left: 220px;
+  }
+
+  &.collapsed {
+    padding-left: 70px;
+  }
+
   &.page-moving {
     overflow: hidden;
   }
@@ -237,6 +245,17 @@ a {
     color: var(--link-color);
   }
 }
+
+a.hoverable {
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 0.5rem 0.25rem;
+  &:hover {
+    color: var(--link-color);
+    border-bottom: 1px solid var(--link-color);
+  }
+}
+
 
 * {
   box-sizing: border-box;

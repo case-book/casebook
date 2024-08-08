@@ -14,11 +14,17 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Query(value = PROJECT_LIST_PROJECTION + " WHERE p.space.id = :spaceId")
     List<Project> findAllBySpaceId(Long spaceId);
 
+    @Query(value = PROJECT_LIST_PROJECTION + " WHERE p.space.code = :spaceCode")
+    List<Project> findAllBySpaceCode(String spaceCode);
+
     @Query(value = PROJECT_LIST_PROJECTION + " INNER JOIN ProjectUser pu ON p.id = pu.project.id WHERE p.space.code = :spaceCode AND pu.user.id = :userId")
     List<Project> findAllBySpaceCodeAndUsersUserId(String spaceCode, Long userId);
 
     @Query(value = "SELECT p.id FROM Project p WHERE p.id = :id AND p.space.id = (SELECT s.id FROM Space s WHERE s.code = :spaceCode)")
     Optional<Long> findIdBySpaceCodeAndId(String spaceCode, Long id);
+
+    @Query(value = "SELECT p.id FROM Project p WHERE p.space.id = (SELECT s.id FROM Space s WHERE s.code = :spaceCode)")
+    List<Long> findIdBySpaceCode(String spaceCode);
 
     Long countBySpaceCodeAndName(String spaceCode, String name);
 

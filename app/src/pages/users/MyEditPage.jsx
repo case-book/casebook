@@ -55,7 +55,7 @@ function MyEditPage() {
           },
           {
             to: '/users/my/edit',
-            text: t('편집'),
+            text: t('변경'),
           },
         ]}
         onListClick={() => {

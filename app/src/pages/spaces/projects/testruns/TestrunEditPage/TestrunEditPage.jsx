@@ -307,7 +307,7 @@ function TestrunEditPage({ type }) {
     <>
       <Page className="testrun-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('테스트런 편집') : t('테스트런 생성')}
+          name={isEdit ? t('테스트런 변경') : t('테스트런 생성')}
           breadcrumbs={[
             {
               to: '/',
@@ -335,7 +335,7 @@ function TestrunEditPage({ type }) {
             },
             {
               to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/new`,
-              text: isEdit ? t('편집') : t('생성'),
+              text: isEdit ? t('변경') : t('생성'),
             },
           ]}
           onListClick={() => {

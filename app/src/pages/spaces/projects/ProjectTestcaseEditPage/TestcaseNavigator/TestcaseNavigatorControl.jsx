@@ -100,7 +100,9 @@ function TestcaseNavigatorControl({
                 size="xs"
                 className="my-button"
                 onClick={() => {
-                  onChangeUserFilter(user.id);
+                  if (onChangeUserFilter) {
+                    onChangeUserFilter(user.id);
+                  }
                 }}
               >
                 MY
@@ -169,6 +171,9 @@ TestcaseNavigatorControl.defaultProps = {
   users: [],
   addTestcase: null,
   addTestcaseGroup: null,
+  userFilter: null,
+  onChangeUserFilter: null,
+  width: null,
 };
 
 TestcaseNavigatorControl.propTypes = {
@@ -180,13 +185,13 @@ TestcaseNavigatorControl.propTypes = {
   user: PropTypes.object,
   // eslint-disable-next-line react/forbid-prop-types
   users: PropTypes.array,
-  userFilter: PropTypes.string.isRequired,
-  onChangeUserFilter: PropTypes.func.isRequired,
+  userFilter: PropTypes.string,
+  onChangeUserFilter: PropTypes.func,
   addTestcase: PropTypes.func,
   addTestcaseGroup: PropTypes.func,
   // eslint-disable-next-line react/forbid-prop-types
   selectedItemInfo: PropTypes.object.isRequired,
-  width: PropTypes.number.isRequired,
+  width: PropTypes.number,
   testcaseFilter: PropTypes.shape({
     ids: PropTypes.arrayOf(PropTypes.string),
     name: PropTypes.string,

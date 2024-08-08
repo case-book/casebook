@@ -40,7 +40,7 @@ function TestrunIterationListPage() {
   }, [projectId]);
 
   return (
-    <Page className="testrun-iteration-list-page-wrapper" list>
+    <Page className="testrun-iteration-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {

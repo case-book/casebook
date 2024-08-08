@@ -249,7 +249,7 @@ function SpaceEditPage({ type }) {
     <>
       <Page className="space-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('스페이스 편집') : t('스페이스 생성')}
+          name={isEdit ? t('스페이스 변경') : t('스페이스 생성')}
           breadcrumbs={
             isEdit
               ? [
@@ -267,7 +267,7 @@ function SpaceEditPage({ type }) {
                   },
                   {
                     to: `/spaces/${spaceCode}/edit`,
-                    text: t('편집'),
+                    text: t('변경'),
                   },
                 ]
               : [
@@ -289,7 +289,7 @@ function SpaceEditPage({ type }) {
             navigate('/spaces');
           }}
         >
-          {isEdit ? t('스페이스 편집') : t('새 스페이스')}
+          {isEdit ? t('스페이스 변경') : t('새 스페이스')}
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>

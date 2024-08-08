@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { Button, Selector, Input, Label, Tag, Title } from '@/components';
+import { Button, Input, Label, Selector, Tag, Title } from '@/components';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import ReleaseService from '@/services/ReleaseService';
@@ -140,7 +140,7 @@ function TestcaseNavigatorFilter({ width, testcaseFilter, onChangeTestcaseFilter
             onRef={node => {
               filterNameInputRef.current = node;
             }}
-            value={null}
+            value={testcaseFilter?.name}
             size="sm"
             placeholder={t('테스트케이스 이름')}
             onChange={value => {
@@ -229,8 +229,12 @@ function TestcaseNavigatorFilter({ width, testcaseFilter, onChangeTestcaseFilter
   );
 }
 
+TestcaseNavigatorFilter.defaultProps = {
+  width: null,
+};
+
 TestcaseNavigatorFilter.propTypes = {
-  width: PropTypes.number.isRequired,
+  width: PropTypes.number,
   testcaseFilter: PropTypes.shape({
     ids: PropTypes.arrayOf(PropTypes.string),
     name: PropTypes.string,

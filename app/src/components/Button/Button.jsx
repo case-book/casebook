@@ -37,7 +37,7 @@ Button.defaultProps = {
   rounded: false,
   size: 'md',
   onClick: null,
-  outline: false,
+  outline: true,
   disabled: false,
   tip: null,
 };

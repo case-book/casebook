@@ -32,7 +32,7 @@ function TestrunReservationListPage() {
   }, [projectId]);
 
   return (
-    <Page className="testrun-reservation-list-page-wrapper" list>
+    <Page className="testrun-reservation-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {

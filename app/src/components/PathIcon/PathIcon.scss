@@ -1,0 +1,51 @@
+svg.path-icon-wrapper {
+  vertical-align: middle;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  fill: var(--gray-color);
+  rotate: 90deg;
+
+  &.color-white {
+    fill: white;
+  }
+
+  &.color-black {
+    fill: var(--gray-color);
+  }
+
+  &.size-xs {
+    width: 11px;
+    height: 11px;
+  }
+
+  &.size-sm {
+    width: $sm-height;
+    height: $sm-height;
+  }
+
+  &.size-md {
+    width: $md-height;
+    height: $md-height;
+  }
+
+  &.size-lg {
+    width: $lg-height;
+    height: $lg-height;
+  }
+
+  &.size-xl {
+    width: $xl-height;
+    height: $xl-height;
+  }
+
+  &.size-xxl {
+    width: $xxl-height;
+    height: $xxl-height;
+  }
+
+  &.size-auto {
+    width: 100%;
+    height: 100%;
+  }
+}

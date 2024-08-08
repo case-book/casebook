@@ -54,7 +54,7 @@ function UserInfoPage() {
           },
           {
             to: `/admin/users/${userId}/edit`,
-            text: t('편집'),
+            text: t('변경'),
           },
         ]}
         onListClick={() => {

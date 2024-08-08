@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Block, BlockRow, Button, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import './MessageChannelEditPopup.scss';
+import './MessageChannelPopup.scss';
 import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import KeyValueEditor from '@/pages/spaces/MessageChannelEditPopup/KeyValueEditor';
 import dialogUtil from '@/utils/dialogUtil';
@@ -53,7 +53,7 @@ function MessageChannelEditPopup({ data, setOpened, onApply, messageChannelTypeL
 
   return (
     <Modal
-      className="message-channel-edit-popup-wrapper"
+      className="message-channel-popup-wrapper"
       size="lg"
       isOpen
       toggle={() => {

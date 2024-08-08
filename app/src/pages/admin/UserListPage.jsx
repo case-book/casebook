@@ -24,7 +24,7 @@ function UserListPage() {
   }, []);
 
   return (
-    <Page className="user-list-page-wrapper" list>
+    <Page className="user-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {

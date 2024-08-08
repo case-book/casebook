@@ -1,7 +1,7 @@
 .block-row-wrapper {
   > .block-row-content {
     display: flex;
-    padding: 0.5rem 0;
+    padding: 4px 0;
 
     @media (max-width: 768px) {
       display: block;

@@ -21,6 +21,7 @@ public class ProjectReleaseResponse {
     private ProjectResponse project;
     private List<TestcaseListResponse> testcases;
     private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
 
     public ProjectReleaseResponse(ProjectReleaseDTO projectReleaseDTO, long userId) {
         this.id = projectReleaseDTO.getId();
@@ -29,6 +30,7 @@ public class ProjectReleaseResponse {
         this.description = projectReleaseDTO.getDescription();
         this.project = new ProjectResponse(projectReleaseDTO.getProject(), userId);
         this.creationDate = projectReleaseDTO.getCreationDate();
+        this.lastUpdateDate = projectReleaseDTO.getLastUpdateDate();
         this.testcases = projectReleaseDTO.getTestcases().stream().map(TestcaseListResponse::new).collect(Collectors.toList());
     }
 }
