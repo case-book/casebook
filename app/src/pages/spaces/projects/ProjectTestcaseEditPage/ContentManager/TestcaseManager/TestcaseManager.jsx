@@ -33,6 +33,7 @@ function TestcaseManager({
   onAcceptParaphraseContent,
   onRemoveParaphraseContent,
   aiEnabled,
+  headerControl,
 }) {
   const {
     themeStore: { theme },
@@ -202,16 +203,17 @@ function TestcaseManager({
                     <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   </>
                 )}
-
-                <Button
-                  size="md"
-                  color="primary"
-                  onClick={() => {
-                    setIsEdit(true);
-                  }}
-                >
-                  {t('변경')}
-                </Button>
+                {setIsEdit && (
+                  <Button
+                    size="md"
+                    color="primary"
+                    onClick={() => {
+                      setIsEdit(true);
+                    }}
+                  >
+                    {t('변경')}
+                  </Button>
+                )}
               </>
             )}
             {isEdit && (
@@ -225,6 +227,7 @@ function TestcaseManager({
               </>
             )}
           </div>
+          {headerControl && headerControl}
         </div>
       </div>
       <div className="title-liner" />
@@ -358,6 +361,8 @@ TestcaseManager.defaultProps = {
   llms: [],
   paraphraseInfo: {},
   aiEnabled: false,
+  setIsEdit: null,
+  headerControl: null,
 };
 
 TestcaseManager.propTypes = {
@@ -389,7 +394,7 @@ TestcaseManager.propTypes = {
   }),
   testcaseTemplates: PropTypes.arrayOf(TestcaseTemplatePropTypes),
   isEdit: PropTypes.bool.isRequired,
-  setIsEdit: PropTypes.func.isRequired,
+  setIsEdit: PropTypes.func,
   setContent: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
@@ -415,6 +420,7 @@ TestcaseManager.propTypes = {
   onAcceptParaphraseContent: PropTypes.func.isRequired,
   onRemoveParaphraseContent: PropTypes.func.isRequired,
   aiEnabled: PropTypes.bool,
+  headerControl: PropTypes.node,
 };
 
 export default TestcaseManager;

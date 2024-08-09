@@ -13,7 +13,10 @@ import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ public class ProjectReleaseService {
     private final ProjectReleaseRepository projectReleaseRepository;
     private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
     private final TestcaseRepository testcaseRepository;
+    private final CacheManager cacheManager;
 
     public ProjectReleaseDTO selectProjectRelease(long releaseId) {
         return projectReleaseRepository
@@ -42,7 +46,11 @@ public class ProjectReleaseService {
     }
 
     @Transactional
-    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+    })
     public ProjectReleaseDTO createProjectRelease(String spaceCode, long projectId, ProjectReleaseDTO projectReleaseDTO) {
         List<Testcase> testcases = testcaseRepository.findByIdIn(projectReleaseDTO
             .getTestcases()
@@ -67,11 +75,19 @@ public class ProjectReleaseService {
             }
         }
 
+        Cache projectTestcaseCache = cacheManager.getCache(CacheConfig.PROJECT_TESTCASE);
+        if (projectTestcaseCache != null) {
+            testcases.forEach(testcase -> projectTestcaseCache.evictIfPresent(spaceCode + "," + testcase.getId()));
+        }
+
         return new ProjectReleaseDTO(projectReleaseRepository.save(new ProjectRelease(projectReleaseDTO, testcases)));
     }
 
     @Transactional
-    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+    })
     public ProjectReleaseDTO updateProjectRelease(String spaceCode, long projectId, long releaseId, ProjectReleaseDTO projectReleaseDTO) {
         ProjectRelease projectRelease = projectReleaseRepository
             .findById(releaseId)
@@ -105,6 +121,8 @@ public class ProjectReleaseService {
         projectRelease.setDescription(projectReleaseDTO.getDescription());
         projectRelease.setIsTarget(projectReleaseDTO.getIsTarget());
 
+        Cache projectTestcaseCache = cacheManager.getCache(CacheConfig.PROJECT_TESTCASE);
+
         // 선택에서 제외된 테스트케이스 릴리스 삭제
         projectRelease.getTestcaseProjectReleases()
             .stream()
@@ -112,7 +130,15 @@ public class ProjectReleaseService {
                 if (!testcaseIds.contains(testcaseProjectRelease.getTestcase().getId())) {
                     testcaseProjectReleaseRepository.delete(testcaseProjectRelease);
                 }
+                if (projectTestcaseCache != null) {
+                    projectTestcaseCache.evictIfPresent(spaceCode + "," + testcaseProjectRelease.getTestcase().getId());
+                }
             });
+
+
+        if (projectTestcaseCache != null) {
+            testcases.forEach(testcase -> projectTestcaseCache.evictIfPresent(spaceCode + "," + testcase.getId()));
+        }
 
         projectRelease.getTestcaseProjectReleases()
             .removeIf(testcaseProjectRelease -> !testcaseIds.contains(testcaseProjectRelease.getTestcase().getId()));
@@ -131,12 +157,17 @@ public class ProjectReleaseService {
 
         }
 
+
+
         projectReleaseRepository.save(projectRelease);
         return new ProjectReleaseDTO(projectRelease);
     }
 
     @Transactional
-    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+    })
     public void deleteProjectRelease(String spaceCode, long projectId, long releaseId) {
         testcaseProjectReleaseRepository.deleteByProjectReleaseId(releaseId);
         projectReleaseRepository.deleteById(releaseId);
@@ -164,8 +195,16 @@ public class ProjectReleaseService {
     }
 
     @Transactional
-    @CacheEvict(value = CacheConfig.PROJECT, key = "{#spaceCode,#projectId}")
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+    })
     public void deleteProjectRelease(String spaceCode, long projectId) {
+        List<Long> testcaseIds = testcaseRepository.selectTestcaseIdsByProjectId(projectId);
+        Cache projectTestcaseCache = cacheManager.getCache(CacheConfig.PROJECT_TESTCASE);
+        if (projectTestcaseCache != null) {
+            testcaseIds.forEach(testcaseId -> projectTestcaseCache.evictIfPresent(spaceCode + "," + testcaseId));
+        }
         testcaseProjectReleaseRepository.deleteByProjectId(projectId);
         projectReleaseRepository.deleteByProjectId(projectId);
     }

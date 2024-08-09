@@ -6,5 +6,16 @@ import TestrunHookInfoPopup from './TestrunHookInfoPopup/TestrunHookInfoPopup';
 import TestrunHookTable from './TestrunHookTable/TestrunHookTable';
 import TestrunMessageChannelSelector from './TestrunMessageChannelSelector/TestrunMessageChannelSelector';
 import TestrunMessageChannelList from './TestrunMessageChannelList/TestrunMessageChannelList';
+import TestcaseViewerPopup from './TestcaseViewerPopup/TestcaseViewerPopup';
 
-export { CommentList, ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelSelector, TestrunMessageChannelList };
+export {
+  CommentList,
+  ProfileSelectPopup,
+  TestcaseSelectPopup,
+  TestrunHookEditPopup,
+  TestrunHookInfoPopup,
+  TestrunHookTable,
+  TestrunMessageChannelSelector,
+  TestrunMessageChannelList,
+  TestcaseViewerPopup,
+};

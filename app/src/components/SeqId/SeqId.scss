@@ -27,8 +27,8 @@
     display: inline-block;
     border-radius: 2px;
     line-height: 100%;
-    background-color: $color-sunflower;
-    color: #000;
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
     padding: 4px;
     font-family: AzeretMono, sans-serif;
     position: relative;

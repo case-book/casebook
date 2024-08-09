@@ -1,0 +1,28 @@
+.testcase-viewer-popup-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+
+  .popup-content {
+    height: 100%;
+    width: 60%;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--light-color);
+
+    .popup-content-layout {
+      max-width: 1200px;
+      border-right: 1px solid var(--light-color);
+      height: 100%;
+      background-color: var(--theme-color);
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
