@@ -499,7 +499,7 @@ function SpaceContent({ space, onRefresh }) {
         <Title paddingBottom={false} border={false} marginBottom={false}>
           {t('관리')}
         </Title>
-        <Block className="danger-box">
+        <Block danger>
           <BlockRow>
             <Label>{t('스페이스 탈퇴')}</Label>
             <Button size="sm" color="warning" onClick={withdraw}>

@@ -20,7 +20,7 @@
 
       > span.title-icon {
         line-height: 1;
-        margin-right: 2px;
+        margin-right: 8px;
         i {
           line-height: 1;
           align-self: center;
@@ -31,6 +31,7 @@
     .control {
       flex-grow: 1;
       align-self: center;
+      line-height: 1;
       .control-content {
         display: inline-block;
       }

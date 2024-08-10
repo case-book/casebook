@@ -109,7 +109,7 @@ public class ProjectReleaseService {
 
         if (projectReleaseDTO.getIsTarget() != null && projectReleaseDTO.getIsTarget()) {
             List<ProjectRelease> targetReleaseList = projectReleaseRepository.findByProjectIdAndIsTargetTrue(projectId);
-            if (targetReleaseList.size() > 0) {
+            if (!targetReleaseList.isEmpty()) {
                 for (ProjectRelease targetRelease : targetReleaseList) {
                     targetRelease.setIsTarget(false);
                     projectReleaseRepository.save(targetRelease);
@@ -124,24 +124,21 @@ public class ProjectReleaseService {
         Cache projectTestcaseCache = cacheManager.getCache(CacheConfig.PROJECT_TESTCASE);
 
         // 선택에서 제외된 테스트케이스 릴리스 삭제
-        projectRelease.getTestcaseProjectReleases()
-            .stream()
-            .forEach(testcaseProjectRelease -> {
-                if (!testcaseIds.contains(testcaseProjectRelease.getTestcase().getId())) {
-                    testcaseProjectReleaseRepository.delete(testcaseProjectRelease);
-                }
-                if (projectTestcaseCache != null) {
-                    projectTestcaseCache.evictIfPresent(spaceCode + "," + testcaseProjectRelease.getTestcase().getId());
-                }
-            });
+        projectRelease.getTestcaseProjectReleases().forEach(testcaseProjectRelease -> {
 
+            if (!testcaseIds.contains(testcaseProjectRelease.getTestcase().getId())) {
+                testcaseProjectReleaseRepository.deleteByProjectReleaseIdAndTestcaseId(testcaseProjectRelease.getProjectRelease().getId(), testcaseProjectRelease.getTestcase().getId());
+            }
+
+            if (projectTestcaseCache != null) {
+                projectTestcaseCache.evictIfPresent(spaceCode + "," + testcaseProjectRelease.getTestcase().getId());
+            }
+        });
+        projectRelease.getTestcaseProjectReleases().removeIf(testcaseProjectRelease -> !testcaseIds.contains(testcaseProjectRelease.getTestcase().getId()));
 
         if (projectTestcaseCache != null) {
             testcases.forEach(testcase -> projectTestcaseCache.evictIfPresent(spaceCode + "," + testcase.getId()));
         }
-
-        projectRelease.getTestcaseProjectReleases()
-            .removeIf(testcaseProjectRelease -> !testcaseIds.contains(testcaseProjectRelease.getTestcase().getId()));
 
         for (Testcase testcase : testcases) {
             if (projectRelease.getTestcaseProjectReleases()
@@ -156,8 +153,6 @@ public class ProjectReleaseService {
             }
 
         }
-
-
 
         projectReleaseRepository.save(projectRelease);
         return new ProjectReleaseDTO(projectRelease);

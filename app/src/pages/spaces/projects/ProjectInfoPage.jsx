@@ -402,7 +402,7 @@ function ProjectInfoPage() {
           <Title paddingBottom={false} border={false} marginBottom={false}>
             {t('관리')}
           </Title>
-          <Block className="danger-box">
+          <Block danger>
             <BlockRow>
               <Label>{t('프로젝트 탈퇴')}</Label>
               <Button size="sm" color="warning" onClick={onWithdraw}>

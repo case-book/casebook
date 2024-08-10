@@ -12,7 +12,7 @@ function Title({ className, children, type, control, border, paddingBottom, marg
             <span className="title-icon">
               <i className="fa-solid fa-barcode" />
             </span>
-          )}{' '}
+          )}
           {children}
         </div>
         {control && (

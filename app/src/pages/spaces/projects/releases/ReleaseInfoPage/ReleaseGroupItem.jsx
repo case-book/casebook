@@ -1,19 +1,28 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
 import { SeqId, Tag, Td, Tr } from '@/components';
 import { ITEM_TYPE } from '@/constants/constants';
+import { useTranslation } from 'react-i18next';
 import './ReleaseGroupItem.scss';
 
-function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameClick, releaseNameMap }) {
-  const testcases = testcaseGroup.testcases
-    .filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId)))
-    .map(testcase => {
-      return {
-        ...testcase,
-        projectReleases: testcase.projectReleaseIds.sort((a, b) => b - a).map(projectReleaseId => releaseNameMap[projectReleaseId]),
-      };
-    });
+function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameClick, releaseNameMap, selectedTestcaseIdMap, releaseSummary }) {
+  const { t } = useTranslation();
+
+  const testcases = useMemo(() => {
+    if (releaseId) {
+      return testcaseGroup.testcases
+        .filter(testcase => testcase.projectReleaseIds.includes(Number(releaseId)))
+        .map(testcase => {
+          return {
+            ...testcase,
+            projectReleases: testcase.projectReleaseIds.sort((a, b) => b - a).map(projectReleaseId => releaseNameMap[projectReleaseId]),
+          };
+        });
+    }
+
+    return testcaseGroup.testcases.filter(testcase => selectedTestcaseIdMap[testcase.id]);
+  }, [testcaseGroup, releaseId, releaseNameMap, selectedTestcaseIdMap]);
 
   return (
     <>
@@ -43,15 +52,18 @@ function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameCli
                   <div>{testcase.name}</div>
                 </div>
               </Td>
-              <Td align="left" className="releases">
-                {testcase.projectReleases.map((projectRelease, jnx) => {
-                  return (
-                    <Tag key={jnx} border bold>
-                      {projectRelease}
-                    </Tag>
-                  );
-                })}
-              </Td>
+              {releaseSummary && (
+                <Td align="left" className="releases">
+                  {testcase.projectReleases?.length > 0 && (
+                    <>
+                      <Tag border bold>
+                        {testcase.projectReleases[0]}
+                      </Tag>
+                      {testcase.projectReleases.length > 1 && <span>{t('외 @개', { count: testcase.projectReleases.length - 1 })}</span>}
+                    </>
+                  )}
+                </Td>
+              )}
             </Tr>
           );
         })}
@@ -64,7 +76,9 @@ function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameCli
             testcaseGroup={child}
             parentGroupName={parentGroupName ? `${parentGroupName} > ${testcaseGroup.name}` : testcaseGroup.name}
             onNameClick={onNameClick}
+            selectedTestcaseIdMap={selectedTestcaseIdMap}
             releaseNameMap={releaseNameMap}
+            releaseSummary={releaseSummary}
           />
         );
       })}
@@ -76,6 +90,9 @@ ReleaseGroupItem.defaultProps = {
   testcaseGroup: {},
   parentGroupName: '',
   releaseNameMap: {},
+  selectedTestcaseIdMap: {},
+  releaseId: null,
+  releaseSummary: false,
 };
 
 ReleaseGroupItem.propTypes = {
@@ -85,7 +102,11 @@ ReleaseGroupItem.propTypes = {
   releaseNameMap: PropTypes.shape({
     [PropTypes.number]: PropTypes.string,
   }),
-  releaseId: PropTypes.string.isRequired,
+  releaseId: PropTypes.string,
+  selectedTestcaseIdMap: PropTypes.shape({
+    [PropTypes.number]: PropTypes.bool,
+  }),
+  releaseSummary: PropTypes.bool,
 };
 
 export default ReleaseGroupItem;

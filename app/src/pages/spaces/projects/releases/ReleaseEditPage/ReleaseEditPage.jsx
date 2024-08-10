@@ -14,6 +14,7 @@ import {
   PageContent,
   PageTitle,
   Table,
+  Tag,
   Tbody,
   Text,
   TextArea,
@@ -33,9 +34,9 @@ import PropTypes from 'prop-types';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseService from '@/services/TestcaseService';
 import './ReleaseEditPage.scss';
-import SelectReleaseGroupItem from '@/pages/spaces/projects/releases/SelectReleaseGroupItem';
 import { TestcaseViewerPopup } from '@/assets';
 import useQueryString from '@/hooks/useQueryString';
+import ReleaseGroupItem from '@/pages/spaces/projects/releases/ReleaseInfoPage/ReleaseGroupItem';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -163,7 +164,7 @@ function ReleaseEditPage({ type }) {
 
   return (
     <>
-      <Page className="release-edit-page">
+      <Page className="release-edit-page-wrapper">
         <PageTitle
           breadcrumbs={[
             { to: '/', text: t('HOME') },
@@ -264,6 +265,10 @@ function ReleaseEditPage({ type }) {
             <Title
               control={
                 <div>
+                  <Tag size="xs" border rounded>
+                    {t('@개', { count: Object.keys(selectedTestcaseIdMap).length })}
+                  </Tag>
+                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   <Button
                     outline
                     size="sm"
@@ -301,7 +306,7 @@ function ReleaseEditPage({ type }) {
                   <Tbody>
                     {testcaseTreeData.map(testcaseGroup => {
                       return (
-                        <SelectReleaseGroupItem
+                        <ReleaseGroupItem
                           key={testcaseGroup.id}
                           testcaseGroup={testcaseGroup}
                           selectedTestcaseIdMap={selectedTestcaseIdMap}

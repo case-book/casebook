@@ -46,9 +46,9 @@ import TestrunIterationListPage from '@/pages/spaces/projects/testruns/TestrunIt
 import TestrunIterationEditPage from '@/pages/spaces/projects/testruns/TestrunIterationEditPage/TestrunIterationEditPage';
 import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIterationInfoPage/TestrunIterationInfoPage';
 
-import ReleaseListPage from './spaces/projects/releases/ReleaseListPage';
-import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
-import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
+import ReleaseListPage from './spaces/projects/releases/ReleaseListPage/ReleaseListPage';
+import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage/ReleaseEditPage';
+import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage/ReleaseInfoPage';
 import MainPage from './main/MainPage/MainPage';
 import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
 import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';

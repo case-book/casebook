@@ -1,18 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tbody, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, BlockRow, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import ReleaseService from '@/services/ReleaseService';
 import testcaseUtil from '@/utils/testcaseUtil';
-import './ReleaseInfoPage.scss';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 import TestcaseService from '@/services/TestcaseService';
 import dateUtil from '@/utils/dateUtil';
-import ReleaseGroupItem from '@/pages/spaces/projects/releases/ReleaseGroupItem';
+import ReleaseGroupItem from '@/pages/spaces/projects/releases/ReleaseInfoPage/ReleaseGroupItem';
 import { TestcaseViewerPopup } from '@/assets';
 import useQueryString from '@/hooks/useQueryString';
+import './ReleaseInfoPage.scss';
 
 const LABEL_MIN_WIDTH = '120px';
 
@@ -23,7 +23,6 @@ function ReleaseInfoPage() {
   const [project, setProject] = useState(null);
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [releaseNameMap, setReleaseNameMap] = useState({});
-  const [release, setRelease] = useState({});
   const [releases, setReleases] = useState([]);
   const { query, setQuery } = useQueryString();
 
@@ -34,6 +33,10 @@ function ReleaseInfoPage() {
   });
 
   useEffect(() => {
+    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
+      setProject(info);
+    });
+
     ReleaseService.selectReleaseList(spaceCode, projectId, list => {
       setReleases(list);
       const nextReleaseNameMap = {};
@@ -43,31 +46,28 @@ function ReleaseInfoPage() {
       setReleaseNameMap(nextReleaseNameMap);
     });
 
-    ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-      setProject(info);
-    });
-
     TestcaseService.selectTestcaseGroupList(spaceCode, projectId, list => {
       setTestcaseGroups(list);
     });
   }, [spaceCode, projectId]);
 
-  useEffect(() => {
-    ReleaseService.selectRelease(spaceCode, projectId, releaseId, info => {
-      setRelease(info);
-    });
-  }, [spaceCode, projectId, releaseId]);
+  const release = useMemo(() => {
+    return releases.find(d => d.id === Number(releaseId)) || {};
+  }, [releases, releaseId]);
 
   const testcaseTreeData = useMemo(() => {
     return testcaseUtil.getTestcaseTreeData(testcaseGroups, 'id');
   }, [project, releaseId, testcaseGroups]);
 
-  const hasReleaseTestcase = useMemo(() => {
-    return testcaseGroups.some(group => {
-      return group.testcases.some(testcase => {
-        return testcase.projectReleaseIds.includes(Number(releaseId));
-      });
-    });
+  const releaseTestcaseCount = useMemo(() => {
+    return testcaseGroups?.reduce((sum, cur) => {
+      return (
+        sum +
+        (cur.testcases?.reduce((count, testcase) => {
+          return count + (testcase.projectReleaseIds.includes(Number(releaseId)) ? 1 : 0);
+        }, 0) || 0)
+      );
+    }, 0);
   }, [testcaseGroups]);
 
   useEffect(() => {
@@ -142,20 +142,20 @@ function ReleaseInfoPage() {
               text: release?.name,
             },
           ]}
-          control={
-            <div>
-              <Button size="sm" color="danger" onClick={onDelete}>
-                {t('릴리스 삭제')}
-              </Button>
-              <Liner display="inline-block" width="1px" height="10px" margin="0 10px 0 0" />
-              <Button onClick={() => navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/new?releaseId=${release.id}`)} color="primary">
-                {t('새 테스트런')}
-              </Button>
-              <Button onClick={() => navigate('edit')} color="primary">
-                {t('변경')}
-              </Button>
-            </div>
-          }
+          links={[
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/testruns/new?releaseId=${release.id}`,
+              text: t('릴리스 테스트런'),
+              color: 'primary',
+              icon: <i className="fa-solid fa-plus" />,
+            },
+            {
+              to: 'edit',
+              text: t('변경'),
+              color: 'primary',
+              icon: <i className="fa-solid fa-pen-fancy" />,
+            },
+          ]}
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
           }}
@@ -196,11 +196,19 @@ function ReleaseInfoPage() {
               <Text whiteSpace="pre-wrap">{dateUtil.getDateString(release.lastUpdateDate)}</Text>
             </BlockRow>
           </Block>
-          <Title>{t('테스트케이스')}</Title>
-          {!hasReleaseTestcase && <EmptyContent border>{t('릴리스에 등록된 테스트케이스가 없습니다.')}</EmptyContent>}
-          {hasReleaseTestcase && (
+          <Title
+            control={
+              <Tag size="xs" border rounded>
+                {t('@개', { count: releaseTestcaseCount })}
+              </Tag>
+            }
+          >
+            {t('테스트케이스')}
+          </Title>
+          {releaseTestcaseCount < 1 && <EmptyContent border>{t('릴리스에 등록된 테스트케이스가 없습니다.')}</EmptyContent>}
+          {releaseTestcaseCount > 0 && (
             <Block className="testcase-list" border padding={false} scroll>
-              <Table className="table" cols={['1px', '100%', '1px']} sticky>
+              <Table className="table" cols={['1px', '100%', '1px']} sticcd apky>
                 <THead>
                   <Tr>
                     <Th align="left">{t('테스트케이스 그룹')}</Th>
@@ -216,6 +224,7 @@ function ReleaseInfoPage() {
                         releaseId={releaseId}
                         testcaseGroup={testcaseGroup}
                         releaseNameMap={releaseNameMap}
+                        releaseSummary
                         onNameClick={(groupId, id) => {
                           setQuery({ groupId, id });
                         }}
@@ -226,7 +235,19 @@ function ReleaseInfoPage() {
               </Table>
             </Block>
           )}
+          <Title>{t('관리')}</Title>
+          <Block danger>
+            <BlockRow>
+              <Label>{t('릴리스 삭제')}</Label>
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('릴리스 삭제')}
+              </Button>
+            </BlockRow>
+          </Block>
           <PageButtons
+            onList={() => {
+              navigate(`/spaces/${spaceCode}/projects/${projectId}/releases`);
+            }}
             onBack={() => {
               navigate(-1);
             }}
