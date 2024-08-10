@@ -12,6 +12,7 @@ import com.mindplates.bugcase.biz.testrun.service.TestrunCachedService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunCreateRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunHookRequest;
+import com.mindplates.bugcase.biz.testrun.vo.request.TestrunReopenRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunResultRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTestcaseGroupTestcaseItemRequest;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunTesterRandomChangeRequest;
@@ -76,6 +77,26 @@ public class TestrunController {
         }
 
         TestrunDTO result = testrunService.createTestrunInfo(spaceCode, testrun);
+
+        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
+        createdTestrunData.addData("testrunId", result.getId());
+        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        // 시작 후 훅 호출
+        result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+            testrunHook.setTestrun(TestrunDTO.builder().id(result.getId()).build());
+            testrunService.updateTestrunHookResult(testrunHook);
+        });
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "프로젝트 테스트런 재오픈")
+    @PutMapping("/{testrunId}/reopen")
+    public ResponseEntity<HttpStatus> reopenTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId , @PathVariable long testrunId, @Valid @RequestBody TestrunReopenRequest testrunReopenRequest) {
+
+        TestrunDTO result = testrunService.reopenTestrunInfo(spaceCode, projectId, testrunId, testrunReopenRequest.getTestrunReopenCreationType(), testrunReopenRequest.getTestrunReopenTestcase(), testrunReopenRequest.getTestrunReopenTester());
 
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
         createdTestrunData.addData("testrunId", result.getId());

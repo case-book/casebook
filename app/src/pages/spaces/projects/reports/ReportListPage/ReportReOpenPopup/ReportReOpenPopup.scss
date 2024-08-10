@@ -1,5 +1,5 @@
 .report-re-open-popup-wrapper {
-  .testrun-title,
+  .testcase-title,
   .tester-title {
     margin-top: 1rem;
   }
@@ -12,7 +12,7 @@
   }
   ul {
     list-style: none;
-    padding: 0;
+    padding: 0 0 0 1rem;
     margin: 0.5rem 0 0;
     li {
       margin-bottom: 10px;
@@ -42,5 +42,9 @@
         }
       }
     }
+  }
+  .info-message {
+    width: 100%;
+    margin-top: 1rem;
   }
 }

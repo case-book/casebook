@@ -27,7 +27,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TestrunTestcaseGroupTestcaseItem extends CommonEntity {
+public class TestrunTestcaseGroupTestcaseItem extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -50,5 +50,20 @@ public class TestrunTestcaseGroupTestcaseItem extends CommonEntity {
 
     @Column(columnDefinition = "text", name = "text")
     private String text;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public TestrunTestcaseGroupTestcaseItem cloneEntity() {
+        try {
+            TestrunTestcaseGroupTestcaseItem copiedTestrunTestcaseGroupTestcaseItem = (TestrunTestcaseGroupTestcaseItem) this.clone();
+            copiedTestrunTestcaseGroupTestcaseItem.setId(null);
+            return copiedTestrunTestcaseGroupTestcaseItem;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
+    }
 
 }

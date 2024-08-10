@@ -62,6 +62,9 @@ import com.mindplates.bugcase.common.code.FileSourceTypeCode;
 import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TesterChangeTargetCode;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
+import com.mindplates.bugcase.common.code.TestrunReopenCreationTypeCode;
+import com.mindplates.bugcase.common.code.TestrunReopenTestcaseCode;
+import com.mindplates.bugcase.common.code.TestrunReopenTesterCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.message.MessageSendService;
 import com.mindplates.bugcase.common.message.vo.MessageData;
@@ -158,7 +161,7 @@ public class TestrunService {
 
         // 테스트런 정보 생성 및 카운트 초기 생성
         Testrun testrun = testrunDTO.toEntity(project);
-        testrun.initializeCreateInfo(currentTestrunSeq);
+        testrun.initializeCreateInfo(currentTestrunSeq, false);
 
         List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
         if (!testrunUsers.isEmpty()) {
@@ -193,6 +196,79 @@ public class TestrunService {
         });
 
         Testrun result = testrunRepository.save(testrun);
+
+        if (result.getMessageChannels() != null) {
+            List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
+            result.getMessageChannels().forEach(channel -> {
+                ProjectMessageChannel projectMessageChannel = projectMessageChannelRepository.findById(channel.getMessageChannel().getId()).orElse(null);
+                if (projectMessageChannel != null) {
+                    SpaceMessageChannel messageChannel = projectMessageChannel.getMessageChannel();
+                    SpaceMessageChannelDTO spaceMessageChannelDTO = new SpaceMessageChannelDTO(messageChannel);
+                    messageChannelService.sendTestrunStartMessage(spaceMessageChannelDTO, spaceCode, result.getProject().getId(), result.getId(), result.getName(), testers);
+                }
+            });
+        }
+
+        return new TestrunDTO(result);
+    }
+
+    @Transactional
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
+    })
+    public TestrunDTO reopenTestrunInfo(String spaceCode, long projectId, long testrunId, TestrunReopenCreationTypeCode testrunReopenCreationTypeCode,
+        TestrunReopenTestcaseCode testrunReopenTestcaseCode, TestrunReopenTesterCode testrunReopenTesterCode) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Testrun base = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        Testrun target = null;
+        if (testrunReopenCreationTypeCode == TestrunReopenCreationTypeCode.REOPEN) {
+            target = base;
+        } else {
+            target = base.cloneEntity();
+            int currentTestrunSeq = projectService.increaseTestrunSeq(spaceCode, projectId);
+            // 테스트런 정보 생성 및 카운트 초기 생성
+            target.setSeqId("R" + currentTestrunSeq);
+        }
+        target.setOpened(true);
+
+        if (testrunReopenTestcaseCode == TestrunReopenTestcaseCode.EXCLUDE_PASSED) {
+            target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
+                testrunTestcaseGroup.getTestcases().removeIf(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult() == TestResultCode.PASSED);
+            });
+
+            target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
+                testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
+                    if (testrunTestcaseGroupTestcase.getTestResult() != TestResultCode.PASSED) {
+                        testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
+                    }
+
+                });
+            });
+        }
+
+        target.updateSummaryCount();
+
+        if (testrunReopenTesterCode == TestrunReopenTesterCode.REASSIGN) {
+            Testrun finalTarget = target;
+            target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
+                testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
+                    if (testrunTestcaseGroupTestcase.getTestResult() != TestResultCode.PASSED) {
+                        testrunTestcaseGroupTestcase.changeTester(project, new TestcaseDTO(testrunTestcaseGroupTestcase.getTestcase()), finalTarget.getTestrunUsers(),
+                            random.nextInt(finalTarget.getTestrunUsers().size()), random);
+                    }
+                });
+            });
+        }
+
+        // 시작 전 훅 호출
+        target.getTestrunHookList(TestrunHookTiming.BEFORE_START).forEach(testrunHook -> {
+            testrunHook.request(httpRequestUtil);
+        });
+
+        Testrun result = testrunRepository.save(target);
 
         if (result.getMessageChannels() != null) {
             List<ProjectUserDTO> testers = getTester(project, result.getTestcaseGroups());
@@ -842,6 +918,7 @@ public class TestrunService {
             .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester() != null)
             .map(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTester().getId())
             .distinct()
+            .filter(userId -> project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null) != null)
             .map(userId -> {
                 ProjectUser projectUser = project.getUsers().stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(userId))).findAny().orElse(null);
                 return ProjectUserDTO.builder().id(projectUser.getId()).role(projectUser.getRole())

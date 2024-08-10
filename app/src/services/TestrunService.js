@@ -561,4 +561,20 @@ TestrunService.notifyTestrunProgress = (spaceCode, projectId, testrunId, success
   );
 };
 
+TestrunService.reopenProjectTestrunInfo = (spaceCode, projectId, testrunId, info, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/reopen`,
+    info,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    null,
+    info.testrunReopenCreationType === 'REOPEN' ? i18n.t('테스트런을 다시 시작하고 있습니다.') : i18n.t('테스트런을 복사하고 있습니다.'),
+  );
+};
+
 export default TestrunService;

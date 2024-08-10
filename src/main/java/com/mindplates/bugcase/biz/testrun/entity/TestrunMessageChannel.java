@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "testrun_message_channel")
-public class TestrunMessageChannel extends CommonEntity {
+public class TestrunMessageChannel extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -47,6 +47,21 @@ public class TestrunMessageChannel extends CommonEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_message_channel_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_MESSAGE_CHANNEL__PROJECT_MESSAGE_CHANNEL"))
     private ProjectMessageChannel messageChannel;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public TestrunMessageChannel cloneEntity() {
+        try {
+            TestrunMessageChannel copiedTestrunMessageChannel = (TestrunMessageChannel) this.clone();
+            copiedTestrunMessageChannel.setId(null);
+            return copiedTestrunMessageChannel;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
+    }
 
 
 }

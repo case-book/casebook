@@ -18,19 +18,4 @@ ReportService.selectReportList = (spaceCode, projectId, start, end, successHandl
   );
 };
 
-ReportService.selectLatestReportList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
-  return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns/closed/latest`,
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-    null,
-    null,
-    loading,
-    i18n.t('최근 종료된 테스트런 목록을 불러오고 있습니다.'),
-  );
-};
-
 export default ReportService;

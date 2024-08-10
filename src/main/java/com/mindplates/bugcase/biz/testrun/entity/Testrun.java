@@ -18,6 +18,7 @@ import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.common.exception.ServiceException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -58,7 +59,7 @@ import org.springframework.util.CollectionUtils;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Testrun extends CommonEntity {
+public class Testrun extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -349,13 +350,16 @@ public class Testrun extends CommonEntity {
     }
 
 
-    public void initializeCreateInfo(int currentTestrunSeq) {
+    public void initializeCreateInfo(int currentTestrunSeq, boolean reopen) {
         this.seqId = "R" + currentTestrunSeq;
         this.opened = true;
-        this.totalTestcaseCount = calculateTotalTestcaseCount();
-        this.passedTestcaseCount = 0;
-        this.failedTestcaseCount = 0;
-        this.untestableTestcaseCount = 0;
+        if (!reopen) {
+            this.totalTestcaseCount = calculateTotalTestcaseCount();
+            this.passedTestcaseCount = 0;
+            this.failedTestcaseCount = 0;
+            this.untestableTestcaseCount = 0;
+        }
+
         if (!CollectionUtils.isEmpty(this.testrunUsers)) {
             this.testrunUsers.forEach(testrunUser -> testrunUser.setTestrun(this));
         }
@@ -407,5 +411,97 @@ public class Testrun extends CommonEntity {
 
     public List<TestrunHook> getTestrunHookList(TestrunHookTiming timing) {
         return this.hooks.stream().filter(hook -> hook.getTiming().equals(timing)).collect(Collectors.toList());
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public Testrun cloneEntity() {
+        try {
+            Testrun copiedTestrun = (Testrun) this.clone();
+            copiedTestrun.setId(null);
+            copiedTestrun.setSeqId(null);
+            copiedTestrun.setOpened(true);
+            copiedTestrun.setClosedDate(null);
+
+            copiedTestrun.setTestrunUsers(copiedTestrun.getTestrunUsers().stream().map(testrunUser -> {
+                TestrunUser copiedTestrunUser = testrunUser.cloneEntity();
+                copiedTestrunUser.setTestrun(copiedTestrun);
+                return copiedTestrunUser;
+            }).collect(Collectors.toList()));
+
+            copiedTestrun.setTestcaseGroups(copiedTestrun.getTestcaseGroups().stream().map(testrunTestcaseGroup -> {
+                TestrunTestcaseGroup copiedTestrunTestcaseGroup = testrunTestcaseGroup.cloneEntity();
+                copiedTestrunTestcaseGroup.setTestrun(copiedTestrun);
+
+                copiedTestrunTestcaseGroup.setTestcases(copiedTestrunTestcaseGroup.getTestcases().stream().map(testrunTestcaseGroupTestcase -> {
+                    TestrunTestcaseGroupTestcase copiedTestrunTestcaseGroupTestcase = testrunTestcaseGroupTestcase.cloneEntity();
+                    copiedTestrunTestcaseGroupTestcase.setId(null);
+                    copiedTestrunTestcaseGroupTestcase.setTestrunTestcaseGroup(copiedTestrunTestcaseGroup);
+                    copiedTestrunTestcaseGroupTestcase.setComments(null);
+
+                    copiedTestrunTestcaseGroupTestcase.setTestcaseItems(copiedTestrunTestcaseGroupTestcase.getTestcaseItems().stream().map(testrunTestcaseGroupTestcaseItem -> {
+                        TestrunTestcaseGroupTestcaseItem copiedTestrunTestcaseGroupTestcaseItem = testrunTestcaseGroupTestcaseItem.cloneEntity();
+                        copiedTestrunTestcaseGroupTestcaseItem.setId(null);
+                        copiedTestrunTestcaseGroupTestcaseItem.setTestrunTestcaseGroupTestcase(copiedTestrunTestcaseGroupTestcase);
+                        return copiedTestrunTestcaseGroupTestcaseItem;
+                    }).collect(Collectors.toList()));
+
+                    return copiedTestrunTestcaseGroupTestcase;
+                }).collect(Collectors.toList()));
+
+                return copiedTestrunTestcaseGroup;
+            }).collect(Collectors.toList()));
+
+            copiedTestrun.setProfiles(copiedTestrun.getProfiles().stream().map(testrunProfile -> {
+                TestrunProfile copiedTestrunProfile = testrunProfile.cloneEntity();
+                copiedTestrunProfile.setId(null);
+                copiedTestrunProfile.setTestrun(copiedTestrun);
+                return copiedTestrunProfile;
+            }).collect(Collectors.toList()));
+
+            copiedTestrun.setHooks(copiedTestrun.getHooks().stream().map(testrunHook -> {
+                TestrunHook copiedTestrunHook = testrunHook.cloneEntity();
+                copiedTestrunHook.setId(null);
+                copiedTestrunHook.setTestrun(copiedTestrun);
+                return copiedTestrunHook;
+            }).collect(Collectors.toList()));
+
+            copiedTestrun.setMessageChannels(copiedTestrun.getMessageChannels().stream().map(testrunMessageChannel -> {
+                TestrunMessageChannel copiedTestrunMessageChannel = testrunMessageChannel.cloneEntity();
+                copiedTestrunMessageChannel.setId(null);
+                copiedTestrunMessageChannel.setTestrun(copiedTestrun);
+                return copiedTestrunMessageChannel;
+            }).collect(Collectors.toList()));
+
+            if (copiedTestrun.getEndDateTime() != null && copiedTestrun.getStartDateTime() != null) {
+                Duration duration = Duration.between(copiedTestrun.getStartDateTime(), copiedTestrun.getEndDateTime());
+                copiedTestrun.setStartDateTime(LocalDateTime.now());
+                copiedTestrun.setEndDateTime(copiedTestrun.getStartDateTime().plus(duration));
+            }
+
+            return copiedTestrun;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
+    }
+
+    public void updateSummaryCount() {
+        this.totalTestcaseCount = calculateTotalTestcaseCount();
+        this.passedTestcaseCount = this.testcaseGroups.stream()
+            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().stream()
+                .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.PASSED)).count() : 0)
+            .reduce(0L, Long::sum).intValue();
+        this.failedTestcaseCount = this.testcaseGroups.stream()
+            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().stream()
+                .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.FAILED)).count() : 0)
+            .reduce(0L, Long::sum).intValue();
+        this.untestableTestcaseCount = this.testcaseGroups.stream()
+            .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().stream()
+                .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.UNTESTABLE)).count() : 0)
+            .reduce(0L, Long::sum).intValue();
+
     }
 }

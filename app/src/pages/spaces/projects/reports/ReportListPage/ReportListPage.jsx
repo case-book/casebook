@@ -10,6 +10,9 @@ import moment from 'moment';
 import './ReportListPage.scss';
 import classNames from 'classnames';
 import ReportReOpenPopup from '@/pages/spaces/projects/reports/ReportListPage/ReportReOpenPopup/ReportReOpenPopup';
+import TestrunService from '@/services/TestrunService';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 function ReportListPage() {
   const { t } = useTranslation();
@@ -109,6 +112,16 @@ function ReportListPage() {
       );
     });
   }, [spaceCode, projectId, period]);
+
+  const onReopen = option => {
+    TestrunService.reopenProjectTestrunInfo(spaceCode, projectId, reportReOpenPopupInfo.testrun.id, option, () => {
+      if (option.testrunReopenCreationType === 'REOPEN') {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('테스트런 생성 완료'), t('테스트런이 다시 시작되었습니다.'));
+      } else {
+        dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('테스트런 생성 완료'), t('테스트런이 생성되었습니다.'));
+      }
+    });
+  };
 
   return (
     <>
@@ -297,7 +310,7 @@ function ReportListPage() {
           setOpened={() => {
             setReportReOpenPopupInfo(null);
           }}
-          onApply={() => {}}
+          onApply={onReopen}
         />
       )}
     </>

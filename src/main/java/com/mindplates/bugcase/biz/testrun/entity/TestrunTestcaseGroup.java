@@ -30,7 +30,7 @@ import org.hibernate.annotations.FetchMode;
 @Getter
 @Setter
 @Table(name = "testrun_testcase_group")
-public class TestrunTestcaseGroup extends CommonEntity {
+public class TestrunTestcaseGroup extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -56,5 +56,20 @@ public class TestrunTestcaseGroup extends CommonEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunTestcaseGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunTestcaseGroupTestcase> testcases;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public TestrunTestcaseGroup cloneEntity() {
+        try {
+            TestrunTestcaseGroup copiedTestrunTestcaseGroup = (TestrunTestcaseGroup) this.clone();
+            copiedTestrunTestcaseGroup.setId(null);
+            return copiedTestrunTestcaseGroup;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
+    }
 
 }
