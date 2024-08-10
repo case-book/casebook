@@ -110,6 +110,7 @@ public class TestrunController {
         return testrunService.selectClosedProjectTestrunList(projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
+    // TODO 삭제 예정
     @Operation(description = "최근 종료된 TOP 3 테스트런 목록 조회")
     @GetMapping("/closed/latest")
     public List<TestrunListResponse> selectLatestClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {

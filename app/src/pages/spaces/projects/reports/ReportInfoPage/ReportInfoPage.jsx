@@ -238,14 +238,36 @@ function ReportInfoPage() {
     });
   };
 
+  const onDelete = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('리포트 삭제'),
+      <div>{t('@ 테스트런 및 리포트와 관련된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { name: testrun.name })}</div>,
+      () => {
+        TestrunService.deleteTestrunInfo(spaceCode, projectId, reportId, () => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns`);
+        });
+      },
+      null,
+      t('삭제'),
+      null,
+      'danger',
+    );
+  };
+
   return (
     <>
       <Page className="report-info-page-wrapper">
         <PageTitle
           control={
-            <Button color="warning" onClick={onOpened}>
-              {t('테스트런 재오픈')}
-            </Button>
+            <div>
+              <Button size="sm" color="danger" onClick={onDelete}>
+                {t('리포트 삭제')}
+              </Button>
+              <Button color="warning" onClick={onOpened}>
+                {t('테스트런 재오픈')}
+              </Button>
+            </div>
           }
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects/${projectId}/reports`);

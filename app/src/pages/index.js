@@ -37,7 +37,7 @@ import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage/Te
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
 import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestrunInfoPage';
 
-import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage';
+import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage/ReportListPage';
 import ReportInfoPage from '@/pages/spaces/projects/reports/ReportInfoPage/ReportInfoPage';
 import TestrunReservationListPage from '@/pages/spaces/projects/testruns/TestrunReservationListPage/TestrunReservationListPage';
 import TestrunReservationEditPage from '@/pages/spaces/projects/testruns/TestrunReservationEditPage/TestrunReservationEditPage';

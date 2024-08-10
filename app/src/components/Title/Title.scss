@@ -107,17 +107,33 @@
     .title-text {
       font-size: 16px;
     }
+
+    &.padding-bottom {
+      > .title-content {
+        padding-bottom: 0.25rem;
+      }
+    }
   }
 
   &.h4 {
     .title-text {
       font-size: 14px;
     }
+    &.padding-bottom {
+      > .title-content {
+        padding-bottom: 0.25rem;
+      }
+    }
   }
 
   &.h5 {
     .title-text {
       font-size: 12px;
+    }
+    &.padding-bottom {
+      > .title-content {
+        padding-bottom: 0.25rem;
+      }
     }
   }
 }

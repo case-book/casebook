@@ -1,0 +1,46 @@
+.report-re-open-popup-wrapper {
+  .testrun-title,
+  .tester-title {
+    margin-top: 1rem;
+  }
+
+  .testrun-name {
+    margin-bottom: 1rem;
+    text-align: center;
+    background-color: var(--lighter-color);
+    padding: 1rem;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    li {
+      margin-bottom: 10px;
+      display: flex;
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      > div {
+        align-self: center;
+        &.checker {
+          flex-grow: 0;
+          align-self: flex-start;
+        }
+
+        &.option-name {
+          flex-grow: 1;
+        }
+
+        &.option-name {
+          .label {
+          }
+
+          .description {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+}
