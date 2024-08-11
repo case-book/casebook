@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Block, Button, CloseIcon, Info, Liner, Page, PageContent, PageTitle, Table, Tbody, Th, THead, Title, Tr, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import SplitPane from 'split-pane-react';
+import SplitPane, { Pane } from 'split-pane-react';
 import { useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
@@ -606,7 +606,7 @@ function ReportInfoPage() {
               </div>
             </div>
             {showComment && (
-              <div className="comment-layout">
+              <Pane className="comment-layout" minSize={300}>
                 <Title
                   border={false}
                   marginBottom={false}
@@ -680,7 +680,7 @@ function ReportInfoPage() {
                     </Button>
                   </div>
                 </Block>
-              </div>
+              </Pane>
             )}
           </SplitPane>
         </PageContent>
