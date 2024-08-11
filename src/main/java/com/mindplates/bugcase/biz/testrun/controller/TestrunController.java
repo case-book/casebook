@@ -96,7 +96,7 @@ public class TestrunController {
     @PutMapping("/{testrunId}/reopen")
     public ResponseEntity<HttpStatus> reopenTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId , @PathVariable long testrunId, @Valid @RequestBody TestrunReopenRequest testrunReopenRequest) {
 
-        TestrunDTO result = testrunService.reopenTestrunInfo(spaceCode, projectId, testrunId, testrunReopenRequest.getTestrunReopenCreationType(), testrunReopenRequest.getTestrunReopenTestcase(), testrunReopenRequest.getTestrunReopenTester());
+        TestrunDTO result = testrunService.reopenTestrunInfo(spaceCode, projectId, testrunId, testrunReopenRequest);
 
         MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
         createdTestrunData.addData("testrunId", result.getId());

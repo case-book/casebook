@@ -1,7 +1,8 @@
 .report-re-open-popup-wrapper {
   .testcase-title,
-  .tester-title {
-    margin-top: 1rem;
+  .tester-title,
+  .test-result-title {
+    margin-top: 0.5rem;
   }
 
   .testrun-name {
@@ -9,6 +10,13 @@
     text-align: center;
     background-color: var(--lighter-color);
     padding: 1rem;
+    display: flex;
+    > span {
+      align-self: center;
+    }
+    > button {
+      margin-left: 8px;
+    }
   }
   ul {
     list-style: none;

@@ -54,6 +54,7 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcas
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseItemRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunTestcaseGroupTestcaseRepository;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunUserRepository;
+import com.mindplates.bugcase.biz.testrun.vo.request.TestrunReopenRequest;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.biz.user.repository.UserRepository;
@@ -63,6 +64,7 @@ import com.mindplates.bugcase.common.code.TestResultCode;
 import com.mindplates.bugcase.common.code.TesterChangeTargetCode;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.code.TestrunReopenCreationTypeCode;
+import com.mindplates.bugcase.common.code.TestrunReopenTestResultCode;
 import com.mindplates.bugcase.common.code.TestrunReopenTestcaseCode;
 import com.mindplates.bugcase.common.code.TestrunReopenTesterCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
@@ -218,13 +220,13 @@ public class TestrunService {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
-    public TestrunDTO reopenTestrunInfo(String spaceCode, long projectId, long testrunId, TestrunReopenCreationTypeCode testrunReopenCreationTypeCode,
-        TestrunReopenTestcaseCode testrunReopenTestcaseCode, TestrunReopenTesterCode testrunReopenTesterCode) {
+    public TestrunDTO reopenTestrunInfo(String spaceCode, long projectId, long testrunId, TestrunReopenRequest option) {
 
         Project project = projectRepository.findById(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Testrun base = testrunRepository.findById(testrunId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         Testrun target = null;
-        if (testrunReopenCreationTypeCode == TestrunReopenCreationTypeCode.REOPEN) {
+        // 테스트런 다시 열기 또는 복사
+        if (option.getTestrunReopenCreationType() == TestrunReopenCreationTypeCode.REOPEN) {
             target = base;
         } else {
             target = base.cloneEntity();
@@ -233,25 +235,39 @@ public class TestrunService {
             target.setSeqId("R" + currentTestrunSeq);
         }
         target.setOpened(true);
+        target.setName(option.getName());
 
-        if (testrunReopenTestcaseCode == TestrunReopenTestcaseCode.EXCLUDE_PASSED) {
+        // 복사일때만, 테스트케이스 선택 옵션 적용
+        if (option.getTestrunReopenCreationType() == TestrunReopenCreationTypeCode.COPY) {
+            // 실패한 테스트케이스를 제거
+            if (option.getTestrunReopenTestcase() == TestrunReopenTestcaseCode.EXCLUDE_PASSED) {
+                target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
+                    testrunTestcaseGroup.getTestcases().removeIf(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult() == TestResultCode.PASSED);
+                });
+            }
+        }
+
+        // 테스트 결과 초기화
+        if (option.getTestrunReopenTestResult() == TestrunReopenTestResultCode.CLEAR_ALL) {
             target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
-                testrunTestcaseGroup.getTestcases().removeIf(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult() == TestResultCode.PASSED);
+                testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
+                    testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
+                });
             });
-
+        } else if (option.getTestrunReopenTestResult() == TestrunReopenTestResultCode.CLEAR_EXCLUDE_PASSED) {
             target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
                 testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
                     if (testrunTestcaseGroupTestcase.getTestResult() != TestResultCode.PASSED) {
                         testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
                     }
-
                 });
             });
         }
 
+        // 상태별 개수 업데이트
         target.updateSummaryCount();
 
-        if (testrunReopenTesterCode == TestrunReopenTesterCode.REASSIGN) {
+        if (option.getTestrunReopenTester() == TestrunReopenTesterCode.REASSIGN) {
             Testrun finalTarget = target;
             target.getTestcaseGroups().forEach(testrunTestcaseGroup -> {
                 testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {

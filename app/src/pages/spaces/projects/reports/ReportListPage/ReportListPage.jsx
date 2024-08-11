@@ -37,7 +37,7 @@ function ReportListPage() {
     });
   }, [spaceCode, projectId]);
 
-  useEffect(() => {
+  const selectReportList = () => {
     const end = moment();
     end.hour(23);
     end.minute(59);
@@ -111,10 +111,15 @@ function ReportListPage() {
         }),
       );
     });
+  };
+
+  useEffect(() => {
+    selectReportList();
   }, [spaceCode, projectId, period]);
 
   const onReopen = option => {
     TestrunService.reopenProjectTestrunInfo(spaceCode, projectId, reportReOpenPopupInfo.testrun.id, option, () => {
+      selectReportList();
       if (option.testrunReopenCreationType === 'REOPEN') {
         dialogUtil.setMessage(MESSAGE_CATEGORY.INFO, t('테스트런 생성 완료'), t('테스트런이 다시 시작되었습니다.'));
       } else {
