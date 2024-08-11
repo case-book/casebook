@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Block, Button, Info, Liner, Page, PageContent, PageTitle, Table, Tbody, Th, THead, Title, Tr, UserAvatar } from '@/components';
+import { Block, Button, CloseIcon, Info, Liner, Page, PageContent, PageTitle, Table, Tbody, Th, THead, Title, Tr, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import SplitPane from 'split-pane-react';
@@ -38,6 +38,16 @@ function ReportInfoPage() {
   const [project, setProject] = useState(null);
 
   const [testrun, setTestrun] = useState({});
+
+  const [showComment, setShowComment] = useState(
+    (() => {
+      const value = localStorage.getItem('reportInfoPageComment');
+      if (!value) {
+        return true;
+      }
+      return value === 'true';
+    })(),
+  );
 
   const [userById, setUserById] = useState({});
 
@@ -274,6 +284,24 @@ function ReportInfoPage() {
     );
   };
 
+  const toggleComment = () => {
+    if (showComment) {
+      setShowComment(false);
+      localStorage.setItem('reportInfoPageComment', 'false');
+    } else {
+      setShowComment(true);
+      localStorage.setItem('reportInfoPageComment', 'true');
+    }
+  };
+
+  useEffect(() => {
+    if (showComment) {
+      setSizes(['auto', '340px']);
+    } else {
+      setSizes(['auto', '0px']);
+    }
+  }, [showComment]);
+
   return (
     <>
       <Page className="report-info-page-wrapper">
@@ -303,10 +331,14 @@ function ReportInfoPage() {
           ]}
           control={
             <div>
+              <Button size="sm" onClick={toggleComment}>
+                {t('테스트런 코멘트')}
+              </Button>
+              <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 0rem" />
               <Button size="sm" onClick={() => {}}>
                 {t('리포트 공유')}
               </Button>
-              <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+              <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 0rem" />
               <Button size="sm" color="danger" onClick={onDelete}>
                 {t('리포트 삭제')}
               </Button>
@@ -573,71 +605,83 @@ function ReportInfoPage() {
                 </Block>
               </div>
             </div>
-            <div className="comment-layout">
-              <Title border={false} marginBottom={false}>
-                {t('테스트런 코멘트')}
-              </Title>
-              <Block className="editor-block scrollbar-sm">
-                <div className="scroller">
-                  <CommentList onDeleteComment={deleteComment} comments={testrunCommentList} />
-                </div>
-              </Block>
-              <Block className="comment-editor">
-                <Editor
-                  key={theme}
-                  ref={editor}
-                  theme={theme === 'DARK' ? 'dark' : 'white'}
-                  placeholder={t('내용을 입력해주세요.')}
-                  previewStyle="vertical"
-                  height="160px"
-                  initialEditType="wysiwyg"
-                  plugins={[colorSyntax]}
-                  autofocus={false}
-                  toolbarItems={[
-                    ['heading', 'bold', 'italic', 'strike'],
-                    ['hr', 'quote'],
-                    ['ul', 'ol', 'task', 'indent', 'outdent'],
-                    ['table', 'image', 'link'],
-                    ['code', 'codeblock'],
-                  ]}
-                  hooks={{
-                    addImageBlobHook: async (blob, callback) => {
-                      const result = await createTestrunImage(blob.name, blob.size, blob.type, blob);
-                      callback(`${getBaseURL()}/api/${spaceCode}/projects/${projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
-                    },
-                  }}
-                  initialValue={comment || ''}
-                  onChange={() => {
-                    setComment(editor.current?.getInstance()?.getHTML());
-                  }}
-                />
-                <div className="buttons">
-                  <Button
-                    outline
-                    onClick={() => {
-                      setComment('');
-                      editor.current?.getInstance().setHTML('');
+            {showComment && (
+              <div className="comment-layout">
+                <Title
+                  border={false}
+                  marginBottom={false}
+                  control={
+                    <CloseIcon
+                      onClick={() => {
+                        toggleComment();
+                      }}
+                    />
+                  }
+                >
+                  {t('테스트런 코멘트')}
+                </Title>
+                <Block className="editor-block scrollbar-sm">
+                  <div className="scroller">
+                    <CommentList onDeleteComment={deleteComment} comments={testrunCommentList} />
+                  </div>
+                </Block>
+                <Block className="comment-editor">
+                  <Editor
+                    key={theme}
+                    ref={editor}
+                    theme={theme === 'DARK' ? 'dark' : 'white'}
+                    placeholder={t('내용을 입력해주세요.')}
+                    previewStyle="vertical"
+                    height="160px"
+                    initialEditType="wysiwyg"
+                    plugins={[colorSyntax]}
+                    autofocus={false}
+                    toolbarItems={[
+                      ['heading', 'bold', 'italic', 'strike'],
+                      ['hr', 'quote'],
+                      ['ul', 'ol', 'task', 'indent', 'outdent'],
+                      ['table', 'image', 'link'],
+                      ['code', 'codeblock'],
+                    ]}
+                    hooks={{
+                      addImageBlobHook: async (blob, callback) => {
+                        const result = await createTestrunImage(blob.name, blob.size, blob.type, blob);
+                        callback(`${getBaseURL()}/api/${spaceCode}/projects/${projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
+                      },
                     }}
-                    size="sm"
-                  >
-                    {t('취소')}
-                  </Button>
-                  <Button
-                    outline
-                    size="sm"
-                    onClick={() => {
-                      if (comment) {
-                        createComment(comment);
+                    initialValue={comment || ''}
+                    onChange={() => {
+                      setComment(editor.current?.getInstance()?.getHTML());
+                    }}
+                  />
+                  <div className="buttons">
+                    <Button
+                      outline
+                      onClick={() => {
                         setComment('');
                         editor.current?.getInstance().setHTML('');
-                      }
-                    }}
-                  >
-                    {t('코멘트 추가')}
-                  </Button>
-                </div>
-              </Block>
-            </div>
+                      }}
+                      size="sm"
+                    >
+                      {t('취소')}
+                    </Button>
+                    <Button
+                      outline
+                      size="sm"
+                      onClick={() => {
+                        if (comment) {
+                          createComment(comment);
+                          setComment('');
+                          editor.current?.getInstance().setHTML('');
+                        }
+                      }}
+                    >
+                      {t('코멘트 추가')}
+                    </Button>
+                  </div>
+                </Block>
+              </div>
+            )}
           </SplitPane>
         </PageContent>
       </Page>
