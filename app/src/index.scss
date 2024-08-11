@@ -546,3 +546,12 @@ hr {
     }
   }
 }
+
+.react-split__sash {
+
+  &:hover {
+    > div {
+      background-color: var(--yellow-color) !important;
+    }
+  }
+}

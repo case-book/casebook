@@ -4,391 +4,276 @@
     flex-grow: 1;
     display: flex;
 
-    @media (max-width: 1240px) {
-      display: block;
+    .summary {
+      width: 100%;
+      margin-bottom: 1rem;
     }
 
-    .layout {
+    .testrun-result-count {
       display: flex;
-      height: 100%;
-      flex-grow: 1;
+      overflow: auto;
 
-      @media (max-width: 1240px) {
-        display: block;
+      > div {
+        flex: 1 1 0;
+        text-align: center;
+        min-width: 140px;
+        border: 1px solid var(--border-light-color);
+
+        padding: 20px 0 30px;
+        margin-right: 1rem;
+        position: relative;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        > div:first-child {
+          white-space: nowrap;
+          font-weight: bold;
+        }
+
+        > div.count {
+          > a {
+            font-size: 30px;
+            font-family: Rowdies, sans-serif;
+            font-weight: bold;
+            display: inline-block;
+            padding: 4px;
+            border-bottom: 1px solid var(--link-color);
+
+            &.PASSED {
+              color: var(--success-color);
+              border-bottom-color: var(--success-color);
+            }
+
+            &.FAILED {
+              color: var(--danger-color);
+              border-bottom-color: var(--danger-color-colorcolor);
+            }
+
+            &.UNTESTABLE {
+              color: var(--gray-color);
+              border-bottom-color: var(--gray-color);
+            }
+
+            &.UNTESTED {
+              color: var(--gray-color);
+              border-bottom-color: var(--gray-color);
+            }
+          }
+        }
+      }
+    }
+
+    .info-layout {
+      flex-grow: 1;
+      border-right: 1px solid var(--border-light-color);
+      padding-right: 1rem;
+      position: relative;
+      height: 100%;
+      overflow-y: auto;
+
+      .text-summary {
+        font-size: 14px;
+        margin-bottom: 0.5rem;
+
+        .row {
+          display: flex;
+          margin-bottom: 10px;
+
+          > div {
+            align-self: center;
+          }
+
+          .label {
+            min-width: 60px;
+            align-self: baseline;
+          }
+
+          .range {
+            margin-right: 0.5rem;
+          }
+
+          .tester {
+            margin-right: 0.5rem;
+            border-radius: 8px;
+          }
+
+          .description {
+            font-size: 14px;
+            line-height: 160%;
+            white-space: pre-wrap;
+            border-radius: 4px;
+          }
+        }
       }
 
-      .info-layout {
-        flex-grow: 1;
-        overflow: hidden;
-        border-right: 1px solid var(--border-light-color);
-
-        @media (max-width: 1240px) {
-          border-right: none;
-        }
-
-        .text-summary {
-          font-size: 14px;
-          margin-bottom: 0.5rem;
-
-          .row {
-            display: flex;
-            margin-bottom: 10px;
-
-            > div {
-              align-self: center;
-            }
-
-            .label {
-              min-width: 60px;
-              align-self: baseline;
-            }
-
-            .range {
-              margin-right: 0.5rem;
-            }
-
-            .tester {
-              margin-right: 0.5rem;
-              border-radius: 8px;
-            }
-
-            .description {
-              font-size: 14px;
-              line-height: 160%;
-              white-space: pre-wrap;
-              border-radius: 4px;
-            }
-          }
-        }
-
-        .summary-content {
-          display: flex;
-          height: 150px;
-          margin-bottom: 10px;
-          overflow: hidden;
-
-          @media (max-width: 800px) {
-            height: auto;
-            display: block;
-          }
-
-          .result-summary {
-            min-width: 200px;
-            padding-top: 20px;
-
-            @media (max-width: 800px) {
-              min-width: auto;
-            }
-
-            &:last-child {
-              margin-bottom: 0;
-            }
-            > div {
-              display: flex;
-              height: 60px;
-              margin-bottom: 10px;
-              .label {
-                min-width: 60px;
-                align-self: center;
-              }
-
-              .progress-info {
-                flex-grow: 1;
-                position: relative;
-                background-color: var(--lighter-color);
-                border-radius: 2px;
-                padding-top: 15px;
-
-                .progress-bar {
-                  position: absolute;
-                  left: 0;
-                  bottom: 0;
-                  top: 0;
-                  border-radius: 2px;
-                  background-color: var(--success-color);
-                }
-
-                .progress-percentage {
-                  position: relative;
-                  z-index: 2;
-                  margin-bottom: 2px;
-                  text-align: center;
-                  font-weight: bold;
-                }
-
-                .progress-count {
-                  position: relative;
-                  z-index: 2;
-                  font-size: 12px;
-                  text-align: center;
-                }
-              }
-            }
-          }
-
-          .summary-separator {
-            display: flex;
-            margin: 0 10px;
-            @media (max-width: 800px) {
-              display: none;
-            }
-            > div {
-              align-self: center;
-              width: 1px;
-              height: 60px;
-              background: var(--border-light-color);
-            }
-          }
-
-          .tester-summary {
-            flex-grow: 1;
-            display: flex;
-            overflow: auto;
-            padding-top: 20px;
-
-            @media (max-width: 800px) {
-              margin-top: 20px;
-            }
-
-            .tester {
-              min-width: 100px;
-              width: 110px;
-              height: 100%;
-              @media (max-width: 800px) {
-                height: 100px;
-              }
+      .summary-content {
+        .tester-summary {
+          > ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            vertical-align: top;
+            li.tester {
+              vertical-align: top;
+              display: inline-flex;
+              flex-direction: column;
+              width: 140px;
               position: relative;
-              display: flex;
-              justify-content: center;
-              margin-right: 8px;
-              border-radius: 2px;
-              background-color: var(--lighter-color);
+              margin-right: 1rem;
+              margin-bottom: 1rem;
+              _background-color: var(--lighter-color);
               border: 1px solid var(--light-color);
+              padding: 10px;
 
               .user-icon {
-                position: absolute;
-                top: -40px;
-                left: 0;
-                right: 0;
                 text-align: center;
               }
 
-              .count-info {
-                align-self: center;
-                position: relative;
-                width: 100%;
+              .user-name {
+                text-align: center;
+                margin-top: 4px;
+              }
 
-                .label {
-                  text-align: center;
-                  color: var(--black-color);
-                  padding: 0 4px;
+              .progress {
+                display: flex;
+                margin-top: 8px;
+                > div {
+                  align-self: center;
+                  font-size: 12px;
 
-                  > a {
-                    border-bottom: 1px solid var(--link-color);
-                    display: inline-block;
-                    padding: 2px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    max-width: 100%;
-                  }
-                }
-
-                .progress-percentage {
-                  text-align: center;
-                  font-size: 14px;
-                  margin-bottom: 4px;
-                  font-weight: bold;
-                }
-
-                .progress-count {
-                  text-align: center;
-                  font-size: 11px;
-                  margin-bottom: 4px;
-                  > span {
-                    display: inline-block;
-                  }
-                }
-
-                .result-count {
-                  text-align: center;
-
-                  > a {
-                    display: inline-block;
-                    padding: 0 1px 1px;
-                    border-bottom: 1px solid var(--link-color);
+                  &:first-child {
                     margin-right: 4px;
-                    &:last-child {
-                      margin-right: 0;
+                  }
+
+                  &.data {
+                    display: flex;
+                    flex-grow: 1;
+                    justify-content: flex-end;
+                    font-family: Rowdies, sans-serif;
+
+                    &.warning {
+                      color: var(--danger-color);
+                    }
+
+                    .count {
+                      margin-left: 4px;
                     }
                   }
-                  .PASSED {
-                    color: var(--success-color);
-                    border-bottom-color: 1px solid var(--success-color);
+                }
+              }
+
+              .count-summary {
+                margin-top: 8px;
+                .bar {
+                  height: 20px;
+                  display: flex;
+                  gap: 8px;
+                  padding: 0 10px;
+                  > div {
+                    flex: 1 1 0;
+                    height: 100%;
+                    background-color: var(--light-color);
+                    position: relative;
+                    cursor: pointer;
+                    border: 1px solid rgba(0, 0, 0, 0.2);
+
+                    &:hover {
+                      border: 1px solid rgba(0, 0, 0, 0.7);
+                    }
+                    > div {
+                      position: absolute;
+                      bottom: 0;
+                      left: 0;
+                      right: 0;
+                      width: 100%;
+                      &.PASSED {
+                        background-color: var(--success-color);
+                      }
+                      &.FAILED {
+                        background-color: var(--danger-color);
+                      }
+                      &.UNTESTABLE {
+                        background-color: var(--warning-color);
+                      }
+                      &.UNTESTED {
+                        background-color: var(--gray-color);
+                      }
+                    }
                   }
-
-                  .FAILED {
-                    color: var(--danger-color);
-                    border-bottom-color: 1px solid var(--danger-color);
-                  }
-
-                  .UNTESTABLE,
-                  .UNTESTED {
-                    color: var(--gray-color);
-                    border-bottom-color: 1px solid var(--gray-color);
-                  }
                 }
-              }
-
-              .progress-bar {
-                height: 4px;
-                margin: 0 30px 2px;
-                border-radius: 5px;
-                line-height: 0;
-                background-color: var(--light-color);
-                > div {
-                  background-color: var(--yellow-color);
-                  height: 100%;
-                  border-radius: 5px;
-                  display: inline-block;
-                  line-height: 0;
-                }
-              }
-            }
-          }
-
-          &.report-metric {
-            margin-right: 1rem;
-            flex-grow: 0;
-
-            @media (max-width: 800px) {
-              margin-right: 0;
-            }
-          }
-        }
-
-        .testrun-result-count {
-          display: flex;
-          overflow: auto;
-
-          > div {
-            flex: 1 1 0;
-            text-align: center;
-            max-width: 140px;
-            min-width: 140px;
-            border: 1px solid var(--border-light-color);
-            padding: 20px 0 30px;
-            margin-right: 10px;
-            position: relative;
-            &:last-child {
-              margin-right: 0;
-            }
-
-            > div:first-child {
-              margin-bottom: 4px;
-              white-space: nowrap;
-            }
-
-            > div.count {
-              > a {
-                font-size: 20px;
-                font-weight: bold;
-                display: inline-block;
-                padding: 4px;
-                border-bottom: 1px solid var(--link-color);
-
-                &.PASSED {
-                  color: var(--success-color);
-                  border-bottom-color: var(--success-color);
-                }
-
-                &.FAILED {
-                  color: var(--danger-color);
-                  border-bottom-color: var(--danger-color-colorcolor);
-                }
-
-                &.UNTESTABLE {
-                  color: var(--gray-color);
-                  border-bottom-color: var(--gray-color);
-                }
-
-                &.UNTESTED {
-                  color: var(--gray-color);
-                  border-bottom-color: var(--gray-color);
-                }
-              }
-            }
-
-            > div.has-comment {
-              text-align: right;
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              padding: 6px 10px;
-
-              > span {
-                margin-right: 4px;
-              }
-
-              a {
-                font-size: 12px;
               }
             }
           }
         }
       }
+    }
 
-      .comment-layout {
-        width: 500px;
-        min-width: 500px;
-        margin-left: 20px;
-        display: flex;
-        flex-direction: column;
-        @media (max-width: 1240px) {
-          margin-left: 0;
-          margin-top: 20px;
-          width: auto;
-          min-width: auto;
-        }
+    .testcase-list {
+      border-top: none;
+      border-bottom: none;
+      .table {
+        margin-top: 0;
 
-        .editor-block {
-          flex-grow: 1;
-          overflow-y: auto;
-          position: relative;
+        tr {
+          th {
+            border-right: 1px solid var(--border-color);
 
-          .scroller {
-            margin: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding-right: 10px;
+            &:last-child {
+              border-right: none;
+            }
+          }
+          td {
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            &:last-child {
+              border-right: none;
+            }
+          }
 
-            @media (max-width: 1240px) {
-              position: static;
-              padding-right: 0;
+          &:last-child {
+            td {
+              border-bottom: none;
             }
           }
         }
+      }
+    }
 
-        .comment-editor {
-          flex-grow: 0;
+    .comment-layout {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding-left: 1rem;
+
+      .editor-block {
+        flex-grow: 1;
+        overflow-y: auto;
+        position: relative;
+
+        .scroller {
+          margin: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          padding-right: 10px;
+        }
+      }
+
+      .comment-editor {
+        flex-grow: 0;
+        margin-top: 10px;
+
+        .buttons {
+          text-align: right;
           margin-top: 10px;
-
-          @media (max-width: 1240px) {
-            margin-top: 0;
-          }
-
-          .buttons {
-            text-align: right;
-            margin-top: 10px;
-            button {
-              margin-right: 10px;
-              &:last-child {
-                margin-right: 0;
-              }
+          button {
+            margin-right: 10px;
+            &:last-child {
+              margin-right: 0;
             }
           }
         }

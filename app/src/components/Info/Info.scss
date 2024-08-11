@@ -1,9 +1,12 @@
 .info-wrapper {
   position: relative;
-  border-radius: 12px;
   border: 1px solid var(--border-light-color);
   padding: 10px;
   display: inline-block;
+
+  &.rounded {
+    border-radius: 12px;
+  }
 
   &.color-danger {
     color: var(--danger-color);

@@ -8,6 +8,7 @@ import reportWebVitals from './reportWebVitals';
 import 'react-datepicker/dist/react-datepicker.css';
 import './styles/global.scss';
 import './index.scss';
+import 'split-pane-react/esm/themes/default.css';
 
 if (process.env.REACT_APP_SENTRY_DSN) {
   Sentry.init({
