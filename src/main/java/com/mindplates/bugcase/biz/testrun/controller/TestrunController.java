@@ -56,6 +56,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class TestrunController {
 
+    private static final int REPORT_PAGE_SIZE = 10;
     private final TestrunService testrunService;
 
     private final ProjectFileService projectFileService;
@@ -129,6 +130,16 @@ public class TestrunController {
         @RequestParam(value = "end") LocalDateTime end
     ) {
         return testrunService.selectClosedProjectTestrunList(projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "종료된 테스트런 목록 조회")
+    @GetMapping("/reports")
+    public List<TestrunListResponse> selectReportList(
+        @PathVariable String spaceCode,
+        @PathVariable long projectId,
+        @RequestParam(value = "pageNo") int pageNo
+    ) {
+        return testrunService.selectClosedProjectTestrunList(projectId, pageNo, REPORT_PAGE_SIZE).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
     // TODO 삭제 예정

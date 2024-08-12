@@ -121,6 +121,17 @@ const MENUS = [
     project: true,
   },
   {
+    key: 'links',
+    to: '/links',
+    icon: <i className="fa-solid fa-paperclip" />,
+    color: '#a4c9d8',
+    name: i18n.t('오픈 링크'),
+    admin: false,
+    pc: true,
+    login: true,
+    project: true,
+  },
+  {
     key: 'info',
     to: '/info',
     icon: <i className="fa-solid fa-gear" />,

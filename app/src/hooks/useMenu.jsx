@@ -55,7 +55,7 @@ const useQueryString = () => {
 
   if (pathInfo) {
     menu = menus?.find(d => d.project && d.to === `/${pathInfo?.menu}`);
-    if (pathInfo.submenu) {
+    if (menu && pathInfo.submenu) {
       submenu = menu.list?.find(d => d.to === `/${pathInfo.submenu}`);
     }
     if (!menu) {

@@ -96,6 +96,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -303,6 +304,12 @@ public class TestrunService {
 
     public List<TestrunListDTO> selectClosedProjectTestrunList(long projectId, LocalDateTime start, LocalDateTime end) {
         List<Testrun> list = testrunRepository.findProjectTestrunByOpenedAndRange(projectId, false, start, end);
+        return list.stream().map(TestrunListDTO::new).collect(Collectors.toList());
+    }
+
+    public List<TestrunListDTO> selectClosedProjectTestrunList(long projectId, int pageNo, int pageSize) {
+        Pageable pageInfo = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        List<Testrun> list = testrunRepository.findProjectTestrunReports(projectId, false, pageInfo);
         return list.stream().map(TestrunListDTO::new).collect(Collectors.toList());
     }
 

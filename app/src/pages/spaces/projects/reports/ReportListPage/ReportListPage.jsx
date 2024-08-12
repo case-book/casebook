@@ -158,6 +158,13 @@ function ReportListPage() {
               text: t('리포트'),
             },
           ]}
+          links={[
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/links`,
+              text: t('오픈 링크'),
+              icon: <i className="fa-solid fa-plus" />,
+            },
+          ]}
           onListClick={() => {
             navigate(`/spaces/${spaceCode}/projects`);
           }}

@@ -46,12 +46,14 @@ import TestrunIterationListPage from '@/pages/spaces/projects/testruns/TestrunIt
 import TestrunIterationEditPage from '@/pages/spaces/projects/testruns/TestrunIterationEditPage/TestrunIterationEditPage';
 import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIterationInfoPage/TestrunIterationInfoPage';
 
+import OpenLinkListPage from '@/pages/spaces/projects/links/OpenLinkListPage/OpenLinkListPage';
 import ReleaseListPage from './spaces/projects/releases/ReleaseListPage/ReleaseListPage';
 import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage/ReleaseEditPage';
 import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage/ReleaseInfoPage';
 import MainPage from './main/MainPage/MainPage';
 import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
 import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';
+import OpenLinkEditPage from './spaces/projects/links/OpenLinkEditPage/OpenLinkEditPage';
 
 export {
   SpaceListPage,
@@ -99,4 +101,6 @@ export {
   MainPage,
   SpaceDashboardPage,
   TestrunHistoryPage,
+  OpenLinkListPage,
+  OpenLinkEditPage,
 };
