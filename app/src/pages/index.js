@@ -54,6 +54,7 @@ import MainPage from './main/MainPage/MainPage';
 import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
 import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';
 import OpenLinkEditPage from './spaces/projects/links/OpenLinkEditPage/OpenLinkEditPage';
+import OpenLinkInfoPage from './spaces/projects/links/OpenLinkInfoPage/OpenLinkInfoPage';
 
 export {
   SpaceListPage,
@@ -103,4 +104,5 @@ export {
   TestrunHistoryPage,
   OpenLinkListPage,
   OpenLinkEditPage,
+  OpenLinkInfoPage,
 };

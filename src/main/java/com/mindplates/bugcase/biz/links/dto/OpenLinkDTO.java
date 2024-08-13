@@ -28,14 +28,17 @@ public class OpenLinkDTO extends CommonDTO implements IDTO<OpenLink> {
     private boolean opened;
 
     public OpenLinkDTO(OpenLink openLink) {
+        this(openLink, false);
+    }
+
+    public OpenLinkDTO(OpenLink openLink, boolean detail) {
         this.id = openLink.getId();
         this.name = openLink.getName();
         this.token = openLink.getToken();
         this.project = ProjectDTO.builder().id(openLink.getProject().getId()).build();
-        this.testruns = openLink.getTestruns().stream().map(OpenLinkTestrunDTO::new).collect(Collectors.toList());
+        this.testruns = openLink.getTestruns().stream().map(openLinkTestrun -> new OpenLinkTestrunDTO(openLinkTestrun, detail)).collect(Collectors.toList());
         this.openEndDateTime = openLink.getOpenEndDateTime();
         this.opened = openLink.isOpened();
-
     }
 
 

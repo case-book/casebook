@@ -9,62 +9,6 @@
       margin-bottom: 1rem;
     }
 
-    .testrun-result-count {
-      display: flex;
-      overflow: auto;
-
-      > div {
-        flex: 1 1 0;
-        text-align: center;
-        min-width: 140px;
-        border: 1px solid var(--border-light-color);
-
-        padding: 20px 0 30px;
-        margin-right: 1rem;
-        position: relative;
-
-        &:last-child {
-          margin-right: 0;
-        }
-
-        > div:first-child {
-          white-space: nowrap;
-          font-weight: bold;
-        }
-
-        > div.count {
-          > a {
-            font-size: 30px;
-            font-family: Rowdies, sans-serif;
-            font-weight: bold;
-            display: inline-block;
-            padding: 4px;
-            border-bottom: 1px solid var(--link-color);
-
-            &.PASSED {
-              color: var(--success-color);
-              border-bottom-color: var(--success-color);
-            }
-
-            &.FAILED {
-              color: var(--danger-color);
-              border-bottom-color: var(--danger-color-colorcolor);
-            }
-
-            &.UNTESTABLE {
-              color: var(--gray-color);
-              border-bottom-color: var(--gray-color);
-            }
-
-            &.UNTESTED {
-              color: var(--gray-color);
-              border-bottom-color: var(--gray-color);
-            }
-          }
-        }
-      }
-    }
-
     .info-layout {
       flex-grow: 1;
       border-right: 1px solid var(--border-light-color);
@@ -213,6 +157,7 @@
     .testcase-list {
       border-top: none;
       border-bottom: none;
+      border-radius: 0;
       .table {
         margin-top: 0;
 

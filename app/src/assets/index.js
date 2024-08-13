@@ -7,6 +7,8 @@ import TestrunHookTable from './TestrunHookTable/TestrunHookTable';
 import TestrunMessageChannelSelector from './TestrunMessageChannelSelector/TestrunMessageChannelSelector';
 import TestrunMessageChannelList from './TestrunMessageChannelList/TestrunMessageChannelList';
 import TestcaseViewerPopup from './TestcaseViewerPopup/TestcaseViewerPopup';
+import OpenLinkReport from './OpenLinkReport/OpenLinkReport';
+import ReportCountSummary from './ReportCountSummary/ReportCountSummary';
 
 export {
   CommentList,
@@ -18,4 +20,6 @@ export {
   TestrunMessageChannelSelector,
   TestrunMessageChannelList,
   TestcaseViewerPopup,
+  OpenLinkReport,
+  ReportCountSummary,
 };

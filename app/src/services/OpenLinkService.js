@@ -14,7 +14,22 @@ OpenLinkService.selectOpenLinkList = (spaceCode, projectId, successHandler, fail
     null,
     null,
     loading,
-    i18n.t('프로젝트의 테스트런 목록을 불러오고 있습니다.'),
+    i18n.t('프로젝트의 오픈 링크 목록을 불러오고 있습니다.'),
+  );
+};
+
+OpenLinkService.selectOpenLinkInfo = (spaceCode, projectId, openLinkId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/links/${openLinkId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('오픈 링크 상세 정보를 불러오고 있습니다.'),
   );
 };
 
@@ -26,6 +41,21 @@ OpenLinkService.createOpenLinkInfo = (spaceCode, projectId, openLink, successHan
       successHandler(res);
     },
     failHandler,
+  );
+};
+
+OpenLinkService.selectOpenLinkInfoByToken = (token, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/links/${token}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('오픈 링크 상세 정보를 불러오고 있습니다.'),
   );
 };
 

@@ -240,4 +240,8 @@ public class ProjectService {
         projectUserRepository.deleteByUserId(userId);
     }
 
+    public List<UserDTO> selectProjectUserList(long projectId) {
+        return projectUserRepository.findAllByProjectId(projectId).stream().map((projectUser -> new UserDTO(projectUser.getUser()))).collect(Collectors.toList());
+    }
+
 }

@@ -22,7 +22,6 @@ function OpenLinkListPage() {
 
   const selectOpenLinkList = () => {
     OpenLinkService.selectOpenLinkList(spaceCode, projectId, list => {
-      console.log(list);
       setOpenLinks(list);
     });
   };
@@ -89,7 +88,7 @@ function OpenLinkListPage() {
                 <li key={testrun.id}>
                   <div className="title">
                     <div className="name">
-                      <Link className="hoverable" to={`/spaces/${spaceCode}/projects/${projectId}/reports/${testrun.id}`}>
+                      <Link className="hoverable" to={`/spaces/${spaceCode}/projects/${projectId}/links/${testrun.id}`}>
                         {testrun.name}
                       </Link>
                     </div>

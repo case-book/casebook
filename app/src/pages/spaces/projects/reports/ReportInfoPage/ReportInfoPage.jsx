@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Block, Button, CloseIcon, Info, Liner, Page, PageContent, PageTitle, Table, Tbody, Th, THead, Title, Tr, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 import { Link, useNavigate } from 'react-router-dom';
 import SplitPane, { Pane } from 'split-pane-react';
 import { useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
@@ -17,12 +18,10 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import useStores from '@/hooks/useStores';
 import TestrunTestcaseListViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunTestcaseListViewerPopup';
 import { getBaseURL } from '@/utils/configUtil';
-import { CommentList } from '@/assets';
-import './ReportInfoPage.scss';
+import { CommentList, ReportCountSummary } from '@/assets';
 
-import CommentBadge from '@/pages/spaces/projects/reports/ReportInfoPage/CommentBadge';
-import classNames from 'classnames';
 import ReportTestcaseGroupItem from '@/pages/spaces/projects/reports/ReportInfoPage/ReportTestcaseGroupItem';
+import './ReportInfoPage.scss';
 
 function ReportInfoPage() {
   const { t } = useTranslation();
@@ -387,108 +386,7 @@ function ReportInfoPage() {
                       })}
                     </span>
                   </Info>
-                  <div className="testrun-result-count">
-                    <div>
-                      <div>{t('전체')}</div>
-                      <div className="count">
-                        <Link
-                          className="ALL"
-                          to="/"
-                          onClick={e => {
-                            onClickTestResultCount(null, false, e);
-                          }}
-                        >
-                          {testrun.totalTestcaseCount}
-                        </Link>
-                      </div>
-                      <CommentBadge
-                        count={testrun.totalTestcaseHasCommentCount}
-                        onClick={() => {
-                          onClickTestResultCount(null, true);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div>{TESTRUN_RESULT_CODE.PASSED}</div>
-                      <div className="count">
-                        <Link
-                          className="PASSED"
-                          to="/"
-                          onClick={e => {
-                            onClickTestResultCount('PASSED', false, e);
-                          }}
-                        >
-                          {testrun.passedTestcaseCount}
-                        </Link>
-                      </div>
-                      <CommentBadge
-                        count={testrun.passedTestcaseHasCommentCount}
-                        onClick={() => {
-                          onClickTestResultCount('PASSED', true);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div>{TESTRUN_RESULT_CODE.FAILED}</div>
-                      <div className="count">
-                        <Link
-                          className="FAILED"
-                          to="/"
-                          onClick={e => {
-                            onClickTestResultCount('FAILED', false, e);
-                          }}
-                        >
-                          {testrun.failedTestcaseCount}
-                        </Link>
-                      </div>
-                      <CommentBadge
-                        count={testrun.failedTestcaseHasCommentCount}
-                        onClick={() => {
-                          onClickTestResultCount('FAILED', true);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div>{TESTRUN_RESULT_CODE.UNTESTABLE}</div>
-                      <div className="count">
-                        <Link
-                          className="UNTESTABLE"
-                          to="/"
-                          onClick={e => {
-                            onClickTestResultCount('UNTESTABLE', false, e);
-                          }}
-                        >
-                          {testrun.untestableTestcaseCount}
-                        </Link>
-                      </div>
-                      <CommentBadge
-                        count={testrun.untestableTestcaseHasCommentCount}
-                        onClick={() => {
-                          onClickTestResultCount('UNTESTABLE', true);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <div>{TESTRUN_RESULT_CODE.UNTESTED}</div>
-                      <div className="count">
-                        <Link
-                          className="UNTESTED"
-                          to="/"
-                          onClick={e => {
-                            onClickTestResultCount('UNTESTED', false, e);
-                          }}
-                        >
-                          {!Number.isNaN(testrun.totalTestcaseCount - testrun.testedCount) ? testrun.totalTestcaseCount - testrun.testedCount : ''}
-                        </Link>
-                      </div>
-                      <CommentBadge
-                        count={testrun.untestedTestcaseHasCommentCount}
-                        onClick={() => {
-                          onClickTestResultCount('UNTESTED', true);
-                        }}
-                      />
-                    </div>
-                  </div>
+                  <ReportCountSummary info={testrun} onCardClick={onClickTestResultCount} />
                 </Block>
                 <Title border={false} marginBottom={false}>
                   {t('테스터별 테스트 결과')}

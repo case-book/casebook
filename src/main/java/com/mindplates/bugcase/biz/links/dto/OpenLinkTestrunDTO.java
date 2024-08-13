@@ -22,10 +22,10 @@ public class OpenLinkTestrunDTO extends CommonDTO implements IDTO<OpenLinkTestru
     private OpenLinkDTO openLink;
     private TestrunDTO testrun;
 
-    public OpenLinkTestrunDTO(OpenLinkTestrun openLinkTestrun) {
+    public OpenLinkTestrunDTO(OpenLinkTestrun openLinkTestrun, boolean detail) {
         this.id = openLinkTestrun.getId();
         this.openLink = OpenLinkDTO.builder().id(openLinkTestrun.getOpenLink().getId()).build();
-        this.testrun = new TestrunDTO(openLinkTestrun.getTestrun());
+        this.testrun = new TestrunDTO(openLinkTestrun.getTestrun(), detail);
     }
 
 

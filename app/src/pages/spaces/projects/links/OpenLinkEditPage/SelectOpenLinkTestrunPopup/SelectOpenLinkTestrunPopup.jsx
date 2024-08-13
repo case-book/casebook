@@ -14,8 +14,6 @@ function SelectOpenLinkTestrunPopup({ spaceCode, projectId, setOpened, onApply, 
   const [reports, setReports] = useState([]);
   const [selectedTestruns, setSelectedTestruns] = useState([]);
 
-  console.log(pageNo, setPageNo, reports, selectedTestruns);
-
   const selectReportList = no => {
     ReportService.selectPagingReportList(spaceCode, projectId, no, list => {
       setReports(list);

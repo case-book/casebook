@@ -8,7 +8,6 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import SpaceService from '@/services/SpaceService';
 import './OpenLinkEditPage.scss';
-import ReportService from '@/services/ReportService';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import SelectOpenLinkTestrunPopup from '@/pages/spaces/projects/links/OpenLinkEditPage/SelectOpenLinkTestrunPopup/SelectOpenLinkTestrunPopup';
 import dateUtil from '@/utils/dateUtil';
@@ -25,7 +24,6 @@ function OpenLinkEditPage({ type }) {
 
   const [project, setProject] = useState({});
   const [openedSelectPopup, setOpenedSelectPopup] = useState(false);
-  const [reports, setReports] = useState([]);
   const [spaceName, setSpaceName] = useState('');
 
   const [openLink, setOpenLink] = useState({
@@ -41,22 +39,12 @@ function OpenLinkEditPage({ type }) {
     return type === 'edit';
   }, [type]);
 
-  const selectReportList = pageNo => {
-    ReportService.selectPagingReportList(spaceCode, projectId, pageNo, list => {
-      setReports(list);
-    });
-  };
-
   useEffect(() => {
     window.scrollTo(0, 0);
     ProjectService.selectProjectName(spaceCode, projectId, info => {
       setProject(info);
     });
-
-    selectReportList(0);
   }, [projectId]);
-
-  console.log(reports);
 
   useEffect(() => {
     SpaceService.selectSpaceName(spaceCode, name => {
@@ -74,8 +62,6 @@ function OpenLinkEditPage({ type }) {
       console.log(d);
     });
   };
-
-  console.log(openLink);
 
   return (
     <>
