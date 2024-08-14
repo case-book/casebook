@@ -68,6 +68,7 @@ function OpenLinkEditPage({ type }) {
     const request = {
       ...openLink,
       testrunIds: openLink.testruns.map(report => report.id),
+      openEndDateTime: openLink.openEndDateTime ? new Date(openLink.openEndDateTime)?.toISOString() : null,
     };
     OpenLinkService.createOpenLinkInfo(spaceCode, projectId, request, () => {
       navigate(`/spaces/${spaceCode}/projects/${projectId}/links`);
@@ -185,9 +186,7 @@ function OpenLinkEditPage({ type }) {
                 />
               </BlockRow>
               <BlockRow>
-                <Label minWidth={labelMinWidth} required>
-                  {t('공유 기간')}
-                </Label>
+                <Label minWidth={labelMinWidth}>{t('공유 기간')}</Label>
                 <div className="iteration-period">
                   <DatePicker
                     className="date-picker start-date-picker"

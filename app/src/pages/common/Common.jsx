@@ -26,7 +26,7 @@ function Common() {
     userStore: { user },
     configStore: { releasePopup, closeReleasePopup, version, setVersion },
     socketStore: { topics, messageHandlers, addTopic, removeTopic, addMessageHandler, removeMessageHandler, setSocketClient },
-    controlStore: { requestLoading, confirm, message, error, requestMessages },
+    controlStore: { requestLoading, confirm, message, error, requestMessages, toast },
     contextStore: { spaceCode, projectId, setProjectId },
   } = useStores();
 
@@ -218,6 +218,11 @@ function Common() {
             }
           }}
         />
+      )}
+      {!loading && toast?.message && (
+        <div className="toast-message">
+          <span>{toast?.message}</span>
+        </div>
       )}
       {!loading && confirm?.message && (
         <ConfirmDialog

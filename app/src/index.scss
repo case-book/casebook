@@ -256,6 +256,12 @@ a.hoverable {
   }
 }
 
+a.g-text-link {
+  color: var(--text-color);
+  &:hover {
+    color: var(--link-color);
+  }
+}
 
 * {
   box-sizing: border-box;
@@ -548,7 +554,6 @@ hr {
 }
 
 .react-split__sash {
-
   &:hover {
     > div {
       background-color: var(--yellow-color) !important;
