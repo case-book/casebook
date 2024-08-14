@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
+import copy from 'copy-to-clipboard';
 import ProjectService from '@/services/ProjectService';
 import SpaceService from '@/services/SpaceService';
 import { Viewer } from '@toast-ui/react-editor';
@@ -16,7 +17,7 @@ import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 
-const labelMinWidth = '160px';
+const labelMinWidth = '100px';
 
 function OpenLinkInfoPage() {
   const { t } = useTranslation();
@@ -126,6 +127,21 @@ function OpenLinkInfoPage() {
               <BlockRow>
                 <Label minWidth={labelMinWidth}>{t('공유 기간')}</Label>
                 <Text>{dateUtil.getDateString(openLink.openEndDateTime)}</Text>
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('공유 URL')}</Label>
+                <Text>
+                  {`${window.location.origin}/links/${openLink.token}`}{' '}
+                  <Button
+                    size="xs"
+                    onClick={() => {
+                      copy(`${window.location.origin}/links/${openLink.token}`);
+                      dialogUtil.setToast(t('클립 보드에 오픈 링크 공유를 위한 URL이 복사되었습니다.'));
+                    }}
+                  >
+                    {t('복사')}
+                  </Button>
+                </Text>
               </BlockRow>
             </Block>
             <Title>{t('리포트 목록')}</Title>
