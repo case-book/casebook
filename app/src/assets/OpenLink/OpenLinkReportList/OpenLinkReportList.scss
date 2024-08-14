@@ -1,0 +1,50 @@
+.open-link-report-list-wrapper {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: square;
+
+  > li {
+    margin-bottom: 0.5rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    .report-name {
+      position: relative;
+      display: flex;
+      > div {
+        align-self: center;
+      }
+
+      .seq-id {
+        margin-right: 0.25rem;
+      }
+      .name {
+        margin-bottom: 0.25rem;
+        flex-grow: 1;
+      }
+      .testrun-others {
+        font-size: 12px;
+        .time-info {
+          display: flex;
+          justify-content: flex-end;
+
+          > div {
+            align-self: center;
+          }
+
+          .calendar {
+            margin-right: 4px;
+          }
+
+          .end-date-info {
+            display: flex;
+          }
+        }
+      }
+
+      .remove-button {
+        margin-left: 8px;
+      }
+    }
+  }
+}

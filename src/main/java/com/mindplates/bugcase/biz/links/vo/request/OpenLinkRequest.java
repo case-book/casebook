@@ -17,6 +17,7 @@ public class OpenLinkRequest {
     private LocalDateTime openEndDateTime;
     private boolean opened;
     private List<Long> testrunIds;
+    private String comment;
 
     public OpenLinkDTO toDTO(long projectId) {
         OpenLinkDTO openLink = OpenLinkDTO.builder()
@@ -25,6 +26,7 @@ public class OpenLinkRequest {
             .openEndDateTime(openEndDateTime)
             .opened(opened)
             .project(ProjectDTO.builder().id(projectId).build())
+            .comment(comment)
             .build();
 
         openLink.setTestruns(testrunIds.stream().map(testrunId -> {

@@ -429,10 +429,6 @@ function ProjectEditPage({ type }) {
                     text: t('HOME'),
                   },
                   {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
-                  {
                     to: `/spaces/${spaceCode}/info`,
                     text: spaceName,
                   },
@@ -453,10 +449,6 @@ function ProjectEditPage({ type }) {
                   {
                     to: '/',
                     text: t('HOME'),
-                  },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
                   },
                   {
                     to: `/spaces/${spaceCode}/info`,

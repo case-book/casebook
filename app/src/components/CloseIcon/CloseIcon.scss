@@ -13,6 +13,10 @@ svg.close-icon-wrapper {
     fill: black;
   }
 
+  &.color-danger {
+    fill: var(--danger-color);
+  }
+
   &.size-xs {
     width: $xs-height;
     height: $xs-height;

@@ -27,6 +27,7 @@ public class OpenLinkShareResponse {
     private boolean opened;
     private List<TestrunResponse> testruns;
     private List<SimpleUserResponse> users;
+    private String comment;
 
     public OpenLinkShareResponse(OpenLinkDTO openLink, List<UserDTO> users) {
         this.id = openLink.getId();
@@ -35,6 +36,7 @@ public class OpenLinkShareResponse {
         this.project = ProjectResponse.builder().id(openLink.getProject().getId()).build();
         this.openEndDateTime = openLink.getOpenEndDateTime();
         this.opened = openLink.isOpened();
+        this.comment = openLink.getComment();
         this.testruns = openLink.getTestruns().stream().map(testrun -> new TestrunResponse(testrun.getTestrun())).collect(Collectors.toList());
         this.users = users.stream().map(SimpleUserResponse::new).collect(Collectors.toList());
     }

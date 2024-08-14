@@ -24,6 +24,7 @@ public class OpenLinkResponse {
     private LocalDateTime openEndDateTime;
     private boolean opened;
     private List<TestrunResponse> testruns;
+    private String comment;
 
     public OpenLinkResponse(OpenLinkDTO openLink) {
         this.id = openLink.getId();
@@ -32,6 +33,7 @@ public class OpenLinkResponse {
         this.project = ProjectResponse.builder().id(openLink.getProject().getId()).build();
         this.openEndDateTime = openLink.getOpenEndDateTime();
         this.opened = openLink.isOpened();
+        this.comment = openLink.getComment();
         this.testruns = openLink.getTestruns().stream().map(testrun -> new TestrunResponse(testrun.getTestrun())).collect(Collectors.toList());
     }
 

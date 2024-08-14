@@ -59,5 +59,8 @@ public class OpenLink extends CommonEntity {
     @Column(name = "opened")
     private boolean opened;
 
+    @Column(columnDefinition = "text", name = "comment")
+    private String comment;
+
 
 }

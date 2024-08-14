@@ -26,6 +26,7 @@ public class OpenLinkDTO extends CommonDTO implements IDTO<OpenLink> {
     private List<OpenLinkTestrunDTO> testruns;
     private LocalDateTime openEndDateTime;
     private boolean opened;
+    private String comment;
 
     public OpenLinkDTO(OpenLink openLink) {
         this(openLink, false);
@@ -39,6 +40,7 @@ public class OpenLinkDTO extends CommonDTO implements IDTO<OpenLink> {
         this.testruns = openLink.getTestruns().stream().map(openLinkTestrun -> new OpenLinkTestrunDTO(openLinkTestrun, detail)).collect(Collectors.toList());
         this.openEndDateTime = openLink.getOpenEndDateTime();
         this.opened = openLink.isOpened();
+        this.comment = openLink.getComment();
     }
 
 
@@ -51,6 +53,7 @@ public class OpenLinkDTO extends CommonDTO implements IDTO<OpenLink> {
             .project(Project.builder().id(project.getId()).build())
             .openEndDateTime(openEndDateTime)
             .opened(opened)
+            .comment(comment)
             .build();
 
         openLink.setTestruns(testruns

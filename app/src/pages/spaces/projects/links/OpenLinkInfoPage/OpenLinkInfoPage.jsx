@@ -84,10 +84,7 @@ function OpenLinkInfoPage({ type }) {
                     to: '/',
                     text: t('HOME'),
                   },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
+
                   {
                     to: `/spaces/${spaceCode}/info`,
                     text: spaceName,
@@ -110,10 +107,7 @@ function OpenLinkInfoPage({ type }) {
                     to: '/',
                     text: t('HOME'),
                   },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
+
                   {
                     to: `/spaces/${spaceCode}/info`,
                     text: spaceName,
@@ -175,7 +169,7 @@ function OpenLinkInfoPage({ type }) {
             </BlockRow>
             <BlockRow>
               <Label minWidth={labelMinWidth} required>
-                {t('공유 마감')}
+                {t('공유 기간')}
               </Label>
               <div className="iteration-period">
                 <DatePicker

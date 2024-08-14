@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, DatePicker, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Block, Button, CheckBox, DatePicker, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Editor } from '@toast-ui/react-editor';
 import PropTypes from 'prop-types';
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
@@ -10,13 +12,21 @@ import SpaceService from '@/services/SpaceService';
 import './OpenLinkEditPage.scss';
 import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
 import SelectOpenLinkTestrunPopup from '@/pages/spaces/projects/links/OpenLinkEditPage/SelectOpenLinkTestrunPopup/SelectOpenLinkTestrunPopup';
-import dateUtil from '@/utils/dateUtil';
 import OpenLinkService from '@/services/OpenLinkService';
+import { getBaseURL } from '@/utils/configUtil';
+import useStores from '@/hooks/useStores';
+import { OpenLinkReportList } from '@/assets';
 
 const labelMinWidth = '160px';
 
 function OpenLinkEditPage({ type }) {
   const { t } = useTranslation();
+
+  const {
+    themeStore: { theme },
+  } = useStores();
+
+  const editor = useRef(null);
 
   const { projectId, spaceCode } = useParams();
 
@@ -33,6 +43,7 @@ function OpenLinkEditPage({ type }) {
     testruns: [],
     openEndDateTime: null,
     opened: true,
+    comment: '',
   });
 
   const isEdit = useMemo(() => {
@@ -58,9 +69,13 @@ function OpenLinkEditPage({ type }) {
       ...openLink,
       testrunIds: openLink.testruns.map(report => report.id),
     };
-    OpenLinkService.createOpenLinkInfo(spaceCode, projectId, request, d => {
-      console.log(d);
+    OpenLinkService.createOpenLinkInfo(spaceCode, projectId, request, () => {
+      navigate(`/spaces/${spaceCode}/projects/${projectId}/links`);
     });
+  };
+
+  const createProjectImage = (name, size, typeText, file) => {
+    return ProjectService.createImage(spaceCode, projectId, name, size, typeText, file);
   };
 
   return (
@@ -76,8 +91,30 @@ function OpenLinkEditPage({ type }) {
                     text: t('HOME'),
                   },
                   {
+                    to: `/spaces/${spaceCode}/info`,
+                    text: spaceName,
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects`,
+                    text: t('프로젝트 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects/${projectId}/info`,
+                    text: project?.name,
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/projects/${projectId}/links`,
+                    text: t('오픈 링크 목록'),
+                  },
+                  {
+                    to: `/spaces/${spaceCode}/edit`,
+                    text: t('변경'),
+                  },
+                ]
+              : [
+                  {
                     to: '/',
-                    text: t('스페이스 목록'),
+                    text: t('HOME'),
                   },
                   {
                     to: `/spaces/${spaceCode}/info`,
@@ -92,26 +129,8 @@ function OpenLinkEditPage({ type }) {
                     text: project?.name,
                   },
                   {
-                    to: `/spaces/${spaceCode}/edit`,
-                    text: t('변경'),
-                  },
-                ]
-              : [
-                  {
-                    to: '/',
-                    text: t('HOME'),
-                  },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/info`,
-                    text: spaceName,
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/projects`,
-                    text: t('프로젝트 목록'),
+                    to: `/spaces/${spaceCode}/projects/${projectId}/links`,
+                    text: t('오픈 링크 목록'),
                   },
                   {
                     to: `/spaces/${spaceCode}/projects/new`,
@@ -152,7 +171,7 @@ function OpenLinkEditPage({ type }) {
                 />
               </BlockRow>
               <BlockRow>
-                <Label minWidth={labelMinWidth}>{t('오픈')}</Label>
+                <Label minWidth={labelMinWidth}>{t('공유')}</Label>
                 <CheckBox
                   size="sm"
                   type="checkbox"
@@ -167,7 +186,7 @@ function OpenLinkEditPage({ type }) {
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth} required>
-                  {t('공유 마감')}
+                  {t('공유 기간')}
                 </Label>
                 <div className="iteration-period">
                   <DatePicker
@@ -201,34 +220,49 @@ function OpenLinkEditPage({ type }) {
               {t('리포트 목록')}
             </Title>
             <Block>
-              <ul className="report-list">
-                {openLink.testruns.map(report => {
-                  return (
-                    <li key={report.id}>
-                      <div>
-                        <div className="report-name">
-                          <div className="name">{report.name}</div>
-                          <div className="testrun-others">
-                            <div className="time-info">
-                              <div className="calendar">
-                                <i className="fa-regular fa-clock" />
-                              </div>
-                              {report.startDateTime && <div>{dateUtil.getDateString(report.startDateTime, 'monthsDaysHoursMinutes')}</div>}
-                              <div className={`end-date-info ${!report.startDateTime ? 'no-start-time' : ''}`}>
-                                {(report.startDateTime || report.closedDate || report.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
-                                {report.startDateTime && (report.closedDate || report.endDateTime) && (
-                                  <span>{dateUtil.getEndDateString(report.startDateTime, report.closedDate || report.endDateTime)}</span>
-                                )}
-                                {!report.startDateTime && (report.closedDate || report.endDateTime) && <span>{dateUtil.getDateString(report.closedDate || report.endDateTime)}</span>}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
+              <OpenLinkReportList
+                reports={openLink.testruns}
+                onRemove={id => {
+                  setOpenLink({
+                    ...openLink,
+                    testruns: openLink.testruns.filter(report => report.id !== id),
+                  });
+                }}
+              />
+            </Block>
+            <Title>{t('코멘트')}</Title>
+            <Block className="editor-block">
+              <Editor
+                ref={editor}
+                theme={theme === 'DARK' ? 'dark' : 'white'}
+                placeholder="내용을 입력해주세요."
+                previewStyle="vertical"
+                height="100%"
+                initialEditType="wysiwyg"
+                hideModeSwitch
+                plugins={[colorSyntax]}
+                autofocus={false}
+                toolbarItems={[
+                  ['heading', 'bold', 'italic', 'strike'],
+                  ['hr', 'quote'],
+                  ['ul', 'ol', 'task', 'indent', 'outdent'],
+                  ['table', 'image', 'link'],
+                  ['code', 'codeblock'],
+                ]}
+                hooks={{
+                  addImageBlobHook: async (blob, callback) => {
+                    const result = await createProjectImage(blob.name, blob.size, blob.type, blob);
+                    callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
+                  },
+                }}
+                initialValue={openLink.comment}
+                onChange={() => {
+                  setOpenLink({
+                    ...openLink,
+                    comment: editor.current?.getInstance()?.getHTML(),
+                  });
+                }}
+              />
             </Block>
             <PageButtons
               onCancel={() => {

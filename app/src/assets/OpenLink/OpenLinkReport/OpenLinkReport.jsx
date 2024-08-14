@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { Block, Info, Table, Tbody, Th, THead, Title, Tr } from '@/components';
-import OpenLinkTestcaseGroupItem from '@/assets/OpenLinkReport/OpenLinkTestcaseGroupItem';
+import OpenLinkTestcaseGroupItem from '@/assets/OpenLink/OpenLinkReport/OpenLinkTestcaseGroupItem';
 import OpenLinkService from '@/services/OpenLinkService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import './OpenLinkReport.scss';

@@ -137,10 +137,7 @@ function ReportListPage() {
               to: '/',
               text: t('HOME'),
             },
-            {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
+
             {
               to: `/spaces/${spaceCode}/info`,
               text: spaceCode,

@@ -257,10 +257,7 @@ function SpaceEditPage({ type }) {
                     to: '/',
                     text: t('HOME'),
                   },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
+
                   {
                     to: `/spaces/${spaceCode}/info`,
                     text: space?.name,
@@ -275,10 +272,7 @@ function SpaceEditPage({ type }) {
                     to: '/',
                     text: t('HOME'),
                   },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
+
                   {
                     to: '/spaces/new',
                     text: t('생성'),

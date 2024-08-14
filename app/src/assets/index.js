@@ -1,3 +1,5 @@
+import OpenLinkReport from '@/assets/OpenLink/OpenLinkReport/OpenLinkReport';
+import OpenLinkReportList from '@/assets/OpenLink/OpenLinkReportList/OpenLinkReportList';
 import TestrunHookEditPopup from './TestrunHookEditPopup/TestrunHookEditPopup';
 import CommentList from './CommentList/CommentList';
 import ProfileSelectPopup from './ProfileSelectPopup/ProfileSelectPopup';
@@ -7,7 +9,6 @@ import TestrunHookTable from './TestrunHookTable/TestrunHookTable';
 import TestrunMessageChannelSelector from './TestrunMessageChannelSelector/TestrunMessageChannelSelector';
 import TestrunMessageChannelList from './TestrunMessageChannelList/TestrunMessageChannelList';
 import TestcaseViewerPopup from './TestcaseViewerPopup/TestcaseViewerPopup';
-import OpenLinkReport from './OpenLinkReport/OpenLinkReport';
 import ReportCountSummary from './ReportCountSummary/ReportCountSummary';
 
 export {
@@ -22,4 +23,5 @@ export {
   TestcaseViewerPopup,
   OpenLinkReport,
   ReportCountSummary,
+  OpenLinkReportList,
 };
