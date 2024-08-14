@@ -1,23 +1,29 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Block, CheckBox, DatePicker, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import React, { useEffect, useState } from 'react';
+import { Block, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import SpaceService from '@/services/SpaceService';
-import './OpenLinkInfoPage.scss';
-import ReportService from '@/services/ReportService';
-import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomInput';
-import dateUtil from '@/utils/dateUtil';
+import { Viewer } from '@toast-ui/react-editor';
 import OpenLinkService from '@/services/OpenLinkService';
 import OpenLinkReportPopup from '@/pages/spaces/projects/links/OpenLinkInfoPage/OpenLinkReportPopup/OpenLinkReportPopup';
+import { OpenLinkReportList } from '@/assets';
+import './OpenLinkInfoPage.scss';
+import useStores from '@/hooks/useStores';
+import dateUtil from '@/utils/dateUtil';
+import dialogUtil from '@/utils/dialogUtil';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 
 const labelMinWidth = '160px';
 
-function OpenLinkInfoPage({ type }) {
+function OpenLinkInfoPage() {
   const { t } = useTranslation();
+
+  const {
+    themeStore: { theme },
+  } = useStores();
 
   const { projectId, spaceCode, openLinkId } = useParams();
 
@@ -27,38 +33,16 @@ function OpenLinkInfoPage({ type }) {
 
   const [project, setProject] = useState({});
 
-  const [reports, setReports] = useState([]);
   const [spaceName, setSpaceName] = useState('');
 
-  const [openLink, setOpenLink] = useState({
-    id: null,
-    name: '',
-    token: '',
-    testruns: [],
-    openEndDateTime: null,
-    opened: true,
-  });
-
-  const isEdit = useMemo(() => {
-    return type === 'edit';
-  }, [type]);
-
-  const selectReportList = pageNo => {
-    ReportService.selectPagingReportList(spaceCode, projectId, pageNo, list => {
-      setReports(list);
-    });
-  };
+  const [openLink, setOpenLink] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     ProjectService.selectProjectName(spaceCode, projectId, info => {
       setProject(info);
     });
-
-    selectReportList(0);
   }, [projectId]);
-
-  console.log(reports);
 
   useEffect(() => {
     SpaceService.selectSpaceName(spaceCode, name => {
@@ -72,174 +56,116 @@ function OpenLinkInfoPage({ type }) {
     });
   }, [spaceCode, projectId, openLinkId]);
 
+  const onDelete = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('오픈 링크 삭제'),
+      <div>{t('오픈 링크를 삭제하면, 오픈 링크를 통해 리포트 내용에 더 이상 접근할 수 없습니다. 삭제하시겠습니까?')}</div>,
+      () => {
+        OpenLinkService.deleteOpenLink(spaceCode, projectId, openLinkId, () => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/links`);
+        });
+      },
+      null,
+      t('삭제'),
+    );
+  };
+
   return (
     <>
       <Page className="open-link-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('오픈 링크 변경') : t('오픈 링크 생성')}
-          breadcrumbs={
-            isEdit
-              ? [
-                  {
-                    to: '/',
-                    text: t('HOME'),
-                  },
+          name={t('오픈 링크')}
+          breadcrumbs={[
+            {
+              to: '/',
+              text: t('HOME'),
+            },
 
-                  {
-                    to: `/spaces/${spaceCode}/info`,
-                    text: spaceName,
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/projects`,
-                    text: t('프로젝트 목록'),
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/projects/${projectId}/info`,
-                    text: project?.name,
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/edit`,
-                    text: t('변경'),
-                  },
-                ]
-              : [
-                  {
-                    to: '/',
-                    text: t('HOME'),
-                  },
-
-                  {
-                    to: `/spaces/${spaceCode}/info`,
-                    text: spaceName,
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/projects`,
-                    text: t('프로젝트 목록'),
-                  },
-                  {
-                    to: `/spaces/${spaceCode}/projects/new`,
-                    text: t('생성'),
-                  },
-                ]
-          }
+            {
+              to: `/spaces/${spaceCode}/info`,
+              text: spaceName,
+            },
+            {
+              to: `/spaces/${spaceCode}/projects`,
+              text: t('프로젝트 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/links`,
+              text: t('오픈 링크 목록'),
+            },
+            {
+              to: `/spaces/${spaceCode}/projects/${projectId}/links/${openLinkId}`,
+              text: openLink?.name,
+            },
+          ]}
           onListClick={() => {
-            navigate(`/spaces/${spaceCode}/projects`);
+            navigate(`/spaces/${spaceCode}/projects/${projectId}/links`);
           }}
         >
-          {type === 'edit' ? t('오픈 링크') : t('새 오픈 링크')}
+          {t('오픈 링크')}
         </PageTitle>
-        <PageContent>
-          <Title border={false} marginBottom={false}>
-            {t('오픈 링크 정보')}
-          </Title>
-          <Block>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
-              <Text>{project.name}</Text>
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('이름')}
-              </Label>
-              <Input
-                value={openLink.name}
-                onChange={val =>
-                  setOpenLink({
-                    ...openLink,
-                    name: val,
-                  })
-                }
-                required
-                minLength={1}
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('오픈')}</Label>
-              <CheckBox
-                size="sm"
-                type="checkbox"
-                value={openLink.opened}
-                onChange={val =>
-                  setOpenLink({
-                    ...openLink,
-                    opened: val,
-                  })
-                }
-              />
-            </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth} required>
-                {t('공유 기간')}
-              </Label>
-              <div className="iteration-period">
-                <DatePicker
-                  className="date-picker start-date-picker"
-                  date={openLink.openEndDateTime}
-                  showTimeSelect
-                  onChange={date => {
-                    setOpenLink({
-                      ...openLink,
-                      openEndDateTime: date,
-                    });
-                  }}
-                  customInput={<DateCustomInput />}
-                />
-              </div>
-            </BlockRow>
-          </Block>
-          <Title>{t('리포트 목록')}</Title>
-          <Block>
-            <ul className="report-list">
-              {openLink?.testruns?.map(testrun => {
-                return (
-                  <li key={testrun.id}>
-                    <div>
-                      <div className="report-name">
-                        <div className="name">{testrun.name}</div>
-                        <div className="testrun-others">
-                          <div className="time-info">
-                            <div className="calendar">
-                              <i className="fa-regular fa-clock" />
-                            </div>
-                            {testrun.startDateTime && <div>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</div>}
-                            <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
-                              {(testrun.startDateTime || testrun.closedDate || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.5rem" />}
-                              {testrun.startDateTime && (testrun.closedDate || testrun.endDateTime) && (
-                                <span>{dateUtil.getEndDateString(testrun.startDateTime, testrun.closedDate || testrun.endDateTime)}</span>
-                              )}
-                              {!testrun.startDateTime && (testrun.closedDate || testrun.endDateTime) && <span>{dateUtil.getDateString(testrun.closedDate || testrun.endDateTime)}</span>}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </Block>
-          <PageButtons
-            onCancel={() => {
-              navigate(-1);
-            }}
-            onInfo={() => {
-              setOpened(true);
-            }}
-            onInfoText={t('리포트 보기')}
-          />
-        </PageContent>
+        {openLink && (
+          <PageContent>
+            <Title border={false} marginBottom={false}>
+              {t('오픈 링크 정보')}
+            </Title>
+            <Block>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('프로젝트')}</Label>
+                <Text>{project.name}</Text>
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('이름')}</Label>
+                <Text>{openLink.name}</Text>
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('공유')}</Label>
+                <Text>{openLink.opened ? 'Y' : 'N'}</Text>
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('공유 기간')}</Label>
+                <Text>{dateUtil.getDateString(openLink.openEndDateTime)}</Text>
+              </BlockRow>
+            </Block>
+            <Title>{t('리포트 목록')}</Title>
+            <Block>
+              <OpenLinkReportList reports={openLink.testruns} />
+            </Block>
+            <Title>{t('코멘트')}</Title>
+            <Block className="viewer-block">
+              {openLink.comment && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={openLink.comment || '<span className="none-text">&nbsp;</span>'} />}
+              {!openLink.comment && <EmptyContent border>{t('코멘트가 없습니다.')}</EmptyContent>}
+            </Block>
+            <Title>{t('관리')}</Title>
+            <Block danger>
+              <BlockRow>
+                <Label>{t('오픈 링크 삭제')}</Label>
+                <Button size="sm" color="danger" onClick={onDelete}>
+                  {t('오픈 링크 삭제')}
+                </Button>
+              </BlockRow>
+            </Block>
+            <PageButtons
+              onBack={() => {
+                navigate(-1);
+              }}
+              onCancelIcon=""
+              onInfo={() => {
+                setOpened(true);
+              }}
+              onInfoText={t('미리 보기')}
+            />
+          </PageContent>
+        )}
       </Page>
       {opened && <OpenLinkReportPopup token={openLink.token} setOpened={setOpened} />}
     </>
   );
 }
 
-OpenLinkInfoPage.defaultProps = {
-  type: 'new',
-};
+OpenLinkInfoPage.defaultProps = {};
 
-OpenLinkInfoPage.propTypes = {
-  type: PropTypes.string,
-};
+OpenLinkInfoPage.propTypes = {};
 
 export default OpenLinkInfoPage;

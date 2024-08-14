@@ -26,7 +26,7 @@ function OpenLinkTestcaseGroupItem({ testcaseGroup, parentGroupName, onNameClick
                 <div
                   className="seq-name"
                   onClick={() => {
-                    onNameClick(testcaseGroup.id, testcase.id);
+                    onNameClick(testcase.testrunId || 0, testcaseGroup.testcaseGroupId, testcase.testcaseId);
                   }}
                 >
                   <div>
@@ -42,8 +42,12 @@ function OpenLinkTestcaseGroupItem({ testcaseGroup, parentGroupName, onNameClick
                 <span className={classNames('test-result', testcase.testResult)}>{TESTRUN_RESULT_CODE[testcase.testResult]}</span>
               </Td>
               {testcase.testResults.length > 0 &&
-                testcase.testResults.map(testResult => {
-                  return <Td align="center">{testResult !== 'UNTESTED' && <span className={classNames('test-result', testResult)}>{TESTRUN_RESULT_CODE[testResult] || ''}</span>}</Td>;
+                testcase.testResults.map((testResult, jnx) => {
+                  return (
+                    <Td key={jnx} align="center">
+                      {testResult !== 'UNTESTED' && <span className={classNames('test-result', testResult)}>{TESTRUN_RESULT_CODE[testResult] || ''}</span>}
+                    </Td>
+                  );
                 })}
             </Tr>
           );

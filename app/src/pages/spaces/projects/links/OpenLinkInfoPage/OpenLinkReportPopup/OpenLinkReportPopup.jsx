@@ -19,7 +19,7 @@ function OpenLinkReportPopup({ token, setOpened }) {
         }
       }}
     >
-      <ModalHeader>{t('오픈 링크 미리보기')}</ModalHeader>
+      <ModalHeader>{t('오픈 링크')}</ModalHeader>
       <ModalBody>
         <OpenLinkReport token={token} />
       </ModalBody>

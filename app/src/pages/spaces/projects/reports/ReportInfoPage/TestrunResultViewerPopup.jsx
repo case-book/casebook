@@ -69,7 +69,7 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
           <div className="case-content" ref={caseContentElement}>
             <div className="testcase-item-list">
               {testcaseTemplate?.testcaseTemplateItems
-                .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
+                ?.filter(testcaseTemplateItem => testcaseTemplateItem.category === 'CASE')
                 .map((testcaseTemplateItem, inx) => {
                   let testcaseItem;
                   if (testcaseTemplateItem.systemLabel) {
@@ -130,7 +130,7 @@ function TestrunResultViewerPopup({ users, testcaseTemplate, testrunTestcaseGrou
                 </div>
                 <div className="testrun-result-list">
                   {testcaseTemplate?.testcaseTemplateItems
-                    .filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
+                    ?.filter(testcaseTemplateItem => testcaseTemplateItem.category === 'RESULT')
                     .map((testcaseTemplateItem, inx) => {
                       const testcaseItem = testrunTestcaseGroupTestcase?.testrunTestcaseItems?.find(d => d.testcaseTemplateItemId === testcaseTemplateItem.id) || {};
 

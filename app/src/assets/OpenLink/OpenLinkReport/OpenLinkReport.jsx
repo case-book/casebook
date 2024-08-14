@@ -2,20 +2,27 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Block, Info, Table, Tbody, Th, THead, Title, Tr } from '@/components';
+import { Block, EmptyContent, Info, Table, Tbody, Th, THead, Title, Tr } from '@/components';
 import OpenLinkTestcaseGroupItem from '@/assets/OpenLink/OpenLinkReport/OpenLinkTestcaseGroupItem';
 import OpenLinkService from '@/services/OpenLinkService';
 import testcaseUtil from '@/utils/testcaseUtil';
-import './OpenLinkReport.scss';
+import { Viewer } from '@toast-ui/react-editor';
 import { ReportCountSummary } from '@/assets';
 import dateUtil from '@/utils/dateUtil';
+import './OpenLinkReport.scss';
+import useStores from '@/hooks/useStores';
+import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
 
 function OpenLinkReport({ className, token }) {
   const { t } = useTranslation();
 
+  const {
+    themeStore: { theme },
+  } = useStores();
+
   const [openLink, setOpenLink] = useState(null);
   const [userById, setUserById] = useState({});
-  const [selectedItemInfo, setSelectedItemInfo] = useState({});
+  const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
     OpenLinkService.selectOpenLinkInfoByToken(token, info => {
@@ -28,8 +35,6 @@ function OpenLinkReport({ className, token }) {
       );
     });
   }, [token]);
-
-  console.log(selectedItemInfo);
 
   const report = useMemo(() => {
     if (!openLink) {
@@ -75,8 +80,15 @@ function OpenLinkReport({ className, token }) {
           }
 
           testcaseGroupsById[testcaseGroup.testcaseGroupId].testcaseById[testcase.testcaseId].testResults[inx] = testcase.testResult;
+
           if (testcase.testResult !== 'UNTESTED') {
+            testcaseGroupsById[testcaseGroup.testcaseGroupId].testcaseById[testcase.testcaseId].testrunId = testrun.id;
             testcaseGroupsById[testcaseGroup.testcaseGroupId].testcaseById[testcase.testcaseId].testResult = testcase.testResult;
+          }
+
+          // 미수행으로 테스트 결과가 없다면, 첫번째 테스트런 ID 입력
+          if (!testcaseGroupsById[testcaseGroup.testcaseGroupId].testcaseById[testcase.testcaseId].testrunId) {
+            testcaseGroupsById[testcaseGroup.testcaseGroupId].testcaseById[testcase.testcaseId].testrunId = testrun.id;
           }
         });
       });
@@ -179,9 +191,6 @@ function OpenLinkReport({ className, token }) {
     return headers;
   }, [report]);
 
-  console.log(report);
-  console.log(testrunCount);
-
   const onClickTestResultCount = (status, hasComment, e) => {
     if (e) {
       e.preventDefault();
@@ -233,7 +242,11 @@ function OpenLinkReport({ className, token }) {
                 </Tr>
                 <Tr>
                   {testrunHeader.map(d => {
-                    return <Th align="center">{d}</Th>;
+                    return (
+                      <Th key={d} align="center">
+                        {d}
+                      </Th>
+                    );
                   })}
                 </Tr>
               </THead>
@@ -241,12 +254,19 @@ function OpenLinkReport({ className, token }) {
                 {report.mergedTestcaseGroups.map(testcaseGroup => {
                   return (
                     <OpenLinkTestcaseGroupItem
-                      testrunCount={testrunCount}
                       key={testcaseGroup.id}
+                      testrunCount={testrunCount}
                       testcaseGroup={testcaseGroup}
                       userById={userById}
-                      onNameClick={(groupId, id) => {
-                        setSelectedItemInfo({ groupId, id });
+                      onNameClick={(testrunId, groupId, id) => {
+                        const testrun = openLink.testruns.find(tr => tr.id === testrunId);
+                        if (testrun) {
+                          const testcase = testrun.testcaseGroups.find(d => d.testcaseGroupId === groupId)?.testcases.find(d => d.testcaseId === id);
+                          if (testcase) {
+                            const testcaseTemplate = openLink.testcaseTemplates.find(d => d.id === testcase.testcaseTemplateId);
+                            setPopupInfo({ groupId, id, testcaseTemplate, testrunTestcaseGroupTestcase: testcase });
+                          }
+                        }
                       }}
                     />
                   );
@@ -254,6 +274,26 @@ function OpenLinkReport({ className, token }) {
               </Tbody>
             </Table>
           </Block>
+          <Title className="comment-title">{t('코멘트')}</Title>
+          <Block className="viewer-block">
+            {openLink.comment && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={openLink.comment || '<span className="none-text">&nbsp;</span>'} />}
+            {!openLink.comment && <EmptyContent border>{t('코멘트가 없습니다.')}</EmptyContent>}
+          </Block>
+          {popupInfo && (
+            <TestrunResultViewerPopup
+              testcaseTemplate={popupInfo.testcaseTemplate}
+              testrunTestcaseGroupTestcase={popupInfo.testrunTestcaseGroupTestcase}
+              users={openLink?.users.map(u => {
+                return {
+                  ...u,
+                  id: u.userId,
+                };
+              })}
+              setOpened={() => {
+                setPopupInfo(null);
+              }}
+            />
+          )}
         </>
       )}
     </div>

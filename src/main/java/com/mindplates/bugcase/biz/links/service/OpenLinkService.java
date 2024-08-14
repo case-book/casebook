@@ -32,6 +32,12 @@ public class OpenLinkService {
         return new OpenLinkDTO(openLink, true);
     }
 
+    public void deleteOpenLink(long projectId, long openLinkId) {
+        OpenLink openLink = openLinkRepository.findByIdAndProjectId(openLinkId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        openLinkRepository.delete(openLink);
+    }
+
+
     public OpenLinkDTO selectOpenLinkInfoByToken(String token) {
         OpenLink openLink = openLinkRepository.findByToken(token).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         if (!openLink.isOpened()) {

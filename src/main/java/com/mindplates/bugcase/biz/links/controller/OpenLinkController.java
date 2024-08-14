@@ -5,12 +5,16 @@ import com.mindplates.bugcase.biz.links.service.OpenLinkService;
 import com.mindplates.bugcase.biz.links.vo.request.OpenLinkRequest;
 import com.mindplates.bugcase.biz.links.vo.response.OpenLinkListResponse;
 import com.mindplates.bugcase.biz.links.vo.response.OpenLinkResponse;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +49,13 @@ public class OpenLinkController {
     public OpenLinkResponse selectOpenLinkInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long openLinkId) {
         OpenLinkDTO openLink = openLinkService.selectOpenLinkInfo(projectId, openLinkId);
         return new OpenLinkResponse(openLink);
+    }
+
+    @Operation(description = "오픈 링크 삭제")
+    @DeleteMapping("/{openLinkId}")
+    public ResponseEntity<HttpStatus> deleteOpenLink(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long openLinkId) {
+        openLinkService.deleteOpenLink(projectId, openLinkId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

@@ -59,4 +59,19 @@ OpenLinkService.selectOpenLinkInfoByToken = (token, successHandler, failHandler,
   );
 };
 
+OpenLinkService.deleteOpenLink = (spaceCode, projectId, openLinkId, successHandler, failHandler, loading = true) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/links/${openLinkId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('오픈 링크를 삭제하고 있습니다.'),
+  );
+};
+
 export default OpenLinkService;

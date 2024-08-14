@@ -11,6 +11,7 @@ import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
@@ -40,7 +41,7 @@ public class ProjectService {
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
     private final ProjectCachedService projectCachedService;
-
+    private final TestcaseTemplateRepository testcaseTemplateRepository;
 
     public ProjectService(
         @Lazy SpaceService spaceService,
@@ -51,7 +52,8 @@ public class ProjectService {
         ProjectUserRepository projectUserRepository,
         ProjectTokenRepository projectTokenRepository,
         ProjectReleaseService projectReleaseService,
-        ProjectCachedService projectCachedService
+        ProjectCachedService projectCachedService,
+        TestcaseTemplateRepository testcaseTemplateRepository
     ) {
         this.spaceService = spaceService;
         this.projectRepository = projectRepository;
@@ -62,6 +64,7 @@ public class ProjectService {
         this.projectUserRepository = projectUserRepository;
         this.projectReleaseService = projectReleaseService;
         this.projectCachedService = projectCachedService;
+        this.testcaseTemplateRepository = testcaseTemplateRepository;
 
     }
 
@@ -242,6 +245,10 @@ public class ProjectService {
 
     public List<UserDTO> selectProjectUserList(long projectId) {
         return projectUserRepository.findAllByProjectId(projectId).stream().map((projectUser -> new UserDTO(projectUser.getUser()))).collect(Collectors.toList());
+    }
+
+    public List<TestcaseTemplateDTO> selectProjectTestcaseTemplateList(long projectId) {
+        return testcaseTemplateRepository.findAllByProjectId(projectId).stream().map((TestcaseTemplateDTO::new)).collect(Collectors.toList());
     }
 
 }
