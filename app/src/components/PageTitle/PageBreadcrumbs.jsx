@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Liner, PathIcon } from '@/components';
+import { Liner, PathIcon, Version } from '@/components';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import './PageBreadcrumbs.scss';
@@ -42,6 +42,7 @@ function PageBreadcrumbs({ className, breadcrumbs, onListClick }) {
           </div>
         </>
       )}
+      <Version className="version" />
     </div>
   );
 }

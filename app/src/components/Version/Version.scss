@@ -1,11 +1,11 @@
 .version-wrapper {
-  height: 60px;
+  height: 100%;
   text-transform: uppercase;
   font-size: 12px;
   text-align: center;
   padding: 1rem;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   > div {
     align-self: center;
     display: flex;

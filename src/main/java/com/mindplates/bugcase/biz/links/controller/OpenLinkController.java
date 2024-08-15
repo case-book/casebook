@@ -5,7 +5,6 @@ import com.mindplates.bugcase.biz.links.service.OpenLinkService;
 import com.mindplates.bugcase.biz.links.vo.request.OpenLinkRequest;
 import com.mindplates.bugcase.biz.links.vo.response.OpenLinkListResponse;
 import com.mindplates.bugcase.biz.links.vo.response.OpenLinkResponse;
-import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +55,13 @@ public class OpenLinkController {
     @DeleteMapping("/{openLinkId}")
     public ResponseEntity<HttpStatus> deleteOpenLink(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long openLinkId) {
         openLinkService.deleteOpenLink(projectId, openLinkId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "오픈 링크 공유 중지")
+    @PutMapping("/{openLinkId}/close")
+    public ResponseEntity<HttpStatus> closeOpenLink(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long openLinkId) {
+        openLinkService.closeOpenLink(projectId, openLinkId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

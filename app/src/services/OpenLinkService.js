@@ -74,4 +74,20 @@ OpenLinkService.deleteOpenLink = (spaceCode, projectId, openLinkId, successHandl
   );
 };
 
+OpenLinkService.closeOpenLink = (spaceCode, projectId, openLinkId, successHandler, failHandler, loading = true) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/links/${openLinkId}/close`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    null,
+    i18n.t('오픈 링크를 만료 처리 중입니다.'),
+  );
+};
+
 export default OpenLinkService;

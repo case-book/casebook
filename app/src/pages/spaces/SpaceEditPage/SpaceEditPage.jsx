@@ -62,6 +62,7 @@ function SpaceEditPage({ type }) {
 
   const {
     userStore: { addSpace, language, country },
+    contextStore: { setSpace: setSpaceStore },
   } = useStores();
 
   const navigate = useNavigate();
@@ -204,7 +205,8 @@ function SpaceEditPage({ type }) {
     if (type === 'new') {
       SpaceService.createSpace(spaceInfo, result => {
         addSpace(result);
-        navigate('/spaces');
+        setSpaceStore(result);
+        navigate('/');
       });
     } else if (isEdit) {
       if ((spaceInfo?.users?.filter(d => d.crud !== 'D') || []).length < 1) {

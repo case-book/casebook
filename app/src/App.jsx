@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { Common, Join, Login, Message, SetUpPage } from '@/pages';
+import { Common, GuidePage, Join, LoginPage, Message, SetUpPage } from '@/pages';
 import SpacesRoutes from '@/pages/spaces';
 import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
@@ -15,12 +15,13 @@ import GuestHeader from '@/pages/common/Header/GuestHeader';
 import ApiRoutes from '@/pages/apis';
 import SideBar from '@/assets/SideBar/SideBar';
 import ProjectListPage from '@/pages/spaces/projects/ProjectListPage';
+import LinksRoutes from '@/pages/links';
 
 function App() {
   const {
     themeStore: { theme },
     userStore: { isLogin, tried },
-    contextStore: { isProjectSelected },
+    contextStore: { space, isProjectSelected },
     configStore: { setUp },
   } = useStores();
 
@@ -87,7 +88,6 @@ function App() {
           </div>
         </div>
       )}
-
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
@@ -96,7 +96,9 @@ function App() {
           <main className="main-content">
             {isLogin && (
               <Routes location={location}>
-                <Route path="/" element={<ProjectListPage />} />
+                <Route path="/start" element={<GuidePage />} />
+                {space && <Route path="/" element={<ProjectListPage />} />}
+                {!space && <Route path="/" element={<GuidePage />} />}
                 <Route path="/users/*" element={<UsersRoutes />} />
                 <Route path="/spaces/*" element={<SpacesRoutes />} />
                 <Route path="/projects/*" element={<ProjectsRoutes />} />
@@ -107,9 +109,11 @@ function App() {
             )}
             {!isLogin && (
               <Routes location={location}>
+                <Route path="/start" element={<GuidePage />} />
+                <Route path="/links/*" element={<LinksRoutes />} />
                 <Route path="/apis/*" element={<ApiRoutes />} />
                 <Route path="/users/join" element={<Join />} />
-                <Route path="*" element={<Login />} />
+                <Route path="*" element={<LoginPage />} />
               </Routes>
             )}
           </main>

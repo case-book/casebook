@@ -6,8 +6,8 @@ import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVar
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
 
-import Login from '@/pages/users/Login';
-import Join from '@/pages/users/Join';
+import LoginPage from '@/pages/users/LoginPage';
+import Join from '@/pages/users/JoinPage';
 import MyInfoPage from '@/pages/users/MyInfoPage';
 import MyEditPage from '@/pages/users/MyEditPage';
 import PasswordChangePage from '@/pages/users/PasswordChangePage';
@@ -50,11 +50,14 @@ import OpenLinkListPage from '@/pages/spaces/projects/links/OpenLinkListPage/Ope
 import ReleaseListPage from './spaces/projects/releases/ReleaseListPage/ReleaseListPage';
 import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage/ReleaseEditPage';
 import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage/ReleaseInfoPage';
-import MainPage from './main/MainPage/MainPage';
+
 import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
 import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';
 import OpenLinkEditPage from './spaces/projects/links/OpenLinkEditPage/OpenLinkEditPage';
 import OpenLinkInfoPage from './spaces/projects/links/OpenLinkInfoPage/OpenLinkInfoPage';
+import OpenLinkPage from './links/OpenLinkPage/OpenLinkPage';
+
+import GuidePage from './spaces/GuidePage/GuidePage';
 
 export {
   SpaceListPage,
@@ -62,7 +65,7 @@ export {
   SpaceInfoPage,
   SpaceEditPage,
   Common,
-  Login,
+  LoginPage,
   Join,
   MyInfoPage,
   MyEditPage,
@@ -99,10 +102,11 @@ export {
   ReleaseInfoPage,
   SpaceVariableEditPage,
   AiHistoryListPage,
-  MainPage,
   SpaceDashboardPage,
   TestrunHistoryPage,
   OpenLinkListPage,
   OpenLinkEditPage,
   OpenLinkInfoPage,
+  OpenLinkPage,
+  GuidePage,
 };

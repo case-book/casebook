@@ -61,5 +61,12 @@ public class OpenLinkService {
         return new OpenLinkDTO(openLinkRepository.save(openLink));
     }
 
+    @Transactional
+    public void closeOpenLink(long projectId, long openLinkId) {
+        OpenLink openLink = openLinkRepository.findByIdAndProjectId(openLinkId, projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        openLink.setOpened(false);
+        openLinkRepository.save(openLink);
+    }
+
 
 }

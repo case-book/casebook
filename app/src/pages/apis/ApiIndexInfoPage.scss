@@ -40,6 +40,7 @@
       display: flex;
       margin-bottom: 20px;
       margin-left: 10px;
+      margin-right: 10px;
       > div {
         align-self: center;
       }
@@ -71,6 +72,7 @@
 
         .req-res {
           margin-left: 10px;
+          margin-right: 10px;
           border: 1px solid var(--border-color);
           .request,
           .request-body {
@@ -126,6 +128,7 @@
             .result {
               padding: 10px;
               margin-left: 10px;
+              margin-right: 10px;
             }
           }
         }

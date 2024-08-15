@@ -13,27 +13,38 @@ import './OpenLinkReport.scss';
 import useStores from '@/hooks/useStores';
 import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
 
-function OpenLinkReport({ className, token }) {
+function OpenLinkReport({ className, token, setName }) {
   const { t } = useTranslation();
 
   const {
     themeStore: { theme },
   } = useStores();
 
+  const [errorCode, setErrorCode] = useState(false);
   const [openLink, setOpenLink] = useState(null);
   const [userById, setUserById] = useState({});
   const [popupInfo, setPopupInfo] = useState(null);
 
   useEffect(() => {
-    OpenLinkService.selectOpenLinkInfoByToken(token, info => {
-      setOpenLink(info);
-      setUserById(
-        info.users.reduce((acc, user) => {
-          acc[user.id] = user;
-          return acc;
-        }, {}),
-      );
-    });
+    OpenLinkService.selectOpenLinkInfoByToken(
+      token,
+      info => {
+        setOpenLink(info);
+        if (setName) {
+          setName(info.name);
+        }
+        setUserById(
+          info.users.reduce((acc, user) => {
+            acc[user.id] = user;
+            return acc;
+          }, {}),
+        );
+      },
+      code => {
+        setErrorCode(code);
+        return code === 404 || code === 410;
+      },
+    );
   }, [token]);
 
   const report = useMemo(() => {
@@ -199,7 +210,13 @@ function OpenLinkReport({ className, token }) {
 
   return (
     <div className={`open-link-report-wrapper ${className}`}>
-      {report && (
+      {errorCode && (
+        <div className="error">
+          <div>{errorCode === 404 && <div>{t('오픈 링크 정보를 찾을 수 없습니다.')}</div>}</div>
+          <div>{errorCode === 410 && <div>{t('오픈 링크 공유가 중지되었거나, 공유 기간이 만료되었습니다.')}</div>}</div>
+        </div>
+      )}
+      {!errorCode && report && (
         <>
           <Title border={false} marginBottom={false}>
             {t('테스트 결과 요약')}
@@ -302,11 +319,13 @@ function OpenLinkReport({ className, token }) {
 
 OpenLinkReport.defaultProps = {
   className: '',
+  setName: null,
 };
 
 OpenLinkReport.propTypes = {
   className: PropTypes.string,
   token: PropTypes.string.isRequired,
+  setName: PropTypes.func,
 };
 
 export default OpenLinkReport;

@@ -78,6 +78,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
             .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
             .mvcMatchers("/api/**/projects/**/images/**")
+            .mvcMatchers("/api/links/**")
             .mvcMatchers("/ws/**");
     }
 

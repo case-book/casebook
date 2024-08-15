@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Button, CheckBox, Form, Info, Input, Version } from '@/components';
+import { Button, CheckBox, Form, Info, Input } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
 import useStores from '@/hooks/useStores';
 import { setToken } from '@/utils/request';
-import './Login.scss';
+import './LoginPage.scss';
 
-function Login() {
+function LoginPage() {
   const { t } = useTranslation();
 
   const { userStore } = useStores();
@@ -94,7 +94,7 @@ function Login() {
             <div className="auto-login">
               <div>
                 <CheckBox
-                  size="xs"
+                  size="sm"
                   type="checkbox"
                   value={info.autoLogin}
                   label={t('자동 로그인')}
@@ -115,13 +115,12 @@ function Login() {
           </Form>
         </div>
       </div>
-      <Version className="version" />
     </div>
   );
 }
 
-Login.defaultProps = {};
+LoginPage.defaultProps = {};
 
-Login.propTypes = {};
+LoginPage.propTypes = {};
 
-export default Login;
+export default LoginPage;

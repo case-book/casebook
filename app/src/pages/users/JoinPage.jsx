@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Version } from '@/components';
+import { Button, Form, Input } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,9 +8,9 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import useStores from '@/hooks/useStores';
 import { setToken } from '@/utils/request';
-import './Join.scss';
+import './JoinPage.scss';
 
-function Join() {
+function JoinPage() {
   const { userStore } = useStores();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -125,9 +125,8 @@ function Join() {
           </div>
         </Form>
       </div>
-      <Version className="version" />
     </div>
   );
 }
 
-export default observer(Join);
+export default observer(JoinPage);

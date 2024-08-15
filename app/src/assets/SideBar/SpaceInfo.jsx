@@ -127,7 +127,7 @@ function SpaceInfo({ className, spaces }) {
                       e.stopPropagation();
                     }}
                   >
-                    <i className="fa-solid fa-plus" /> {t('스페이스 검색')}
+                    <i className="fa-solid fa-magnifying-glass" /> {t('스페이스 검색')}
                   </Link>
                 </li>
                 <li>

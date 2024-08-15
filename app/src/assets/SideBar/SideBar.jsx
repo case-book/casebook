@@ -11,6 +11,7 @@ import UserHeaderControl from '@/pages/common/Header/UserHeaderControl';
 import ProjectInfo from '@/assets/SideBar/ProjectInfo';
 import ProjectService from '@/services/ProjectService';
 import './SideBar.scss';
+import SpaceMenu from '@/pages/common/Header/SpaceMenu';
 
 function SideBar() {
   const {
@@ -82,9 +83,14 @@ function SideBar() {
           />
         </div>
       )}
-      <SpaceInfo spaces={spaces} />
-      <ProjectInfo projects={projects} onRefresh={getProjectList} />
-      <ProjectMenu projects={projects} />
+      {!space && <SpaceMenu projects={projects} />}
+      {space && (
+        <>
+          <SpaceInfo spaces={spaces} />
+          <ProjectInfo projects={projects} onRefresh={getProjectList} />
+          <ProjectMenu projects={projects} />
+        </>
+      )}
       <div className="side-bar-bottom">
         <UserHeaderControl />
       </div>

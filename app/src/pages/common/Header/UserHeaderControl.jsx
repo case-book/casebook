@@ -16,7 +16,7 @@ import { THEMES } from '@/constants/constants';
 function UserHeaderControl({ className }) {
   const {
     userStore: { isAdmin, user, setUser, notificationCount, setNotificationCount },
-    contextStore: { collapsed, setCollapsed },
+    contextStore: { collapsed, setCollapsed, setSpace },
     themeStore: { theme, setTheme },
   } = useStores();
 
@@ -104,8 +104,10 @@ function UserHeaderControl({ className }) {
     e.stopPropagation();
 
     setUserMenuOpen(false);
+    setSpace(null);
     setToken('');
     setOption('user', 'info', 'uuid', '');
+
     UserService.logout(
       () => {
         setUser(null);

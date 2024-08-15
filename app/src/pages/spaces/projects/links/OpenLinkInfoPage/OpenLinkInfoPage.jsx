@@ -17,7 +17,7 @@ import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
 
-const labelMinWidth = '100px';
+const labelMinWidth = '140px';
 
 function OpenLinkInfoPage() {
   const { t } = useTranslation();
@@ -69,6 +69,21 @@ function OpenLinkInfoPage() {
       },
       null,
       t('삭제'),
+    );
+  };
+
+  const onStop = () => {
+    dialogUtil.setConfirm(
+      MESSAGE_CATEGORY.WARNING,
+      t('오픈 링크 공유 중지'),
+      <div>{t('오픈 링크를 만료시킵니다. 오픈 링크를 통해 리포트 내용에 더 이상 접근할 수 없습니다. 중지하시겠습니까?')}</div>,
+      () => {
+        OpenLinkService.closeOpenLink(spaceCode, projectId, openLinkId, () => {
+          navigate(`/spaces/${spaceCode}/projects/${projectId}/links`);
+        });
+      },
+      null,
+      t('중지'),
     );
   };
 
@@ -156,7 +171,13 @@ function OpenLinkInfoPage() {
             <Title>{t('관리')}</Title>
             <Block danger>
               <BlockRow>
-                <Label>{t('오픈 링크 삭제')}</Label>
+                <Label minWidth={labelMinWidth}>{t('오픈 링크 공유 중지')}</Label>
+                <Button size="sm" color="danger" onClick={onStop}>
+                  {t('공유 중지')}
+                </Button>
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth}>{t('오픈 링크 삭제')}</Label>
                 <Button size="sm" color="danger" onClick={onDelete}>
                   {t('오픈 링크 삭제')}
                 </Button>
