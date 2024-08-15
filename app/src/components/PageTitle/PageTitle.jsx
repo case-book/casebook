@@ -13,7 +13,7 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
 
   return (
     <>
-      <PageBreadcrumbs breadcrumbs={breadcrumbs} onListClick={onListClick} />
+      {breadcrumbs?.length > 0 && <PageBreadcrumbs breadcrumbs={breadcrumbs} onListClick={onListClick} />}
       <div className={`page-title-wrapper g-no-select ${className} ${borderBottom ? 'border-bottom' : ''} ${marginBottom ? 'margin-bottom' : ''}`}>
         <div>
           <div className="menu-icon">

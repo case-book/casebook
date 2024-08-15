@@ -13,7 +13,7 @@ import './OpenLinkReport.scss';
 import useStores from '@/hooks/useStores';
 import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
 
-function OpenLinkReport({ className, token }) {
+function OpenLinkReport({ className, token, setName }) {
   const { t } = useTranslation();
 
   const {
@@ -27,6 +27,9 @@ function OpenLinkReport({ className, token }) {
   useEffect(() => {
     OpenLinkService.selectOpenLinkInfoByToken(token, info => {
       setOpenLink(info);
+      if (setName) {
+        setName(info.name);
+      }
       setUserById(
         info.users.reduce((acc, user) => {
           acc[user.id] = user;
@@ -302,11 +305,13 @@ function OpenLinkReport({ className, token }) {
 
 OpenLinkReport.defaultProps = {
   className: '',
+  setName: null,
 };
 
 OpenLinkReport.propTypes = {
   className: PropTypes.string,
   token: PropTypes.string.isRequired,
+  setName: PropTypes.func,
 };
 
 export default OpenLinkReport;

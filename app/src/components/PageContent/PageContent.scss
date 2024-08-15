@@ -31,3 +31,9 @@
     margin: 0 auto;
   }
 }
+
+.border {
+  > .page-content-wrapper {
+    border-radius: 8px;
+  }
+}

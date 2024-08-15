@@ -15,6 +15,7 @@ import GuestHeader from '@/pages/common/Header/GuestHeader';
 import ApiRoutes from '@/pages/apis';
 import SideBar from '@/assets/SideBar/SideBar';
 import ProjectListPage from '@/pages/spaces/projects/ProjectListPage';
+import LinksRoutes from '@/pages/links';
 
 function App() {
   const {
@@ -87,7 +88,6 @@ function App() {
           </div>
         </div>
       )}
-
       {tried && setUp != null && !setUp && <SetUpPage />}
       {tried && setUp != null && setUp && (
         <div className="app-content">
@@ -107,6 +107,7 @@ function App() {
             )}
             {!isLogin && (
               <Routes location={location}>
+                <Route path="/links/*" element={<LinksRoutes />} />
                 <Route path="/apis/*" element={<ApiRoutes />} />
                 <Route path="/users/join" element={<Join />} />
                 <Route path="*" element={<Login />} />

@@ -2,7 +2,8 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
 import { useTranslation } from 'react-i18next';
 import './GuestHeader.scss';
 import { Liner, Logo } from '@/components';
@@ -16,6 +17,7 @@ function GuestHeader({ className }) {
   } = useStores();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { t } = useTranslation();
 
@@ -52,7 +54,7 @@ function GuestHeader({ className }) {
         </div>
         <div className="right">
           <UserHeaderControl className="user-header-control" />
-          {!isLogin && (
+          {!isLogin && location.pathname.indexOf('/links/') !== 0 && (
             <>
               <Link to="/users/login">
                 <span>

@@ -8,12 +8,24 @@
   overflow: visible;
   box-sizing: border-box;
 
+  &.margin-bottom {
+    margin-bottom: 20px !important;
+  }
+
   &.colored {
     width: 100%;
     min-height: 100vh;
     top: 0;
     left: 0;
     background: linear-gradient(#33a1de, #acd9f2);
+  }
+
+  &.border {
+    border: 1px solid var(--border-color);
+  }
+
+  &.rounded {
+    border-radius: 8px;
   }
 
   .block-wrapper ~ .title-wrapper {
