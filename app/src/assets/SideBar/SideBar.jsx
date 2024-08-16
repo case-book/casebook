@@ -16,6 +16,7 @@ import SpaceMenu from '@/pages/common/Header/SpaceMenu';
 function SideBar() {
   const {
     contextStore: { space, setSpace, collapsed, setCollapsed, refreshProjectTime },
+    userStore: { isLogin },
   } = useStores();
 
   const navigate = useNavigate();
@@ -61,13 +62,21 @@ function SideBar() {
   }, [space, refreshProjectTime]);
 
   useEffect(() => {
-    document.body.classList.add('side-bar-ready');
-    if (collapsed) {
-      document.body.classList.add('collapsed');
+    if (!isLogin) {
+      document.body.classList.remove('side-bar-ready');
     } else {
-      document.body.classList.remove('collapsed');
+      document.body.classList.add('side-bar-ready');
+      if (collapsed) {
+        document.body.classList.add('collapsed');
+      } else {
+        document.body.classList.remove('collapsed');
+      }
     }
-  }, [collapsed]);
+
+    return () => {
+      document.body.classList.remove('side-bar-ready');
+    };
+  }, [collapsed, isLogin]);
 
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>

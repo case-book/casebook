@@ -99,6 +99,7 @@ function App() {
                 <Route path="/start" element={<GuidePage />} />
                 {space && <Route path="/" element={<ProjectListPage />} />}
                 {!space && <Route path="/" element={<GuidePage />} />}
+                <Route path="/links/*" element={<LinksRoutes />} />
                 <Route path="/users/*" element={<UsersRoutes />} />
                 <Route path="/spaces/*" element={<SpacesRoutes />} />
                 <Route path="/projects/*" element={<ProjectsRoutes />} />
