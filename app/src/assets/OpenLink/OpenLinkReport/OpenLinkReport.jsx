@@ -27,23 +27,23 @@ function OpenLinkReport({ className, token, setName }) {
 
   useEffect(() => {
     OpenLinkService.selectOpenLinkInfoByToken(
-      token,
-      info => {
-        setOpenLink(info);
-        if (setName) {
-          setName(info.name);
-        }
-        setUserById(
-          info.users.reduce((acc, user) => {
-            acc[user.id] = user;
-            return acc;
-          }, {}),
-        );
-      },
-      code => {
-        setErrorCode(code);
-        return code === 404 || code === 410;
-      },
+        token,
+        info => {
+          setOpenLink(info);
+          if (setName) {
+            setName(info.name);
+          }
+          setUserById(
+              info.users.reduce((acc, user) => {
+                acc[user.id] = user;
+                return acc;
+              }, {}),
+          );
+        },
+        code => {
+          setErrorCode(code);
+          return code === 404 || code === 410;
+        },
     );
   }, [token]);
 
@@ -106,13 +106,13 @@ function OpenLinkReport({ className, token, setName }) {
     });
 
     const mergedTestcaseGroups = Object.values(testcaseGroupsById)
-      .sort((a, b) => a.itemOrder - b.itemOrder)
-      .map(testcaseGroup => {
-        return {
-          ...testcaseGroup,
-          testcases: Object.values(testcaseGroup.testcaseById).sort((a, b) => a.itemOrder - b.itemOrder),
-        };
-      });
+    .sort((a, b) => a.itemOrder - b.itemOrder)
+    .map(testcaseGroup => {
+      return {
+        ...testcaseGroup,
+        testcases: Object.values(testcaseGroup.testcaseById).sort((a, b) => a.itemOrder - b.itemOrder),
+      };
+    });
 
     const info = {
       ...openLink,
@@ -209,111 +209,111 @@ function OpenLinkReport({ className, token, setName }) {
   };
 
   return (
-    <div className={`open-link-report-wrapper ${className}`}>
-      {errorCode && (
-        <div className="error">
-          <div>{errorCode === 404 && <div>{t('오픈 링크 정보를 찾을 수 없습니다.')}</div>}</div>
-          <div>{errorCode === 410 && <div>{t('오픈 링크 공유가 중지되었거나, 공유 기간이 만료되었습니다.')}</div>}</div>
-        </div>
-      )}
-      {!errorCode && report && (
-        <>
-          <Title border={false} marginBottom={false}>
-            {t('테스트 결과 요약')}
-          </Title>
-          <Block>
-            <Info className="summary" rounded={false}>
-              {t('@부터 @까지 총 @회 동안 @명의 테스터가 테스트를 진행하였습니다.', {
-                start: dateUtil.getDateString(report.minStartDate),
-                end: dateUtil.getDateString(report.maxCloseDate),
-                count: testrunCount,
-                people: report.testerCount,
-              })}
-            </Info>
-            <ReportCountSummary info={report} onCardClick={onClickTestResultCount} />
-          </Block>
-          <Title className="test-result-title" border={false} marginBottom={false}>
-            {t('테스트 결과')}
-          </Title>
-          <Block className="testcase-list" border scroll>
-            <Table className="table" cols={['100px', '100%', '1px']} sticcd apky>
-              <THead>
-                <Tr>
-                  <Th className="testcase-group" rowSpan={2} align="left">
-                    {t('테스트케이스 그룹')}
-                  </Th>
-                  <Th rowSpan={2} align="left">
-                    {t('테스트케이스')}
-                  </Th>
-                  <Th rowSpan={2} align="left">
-                    {t('최종 테스터')}
-                  </Th>
-                  <Th rowSpan={2} align="left">
-                    {t('최종 테스트 결과')}
-                  </Th>
-                  {testrunCount > 0 && (
-                    <Th colSpan={testrunCount} align="center">
-                      {t('테스트 진행')}
-                    </Th>
-                  )}
-                </Tr>
-                <Tr>
-                  {testrunHeader.map(d => {
-                    return (
-                      <Th key={d} align="center">
-                        {d}
-                      </Th>
-                    );
+      <div className={`open-link-report-wrapper ${className}`}>
+        {errorCode && (
+            <div className="error">
+              <div>{errorCode === 404 && <div>{t('오픈 링크 정보를 찾을 수 없습니다.')}</div>}</div>
+              <div>{errorCode === 410 && <div>{t('오픈 링크 공유가 중지되었거나, 공유 기간이 만료되었습니다.')}</div>}</div>
+            </div>
+        )}
+        {!errorCode && report && (
+            <>
+              <Title border={false} marginBottom={false}>
+                {t('테스트 결과 요약')}
+              </Title>
+              <Block>
+                <Info className="summary" rounded={false}>
+                  {t('@부터 @까지 총 @회 동안 @명의 테스터가 테스트를 진행하였습니다.', {
+                    start: dateUtil.getDateString(report.minStartDate),
+                    end: dateUtil.getDateString(report.maxCloseDate),
+                    count: testrunCount,
+                    people: report.testerCount,
                   })}
-                </Tr>
-              </THead>
-              <Tbody>
-                {report.mergedTestcaseGroups.map(testcaseGroup => {
-                  return (
-                    <OpenLinkTestcaseGroupItem
-                      key={testcaseGroup.id}
-                      testrunCount={testrunCount}
-                      testcaseGroup={testcaseGroup}
-                      userById={userById}
-                      onNameClick={(testrunId, groupId, id) => {
-                        const testrun = openLink.testruns.find(tr => tr.id === testrunId);
-                        if (testrun) {
-                          const testcase = testrun.testcaseGroups.find(d => d.testcaseGroupId === groupId)?.testcases.find(d => d.testcaseId === id);
-                          if (testcase) {
-                            const testcaseTemplate = openLink.testcaseTemplates.find(d => d.id === testcase.testcaseTemplateId);
-                            setPopupInfo({ groupId, id, testcaseTemplate, testrunTestcaseGroupTestcase: testcase });
-                          }
-                        }
+                </Info>
+                <ReportCountSummary info={report} onCardClick={onClickTestResultCount} />
+              </Block>
+              <Title className="test-result-title" border={false} marginBottom={false}>
+                {t('테스트 결과')}
+              </Title>
+              <Block className="testcase-list" border scroll>
+                <Table className="table" cols={['100px', '100%', '1px']} sticcd apky>
+                  <THead>
+                    <Tr>
+                      <Th className="testcase-group" rowSpan={2} align="left">
+                        {t('테스트케이스 그룹')}
+                      </Th>
+                      <Th rowSpan={2} align="left">
+                        {t('테스트케이스')}
+                      </Th>
+                      <Th rowSpan={2} align="left">
+                        {t('최종 테스터')}
+                      </Th>
+                      <Th rowSpan={2} align="left">
+                        {t('최종 테스트 결과')}
+                      </Th>
+                      {testrunCount > 0 && (
+                          <Th colSpan={testrunCount} align="center">
+                            {t('테스트 진행')}
+                          </Th>
+                      )}
+                    </Tr>
+                    <Tr>
+                      {testrunHeader.map(d => {
+                        return (
+                            <Th key={d} align="center">
+                              {d}
+                            </Th>
+                        );
+                      })}
+                    </Tr>
+                  </THead>
+                  <Tbody>
+                    {report.mergedTestcaseGroups.map(testcaseGroup => {
+                      return (
+                          <OpenLinkTestcaseGroupItem
+                              key={testcaseGroup.id}
+                              testrunCount={testrunCount}
+                              testcaseGroup={testcaseGroup}
+                              userById={userById}
+                              onNameClick={(testrunId, groupId, id) => {
+                                const testrun = openLink.testruns.find(tr => tr.id === testrunId);
+                                if (testrun) {
+                                  const testcase = testrun.testcaseGroups.find(d => d.testcaseGroupId === groupId)?.testcases.find(d => d.testcaseId === id);
+                                  if (testcase) {
+                                    const testcaseTemplate = openLink.testcaseTemplates.find(d => d.id === testcase.testcaseTemplateId);
+                                    setPopupInfo({ groupId, id, testcaseTemplate, testrunTestcaseGroupTestcase: testcase });
+                                  }
+                                }
+                              }}
+                          />
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              </Block>
+              <Title className="comment-title">{t('코멘트')}</Title>
+              <Block className="viewer-block">
+                {openLink.comment && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={openLink.comment || '<span className="none-text">&nbsp;</span>'} />}
+                {!openLink.comment && <EmptyContent border>{t('코멘트가 없습니다.')}</EmptyContent>}
+              </Block>
+              {popupInfo && (
+                  <TestrunResultViewerPopup
+                      testcaseTemplate={popupInfo.testcaseTemplate}
+                      testrunTestcaseGroupTestcase={popupInfo.testrunTestcaseGroupTestcase}
+                      users={openLink?.users.map(u => {
+                        return {
+                          ...u,
+                          id: u.userId,
+                        };
+                      })}
+                      setOpened={() => {
+                        setPopupInfo(null);
                       }}
-                    />
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </Block>
-          <Title className="comment-title">{t('코멘트')}</Title>
-          <Block className="viewer-block">
-            {openLink.comment && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={openLink.comment || '<span className="none-text">&nbsp;</span>'} />}
-            {!openLink.comment && <EmptyContent border>{t('코멘트가 없습니다.')}</EmptyContent>}
-          </Block>
-          {popupInfo && (
-            <TestrunResultViewerPopup
-              testcaseTemplate={popupInfo.testcaseTemplate}
-              testrunTestcaseGroupTestcase={popupInfo.testrunTestcaseGroupTestcase}
-              users={openLink?.users.map(u => {
-                return {
-                  ...u,
-                  id: u.userId,
-                };
-              })}
-              setOpened={() => {
-                setPopupInfo(null);
-              }}
-            />
-          )}
-        </>
-      )}
-    </div>
+                  />
+              )}
+            </>
+        )}
+      </div>
   );
 }
 
