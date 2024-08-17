@@ -3,7 +3,6 @@ import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
-import { useShouldRender } from './testcaseFilterUtils';
 
 function TestcaseNavigatorTestcaseItem({
   testcase,
@@ -24,11 +23,7 @@ function TestcaseNavigatorTestcaseItem({
   onContextMenu,
   clearDragInfo,
   onKeyDown,
-  testcaseFilter,
 }) {
-  const shouldRender = useShouldRender(testcase, testcaseFilter);
-
-  if (!shouldRender) return null;
   return (
     <li className="testcase-content" key={testcase.id}>
       <div
@@ -245,7 +240,6 @@ TestcaseNavigatorTestcaseItem.defaultProps = {
   copyInfo: null,
   onContextMenu: () => {},
   clearDragInfo: () => {},
-  testcaseFilter: {},
 };
 
 TestcaseNavigatorTestcaseItem.propTypes = {
@@ -294,11 +288,6 @@ TestcaseNavigatorTestcaseItem.propTypes = {
     type: PropTypes.string,
     id: PropTypes.number,
     name: PropTypes.string,
-  }),
-  testcaseFilter: PropTypes.shape({
-    ids: PropTypes.arrayOf(PropTypes.number),
-    name: PropTypes.string,
-    releaseIds: PropTypes.arrayOf(PropTypes.number),
   }),
   onContextMenu: PropTypes.func,
   clearDragInfo: PropTypes.func,

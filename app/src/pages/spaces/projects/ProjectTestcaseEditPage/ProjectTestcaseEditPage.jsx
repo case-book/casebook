@@ -29,10 +29,6 @@ function ProjectTestcaseEditPage() {
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [releases, setReleases] = useState([]);
   const [paraphraseInfo, setParaphraseInfo] = useState({});
-  const [countSummary, setCountSummary] = useState({
-    testcaseGroupCount: 0,
-    testcaseCount: 0,
-  });
   const { query, setQuery: setSelectedItemInfo } = useQueryString();
 
   const selectedItemInfo = useMemo(() => {
@@ -137,8 +133,6 @@ function ProjectTestcaseEditPage() {
     return releases.find(d => d.isTarget);
   }, [releases]);
 
-  const [min, setMin] = useState(false);
-
   useEffect(() => {
     window.scrollTo(0, 0);
     getLlms();
@@ -197,21 +191,9 @@ function ProjectTestcaseEditPage() {
 
   useEffect(() => {
     if (allTestcaseGroups?.length > 0) {
-      setCountSummary({
-        testcaseGroupCount: allTestcaseGroups?.length || 0,
-        testcaseCount: allTestcaseGroups?.reduce((count, next) => {
-          return count + (next?.testcases?.length || 0);
-        }, 0),
-      });
-
       const nextGroups = testcaseUtil.getTestcaseTreeData(allTestcaseGroups);
       setTestcaseGroups(nextGroups);
     } else {
-      setCountSummary({
-        testcaseGroupCount: 0,
-        testcaseCount: 0,
-      });
-
       setTestcaseGroups([]);
     }
   }, [allTestcaseGroups]);
@@ -626,7 +608,7 @@ function ProjectTestcaseEditPage() {
       <PageContent className="page-content">
         {project?.testcaseTemplates && (
           <SplitPane sizes={sizes} onChange={onChangeSize}>
-            <Pane className="page-layout" minSize={200}>
+            <Pane className="page-layout" minSize={300}>
               <TestcaseNavigator
                 testcaseGroups={testcaseGroups}
                 addTestcaseGroup={addTestcaseGroup}
@@ -636,9 +618,6 @@ function ProjectTestcaseEditPage() {
                 selectedItemInfo={selectedItemInfo}
                 onSelect={setSelectedItemInfo}
                 onDelete={onDeleteTestcaseGroup}
-                min={min}
-                setMin={setMin}
-                countSummary={countSummary}
                 contentChanged={contentChanged}
                 copyTestcase={copyTestcase}
               />

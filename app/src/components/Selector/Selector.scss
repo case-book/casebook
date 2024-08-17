@@ -15,6 +15,10 @@
     border-color: var(--border-color-hover);
   }
 
+  .placeholder {
+    color: var(--gray-color);
+  }
+
   &.size-xs {
     height: $xs-height;
     font-size: 0.8rem;

@@ -5,7 +5,6 @@ import { ITEM_TYPE } from '@/constants/constants';
 import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
 import { observer } from 'mobx-react';
 import './TestcaseNavigatorGroupItem.scss';
-import { useShouldRender } from './testcaseFilterUtils';
 import TestcaseNavigatorTestcaseItem from './TestcaseNavigatorTestcaseItem';
 
 function TestcaseNavigatorGroupItem({
@@ -30,10 +29,8 @@ function TestcaseNavigatorGroupItem({
   watcherInfo,
   enableDrag,
   copyInfo,
-  testcaseFilter,
 }) {
   const [treeOpen, setTreeOpen] = useState(false);
-  const shouldRender = useShouldRender(group, testcaseFilter);
 
   useEffect(() => {
     if (allOpen !== null) {
@@ -66,7 +63,6 @@ function TestcaseNavigatorGroupItem({
     return group?.testcases?.length > 0 || group?.children?.length > 0;
   }, [group]);
 
-  if (!shouldRender) return null;
   return (
     <Suspense>
       <li key={group.id} className="testcase-group-item-wrapper" onClick={e => e.stopPropagation()}>
@@ -261,7 +257,6 @@ function TestcaseNavigatorGroupItem({
                     onContextMenu={onContextMenu}
                     clearDragInfo={clearDragInfo}
                     onKeyDown={onKeyDown}
-                    testcaseFilter={testcaseFilter}
                   />
                 ))}
               </ul>
@@ -332,7 +327,6 @@ TestcaseNavigatorGroupItem.defaultProps = {
   enableDrag: true,
   watcherInfo: null,
   copyInfo: null,
-  testcaseFilter: {},
 };
 
 TestcaseNavigatorGroupItem.propTypes = {
@@ -386,11 +380,6 @@ TestcaseNavigatorGroupItem.propTypes = {
     type: PropTypes.string,
     id: PropTypes.number,
     name: PropTypes.string,
-  }),
-  testcaseFilter: PropTypes.shape({
-    ids: PropTypes.arrayOf(PropTypes.number),
-    name: PropTypes.string,
-    releaseIds: PropTypes.arrayOf(PropTypes.number),
   }),
 };
 

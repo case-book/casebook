@@ -41,13 +41,6 @@ function TestrunExecutePage() {
 
   const navigate = useNavigate();
 
-  const [min, setMin] = useState(false);
-
-  const [countSummary, setCountSummary] = useState({
-    testcaseGroupCount: 0,
-    testcaseCount: 0,
-  });
-
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [project, setProject] = useState(null);
@@ -182,13 +175,6 @@ function TestrunExecutePage() {
         };
       });
 
-      setCountSummary({
-        testcaseGroupCount: filteredTestcaseGroups?.length || 0,
-        testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
-          return count + (next?.testcases?.length || 0);
-        }, 0),
-      });
-
       const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
       setTestcaseGroups(groups);
     });
@@ -228,13 +214,6 @@ function TestrunExecutePage() {
           return String(testcase.testerId) === String(tester);
         }),
       };
-    });
-
-    setCountSummary({
-      testcaseGroupCount: filteredTestcaseGroups?.length || 0,
-      testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
-        return count + (next?.testcases?.length || 0);
-      }, 0),
     });
 
     const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
@@ -515,13 +494,6 @@ function TestrunExecutePage() {
           };
         });
 
-        setCountSummary({
-          testcaseGroupCount: filteredTestcaseGroups?.length || 0,
-          testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
-            return count + (next?.testcases?.length || 0);
-          }, 0),
-        });
-
         const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
         setTestcaseGroups(groups);
 
@@ -645,7 +617,7 @@ function TestrunExecutePage() {
       </PageTitle>
       <PageContent className="page-content">
         <SplitPane sizes={sizes} onChange={onChangeSize}>
-          <Pane className="testcase-navigator-content" minSize={200}>
+          <Pane className="testcase-navigator-content" minSize={300}>
             <TestcaseNavigator
               user={user}
               users={project?.users}
@@ -654,9 +626,6 @@ function TestrunExecutePage() {
               enableDrag={false}
               selectedItemInfo={{ id: Number(id), type }}
               onSelect={onSelect}
-              min={min}
-              setMin={setMin}
-              countSummary={countSummary}
               userFilter={tester}
               setUserFilter={onChangeTester}
               watcherInfo={watcherInfo}

@@ -1,4 +1,4 @@
-import React, { startTransition, useCallback, useEffect, useRef, useState } from 'react';
+import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, EmptyContent } from '@/components';
 import PropTypes from 'prop-types';
 import TestcaseNavigatorGroupItem from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigatorGroupItem';
@@ -12,7 +12,7 @@ import { MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import TestcaseNavigatorControl from './TestcaseNavigatorControl';
-import { useTestcaseFilter } from './testcaseFilterUtils';
+import filteringTestcaseGroupList from './testcaseFilterUtils';
 import './TestcaseNavigator.scss';
 
 function TestcaseNavigator({
@@ -24,9 +24,6 @@ function TestcaseNavigator({
   onDelete,
   onChangeTestcaseGroupName,
   addTestcase,
-  min,
-  setMin,
-  countSummary,
   contentChanged,
   user,
   users,
@@ -77,6 +74,11 @@ function TestcaseNavigator({
     name: '',
   });
 
+  const [testcaseFilter, setTestcaseFilter] = useState({
+    words: [],
+    releaseIds: [],
+  });
+
   const [allOpen, setAllOpen] = useState(true);
 
   const [setting, setSetting] = useState(() => {
@@ -120,7 +122,13 @@ function TestcaseNavigator({
     };
   });
 
-  const { testcaseFilter, setTestcaseFilter } = useTestcaseFilter(testcaseGroups);
+  const list = useMemo(() => {
+    if (testcaseFilter.words.length === 0 && testcaseFilter.releaseIds.length === 0) {
+      return testcaseGroups;
+    }
+
+    return filteringTestcaseGroupList(testcaseGroups, testcaseFilter);
+  }, [testcaseFilter, testcaseGroups]);
 
   const setDragInfo = info => {
     setDragChange(Date.now());
@@ -284,16 +292,14 @@ function TestcaseNavigator({
   };
 
   return (
-    <div className={`testcase-groups-wrapper g-no-select ${min ? 'min' : ''}`} ref={ref}>
+    <div className="testcase-groups-wrapper g-no-select" ref={ref}>
       <TestcaseNavigatorControl
-        min={min}
         width={width}
         user={user}
         users={users}
         userFilter={userFilter}
         selectedItemInfo={selectedItemInfo}
         testcaseFilter={testcaseFilter}
-        setMin={setMin}
         addTestcase={addTestcase}
         addTestcaseGroup={addTestcaseGroup}
         onChangeUserFilter={setUserFilter}
@@ -310,20 +316,8 @@ function TestcaseNavigator({
           });
         }}
       >
-        {min && (
-          <div className="min-content">
-            <div>
-              <div className="label">GROUP</div>
-              <div className="count">{countSummary.testcaseGroupCount || 0}</div>
-            </div>
-            <div>
-              <div className="label">CASE</div>
-              <div className="count">{countSummary.testcaseCount || 0}</div>
-            </div>
-          </div>
-        )}
         <div className={`content-scroller ${dragChange}`} ref={scroller}>
-          {!min && testcaseGroups?.length < 1 && (
+          {list?.length < 1 && (
             <EmptyContent className="empty-content">
               <div>{t('테스트케이스 그룹이 없습니다.')}</div>
               {addTestcaseGroup && (
@@ -350,9 +344,9 @@ function TestcaseNavigator({
               )}
             </EmptyContent>
           )}
-          {testcaseGroups?.length > 0 && (
+          {list?.length > 0 && (
             <ul>
-              {testcaseGroups.map(group => {
+              {list.map(group => {
                 return (
                   <TestcaseNavigatorGroupItem
                     key={group.id}
@@ -377,7 +371,6 @@ function TestcaseNavigator({
                     showTestResult={showTestResult}
                     watcherInfo={watcherInfo}
                     copyInfo={copyInfo}
-                    testcaseFilter={testcaseFilter}
                   />
                 );
               })}
@@ -385,33 +378,32 @@ function TestcaseNavigator({
           )}
         </div>
       </div>
-      {!min && (
-        <div className="testcase-config-button">
-          <Button
-            size="xs"
-            outline
-            onClick={() => {
-              setSetting({
-                ...setting,
-                show: true,
-              });
-            }}
-            rounded
-          >
-            <i className="fa-solid fa-gear" />
-          </Button>
-          <TestcaseGroupSetting
-            setting={setting}
-            onChangeSetting={onChangeSetting}
-            onClose={() => {
-              setSetting({
-                ...setting,
-                show: false,
-              });
-            }}
-          />
-        </div>
-      )}
+
+      <div className="testcase-config-button">
+        <Button
+          size="xs"
+          outline
+          onClick={() => {
+            setSetting({
+              ...setting,
+              show: true,
+            });
+          }}
+          rounded
+        >
+          <i className="fa-solid fa-gear" />
+        </Button>
+        <TestcaseGroupSetting
+          setting={setting}
+          onChangeSetting={onChangeSetting}
+          onClose={() => {
+            setSetting({
+              ...setting,
+              show: false,
+            });
+          }}
+        />
+      </div>
       {onDelete && (
         <TestcaseNavigatorContextMenu
           onDelete={onDelete}
@@ -433,11 +425,6 @@ TestcaseNavigator.defaultProps = {
     id: null,
     type: null,
     time: null,
-  },
-  min: false,
-  countSummary: {
-    testcaseGroupCount: 0,
-    testcaseCount: 0,
   },
   addTestcaseGroup: null,
   addTestcase: null,
@@ -468,12 +455,6 @@ TestcaseNavigator.propTypes = {
     time: NullableNumber,
   }),
   onChangeTestcaseGroupName: PropTypes.func,
-  min: PropTypes.bool,
-  setMin: PropTypes.func.isRequired,
-  countSummary: PropTypes.shape({
-    testcaseGroupCount: PropTypes.number,
-    testcaseCount: PropTypes.number,
-  }),
   contentChanged: PropTypes.bool,
   user: PropTypes.shape({
     id: PropTypes.number,

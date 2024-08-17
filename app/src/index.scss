@@ -555,12 +555,11 @@ hr {
 
 .react-split__sash {
   border-left: 1px solid var(--border-light-color);
+  .split-sash-content-active {
+    background-color: var(--yellow-color) !important;
+  }
   &:hover {
     > div {
-      background-color: var(--yellow-color) !important;
-    }
-
-    .split-sash-content-active {
       background-color: var(--yellow-color) !important;
     }
   }
