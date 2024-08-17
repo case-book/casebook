@@ -30,6 +30,12 @@ function TestcaseNavigatorFilter({ testcaseFilter, onChangeTestcaseFilter, setOp
 
   const addWord = () => {
     const nextTestcaseFilter = { ...testcaseFilter };
+
+    if (nextTestcaseFilter.words.includes(text)) {
+      setText('');
+      return;
+    }
+
     const nextWord = nextTestcaseFilter.words.slice(0);
     nextWord.push(text);
     nextTestcaseFilter.words = nextWord;
@@ -195,9 +201,7 @@ TestcaseNavigatorFilter.defaultProps = {};
 TestcaseNavigatorFilter.propTypes = {
   testcaseFilter: PropTypes.shape({
     words: PropTypes.arrayOf(PropTypes.string),
-    ids: PropTypes.arrayOf(PropTypes.string),
-    name: PropTypes.string,
-    releaseIds: PropTypes.arrayOf(PropTypes.string),
+    releaseIds: PropTypes.arrayOf(PropTypes.number),
   }).isRequired,
   onChangeTestcaseFilter: PropTypes.func.isRequired,
   setOpened: PropTypes.func.isRequired,

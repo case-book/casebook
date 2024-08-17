@@ -175,20 +175,26 @@ TestcaseNavigatorControl.defaultProps = {
 TestcaseNavigatorControl.propTypes = {
   className: PropTypes.string,
   onClickAllOpen: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  user: PropTypes.object,
-  // eslint-disable-next-line react/forbid-prop-types
-  users: PropTypes.array,
+  user: PropTypes.shape({
+    id: PropTypes.number,
+  }),
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      userId: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
   userFilter: PropTypes.string,
   onChangeUserFilter: PropTypes.func,
   addTestcase: PropTypes.func,
   addTestcaseGroup: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
-  selectedItemInfo: PropTypes.object.isRequired,
+  selectedItemInfo: PropTypes.shape({
+    type: PropTypes.string,
+  }).isRequired,
   width: PropTypes.number,
   testcaseFilter: PropTypes.shape({
     words: PropTypes.arrayOf(PropTypes.string),
-    releaseIds: PropTypes.arrayOf(PropTypes.string),
+    releaseIds: PropTypes.arrayOf(PropTypes.number),
   }).isRequired,
   onChangeTestcaseFilter: PropTypes.func.isRequired,
 };
