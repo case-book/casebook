@@ -83,7 +83,7 @@ function OpenLinkListPage() {
         )}
         <Block>
           {openLinks?.length > 0 && (
-            <Table className="table" cols={['100%', '1px', '1px']}>
+            <Table className="table" cols={['100%', '1px', '1px']} border>
               <THead>
                 <Tr>
                   <Th align="left">{t('오픈 링크')}</Th>

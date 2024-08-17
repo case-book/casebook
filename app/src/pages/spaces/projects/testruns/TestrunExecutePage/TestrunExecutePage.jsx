@@ -550,7 +550,7 @@ function TestrunExecutePage() {
       removeTopic(`/sub/projects/${projectId}/testruns/${testrunId}/users/${user.id}`);
       removeMessageHandler('TestrunExecutePage');
     };
-  }, [user, paricipants, watcherInfo, testrun, socketClient]);
+  }, [user, paricipants, watcherInfo, testrun, socketClient, content]);
 
   return (
     <Page className="testrun-execute-page-wrapper">
