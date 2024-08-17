@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, FlexibleLayout, Page, PageContent, PageTitle, UserAvatar } from '@/components';
+import { Button, Page, PageContent, PageTitle, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -11,6 +11,7 @@ import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunTestcaseManager';
+import SplitPane, { Pane } from 'split-pane-react';
 import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
 import ReactTooltip from 'react-tooltip';
@@ -60,6 +61,22 @@ function TestrunExecutePage() {
   const lastParicipants = useRef(null);
 
   const [watcherInfo, setWatcherInfo] = useState({});
+
+  const [sizes, setSizes] = useState(
+    (() => {
+      const info = JSON.parse(localStorage.getItem('testrun-execute-page-sizes'));
+      if (info) {
+        return info;
+      }
+
+      return [300, 'auto'];
+    })(),
+  );
+
+  const onChangeSize = info => {
+    localStorage.setItem('testrun-execute-page-sizes', JSON.stringify(info));
+    setSizes(info);
+  };
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -627,11 +644,8 @@ function TestrunExecutePage() {
         </div>
       </PageTitle>
       <PageContent className="page-content">
-        <FlexibleLayout
-          layoutOptionKey={['testrun', 'testrun-layout', 'width']}
-          min={min}
-          setMin={setMin}
-          left={
+        <SplitPane sizes={sizes} onChange={onChangeSize}>
+          <Pane className="testcase-navigator-content" minSize={200}>
             <TestcaseNavigator
               user={user}
               users={project?.users}
@@ -647,10 +661,9 @@ function TestrunExecutePage() {
               setUserFilter={onChangeTester}
               watcherInfo={watcherInfo}
             />
-          }
-          right={
-            id &&
-            type === ITEM_TYPE.TESTCASE && (
+          </Pane>
+          <Pane className="testrun-testcase-manager-content" minSize={200}>
+            {id && type === ITEM_TYPE.TESTCASE && (
               <TestRunTestcaseManager
                 spaceCode={spaceCode}
                 projectId={projectId}
@@ -676,9 +689,9 @@ function TestrunExecutePage() {
                 })}
                 createTestrunImage={createTestrunImage}
               />
-            )
-          }
-        />
+            )}
+          </Pane>
+        </SplitPane>
       </PageContent>
     </Page>
   );

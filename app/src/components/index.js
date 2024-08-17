@@ -49,7 +49,7 @@ import Star from './Star/Star';
 import SeqId from './SeqId/SeqId';
 import DateRange from './DateRange/DateRange';
 import DatePicker from './DateRange/DatePicker';
-import FlexibleLayout from './FlexibleLayout/FlexibleLayout';
+
 import TestcaseViewerLabel from './TestcaseViewerLabel/TestcaseViewerLabel';
 import TestcaseItem from './TestcaseItem/TestcaseItem';
 import PieChart from './PieChart/PieChart';
@@ -120,7 +120,6 @@ export {
   SeqId,
   DatePicker,
   DateRange,
-  FlexibleLayout,
   TestcaseViewerLabel,
   TestcaseItem,
   PieChart,

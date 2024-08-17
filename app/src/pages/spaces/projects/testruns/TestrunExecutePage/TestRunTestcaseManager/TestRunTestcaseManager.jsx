@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, FlexibleLayout, Loader, SeqId, TestcaseItem } from '@/components';
+import { Button, Loader, SeqId, TestcaseItem } from '@/components';
+import SplitPane, { Pane } from 'split-pane-react';
 import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -45,6 +46,22 @@ function TestRunTestcaseManager({
   const testcaseManagerContentElement = useRef(null);
   const managerLayoutElement = useRef(null);
   const managerContentElement = useRef(null);
+
+  const [sizes, setSizes] = useState(
+    (() => {
+      const info = JSON.parse(localStorage.getItem('testrun-testcase-manager-sizes'));
+      if (info) {
+        return info;
+      }
+
+      return ['auto', 300];
+    })(),
+  );
+
+  const onChangeSize = info => {
+    localStorage.setItem('testrun-testcase-manager-sizes', JSON.stringify(info));
+    setSizes(info);
+  };
 
   const testcaseTemplate = useMemo(() => {
     return testcaseTemplates.find(d => d.id === content?.testcaseTemplateId);
@@ -251,36 +268,33 @@ function TestRunTestcaseManager({
     <div className={`testrun-testcase-manager-wrapper ${resultLayoutPosition}`} ref={testcaseManagerContentElement}>
       {contentLoading && <Loader />}
       {resultLayoutPosition === 'RIGHT' && (
-        <FlexibleLayout
-          defaultSize="800px"
-          layoutOptionKey={['testrun', 'testrun-result-layout', 'width']}
-          className="manager-layout"
-          left={getManagerContent()}
-          right={
-            <div>
-              <TestRunResultInfo
-                spaceCode={spaceCode}
-                projectId={projectId}
-                testrunId={testrunId}
-                project={project}
-                content={content}
-                testcaseTemplates={testcaseTemplates}
-                users={users}
-                createTestrunImage={createTestrunImage}
-                onSaveComment={onSaveComment}
-                user={user}
-                onDeleteComment={onDeleteComment}
-                resultLayoutPosition={resultLayoutPosition}
-                onChangeTestResult={onChangeTestResult}
-                onChangeTester={onChangeTester}
-                onRandomTester={onRandomTester}
-                onChangeTestcaseItem={onChangeTestcaseItem}
-                resultPopupOpened={resultPopupOpened}
-                setResultPopupOpened={setResultPopupOpened}
-              />
-            </div>
-          }
-        />
+        <SplitPane sizes={sizes} onChange={onChangeSize}>
+          <Pane className="manager-content-layout" minSize={200}>
+            {getManagerContent()}
+          </Pane>
+          <Pane className="testcase-navigator-content" minSize={300}>
+            <TestRunResultInfo
+              spaceCode={spaceCode}
+              projectId={projectId}
+              testrunId={testrunId}
+              project={project}
+              content={content}
+              testcaseTemplates={testcaseTemplates}
+              users={users}
+              createTestrunImage={createTestrunImage}
+              onSaveComment={onSaveComment}
+              user={user}
+              onDeleteComment={onDeleteComment}
+              resultLayoutPosition={resultLayoutPosition}
+              onChangeTestResult={onChangeTestResult}
+              onChangeTester={onChangeTester}
+              onRandomTester={onRandomTester}
+              onChangeTestcaseItem={onChangeTestcaseItem}
+              resultPopupOpened={resultPopupOpened}
+              setResultPopupOpened={setResultPopupOpened}
+            />
+          </Pane>
+        </SplitPane>
       )}
       {resultLayoutPosition !== 'RIGHT' && (
         <div className="manager-layout" ref={managerLayoutElement}>

@@ -2,13 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import { useParams } from 'react-router';
-import { FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
+import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
 import ReleaseService from '@/services/ReleaseService';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/ContentManager';
+import SplitPane, { Pane } from 'split-pane-react';
 import './ProjectTestcaseEditPage.scss';
 import testcaseUtil from '@/utils/testcaseUtil';
 import { useNavigate } from 'react-router-dom';
@@ -47,6 +48,22 @@ function ProjectTestcaseEditPage() {
   const [popupContent, setPopupContent] = useState(null);
   const [contentChanged, setContentChanged] = useState(false);
   const [variables, setVariables] = useState([]);
+
+  const [sizes, setSizes] = useState(
+    (() => {
+      const info = JSON.parse(localStorage.getItem('project-testcase-edit-page-sizes'));
+      if (info) {
+        return info;
+      }
+
+      return [300, 'auto'];
+    })(),
+  );
+
+  const onChangeSize = info => {
+    localStorage.setItem('project-testcase-edit-page-sizes', JSON.stringify(info));
+    setSizes(info);
+  };
 
   const getLlms = () => {
     SpaceService.selectSpaceLlmList(spaceCode, list => {
@@ -608,10 +625,8 @@ function ProjectTestcaseEditPage() {
       </PageTitle>
       <PageContent className="page-content">
         {project?.testcaseTemplates && (
-          <FlexibleLayout
-            layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
-            min={min}
-            left={
+          <SplitPane sizes={sizes} onChange={onChangeSize}>
+            <Pane className="page-layout" minSize={200}>
               <TestcaseNavigator
                 testcaseGroups={testcaseGroups}
                 addTestcaseGroup={addTestcaseGroup}
@@ -627,8 +642,8 @@ function ProjectTestcaseEditPage() {
                 contentChanged={contentChanged}
                 copyTestcase={copyTestcase}
               />
-            }
-            right={
+            </Pane>
+            <Pane className="page-layout" minSize={400}>
               <ContentManager
                 getPopupContent={getPopupContent}
                 popupContent={popupContent}
@@ -654,8 +669,8 @@ function ProjectTestcaseEditPage() {
                 onRemoveParaphraseContent={onRemoveParaphraseContent}
                 aiEnabled={project.aiEnabled}
               />
-            }
-          />
+            </Pane>
+          </SplitPane>
         )}
       </PageContent>
     </Page>

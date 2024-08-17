@@ -4,6 +4,11 @@
     flex-grow: 1;
     display: flex;
     padding: 0;
+
+    .testcase-navigator-content,
+    .testrun-testcase-manager-content {
+      height: 100%;
+    }
   }
 
   .page-title {

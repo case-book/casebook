@@ -5,6 +5,11 @@
   right: 0;
   bottom: 0;
 
+  .manager-content-layout {
+    overflow-y: auto;
+    height: 100%;
+  }
+
   .manager-layout {
     overflow-y: auto;
     height: 100%;
