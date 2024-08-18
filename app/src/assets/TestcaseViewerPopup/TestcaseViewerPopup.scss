@@ -16,6 +16,10 @@
     flex-direction: column;
     background-color: var(--light-color);
 
+    .testcase-viewer-close-icon {
+      margin-left: 1rem;
+    }
+
     .popup-content-layout {
       max-width: 1200px;
       border-right: 1px solid var(--light-color);

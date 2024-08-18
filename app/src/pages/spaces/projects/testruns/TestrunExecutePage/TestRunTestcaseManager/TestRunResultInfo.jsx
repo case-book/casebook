@@ -154,6 +154,7 @@ function TestRunResultInfo({
           )}
           <Button
             className="exit-button"
+            outline={false}
             color="transparent"
             onClick={() => {
               setResultPopupOpened(false);

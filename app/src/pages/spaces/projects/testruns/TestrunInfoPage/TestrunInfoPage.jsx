@@ -190,6 +190,16 @@ function TestrunInfoPage() {
     return testcaseUtil.getTestcaseTreeData(testcaseGroups, 'id');
   }, [testcaseGroups]);
 
+  const onChangeTestcase = testcase => {
+    const nextTestcaseGroups = testcaseGroups.slice(0);
+    const group = nextTestcaseGroups.find(d => d.id === testcase.testcaseGroupId);
+    const nextTestcasesIndex = group.testcases.findIndex(d => d.id === testcase.id);
+    if (nextTestcasesIndex > -1) {
+      group.testcases[nextTestcasesIndex] = testcase;
+    }
+    setTestcaseGroups(nextTestcaseGroups);
+  };
+
   return (
     <>
       <Page className="testrun-info-page-wrapper">
@@ -443,6 +453,8 @@ function TestrunInfoPage() {
           setOpened={() => {
             setTestcaseViewerInfo(null);
           }}
+          editEnabled
+          onTestcaseChange={onChangeTestcase}
         />
       )}
     </>

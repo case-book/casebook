@@ -111,6 +111,16 @@ function ReleaseInfoPage() {
     );
   };
 
+  const onChangeTestcase = testcase => {
+    const nextTestcaseGroups = testcaseGroups.slice(0);
+    const group = nextTestcaseGroups.find(d => d.id === testcase.testcaseGroupId);
+    const nextTestcasesIndex = group.testcases.findIndex(d => d.id === testcase.id);
+    if (nextTestcasesIndex > -1) {
+      group.testcases[nextTestcasesIndex] = testcase;
+    }
+    setTestcaseGroups(nextTestcaseGroups);
+  };
+
   return (
     <>
       <Page className="release-info-page-wrapper">
@@ -277,6 +287,8 @@ function ReleaseInfoPage() {
             });
             setQuery({ groupId: null, id: null });
           }}
+          editEnabled
+          onTestcaseChange={onChangeTestcase}
         />
       )}
     </>

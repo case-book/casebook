@@ -6,10 +6,22 @@ import './TestcaseViewerPopup.scss';
 import TestcaseService from '@/services/TestcaseService';
 import TestcaseManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/TestcaseManager/TestcaseManager';
 import useKeyboard from '@/hooks/useKeyboard';
-import { CloseIcon } from '@/components';
+import { CloseIcon, Loader } from '@/components';
+import dialogUtil from '@/utils/dialogUtil';
+import { useTranslation } from 'react-i18next';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { cloneDeep } from 'lodash';
 
-function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGroupId, testcaseGroupTestcaseId, setOpened }) {
+function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGroupId, testcaseGroupTestcaseId, setOpened, editEnabled, onTestcaseChange }) {
+  const { t } = useTranslation();
   const [testcase, setTestcase] = useState(null);
+  const [orginalTestcase, setOrginalTestcase] = useState(null);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const targetRelease = useMemo(() => {
+    return releases.find(d => d.isTarget);
+  }, [releases]);
 
   const tags = useMemo(() => {
     const tagMap = {};
@@ -27,6 +39,7 @@ function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGrou
   useEffect(() => {
     TestcaseService.selectTestcase(spaceCode, project.id, testcaseGroupTestcaseId, data => {
       setTestcase(data);
+      setOrginalTestcase(cloneDeep(data));
     });
   }, [testcaseGroupId, testcaseGroupTestcaseId]);
 
@@ -50,6 +63,62 @@ function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGrou
     };
   }, []);
 
+  const updateTestcase = info => {
+    setContentLoading(true);
+    TestcaseService.updateTestcase(
+      spaceCode,
+      project.id,
+      info.id,
+      info,
+      result => {
+        setTestcase(result);
+        setTimeout(() => {
+          setContentLoading(false);
+        }, 200);
+
+        setIsEdit(false);
+        if (onTestcaseChange) {
+          onTestcaseChange(result);
+        }
+      },
+      () => {
+        setTimeout(() => {
+          setContentLoading(false);
+        }, 200);
+      },
+    );
+  };
+
+  const onSaveTestcase = info => {
+    if (targetRelease && !info.projectReleaseIds.includes(targetRelease.id)) {
+      dialogUtil.setConfirm(
+        MESSAGE_CATEGORY.WARNING,
+        t('타켓 릴리스 추가 확인'),
+        t('설정된 프로젝트의 타켓 릴리스가 현재 테스트케이스에 추가되어 있지 않습니다. 테스트케이스에 타켓 릴리스를 추가하시겠습니까?'),
+        () => {
+          info.projectReleaseIds.push(targetRelease.id);
+          updateTestcase(info);
+        },
+        () => {
+          updateTestcase(info);
+        },
+        '추가',
+        '추가 안함',
+      );
+    } else {
+      updateTestcase(info);
+    }
+  };
+
+  const createTestcaseImage = (testcaseId, name, size, type, file) => {
+    return TestcaseService.createImage(spaceCode, project.id, testcaseId, name, size, type, file);
+  };
+
+  const onCancel = () => {
+    setIsEdit(false);
+    setTestcase(cloneDeep(orginalTestcase));
+  };
+
   return (
     <div
       className="testcase-viewer-popup-wrapper"
@@ -57,20 +126,24 @@ function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGrou
         setOpened(false);
       }}
     >
+      {contentLoading && <Loader />}
       {testcase && (
         <div className="popup-content" onClick={e => e.stopPropagation()}>
           <div className="popup-content-layout">
             {testcase && (
               <TestcaseManager
-                isEdit={false}
+                isEdit={isEdit}
+                setIsEdit={editEnabled ? setIsEdit : null}
                 content={testcase}
                 testcaseTemplates={project.testcaseTemplates}
-                setContent={() => {}}
-                onSave={() => {}}
-                onCancel={() => {}}
+                setContent={setTestcase}
+                onSave={() => {
+                  onSaveTestcase(testcase);
+                }}
+                onCancel={onCancel}
                 releases={releases}
                 users={users}
-                createTestcaseImage={() => {}}
+                createTestcaseImage={createTestcaseImage}
                 tags={tags}
                 llms={null}
                 onParaphrase={() => {}}
@@ -80,6 +153,7 @@ function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGrou
                 aiEnabled={false}
                 headerControl={
                   <CloseIcon
+                    className="testcase-viewer-close-icon"
                     onClick={() => {
                       setOpened(false);
                     }}
@@ -96,6 +170,8 @@ function TestcaseViewerPopup({ spaceCode, project, releases, users, testcaseGrou
 
 TestcaseViewerPopup.defaultProps = {
   users: [],
+  editEnabled: false,
+  onTestcaseChange: null,
 };
 
 TestcaseViewerPopup.propTypes = {
@@ -110,6 +186,8 @@ TestcaseViewerPopup.propTypes = {
   setOpened: PropTypes.func.isRequired,
   project: ProjectPropTypes.isRequired,
   releases: PropTypes.arrayOf(ProjectReleasePropTypes).isRequired,
+  editEnabled: PropTypes.bool,
+  onTestcaseChange: PropTypes.func,
 };
 
 export default observer(TestcaseViewerPopup);
