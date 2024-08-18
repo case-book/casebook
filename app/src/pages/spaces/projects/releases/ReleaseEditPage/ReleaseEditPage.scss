@@ -1,0 +1,43 @@
+.release-edit-page-wrapper {
+  .target-description {
+    font-size: 12px;
+    color: $gray-700;
+    margin-top: 8px;
+  }
+
+  .summary-list {
+    width: 100%;
+    margin: 0;
+    > table {
+      margin-top: 0;
+
+      tbody {
+        td {
+          border-bottom: 1px solid var(--border-light-color);
+        }
+      }
+    }
+  }
+
+  .testcase-list {
+    .table {
+      margin-top: 0;
+
+      tr {
+        td {
+          border-bottom: 1px solid var(--border-color);
+          border-right: 1px solid var(--border-color);
+          &:last-child {
+            border-right: none;
+          }
+        }
+
+        &:last-child {
+          td {
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { Join, Login, Message, MyEditPage, MyInfoPage, PasswordChangePage } from '@/pages';
+import { Join, LoginPage, Message, MyEditPage, MyInfoPage, PasswordChangePage } from '@/pages';
 
 function UsersRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/my/password" element={<PasswordChangePage />} />
       <Route path="/my/edit" element={<MyEditPage />} />
       <Route path="/my" element={<MyInfoPage />} />

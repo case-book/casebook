@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './Logo.scss';
+import classNames from 'classnames';
 
-function Logo({ className, onClick, animation }) {
+function Logo({ className, onClick, animation, color, size, hand }) {
   return (
-    <div className={`logo-wrapper ${className} ${onClick ? 'g-clickable' : ''} ${animation ? 'animation' : ''}`}>
-      {animation && (
+    <div className={classNames('logo-wrapper', className, `size-${size}`, `color-${color}`, { 'g-clickable': onClick, animation })}>
+      {animation && hand && (
         <>
           <div className="hand-1">
             <span className="hand">
@@ -50,12 +51,18 @@ Logo.defaultProps = {
   className: '',
   onClick: null,
   animation: true,
+  color: null,
+  size: 'md',
+  hand: true,
 };
 
 Logo.propTypes = {
   className: PropTypes.string,
   onClick: PropTypes.func,
   animation: PropTypes.bool,
+  color: PropTypes.string,
+  size: PropTypes.string,
+  hand: PropTypes.bool,
 };
 
 export default Logo;

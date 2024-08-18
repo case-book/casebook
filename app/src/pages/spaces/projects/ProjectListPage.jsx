@@ -1,19 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Card, EmptyContent, Page, PageContent, PageTitle } from '@/components';
+import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router';
 import ProjectService from '@/services/ProjectService';
 import './ProjectListPage.scss';
 import { MENUS } from '@/constants/menu';
 import SpaceService from '@/services/SpaceService';
+import useStores from '@/hooks/useStores';
+import classNames from 'classnames';
 
 function ProjectListPage() {
+  const {
+    contextStore: { space },
+  } = useStores();
+
   const { t } = useTranslation();
-  const { spaceCode } = useParams();
   const [spaceName, setSpaceName] = useState(null);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
+
+  const spaceCode = useMemo(() => {
+    return space?.code;
+  }, [space?.code]);
 
   const getSpaceInfo = () => {
     SpaceService.selectSpaceName(spaceCode, name => {
@@ -22,24 +31,25 @@ function ProjectListPage() {
   };
 
   useEffect(() => {
-    getSpaceInfo();
-    ProjectService.selectMyProjectList(spaceCode, list => {
-      setProjects(list);
-    });
+    if (spaceCode) {
+      getSpaceInfo();
+      ProjectService.selectMyProjectList(space?.code, list => {
+        setProjects(list);
+      });
+    }
   }, [spaceCode]);
 
+  const projectMenu = useMemo(() => {
+    return MENUS.filter(d => d.project);
+  }, []);
+
   return (
-    <Page className="project-list-page-wrapper" list>
+    <Page className="project-list-page-wrapper">
       <PageTitle
-        collapse
         breadcrumbs={[
           {
             to: '/',
             text: t('HOME'),
-          },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
           },
           {
             to: `/spaces/${spaceCode}/info`,
@@ -54,18 +64,13 @@ function ProjectListPage() {
           {
             to: `/spaces/${spaceCode}/variables`,
             text: t('변수 관리'),
-            color: 'primary',
           },
           {
             to: `/spaces/${spaceCode}/projects/new`,
             text: t('새 프로젝트'),
-            color: 'primary',
             icon: <i className="fa-solid fa-plus" />,
           },
         ]}
-        onListClick={() => {
-          navigate('/spaces');
-        }}
       >
         {t('프로젝트')}
       </PageTitle>
@@ -137,7 +142,7 @@ function ProjectListPage() {
                             </div>
                             <div>
                               <div
-                                className="tr-count"
+                                className={classNames('tr-count', { 'has-testrun': project.testrunCount > 0 })}
                                 onClick={() => {
                                   navigate(`/spaces/${spaceCode}/projects/${project.id}/testruns`);
                                 }}
@@ -154,7 +159,7 @@ function ProjectListPage() {
                       </div>
                       <div className="side-menu">
                         <ul>
-                          {MENUS.map((menu, inx) => {
+                          {projectMenu.map((menu, inx) => {
                             return (
                               <li
                                 key={inx}
@@ -186,5 +191,4 @@ function ProjectListPage() {
     </Page>
   );
 }
-
-export default ProjectListPage;
+export default observer(ProjectListPage);

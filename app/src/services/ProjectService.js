@@ -18,7 +18,7 @@ ProjectService.selectMyProjectList = (spaceCode, successHandler, failHandler, lo
   );
 };
 
-ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHandler = null, loading = true) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}`,
     null,
@@ -29,6 +29,7 @@ ProjectService.selectProjectInfo = (spaceCode, projectId, successHandler, failHa
     null,
     null,
     loading,
+    i18n.t('프로젝트 정보를 가져오고 있습니다.'),
   );
 };
 

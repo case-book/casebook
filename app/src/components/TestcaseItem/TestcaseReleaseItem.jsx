@@ -74,7 +74,7 @@ function TestcaseReleaseItem({ isEdit, testcaseTemplateItem, content, onChangeTe
           <div>
             <div className={`case-release ${isEdit ? 'is-edit' : ''}`}>
               <div className="release-list">
-                {!(content.projectReleaseIds?.length > 0) && <div className="no-release">{t('릴리즈가 없습니다.')}</div>}
+                {!(content.projectReleaseIds?.length > 0) && <div className="no-release">{t('릴리스가 없습니다.')}</div>}
                 {content.projectReleaseIds?.length > 0 &&
                   content.projectReleaseIds
                     ?.sort((a, b) => b - a)

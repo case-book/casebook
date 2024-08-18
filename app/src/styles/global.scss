@@ -5,11 +5,12 @@ html {
   --black-color: #222;
   --danger-color: #e3242b;
   --green-color: #397d02;
-  --success-color: #32cd32;
+  --success-color: #48bf53;
   --warning-color: #b90e0a;
   --yellow-color: #ffbc4b;
   --disable-opacity: 0.6;
   --secondary-color: #7bde89;
+  --blue-color: #1e90ff;
 }
 
 html {
@@ -34,6 +35,7 @@ html {
   --dark-gray-color: #495057;
   --hover-brightness: 1.06;
   --input-border-color: #dadde6;
+  --input-border-color: rgba(0, 0, 0, 0.25);
   --input-background-color: #fff;
   --border-color: rgba(0, 0, 0, 0.25);
   --border-lighter-color: rgba(0, 0, 0, 0.05);
@@ -48,8 +50,8 @@ html {
   --hover-background-color: rgba(0, 0, 0, 0.05);
   --color-first: rgb(165, 0, 52);
   --color-second: #1428a0;
-  --link-color: #12279e;
-  --link-hover-color: #102496;
+  --link-color: #1e90ff;
+  --link-hover-color: #1a7ad9;
 }
 
 html.theme-DARK {

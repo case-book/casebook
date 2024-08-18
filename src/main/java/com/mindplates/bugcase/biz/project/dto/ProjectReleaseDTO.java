@@ -28,11 +28,13 @@ public class ProjectReleaseDTO extends CommonDTO implements IDTO<ProjectRelease>
     private ProjectDTO project;
     private List<TestcaseListDTO> testcases;
     private LocalDateTime creationDate;
+    private LocalDateTime lastUpdateDate;
 
     public ProjectReleaseDTO(ProjectRelease projectRelease) {
         this.id = projectRelease.getId();
         this.name = projectRelease.getName();
         this.creationDate = projectRelease.getCreationDate();
+        this.lastUpdateDate = projectRelease.getLastUpdateDate();
         this.description = projectRelease.getDescription();
         this.isTarget = projectRelease.getIsTarget();
         if (projectRelease.getProject() != null) {

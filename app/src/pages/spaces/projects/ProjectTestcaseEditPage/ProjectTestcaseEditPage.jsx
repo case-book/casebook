@@ -2,13 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import dialogUtil from '@/utils/dialogUtil';
 import { useParams } from 'react-router';
-import { FlexibleLayout, Page, PageContent, PageTitle } from '@/components';
+import { Page, PageContent, PageTitle } from '@/components';
 import { useTranslation } from 'react-i18next';
 import ProjectService from '@/services/ProjectService';
 import TestcaseService from '@/services/TestcaseService';
 import ReleaseService from '@/services/ReleaseService';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import ContentManager from '@/pages/spaces/projects/ProjectTestcaseEditPage/ContentManager/ContentManager';
+import SplitPane, { Pane } from 'split-pane-react';
 import './ProjectTestcaseEditPage.scss';
 import testcaseUtil from '@/utils/testcaseUtil';
 import { useNavigate } from 'react-router-dom';
@@ -28,10 +29,6 @@ function ProjectTestcaseEditPage() {
   const [testcaseGroups, setTestcaseGroups] = useState([]);
   const [releases, setReleases] = useState([]);
   const [paraphraseInfo, setParaphraseInfo] = useState({});
-  const [countSummary, setCountSummary] = useState({
-    testcaseGroupCount: 0,
-    testcaseCount: 0,
-  });
   const { query, setQuery: setSelectedItemInfo } = useQueryString();
 
   const selectedItemInfo = useMemo(() => {
@@ -47,6 +44,22 @@ function ProjectTestcaseEditPage() {
   const [popupContent, setPopupContent] = useState(null);
   const [contentChanged, setContentChanged] = useState(false);
   const [variables, setVariables] = useState([]);
+
+  const [sizes, setSizes] = useState(
+    (() => {
+      const info = JSON.parse(localStorage.getItem('project-testcase-edit-page-sizes'));
+      if (info) {
+        return info;
+      }
+
+      return [300, 'auto'];
+    })(),
+  );
+
+  const onChangeSize = info => {
+    localStorage.setItem('project-testcase-edit-page-sizes', JSON.stringify(info));
+    setSizes(info);
+  };
 
   const getLlms = () => {
     SpaceService.selectSpaceLlmList(spaceCode, list => {
@@ -120,8 +133,6 @@ function ProjectTestcaseEditPage() {
     return releases.find(d => d.isTarget);
   }, [releases]);
 
-  const [min, setMin] = useState(false);
-
   useEffect(() => {
     window.scrollTo(0, 0);
     getLlms();
@@ -180,21 +191,9 @@ function ProjectTestcaseEditPage() {
 
   useEffect(() => {
     if (allTestcaseGroups?.length > 0) {
-      setCountSummary({
-        testcaseGroupCount: allTestcaseGroups?.length || 0,
-        testcaseCount: allTestcaseGroups?.reduce((count, next) => {
-          return count + (next?.testcases?.length || 0);
-        }, 0),
-      });
-
       const nextGroups = testcaseUtil.getTestcaseTreeData(allTestcaseGroups);
       setTestcaseGroups(nextGroups);
     } else {
-      setCountSummary({
-        testcaseGroupCount: 0,
-        testcaseCount: 0,
-      });
-
       setTestcaseGroups([]);
     }
   }, [allTestcaseGroups]);
@@ -461,8 +460,8 @@ function ProjectTestcaseEditPage() {
     if (targetRelease && !info.projectReleaseIds.includes(targetRelease.id)) {
       dialogUtil.setConfirm(
         MESSAGE_CATEGORY.WARNING,
-        t('타켓 릴리즈 추가 확인'),
-        t('설정된 프로젝트의 타켓 릴리즈가 현재 테스트케이스에 추가되어 있지 않습니다. 테스트케이스에 타켓 릴리즈를 추가하시겠습니까?'),
+        t('타켓 릴리스 추가 확인'),
+        t('설정된 프로젝트의 타켓 릴리스가 현재 테스트케이스에 추가되어 있지 않습니다. 테스트케이스에 타켓 릴리스를 추가하시겠습니까?'),
         () => {
           info.projectReleaseIds.push(targetRelease.id);
           updateTestcase(info, handler);
@@ -582,10 +581,7 @@ function ProjectTestcaseEditPage() {
             to: '/',
             text: t('HOME'),
           },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
+
           {
             to: `/spaces/${spaceCode}/info`,
             text: spaceCode,
@@ -611,10 +607,8 @@ function ProjectTestcaseEditPage() {
       </PageTitle>
       <PageContent className="page-content">
         {project?.testcaseTemplates && (
-          <FlexibleLayout
-            layoutOptionKey={['testcase', 'testcase-group-layout', 'width']}
-            min={min}
-            left={
+          <SplitPane sizes={sizes} onChange={onChangeSize}>
+            <Pane className="page-layout" minSize={300}>
               <TestcaseNavigator
                 testcaseGroups={testcaseGroups}
                 addTestcaseGroup={addTestcaseGroup}
@@ -624,14 +618,11 @@ function ProjectTestcaseEditPage() {
                 selectedItemInfo={selectedItemInfo}
                 onSelect={setSelectedItemInfo}
                 onDelete={onDeleteTestcaseGroup}
-                min={min}
-                setMin={setMin}
-                countSummary={countSummary}
                 contentChanged={contentChanged}
                 copyTestcase={copyTestcase}
               />
-            }
-            right={
+            </Pane>
+            <Pane className="page-layout" minSize={400}>
               <ContentManager
                 getPopupContent={getPopupContent}
                 popupContent={popupContent}
@@ -657,8 +648,8 @@ function ProjectTestcaseEditPage() {
                 onRemoveParaphraseContent={onRemoveParaphraseContent}
                 aiEnabled={project.aiEnabled}
               />
-            }
-          />
+            </Pane>
+          </SplitPane>
         )}
       </PageContent>
     </Page>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, FlexibleLayout, Page, PageContent, PageTitle, UserAvatar } from '@/components';
+import { Button, Page, PageContent, PageTitle, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -11,9 +11,11 @@ import TestrunService from '@/services/TestrunService';
 import testcaseUtil from '@/utils/testcaseUtil';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import TestRunTestcaseManager from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunTestcaseManager';
+import SplitPane, { Pane } from 'split-pane-react';
 import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
 import ReactTooltip from 'react-tooltip';
+import ReleaseService from '@/services/ReleaseService';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -40,15 +42,6 @@ function TestrunExecutePage() {
 
   const navigate = useNavigate();
 
-  const [wide, setWide] = useState(false);
-
-  const [min, setMin] = useState(false);
-
-  const [countSummary, setCountSummary] = useState({
-    testcaseGroupCount: 0,
-    testcaseCount: 0,
-  });
-
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [project, setProject] = useState(null);
@@ -62,6 +55,24 @@ function TestrunExecutePage() {
   const lastParicipants = useRef(null);
 
   const [watcherInfo, setWatcherInfo] = useState({});
+
+  const [releases, setReleases] = useState([]);
+
+  const [sizes, setSizes] = useState(
+    (() => {
+      const info = JSON.parse(localStorage.getItem('testrun-execute-page-sizes'));
+      if (info) {
+        return info;
+      }
+
+      return [300, 'auto'];
+    })(),
+  );
+
+  const onChangeSize = info => {
+    localStorage.setItem('testrun-execute-page-sizes', JSON.stringify(info));
+    setSizes(info);
+  };
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -91,8 +102,15 @@ function TestrunExecutePage() {
     });
   };
 
+  const getReleases = () => {
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+      setReleases(list);
+    });
+  };
+
   useEffect(() => {
     getProject();
+    getReleases();
   }, [projectId]);
 
   const join = () => {
@@ -128,6 +146,29 @@ function TestrunExecutePage() {
     }
   };
 
+  const changeTestcaseGroups = info => {
+    const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
+      return {
+        ...d,
+        testcases:
+          d.testcases?.filter(testcase => {
+            if (tester === '') {
+              return true;
+            }
+
+            if (tester === 'none') {
+              return !testcase.testerId;
+            }
+
+            return String(testcase.testerId) === String(tester);
+          }) || [],
+      };
+    });
+
+    const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
+    setTestcaseGroups(groups);
+  };
+
   const getTestrunInfo = () => {
     TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, info => {
       if (!project) {
@@ -149,33 +190,7 @@ function TestrunExecutePage() {
         );
       }
 
-      const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
-        return {
-          ...d,
-          testcases:
-            d.testcases?.filter(testcase => {
-              if (tester === '') {
-                return true;
-              }
-
-              if (tester === 'none') {
-                return !testcase.testerId;
-              }
-
-              return String(testcase.testerId) === String(tester);
-            }) || [],
-        };
-      });
-
-      setCountSummary({
-        testcaseGroupCount: filteredTestcaseGroups?.length || 0,
-        testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
-          return count + (next?.testcases?.length || 0);
-        }, 0),
-      });
-
-      const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
-      setTestcaseGroups(groups);
+      changeTestcaseGroups(info);
     });
   };
 
@@ -213,13 +228,6 @@ function TestrunExecutePage() {
           return String(testcase.testerId) === String(tester);
         }),
       };
-    });
-
-    setCountSummary({
-      testcaseGroupCount: filteredTestcaseGroups?.length || 0,
-      testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
-        return count + (next?.testcases?.length || 0);
-      }, 0),
     });
 
     const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
@@ -500,13 +508,6 @@ function TestrunExecutePage() {
           };
         });
 
-        setCountSummary({
-          testcaseGroupCount: filteredTestcaseGroups?.length || 0,
-          testcaseCount: filteredTestcaseGroups?.reduce((count, next) => {
-            return count + (next?.testcases?.length || 0);
-          }, 0),
-        });
-
         const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
         setTestcaseGroups(groups);
 
@@ -539,6 +540,38 @@ function TestrunExecutePage() {
     }
   };
 
+  const onChangeTestcase = testcase => {
+    if (content.testcaseId === testcase.id) {
+      const nextContent = { ...content };
+      nextContent.name = testcase.name;
+      nextContent.description = testcase.description;
+      nextContent.testcaseTemplateId = testcase.testcaseTemplateId;
+      nextContent.testcaseItems = testcase.testcaseItems;
+      setContent(nextContent);
+    }
+
+    const nextTestrun = { ...testrun };
+
+    const nextTestcaseGroups = nextTestrun.testcaseGroups.slice(0);
+    const group = nextTestcaseGroups.find(d => d.testcaseGroupId === testcase.testcaseGroupId);
+    if (group) {
+      const nextTestcasesIndex = group.testcases.findIndex(d => d.testcaseId === testcase.id);
+
+      if (nextTestcasesIndex > -1) {
+        const nextTestcases = group.testcases[nextTestcasesIndex];
+        if (nextTestcases) {
+          nextTestcases.name = testcase.name;
+          nextTestcases.description = testcase.description;
+          nextTestcases.testcaseTemplateId = testcase.testcaseTemplateId;
+          nextTestcases.testcaseItems = testcase.testcaseItems;
+
+          setTestrun(nextTestrun);
+          changeTestcaseGroups(nextTestrun);
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     if (user?.id) {
       ReactTooltip.rebuild();
@@ -552,20 +585,17 @@ function TestrunExecutePage() {
       removeTopic(`/sub/projects/${projectId}/testruns/${testrunId}/users/${user.id}`);
       removeMessageHandler('TestrunExecutePage');
     };
-  }, [user, paricipants, watcherInfo, testrun, socketClient]);
+  }, [user, paricipants, watcherInfo, testrun, socketClient, content]);
 
   return (
-    <Page className="testrun-execute-page-wrapper" wide={wide}>
+    <Page className="testrun-execute-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {
             to: '/',
             text: t('HOME'),
           },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
+
           {
             to: `/spaces/${spaceCode}/info`,
             text: spaceCode,
@@ -632,11 +662,8 @@ function TestrunExecutePage() {
         </div>
       </PageTitle>
       <PageContent className="page-content">
-        <FlexibleLayout
-          layoutOptionKey={['testrun', 'testrun-layout', 'width']}
-          min={min}
-          setMin={setMin}
-          left={
+        <SplitPane sizes={sizes} onChange={onChangeSize}>
+          <Pane className="testcase-navigator-content" minSize={300}>
             <TestcaseNavigator
               user={user}
               users={project?.users}
@@ -645,25 +672,21 @@ function TestrunExecutePage() {
               enableDrag={false}
               selectedItemInfo={{ id: Number(id), type }}
               onSelect={onSelect}
-              min={min}
-              setMin={setMin}
-              countSummary={countSummary}
               userFilter={tester}
               setUserFilter={onChangeTester}
               watcherInfo={watcherInfo}
             />
-          }
-          right={
-            id &&
-            type === ITEM_TYPE.TESTCASE && (
+          </Pane>
+          <Pane className="testrun-testcase-manager-content" minSize={200}>
+            {id && type === ITEM_TYPE.TESTCASE && (
               <TestRunTestcaseManager
                 spaceCode={spaceCode}
                 projectId={projectId}
                 project={project}
                 testrunId={testrunId}
-                setWide={setWide}
                 contentLoading={contentLoading}
                 content={content || {}}
+                releases={releases}
                 testcaseTemplates={project?.testcaseTemplates}
                 setContent={d => {
                   setContent(d);
@@ -681,10 +704,11 @@ function TestrunExecutePage() {
                   };
                 })}
                 createTestrunImage={createTestrunImage}
+                onChangeTestcase={onChangeTestcase}
               />
-            )
-          }
-        />
+            )}
+          </Pane>
+        </SplitPane>
       </PageContent>
     </Page>
   );

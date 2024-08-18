@@ -46,7 +46,7 @@ import org.springframework.util.CollectionUtils;
 @Getter
 @Setter
 @Table(name = "testrun_testcase_group_testcase")
-public class TestrunTestcaseGroupTestcase extends CommonEntity {
+public class TestrunTestcaseGroupTestcase extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -153,6 +153,15 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
         return currentSeq;
     }
 
+    public int changeTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
+        Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
+
+        if (!testrunUsers.isEmpty()) {
+            currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
+        }
+        return currentSeq;
+    }
+
     private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, TestcaseDTO testcase,
         int currentSeq) {
         // 테스터 입력
@@ -208,5 +217,20 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity {
             testrunTestcaseGroupTestcase.getTestcaseItems().add(testrunTestcaseGroupTestcaseItem);
         }
         return currentSeq;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public TestrunTestcaseGroupTestcase cloneEntity() {
+        try {
+            TestrunTestcaseGroupTestcase copiedTestrunTestcaseGroupTestcase = (TestrunTestcaseGroupTestcase) this.clone();
+            copiedTestrunTestcaseGroupTestcase.setId(null);
+            return copiedTestrunTestcaseGroupTestcase;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
     }
 }

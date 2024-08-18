@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, Tag } from '@/components';
+import { Button, Card, CardContent, EmptyContent, Liner, Page, PageContent, PageTitle, PieChart, SeqId, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -9,6 +9,7 @@ import moment from 'moment';
 import useStores from '@/hooks/useStores';
 import './TestrunListPage.scss';
 import ProjectService from '@/services/ProjectService';
+import { ITEM_TYPE } from '@/constants/constants';
 
 function TestrunListPage() {
   const { t } = useTranslation();
@@ -119,7 +120,7 @@ function TestrunListPage() {
   }, [user?.id, projectId, testruns]);
 
   return (
-    <Page className="testrun-list-page-wrapper" list>
+    <Page className="testrun-list-page-wrapper">
       <PageTitle
         className="page-title"
         breadcrumbs={[
@@ -127,10 +128,7 @@ function TestrunListPage() {
             to: '/',
             text: t('HOME'),
           },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
+
           {
             to: `/spaces/${spaceCode}/info`,
             text: spaceCode,
@@ -192,125 +190,131 @@ function TestrunListPage() {
               return (
                 <li key={testrun.id}>
                   <Card className={`testrun-card ${testrun.opened ? 'opened' : 'closed'}`} border>
-                    <div className="config-button">
-                      <Button
-                        rounded
-                        outline
-                        size="sm"
-                        onClick={e => {
-                          e.stopPropagation();
-                          navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`);
-                        }}
-                      >
-                        <i className="fa-solid fa-gear" />
-                      </Button>
-                    </div>
-                    <div className="name">
-                      <div className="seq">{testrun.seqId}</div>
-                      <div className="text">
-                        <Link to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>{testrun.name}</Link>
-                      </div>
-                    </div>
-                    <div className="description">{testrun.description}</div>
-                    <div className="chart">
-                      {!(testrun.totalTestcaseCount > 0) && (
-                        <div className="no-testcase">
-                          <div>{t('테스트케이스가 없습니다.')}</div>
+                    <CardContent>
+                      <div className="name">
+                        <div className="text">
+                          <Link className="hoverable" to={`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}`}>
+                            {testrun.name}
+                          </Link>
                         </div>
-                      )}
-                      {testrun.totalTestcaseCount > 0 && (
-                        <>
-                          <div className="chart-content">
-                            <PieChart
-                              data={testrun.data}
-                              legend={false}
-                              tooltip={false}
-                              activeOuterRadiusOffset={0}
-                              margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                              isInteractive={false}
-                              defs={[
-                                {
-                                  id: 'PROGRESS',
-                                  type: 'patternLines',
-                                  background: testrun?.data?.find(d => d.id === 'PROGRESS')?.color,
-                                  color: 'rgba(0,0,0,0.1)',
-                                  rotation: -45,
-                                  lineWidth: 6,
-                                  spacing: 10,
-                                },
-                                {
-                                  id: 'REMAINS',
-                                  type: 'patternDots',
-                                  background: testrun?.data?.find(d => d.id === 'REMAINS')?.color,
-                                  color: 'rgba(0,0,0,0.1)',
-                                  size: 8,
-                                  padding: 1,
-                                  stagger: true,
-                                },
-                              ]}
-                              fill={[
-                                {
-                                  match: {
+                        <div>
+                          <Button
+                            rounded
+                            outline
+                            size="sm"
+                            onClick={e => {
+                              e.stopPropagation();
+                              navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrun.id}/info`);
+                            }}
+                          >
+                            <i className="fa-solid fa-gear" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="description">{testrun.description}</div>
+                      <div className="chart">
+                        {!(testrun.totalTestcaseCount > 0) && (
+                          <div className="no-testcase">
+                            <div>{t('테스트케이스가 없습니다.')}</div>
+                          </div>
+                        )}
+                        {testrun.totalTestcaseCount > 0 && (
+                          <>
+                            <div className="chart-content">
+                              <PieChart
+                                data={testrun.data}
+                                legend={false}
+                                tooltip={false}
+                                activeOuterRadiusOffset={0}
+                                margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                                isInteractive={false}
+                                defs={[
+                                  {
+                                    id: 'PROGRESS',
+                                    type: 'patternLines',
+                                    background: testrun?.data?.find(d => d.id === 'PROGRESS')?.color,
+                                    color: 'rgba(0,0,0,0.1)',
+                                    rotation: -45,
+                                    lineWidth: 6,
+                                    spacing: 10,
+                                  },
+                                  {
+                                    id: 'REMAINS',
+                                    type: 'patternDots',
+                                    background: testrun?.data?.find(d => d.id === 'REMAINS')?.color,
+                                    color: 'rgba(0,0,0,0.1)',
+                                    size: 8,
+                                    padding: 1,
+                                    stagger: true,
+                                  },
+                                ]}
+                                fill={[
+                                  {
+                                    match: {
+                                      id: 'PASSED',
+                                    },
                                     id: 'PASSED',
                                   },
-                                  id: 'PASSED',
-                                },
-                                {
-                                  match: {
+                                  {
+                                    match: {
+                                      id: 'FAILED',
+                                    },
                                     id: 'FAILED',
                                   },
-                                  id: 'FAILED',
-                                },
-                                {
-                                  match: {
+                                  {
+                                    match: {
+                                      id: 'UNTESTED',
+                                    },
                                     id: 'UNTESTED',
                                   },
-                                  id: 'UNTESTED',
-                                },
-                              ]}
-                            />
-                          </div>
-                          <div className="progress-content">
-                            <div className="percentage-info">
-                              <span className="percentage">{progressPercentage}</span>
-                              <span className="symbol">%</span>
+                                ]}
+                              />
                             </div>
-                            <div className="progress-label">{t('진행')}</div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                    <div className="testrun-others">
-                      <div className="time-info">
-                        <div className="time-span">
-                          {testrun.opened && span.days > 0 && <span>{t('@ 일 남음', { days: span.days })}</span>}
-                          {testrun.opened && span.days <= 0 && span.hours > 0 && (
-                            <Tag color="white" border uppercase>
-                              {t('@ 시간 남음', { hours: span.hours })}
-                            </Tag>
-                          )}
-                          {testrun.opened && span.days <= 0 && span.hours <= 0 && <span>{t('기간 지남')}</span>}
-                        </div>
-                        <span className="calendar">
-                          <i className="fa-regular fa-clock" />
-                        </span>
-                        {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
-                        <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
-                          {(testrun.startDateTime || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.25rem 0 0" />}
-                          {testrun.startDateTime && testrun.endDateTime && (
-                            <span className={testrun.endDateTime && moment.utc().isAfter(moment.utc(testrun.endDateTime)) ? 'past' : ''}>
-                              {dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}
-                            </span>
-                          )}
-                          {!testrun.startDateTime && testrun.endDateTime && (
-                            <Tag color="white" border uppercase>
-                              {dateUtil.getDateString(testrun.endDateTime)}
-                            </Tag>
-                          )}
-                        </div>
-                        {!testrun.startDateTime && !testrun.endDateTime && <Tag color="transparent">{t('설정된 테스트런 기간이 없습니다.')}</Tag>}
+                            <div className="progress-content">
+                              <div className="percentage-info">
+                                <span className="percentage">{progressPercentage}</span>
+                                <span className="symbol">%</span>
+                              </div>
+                              <div className="progress-label">{t('진행')}</div>
+                            </div>
+                          </>
+                        )}
                       </div>
-                    </div>
+                      <div className="testrun-others">
+                        <div className="time-info">
+                          <div className="seq-id">
+                            <SeqId type={ITEM_TYPE.TESTRUN}>{testrun.seqId}</SeqId>
+                          </div>
+                          <div className="time-span">
+                            {testrun.opened && span.days > 0 && <span>{t('@ 일 남음', { days: span.days })}</span>}
+                            {testrun.opened && span.days <= 0 && span.hours > 0 && (
+                              <Tag color="white" border uppercase>
+                                {t('@ 시간 남음', { hours: span.hours })}
+                              </Tag>
+                            )}
+                            {testrun.opened && span.days <= 0 && span.hours <= 0 && <span>{t('기간 지남')}</span>}
+                          </div>
+                          <span className="calendar">
+                            <i className="fa-regular fa-clock" />
+                          </span>
+                          {testrun.startDateTime && <span>{dateUtil.getDateString(testrun.startDateTime, 'monthsDaysHoursMinutes')}</span>}
+                          <div className={`end-date-info ${!testrun.startDateTime ? 'no-start-time' : ''}`}>
+                            {(testrun.startDateTime || testrun.endDateTime) && <Liner width="6px" height="1px" display="inline-block" margin="0 0.25rem 0 0" />}
+                            {testrun.startDateTime && testrun.endDateTime && (
+                              <span className={testrun.endDateTime && moment.utc().isAfter(moment.utc(testrun.endDateTime)) ? 'past' : ''}>
+                                {dateUtil.getEndDateString(testrun.startDateTime, testrun.endDateTime)}
+                              </span>
+                            )}
+                            {!testrun.startDateTime && testrun.endDateTime && (
+                              <Tag color="white" border uppercase>
+                                {dateUtil.getDateString(testrun.endDateTime)}
+                              </Tag>
+                            )}
+                          </div>
+                          {!testrun.startDateTime && !testrun.endDateTime && <Tag color="transparent">{t('설정된 테스트런 기간이 없습니다.')}</Tag>}
+                        </div>
+                      </div>
+                    </CardContent>
                   </Card>
                 </li>
               );

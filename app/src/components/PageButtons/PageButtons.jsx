@@ -143,7 +143,7 @@ function PageButtons(props) {
 PageButtons.defaultProps = {
   className: '',
   size: 'lg',
-  outline: false,
+  outline: true,
   onListText: i18n.t('목록'),
   onListIcon: '', // <i className="far fa-file-alt" />,
   onInfoText: i18n.t('정보'),
@@ -152,7 +152,7 @@ PageButtons.defaultProps = {
   onDeleteIcon: '', // <i className="far fa-trash-alt" />,
   onSubmitText: i18n.t('저장'),
   onSubmitIcon: '', // <i className="far fa-paper-plane" />,
-  onEditText: i18n.t('편집'),
+  onEditText: i18n.t('변경'),
   onEditIcon: '', // <i className="fas fa-pen-nib" />,
   onCancelText: i18n.t('취소'),
   onCancelIcon: '', // <i className="fas fa-chevron-left" />,

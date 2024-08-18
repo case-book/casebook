@@ -5,13 +5,18 @@
   right: 0;
   bottom: 0;
 
+  .manager-content-layout {
+    overflow-y: auto;
+    height: 100%;
+  }
+
   .manager-layout {
     overflow-y: auto;
     height: 100%;
   }
 
   &.RIGHT {
-    .manager-layout {
+    .manager-content-layout {
       display: flex;
 
       .creator-info {
@@ -100,16 +105,16 @@
           width: 30px;
           height: 30px;
           background-color: var(--primary-color);
-          border-radius: 50%;
           position: relative;
           top: -3px;
+          border-radius: 4px;
         }
 
         .current-layout {
           font-size: 12px;
           position: absolute;
           left: -10px;
-          top: 5px;
+          top: 3px;
           width: 50px;
           text-align: center;
           color: var(--primary-text-color);
@@ -131,13 +136,12 @@
           position: absolute;
           width: 24px;
           height: 24px;
-          border-radius: 2px;
+          border-radius: 4px;
           background-color: var(--gray-color);
           display: inline-flex;
           justify-content: center;
           > div {
             align-self: center;
-            display: none;
             white-space: nowrap;
             font-size: 10px;
             color: var(--primary-text-color);

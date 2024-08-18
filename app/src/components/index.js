@@ -49,7 +49,7 @@ import Star from './Star/Star';
 import SeqId from './SeqId/SeqId';
 import DateRange from './DateRange/DateRange';
 import DatePicker from './DateRange/DatePicker';
-import FlexibleLayout from './FlexibleLayout/FlexibleLayout';
+
 import TestcaseViewerLabel from './TestcaseViewerLabel/TestcaseViewerLabel';
 import TestcaseItem from './TestcaseItem/TestcaseItem';
 import PieChart from './PieChart/PieChart';
@@ -63,9 +63,11 @@ import UserAvatar from './UserAvatar/UserAvatar';
 import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
 import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
 import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
-import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary';
+
 import MultiSelector from './MultiSelector/MultiSelector';
 import VariableInput from './VariableInput/VariableInput';
+import PathIcon from './PathIcon/PathIcon';
+import Pill from './Pill/Pill';
 
 export {
   Selector,
@@ -118,7 +120,6 @@ export {
   SeqId,
   DatePicker,
   DateRange,
-  FlexibleLayout,
   TestcaseViewerLabel,
   TestcaseItem,
   PieChart,
@@ -133,7 +134,8 @@ export {
   TestcaseSelector,
   TestcaseSelectorGroup,
   TestcaseSelectorFilter,
-  TestcaseSelectorSummary,
   MultiSelector,
   VariableInput,
+  PathIcon,
+  Pill,
 };

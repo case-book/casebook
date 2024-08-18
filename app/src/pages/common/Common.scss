@@ -1,11 +1,20 @@
-@keyframes LoaderAnimation {
-  0%,
-  10% {
-    transform: translateY(128px);
+@keyframes bottomToTop {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
   }
-  90%,
+  10% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  90% {
+    transform: translateY(0);
+    opacity: 1;
+  }
   100% {
-    transform: translateY(0px);
+    opacity: 0;
+    transform: translateY(100%);
   }
 }
 
@@ -90,22 +99,48 @@
   .request-messages {
     text-align: center;
     > div {
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      background-color: var(--theme-color);
+      display: inline-block;
+      border-radius: 20px;
+      padding: 1rem;
+      > div {
+        text-align: left;
+        > span {
+          display: inline-block;
+          padding: 0.75rem 1rem;
+          border-radius: 5px;
+          font-size: 14px;
+          line-height: 100%;
+          font-weight: bold;
 
-      > span {
-        background-color: var(--theme-color);
-        display: inline-block;
-        padding: 0.75rem 1rem;
-        border-radius: 5px;
-        font-size: 14px;
-        line-height: 100%;
-        font-weight: bold;
-
-        i {
-          margin-right: 0.5rem;
+          i {
+            margin-right: 0.5rem;
+          }
         }
       }
     }
+  }
+}
+
+.toast-message {
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  animation: bottomToTop 1s linear;
+  animation-fill-mode: forwards;
+
+  > span {
+    display: inline-block;
+    padding: 1rem;
+    color : var(--text-color);
+    background-color: var(--theme-color);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 8%);
   }
 }
 

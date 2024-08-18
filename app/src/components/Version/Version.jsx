@@ -17,9 +17,9 @@ function Version({ className }) {
     <div className={`version-wrapper ${className}`}>
       <div>
         <div className="app-version">
-          <span>CASEBOOK (APP-{process.env.REACT_APP_VERSION}</span>
-          <span className="slash">/</span>
-          <span>API-{version?.version})</span>
+          <a href="https://github.com/case-book/casebook/releases" target="_blank" rel="noreferrer">
+            CASEBOOK {version?.version}
+          </a>
         </div>
         <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 8px" />
         <div className="list-link">
@@ -34,6 +34,10 @@ function Version({ className }) {
           </Link>
           <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 8px" />
           <Link to="/apis">APIS</Link>
+          <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === THEMES.LIGHT ? 'gray' : 'white'} margin="0 8px" />
+          <Link to="/start">
+            <i className="fa-solid fa-circle-info" />
+          </Link>
         </div>
       </div>
     </div>

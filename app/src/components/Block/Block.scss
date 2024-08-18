@@ -1,7 +1,10 @@
 .block-wrapper {
   position: relative;
   border-radius: 4px;
-  margin: 0 0.5rem;
+
+  &.padding {
+    margin: 0 0.5rem;
+  }
 
   &.border {
     border: 1px solid var(--border-color);
@@ -19,5 +22,11 @@
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  &.danger {
+    margin-top: 1rem;
+    border: 1px solid var(--danger-color);
+    padding: 1rem;
   }
 }

@@ -237,16 +237,13 @@ function TestrunReservationEditPage({ type }) {
     <>
       <Page className="testrun-reservation-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('예약 테스트런 편집') : t('예약 테스트런 생성')}
+          name={isEdit ? t('예약 테스트런 변경') : t('예약 테스트런 생성')}
           breadcrumbs={[
             {
               to: '/',
               text: t('HOME'),
             },
-            {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
+
             {
               to: `/spaces/${spaceCode}/info`,
               text: spaceCode,
@@ -265,7 +262,7 @@ function TestrunReservationEditPage({ type }) {
             },
             {
               to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/new`,
-              text: isEdit ? t('편집') : t('생성'),
+              text: isEdit ? t('변경') : t('생성'),
             },
           ]}
           onListClick={() => {

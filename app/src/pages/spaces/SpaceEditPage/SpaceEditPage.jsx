@@ -62,6 +62,7 @@ function SpaceEditPage({ type }) {
 
   const {
     userStore: { addSpace, language, country },
+    contextStore: { setSpace: setSpaceStore },
   } = useStores();
 
   const navigate = useNavigate();
@@ -204,7 +205,8 @@ function SpaceEditPage({ type }) {
     if (type === 'new') {
       SpaceService.createSpace(spaceInfo, result => {
         addSpace(result);
-        navigate('/spaces');
+        setSpaceStore(result);
+        navigate('/');
       });
     } else if (isEdit) {
       if ((spaceInfo?.users?.filter(d => d.crud !== 'D') || []).length < 1) {
@@ -249,7 +251,7 @@ function SpaceEditPage({ type }) {
     <>
       <Page className="space-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('스페이스 편집') : t('스페이스 생성')}
+          name={isEdit ? t('스페이스 변경') : t('스페이스 생성')}
           breadcrumbs={
             isEdit
               ? [
@@ -257,17 +259,14 @@ function SpaceEditPage({ type }) {
                     to: '/',
                     text: t('HOME'),
                   },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
+
                   {
                     to: `/spaces/${spaceCode}/info`,
                     text: space?.name,
                   },
                   {
                     to: `/spaces/${spaceCode}/edit`,
-                    text: t('편집'),
+                    text: t('변경'),
                   },
                 ]
               : [
@@ -275,10 +274,7 @@ function SpaceEditPage({ type }) {
                     to: '/',
                     text: t('HOME'),
                   },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
+
                   {
                     to: '/spaces/new',
                     text: t('생성'),
@@ -289,7 +285,7 @@ function SpaceEditPage({ type }) {
             navigate('/spaces');
           }}
         >
-          {isEdit ? t('스페이스 편집') : t('새 스페이스')}
+          {isEdit ? t('스페이스 변경') : t('새 스페이스')}
         </PageTitle>
         <PageContent>
           <Form onSubmit={onSubmit}>

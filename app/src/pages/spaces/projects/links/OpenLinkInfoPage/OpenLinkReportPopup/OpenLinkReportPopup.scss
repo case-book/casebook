@@ -1,0 +1,63 @@
+.select-open-link-testrun-popup-wrapper {
+  .modal-header {
+    .title {
+      display: flex;
+      line-height: 1;
+      > div {
+        align-self: center;
+      }
+    }
+  }
+  ul.report-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    > li {
+      _border-bottom: 1px solid var(--border-color);
+      padding: 0.5rem;
+      &:first-child {
+        _border-top: 1px solid var(--border-color);
+      }
+
+      > div {
+        display: flex;
+        line-height: 1;
+        > div {
+          align-self: center;
+
+          &.report-name {
+            flex-grow: 1;
+            position: relative;
+            .name {
+              margin-bottom: 0.25rem;
+            }
+            .testrun-others {
+              flex-grow: 1;
+              font-size: 12px;
+              position: absolute;
+              bottom: 0;
+              right: 0;
+
+              .time-info {
+                display: flex;
+                justify-content: flex-end;
+
+                > div {
+                  align-self: center;
+                }
+
+                .calendar {
+                  margin-right: 4px;
+                }
+
+                .end-date-info {
+                  display: flex;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

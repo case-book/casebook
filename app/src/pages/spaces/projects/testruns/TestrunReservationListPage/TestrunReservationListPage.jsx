@@ -32,17 +32,14 @@ function TestrunReservationListPage() {
   }, [projectId]);
 
   return (
-    <Page className="testrun-reservation-list-page-wrapper" list>
+    <Page className="testrun-reservation-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {
             to: '/',
             text: t('HOME'),
           },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
+
           {
             to: `/spaces/${spaceCode}/info`,
             text: spaceCode,

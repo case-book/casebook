@@ -6,28 +6,6 @@
   font-size: 14px;
   position: relative;
 
-  &.min {
-    .testcase-manage-button {
-      .navigation-controller {
-        display: none;
-      }
-    }
-
-    .testcase-groups-content {
-      .content-scroller {
-        > ul {
-          width: 0;
-          height: 0;
-          overflow: hidden;
-        }
-      }
-    }
-
-    .testcase-filter-group {
-      display: none;
-    }
-  }
-
   .min-content {
     margin-top: 1rem;
     > div {

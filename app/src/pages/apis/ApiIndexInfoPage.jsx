@@ -36,6 +36,7 @@ function ApiIndexInfoPage() {
   return (
     <Page className="apis-index-info-page-wrapper">
       <PageTitle
+        borderTop
         breadcrumbs={[
           {
             to: '/',

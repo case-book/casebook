@@ -1,70 +1,50 @@
 .testcase-navigator-filter-wrapper {
-  $navigator-padding: 1rem;
+  background-color: var(--theme-color);
+  padding: 1rem;
   position: relative;
-
-  padding: $navigator-padding;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid var(--border-light-color);
 
-  &.small-control {
-    height: 60px;
+  .testcase-filter-title {
+    margin-bottom: 0.5rem;
 
-    .title-content {
-      padding: 0;
-    }
-
-    .filter-input-wrapper.floating {
-      position: absolute;
-      width: max(100%, 360px);
-      top: 0px;
-      left: 10px;
-      background-color: white;
-      border: 1px solid var(--border-light-color);
-      border-radius: 10px;
-      box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1);
-      z-index: 99;
-
-      margin-top: 0;
-      padding: 20px $navigator-padding;
-    }
-  }
-
-  &.smaller-control {
-    .title-text {
-      margin-right: 3px !important;
-    }
-    .liner-wrapper {
-      display: none !important;
-    }
-  }
-
-  .filter-input-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem 0;
-    margin-top: 1rem;
-
-    .testcase-filter-ids-list,
-    .testcase-filter-release-ids-list {
-      overflow-x: auto;
+    .filter-control {
       display: flex;
-      flex-direction: row;
+    }
+  }
 
-      min-height: $sm-height;
-      margin-left: 90px;
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
 
-      & > div {
-        white-space: nowrap;
+  .filter-condition {
+    display: flex;
+    flex-grow: 1;
+    > div {
+      align-self: center;
+      &.condition {
+        flex-grow: 1;
+      }
+
+      .button-group {
+        display: flex;
+        flex-grow: 1;
       }
     }
+
+    .selector {
+      flex-grow: 1;
+    }
   }
-  .filter-input-group {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0 5px;
-    .selector-wrapper {
-      flex: 1;
+
+  .filter-items-block {
+    margin-top: 0.5rem;
+    .filter-items {
+      > div {
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
     }
   }
 }

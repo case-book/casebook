@@ -27,6 +27,10 @@ public interface TestrunRepository extends JpaRepository<Testrun, Long> {
         + " WHERE tr.project.id = :projectId AND tr.opened = :opened AND ((tr.startDateTime >= :start AND tr.startDateTime < :end) OR (tr.endDateTime >= :start AND tr.endDateTime < :end)) ORDER BY tr.startDateTime DESC, tr.id DESC")
     List<Testrun> findProjectTestrunByOpenedAndRange(Long projectId, boolean opened, LocalDateTime start, LocalDateTime end);
 
+    @Query(TESTRUN_LIST_PROJECTION
+        + " WHERE tr.project.id = :projectId AND tr.opened = :opened ORDER BY tr.id DESC")
+    List<Testrun> findProjectTestrunReports(Long projectId, boolean opened, Pageable Pageable);
+
     @Query(TESTRUN_LIST_PROJECTION + " WHERE tr.project.id = :projectId AND tr.opened = :opened ORDER BY tr.endDateTime DESC")
     List<Testrun> findTopNProjectTestrunByOpened(Long projectId, boolean opened, Pageable pageable);
 

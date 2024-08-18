@@ -11,6 +11,7 @@ import com.mindplates.bugcase.biz.project.repository.ProjectUserRepository;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
+import com.mindplates.bugcase.biz.testcase.repository.TestcaseTemplateRepository;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
@@ -39,9 +40,8 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectUserRepository projectUserRepository;
     private final ProjectTokenRepository projectTokenRepository;
-
     private final ProjectCachedService projectCachedService;
-
+    private final TestcaseTemplateRepository testcaseTemplateRepository;
 
     public ProjectService(
         @Lazy SpaceService spaceService,
@@ -52,7 +52,8 @@ public class ProjectService {
         ProjectUserRepository projectUserRepository,
         ProjectTokenRepository projectTokenRepository,
         ProjectReleaseService projectReleaseService,
-        ProjectCachedService projectCachedService
+        ProjectCachedService projectCachedService,
+        TestcaseTemplateRepository testcaseTemplateRepository
     ) {
         this.spaceService = spaceService;
         this.projectRepository = projectRepository;
@@ -63,6 +64,7 @@ public class ProjectService {
         this.projectUserRepository = projectUserRepository;
         this.projectReleaseService = projectReleaseService;
         this.projectCachedService = projectCachedService;
+        this.testcaseTemplateRepository = testcaseTemplateRepository;
 
     }
 
@@ -100,6 +102,12 @@ public class ProjectService {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
+
+    public List<ProjectListDTO> selectSpaceProjectList(String spaceCode) {
+        List<Project> projectList = projectRepository.findAllBySpaceCode(spaceCode);
+        return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
+    }
+
 
     public List<ProjectDTO> selectSpaceProjectDetailList(long spaceId) {
         List<Project> projectList = projectRepository.findAllBySpaceId(spaceId);
@@ -163,10 +171,6 @@ public class ProjectService {
 
     public Long selectSpaceProjectCount(Long spaceId) {
         return projectRepository.countBySpaceId(spaceId);
-    }
-
-    public long selectSpaceId(Long projectId) {
-        return projectRepository.findSpaceIdByProjectId(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
     public String selectSpaceCode(Long projectId) {
@@ -237,6 +241,14 @@ public class ProjectService {
     @Transactional
     public void deleteProjectUser(long userId) {
         projectUserRepository.deleteByUserId(userId);
+    }
+
+    public List<UserDTO> selectProjectUserList(long projectId) {
+        return projectUserRepository.findAllByProjectId(projectId).stream().map((projectUser -> new UserDTO(projectUser.getUser()))).collect(Collectors.toList());
+    }
+
+    public List<TestcaseTemplateDTO> selectProjectTestcaseTemplateList(long projectId) {
+        return testcaseTemplateRepository.findAllByProjectId(projectId).stream().map((TestcaseTemplateDTO::new)).collect(Collectors.toList());
     }
 
 }

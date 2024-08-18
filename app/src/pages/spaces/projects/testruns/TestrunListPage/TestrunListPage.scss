@@ -35,16 +35,52 @@
 
     > li {
       display: inline-block;
-      width: calc((100% - 3rem) / 4);
+      width: calc((100% - 5rem) / 6);
       margin-bottom: 1rem;
       margin-right: 1rem;
 
-      &:nth-child(4n) {
+      &:nth-child(6n) {
         margin-right: 0;
       }
 
-      @media (max-width: 1300px) {
+      @media (max-width: 2600px) {
+        width: calc((100% - 4rem) / 5);
+
+        &:nth-child(6n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(5n) {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 2200px) {
+        width: calc((100% - 3rem) / 4);
+
+        &:nth-child(6n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(5n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(4n) {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 1800px) {
         width: calc((100% - 2rem) / 3);
+
+        &:nth-child(6n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(5n) {
+          margin-right: 1rem;
+        }
 
         &:nth-child(4n) {
           margin-right: 1rem;
@@ -55,8 +91,16 @@
         }
       }
 
-      @media (max-width: 1024px) {
+      @media (max-width: 1400px) {
         width: calc((100% - 1rem) / 2);
+
+        &:nth-child(6n) {
+          margin-right: 1rem;
+        }
+
+        &:nth-child(5n) {
+          margin-right: 1rem;
+        }
 
         &:nth-child(4n) {
           margin-right: 1rem;
@@ -71,44 +115,29 @@
         }
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 1000px) {
         width: 100%;
         margin-right: 0;
       }
 
       .testrun-card {
-        width: 100%;
-        padding: 1rem;
-        position: relative;
-
-        .config-button {
-          position: absolute;
-          top: 10px;
-          right: 16px;
-        }
-
         .name {
-          text-align: center;
+          text-align: left;
           margin-bottom: 0.75rem;
+          display: flex;
 
-          .seq {
-            margin-bottom: 0.25rem;
-            position: absolute;
-            top: 16px;
-            left: 16px;
-
-            .seq-id {
-              margin-right: 0;
-            }
+          > div {
+            align-self: center;
           }
 
           .text {
-            font-size: 22px;
-            padding-top: 20px;
-
-            > a {
-              color: var(--text-color);
-            }
+            flex-grow: 1;
+            font-size: 18px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 0.5rem;
           }
         }
 
@@ -119,14 +148,14 @@
           min-height: 54px;
           padding: 0.5rem;
           display: flex;
-
-          border-radius: 8px;
+          border-radius: 4px;
           overflow-y: auto;
           margin-bottom: 0.75rem;
           font-size: 12px;
           white-space: pre-wrap;
           background-color: var(--lighter-color);
           color: var(--text-color);
+          border: 1px solid var(--border-light-color);
           > div {
             align-self: center;
           }
@@ -140,7 +169,8 @@
           display: flex;
           flex-direction: row;
           background-color: var(--lighter-color);
-          border-radius: 8px;
+          border: 1px solid var(--border-light-color);
+          border-radius: 4px;
 
           .no-testcase {
             width: 100%;
@@ -199,6 +229,10 @@
             display: flex;
             position: relative;
             font-size: 12px;
+
+            .seq-id {
+              margin-right: 0.5rem;
+            }
 
             .time-span {
               position: absolute;

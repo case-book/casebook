@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, FlexibleLayout, Loader, SeqId, TestcaseItem } from '@/components';
+import { ProjectPropTypes, ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
+import { Button, Loader, SeqId, TestcaseItem } from '@/components';
+import SplitPane, { Pane } from 'split-pane-react';
 import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -15,6 +16,7 @@ import { getOption, setOption } from '@/utils/storageUtil';
 import './TestRunTestcaseManager.scss';
 import TestRunResultInfo from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestRunTestcaseManager/TestRunResultInfo';
 import dateUtil from '@/utils/dateUtil';
+import { TestcaseViewerPopup } from '@/assets';
 
 function TestRunTestcaseManager({
   spaceCode,
@@ -33,8 +35,9 @@ function TestRunTestcaseManager({
   onSaveResult,
   onRandomTester,
   onSaveTester,
-  setWide,
   testrunId,
+  releases,
+  onChangeTestcase,
 }) {
   const {
     themeStore: { theme },
@@ -46,6 +49,23 @@ function TestRunTestcaseManager({
   const testcaseManagerContentElement = useRef(null);
   const managerLayoutElement = useRef(null);
   const managerContentElement = useRef(null);
+  const [testcaseViewerInfo, setTestcaseViewerInfo] = useState(null);
+
+  const [sizes, setSizes] = useState(
+    (() => {
+      const info = JSON.parse(localStorage.getItem('testrun-testcase-manager-sizes'));
+      if (info) {
+        return info;
+      }
+
+      return ['auto', 300];
+    })(),
+  );
+
+  const onChangeSize = info => {
+    localStorage.setItem('testrun-testcase-manager-sizes', JSON.stringify(info));
+    setSizes(info);
+  };
 
   const testcaseTemplate = useMemo(() => {
     return testcaseTemplates.find(d => d.id === content?.testcaseTemplateId);
@@ -63,16 +83,6 @@ function TestRunTestcaseManager({
       return getOption('testrun', 'manager', 'layout') || 'RIGHT';
     })(),
   );
-
-  useEffect(() => {
-    if (resultLayoutPosition === 'RIGHT') {
-      if (setWide) {
-        setWide(true);
-      }
-    } else if (setWide) {
-      setWide(false);
-    }
-  }, [resultLayoutPosition]);
 
   useEffect(() => {
     if (testcaseManagerContentElement.current) {
@@ -162,6 +172,21 @@ function TestRunTestcaseManager({
             {content.seqId}
           </SeqId>
           <div className="name">{content.name}</div>
+          <div>
+            <Button
+              size="sm"
+              className="result-popup-open-button"
+              onClick={() => {
+                setTestcaseViewerInfo({
+                  testcaseTemplate: project.testcaseTemplates.find(d => d.id === content.testcaseTemplateId),
+                  testcaseGroupId: content.testrunTestcaseGroupId,
+                  testcaseGroupTestcaseId: content.testcaseId,
+                });
+              }}
+            >
+              {t('변경')}
+            </Button>
+          </div>
           {resultLayoutPosition === 'POPUP' && (
             <Button
               size="xs"
@@ -173,6 +198,7 @@ function TestRunTestcaseManager({
               {t('결과 입력')}
             </Button>
           )}
+
           <div className="result-layout-selector">
             <div className="circle" />
             <div className="current-layout">{TESTRUN_RESULT_LAYOUTS[resultLayoutPosition]}</div>
@@ -259,16 +285,15 @@ function TestRunTestcaseManager({
   };
 
   return (
-    <div className={`testrun-testcase-manager-wrapper ${resultLayoutPosition}`} ref={testcaseManagerContentElement}>
-      {contentLoading && <Loader />}
-      {resultLayoutPosition === 'RIGHT' && (
-        <FlexibleLayout
-          defaultSize="800px"
-          layoutOptionKey={['testrun', 'testrun-result-layout', 'width']}
-          className="manager-layout"
-          left={getManagerContent()}
-          right={
-            <div>
+    <>
+      <div className={`testrun-testcase-manager-wrapper ${resultLayoutPosition}`} ref={testcaseManagerContentElement}>
+        {contentLoading && <Loader />}
+        {resultLayoutPosition === 'RIGHT' && (
+          <SplitPane sizes={sizes} onChange={onChangeSize}>
+            <Pane className="manager-content-layout" minSize={200}>
+              {getManagerContent()}
+            </Pane>
+            <Pane className="testcase-navigator-content" minSize={300}>
               <TestRunResultInfo
                 spaceCode={spaceCode}
                 projectId={projectId}
@@ -289,58 +314,80 @@ function TestRunTestcaseManager({
                 resultPopupOpened={resultPopupOpened}
                 setResultPopupOpened={setResultPopupOpened}
               />
-            </div>
-          }
-        />
-      )}
-      {resultLayoutPosition !== 'RIGHT' && (
-        <div className="manager-layout" ref={managerLayoutElement}>
-          {getManagerContent()}
-          {resultLayoutPosition === 'BOTTOM' && (
-            <TestRunResultInfo
-              spaceCode={spaceCode}
-              projectId={projectId}
-              testrunId={testrunId}
-              project={project}
-              content={content}
-              testcaseTemplates={testcaseTemplates}
-              users={users}
-              createTestrunImage={createTestrunImage}
-              onSaveComment={onSaveComment}
-              user={user}
-              onDeleteComment={onDeleteComment}
-              resultLayoutPosition={resultLayoutPosition}
-              onChangeTestResult={onChangeTestResult}
-              onChangeTester={onChangeTester}
-              onChangeTestcaseItem={onChangeTestcaseItem}
-              resultPopupOpened={resultPopupOpened}
-              setResultPopupOpened={setResultPopupOpened}
-            />
-          )}
-        </div>
-      )}
-      {resultLayoutPosition === 'POPUP' && (
-        <TestRunResultInfo
+            </Pane>
+          </SplitPane>
+        )}
+        {resultLayoutPosition !== 'RIGHT' && (
+          <div className="manager-layout" ref={managerLayoutElement}>
+            {getManagerContent()}
+            {resultLayoutPosition === 'BOTTOM' && (
+              <TestRunResultInfo
+                spaceCode={spaceCode}
+                projectId={projectId}
+                testrunId={testrunId}
+                project={project}
+                content={content}
+                testcaseTemplates={testcaseTemplates}
+                users={users}
+                createTestrunImage={createTestrunImage}
+                onSaveComment={onSaveComment}
+                user={user}
+                onDeleteComment={onDeleteComment}
+                resultLayoutPosition={resultLayoutPosition}
+                onChangeTestResult={onChangeTestResult}
+                onChangeTester={onChangeTester}
+                onChangeTestcaseItem={onChangeTestcaseItem}
+                resultPopupOpened={resultPopupOpened}
+                setResultPopupOpened={setResultPopupOpened}
+              />
+            )}
+          </div>
+        )}
+        {resultLayoutPosition === 'POPUP' && (
+          <TestRunResultInfo
+            spaceCode={spaceCode}
+            projectId={projectId}
+            testrunId={testrunId}
+            project={project}
+            content={content}
+            testcaseTemplates={testcaseTemplates}
+            users={users}
+            createTestrunImage={createTestrunImage}
+            onSaveComment={onSaveComment}
+            user={user}
+            onDeleteComment={onDeleteComment}
+            resultLayoutPosition={resultLayoutPosition}
+            onChangeTestResult={onChangeTestResult}
+            onChangeTester={onChangeTester}
+            onChangeTestcaseItem={onChangeTestcaseItem}
+            resultPopupOpened={resultPopupOpened}
+            setResultPopupOpened={setResultPopupOpened}
+          />
+        )}
+      </div>
+      {testcaseViewerInfo && (
+        <TestcaseViewerPopup
           spaceCode={spaceCode}
           projectId={projectId}
-          testrunId={testrunId}
           project={project}
-          content={content}
-          testcaseTemplates={testcaseTemplates}
-          users={users}
-          createTestrunImage={createTestrunImage}
-          onSaveComment={onSaveComment}
-          user={user}
-          onDeleteComment={onDeleteComment}
-          resultLayoutPosition={resultLayoutPosition}
-          onChangeTestResult={onChangeTestResult}
-          onChangeTester={onChangeTester}
-          onChangeTestcaseItem={onChangeTestcaseItem}
-          resultPopupOpened={resultPopupOpened}
-          setResultPopupOpened={setResultPopupOpened}
+          releases={releases}
+          testcaseTemplate={testcaseViewerInfo.testcaseTemplate}
+          testcaseGroupId={testcaseViewerInfo.testcaseGroupId}
+          testcaseGroupTestcaseId={testcaseViewerInfo.testcaseGroupTestcaseId}
+          users={project?.users.map(u => {
+            return {
+              ...u,
+              id: u.userId,
+            };
+          })}
+          setOpened={() => {
+            setTestcaseViewerInfo(null);
+          }}
+          editEnabled
+          onTestcaseChange={onChangeTestcase}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -357,18 +404,17 @@ TestRunTestcaseManager.defaultProps = {
   onSaveTester: null,
   onRandomTester: null,
   onSaveTestResultItem: null,
-  setWide: null,
   spaceCode: null,
   projectId: null,
   project: null,
+  releases: [],
+  onChangeTestcase: null,
 };
 
 TestRunTestcaseManager.propTypes = {
   spaceCode: PropTypes.string,
   projectId: PropTypes.string,
-  project: PropTypes.shape({
-    id: PropTypes.number,
-  }),
+  project: ProjectPropTypes,
   testrunId: PropTypes.string,
   content: PropTypes.shape({
     id: PropTypes.number,
@@ -433,7 +479,8 @@ TestRunTestcaseManager.propTypes = {
   onSaveTester: PropTypes.func,
   onRandomTester: PropTypes.func,
   onSaveTestResultItem: PropTypes.func,
-  setWide: PropTypes.func,
+  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
+  onChangeTestcase: PropTypes.func,
 };
 
 export default observer(TestRunTestcaseManager);

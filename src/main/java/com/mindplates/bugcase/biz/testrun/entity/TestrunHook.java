@@ -35,7 +35,7 @@ import org.springframework.http.HttpMethod;
 @Getter
 @Setter
 @TypeDef(name = "json", typeClass = JsonType.class)
-public class TestrunHook extends CommonEntity {
+public class TestrunHook extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -84,5 +84,20 @@ public class TestrunHook extends CommonEntity {
         TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
         return testrunHookResult;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public TestrunHook cloneEntity() {
+        try {
+            TestrunHook copiedTestrunHook = (TestrunHook) this.clone();
+            copiedTestrunHook.setId(null);
+            return copiedTestrunHook;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
     }
 }

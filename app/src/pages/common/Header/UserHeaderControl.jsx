@@ -10,11 +10,14 @@ import { useTranslation } from 'react-i18next';
 import { setToken } from '@/utils/request';
 import './UserHeaderControl.scss';
 import NotificationList from '@/components/NotificationList/NotificationList';
-import { ADMIN_MENUS } from '@/constants/menu';
+import classNames from 'classnames';
+import { THEMES } from '@/constants/constants';
 
 function UserHeaderControl({ className }) {
   const {
     userStore: { isAdmin, user, setUser, notificationCount, setNotificationCount },
+    contextStore: { collapsed, setCollapsed, setSpace },
+    themeStore: { theme, setTheme },
   } = useStores();
 
   const navigate = useNavigate();
@@ -101,8 +104,10 @@ function UserHeaderControl({ className }) {
     e.stopPropagation();
 
     setUserMenuOpen(false);
+    setSpace(null);
     setToken('');
     setOption('user', 'info', 'uuid', '');
+
     UserService.logout(
       () => {
         setUser(null);
@@ -117,46 +122,32 @@ function UserHeaderControl({ className }) {
   };
 
   return (
-    <div className={`user-header-control-wrapper ${className}`}>
-      {isAdmin && (
-        <div className="notification-menu side-menu-item admin-menu-item">
-          <div
-            className="menu-button"
-            onClick={() => {
-              navigate('/admin');
-            }}
-          >
-            <span>{t('시스템 관리')}</span>
-          </div>
-          <div className="hover-area" />
-          <ul className="admin-menu">
-            <div className="arrow">
-              <div />
-            </div>
-            {ADMIN_MENUS.map(d => {
-              return (
-                <React.Fragment key={d.to}>
-                  <li key={d.to}>
-                    <Link to={d.to}>{d.name}</Link>
-                  </li>
-                  {d.separator && <div className="separator" />}
-                </React.Fragment>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+    <div className={classNames('user-header-control-wrapper', className, { collapsed })}>
       {user?.id && (
         <>
+          <div className="user-menu side-menu-item">
+            <Button
+              outline={!user.avatarInfo}
+              rounded
+              color={user.avatarInfo ? 'transparent' : 'white'}
+              onClick={e => {
+                e.preventDefault();
+                setUserMenuOpen(!userMenuOpen);
+              }}
+            >
+              {isAdmin && <div className="admin-flag">ADMIN</div>}
+              <UserAvatar avatarInfo={user.avatarInfo} size={32} rounded outline />
+            </Button>
+          </div>
           <div className="notification-menu side-menu-item">
             <Button
-              outline
+              outline={false}
               rounded
               className={notificationChangeEffect ? 'effect' : ''}
               color={notificationOpen ? 'primary' : 'white'}
               onClick={e => {
                 e.preventDefault();
-                openUserNotificationPopup(true);
+                openUserNotificationPopup(!notificationOpen);
               }}
             >
               {notificationCount > 0 && (
@@ -167,22 +158,22 @@ function UserHeaderControl({ className }) {
               <i className="fa-solid fa-bell" />
             </Button>
           </div>
-          <div className="user-menu side-menu-item">
-            <Button
-              outline={!user.avatarInfo}
-              rounded
-              color={user.avatarInfo ? 'transparent' : 'white'}
-              onClick={e => {
-                e.preventDefault();
-                setUserMenuOpen(true);
-              }}
-            >
-              {isAdmin && <div className="admin-flag">ADMIN</div>}
-              <UserAvatar avatarInfo={user.avatarInfo} size={34} rounded />
-            </Button>
-          </div>
         </>
       )}
+      <div className="collapse side-menu-item">
+        <button
+          onClick={() => {
+            setCollapsed(!collapsed);
+            localStorage.setItem('collapsed', !collapsed);
+          }}
+        >
+          <span className="icon">
+            {collapsed && <i className="fa-solid fa-angle-right" />}
+            {!collapsed && <i className="fa-solid fa-angle-left" />}
+          </span>
+          <span className="text">COLLAPSE</span>
+        </button>
+      </div>
       {notificationOpen && (
         <div
           className="notification-list"
@@ -191,7 +182,7 @@ function UserHeaderControl({ className }) {
           }}
         >
           <div>
-            <div>
+            <div onClick={e => e.stopPropagation()}>
               <div className={`notification-loader ${notificationLoading ? 'loading' : ''}`}>
                 <Loader color="primary" />
               </div>
@@ -241,7 +232,7 @@ function UserHeaderControl({ className }) {
           }}
         >
           <div>
-            <div>
+            <div onClick={e => e.stopPropagation()}>
               <div className="arrow">
                 <div />
               </div>
@@ -263,6 +254,26 @@ function UserHeaderControl({ className }) {
                   </div>
 
                   <hr />
+                </li>
+                <li>
+                  <div className="theme-selector">
+                    <span
+                      className={theme === THEMES.LIGHT ? 'selected' : ''}
+                      onClick={() => {
+                        setTheme(THEMES.LIGHT);
+                      }}
+                    >
+                      <i className="fa-solid fa-lightbulb" /> LIGHT
+                    </span>
+                    <span
+                      className={theme === THEMES.DARK ? 'selected' : ''}
+                      onClick={() => {
+                        setTheme(THEMES.DARK);
+                      }}
+                    >
+                      <i className="fa-solid fa-moon" /> DARK
+                    </span>
+                  </div>
                 </li>
                 <li>
                   <Link

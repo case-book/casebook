@@ -1,6 +1,10 @@
 import { action, makeObservable, observable } from 'mobx';
 
 export default class ControlStore {
+  toast = {
+    message: null,
+  };
+
   message = {
     category: null,
     title: null,
@@ -43,6 +47,8 @@ export default class ControlStore {
       setError: action,
       addRequestMessage: action,
       removeRequestMessage: action,
+      toast: observable,
+      setToast: action,
     });
   }
 
@@ -70,6 +76,18 @@ export default class ControlStore {
       okHandler,
       okText,
     };
+  };
+
+  setToast = message => {
+    this.toast = {
+      message,
+    };
+
+    setTimeout(() => {
+      this.toast = {
+        message: null,
+      };
+    }, 3000);
   };
 
   setConfirm = (category, title, message, okHandler, noHandler, okText, noText, okColor) => {

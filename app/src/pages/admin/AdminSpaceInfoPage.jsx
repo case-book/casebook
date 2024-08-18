@@ -45,7 +45,7 @@ function AdminSpaceInfoPage() {
         links={[
           {
             to: `/spaces/${space.code}/edit`,
-            text: t('편집'),
+            text: t('변경'),
             color: 'primary',
           },
         ]}

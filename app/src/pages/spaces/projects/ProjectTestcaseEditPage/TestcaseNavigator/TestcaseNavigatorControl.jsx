@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Button, Liner, Selector } from '@/components';
@@ -9,8 +9,6 @@ import TestcaseNavigatorFilter from './TestcaseNavigatorFilter';
 
 function TestcaseNavigatorControl({
   className,
-  min,
-  setMin,
   onClickAllOpen,
   user,
   users,
@@ -25,6 +23,8 @@ function TestcaseNavigatorControl({
 }) {
   const { t } = useTranslation();
 
+  const [filterOpened, setFilterOpened] = useState(false);
+
   return (
     <div className={`testcase-navigator-control-wrapper ${className}`}>
       <div className="testcase-manage-button">
@@ -35,61 +35,53 @@ function TestcaseNavigatorControl({
               <span className="controller-button start-button">
                 <i className="fa-solid fa-gamepad" />
               </span>
-              {!min && (
-                <div className="vertical">
-                  <span
-                    className="controller-button"
-                    onClick={() => {
-                      onClickAllOpen(false);
-                    }}
-                  >
-                    <div className="all-open-toggle">
-                      <div className="tree-icon">
-                        <i className="fa-solid fa-folder-minus" />
-                      </div>
-                      <div className="all-text">
-                        <span>ALL</span>
-                      </div>
-                    </div>
-                  </span>
-                  <span className="controller-button center-button" />
-                  <span
-                    className="controller-button"
-                    onClick={() => {
-                      onClickAllOpen(true);
-                    }}
-                  >
-                    <div className="all-open-toggle">
-                      <div className="tree-icon">
-                        <i className="fa-solid fa-folder-plus" />
-                      </div>
-                      <div className="all-text">
-                        <span>ALL</span>
-                      </div>
-                    </div>
-                  </span>
-                </div>
-              )}
-              <div className="horizontal">
+
+              <div className="vertical">
                 <span
                   className="controller-button"
                   onClick={() => {
-                    setMin(true);
+                    onClickAllOpen(false);
                   }}
                 >
-                  <i className="fa-solid fa-minimize" />
+                  <div className="all-open-toggle">
+                    <div className="tree-icon">
+                      <i className="fa-solid fa-folder-minus" />
+                    </div>
+                    <div className="all-text">
+                      <span>ALL</span>
+                    </div>
+                  </div>
                 </span>
                 <span className="controller-button center-button" />
                 <span
                   className="controller-button"
                   onClick={() => {
-                    setMin(false);
+                    onClickAllOpen(true);
                   }}
                 >
-                  <i className="fa-solid fa-maximize" />
+                  <div className="all-open-toggle">
+                    <div className="tree-icon">
+                      <i className="fa-solid fa-folder-plus" />
+                    </div>
+                    <div className="all-text">
+                      <span>ALL</span>
+                    </div>
+                  </div>
                 </span>
               </div>
             </div>
+          </div>
+          <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+          <div className="filter">
+            <Button
+              size="xs"
+              onClick={() => {
+                setFilterOpened(!filterOpened);
+              }}
+              color="white"
+            >
+              <i className="fa-solid fa-filter" /> <span className="button-text">{t('필터')}</span>
+            </Button>
           </div>
         </div>
         {user && (
@@ -100,7 +92,9 @@ function TestcaseNavigatorControl({
                 size="xs"
                 className="my-button"
                 onClick={() => {
-                  onChangeUserFilter(user.id);
+                  if (onChangeUserFilter) {
+                    onChangeUserFilter(user.id);
+                  }
                 }}
               >
                 MY
@@ -130,7 +124,7 @@ function TestcaseNavigatorControl({
           </div>
         )}
         {addTestcase && addTestcaseGroup && (
-          <div className={`navigation-controller ${width < 260 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
+          <div className={`navigation-controller ${width < 310 ? 'small-control' : ''} ${width < 160 ? 'smaller-control' : ''}`}>
             {addTestcaseGroup && (
               <Button
                 size="xs"
@@ -158,7 +152,11 @@ function TestcaseNavigatorControl({
           </div>
         )}
       </div>
-      <TestcaseNavigatorFilter onChangeTestcaseFilter={onChangeTestcaseFilter} testcaseFilter={testcaseFilter} width={width} />
+      {filterOpened && (
+        <div className="testcase-navigator-filter">
+          <TestcaseNavigatorFilter setOpened={setFilterOpened} onChangeTestcaseFilter={onChangeTestcaseFilter} testcaseFilter={testcaseFilter} width={width} />
+        </div>
+      )}
     </div>
   );
 }
@@ -169,28 +167,34 @@ TestcaseNavigatorControl.defaultProps = {
   users: [],
   addTestcase: null,
   addTestcaseGroup: null,
+  userFilter: null,
+  onChangeUserFilter: null,
+  width: null,
 };
 
 TestcaseNavigatorControl.propTypes = {
   className: PropTypes.string,
-  min: PropTypes.bool.isRequired,
-  setMin: PropTypes.func.isRequired,
   onClickAllOpen: PropTypes.func.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  user: PropTypes.object,
-  // eslint-disable-next-line react/forbid-prop-types
-  users: PropTypes.array,
-  userFilter: PropTypes.string.isRequired,
-  onChangeUserFilter: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    id: PropTypes.number,
+  }),
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      userId: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  ),
+  userFilter: PropTypes.string,
+  onChangeUserFilter: PropTypes.func,
   addTestcase: PropTypes.func,
   addTestcaseGroup: PropTypes.func,
-  // eslint-disable-next-line react/forbid-prop-types
-  selectedItemInfo: PropTypes.object.isRequired,
-  width: PropTypes.number.isRequired,
+  selectedItemInfo: PropTypes.shape({
+    type: PropTypes.string,
+  }).isRequired,
+  width: PropTypes.number,
   testcaseFilter: PropTypes.shape({
-    ids: PropTypes.arrayOf(PropTypes.string),
-    name: PropTypes.string,
-    releaseIds: PropTypes.arrayOf(PropTypes.string),
+    words: PropTypes.arrayOf(PropTypes.string),
+    releaseIds: PropTypes.arrayOf(PropTypes.number),
   }).isRequired,
   onChangeTestcaseFilter: PropTypes.func.isRequired,
 };

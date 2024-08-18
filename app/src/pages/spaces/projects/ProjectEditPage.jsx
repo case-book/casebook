@@ -29,7 +29,7 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
@@ -420,17 +420,13 @@ function ProjectEditPage({ type }) {
     <>
       <Page className="project-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('프로젝트 편집') : t('프로젝트 생성')}
+          name={isEdit ? t('프로젝트 변경') : t('프로젝트 생성')}
           breadcrumbs={
             isEdit
               ? [
                   {
                     to: '/',
                     text: t('HOME'),
-                  },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
                   },
                   {
                     to: `/spaces/${spaceCode}/info`,
@@ -446,17 +442,13 @@ function ProjectEditPage({ type }) {
                   },
                   {
                     to: `/spaces/${spaceCode}/edit`,
-                    text: t('편집'),
+                    text: t('변경'),
                   },
                 ]
               : [
                   {
                     to: '/',
                     text: t('HOME'),
-                  },
-                  {
-                    to: '/',
-                    text: t('스페이스 목록'),
                   },
                   {
                     to: `/spaces/${spaceCode}/info`,
@@ -553,7 +545,7 @@ function ProjectEditPage({ type }) {
               </BlockRow>
               {isEdit && (
                 <BlockRow>
-                  <Label>{t('타겟 릴리즈')}</Label>
+                  <Label>{t('타겟 릴리스')}</Label>
                   <Selector
                     items={[{ key: null, value: t('없음') }].concat(
                       releases.map(release => {
@@ -593,10 +585,18 @@ function ProjectEditPage({ type }) {
                         <div>
                           <Selector
                             minWidth="100%"
+                            size="md"
                             items={spaceMessageChannelList.map(d => {
                               return {
                                 key: d.id,
-                                value: d.name,
+                                value: (
+                                  <div className="message-channel-item">
+                                    <Tag size="xs" color="white" border>
+                                      {CHANNEL_TYPE_CODE[d.messageChannelType]}
+                                    </Tag>
+                                    <div>{d.name}</div>
+                                  </div>
+                                ),
                               };
                             })}
                             value={channel.spaceMessageChannelId}

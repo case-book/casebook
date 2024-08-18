@@ -1,13 +1,10 @@
 .testcase-navigator-control-wrapper {
-  $navigator-padding: 1rem;
-
   position: relative;
 
   .testcase-manage-button {
-    padding: $navigator-padding;
+    padding: 1rem;
     border-bottom: 1px dotted rgba(0, 0, 0, 0.12);
     border-bottom: 1px dotted var(--border-light-color);
-
     text-align: right;
     border-radius: 4px 4px 0 0;
     display: flex;
@@ -194,7 +191,7 @@
         }
 
         .add-testcase-button {
-          margin-right: 0.5rem;
+          margin-left: 0.5rem;
         }
 
         .button-text {

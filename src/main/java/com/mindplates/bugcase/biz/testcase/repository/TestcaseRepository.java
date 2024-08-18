@@ -14,6 +14,9 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
     @Query(value = "SELECT MAX(t.itemOrder) FROM Testcase t WHERE t.testcaseGroup.id = :testcaseGroupId")
     Integer selectTestcaseGroupMaxItemOrder(Long testcaseGroupId);
 
+    @Query(value = "SELECT t.id FROM Testcase t WHERE t.project.id = :projectId")
+    List<Long> selectTestcaseIdsByProjectId(Long projectId);
+
     @Modifying
     @Query("DELETE FROM Testcase t WHERE t.testcaseGroup.id IN (:ids)")
     void deleteByTestcaseGroupIds(@Param("ids") List<Long> ids);

@@ -6,14 +6,13 @@ import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVar
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
 
-import Login from '@/pages/users/Login';
-import Join from '@/pages/users/Join';
+import LoginPage from '@/pages/users/LoginPage';
+import Join from '@/pages/users/JoinPage';
 import MyInfoPage from '@/pages/users/MyInfoPage';
 import MyEditPage from '@/pages/users/MyEditPage';
 import PasswordChangePage from '@/pages/users/PasswordChangePage';
 import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
-import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
 
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
@@ -38,7 +37,7 @@ import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage/Te
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
 import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestrunInfoPage';
 
-import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage';
+import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage/ReportListPage';
 import ReportInfoPage from '@/pages/spaces/projects/reports/ReportInfoPage/ReportInfoPage';
 import TestrunReservationListPage from '@/pages/spaces/projects/testruns/TestrunReservationListPage/TestrunReservationListPage';
 import TestrunReservationEditPage from '@/pages/spaces/projects/testruns/TestrunReservationEditPage/TestrunReservationEditPage';
@@ -47,18 +46,26 @@ import TestrunIterationListPage from '@/pages/spaces/projects/testruns/TestrunIt
 import TestrunIterationEditPage from '@/pages/spaces/projects/testruns/TestrunIterationEditPage/TestrunIterationEditPage';
 import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIterationInfoPage/TestrunIterationInfoPage';
 
-import ReleaseListPage from './spaces/projects/releases/ReleaseListPage';
-import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
-import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
+import OpenLinkListPage from '@/pages/spaces/projects/links/OpenLinkListPage/OpenLinkListPage';
+import ReleaseListPage from './spaces/projects/releases/ReleaseListPage/ReleaseListPage';
+import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage/ReleaseEditPage';
+import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage/ReleaseInfoPage';
+
+import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
+import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';
+import OpenLinkEditPage from './spaces/projects/links/OpenLinkEditPage/OpenLinkEditPage';
+import OpenLinkInfoPage from './spaces/projects/links/OpenLinkInfoPage/OpenLinkInfoPage';
+import OpenLinkPage from './links/OpenLinkPage/OpenLinkPage';
+
+import GuidePage from './spaces/GuidePage/GuidePage';
 
 export {
-  ProjectDashBoardPage,
   SpaceListPage,
   Message,
   SpaceInfoPage,
   SpaceEditPage,
   Common,
-  Login,
+  LoginPage,
   Join,
   MyInfoPage,
   MyEditPage,
@@ -95,4 +102,11 @@ export {
   ReleaseInfoPage,
   SpaceVariableEditPage,
   AiHistoryListPage,
+  SpaceDashboardPage,
+  TestrunHistoryPage,
+  OpenLinkListPage,
+  OpenLinkEditPage,
+  OpenLinkInfoPage,
+  OpenLinkPage,
+  GuidePage,
 };
