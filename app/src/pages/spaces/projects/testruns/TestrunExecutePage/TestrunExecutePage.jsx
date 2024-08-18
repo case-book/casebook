@@ -15,6 +15,7 @@ import SplitPane, { Pane } from 'split-pane-react';
 import './TestrunExecutePage.scss';
 import useQueryString from '@/hooks/useQueryString';
 import ReactTooltip from 'react-tooltip';
+import ReleaseService from '@/services/ReleaseService';
 
 const start = new Date();
 start.setHours(start.getHours() + 1);
@@ -54,6 +55,8 @@ function TestrunExecutePage() {
   const lastParicipants = useRef(null);
 
   const [watcherInfo, setWatcherInfo] = useState({});
+
+  const [releases, setReleases] = useState([]);
 
   const [sizes, setSizes] = useState(
     (() => {
@@ -99,8 +102,15 @@ function TestrunExecutePage() {
     });
   };
 
+  const getReleases = () => {
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+      setReleases(list);
+    });
+  };
+
   useEffect(() => {
     getProject();
+    getReleases();
   }, [projectId]);
 
   const join = () => {
@@ -136,6 +146,29 @@ function TestrunExecutePage() {
     }
   };
 
+  const changeTestcaseGroups = info => {
+    const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
+      return {
+        ...d,
+        testcases:
+          d.testcases?.filter(testcase => {
+            if (tester === '') {
+              return true;
+            }
+
+            if (tester === 'none') {
+              return !testcase.testerId;
+            }
+
+            return String(testcase.testerId) === String(tester);
+          }) || [],
+      };
+    });
+
+    const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
+    setTestcaseGroups(groups);
+  };
+
   const getTestrunInfo = () => {
     TestrunService.selectTestrunInfo(spaceCode, projectId, testrunId, info => {
       if (!project) {
@@ -157,26 +190,7 @@ function TestrunExecutePage() {
         );
       }
 
-      const filteredTestcaseGroups = info.testcaseGroups?.map(d => {
-        return {
-          ...d,
-          testcases:
-            d.testcases?.filter(testcase => {
-              if (tester === '') {
-                return true;
-              }
-
-              if (tester === 'none') {
-                return !testcase.testerId;
-              }
-
-              return String(testcase.testerId) === String(tester);
-            }) || [],
-        };
-      });
-
-      const groups = testcaseUtil.getTestcaseTreeData(filteredTestcaseGroups, 'testcaseGroupId');
-      setTestcaseGroups(groups);
+      changeTestcaseGroups(info);
     });
   };
 
@@ -526,6 +540,38 @@ function TestrunExecutePage() {
     }
   };
 
+  const onChangeTestcase = testcase => {
+    if (content.testcaseId === testcase.id) {
+      const nextContent = { ...content };
+      nextContent.name = testcase.name;
+      nextContent.description = testcase.description;
+      nextContent.testcaseTemplateId = testcase.testcaseTemplateId;
+      nextContent.testcaseItems = testcase.testcaseItems;
+      setContent(nextContent);
+    }
+
+    const nextTestrun = { ...testrun };
+
+    const nextTestcaseGroups = nextTestrun.testcaseGroups.slice(0);
+    const group = nextTestcaseGroups.find(d => d.testcaseGroupId === testcase.testcaseGroupId);
+    if (group) {
+      const nextTestcasesIndex = group.testcases.findIndex(d => d.testcaseId === testcase.id);
+
+      if (nextTestcasesIndex > -1) {
+        const nextTestcases = group.testcases[nextTestcasesIndex];
+        if (nextTestcases) {
+          nextTestcases.name = testcase.name;
+          nextTestcases.description = testcase.description;
+          nextTestcases.testcaseTemplateId = testcase.testcaseTemplateId;
+          nextTestcases.testcaseItems = testcase.testcaseItems;
+
+          setTestrun(nextTestrun);
+          changeTestcaseGroups(nextTestrun);
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     if (user?.id) {
       ReactTooltip.rebuild();
@@ -640,6 +686,7 @@ function TestrunExecutePage() {
                 testrunId={testrunId}
                 contentLoading={contentLoading}
                 content={content || {}}
+                releases={releases}
                 testcaseTemplates={project?.testcaseTemplates}
                 setContent={d => {
                   setContent(d);
@@ -657,6 +704,7 @@ function TestrunExecutePage() {
                   };
                 })}
                 createTestrunImage={createTestrunImage}
+                onChangeTestcase={onChangeTestcase}
               />
             )}
           </Pane>
