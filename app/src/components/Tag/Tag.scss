@@ -1,5 +1,5 @@
 .tag-wrapper {
-  display: inline-block;
+  display: inline-flex;
   font-size: 12px;
   line-height: 100%;
   padding: 6px;
@@ -8,9 +8,12 @@
   background-color: var(--lighter-color);
   color: var(--text-color);
   box-sizing: border-box;
+  > span {
+    align-self: center;
+  }
 
   &.size-xs {
-    padding: 3px 6px;
+    padding: 0 6px;
     font-size: 11px;
     height: 20px;
 
@@ -24,7 +27,7 @@
   }
 
   &.size-sm {
-    padding: 8px;
+    padding: 0 8px;
     font-size: 12px;
     height: $sm-height;
 
@@ -38,7 +41,7 @@
   }
 
   &.size-md {
-    padding: 10px;
+    padding: 0 10px;
     font-size: 14px;
     height: $md-height;
 
@@ -48,7 +51,7 @@
   }
 
   &.size-lg {
-    padding: 10px;
+    padding: 0 10px;
     font-size: 14px;
     height: $lg-height;
 

@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import { TestcaseGroupPropTypes } from '@/proptypes';
 import PropTypes from 'prop-types';
 import { SeqId, Tag, Td, Tr } from '@/components';
-import { ITEM_TYPE } from '@/constants/constants';
+import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import './ReleaseGroupItem.scss';
 
-function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameClick, releaseNameMap, selectedTestcaseIdMap, releaseSummary }) {
+function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameClick, releaseNameMap, selectedTestcaseIdMap, releaseSummary, showTester, showTestResult, userById }) {
   const { t } = useTranslation();
 
   const testcases = useMemo(() => {
@@ -64,6 +64,14 @@ function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameCli
                   )}
                 </Td>
               )}
+              {showTester && <Td align="left">{userById[selectedTestcaseIdMap[testcase.id]?.testerId]?.name}</Td>}
+              {showTestResult && (
+                <Td align="center">
+                  <Tag size="xs" className={selectedTestcaseIdMap[testcase.id].testResult}>
+                    {TESTRUN_RESULT_CODE[selectedTestcaseIdMap[testcase.id].testResult]}
+                  </Tag>
+                </Td>
+              )}
             </Tr>
           );
         })}
@@ -79,6 +87,9 @@ function ReleaseGroupItem({ testcaseGroup, parentGroupName, releaseId, onNameCli
             selectedTestcaseIdMap={selectedTestcaseIdMap}
             releaseNameMap={releaseNameMap}
             releaseSummary={releaseSummary}
+            showTester={showTester}
+            showTestResult={showTestResult}
+            userById={userById}
           />
         );
       })}
@@ -93,6 +104,9 @@ ReleaseGroupItem.defaultProps = {
   selectedTestcaseIdMap: {},
   releaseId: null,
   releaseSummary: false,
+  showTestResult: false,
+  showTester: false,
+  userById: {},
 };
 
 ReleaseGroupItem.propTypes = {
@@ -107,6 +121,14 @@ ReleaseGroupItem.propTypes = {
     [PropTypes.number]: PropTypes.bool,
   }),
   releaseSummary: PropTypes.bool,
+  showTestResult: PropTypes.bool,
+  showTester: PropTypes.bool,
+  userById: PropTypes.shape({
+    [PropTypes.number]: PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }),
+  }),
 };
 
 export default ReleaseGroupItem;

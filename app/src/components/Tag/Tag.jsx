@@ -6,7 +6,7 @@ import { Button } from '@/components';
 function Tag({ className, children, color, border, rounded, uppercase, size, onRemove }) {
   return (
     <div className={`tag-wrapper ${className} color-${color} ${border ? 'border' : ''} ${rounded ? 'rounded' : ''} ${uppercase ? 'uppercase' : ''} size-${size}`}>
-      {children}
+      <span>{children}</span>
       {onRemove && (
         <Button className="remove-button" color="danger" rounded size={size} onClick={onRemove}>
           <i className="fa-solid fa-xmark" />

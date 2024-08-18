@@ -382,11 +382,15 @@ hr {
   width: 10px;
   height: 10px;
 }
+
 ::-webkit-scrollbar-track {
-  background-color: $gray-300;
+  background-color: $gray-200;
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color: $gray-500;
+  border: 3px solid $gray-200;
+  background-color: var(--link-color);
+  border-radius: 10px;
 }
 
 .theme-DARK {

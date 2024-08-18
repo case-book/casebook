@@ -14,10 +14,15 @@ import {
   PageButtons,
   PageContent,
   PageTitle,
-  TestcaseSelectorSummary,
+  Table,
+  Tag,
+  Tbody,
   Text,
   TextArea,
+  Th,
+  THead,
   Title,
+  Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -28,7 +33,7 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import useStores from '@/hooks/useStores';
 import ProjectUserSelectPopup from '@/pages/spaces/projects/testruns/ProjectUserSelectPopup/ProjectUserSelectPopup';
-import { ProfileSelectPopup, TestcaseSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
+import { ProfileSelectPopup, TestcaseSelectPopup, TestcaseViewerPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
 import TestrunService from '@/services/TestrunService';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -39,6 +44,7 @@ import ReleaseService from '@/services/ReleaseService';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import TestcaseService from '@/services/TestcaseService';
 import { waitFor } from '@/utils/request';
+import ReleaseGroupItem from '@/pages/spaces/projects/releases/ReleaseInfoPage/ReleaseGroupItem';
 
 const labelMinWidth = '160px';
 
@@ -66,9 +72,13 @@ function TestrunEditPage({ type }) {
 
   const [project, setProject] = useState(null);
 
+  const [currentSelectedTestcaseGroups, setCurrentSelectedTestcaseGroups] = useState([]);
+
   const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [releases, setReleases] = useState([]);
+
+  const [testcaseViewerInfo, setTestcaseViewerInfo] = useState(null);
 
   const [spaceProfileList, setSpaceProfileList] = useState([]);
 
@@ -77,7 +87,6 @@ function TestrunEditPage({ type }) {
     name: '',
     description: '',
     testrunUsers: [],
-    testcaseGroups: [],
     startDateTime: (() => {
       const start = new Date();
       start.setHours(10);
@@ -116,11 +125,6 @@ function TestrunEditPage({ type }) {
     hooks: [],
   });
 
-  const selectedTestcaseGroupSummary = useMemo(() => {
-    if (!testrun?.testcaseGroups || !testcaseGroups) return [];
-    return testcaseUtil.getSelectedTestcaseGroupSummary(testrun.testcaseGroups, testcaseGroups);
-  }, [testrun?.testcaseGroups, testcaseGroups]);
-
   const isEdit = useMemo(() => {
     return type === 'edit';
   }, [type]);
@@ -136,22 +140,19 @@ function TestrunEditPage({ type }) {
   };
 
   const selectAllTestcase = () => {
-    const initSelectedGroups = testcaseGroups?.map(d => {
-      return {
-        testcaseGroupId: d.id,
-        testcases: d.testcases?.map(item => {
-          return {
-            testcaseId: item.id,
-          };
-        }),
-      };
-    });
-
-    const nextTestrun = {
-      ...testrun,
-      testcaseGroups: initSelectedGroups,
-    };
-    setTestrun(nextTestrun);
+    setCurrentSelectedTestcaseGroups(
+      testcaseGroups.map(group => {
+        return {
+          testcaseGroupId: group.id,
+          testcases:
+            group?.testcases?.map(testcase => {
+              return {
+                testcaseId: testcase.id,
+              };
+            }) || [],
+        };
+      }),
+    );
   };
 
   useEffect(() => {
@@ -178,27 +179,29 @@ function TestrunEditPage({ type }) {
             endDateTime: dateUtil.getTime(data.endDateTime),
             messageChannels: data.messageChannels || [],
           });
+
+          setCurrentSelectedTestcaseGroups(
+            data.testcaseGroups.map(group => {
+              return {
+                testcaseGroupId: group.testcaseGroupId,
+                testcases:
+                  group?.testcases?.map(testcase => {
+                    return {
+                      testcaseId: testcase.testcaseId,
+                    };
+                  }) || [],
+              };
+            }),
+          );
         });
       } else {
         const defaultProfile = profiles.find(profile => profile.default);
-
-        const initSelectedGroups = list?.map(d => {
-          return {
-            testcaseGroupId: d.id,
-            testcases: d.testcases?.map(item => {
-              return {
-                testcaseId: item.id,
-              };
-            }),
-          };
-        });
 
         setTestrun({
           ...testrun,
           testrunUsers: info.users?.map(d => {
             return { userId: d.userId, email: d.email, name: d.name };
           }),
-          testcaseGroups: initSelectedGroups,
           profileIds: defaultProfile ? [defaultProfile.id] : [],
           messageChannels: info.messageChannels?.map(d => {
             return {
@@ -206,20 +209,27 @@ function TestrunEditPage({ type }) {
             };
           }),
         });
+
+        setCurrentSelectedTestcaseGroups([]);
       }
     });
   }, [isEdit, projectId, testrunId]);
 
   useEffect(() => {
-    if (isEdit || !releaseId || !testcaseGroups) return;
-
     ReleaseService.selectReleaseList(spaceCode, projectId, list => {
       setReleases(list);
     });
 
+    if (isEdit || !releaseId || !testcaseGroups) {
+      return;
+    }
+
     ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
       const nextTestcaseGroups = testcaseUtil.getSelectionForTestrunEdit(
-        testcaseGroups.map(group => ({ ...group, testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))) })),
+        testcaseGroups.map(group => ({
+          ...group,
+          testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))),
+        })),
       );
 
       setTestrun(prev => ({
@@ -239,7 +249,7 @@ function TestrunEditPage({ type }) {
       return;
     }
 
-    if (!testrun.testcaseGroups || testrun.testcaseGroups?.length < 1) {
+    if (currentSelectedTestcaseGroups.length < 1) {
       dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('테스트케이스 없음'), t('테스트런에 포함된 테스트케이스가 없습니다.'));
       return;
     }
@@ -250,6 +260,7 @@ function TestrunEditPage({ type }) {
         projectId,
         {
           ...testrun,
+          testcaseGroups: currentSelectedTestcaseGroups,
           projectId,
           startDateTime: testrun.startDateTime ? new Date(testrun.startDateTime)?.toISOString() : null,
           endDateTime: testrun.endDateTime ? new Date(testrun.endDateTime)?.toISOString() : null,
@@ -265,6 +276,7 @@ function TestrunEditPage({ type }) {
         projectId,
         {
           ...testrun,
+          testcaseGroups: currentSelectedTestcaseGroups,
           projectId,
           // startDateTime: testrun.startDateTime ? moment(testrun.startDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
           // endDateTime: testrun.endDateTime ? moment(testrun.endDateTime).format('YYYY-MM-DDTHH:mm:ss') : null,
@@ -302,6 +314,21 @@ function TestrunEditPage({ type }) {
       endDateTime: null,
     });
   };
+
+  const selectedTestcaseIdMap = useMemo(() => {
+    const map = {};
+    currentSelectedTestcaseGroups.forEach(group => {
+      group.testcases.forEach(testcase => {
+        map[testcase.testcaseId] = true;
+      });
+    });
+
+    return map;
+  }, [currentSelectedTestcaseGroups]);
+
+  const testcaseTreeData = useMemo(() => {
+    return testcaseUtil.getTestcaseTreeData(testcaseGroups, 'id');
+  }, [testcaseGroups]);
 
   return (
     <>
@@ -518,19 +545,24 @@ function TestrunEditPage({ type }) {
                   </ul>
                 )}
               </BlockRow>
-              <BlockRow className="testrun-selection-type-row">
-                <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
-                <Text>
-                  <Link
-                    to="/"
-                    onClick={e => {
-                      e.preventDefault();
+            </Block>
+            <Title
+              control={
+                <div>
+                  <Tag size="xs" border rounded>
+                    {t('@개', { count: Object.keys(selectedTestcaseIdMap).length })}
+                  </Tag>
+                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
+                  <Button
+                    outline
+                    size="sm"
+                    onClick={() => {
                       setTestcaseSelectPopupOpened(true);
                     }}
                   >
                     {t('테스트케이스 선택')}
-                  </Link>
-                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem 0 1rem" />
+                  </Button>
+                  <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   <Button
                     outline
                     size="sm"
@@ -540,34 +572,43 @@ function TestrunEditPage({ type }) {
                   >
                     {t('모든 테스트케이스 추가')}
                   </Button>
-                </Text>
-              </BlockRow>
-              <BlockRow>
-                <Label minWidth={labelMinWidth} />
-                {selectedTestcaseGroupSummary?.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
-                {selectedTestcaseGroupSummary?.length > 0 && (
-                  <Block className="summary-list" scroll maxHeight="600px" border>
-                    <TestcaseSelectorSummary
-                      selectedTestcaseGroupSummary={selectedTestcaseGroupSummary}
-                      onDeleteGroup={testcaseGroupId => {
-                        const nextTestcaseGroups = testrun.testcaseGroups.slice(0);
-                        const index = nextTestcaseGroups.findIndex(d => d.testcaseGroupId === testcaseGroupId);
-                        if (index < 0) return;
+                </div>
+              }
+            >
+              {t('테스트케이스')}
+            </Title>
+            {currentSelectedTestcaseGroups.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+            {currentSelectedTestcaseGroups.length > 0 && (
+              <Block className="testcase-list" border padding={false} scroll>
+                <Table className="table" cols={['1px', '100%', '1px']} sticky>
+                  <THead>
+                    <Tr>
+                      <Th align="left">{t('테스트케이스 그룹')}</Th>
+                      <Th align="left">{t('테스트케이스')}</Th>
+                    </Tr>
+                  </THead>
+                  <Tbody>
+                    {testcaseTreeData.map(testcaseGroup => {
+                      return (
+                        <ReleaseGroupItem
+                          key={testcaseGroup.id}
+                          testcaseGroup={testcaseGroup}
+                          selectedTestcaseIdMap={selectedTestcaseIdMap}
+                          onNameClick={(groupId, id) => {
+                            setTestcaseViewerInfo({
+                              testcaseTemplate: project.testcaseTemplates.find(d => d.id === id),
+                              testcaseGroupId: groupId,
+                              testcaseGroupTestcaseId: id,
+                            });
+                          }}
+                        />
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+              </Block>
+            )}
 
-                        const hasChild = selectedTestcaseGroupSummary.some(d => d.parentId && d.parentId === testcaseGroupId);
-                        if (hasChild) {
-                          nextTestcaseGroups[index].testcases = [];
-                        } else {
-                          nextTestcaseGroups.splice(index, 1);
-                        }
-
-                        onChangeTestrun('testcaseGroups', nextTestcaseGroups);
-                      }}
-                    />
-                  </Block>
-                )}
-              </BlockRow>
-            </Block>
             <Title border={false} marginBottom={false}>
               {t('알림 채널')}
             </Title>
@@ -649,13 +690,11 @@ function TestrunEditPage({ type }) {
       {testcaseSelectPopupOpened && (
         <TestcaseSelectPopup
           testcaseGroups={testcaseGroups}
-          selectedTestcaseGroups={testrun.testcaseGroups}
           users={project.users}
           selectedUsers={testrun.testrunUsers}
           setOpened={setTestcaseSelectPopupOpened}
-          onApply={selectedTestcaseGroups => {
-            onChangeTestrun('testcaseGroups', selectedTestcaseGroups);
-          }}
+          selectedTestcaseGroups={currentSelectedTestcaseGroups}
+          onApply={setCurrentSelectedTestcaseGroups}
           releases={releases}
         />
       )}
@@ -686,6 +725,26 @@ function TestrunEditPage({ type }) {
               nextHooks[testrunHookEditPopupInfo.index] = apiInfo;
               setTestrun({ ...nextTestrun, hooks: nextHooks });
             }
+          }}
+        />
+      )}
+      {testcaseViewerInfo && (
+        <TestcaseViewerPopup
+          spaceCode={spaceCode}
+          projectId={projectId}
+          project={project}
+          releases={releases}
+          testcaseTemplate={testcaseViewerInfo.testcaseTemplate}
+          testcaseGroupId={testcaseViewerInfo.testcaseGroupId}
+          testcaseGroupTestcaseId={testcaseViewerInfo.testcaseGroupTestcaseId}
+          users={project?.users.map(u => {
+            return {
+              ...u,
+              id: u.userId,
+            };
+          })}
+          setOpened={() => {
+            setTestcaseViewerInfo(null);
           }}
         />
       )}

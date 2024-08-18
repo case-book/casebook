@@ -35,4 +35,24 @@
       font-size: 12px;
     }
   }
+
+  .FAILED {
+    background-color: var(--danger-color);
+    color: var(--white-color);
+  }
+
+  .PASSED {
+    background-color: var(--success-color);
+    color: var(--white-color);
+  }
+
+  .UNTESTABLE {
+    background-color: var(--gray-color);
+    color: var(--white-color);
+  }
+
+  .UNTESTED {
+    background-color: var(--dark-gray-color);
+    color: var(--white-color);
+  }
 }

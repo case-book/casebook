@@ -63,7 +63,7 @@ import UserAvatar from './UserAvatar/UserAvatar';
 import TestcaseSelector from './TestcaseSelector/TestcaseSelector';
 import TestcaseSelectorGroup from './TestcaseSelector/TestcaseSelectorGroup';
 import TestcaseSelectorFilter from './TestcaseSelector/TestcaseSelectorFilter';
-import TestcaseSelectorSummary from './TestcaseSelector/TestcaseSelectorSummary';
+
 import MultiSelector from './MultiSelector/MultiSelector';
 import VariableInput from './VariableInput/VariableInput';
 import PathIcon from './PathIcon/PathIcon';
@@ -134,7 +134,6 @@ export {
   TestcaseSelector,
   TestcaseSelectorGroup,
   TestcaseSelectorFilter,
-  TestcaseSelectorSummary,
   MultiSelector,
   VariableInput,
   PathIcon,
