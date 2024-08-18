@@ -4,10 +4,13 @@ import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.user.vo.response.SimpleMemberResponse;
 import com.mindplates.bugcase.common.code.UserRoleCode;
-import lombok.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -41,20 +44,20 @@ public class SpaceAccessibleResponse {
 
         if (space.isAllowSearch() && space.getUsers() != null) {
             this.admins = space.getUsers().stream().filter((spaceUser -> UserRoleCode.ADMIN.equals(spaceUser.getRole()))).map(
-                    (spaceUser) -> SimpleMemberResponse.builder()
-                            .id(spaceUser.getId())
-                            .userId(spaceUser.getUser().getId())
-                            .role(spaceUser.getRole())
-                            .email(spaceUser.getUser().getEmail())
-                            .name(spaceUser.getUser().getName())
-                            .build()).collect(Collectors.toList());
+                (spaceUser) -> SimpleMemberResponse.builder()
+                    .id(spaceUser.getId())
+                    .userId(spaceUser.getUser().getId())
+                    .role(spaceUser.getRole())
+                    .email(spaceUser.getUser().getEmail())
+                    .name(spaceUser.getUser().getName())
+                    .build()).collect(Collectors.toList());
         }
 
         if (space.getApplicants() != null) {
             SpaceApplicantDTO userApplicantInfo = space.getApplicants()
-                    .stream()
-                    .filter(spaceApplicant -> spaceApplicant.getUser().getId().equals(userId))
-                    .findAny().orElse(null);
+                .stream()
+                .filter(spaceApplicant -> spaceApplicant.getUser().getId().equals(userId))
+                .findAny().orElse(null);
             if (userApplicantInfo != null) {
                 this.applicant = new SpaceApplicantResponse(userApplicantInfo);
             }

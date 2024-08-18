@@ -155,6 +155,25 @@
           flex-grow: 1;
         }
       }
+
+      .message-channel-item {
+        display: flex;
+        > div {
+          align-self: center;
+
+          &:first-child {
+            margin-right: 4px;
+
+          }
+        }
+      }
+    }
+  }
+
+  .msg {
+    align-self: center;
+    > i {
+      margin-right: 0.5rem;
     }
   }
 }

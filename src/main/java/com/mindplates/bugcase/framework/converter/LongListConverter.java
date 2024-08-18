@@ -1,14 +1,13 @@
 package com.mindplates.bugcase.framework.converter;
 
-import org.apache.commons.lang3.StringUtils;
+import static java.util.Collections.emptyList;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.emptyList;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+import org.apache.commons.lang3.StringUtils;
 
 @Converter
 public class LongListConverter implements AttributeConverter<List<Long>, String> {
@@ -23,8 +22,8 @@ public class LongListConverter implements AttributeConverter<List<Long>, String>
     @Override
     public List<Long> convertToEntityAttribute(String string) {
         return !StringUtils.isBlank(string) ? Arrays.asList(string.split(SPLIT_CHAR))
-                .stream()
-                .map(Long::parseLong).collect(Collectors.toList())
-                : emptyList();
+            .stream()
+            .map(Long::parseLong).collect(Collectors.toList())
+            : emptyList();
     }
 }

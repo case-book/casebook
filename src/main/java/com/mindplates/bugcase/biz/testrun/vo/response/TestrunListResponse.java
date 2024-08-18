@@ -1,13 +1,13 @@
 package com.mindplates.bugcase.biz.testrun.vo.response;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunListDTO;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Builder
 @Getter
@@ -37,6 +37,29 @@ public class TestrunListResponse {
     private Boolean autoTestcaseNotAssignedTester;
 
     public TestrunListResponse(TestrunDTO testrun) {
+        this.id = testrun.getId();
+        this.seqId = testrun.getSeqId();
+        this.name = testrun.getName();
+        this.description = testrun.getDescription();
+        this.startDateTime = testrun.getStartDateTime();
+        this.endDateTime = testrun.getEndDateTime();
+        this.opened = testrun.isOpened();
+        this.totalTestcaseCount = testrun.getTotalTestcaseCount();
+        this.passedTestcaseCount = testrun.getPassedTestcaseCount();
+        this.failedTestcaseCount = testrun.getFailedTestcaseCount();
+        this.untestableTestcaseCount = testrun.getUntestableTestcaseCount();
+        this.closedDate = testrun.getClosedDate();
+        this.days = testrun.getDays();
+        this.excludeHoliday = testrun.getExcludeHoliday();
+        this.startTime = testrun.getStartTime();
+        this.durationHours = testrun.getDurationHours();
+        this.reserveExpired = testrun.getReserveExpired();
+        this.reserveResultId = testrun.getReserveResultId();
+        this.deadlineClose = testrun.getDeadlineClose();
+        this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
+    }
+
+    public TestrunListResponse(TestrunListDTO testrun) {
         this.id = testrun.getId();
         this.seqId = testrun.getSeqId();
         this.name = testrun.getName();

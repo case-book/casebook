@@ -1,17 +1,18 @@
 package com.mindplates.bugcase;
 
+import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.config.FileConfig;
+import java.util.TimeZone;
+import javax.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import javax.annotation.PostConstruct;
-import java.util.TimeZone;
-
 @EnableConfigurationProperties({
-        FileConfig.class
+    FileConfig.class,
+    AiConfig.class
 })
 // @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @SpringBootApplication

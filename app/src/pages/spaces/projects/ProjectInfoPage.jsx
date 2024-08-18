@@ -41,10 +41,11 @@ function ProjectInfoPage() {
   const { t } = useTranslation();
   const {
     userStore: { isAdmin },
+    contextStore: { setRefreshProjectList },
   } = useStores();
   const { spaceCode, projectId } = useParams();
   const navigate = useNavigate();
-  const [space, setSpace] = useState(null);
+  const [spaceName, setSpaceName] = useState('');
   const [project, setProject] = useState(null);
   const [projectTokenList, setProjectTokenList] = useState([]);
   const [releases, setReleases] = useState([]);
@@ -65,8 +66,8 @@ function ProjectInfoPage() {
   });
 
   useEffect(() => {
-    SpaceService.selectSpaceInfo(spaceCode, info => {
-      setSpace(info);
+    SpaceService.selectSpaceName(spaceCode, name => {
+      setSpaceName(name);
     });
   }, [spaceCode]);
 
@@ -127,6 +128,7 @@ function ProjectInfoPage() {
       <div>{t('@ 프로젝트 및 프로젝트에 포함된 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { projectName: project.name })}</div>,
       () => {
         ProjectService.deleteProject(spaceCode, project, () => {
+          setRefreshProjectList();
           navigate(`/spaces/${spaceCode}/projects`);
         });
       },
@@ -144,6 +146,7 @@ function ProjectInfoPage() {
       <div>{t('프로젝트를 탈퇴하면, @ 프로젝트에 더 이상 접근할 수 없습니다. 탈퇴하시겠습니까?', { projectName: project.name })}</div>,
       () => {
         ProjectService.withdrawProject(spaceCode, project, () => {
+          setRefreshProjectList();
           navigate(`/spaces/${spaceCode}/projects`);
         });
       },
@@ -189,12 +192,8 @@ function ProjectInfoPage() {
               text: t('HOME'),
             },
             {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
-            {
               to: `/spaces/${spaceCode}/info`,
-              text: space?.name,
+              text: spaceName,
             },
             {
               to: `/spaces/${spaceCode}/projects`,
@@ -210,7 +209,7 @@ function ProjectInfoPage() {
               ? [
                   {
                     to: `/spaces/${spaceCode}/projects/${project?.id}/edit`,
-                    text: t('편집'),
+                    text: t('변경'),
                     color: 'primary',
                   },
                 ]
@@ -244,7 +243,11 @@ function ProjectInfoPage() {
               <Text>{project?.activated ? 'Y' : 'N'}</Text>
             </BlockRow>
             <BlockRow>
-              <Label>{t('타겟 릴리즈')}</Label>
+              <Label>{t('AI 활성화')}</Label>
+              <Text>{project?.aiEnabled ? 'Y' : 'N'}</Text>
+            </BlockRow>
+            <BlockRow>
+              <Label>{t('타겟 릴리스')}</Label>
               <Text>{targetRelease?.name}</Text>
             </BlockRow>
           </Block>
@@ -395,23 +398,19 @@ function ProjectInfoPage() {
           <Title paddingBottom={false} border={false} marginBottom={false}>
             {t('관리')}
           </Title>
-          <Block>
+          <Block danger>
             <BlockRow>
               <Label>{t('프로젝트 탈퇴')}</Label>
-              <Text>
-                <Button size="sm" color="warning" onClick={onWithdraw}>
-                  {t('프로젝트 탈퇴')}
-                </Button>
-              </Text>
+              <Button size="sm" color="warning" onClick={onWithdraw}>
+                {t('프로젝트 탈퇴')}
+              </Button>
             </BlockRow>
             {(isAdmin || project?.admin) && (
               <BlockRow>
                 <Label>{t('프로젝트 삭제')}</Label>
-                <Text>
-                  <Button size="sm" color="danger" onClick={onDelete}>
-                    {t('프로젝트 삭제')}
-                  </Button>
-                </Text>
+                <Button size="sm" color="danger" onClick={onDelete}>
+                  {t('프로젝트 삭제')}
+                </Button>
               </BlockRow>
             )}
           </Block>

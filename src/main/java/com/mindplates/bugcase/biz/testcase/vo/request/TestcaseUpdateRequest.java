@@ -1,18 +1,17 @@
 package com.mindplates.bugcase.biz.testcase.vo.request;
 
-import com.mindplates.bugcase.biz.project.entity.Project;
-import com.mindplates.bugcase.biz.project.entity.ProjectRelease;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectReleaseId;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
+import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
+import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
+import com.mindplates.bugcase.common.vo.IRequestVO;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class TestcaseUpdateRequest {
+public class TestcaseUpdateRequest implements IRequestVO<TestcaseDTO> {
 
     private Long id;
     private Long testcaseGroupId;
@@ -27,28 +26,31 @@ public class TestcaseUpdateRequest {
     private String testerValue;
     private List<Long> projectReleaseIds;
 
-    public Testcase buildEntity() {
-        Testcase testcase = Testcase.builder()
+
+    @Override
+    public TestcaseDTO toDTO() {
+        TestcaseDTO testcase = TestcaseDTO.builder()
             .id(id)
-            .project(Project.builder().id(projectId).build())
-            .testcaseGroup(TestcaseGroup.builder().id(testcaseGroupId).build())
-            .testcaseTemplate(TestcaseTemplate.builder().id(testcaseTemplateId).build())
+            .project(ProjectDTO.builder().id(projectId).build())
+            .testcaseGroup(TestcaseGroupDTO.builder().id(testcaseGroupId).build())
+            .testcaseTemplate(TestcaseTemplateDTO.builder().id(testcaseTemplateId).build())
             .name(name)
             .description(description)
             .itemOrder(itemOrder)
             .closed(closed)
-            .testcaseItems(testcaseItems.stream().map(TestcaseItemRequest::buildEntity).collect(Collectors.toList()))
+            .testcaseItems(testcaseItems.stream().map((TestcaseItemRequest::toDTO)).collect(Collectors.toList()))
             .testerType(testerType)
             .testerValue(testerValue)
             .build();
 
         if (projectReleaseIds != null) {
-            testcase.setTestcaseProjectReleases(
+            testcase.setProjectReleases(
                 projectReleaseIds.stream()
-                    .map(projectReleaseId -> TestcaseProjectRelease.builder()
-                        .testcase(Testcase.builder().id(testcase.getId()).build())
-                        .projectRelease(ProjectRelease.builder().id(projectReleaseId).build())
-                        .build())
+                    .map(projectReleaseId ->
+                        ProjectReleaseDTO
+                            .builder()
+                            .id(projectReleaseId)
+                            .build())
                     .collect(Collectors.toList())
             );
         }

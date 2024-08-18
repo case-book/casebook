@@ -1,0 +1,26 @@
+.select-open-link-testrun-popup-wrapper {
+  .modal-header {
+    .title {
+      display: flex;
+      line-height: 1;
+      > div {
+        align-self: center;
+      }
+    }
+  }
+
+  .open-link-report-list {
+    min-height: 332px;
+  }
+
+  .pager {
+    text-align: right;
+    margin-top: 1rem;
+    > button {
+      margin-right: 0.5rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

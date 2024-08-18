@@ -1,6 +1,5 @@
 package com.mindplates.bugcase.biz.space.repository;
 
-import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
 import com.mindplates.bugcase.biz.space.entity.SpaceProfileVariable;
 import java.util.List;
 import java.util.Optional;

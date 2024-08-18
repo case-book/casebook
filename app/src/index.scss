@@ -202,6 +202,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  &.side-bar-ready {
+    padding-left: 220px;
+  }
+
+  &.collapsed {
+    padding-left: 70px;
+  }
+
   &.page-moving {
     overflow: hidden;
   }
@@ -234,6 +242,23 @@ a {
   }
 
   &:visited {
+    color: var(--link-color);
+  }
+}
+
+a.hoverable {
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 0.5rem 0.25rem;
+  &:hover {
+    color: var(--link-color);
+    border-bottom: 1px solid var(--link-color);
+  }
+}
+
+a.g-text-link {
+  color: var(--text-color);
+  &:hover {
     color: var(--link-color);
   }
 }
@@ -357,11 +382,15 @@ hr {
   width: 10px;
   height: 10px;
 }
+
 ::-webkit-scrollbar-track {
-  background-color: $gray-300;
+  background-color: $gray-200;
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color: $gray-500;
+  border: 3px solid $gray-200;
+  background-color: var(--link-color);
+  border-radius: 10px;
 }
 
 .theme-DARK {
@@ -462,7 +491,6 @@ hr {
   border: 1px solid var(--border-color);
 }
 
-
 .toastui-editor-variable-list-popup {
   z-index: 100;
   background-color: var(--theme-color);
@@ -525,6 +553,18 @@ hr {
       &.selected {
         background-color: var(--hover-background-color);
       }
+    }
+  }
+}
+
+.react-split__sash {
+  border-left: 1px solid var(--border-light-color);
+  .split-sash-content-active {
+    background-color: var(--yellow-color) !important;
+  }
+  &:hover {
+    > div {
+      background-color: var(--yellow-color) !important;
     }
   }
 }

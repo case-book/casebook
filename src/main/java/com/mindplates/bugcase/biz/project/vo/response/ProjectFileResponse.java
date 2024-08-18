@@ -1,7 +1,11 @@
 package com.mindplates.bugcase.biz.project.vo.response;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectFileDTO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -29,7 +33,6 @@ public class ProjectFileResponse {
         this.size = projectFile.getSize();
         this.spaceCode = spaceCode;
         this.projectId = projectId;
-
         this.uuid = projectFile.getUuid();
 
     }

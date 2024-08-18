@@ -21,7 +21,14 @@ public interface TestcaseItemRepository extends JpaRepository<TestcaseItem, Long
     @Query("DELETE FROM TestcaseItem ti WHERE ti.testcaseTemplateItem.id = :testcaseTemplateItemId")
     void deleteByTestcaseTemplateItemId(@Param("testcaseTemplateItemId") Long testcaseTemplateItemId);
 
+    @Modifying
+    @Query("DELETE FROM TestcaseItem ti WHERE ti.testcaseTemplateItem.id IN (SELECT tti.id FROM TestcaseTemplateItem tti WHERE tti.testcaseTemplate.id = :testcaseTemplateId)")
+    void deleteByTestcaseTemplateId(@Param("testcaseTemplateId") Long testcaseTemplateId);
+
     List<TestcaseItem> findByTestcaseProjectId(Long projectId);
 
+    @Modifying
+    @Query("DELETE FROM TestcaseItem ti WHERE ti.testcase.id IN (SELECT t.id FROM Testcase t WHERE t.project.id = :projectId)")
+    void deleteByProjectId(@Param("projectId") Long projectId);
 }
 

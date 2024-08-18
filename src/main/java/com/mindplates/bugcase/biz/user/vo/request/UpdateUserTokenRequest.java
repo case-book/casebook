@@ -2,9 +2,8 @@ package com.mindplates.bugcase.biz.user.vo.request;
 
 
 import com.mindplates.bugcase.biz.user.dto.UserTokenDTO;
-import lombok.Data;
-
 import javax.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Data
 public class UpdateUserTokenRequest {
@@ -16,8 +15,8 @@ public class UpdateUserTokenRequest {
 
     public UserTokenDTO toDTO() {
         return UserTokenDTO.builder()
-                .name(name)
-                .enabled(enabled)
-                .build();
+            .name(name)
+            .enabled(enabled)
+            .build();
     }
 }

@@ -5,7 +5,6 @@ import com.mindplates.bugcase.biz.space.entity.SpaceVariable;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceVariableRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ public class SpaceVariableService {
 
     private final SpaceVariableRepository spaceVariableRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
-    private final MappingUtil mappingUtil;
 
     private boolean existByName(long spaceId, String name) {
         Long count = spaceVariableRepository.countBySpaceIdAndName(spaceId, name);
@@ -58,9 +56,8 @@ public class SpaceVariableService {
             throw new ServiceException("error.space.variable.code.duplicated");
         }
 
-        SpaceVariable spaceVariable = mappingUtil.convert(createSpaceVariableInfo, SpaceVariable.class);
-        spaceVariableRepository.save(spaceVariable);
-        return new SpaceVariableDTO(spaceVariable);
+        SpaceVariable result = spaceVariableRepository.save(createSpaceVariableInfo.toEntity());
+        return new SpaceVariableDTO(result);
     }
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE_VARIABLE)

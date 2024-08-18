@@ -2,10 +2,14 @@ package com.mindplates.bugcase.biz.user.dto;
 
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.SystemRole;
-import com.mindplates.bugcase.common.entity.CommonEntity;
-import lombok.*;
-
+import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Builder
@@ -13,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO extends CommonEntity {
+public class UserDTO extends CommonDTO implements IDTO<User> {
 
     private Long id;
     private String email;
@@ -61,4 +65,31 @@ public class UserDTO extends CommonEntity {
         this.avatarInfo = user.getAvatarInfo();
     }
 
+    @Override
+    public User toEntity() {
+        return User.builder()
+            .id(this.id)
+            .email(this.email)
+            .name(this.name)
+            .uuid(this.uuid)
+            .password(this.password)
+            .salt(this.salt)
+            .activateYn(this.activateYn)
+            .useYn(this.useYn)
+            .language(this.language)
+            .country(this.country)
+            .activationToken(this.activationToken)
+            .activateMailSendResult(this.activateMailSendResult)
+            .recoveryToken(this.recoveryToken)
+            .recoveryMailSendResult(this.recoveryMailSendResult)
+            .systemRole(this.systemRole)
+            .activeSystemRole(this.activeSystemRole)
+            .autoLogin(this.autoLogin)
+            .loginToken(this.loginToken)
+            .timezone(this.timezone)
+            .lastSeen(this.lastSeen)
+            .avatarInfo(this.avatarInfo)
+            .build();
+
+    }
 }

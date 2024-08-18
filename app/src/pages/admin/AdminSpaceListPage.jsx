@@ -23,7 +23,7 @@ function AdminSpaceListPage() {
   }, []);
 
   return (
-    <Page className="admin-space-list-page-wrapper" list>
+    <Page className="admin-space-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {
@@ -32,7 +32,7 @@ function AdminSpaceListPage() {
           },
           {
             to: '/admin',
-            text: t('관리'),
+            text: t('시스템 관리'),
           },
           {
             to: '/admin/spaces',

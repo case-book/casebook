@@ -20,7 +20,7 @@ function SpaceVariableEditPage() {
   const [spaceVariableList, setSpaceVariableList] = useState([]);
   const [spaceProfileList, setSpaceProfileList] = useState([]);
   const [spaceProfileVariableList, setSpaceProfileVariableList] = useState([]);
-  const [space, setSpace] = useState(null);
+  const [spaceName, setSpaceName] = useState('');
   const [variableEditPopup, setVariableEditPopup] = useState({ opened: false, data: null });
   const [profileEditPopup, setProfileEditPopup] = useState({ opened: false, data: null });
   const [profileVariableEditPopup, setProfileVariableEditPopup] = useState({
@@ -30,8 +30,8 @@ function SpaceVariableEditPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    SpaceService.selectSpaceInfo(spaceCode, info => {
-      setSpace(info);
+    SpaceService.selectSpaceName(spaceCode, name => {
+      setSpaceName(name);
     });
     SpaceVariableService.selectSpaceVariableList(spaceCode, list => {
       setSpaceVariableList(list);
@@ -188,13 +188,10 @@ function SpaceVariableEditPage() {
             to: '/',
             text: t('HOME'),
           },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
+
           {
             to: `/spaces/${spaceCode}/info`,
-            text: space?.name,
+            text: spaceName,
           },
           {
             to: `/spaces/${spaceCode}/variables`,

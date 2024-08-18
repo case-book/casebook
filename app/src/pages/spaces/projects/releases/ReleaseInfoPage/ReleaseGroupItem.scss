@@ -1,0 +1,58 @@
+.release-group-item-wrapper {
+  > td:first-child {
+    vertical-align: top;
+  }
+  .seq-id {
+    margin-right: 8px;
+    > div {
+      min-width: 50px;
+      text-align: center;
+    }
+  }
+
+  .seq-name {
+    display: inline-flex;
+    cursor: pointer;
+    color: var(--text-color);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-color);
+
+    &:hover {
+      color: var(--link-color);
+      border-bottom: 1px solid var(--link-color);
+    }
+
+    > div {
+      align-self: center;
+    }
+  }
+
+  .releases {
+    > div {
+      margin-right: 8px;
+    }
+    > span {
+      font-size: 12px;
+    }
+  }
+
+  .FAILED {
+    background-color: var(--danger-color);
+    color: var(--white-color);
+  }
+
+  .PASSED {
+    background-color: var(--success-color);
+    color: var(--white-color);
+  }
+
+  .UNTESTABLE {
+    background-color: var(--gray-color);
+    color: var(--white-color);
+  }
+
+  .UNTESTED {
+    background-color: var(--dark-gray-color);
+    color: var(--white-color);
+  }
+}

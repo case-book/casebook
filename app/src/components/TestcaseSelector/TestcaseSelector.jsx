@@ -151,6 +151,14 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
       });
   }, [projectTestcaseGroupTree, filterCondition]);
 
+  const releaseNameMap = useMemo(() => {
+    const nextReleaseNameMap = {};
+    releases.forEach(projectRelease => {
+      nextReleaseNameMap[projectRelease.id] = projectRelease.name;
+    });
+    return nextReleaseNameMap;
+  }, [releases]);
+
   return (
     <div className={`testcase-selector-wrapper g-no-select ${className}`}>
       <div>
@@ -169,7 +177,7 @@ function TestcaseSelector({ className, testcaseGroups, currentSelectedTestcaseGr
                 minDate={filterCondition.minDate}
                 maxDate={filterCondition.maxDate}
                 filteredReleases={filterCondition.releases}
-                releases={releases}
+                releaseNameMap={releaseNameMap}
               />
             );
           })}

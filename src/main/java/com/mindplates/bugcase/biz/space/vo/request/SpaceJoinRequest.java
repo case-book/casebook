@@ -14,10 +14,10 @@ public class SpaceJoinRequest implements IRequestVO<SpaceApplicantDTO> {
     public SpaceApplicantDTO toDTO(String spaceCode, Long userId) {
 
         return SpaceApplicantDTO.builder()
-                .user(UserDTO.builder().id(userId).build())
-                .space(SpaceDTO.builder().code(spaceCode).build())
-                .message(message)
-                .build();
+            .user(UserDTO.builder().id(userId).build())
+            .space(SpaceDTO.builder().code(spaceCode).build())
+            .message(message)
+            .build();
     }
 
     public SpaceApplicantDTO toDTO() {

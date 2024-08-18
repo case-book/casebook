@@ -1,0 +1,13 @@
+.project-testcase-info-page-wrapper {
+  display: flex;
+
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+    padding: 0;
+    .page-layout {
+      height: 100%;
+      overflow-y: auto;
+    }
+  }
+}

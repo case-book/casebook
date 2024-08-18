@@ -1,12 +1,13 @@
 package com.mindplates.bugcase.biz.testcase.vo.request;
 
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
+import com.mindplates.bugcase.common.vo.IRequestVO;
+import javax.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
-
 @Data
-public class TestcaseGroupUpdateRequest {
+public class TestcaseGroupUpdateRequest implements IRequestVO<TestcaseGroupDTO> {
 
     private Long id;
     @NotBlank
@@ -16,4 +17,12 @@ public class TestcaseGroupUpdateRequest {
     private String description;
 
 
+    @Override
+    public TestcaseGroupDTO toDTO() {
+        return TestcaseGroupDTO.builder()
+            .id(id)
+            .name(name)
+            .description(description)
+            .build();
+    }
 }

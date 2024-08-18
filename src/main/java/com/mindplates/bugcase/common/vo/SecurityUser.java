@@ -1,15 +1,13 @@
 package com.mindplates.bugcase.common.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.Collection;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Builder
 @Data

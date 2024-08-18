@@ -22,14 +22,14 @@ import {
   Title,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import SpaceService from '@/services/SpaceService';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import dialogUtil from '@/utils/dialogUtil';
-import { MESSAGE_CATEGORY } from '@/constants/constants';
+import { CHANNEL_TYPE_CODE, MESSAGE_CATEGORY } from '@/constants/constants';
 import ProjectService from '@/services/ProjectService';
 import TestcaseTemplateEditorPopup from '@/pages/spaces/projects/TestcaseTemplateEditorPopup/TestcaseTemplateEditorPopup';
 import ConfigService from '@/services/ConfigService';
@@ -167,12 +167,13 @@ function ProjectEditPage({ type }) {
 
   const navigate = useNavigate();
 
-  const [space, setSpace] = useState(null);
+  const [spaceName, setSpaceName] = useState('');
   const [testcaseItemTypes, setTestcaseItemTypes] = useState([]);
   const [testcaseItemCategories, setTestcaseItemCategories] = useState([]);
   const [opened, setOpened] = useState(false);
   const [spaceMessageChannelList, setSpaceMessageChannelList] = useState([]);
   const [releases, setReleases] = useState([]);
+  const [llms, setLlms] = useState([]);
 
   const [templateEditorPopupInfo, setTemplateEditorPopupInfo] = useState({
     opened: false,
@@ -185,11 +186,18 @@ function ProjectEditPage({ type }) {
     code: '',
     description: '',
     activated: true,
+    aiEnabled: false,
     token: uuidv4(),
     testcaseTemplates: cloneDeep(defaultProjectConfig.testcaseTemplates),
     targetReleaseId: null,
     messageChannels: [],
   });
+
+  const getLlms = () => {
+    SpaceService.selectSpaceLlmList(spaceCode, list => {
+      setLlms(list);
+    });
+  };
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -208,6 +216,7 @@ function ProjectEditPage({ type }) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    getLlms();
     if (projectId && type === 'edit') {
       ProjectService.selectProjectInfo(spaceCode, projectId, info => {
         ReleaseService.selectReleaseList(spaceCode, projectId, list => {
@@ -223,8 +232,8 @@ function ProjectEditPage({ type }) {
   }, [type, projectId]);
 
   useEffect(() => {
-    SpaceService.selectSpaceInfo(spaceCode, info => {
-      setSpace(info);
+    SpaceService.selectSpaceName(spaceCode, name => {
+      setSpaceName(name);
     });
   }, [spaceCode]);
 
@@ -403,11 +412,15 @@ function ProjectEditPage({ type }) {
     setProject(nextProject);
   };
 
+  const hasLlm = useMemo(() => {
+    return llms && llms?.length > 0;
+  });
+
   return (
     <>
       <Page className="project-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('프로젝트 편집') : t('프로젝트 생성')}
+          name={isEdit ? t('프로젝트 변경') : t('프로젝트 생성')}
           breadcrumbs={
             isEdit
               ? [
@@ -416,12 +429,8 @@ function ProjectEditPage({ type }) {
                     text: t('HOME'),
                   },
                   {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
-                  {
                     to: `/spaces/${spaceCode}/info`,
-                    text: space?.name,
+                    text: spaceName,
                   },
                   {
                     to: `/spaces/${spaceCode}/projects`,
@@ -433,7 +442,7 @@ function ProjectEditPage({ type }) {
                   },
                   {
                     to: `/spaces/${spaceCode}/edit`,
-                    text: t('편집'),
+                    text: t('변경'),
                   },
                 ]
               : [
@@ -442,12 +451,8 @@ function ProjectEditPage({ type }) {
                     text: t('HOME'),
                   },
                   {
-                    to: '/',
-                    text: t('스페이스 목록'),
-                  },
-                  {
                     to: `/spaces/${spaceCode}/info`,
-                    text: space?.name,
+                    text: spaceName,
                   },
                   {
                     to: `/spaces/${spaceCode}/projects`,
@@ -473,7 +478,7 @@ function ProjectEditPage({ type }) {
             <Block>
               <BlockRow>
                 <Label>{t('스페이스')}</Label>
-                <Text>{space?.name}</Text>
+                <Text>{spaceName}</Text>
               </BlockRow>
               <BlockRow>
                 <Label required>{t('이름')}</Label>
@@ -515,9 +520,32 @@ function ProjectEditPage({ type }) {
                   }
                 />
               </BlockRow>
+              <BlockRow>
+                <Label>{t('AI 활성화')}</Label>
+                <CheckBox
+                  type="checkbox"
+                  value={project.aiEnabled}
+                  disabled={!hasLlm}
+                  onChange={val =>
+                    setProject({
+                      ...project,
+                      aiEnabled: val,
+                    })
+                  }
+                />
+                {!hasLlm && (
+                  <div className="msg">
+                    <i className="fa-solid fa-circle-info" />
+                    <Link to={`/spaces/${spaceCode}/info`}>
+                      <span>{t('스페이스')}</span>
+                    </Link>
+                    에 설정된 LLM API 정보가 없습니다.
+                  </div>
+                )}
+              </BlockRow>
               {isEdit && (
                 <BlockRow>
-                  <Label>{t('타겟 릴리즈')}</Label>
+                  <Label>{t('타겟 릴리스')}</Label>
                   <Selector
                     items={[{ key: null, value: t('없음') }].concat(
                       releases.map(release => {
@@ -557,10 +585,18 @@ function ProjectEditPage({ type }) {
                         <div>
                           <Selector
                             minWidth="100%"
+                            size="md"
                             items={spaceMessageChannelList.map(d => {
                               return {
                                 key: d.id,
-                                value: d.name,
+                                value: (
+                                  <div className="message-channel-item">
+                                    <Tag size="xs" color="white" border>
+                                      {CHANNEL_TYPE_CODE[d.messageChannelType]}
+                                    </Tag>
+                                    <div>{d.name}</div>
+                                  </div>
+                                ),
                               };
                             })}
                             value={channel.spaceMessageChannelId}

@@ -1,0 +1,122 @@
+.release-list-page-wrapper {
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+  }
+
+  .release-cards {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-auto-rows: minmax(130px, auto);
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+
+    .release-card-header {
+      padding-top: 1.5rem;
+      padding-bottom: 0;
+      text-align: left;
+      a {
+        text-align: center;
+        color: var(--text-color);
+        border-bottom: 1px solid;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.25rem;
+
+        &:hover {
+          color: var(--link-color);
+          border-bottom: 1px solid var(--link-color);
+        }
+      }
+
+      .target {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        .triangle {
+          width: 0;
+          height: 0;
+          border-top: 60px solid #333;
+          border-left: 60px solid transparent;
+          border-right: 0 solid transparent;
+          position: absolute;
+          top: 0;
+          right: 0;
+          border-top-right-radius: 3px;
+        }
+
+        .text {
+          font-family: LINESeed, sans-serif;
+          color: var(--white-color);
+          position: absolute;
+          z-index: 1;
+          top: 14px;
+          right: 0;
+          font-size: 10px;
+          transform: rotate(45deg);
+          transform-origin: center;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .description {
+      background-color: var(--lighter-color);
+      padding: 0 10px;
+      font-size: 12px;
+      height: 40px;
+      display: flex;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .release-content {
+      margin-top: 1rem;
+      display: flex;
+
+      .testcase-count {
+        display: flex;
+        > div {
+          align-self: center;
+
+          &.icon {
+            margin-right: 10px;
+            > span {
+              width: 24px;
+              height: 24px;
+              background-color: var(--light-color);
+              display: inline-flex;
+              justify-content: center;
+              border-radius: 50%;
+              i {
+                align-self: center;
+              }
+            }
+          }
+
+          &.count {
+            font-family: Rowdies, sans-serif;
+            font-size: 26px;
+          }
+        }
+      }
+
+      .buttons {
+        flex-grow: 1;
+        text-align: right;
+
+        .create-next-release-button,
+        .create-testrun-button {
+          border-radius: 20px;
+          margin-left: 8px;
+          i:first-child {
+            margin-right: 4px;
+          }
+        }
+      }
+    }
+  }
+}

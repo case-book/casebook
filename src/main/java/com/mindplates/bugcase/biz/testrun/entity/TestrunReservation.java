@@ -47,7 +47,7 @@ public class TestrunReservation extends CommonEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN__PROJECT"))
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_TESTRUN_RESERVATION__PROJECT"))
     private Project project;
 
     @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
@@ -55,14 +55,6 @@ public class TestrunReservation extends CommonEntity {
 
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<TestrunUser> testrunUsers;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SELECT)
-    private List<TestrunTestcaseGroup> testcaseGroups;
 
     @Column(name = "start_date_time")
     private LocalDateTime startDateTime;
@@ -110,6 +102,45 @@ public class TestrunReservation extends CommonEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunMessageChannel> messageChannels;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunUser> testrunUsers;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrunReservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<TestrunTestcaseGroup> testcaseGroups;
+
+    public TestrunReservation(Long id,
+        String name,
+        String description,
+        long projectId,
+        LocalDateTime startDateTime,
+        LocalDateTime endDateTime,
+        Boolean expired,
+        Boolean deadlineClose,
+        Boolean autoTestcaseNotAssignedTester,
+        Integer testcaseGroupCount,
+        Integer testcaseCount,
+        Long testrunId,
+        Boolean selectCreatedTestcase,
+        Boolean selectUpdatedTestcase) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.project = Project.builder().id(projectId).build();
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.expired = expired;
+        this.deadlineClose = deadlineClose;
+        this.autoTestcaseNotAssignedTester = autoTestcaseNotAssignedTester;
+        this.testcaseGroupCount = testcaseGroupCount;
+        this.testcaseCount = testcaseCount;
+        this.testrun = Testrun.builder().id(testrunId).build();
+        this.selectCreatedTestcase = selectCreatedTestcase;
+        this.selectUpdatedTestcase = selectUpdatedTestcase;
+
+    }
+
     public void updateTestcaseCount() {
         int testcaseGroupCountResult = 0;
         int testcaseCountResult = 0;
@@ -136,7 +167,7 @@ public class TestrunReservation extends CommonEntity {
         this.startDateTime = testrunReservation.getStartDateTime();
         this.endDateTime = testrunReservation.getEndDateTime();
         this.deadlineClose = testrunReservation.getDeadlineClose();
-        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
+        this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester() != null && testrunReservation.getAutoTestcaseNotAssignedTester();
         this.profiles.clear();
         this.profiles.addAll(testrunReservation.getProfiles());
         this.hooks.removeIf(hook -> testrunReservation.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
@@ -202,7 +233,7 @@ public class TestrunReservation extends CommonEntity {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testrunTestcaseGroupTestcaseDTO.getId().equals(testcase.getId()));
+                            .noneMatch(testrunTestcaseGroupTestcaseDTO -> testcase.getId().equals(testrunTestcaseGroupTestcaseDTO.getId()));
                     }
                     return true;
                 });

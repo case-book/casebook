@@ -1,0 +1,32 @@
+.comment-badge-wrapper {
+  text-align: right;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: none;
+
+  &.has-comment {
+display: block;
+  }
+
+  > button {
+    position: relative;
+    .badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--link-color);
+      color: var(--white-color);
+      display: inline-flex;
+      width: 20px;
+      height: 20px;
+      justify-content: center;
+      border-radius: 50%;
+      > span {
+        align-self: center;
+        font-family: Rowdies, sans-serif;
+        font-size: 12px;
+      }
+    }
+  }
+}

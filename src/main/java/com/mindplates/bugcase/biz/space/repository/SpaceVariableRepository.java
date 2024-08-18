@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SpaceVariableRepository extends JpaRepository<SpaceVariable, Long> {
 
     Long deleteBySpaceId(long spaceId);
+
     Optional<SpaceVariable> findBySpaceCodeAndId(String spaceCode, Long id);
+
     List<SpaceVariable> findAllBySpaceCode(String spaceCode);
 
     Long countBySpaceIdAndName(Long spaceId, String name);

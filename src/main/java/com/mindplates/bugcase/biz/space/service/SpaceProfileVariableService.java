@@ -5,10 +5,8 @@ import com.mindplates.bugcase.biz.space.entity.Space;
 import com.mindplates.bugcase.biz.space.entity.SpaceProfile;
 import com.mindplates.bugcase.biz.space.entity.SpaceProfileVariable;
 import com.mindplates.bugcase.biz.space.entity.SpaceVariable;
-import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SpaceProfileVariableService {
 
-    private final SpaceProfileRepository spaceProfileRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
-    private final MappingUtil mappingUtil;
 
     @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE_PROFILE_VARIABLE)
     public List<SpaceProfileVariableDTO> selectSpaceProfileVariableList(String spaceCode) {

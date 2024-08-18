@@ -53,7 +53,9 @@ public class HttpRequestUtil {
             MultiValueMap<String, String> headerData = new LinkedMultiValueMap<>();
             headers.forEach(header -> headerData.add(header.get("key"), header.get("value")));
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-            bodies.forEach(body -> formData.set(body.get("key"), body.get("value")));
+            if (bodies != null) {
+                bodies.forEach(body -> formData.set(body.get("key"), body.get("value")));
+            }
             HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headerData);
             ResponseEntity<String> response = restTemplate.exchange(
                 url,

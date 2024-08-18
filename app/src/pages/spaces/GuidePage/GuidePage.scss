@@ -1,0 +1,49 @@
+.guide-page-wrapper {
+  .img {
+    text-align: center;
+    > img {
+      height: 400px;
+    }
+  }
+
+  span.bold {
+    font-weight: bold;
+  }
+
+  p {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+
+  ul.order {
+    margin-bottom: 2rem;
+    > li {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+
+
+  .img-description {
+    display: flex;
+    > div {
+      &.img {
+        > img {
+          height: 200px;
+          border-radius: 20px;
+        }
+      }
+      &.description {
+        margin-left: 1rem;
+        .strong {
+          font-size: 16px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

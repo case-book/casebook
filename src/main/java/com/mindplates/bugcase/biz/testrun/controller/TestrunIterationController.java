@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.controller;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
-import com.mindplates.bugcase.biz.testrun.service.TestrunService;
+import com.mindplates.bugcase.biz.testrun.service.TestrunIterationService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunIterationRequest;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunIterationListResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunIterationResponse;
@@ -30,13 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class TestrunIterationController {
 
-    private final TestrunService testrunService;
+
+    private final TestrunIterationService testrunIterationService;
 
     @Operation(description = "반복 테스트런 목록 조회")
     @GetMapping("")
     public List<TestrunIterationListResponse> selectTestrunIterationList(@PathVariable String spaceCode, @PathVariable long projectId,
         @RequestParam(value = "expired") Boolean expired) {
-        List<TestrunIterationDTO> testrunIterationList = testrunService.selectProjectTestrunIterationList(spaceCode, projectId, expired);
+        List<TestrunIterationDTO> testrunIterationList = testrunIterationService.selectProjectTestrunIterationList(spaceCode, projectId, expired);
         return testrunIterationList.stream().map(TestrunIterationListResponse::new).collect(Collectors.toList());
     }
 
@@ -49,8 +50,8 @@ public class TestrunIterationController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        TestrunIterationDTO testrunIteration = testrunIterationRequest.buildEntity();
-        TestrunIterationDTO createdTestrunIteration = testrunService.createTestrunIterationInfo(spaceCode, testrunIteration);
+        TestrunIterationDTO testrunIteration = testrunIterationRequest.toDTO();
+        TestrunIterationDTO createdTestrunIteration = testrunIterationService.createTestrunIterationInfo(testrunIteration);
 
         return new TestrunIterationListResponse(createdTestrunIteration);
     }
@@ -60,7 +61,7 @@ public class TestrunIterationController {
     @PutMapping("/{testrunId}")
     public ResponseEntity<HttpStatus> updateTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
         @Valid @RequestBody TestrunIterationRequest testrunIterationRequest) {
-        TestrunIterationDTO testrunIterationDTO = testrunIterationRequest.buildEntity();
+        TestrunIterationDTO testrunIterationDTO = testrunIterationRequest.toDTO();
 
         int testcaseCount = testrunIterationDTO.getTestcaseGroups().stream()
             .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().size() : 0)
@@ -70,7 +71,7 @@ public class TestrunIterationController {
             throw new ServiceException("testrun.reservation.testcase.empty");
         }
 
-        testrunService.updateTestrunIterationInfo(spaceCode, testrunIterationDTO, false);
+        testrunIterationService.updateTestrunIterationInfo(spaceCode, testrunIterationDTO, false);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -79,7 +80,7 @@ public class TestrunIterationController {
     @GetMapping("/{testrunIterationId}")
     public TestrunIterationResponse selectTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
         @PathVariable long testrunIterationId) {
-        TestrunIterationDTO testrunIteration = testrunService.selectProjectTestrunIterationInfo(testrunIterationId);
+        TestrunIterationDTO testrunIteration = testrunIterationService.selectTestrunIterationInfo(testrunIterationId);
         return new TestrunIterationResponse(testrunIteration);
     }
 
@@ -88,7 +89,7 @@ public class TestrunIterationController {
     @DeleteMapping("/{testrunIterationId}")
     public ResponseEntity<HttpStatus> deleteTestrunIterationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
         @PathVariable long testrunIterationId) {
-        testrunService.deleteProjectTestrunIterationInfo(spaceCode, projectId, testrunIterationId);
+        testrunIterationService.deleteProjectTestrunIterationInfo(spaceCode, projectId, testrunIterationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

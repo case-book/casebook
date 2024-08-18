@@ -7,7 +7,7 @@ CASEBOOK
 * 회사나 조직 혹은 공통의 관심사를 가지는 그룹이 공유할 수 있는 '스페이스'라는 공간을 생성하고, '스페이스'의 참여자를 관리할 수 있습니다.
 * '스페이스'에 '프로젝트'를 생성하고, '프로젝트'의 참여자를 관리할 수 있습니다.
 * '프로젝트'에 트리 형태의 '테스트케이스 그룹'을 생성하고, '테스트케이스 그룹' 아래에 '테스트케이스'를 작성할 수 있습니다.
-* '테스트케이스'에 작성을 위한 '테스트케이스 템플릿'을 추가하거나, 편집하여, '프로젝트' 별로 '테스트케이스' 작성이나, 결과 입력에 필요한 항목을 커스터마이징 할 수 있습니다.
+* '테스트케이스'에 작성을 위한 '테스트케이스 템플릿'을 추가하거나, 변경하여, '프로젝트' 별로 '테스트케이스' 작성이나, 결과 입력에 필요한 항목을 커스터마이징 할 수 있습니다.
 * 작성된 '테스트케이스'를 테스트 수행을 위해 필요한 여러 조건을 선택하여, '테스트런'을 생성한 후, 테스트를 수행할 수 있습니다.
 * '테스트런' 생성 시 테스트를 수행할 기간, 테스트 대상이 되는 '테스트케이스 그룹'이나 '테스트케이스', 테스트를 수행할 '테스터'를 자유롭게 선택할 수 있습니다.
 * '테스트런'의 시작, 종료, 테스터의 변경 등의 '테스트런'의 상황 변화를 슬랙과 연동할 수 있습니다.
@@ -53,6 +53,7 @@ app] npm start
 ### 백엔드 환경 구성
 
 
+
 ## 릴리스
 아래와 같이 릴리스 파일을 생성할 수 있습니다. 단, gradle 7.X 버전을 사용해야 올바르게 릴리스됩니다. gradle 8.0 이상의 버전에서는 현재 올바르게 릴리스 과정이 동작하지 않습니다.
 ```agsl
@@ -65,3 +66,7 @@ gradle release
 설치 파일을 직접사용하지 않고, 빌드 과정에서 생성된 파일들을 이용하여, 일반적인 웹 애플리케이션을 배포하는 방식으로 각 사용자의 상황에 맞게 직접 설치를 진행할 수 있습니다. 이때 아래의 디렉토리에 생성된 파일들을 참고하실 수 있습니다. 
  - build/libs/casebook-api-[version].war
  - app/build
+
+## API 요청
+curl -u (user-email):(user-token) -d "{""result"":""SUCCESS"", ""comment"":""your comment""}" -H "Content-Type: application/json"  -X POST http://casebook-domain/api/automation/projects/(project-token)/testruns/147/testcases/40
+curl -u (user-email):3ad56155-6faf-475c-abba-9897fcf6fb56 -d "{""result"":""SUCCESS"", ""comment"":""your comment""}" -H "Content-Type: application/json" -X POST http://localhost:8080/api/automation/projects/d6ae0639-13a5-4f7d-b413-0f63369c94f2/testruns/147/testcases/40

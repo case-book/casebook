@@ -22,11 +22,11 @@ public class SpaceUserRequest implements IRequestVO<SpaceUserDTO> {
 
     public SpaceUserDTO toDTO(SpaceDTO space) {
         return SpaceUserDTO.builder()
-                .id(id)
-                .role(role)
-                .user(UserDTO.builder().id(userId).build())
-                .crud(crud)
-                .space(space)
-                .build();
+            .id(id)
+            .role(role)
+            .user(UserDTO.builder().id(userId).build())
+            .crud(crud)
+            .space(space)
+            .build();
     }
 }

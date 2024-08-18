@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "testrun_profile")
-public class TestrunProfile extends CommonEntity {
+public class TestrunProfile extends CommonEntity implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -50,5 +50,20 @@ public class TestrunProfile extends CommonEntity {
 
     @Column(name = "item_order")
     private Integer itemOrder;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public TestrunProfile cloneEntity() {
+        try {
+            TestrunProfile copiedTestrunProfile = (TestrunProfile) this.clone();
+            copiedTestrunProfile.setId(null);
+            return copiedTestrunProfile;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Clone not supported for Testrun", e);
+        }
+    }
 
 }

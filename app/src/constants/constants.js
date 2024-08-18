@@ -607,6 +607,17 @@ const CHANNEL_TYPE_CODE = {
   WEBHOOK: i18n.t('웹훅'),
 };
 
+const LLM_TYPE_CODE = {
+  OPENAI: 'OPENAI',
+};
+
+const LLM_CONFIGS = {
+  LLM_PROMPT: '프롬프트',
+  LLM_SYSTEM_ROLE: '시스템 롤',
+  LLM_PREFIX: 'PRE 프롬프트',
+  LLM_POSTFIX: 'POST 프롬프트',
+};
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -640,4 +651,6 @@ export {
   TESTRUN_HOOK_TIMINGS,
   HTTP_METHOD,
   CHANNEL_TYPE_CODE,
+  LLM_TYPE_CODE,
+  LLM_CONFIGS,
 };

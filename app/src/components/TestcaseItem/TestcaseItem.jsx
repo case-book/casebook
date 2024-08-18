@@ -10,6 +10,7 @@ import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
 import { getVariableList } from '@/pages/spaces/projects/testruns/TestrunExecutePage/variableUtil';
+import { ParaphraseInfoPropTypes } from '@/proptypes';
 
 // const reWidgetRule = /\{{(\S+)}}/;
 
@@ -33,6 +34,9 @@ function TestcaseItem({
   isTestResultItem,
   tags,
   variables,
+  paraphraseInfo,
+  onAcceptParaphraseContent,
+  onRemoveParaphraseContent,
 }) {
   const editor = useRef(null);
   const { t } = useTranslation();
@@ -42,6 +46,14 @@ function TestcaseItem({
   const onUserRandomChange = () => {
     setOpened(true);
   };
+
+  let paraphraseContent = '';
+  try {
+    paraphraseContent = paraphraseInfo?.items?.find(d => d.id === testcaseItem.id);
+  } catch (e) {
+    paraphraseContent = '';
+    console.error(e);
+  }
 
   return (
     <div key={testcaseTemplateItem.id} className={`testcase-item-wrapper size-${testcaseTemplateItem?.size}`}>
@@ -111,6 +123,20 @@ function TestcaseItem({
                     </span>
                   </div>
                 )}
+                {!isEdit && paraphraseContent?.text && (
+                  <div className="value-text">
+                    <span
+                      onClick={() => {
+                        if (testcaseItem.value) {
+                          window.open(testcaseItem.value, '_blank', 'noopener, noreferrer');
+                        }
+                      }}
+                    >
+                      {paraphraseContent?.text}
+                    </span>
+                  </div>
+                )}
+
                 {isEdit && (
                   <VariableInput
                     type={testcaseTemplateItem.type.toLowerCase()}
@@ -184,7 +210,45 @@ function TestcaseItem({
             )}
             {testcaseTemplateItem.type === 'EDITOR' && (
               <div className="editor" key={`${content.id}-${theme}`}>
-                {!isEdit && <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />}
+                {!isEdit && (
+                  <Viewer key={testcaseItem?.text} className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />
+                )}
+                {!isEdit && paraphraseContent?.text && (
+                  <div className="paraphrase-content">
+                    <Tag className="ai-tag" border color="white">
+                      AI GEN
+                    </Tag>
+                    <div className="buttons">
+                      {onRemoveParaphraseContent && (
+                        <Button
+                          size="sm"
+                          color="danger"
+                          rounded
+                          onClick={() => {
+                            onRemoveParaphraseContent(testcaseItem.id);
+                          }}
+                        >
+                          <i className="fa-solid fa-xmark" />
+                        </Button>
+                      )}
+                      {onAcceptParaphraseContent && (
+                        <Button
+                          size="sm"
+                          color="yellow"
+                          rounded
+                          onClick={() => {
+                            onAcceptParaphraseContent(content.id, testcaseItem.id);
+                          }}
+                        >
+                          <i className="fa-solid fa-arrow-up" />
+                        </Button>
+                      )}
+                    </div>
+                    <div>
+                      <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={paraphraseContent?.text || '<span className="none-text">&nbsp;</span>'} />
+                    </div>
+                  </div>
+                )}
                 {isEdit && (
                   <Editor
                     ref={editor}
@@ -264,6 +328,9 @@ TestcaseItem.defaultProps = {
   tags: [],
   onRandomTester: null,
   variables: [],
+  paraphraseInfo: {},
+  onAcceptParaphraseContent: null,
+  onRemoveParaphraseContent: null,
 };
 
 TestcaseItem.propTypes = {
@@ -278,6 +345,7 @@ TestcaseItem.propTypes = {
     options: PropTypes.arrayOf(PropTypes.string),
   }),
   testcaseItem: PropTypes.shape({
+    id: PropTypes.number,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
     type: PropTypes.string,
     text: PropTypes.string,
@@ -317,6 +385,9 @@ TestcaseItem.propTypes = {
       name: PropTypes.string,
     }),
   ),
+  paraphraseInfo: ParaphraseInfoPropTypes,
+  onAcceptParaphraseContent: PropTypes.func,
+  onRemoveParaphraseContent: PropTypes.func,
 };
 
 export default TestcaseItem;

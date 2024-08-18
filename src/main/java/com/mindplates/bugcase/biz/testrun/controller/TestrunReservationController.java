@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.controller;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunReservationDTO;
-import com.mindplates.bugcase.biz.testrun.service.TestrunService;
+import com.mindplates.bugcase.biz.testrun.service.TestrunReservationService;
 import com.mindplates.bugcase.biz.testrun.vo.request.TestrunReservationRequest;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunReservationListResponse;
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunReservationResponse;
@@ -30,14 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class TestrunReservationController {
 
-    private final TestrunService testrunService;
-
-    @Operation(description = "예약 테스트런 목록 조회")
-    @GetMapping("")
-    public List<TestrunReservationListResponse> selectTestrunReservationList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "expired") Boolean expired) {
-        List<TestrunReservationDTO> testrunReservationList = testrunService.selectProjectReserveTestrunList(spaceCode, projectId, expired);
-        return testrunReservationList.stream().map(TestrunReservationListResponse::new).collect(Collectors.toList());
-    }
+    private final TestrunReservationService testrunReservationService;
 
     @Operation(description = "예약 테스트런 생성")
     @PostMapping("")
@@ -48,36 +41,44 @@ public class TestrunReservationController {
             throw new ServiceException(HttpStatus.BAD_REQUEST);
         }
 
-        TestrunReservationDTO testrunReservation = testrunReservationRequest.buildEntity();
-        TestrunReservationDTO createdTestrunReservation = testrunService.createTestrunReservationInfo(spaceCode, testrunReservation);
+        TestrunReservationDTO testrunReservation = testrunReservationRequest.toDTO();
+        TestrunReservationDTO createdTestrunReservation = testrunReservationService.createTestrunReservationInfo(testrunReservation);
 
         return new TestrunReservationListResponse(createdTestrunReservation);
     }
-
 
     @Operation(description = "예약 테스트런 변경")
     @PutMapping("/{testrunId}")
     public ResponseEntity<HttpStatus> updateTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
         @Valid @RequestBody TestrunReservationRequest testrunReservationRequest) {
-        TestrunReservationDTO testrunReservation = testrunReservationRequest.buildEntity();
-        testrunService.updateTestrunReservationInfo(spaceCode, testrunReservation);
+
+        if (!testrunReservationRequest.getProjectId().equals(projectId)) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
+        TestrunReservationDTO testrunReservation = testrunReservationRequest.toDTO();
+        testrunReservationService.updateTestrunReservationInfo(spaceCode, testrunReservation);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(description = "예약 테스트런 목록 조회")
+    @GetMapping("")
+    public List<TestrunReservationListResponse> selectTestrunReservationList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "expired") Boolean expired) {
+        List<TestrunReservationDTO> testrunReservationList = testrunReservationService.selectProjectReserveTestrunList(spaceCode, projectId, expired);
+        return testrunReservationList.stream().map(TestrunReservationListResponse::new).collect(Collectors.toList());
+    }
 
     @Operation(description = "예약 테스트런 상세 조회")
     @GetMapping("/{testrunReservationId}")
-    public TestrunReservationResponse selectTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
-        @PathVariable long testrunReservationId) {
-        TestrunReservationDTO testrunReservation = testrunService.selectProjectTestrunReservationInfo(testrunReservationId);
+    public TestrunReservationResponse selectTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {
+        TestrunReservationDTO testrunReservation = testrunReservationService.selectProjectTestrunReservationInfo(testrunReservationId);
         return new TestrunReservationResponse(testrunReservation);
     }
 
     @Operation(description = "예약 테스트런 삭제")
     @DeleteMapping("/{testrunReservationId}")
-    public ResponseEntity<HttpStatus> deleteTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId,
-        @PathVariable long testrunReservationId) {
-        testrunService.deleteProjectTestrunReservationInfo(spaceCode, projectId, testrunReservationId);
+    public ResponseEntity<HttpStatus> deleteTestrunReservationInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunReservationId) {
+        testrunReservationService.deleteProjectTestrunReservationInfo(spaceCode, projectId, testrunReservationId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -6,7 +6,7 @@ function ProjectBugInfoPage() {
   const { t } = useTranslation();
 
   return (
-    <Page className="project-overview-info-page-wrapper" list>
+    <Page className="project-overview-info-page-wrapper">
       <PageTitle>{t('버그')}</PageTitle>
       <PageContent flex>
         <div className="g-empty-message">

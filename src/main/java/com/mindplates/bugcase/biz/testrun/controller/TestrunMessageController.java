@@ -1,6 +1,7 @@
 package com.mindplates.bugcase.biz.testrun.controller;
 
 import com.mindplates.bugcase.biz.testrun.dto.TestrunParticipantDTO;
+import com.mindplates.bugcase.biz.testrun.service.TestrunParticipantService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestrunMessageController {
 
     private final TestrunService testrunService;
+    private final TestrunParticipantService testrunParticipantService;
     private final UserService userService;
     private final MessageSendService messageSendService;
 
@@ -40,15 +42,15 @@ public class TestrunMessageController {
         String sessionId = headerAccessor.getSessionId();
 
         Long userId = Long.parseLong((String) attributes.get("USER-ID"));
-        UserDTO user = userService.selectUserInfo(userId);
+        UserDTO user = userService.getUserInfo(userId);
 
         // 이미 참가 중인 사용자가의 새로운 세션인지의 여부
-        boolean isAlreadyJoinedUser = testrunService.isExistParticipant(testrunId, userId);
+        boolean isAlreadyJoinedUser = testrunParticipantService.isExistParticipant(testrunId, userId);
 
-        TestrunParticipantDTO testrunParticipant = testrunService.createTestrunParticipantInfo(spaceCode, projectId, testrunId, user, sessionId);
+        TestrunParticipantDTO testrunParticipant = testrunParticipantService.createTestrunParticipantInfo(spaceCode, projectId, testrunId, user, sessionId);
 
         // 테스트런의 모든 참가자 정보를 등록된 사용자에게 전달
-        List<TestrunParticipantDTO> participants = testrunService.selectTestrunParticipantList(spaceCode, projectId, testrunId);
+        List<TestrunParticipantDTO> participants = testrunParticipantService.selectTestrunParticipantList(spaceCode, projectId, testrunId);
         Map<Long, Boolean> userIdMap = new HashMap<>();
 
         List<TestrunParticipantDTO> uniqueParticipants = participants.stream().filter((participant -> {
@@ -84,10 +86,10 @@ public class TestrunMessageController {
         Long userId = Long.parseLong((String) attributes.get("USER-ID"));
         String sessionId = headerAccessor.getSessionId();
 
-        TestrunParticipantDTO participant = testrunService.selectTestrunParticipantInfo(spaceCode, projectId, testrunId, userId, sessionId);
+        TestrunParticipantDTO participant = testrunParticipantService.selectTestrunParticipantInfo(spaceCode, projectId, testrunId, userId, sessionId);
         if (participant != null) {
-            testrunService.deleteTestrunParticipantInfo(participant);
-            boolean isExist = testrunService.isExistParticipant(testrunId, userId);
+            testrunParticipantService.deleteTestrunParticipantInfo(participant);
+            boolean isExist = testrunParticipantService.isExistParticipant(testrunId, userId);
             if (!isExist) {
                 MessageData participantData = MessageData.builder().type("TESTRUN-USER-LEAVE").build();
                 participantData.addData("participant", participant);

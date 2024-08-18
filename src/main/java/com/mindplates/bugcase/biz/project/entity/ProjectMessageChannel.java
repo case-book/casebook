@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
@@ -36,7 +38,8 @@ public class ProjectMessageChannel extends CommonEntity {
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_PROJECT_MESSAGE_CHANNEL__PROJECT"))
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumn(name = "space_message_channel_id", foreignKey = @ForeignKey(name = "FK_PROJECT_MESSAGE_CHANNEL__SPACE_MESSAGE_CHANNEL"))
     private SpaceMessageChannel messageChannel;
 

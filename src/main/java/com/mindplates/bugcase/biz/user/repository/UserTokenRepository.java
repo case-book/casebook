@@ -14,5 +14,6 @@ public interface UserTokenRepository extends JpaRepository<UserToken, Long> {
 
     Long countByToken(String token);
 
+    void deleteByUserId(Long userId);
 }
 

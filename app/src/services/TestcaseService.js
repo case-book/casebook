@@ -184,6 +184,20 @@ TestcaseService.updateTestcaseNameAndDescription = (spaceCode, projectId, testca
   );
 };
 
+TestcaseService.selectTestcaseGroupList = (spaceCode, projectId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testcases/groups`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
 TestcaseService.selectTestcaseList = (spaceCode, projectId, successHandler, failHandler) => {
   return request.get(
     `/api/${spaceCode}/projects/${projectId}/testcases`,
@@ -236,23 +250,38 @@ TestcaseService.createImage = (spaceCode, projectId, testcaseId, name, size, typ
   return request.post(`/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/images`, formData, null, null, null, null, null, true);
 };
 
-TestcaseService.updateTestcaseRelease = (spaceCode, projectId, testcaseId, releaseId, successHandler) => {
-  return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/release`,
-    { releaseId },
+TestcaseService.selectTestcaseTestrunHistory = (spaceCode, projectId, testcaseId, currentTestrunId, successHandler, failHandler) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/testrun/result/history?currentTestrunId=${currentTestrunId}`,
+    null,
     res => {
       successHandler(res);
     },
+    failHandler,
     null,
     null,
     false,
   );
 };
 
-TestcaseService.selectTestcaseTestrunHistory = (spaceCode, projectId, testcaseId, currentTestrunId, successHandler, failHandler) => {
-  return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/testrun/result/history?currentTestrunId=${currentTestrunId}`,
+TestcaseService.createParaphraseTestcase = (spaceCode, projectId, testcaseId, modelId, successHandler, failHandler) => {
+  return request.post(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/paraphrase?modelId=${modelId}`,
     null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    false,
+  );
+};
+
+TestcaseService.updateTestcaseItem = (spaceCode, projectId, testcaseId, testcaseItemId, testcaseItem, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testcases/${testcaseId}/items/${testcaseItemId}`,
+    testcaseItem,
     res => {
       successHandler(res);
     },

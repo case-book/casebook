@@ -1,11 +1,10 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Builder
 @Getter

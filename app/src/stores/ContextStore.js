@@ -1,27 +1,35 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 
 export default class ContextStore {
-  spaceCode = null;
+  space = null;
 
   projectId = null;
 
   refreshProjectTime = null;
 
+  collapsed = null;
+
+  hoverMenu = null;
+
   constructor() {
     makeObservable(this, {
-      spaceCode: observable,
+      space: observable,
       projectId: observable,
-      setSpaceCode: action,
+      setSpace: action,
       setProjectId: action,
       isProjectSelected: computed,
       isSpaceSelected: computed,
       refreshProjectTime: observable,
       setRefreshProjectList: action,
+      collapsed: observable,
+      setCollapsed: action,
+      hoverMenu: observable,
+      setHoverMenu: action,
     });
   }
 
-  setSpaceCode = spaceCode => {
-    this.spaceCode = spaceCode;
+  setSpace = space => {
+    this.space = space;
   };
 
   setProjectId = projectId => {
@@ -32,11 +40,23 @@ export default class ContextStore {
     this.refreshProjectTime = Date.now();
   };
 
+  setCollapsed = collapsed => {
+    this.collapsed = collapsed;
+  };
+
+  setHoverMenu = hoverMenu => {
+    this.hoverMenu = hoverMenu;
+  };
+
   get isProjectSelected() {
-    return !!this.spaceCode && !!this.projectId && Number.isInteger(this.projectId);
+    return !!this.space?.code && !!this.projectId && Number.isInteger(this.projectId);
   }
 
   get isSpaceSelected() {
-    return !!this.spaceCode;
+    return !!this.space?.code;
+  }
+
+  get spaceCode() {
+    return this.space?.code;
   }
 }

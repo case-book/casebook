@@ -1,20 +1,20 @@
 package com.mindplates.bugcase.biz.space.service;
 
+import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
+import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
+import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
 import com.mindplates.bugcase.biz.notification.service.NotificationService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
-import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
 import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.dto.SpaceApplicantDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
-import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelHeaderDTO;
-import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelPayloadDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceUserDTO;
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.space.entity.SpaceMessageChannel;
+import com.mindplates.bugcase.biz.space.entity.SpaceApplicant;
 import com.mindplates.bugcase.biz.space.entity.SpaceUser;
-import com.mindplates.bugcase.biz.space.repository.SpaceMessageChannelRepository;
+import com.mindplates.bugcase.biz.space.repository.SpaceApplicantRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceProfileVariableRepository;
 import com.mindplates.bugcase.biz.space.repository.SpaceRepository;
@@ -24,21 +24,23 @@ import com.mindplates.bugcase.biz.testrun.repository.TestrunMessageChannelReposi
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.code.ApprovalStatusCode;
+import com.mindplates.bugcase.common.code.LlmTypeCode;
 import com.mindplates.bugcase.common.code.NotificationTargetCode;
 import com.mindplates.bugcase.common.code.UserRoleCode;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.util.MappingUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import com.mindplates.bugcase.framework.config.CacheConfig;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -53,30 +55,23 @@ public class SpaceService {
     private final SpaceUserRepository spaceUserRepository;
     private final ProjectService projectService;
     private final NotificationService notificationService;
-    private final MappingUtil mappingUtil;
     private final MessageSourceAccessor messageSourceAccessor;
     private final SpaceVariableRepository spaceVariableRepository;
     private final SpaceProfileRepository spaceProfileRepository;
     private final SpaceProfileVariableRepository spaceProfileVariableRepository;
-    private final SpaceMessageChannelRepository spaceMessageChannelRepository;
     private final ProjectMessageChannelRepository projectMessageChannelRepository;
     private final TestrunMessageChannelRepository testrunMessageChannelRepository;
+    private final OpenAIClientService openAIClientService;
+    private final SpaceApplicantRepository spaceApplicantRepository;
+    private final ApplicationContext applicationContext;
+
 
     private boolean existByCode(String code) {
-        Long count = spaceRepository.countByCode(code);
-        return count > 0;
+        return spaceRepository.existsByCode(code);
     }
 
     public List<SpaceDTO> selectSpaceList() {
-        List<Space> spaceList = spaceRepository.findAll();
-        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
-
-        result.forEach((space -> {
-            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
-            space.setProjectCount(projectCount);
-        }));
-
-        return result;
+        return spaceRepository.findAll().stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
     public SpaceDTO selectSpaceInfo(Long id) {
@@ -84,6 +79,17 @@ public class SpaceService {
         return new SpaceDTO(space);
     }
 
+    public String selectSpaceCode(Long id) {
+        return spaceRepository.findCodeById(id).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
+
+    public String selectSpaceCodeByProjectId(Long projectId) {
+        return spaceRepository.findCodeByProjectId(projectId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
+
+    public String selectSpaceName(String spaceCode) {
+        return spaceRepository.findNameByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+    }
 
     @Cacheable(key = "#spaceCode", value = CacheConfig.SPACE)
     public SpaceDTO selectSpaceInfo(String spaceCode) {
@@ -92,8 +98,7 @@ public class SpaceService {
     }
 
     public Long selectSpaceIdByCode(String spaceCode) {
-        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        return space.getId();
+        return spaceRepository.findIdByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
     }
 
 
@@ -102,9 +107,10 @@ public class SpaceService {
     public void deleteSpaceInfo(SpaceDTO space) {
         List<ProjectDTO> projects = projectService.selectSpaceProjectDetailList(space.getId());
         for (ProjectDTO project : projects) {
-            projectService.deleteProjectInfo(space.getCode(), project);
+            projectService.deleteProjectInfo(space.getCode(), project.getId());
         }
 
+        // 자식으로 설정되어 있지 않은 데이터 삭제
         spaceVariableRepository.deleteBySpaceId(space.getId());
         spaceProfileRepository.deleteBySpaceId(space.getId());
         spaceProfileVariableRepository.deleteBySpaceId(space.getId());
@@ -117,139 +123,95 @@ public class SpaceService {
     @Transactional
     public SpaceDTO createSpaceInfo(SpaceDTO createSpaceInfo, Long userId) {
 
+        // 스페이스 코드 중복 확인
         if (existByCode(createSpaceInfo.getCode())) {
             throw new ServiceException("error.space.code.duplicated");
         }
 
-        Space spaceInfo = mappingUtil.convert(createSpaceInfo, Space.class);
-        SpaceUser spaceUser = SpaceUser.builder().space(spaceInfo).user(User.builder().id(userId).build()).role(UserRoleCode.ADMIN).build();
-        spaceInfo.setUsers(Arrays.asList(spaceUser));
-        spaceRepository.save(spaceInfo);
-        return new SpaceDTO(spaceInfo);
+        // 생성한 사용자를 어드민으로 추가
+        List<SpaceUserDTO> users = new ArrayList<SpaceUserDTO>();
+        users.add(SpaceUserDTO.builder().space(createSpaceInfo).user(UserDTO.builder().id(userId).build()).role(UserRoleCode.ADMIN).build());
+        createSpaceInfo.setUsers(users);
+
+        // LLM 모델 동기화
+        createSpaceInfo.getLlms().forEach((llm -> {
+            if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
+                syncLlmModels(llm);
+            }
+        }));
+
+        Space target = createSpaceInfo.toEntity();
+        spaceRepository.save(target);
+        return new SpaceDTO(target);
     }
 
 
     @CacheEvict(key = "#updateSpaceInfo.code", value = CacheConfig.SPACE)
     @Transactional
     public SpaceDTO updateSpaceInfo(SpaceDTO updateSpaceInfo) {
+
+        boolean hasAdmin = updateSpaceInfo.getUsers().stream().filter((spaceUserDTO -> !"D".equals(spaceUserDTO.getCrud()))).anyMatch((spaceUser -> spaceUser.getRole().equals(UserRoleCode.ADMIN)));
+        if (!hasAdmin) {
+            throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
+        }
+
         SpaceDTO spaceInfo = this.selectSpaceInfo(updateSpaceInfo.getId());
         spaceInfo.setName(updateSpaceInfo.getName());
         spaceInfo.setDescription(updateSpaceInfo.getDescription());
         spaceInfo.setActivated(updateSpaceInfo.isActivated());
         spaceInfo.setToken(updateSpaceInfo.getToken());
         spaceInfo.setAllowAutoJoin(updateSpaceInfo.isAllowAutoJoin());
+        spaceInfo.setAllowSearch(updateSpaceInfo.isAllowSearch());
         spaceInfo.setHolidays(updateSpaceInfo.getHolidays());
         spaceInfo.setCountry(updateSpaceInfo.getCountry());
         spaceInfo.setTimeZone(updateSpaceInfo.getTimeZone());
 
-        if (updateSpaceInfo.getMessageChannels() == null || updateSpaceInfo.getMessageChannels().isEmpty()) {
-            if (!spaceInfo.getMessageChannels().isEmpty()) {
-                spaceInfo.getMessageChannels().clear();
-            }
-        } else {
+        // LLM 프롬프트 업데이트
+        spaceInfo.updateLlmPrompts(updateSpaceInfo.getLlmPrompts());
 
-
-            List<Long> deleteMessageChannelIds = spaceInfo.getMessageChannels().stream()
-                .filter((spaceMessageChannel -> updateSpaceInfo.getMessageChannels().stream()
-                    .noneMatch((updateMessageChannel -> updateMessageChannel.getId().equals(spaceMessageChannel.getId())))))
-                .map(SpaceMessageChannelDTO::getId)
-                .collect(Collectors.toList());
-
-            spaceInfo.getMessageChannels().removeIf((projectMessageChannel -> deleteMessageChannelIds.contains(projectMessageChannel.getId())));
-
-            // deleteMessageChannelIds에 있는 ID를 가진 testrunMessageChannel 삭제
-            deleteMessageChannelIds.forEach((deleteSpaceMessageChannelId -> {
-                projectMessageChannelRepository.findAllByMessageChannelId(deleteSpaceMessageChannelId).forEach((projectMessageChannel -> {
-                    testrunMessageChannelRepository.deleteByProjectMessageChannelId(projectMessageChannel.getId());
-                }));
-                projectMessageChannelRepository.deleteBySpaceMessageChannelId(deleteSpaceMessageChannelId);
-            }));
-
-            updateSpaceInfo.getMessageChannels().forEach((updateChannel -> {
-                if (updateChannel.getId() == null) {
-                    spaceInfo.getMessageChannels().add(updateChannel);
-                } else {
-                    SpaceMessageChannelDTO targetChannel = spaceInfo.getMessageChannels().stream().filter((channel -> channel.getId().equals(updateChannel.getId()))).findAny().orElse(null);
-                    if (targetChannel != null) {
-                        targetChannel.setName(updateChannel.getName());
-                        targetChannel.setUrl(updateChannel.getUrl());
-                        targetChannel.setHttpMethod(updateChannel.getHttpMethod());
-                        targetChannel.setMessageChannelType(updateChannel.getMessageChannelType());
-                        targetChannel.setPayloadType(updateChannel.getPayloadType());
-                        targetChannel.setJson(updateChannel.getJson());
-
-                        // updateChannel의 header를 id가 존재하는지에 따라 업데이터 및 추가 처리
-                        targetChannel.getHeaders().removeIf((header -> updateChannel.getHeaders().stream().noneMatch((updateHeader -> updateHeader.getId().equals(header.getId())))));
-                        updateChannel.getHeaders().forEach((updateHeader -> {
-                            if (updateHeader.getId() == null) {
-                                targetChannel.getHeaders().add(updateHeader);
-                            } else {
-                                SpaceMessageChannelHeaderDTO targetHeader = targetChannel.getHeaders().stream().filter((header -> header.getId().equals(updateHeader.getId()))).findAny().orElse(null);
-                                if (targetHeader != null) {
-                                    targetHeader.setDataKey(updateHeader.getDataKey());
-                                    targetHeader.setDataValue(updateHeader.getDataValue());
-                                }
-                            }
-                        }));
-
-                        // updateChannel의 payloads를 id가 존재하는지에 따라 업데이터 및 추가 처리
-                        targetChannel.getPayloads().removeIf((payload -> updateChannel.getPayloads().stream().noneMatch((updatePayload -> updatePayload.getId().equals(payload.getId())))));
-                        updateChannel.getPayloads().forEach((updatePayload -> {
-                            if (updatePayload.getId() == null) {
-                                targetChannel.getPayloads().add(updatePayload);
-                            } else {
-                                SpaceMessageChannelPayloadDTO targetPayload = targetChannel.getPayloads().stream().filter((payload -> payload.getId().equals(updatePayload.getId()))).findAny().orElse(null);
-                                if (targetPayload != null) {
-                                    targetPayload.setDataKey(updatePayload.getDataKey());
-                                    targetPayload.setDataValue(updatePayload.getDataValue());
-                                }
-                            }
-                        }));
-
-                    }
-                }
-            }));
-        }
-
-        updateSpaceInfo.getUsers().forEach((spaceUser -> {
-            if ("D".equals(spaceUser.getCrud())) {
-                spaceInfo.getUsers().removeIf((currentUser -> currentUser.getId().equals(spaceUser.getId())));
-                spaceInfo.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(spaceUser.getUser().getId())));
-
-                String message = messageSourceAccessor.getMessage("space.user.banned", new Object[]{spaceInfo.getName()});
-                notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(),
-                    message, "/spaces/" + spaceInfo.getCode() + "/info");
-            } else if ("U".equals(spaceUser.getCrud())) {
-                SpaceUserDTO updateUser = spaceInfo.getUsers().stream().filter((currentUser -> currentUser.getId().equals(spaceUser.getId())))
-                    .findAny().orElse(null);
-
-                if (updateUser != null) {
-                    if (!updateUser.getRole().equals(spaceUser.getRole())) {
-
-                        String message = messageSourceAccessor.getMessage("space.user.auth.changed",
-                            new Object[]{spaceInfo.getName(), updateUser.getRole(), spaceUser.getRole()});
-
-                        notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), spaceUser.getUser().getId(),
-                            message,
-                            "/spaces/" + spaceInfo.getCode() + "/info");
-                    }
-                    updateUser.setRole(spaceUser.getRole());
-                }
+        // LLM 설정 업데이트
+        spaceInfo.updateLlms(updateSpaceInfo.getLlms());
+        // 모델 업데이트
+        spaceInfo.getLlms().forEach((llm -> {
+            if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
+                syncLlmModels(llm);
             }
         }));
 
-        boolean hasAdmin = spaceInfo.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRoleCode.ADMIN)));
-        if (!hasAdmin) {
-            throw new ServiceException(HttpStatus.BAD_GATEWAY, "at.least.one.space.admin");
-        }
+        // 메세지 채널 업데이트
+        List<Long> deleteMessageChannelIds = spaceInfo.getRemoveTargetMessageChannels(updateSpaceInfo.getMessageChannels());
+        deleteSpaceMessageChannels(deleteMessageChannelIds);
+        spaceInfo.updateMessageChannels(updateSpaceInfo.getMessageChannels());
 
-        Space updateSpaceResult = spaceRepository.save(mappingUtil.convert(spaceInfo, Space.class));
+        // 추방 사용자 알림 발송
+        List<Long> bannedUserIds = spaceInfo.getBannedUserIds(updateSpaceInfo.getUsers());
+        String bannedMessage = messageSourceAccessor.getMessage("space.user.banned", new Object[]{spaceInfo.getName()});
+        bannedUserIds.forEach((bannedUserId -> {
+            notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), bannedUserId, bannedMessage, "/spaces/" + spaceInfo.getCode() + "/info");
+        }));
 
+        // 권한 변경 사용자 알림 발송
+        List<Map<String, String>> roleChangedUserInfo = spaceInfo.getRoleChangedUsers(updateSpaceInfo.getUsers());
+        roleChangedUserInfo.forEach((roleChangedUser -> {
+            Long userId = Long.parseLong(roleChangedUser.get("userId"));
+            String beforeRole = roleChangedUser.get("beforeRole");
+            String afterRole = roleChangedUser.get("afterRole");
+            String roleChangeMessage = messageSourceAccessor.getMessage("space.user.auth.changed", new Object[]{spaceInfo.getName(), beforeRole, afterRole});
+            notificationService.createNotificationInfoToUser(NotificationTargetCode.SPACE, spaceInfo.getId(), userId, roleChangeMessage, "/spaces/" + spaceInfo.getCode() + "/info");
+        }));
+
+        // 사용자 업데이트
+        spaceInfo.updateUsers(updateSpaceInfo.getUsers());
+
+        Space space = spaceInfo.toEntity();
+        Space updateSpaceResult = spaceRepository.save(space);
         return new SpaceDTO(updateSpaceResult);
+
+
     }
 
-    public List<SpaceDTO> selectSearchAllowedSpaceList(String query) {
-        List<Space> spaceList = spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%");
+    public List<SpaceDTO> selectSearchAllowedSpaceList(String query, Long userId) {
+        List<Space> spaceList = spaceRepository.findAllByNameLikeAndAllowSearchTrueOrCodeLikeAndAllowSearchTrue(query + "%", query + "%", userId);
         return spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
@@ -274,21 +236,12 @@ public class SpaceService {
             spaceList = spaceRepository.findAllByUsersUserIdAndNameContainingIgnoreCase(userId, query);
         }
 
-        List<SpaceDTO> result = spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
-
-        result.forEach((space -> {
-            Long projectCount = projectService.selectSpaceProjectCount(space.getId());
-            space.setProjectCount(projectCount);
-        }));
-
-        return result;
-
+        return spaceList.stream().map(SpaceDTO::new).collect(Collectors.toList());
     }
 
     public List<SpaceUserDTO> selectSpaceUserList(String spaceCode, String query) {
         if (StringUtils.isNotBlank(query)) {
-            List<SpaceUser> spaceUserList = spaceUserRepository
-                .findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query + "%", spaceCode, query);
+            List<SpaceUser> spaceUserList = spaceUserRepository.findAllBySpaceCodeAndUserNameLikeOrSpaceCodeAndUserEmailLike(spaceCode, query);
             return spaceUserList.stream().map(SpaceUserDTO::new).collect(Collectors.toList());
         }
 
@@ -310,31 +263,35 @@ public class SpaceService {
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
-    public SpaceDTO createOrUpdateSpaceApplicantInfo(String spaceCode, SpaceApplicantDTO spaceApplicant) {
+    public void createOrUpdateSpaceApplicantInfo(String spaceCode, SpaceApplicantDTO spaceApplicant) {
+
+        if (!spaceCode.equals(spaceApplicant.getSpace().getCode())) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST);
+        }
+
         SecurityUser user = SessionUtil.getSecurityUser();
-        SpaceDTO space = this.selectSpaceInfo(spaceApplicant.getSpace().getCode());
-        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(
-                applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId()))
-            .findAny().orElse(null);
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+
+        SpaceApplicant targetApplicant = space.getApplicants().stream()
+            .filter(applicant -> applicant.getSpace().getId().equals(space.getId()) && applicant.getUser().getId().equals(spaceApplicant.getUser().getId())).findAny().orElse(null);
 
         if (targetApplicant == null) {
-            targetApplicant = spaceApplicant;
+            targetApplicant = spaceApplicant.toEntity(space);
             space.getApplicants().add(targetApplicant);
-            targetApplicant.setSpace(space);
         } else {
             targetApplicant.setMessage(spaceApplicant.getMessage());
         }
 
+        SpaceDTO spaceDTO = new SpaceDTO(space);
+
         // 자동 참여 옵션이 켜진 스페이스
         if (space.isAllowAutoJoin()) {
-            if (targetApplicant.getApprovalStatusCode() == null || targetApplicant.getApprovalStatusCode() != null && !ApprovalStatusCode.APPROVAL
-                .equals(targetApplicant.getApprovalStatusCode())) {
+            if (targetApplicant.getApprovalStatusCode() == null || !ApprovalStatusCode.APPROVAL.equals(targetApplicant.getApprovalStatusCode())) {
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
 
                 if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(spaceApplicant.getUser().getId()))) {
-                    notificationService.createSpaceSelfJoinNotificationInfo(space, user.getUsername());
-                    space.getUsers().add(SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build())
-                        .role(UserRoleCode.USER).build());
+                    notificationService.createSpaceSelfJoinNotificationInfo(spaceDTO, user.getUsername());
+                    space.getUsers().add(SpaceUser.builder().space(space).user(User.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
                 }
             }
 
@@ -345,90 +302,118 @@ public class SpaceService {
                 .equals(targetApplicant.getApprovalStatusCode())) {
                 throw new ServiceException(HttpStatus.BAD_REQUEST, "already.requested");
             } else if (ApprovalStatusCode.REJECTED.equals(targetApplicant.getApprovalStatusCode())) {
-                notificationService.createSpaceJoinAgainRequestNotificationInfo(space, user.getUsername());
+                notificationService.createSpaceJoinAgainRequestNotificationInfo(spaceDTO, user.getUsername());
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.REQUEST_AGAIN);
             } else {
-                notificationService.createSpaceJoinRequestNotificationInfo(space, user.getUsername());
+                notificationService.createSpaceJoinRequestNotificationInfo(spaceDTO, user.getUsername());
                 targetApplicant.setApprovalStatusCode(ApprovalStatusCode.REQUEST);
             }
         }
 
-        Space result = spaceRepository.save(mappingUtil.convert(space, Space.class));
-        return new SpaceDTO(result);
+        spaceRepository.save(space);
     }
-
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
     public void deleteSpaceApplicantInfo(String spaceCode, Long userId) {
+        SpaceService spaceService = applicationContext.getBean(SpaceService.class);
         SecurityUser user = SessionUtil.getSecurityUser();
-        SpaceDTO space = this.selectSpaceInfo(spaceCode);
+        SpaceDTO space = spaceService.selectSpaceInfo(spaceCode);
         notificationService.createSpaceJoinRequestCancelNotificationInfo(space, user.getUsername());
-        space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
-        spaceRepository.save(mappingUtil.convert(space, Space.class));
+        spaceApplicantRepository.deleteBySpaceIdAndUserId(space.getId(), userId);
     }
-
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
-    public SpaceDTO updateSpaceApplicantStatus(String spaceCode, Long applicantId, boolean approve) {
+    public void updateSpaceApplicantStatus(String spaceCode, Long applicantId, boolean approve) {
 
         SecurityUser user = SessionUtil.getSecurityUser();
-        SpaceDTO space = this.selectSpaceInfo(spaceCode);
-        SpaceApplicantDTO targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getId().equals(applicantId)).findAny()
+
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        SpaceApplicant targetApplicant = space.getApplicants().stream().filter(applicant -> applicant.getId().equals(applicantId)).findAny()
             .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
         if (approve) {
             targetApplicant.setApprovalStatusCode(ApprovalStatusCode.APPROVAL);
 
             if (space.getUsers().stream().noneMatch(spaceUser -> spaceUser.getUser().getId().equals(targetApplicant.getUser().getId()))) {
-                notificationService.createSpaceJoinResultNotificationInfo(space, user.getUsername(), targetApplicant.getUser().getId(), true);
-                space.getUsers().add(
-                    SpaceUserDTO.builder().space(space).user(UserDTO.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER)
-                        .build());
+                notificationService.createSpaceJoinResultNotificationInfo(new SpaceDTO(space), user.getUsername(), targetApplicant.getUser().getId(), true);
+                space.getUsers().add(SpaceUser.builder().space(space).user(User.builder().id(targetApplicant.getUser().getId()).build()).role(UserRoleCode.USER).build());
             }
-
-
         } else {
-            notificationService.createSpaceJoinResultNotificationInfo(space, user.getUsername(), targetApplicant.getUser().getId(), false);
+            notificationService.createSpaceJoinResultNotificationInfo(new SpaceDTO(space), user.getUsername(), targetApplicant.getUser().getId(), false);
             targetApplicant.setApprovalStatusCode(ApprovalStatusCode.REJECTED);
         }
 
-        Space result = spaceRepository.save(mappingUtil.convert(space, Space.class));
+        spaceRepository.save(space);
 
-        return new SpaceDTO(result);
     }
 
     @CacheEvict(key = "#spaceCode", value = CacheConfig.SPACE)
     @Transactional
-    public void deleteSpaceUser(String spaceCode, Long userId) {
-        SpaceDTO space = this.selectSpaceInfo(spaceCode);
-        boolean isSpaceAdmin = space.getUsers().stream()
-            .anyMatch((spaceUser -> spaceUser.getUser().getId().equals(userId) && spaceUser.getRole().equals(UserRoleCode.ADMIN)));
-        SecurityUser user = SessionUtil.getSecurityUser();
-        if (!(user.getId().equals(userId) || isSpaceAdmin)) {
-            throw new ServiceException(HttpStatus.FORBIDDEN);
-        }
+    public void leaveSpace(String spaceCode, Long userId) {
+        Space space = spaceRepository.findByCode(spaceCode).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
-        UserDTO targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny()
-            .map(spaceUser -> spaceUser.getUser()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-
-        space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
-        space.getUsers().removeIf((spaceUser -> spaceUser.getUser().getId().equals(userId)));
-
-        boolean hasAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRoleCode.ADMIN)));
+        boolean hasAdmin = space.getUsers().stream().anyMatch((spaceUser -> spaceUser.getRole().equals(UserRoleCode.ADMIN) && !spaceUser.getUser().getId().equals(userId)));
         if (!hasAdmin) {
             throw new ServiceException(HttpStatus.BAD_GATEWAY, "no.space.admin.exist");
         }
 
-        spaceRepository.save(mappingUtil.convert(space, Space.class));
-        notificationService.createSpaceUserWithdrawInfo(space, targetUser.getName() + " [" + targetUser.getEmail() + "]");
-
+        User targetUser = space.getUsers().stream().filter(spaceUser -> spaceUser.getUser().getId().equals(userId)).findAny().map(SpaceUser::getUser)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        space.getApplicants().removeIf((spaceApplicant -> spaceApplicant.getUser().getId().equals(userId)));
+        space.getUsers().removeIf((spaceUser -> spaceUser.getUser().getId().equals(userId)));
+        spaceRepository.save(space);
+        notificationService.createSpaceUserWithdrawInfo(new SpaceDTO(space), targetUser.getName() + " [" + targetUser.getEmail() + "]");
     }
 
     public List<SpaceMessageChannelDTO> selectSpaceMessageChannels(String spaceCode) {
-        List<SpaceMessageChannel> spaceMessageChannels = spaceMessageChannelRepository.findAllBySpaceCode(spaceCode);
-        return spaceMessageChannels.stream().map(SpaceMessageChannelDTO::new).collect(Collectors.toList());
+        SpaceService spaceService = applicationContext.getBean(SpaceService.class);
+        SpaceDTO space = spaceService.selectSpaceInfo(spaceCode);
+        return space.getMessageChannels();
     }
+
+    private void syncLlmModels(LlmDTO llm) {
+        if (llm.getOpenAi().getModels() == null) {
+            llm.getOpenAi().setModels(new ArrayList<>());
+        }
+
+        try {
+            List<String> models = openAIClientService.getModelList(llm.getOpenAi().getUrl(), llm.getOpenAi().getApiKey());
+            if (llm.getId() != null) {
+                // targetLlm의 model에는 있는 code인데, modeCodes에 없다면 제거
+                llm.getOpenAi().getModels().removeIf((model -> models.stream().noneMatch((modelCode -> model.getCode().equals(modelCode)))));
+            }
+
+            // targetLlm의 model의 code와 modelCodes가 일치하지 않는 것만 추가
+            models.stream().filter((modelCode -> llm.getOpenAi().getModels().stream().noneMatch((model -> model.getCode().equals(modelCode)))))
+                .forEach((modelCode -> {
+                    llm.getOpenAi().getModels().add(OpenAiModelDTO.builder()
+                        .name(modelCode)
+                        .code(modelCode)
+                        .openAi(llm.getOpenAi())
+                        .build());
+                }));
+        } catch (Exception e) {
+            throw new ServiceException("llm.fail.to.get.models", new String[]{e.getMessage()});
+        }
+
+    }
+
+    private void deleteSpaceMessageChannels(List<Long> deleteMessageChannelIds) {
+        deleteMessageChannelIds.forEach((deleteSpaceMessageChannelId -> {
+            projectMessageChannelRepository.findAllByMessageChannelId(deleteSpaceMessageChannelId).forEach((projectMessageChannel -> {
+                testrunMessageChannelRepository.deleteByProjectMessageChannelId(projectMessageChannel.getId());
+            }));
+            projectMessageChannelRepository.deleteBySpaceMessageChannelId(deleteSpaceMessageChannelId);
+        }));
+    }
+
+    @Transactional
+    public void deleteSpaceUser(long userId) {
+        spaceApplicantRepository.deleteByUserId(userId);
+        spaceUserRepository.deleteByUserId(userId);
+    }
+
 
 }

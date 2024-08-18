@@ -1,0 +1,60 @@
+.open-link-testcase-group-item-wrapper {
+  > td:first-child {
+    vertical-align: top;
+  }
+  .seq-id {
+    margin-right: 8px;
+    > div {
+      min-width: 50px;
+      text-align: center;
+    }
+  }
+
+  .testcase-group {
+    word-break: break-all;
+    white-space: normal;
+  }
+
+  .seq-name {
+    display: inline-flex;
+    cursor: pointer;
+    color: var(--text-color);
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-color);
+
+    &:hover {
+      color: var(--link-color);
+      border-bottom: 1px solid var(--link-color);
+    }
+
+    > div {
+      align-self: center;
+    }
+  }
+
+  .test-result {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 4px 8px;
+    &.PASSED {
+      background-color: var(--success-color);
+      color: var(--white-color);
+    }
+
+    &.FAILED {
+      background-color: var(--danger-color);
+      color: var(--white-color);
+    }
+
+    &.UNTESTABLE {
+      background-color: var(--warning-color);
+      color: var(--white-color);
+    }
+
+    &.UNTESTED {
+      background-color: var(--gray-color);
+      color: var(--white-color);
+    }
+  }
+}

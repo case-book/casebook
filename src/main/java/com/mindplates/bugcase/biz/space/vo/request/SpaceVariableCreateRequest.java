@@ -13,6 +13,7 @@ public class SpaceVariableCreateRequest implements IRequestVO<SpaceVariableDTO> 
     @NotNull
     @Size(min = 1)
     private String name;
+
     public SpaceVariableDTO toDTO() {
 
         return SpaceVariableDTO

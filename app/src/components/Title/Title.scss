@@ -18,16 +18,20 @@
       align-self: center;
       @include title;
 
-      i {
-        margin-right: 2px;
-        font-size: 18px;
-        position: relative;
-        top: 1px;
+      > span.title-icon {
+        line-height: 1;
+        margin-right: 8px;
+        i {
+          line-height: 1;
+          align-self: center;
+          font-size: 18px;
+        }
       }
     }
     .control {
       flex-grow: 1;
       align-self: center;
+      line-height: 1;
       .control-content {
         display: inline-block;
       }
@@ -103,17 +107,33 @@
     .title-text {
       font-size: 16px;
     }
+
+    &.padding-bottom {
+      > .title-content {
+        padding-bottom: 0.25rem;
+      }
+    }
   }
 
   &.h4 {
     .title-text {
       font-size: 14px;
     }
+    &.padding-bottom {
+      > .title-content {
+        padding-bottom: 0.25rem;
+      }
+    }
   }
 
   &.h5 {
     .title-text {
       font-size: 12px;
+    }
+    &.padding-bottom {
+      > .title-content {
+        padding-bottom: 0.25rem;
+      }
     }
   }
 }

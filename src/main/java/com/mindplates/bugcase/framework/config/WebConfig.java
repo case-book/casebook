@@ -1,14 +1,10 @@
 package com.mindplates.bugcase.framework.config;
 
-import com.mindplates.bugcase.common.bean.InitService;
-import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.framework.converter.LongToLocalDateTimeConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateConverter;
 import com.mindplates.bugcase.framework.converter.StringToLocalDateTimeConverter;
-import com.mindplates.bugcase.framework.redis.template.JsonRedisTemplate;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +13,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -24,31 +21,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
-import java.io.IOException;
-
 
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
     @Value("${bug-case.corsUrls}")
     private String[] corsUrls;
-
-    @Autowired
-    private JsonRedisTemplate jsonRedisTemplate;
-
-    public WebConfig(SessionUtil sessionUtil) {
-
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return modelMapper;
-    }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -75,6 +56,11 @@ public class WebConfig implements WebMvcConfigurer {
         return new MessageSourceAccessor(messageSource());
     }
 
+    @Bean
+    public WebClient webClient() {
+        return WebClient.builder().build();
+    }
+
 
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
@@ -90,25 +76,19 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new StringToLocalDateTimeConverter());
     }
 
-    @Bean
-    public InitService initService() {
-        InitService initService = new InitService(jsonRedisTemplate);
-        initService.init();
-        return initService;
-    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**/*")
-                .addResourceLocations("classpath:/static/")
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver() {
-                    @Override
-                    protected Resource getResource(String resourcePath, Resource location) throws IOException {
-                        Resource requestedResource = location.createRelative(resourcePath);
-                        return requestedResource.exists() && requestedResource.isReadable() ? requestedResource : new ClassPathResource("/static/index.html");
-                    }
-                });
+            .addResourceLocations("classpath:/static/")
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver() {
+                @Override
+                protected Resource getResource(String resourcePath, Resource location) throws IOException {
+                    Resource requestedResource = location.createRelative(resourcePath);
+                    return requestedResource.exists() && requestedResource.isReadable() ? requestedResource : new ClassPathResource("/static/index.html");
+                }
+            });
     }
 
 

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './Selector.scss';
 
-function Selector({ className, onChange, items, value, addAll, size, separator, minWidth, radius, disabled, onClick }) {
+function Selector({ className, onChange, items, value, addAll, size, separator, minWidth, radius, disabled, onClick, placeholder }) {
   const [open, setOpen] = useState(false);
   const [bottomList, setBottomList] = useState(true);
 
@@ -83,7 +83,7 @@ function Selector({ className, onChange, items, value, addAll, size, separator, 
           }
         }}
       >
-        <span className="selector-selected-text">{selectedItem ? selectedItem.value : ' '}</span>
+        <span className="selector-selected-text">{selectedItem ? selectedItem.value : <span className="placeholder">{placeholder}</span>}</span>
         {separator && (
           <span className="liner">
             <span />
@@ -144,6 +144,7 @@ Selector.defaultProps = {
   items: [],
   onChange: PropTypes.func,
   onClick: null,
+  placeholder: null,
 };
 
 Selector.propTypes = {
@@ -164,6 +165,7 @@ Selector.propTypes = {
   radius: PropTypes.bool,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
+  placeholder: PropTypes.string,
 };
 
 export default Selector;

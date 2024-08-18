@@ -1,0 +1,50 @@
+.testcase-navigator-filter-wrapper {
+  background-color: var(--theme-color);
+  padding: 1rem;
+  position: relative;
+  border-bottom: 1px solid var(--border-light-color);
+
+  .testcase-filter-title {
+    margin-bottom: 0.5rem;
+
+    .filter-control {
+      display: flex;
+    }
+  }
+
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .filter-condition {
+    display: flex;
+    flex-grow: 1;
+    > div {
+      align-self: center;
+      &.condition {
+        flex-grow: 1;
+      }
+
+      .button-group {
+        display: flex;
+        flex-grow: 1;
+      }
+    }
+
+    .selector {
+      flex-grow: 1;
+    }
+  }
+
+  .filter-items-block {
+    margin-top: 0.5rem;
+    .filter-items {
+      > div {
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+}

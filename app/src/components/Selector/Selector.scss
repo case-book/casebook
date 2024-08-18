@@ -15,6 +15,10 @@
     border-color: var(--border-color-hover);
   }
 
+  .placeholder {
+    color: var(--gray-color);
+  }
+
   &.size-xs {
     height: $xs-height;
     font-size: 0.8rem;
@@ -213,7 +217,7 @@
 
       li {
         padding: 8px;
-        height: 32px;
+        min-height: 32px;
         text-transform: uppercase;
         border-bottom: 1px solid var(--input-border-color);
         position: relative;

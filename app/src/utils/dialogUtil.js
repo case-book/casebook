@@ -19,11 +19,16 @@ function clearConfirm() {
   rootStore.controlStore.setConfirm(null, null, null, null, null);
 }
 
+function setToast(message) {
+  rootStore.controlStore.setToast(message);
+}
+
 const dialogUtil = {
   setMessage,
   clearMessage,
   setConfirm,
   clearConfirm,
+  setToast,
 };
 
 export default dialogUtil;

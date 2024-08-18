@@ -121,6 +121,11 @@ const TestcaseGroupSettingPropTypes = PropTypes.shape({
   }),
 });
 
+const ProjectPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  name: PropTypes.string,
+});
+
 const SpacePropTypes = PropTypes.shape({
   name: PropTypes.string,
   code: PropTypes.string,
@@ -208,6 +213,36 @@ const ProjectReleasePropTypes = PropTypes.shape({
   testcases: PropTypes.arrayOf(PropTypes.shape({ id: PropTypes.number })),
 });
 
+const ParaphraseInfoPropTypes = PropTypes.shape({
+  testcaseId: PropTypes.number,
+  result: PropTypes.bool,
+  isLoading: PropTypes.bool,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      label: PropTypes.string,
+      text: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    }),
+  ),
+});
+
+const LlmPropTypes = PropTypes.arrayOf(
+  PropTypes.shape({
+    id: PropTypes.number,
+    llmTypeCode: PropTypes.string,
+    openAi: PropTypes.shape({
+      apiKey: PropTypes.string,
+      models: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number,
+          name: PropTypes.string,
+          code: PropTypes.string,
+        }),
+      ),
+    }),
+  }),
+);
+
 export {
   NullableNumber,
   NullableString,
@@ -223,4 +258,7 @@ export {
   TestcaseSelectorFilterPropTypes,
   SelectedTestcaseGroupPropTypes,
   ProjectReleasePropTypes,
+  LlmPropTypes,
+  ParaphraseInfoPropTypes,
+  ProjectPropTypes,
 };

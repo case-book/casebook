@@ -3,7 +3,7 @@ package com.mindplates.bugcase.common.service;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectUserDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
-import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
+import com.mindplates.bugcase.biz.testrun.dto.TestrunCountSummaryDTO;
 import com.mindplates.bugcase.common.code.MessageChannelTypeCode;
 import com.mindplates.bugcase.common.code.PayloadTypeCode;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
@@ -235,15 +235,20 @@ public class MessageChannelService {
 
         remainInfo.forEach((testerId, count) -> {
             Optional<ProjectUserDTO> projectUser = testers.stream().filter((projectUserDTO -> projectUserDTO.getUser().getId().equals(testerId))).findAny();
-            String testerName = "";
             if (projectUser.isPresent()) {
-                testerName = projectUser.get().getUser().getName();
+                messageInfo
+                    .append(messageSourceAccessor.getMessage("testrun.user.link.count", new Object[]{projectUser.get().getUser().getName(), count}))
+                    .append('\n')
+                    .append(testrunUrl).append("?tester=").append(testerId)
+                    .append("\n\n");
+            } else {
+                messageInfo
+                    .append(messageSourceAccessor.getMessage("testrun.not.assigned.link.count", new Object[]{count}))
+                    .append('\n')
+                    .append(testrunUrl).append("?tester=none")
+                    .append("\n\n");
             }
-            messageInfo
-                .append(messageSourceAccessor.getMessage("testrun.user.link.count", new Object[]{testerName, count}))
-                .append('\n')
-                .append(testrunUrl).append("?tester=").append(testerId)
-                .append("\n\n");
+
 
         });
 
@@ -257,23 +262,22 @@ public class MessageChannelService {
     /**
      * 테스트 실행이 종료될 때 메시지를 보냅니다.
      *
-     * @param messageChannel 메시지가 전송될 채널입니다. 이것은 슬랙 채널이거나 웹훅일 수 있습니다.
-     * @param spaceCode      프로젝트가 위치한 공간의 코드입니다.
-     * @param projectId      테스트 실행이 종료되는 프로젝트의 ID입니다.
-     * @param testrun        테스트 실행에 대한 정보를 담고 있는 TestrunDTO 객체입니다.
+     * @param messageChannel      메시지가 전송될 채널입니다. 이것은 슬랙 채널이거나 웹훅일 수 있습니다.
+     * @param spaceCode           프로젝트가 위치한 공간의 코드입니다.
+     * @param testrunCountSummary 테스트 실행에 대한 정보를 담고 있는 TestrunDTO 객체입니다.
      */
-    public void sendTestrunClosedMessage(SpaceMessageChannelDTO messageChannel, String spaceCode, Long projectId, TestrunDTO testrun) {
+    public void sendTestrunClosedMessage(SpaceMessageChannelDTO messageChannel, String spaceCode, TestrunCountSummaryDTO testrunCountSummary) {
 
         if (messageChannel == null) {
             return;
         }
 
-        String reportUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + projectId + "/reports/" + testrun.getId();
+        String reportUrl = webUrl + "/spaces/" + spaceCode + "/projects/" + testrunCountSummary.getProjectId() + "/reports/" + testrunCountSummary.getId();
         StringBuilder message = new StringBuilder();
-        message.append(messageSourceAccessor.getMessage("testrun.closed", new Object[]{testrun.getName()})).append("\n\n");
+        message.append(messageSourceAccessor.getMessage("testrun.closed", new Object[]{testrunCountSummary.getName()})).append("\n\n");
 
-        float totalTestedCount = testrun.getPassedTestcaseCount() + testrun.getFailedTestcaseCount() + testrun.getUntestableTestcaseCount();
-        float totalCount = testrun.getTotalTestcaseCount();
+        float totalTestedCount = testrunCountSummary.getPassedTestcaseCount() + testrunCountSummary.getFailedTestcaseCount() + testrunCountSummary.getUntestableTestcaseCount();
+        float totalCount = testrunCountSummary.getTotalTestcaseCount();
         float testedPercentage = 0;
         if (totalCount > 0) {
             testedPercentage = Math.round((totalTestedCount / totalCount) * 1000) / 10f;
@@ -281,17 +285,17 @@ public class MessageChannelService {
 
         float passedPercentage = 0;
         if (totalCount > 0) {
-            passedPercentage = Math.round(((float) testrun.getPassedTestcaseCount() / totalCount) * 1000) / 10f;
+            passedPercentage = Math.round(((float) testrunCountSummary.getPassedTestcaseCount() / totalCount) * 1000) / 10f;
         }
 
         float failedPercentage = 0;
         if (totalCount > 0) {
-            failedPercentage = Math.round(((float) testrun.getFailedTestcaseCount() / totalCount) * 1000) / 10f;
+            failedPercentage = Math.round(((float) testrunCountSummary.getFailedTestcaseCount() / totalCount) * 1000) / 10f;
         }
 
         float untestablePercentage = 0;
         if (totalCount > 0) {
-            untestablePercentage = Math.round(((float) testrun.getUntestableTestcaseCount() / totalCount) * 1000) / 10f;
+            untestablePercentage = Math.round(((float) testrunCountSummary.getUntestableTestcaseCount() / totalCount) * 1000) / 10f;
         }
 
         float untestedPercentage = 0;
@@ -302,11 +306,11 @@ public class MessageChannelService {
         message
             .append(messageSourceAccessor.getMessage("testrun.report.summary.progress", new Object[]{testedPercentage, totalTestedCount, totalCount}))
             .append('\n')
-            .append(messageSourceAccessor.getMessage("testrun.report.summary.passed", new Object[]{passedPercentage, testrun.getPassedTestcaseCount(), totalCount}))
+            .append(messageSourceAccessor.getMessage("testrun.report.summary.passed", new Object[]{passedPercentage, testrunCountSummary.getPassedTestcaseCount(), totalCount}))
             .append('\n')
-            .append(messageSourceAccessor.getMessage("testrun.report.summary.failed", new Object[]{failedPercentage, testrun.getFailedTestcaseCount(), totalCount}))
+            .append(messageSourceAccessor.getMessage("testrun.report.summary.failed", new Object[]{failedPercentage, testrunCountSummary.getFailedTestcaseCount(), totalCount}))
             .append('\n')
-            .append(messageSourceAccessor.getMessage("testrun.report.summary.untestable", new Object[]{untestablePercentage, testrun.getUntestableTestcaseCount(), totalCount}))
+            .append(messageSourceAccessor.getMessage("testrun.report.summary.untestable", new Object[]{untestablePercentage, testrunCountSummary.getUntestableTestcaseCount(), totalCount}))
             .append('\n')
             .append(messageSourceAccessor.getMessage("testrun.report.summary.untested", new Object[]{untestedPercentage, (totalCount - totalTestedCount), totalCount}))
             .append("\n\n")

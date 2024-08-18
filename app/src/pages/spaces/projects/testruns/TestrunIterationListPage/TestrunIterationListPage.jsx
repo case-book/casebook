@@ -40,17 +40,14 @@ function TestrunIterationListPage() {
   }, [projectId]);
 
   return (
-    <Page className="testrun-iteration-list-page-wrapper" list>
+    <Page className="testrun-iteration-list-page-wrapper">
       <PageTitle
         breadcrumbs={[
           {
             to: '/',
             text: t('HOME'),
           },
-          {
-            to: '/',
-            text: t('스페이스 목록'),
-          },
+
           {
             to: `/spaces/${spaceCode}/info`,
             text: spaceCode,

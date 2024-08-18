@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Block, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, SeqId, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Block, Button, EmptyContent, Label, Liner, Page, PageButtons, PageContent, PageTitle, Table, Tag, Tbody, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
 import TestrunService from '@/services/TestrunService';
-import { ITEM_TYPE, MESSAGE_CATEGORY, TESTRUN_RESULT_CODE } from '@/constants/constants';
+import { MESSAGE_CATEGORY } from '@/constants/constants';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import './TestrunInfoPage.scss';
-import { TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
+import { TestcaseViewerPopup, TestrunHookInfoPopup, TestrunHookTable, TestrunMessageChannelList } from '@/assets';
+import ReleaseGroupItem from '@/pages/spaces/projects/releases/ReleaseInfoPage/ReleaseGroupItem';
+import testcaseUtil from '@/utils/testcaseUtil';
+import TestcaseService from '@/services/TestcaseService';
+import ReleaseService from '@/services/ReleaseService';
 
 const labelMinWidth = '120px';
 
@@ -22,8 +26,11 @@ function TestrunInfoPage() {
   const navigate = useNavigate();
 
   const [project, setProject] = useState(null);
+  const [releases, setReleases] = useState([]);
 
   const [spaceProfileList, setSpaceProfileList] = useState([]);
+
+  const [testcaseViewerInfo, setTestcaseViewerInfo] = useState(null);
 
   const [testrun, setTestrun] = useState({
     seqId: '',
@@ -67,9 +74,28 @@ function TestrunInfoPage() {
     hooks: [],
   });
 
+  const [testcaseGroups, setTestcaseGroups] = useState([]);
+
   const [testrunHookInfoPopup, setTestrunHookInfoPopup] = useState({
     opened: false,
   });
+
+  const [releaseNameMap, setReleaseNameMap] = useState({});
+
+  useEffect(() => {
+    TestcaseService.selectTestcaseGroupList(spaceCode, projectId, list => {
+      setTestcaseGroups(list);
+    });
+
+    ReleaseService.selectReleaseList(spaceCode, projectId, list => {
+      setReleases(list);
+      const nextReleaseNameMap = {};
+      list.forEach(projectRelease => {
+        nextReleaseNameMap[projectRelease.id] = projectRelease.name;
+      });
+      setReleaseNameMap(nextReleaseNameMap);
+    });
+  }, [spaceCode, projectId]);
 
   useEffect(() => {
     SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
@@ -87,6 +113,16 @@ function TestrunInfoPage() {
       });
     });
   }, [projectId, testrunId]);
+
+  const userById = useMemo(() => {
+    const map = {};
+
+    project?.users.forEach(user => {
+      map[user.userId] = user;
+    });
+
+    return map;
+  }, [project]);
 
   const onDelete = () => {
     dialogUtil.setConfirm(
@@ -122,6 +158,17 @@ function TestrunInfoPage() {
     );
   };
 
+  const selectedTestcaseIdMap = useMemo(() => {
+    const map = {};
+    testrun.testcaseGroups.forEach(group => {
+      group.testcases?.forEach(testcase => {
+        map[testcase.testcaseId] = testcase;
+      });
+    });
+
+    return map;
+  }, [testrun.testcaseGroups]);
+
   const onOpened = () => {
     dialogUtil.setConfirm(
       MESSAGE_CATEGORY.WARNING,
@@ -139,6 +186,22 @@ function TestrunInfoPage() {
     );
   };
 
+  const testcaseTreeData = useMemo(() => {
+    return testcaseUtil.getTestcaseTreeData(testcaseGroups, 'id');
+  }, [testcaseGroups]);
+
+  const onChangeTestcase = testcase => {
+    const nextTestcaseGroups = testcaseGroups.slice(0);
+    const group = nextTestcaseGroups.find(d => d.id === testcase.testcaseGroupId);
+    if (group) {
+      const nextTestcasesIndex = group.testcases.findIndex(d => d.id === testcase.id);
+      if (nextTestcasesIndex > -1) {
+        group.testcases[nextTestcasesIndex] = testcase;
+      }
+      setTestcaseGroups(nextTestcaseGroups);
+    }
+  };
+
   return (
     <>
       <Page className="testrun-info-page-wrapper">
@@ -149,10 +212,7 @@ function TestrunInfoPage() {
               to: '/',
               text: t('HOME'),
             },
-            {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
+
             {
               to: `/spaces/${spaceCode}/info`,
               text: spaceCode,
@@ -197,7 +257,7 @@ function TestrunInfoPage() {
                   navigate(`/spaces/${spaceCode}/projects/${projectId}/testruns/${testrunId}/edit`);
                 }}
               >
-                {t('편집')}
+                {t('변경')}
               </Button>
             </div>
           }
@@ -279,91 +339,56 @@ function TestrunInfoPage() {
                 </Text>
               )}
             </BlockRow>
-            <BlockRow>
-              <Label minWidth={labelMinWidth}>{t('테스트케이스')}</Label>
-            </BlockRow>
-            <BlockRow className="testrun-testcases-content">
-              {testrun.testcaseGroups?.length < 1 && <Text className="no-user">{t('선택된 테스트케이스가 없습니다.')}</Text>}
-              {testrun.testcaseGroups?.length > 0 && (
-                <Table cols={['1px', '100%']} border>
-                  <THead>
-                    <Tr>
-                      <Th align="left">{t('테스트케이스 그룹')}</Th>
-                      <Th align="left">{t('테스트케이스')}</Th>
-                      <Th align="left">{t('테스터')}</Th>
-                      <Th align="center">{t('테스트 결과')}</Th>
-                    </Tr>
-                  </THead>
-                  <Tbody>
-                    {testrun.testcaseGroups?.map(d => {
-                      if (d.testcases?.length > 0) {
-                        return (
-                          <React.Fragment key={d.id}>
-                            {d.testcases?.map((testcase, inx) => {
-                              const tester = project.users.find(user => {
-                                return user.userId === testcase.testerId;
-                              });
-
-                              return (
-                                <Tr key={testcase.id}>
-                                  {inx === 0 && (
-                                    <Td rowSpan={d.testcases.length} className="group-info">
-                                      <div className="seq-name">
-                                        <div>
-                                          <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                                            {d.seqId}
-                                          </SeqId>
-                                        </div>
-                                        <div>{d.name}</div>
-                                      </div>
-                                    </Td>
-                                  )}
-                                  <Td>
-                                    <div className="seq-name">
-                                      <div>
-                                        <SeqId className="seq-id" size="sm" type={ITEM_TYPE.TESTCASE} copy={false}>
-                                          {testcase.seqId}
-                                        </SeqId>
-                                      </div>
-                                      <div>{testcase.name}</div>
-                                    </div>
-                                  </Td>
-                                  <Td align="left">{tester?.name}</Td>
-                                  <Td align="center">
-                                    <Tag size="xs" className={testcase.testResult}>
-                                      {TESTRUN_RESULT_CODE[testcase.testResult]}
-                                    </Tag>
-                                  </Td>
-                                </Tr>
-                              );
-                            })}
-                          </React.Fragment>
-                        );
-                      }
-
-                      return (
-                        <Tr key={d.seqId}>
-                          <Td className="group-info">
-                            <div className="seq-name">
-                              <div>
-                                <SeqId size="sm" type={ITEM_TYPE.TESTCASE_GROUP} copy={false}>
-                                  {d.seqId}
-                                </SeqId>
-                              </div>
-                              <div>{d.name}</div>
-                            </div>
-                          </Td>
-                          <Td />
-                          <Td />
-                          <Td />
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
-              )}
-            </BlockRow>
           </Block>
+          <Title
+            control={
+              <div>
+                <Tag size="xs" border rounded>
+                  {t('@개', { count: Object.keys(selectedTestcaseIdMap).length })}
+                </Tag>
+              </div>
+            }
+          >
+            {t('테스트케이스')}
+          </Title>
+          {testrun.testcaseGroups.length < 1 && <EmptyContent border>{t('선택된 테스트케이스가 없습니다.')}</EmptyContent>}
+          {testrun.testcaseGroups.length > 0 && (
+            <Block className="testcase-list" border padding={false} scroll>
+              <Table className="table" cols={['1px', '100%', '1px', '1px']} sticky>
+                <THead>
+                  <Tr>
+                    <Th align="left">{t('테스트케이스 그룹')}</Th>
+                    <Th align="left">{t('테스트케이스')}</Th>
+                    <Th align="left">{t('테스터')}</Th>
+                    <Th align="left">{t('테스트 결과')}</Th>
+                  </Tr>
+                </THead>
+                <Tbody>
+                  {testcaseTreeData.map(testcaseGroup => {
+                    return (
+                      <ReleaseGroupItem
+                        key={testcaseGroup.id}
+                        testcaseGroup={testcaseGroup}
+                        selectedTestcaseIdMap={selectedTestcaseIdMap}
+                        releaseNameMap={releaseNameMap}
+                        showTester
+                        showTestResult
+                        onNameClick={(groupId, id) => {
+                          setTestcaseViewerInfo({
+                            testcaseTemplate: project.testcaseTemplates.find(d => d.id === id),
+                            testcaseGroupId: groupId,
+                            testcaseGroupTestcaseId: id,
+                          });
+                        }}
+                        userById={userById}
+                      />
+                    );
+                  })}
+                </Tbody>
+              </Table>
+            </Block>
+          )}
+
           <Title border={false} marginBottom={false}>
             {t('알림 채널')}
           </Title>
@@ -410,6 +435,28 @@ function TestrunInfoPage() {
             setTestrunHookInfoPopup({ opened: value });
           }}
           data={testrunHookInfoPopup.data}
+        />
+      )}
+      {testcaseViewerInfo && (
+        <TestcaseViewerPopup
+          spaceCode={spaceCode}
+          projectId={projectId}
+          project={project}
+          releases={releases}
+          testcaseTemplate={testcaseViewerInfo.testcaseTemplate}
+          testcaseGroupId={testcaseViewerInfo.testcaseGroupId}
+          testcaseGroupTestcaseId={testcaseViewerInfo.testcaseGroupTestcaseId}
+          users={project?.users.map(u => {
+            return {
+              ...u,
+              id: u.userId,
+            };
+          })}
+          setOpened={() => {
+            setTestcaseViewerInfo(null);
+          }}
+          editEnabled
+          onTestcaseChange={onChangeTestcase}
         />
       )}
     </>

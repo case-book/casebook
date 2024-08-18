@@ -1,11 +1,10 @@
 package com.mindplates.bugcase.biz.testcase.vo.response;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +17,7 @@ public class TestcaseGroupResponse {
     private String name;
     private String description;
     private Integer itemOrder;
-    private List<TestcaseSimpleResponse> testcases;
+    private List<TestcaseListResponse> testcases;
 
     public TestcaseGroupResponse(TestcaseGroupDTO testcaseGroup) {
         this.id = testcaseGroup.getId();
@@ -29,7 +28,7 @@ public class TestcaseGroupResponse {
         this.description = testcaseGroup.getDescription();
         this.itemOrder = testcaseGroup.getItemOrder();
         if (testcaseGroup.getTestcases() != null) {
-            this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseSimpleResponse::new).collect(Collectors.toList());
+            this.testcases = testcaseGroup.getTestcases().stream().map(TestcaseListResponse::new).collect(Collectors.toList());
         }
 
     }

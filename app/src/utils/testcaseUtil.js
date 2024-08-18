@@ -103,6 +103,14 @@ function getFilteredTestcaseGroupList(list, status, userId, hasComment = false) 
 
         return testcase.testerId === userId && testcase.testResult === status;
       });
+    } else if (status && !userId) {
+      hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
+        if (hasComment) {
+          return testcase.testResult === status && testcase.comments?.length > 0;
+        }
+
+        return testcase.testResult === status;
+      });
     } else if (!status && !userId) {
       hasFilteredTestcase = testcaseGroup.testcases?.some(testcase => {
         if (hasComment) {
@@ -146,6 +154,14 @@ function getFilteredTestcaseList(list, status, userId, hasComment = false) {
       }
 
       return testcase.testerId === userId && testcase.testResult === status;
+    }
+
+    if (status && !userId) {
+      if (hasComment) {
+        return testcase.testResult === status && testcase.comments?.length > 0;
+      }
+
+      return testcase.testResult === status;
     }
 
     if (!status && !userId) {

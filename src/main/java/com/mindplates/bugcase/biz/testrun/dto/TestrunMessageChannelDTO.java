@@ -1,8 +1,13 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
 import com.mindplates.bugcase.biz.project.dto.ProjectMessageChannelDTO;
+import com.mindplates.bugcase.biz.project.entity.ProjectMessageChannel;
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunMessageChannel;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.common.dto.CommonDTO;
+import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestrunMessageChannelDTO extends CommonDTO {
+public class TestrunMessageChannelDTO extends CommonDTO implements IDTO<TestrunMessageChannel> {
 
     private Long id;
     private TestrunDTO testrun;
@@ -38,4 +43,45 @@ public class TestrunMessageChannelDTO extends CommonDTO {
     }
 
 
+    @Override
+    public TestrunMessageChannel toEntity() {
+        TestrunMessageChannel testrunMessageChannel =
+            TestrunMessageChannel.builder()
+                .id(id)
+                .messageChannel(ProjectMessageChannel.builder().id(messageChannel.getId()).build())
+                .build();
+
+        if (testrun != null) {
+            testrunMessageChannel.setTestrun(Testrun.builder().id(testrun.getId()).build());
+        }
+
+        if (testrunReservation != null) {
+            testrunMessageChannel.setTestrunReservation(TestrunReservation.builder().id(testrunReservation.getId()).build());
+        }
+
+        if (testrunIteration != null) {
+            testrunMessageChannel.setTestrunIteration(TestrunIteration.builder().id(testrunIteration.getId()).build());
+        }
+
+        return testrunMessageChannel;
+
+    }
+
+    public TestrunMessageChannel toEntity(Testrun testrun) {
+        TestrunMessageChannel testrunMessageChannel = toEntity();
+        testrunMessageChannel.setTestrun(testrun);
+        return testrunMessageChannel;
+    }
+
+    public TestrunMessageChannel toEntity(TestrunReservation testrunReservation) {
+        TestrunMessageChannel testrunMessageChannel = toEntity();
+        testrunMessageChannel.setTestrunReservation(testrunReservation);
+        return testrunMessageChannel;
+    }
+
+    public TestrunMessageChannel toEntity(TestrunIteration testrunIteration) {
+        TestrunMessageChannel testrunMessageChannel = toEntity();
+        testrunMessageChannel.setTestrunIteration(testrunIteration);
+        return testrunMessageChannel;
+    }
 }

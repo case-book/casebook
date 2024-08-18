@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, CloseIcon, DateRange, EmptyContent, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
+import { Block, Button, CheckBox, CloseIcon, DateRange, Form, Input, Label, Liner, Page, PageButtons, PageContent, PageTitle, Text, TextArea, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -16,6 +16,8 @@ import dateUtil from '@/utils/dateUtil';
 import './TestrunReservationEditPage.scss';
 import SpaceProfileService from '@/services/SpaceProfileService';
 import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMessageChannelSelector } from '@/assets';
+import { waitFor } from '@/utils/request';
+import TestcaseService from '@/services/TestcaseService';
 
 const labelMinWidth = '120px';
 
@@ -34,6 +36,8 @@ function TestrunReservationEditPage({ type }) {
   const [testcaseSelectPopupOpened, setTestcaseSelectPopupOpened] = useState(false);
 
   const [project, setProject] = useState(null);
+
+  const [testcaseGroups, setTestcaseGroups] = useState([]);
 
   const [spaceProfileList, setSpaceProfileList] = useState([]);
 
@@ -95,7 +99,7 @@ function TestrunReservationEditPage({ type }) {
   const selectAllTestcase = () => {
     const nextTestrun = {
       ...testrunReservation,
-      testcaseGroups: project.testcaseGroups?.map(d => {
+      testcaseGroups: testcaseGroups?.map(d => {
         return {
           testcaseGroupId: d.id,
           testcases: d.testcases?.map(item => {
@@ -110,47 +114,55 @@ function TestrunReservationEditPage({ type }) {
   };
 
   useEffect(() => {
-    SpaceProfileService.selectSpaceProfileList(spaceCode, profiles => {
-      setSpaceProfileList(profiles);
+    const promises = [];
+    promises.push(SpaceProfileService.selectSpaceProfileList(spaceCode));
+    promises.push(ProjectService.selectProjectInfo(spaceCode, projectId));
+    promises.push(TestcaseService.selectTestcaseGroupList(spaceCode, projectId));
 
-      ProjectService.selectProjectInfo(spaceCode, projectId, info => {
-        setProject(info);
-        if (isEdit) {
-          TestrunService.selectTestrunReservationInfo(spaceCode, projectId, testrunReservationId, data => {
-            setTestrunReservation({
-              ...data,
-              startTime: dateUtil.getHourMinuteTime(data.startTime),
-              startDateTime: dateUtil.getTime(data.startDateTime),
-              endDateTime: dateUtil.getTime(data.endDateTime),
-              messageChannels: data.messageChannels || [],
-            });
-          });
-        } else {
-          const defaultProfile = profiles.find(profile => profile.default);
+    waitFor(promises).then(responses => {
+      const profiles = responses[0].data;
+      const info = responses[1].data;
+      const list = responses[2].data;
+
+      setSpaceProfileList(profiles);
+      setProject(info);
+      setTestcaseGroups(list);
+
+      if (isEdit) {
+        TestrunService.selectTestrunReservationInfo(spaceCode, projectId, testrunReservationId, data => {
           setTestrunReservation({
-            ...testrunReservation,
-            testrunUsers: info.users?.map(d => {
-              return { userId: d.userId, email: d.email, name: d.name };
-            }),
-            testcaseGroups: info.testcaseGroups?.map(d => {
-              return {
-                testcaseGroupId: d.id,
-                testcases: d.testcases?.map(item => {
-                  return {
-                    testcaseId: item.id,
-                  };
-                }),
-              };
-            }),
-            profileIds: defaultProfile ? [defaultProfile.id] : [],
-            messageChannels: info.messageChannels?.map(d => {
-              return {
-                projectMessageChannelId: d.id,
-              };
-            }),
+            ...data,
+            startTime: dateUtil.getHourMinuteTime(data.startTime),
+            startDateTime: dateUtil.getTime(data.startDateTime),
+            endDateTime: dateUtil.getTime(data.endDateTime),
+            messageChannels: data.messageChannels || [],
           });
-        }
-      });
+        });
+      } else {
+        const defaultProfile = profiles.find(profile => profile.default);
+        setTestrunReservation({
+          ...testrunReservation,
+          testrunUsers: info.users?.map(d => {
+            return { userId: d.userId, email: d.email, name: d.name };
+          }),
+          testcaseGroups: list?.map(d => {
+            return {
+              testcaseGroupId: d.id,
+              testcases: d.testcases?.map(item => {
+                return {
+                  testcaseId: item.id,
+                };
+              }),
+            };
+          }),
+          profileIds: defaultProfile ? [defaultProfile.id] : [],
+          messageChannels: info.messageChannels?.map(d => {
+            return {
+              projectMessageChannelId: d.id,
+            };
+          }),
+        });
+      }
     });
   }, [type, projectId, testrunReservationId]);
 
@@ -225,16 +237,13 @@ function TestrunReservationEditPage({ type }) {
     <>
       <Page className="testrun-reservation-edit-page-wrapper">
         <PageTitle
-          name={isEdit ? t('예약 테스트런 편집') : t('예약 테스트런 생성')}
+          name={isEdit ? t('예약 테스트런 변경') : t('예약 테스트런 생성')}
           breadcrumbs={[
             {
               to: '/',
               text: t('HOME'),
             },
-            {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
+
             {
               to: `/spaces/${spaceCode}/info`,
               text: spaceCode,
@@ -253,7 +262,7 @@ function TestrunReservationEditPage({ type }) {
             },
             {
               to: isEdit ? `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/edit` : `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/new`,
-              text: isEdit ? t('편집') : t('생성'),
+              text: isEdit ? t('변경') : t('생성'),
             },
           ]}
           onListClick={() => {
@@ -463,7 +472,7 @@ function TestrunReservationEditPage({ type }) {
                       return (
                         <li key={d.testcaseGroupId}>
                           <div>
-                            {project.testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
+                            {testcaseGroups.find(group => group.id === d.testcaseGroupId)?.name}
                             {d.testcases?.length > 0 && (
                               <span className="badge">
                                 <span>{d.testcases?.length}</span>
@@ -526,11 +535,6 @@ function TestrunReservationEditPage({ type }) {
                 });
               }}
             />
-            {!(project?.messageChannels?.length > 0) && (
-              <EmptyContent className="empty-content">
-                <div>{t('등록된 메세지 채널이 없습니다.')}</div>
-              </EmptyContent>
-            )}
             <Title
               border={false}
               marginBottom={false}
@@ -598,7 +602,7 @@ function TestrunReservationEditPage({ type }) {
       )}
       {testcaseSelectPopupOpened && (
         <TestcaseSelectPopup
-          testcaseGroups={project.testcaseGroups}
+          testcaseGroups={testcaseGroups}
           selectedTestcaseGroups={testrunReservation.testcaseGroups}
           users={project.users}
           selectedUsers={testrunReservation.testrunUsers}

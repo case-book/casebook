@@ -5,28 +5,30 @@ import SpaceVariableEditPage from '@/pages/spaces/SpaceVariableEditPage/SpaceVar
 
 import Message from '@/pages/common/Message';
 import Common from '@/pages/common/Common';
-import Header from '@/pages/common/Header/Header';
-import Login from '@/pages/users/Login';
-import Join from '@/pages/users/Join';
+
+import LoginPage from '@/pages/users/LoginPage';
+import Join from '@/pages/users/JoinPage';
 import MyInfoPage from '@/pages/users/MyInfoPage';
 import MyEditPage from '@/pages/users/MyEditPage';
 import PasswordChangePage from '@/pages/users/PasswordChangePage';
 import SpaceProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import ProjectEditPage from '@/pages/spaces/projects/ProjectEditPage';
-import ProjectDashBoardPage from '@/pages/spaces/projects/ProjectDashBoardPage';
 
 import ProjectInfoPage from '@/pages/spaces/projects/ProjectInfoPage';
 
 import ProjectBugInfoPage from '@/pages/spaces/projects/ProjectBugInfoPage';
 
-import ProjectTestcaseInfoPage from '@/pages/spaces/projects/ProjectTestcaseInfoPage/ProjectTestcaseInfoPage';
+import ProjectTestcaseEditPage from '@/pages/spaces/projects/ProjectTestcaseEditPage/ProjectTestcaseEditPage';
 
 import SystemInfoPage from '@/pages/admin/SystemInfoPage';
+import SystemConfigInfoPage from '@/pages/admin/SystemConfigInfoPage';
+import SystemEditPage from '@/pages/admin/SystemConfigEditPage';
 import SetUpPage from '@/pages/admin/SetUpPage';
 import UserListPage from '@/pages/admin/UserListPage';
 import UserInfoPage from '@/pages/admin/UserInfoPage';
 import UserEditPage from '@/pages/admin/UserEditPage';
 import AdminIndexInfoPage from '@/pages/admin/AdminIndexInfoPage/AdminIndexInfoPage';
+import AiHistoryListPage from '@/pages/admin/AiHistoryListPage';
 
 import AdminSpaceListPage from '@/pages/admin/AdminSpaceListPage';
 import AdminSpaceInfoPage from '@/pages/admin/AdminSpaceInfoPage';
@@ -35,7 +37,7 @@ import TestrunEditPage from '@/pages/spaces/projects/testruns/TestrunEditPage/Te
 import TestrunExecutePage from '@/pages/spaces/projects/testruns/TestrunExecutePage/TestrunExecutePage';
 import TestrunInfoPage from '@/pages/spaces/projects/testruns/TestrunInfoPage/TestrunInfoPage';
 
-import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage';
+import ReportListPage from '@/pages/spaces/projects/reports/ReportListPage/ReportListPage';
 import ReportInfoPage from '@/pages/spaces/projects/reports/ReportInfoPage/ReportInfoPage';
 import TestrunReservationListPage from '@/pages/spaces/projects/testruns/TestrunReservationListPage/TestrunReservationListPage';
 import TestrunReservationEditPage from '@/pages/spaces/projects/testruns/TestrunReservationEditPage/TestrunReservationEditPage';
@@ -44,19 +46,26 @@ import TestrunIterationListPage from '@/pages/spaces/projects/testruns/TestrunIt
 import TestrunIterationEditPage from '@/pages/spaces/projects/testruns/TestrunIterationEditPage/TestrunIterationEditPage';
 import TestrunIterationInfoPage from '@/pages/spaces/projects/testruns/TestrunIterationInfoPage/TestrunIterationInfoPage';
 
-import ReleaseListPage from './spaces/projects/releases/ReleaseListPage';
-import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage';
-import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage';
+import OpenLinkListPage from '@/pages/spaces/projects/links/OpenLinkListPage/OpenLinkListPage';
+import ReleaseListPage from './spaces/projects/releases/ReleaseListPage/ReleaseListPage';
+import ReleaseEditPage from './spaces/projects/releases/ReleaseEditPage/ReleaseEditPage';
+import ReleaseInfoPage from './spaces/projects/releases/ReleaseInfoPage/ReleaseInfoPage';
+
+import SpaceDashboardPage from './spaces/SpaceDashboardPage/SpaceDashboardPage';
+import TestrunHistoryPage from './spaces/projects/testruns/TestrunHistoryPage/TestrunHistoryPage';
+import OpenLinkEditPage from './spaces/projects/links/OpenLinkEditPage/OpenLinkEditPage';
+import OpenLinkInfoPage from './spaces/projects/links/OpenLinkInfoPage/OpenLinkInfoPage';
+import OpenLinkPage from './links/OpenLinkPage/OpenLinkPage';
+
+import GuidePage from './spaces/GuidePage/GuidePage';
 
 export {
-  ProjectDashBoardPage,
   SpaceListPage,
   Message,
   SpaceInfoPage,
   SpaceEditPage,
   Common,
-  Header,
-  Login,
+  LoginPage,
   Join,
   MyInfoPage,
   MyEditPage,
@@ -65,8 +74,10 @@ export {
   ProjectEditPage,
   ProjectInfoPage,
   ProjectBugInfoPage,
-  ProjectTestcaseInfoPage,
+  ProjectTestcaseEditPage,
   SystemInfoPage,
+  SystemConfigInfoPage,
+  SystemEditPage,
   SetUpPage,
   UserListPage,
   UserInfoPage,
@@ -90,4 +101,12 @@ export {
   ReleaseEditPage,
   ReleaseInfoPage,
   SpaceVariableEditPage,
+  AiHistoryListPage,
+  SpaceDashboardPage,
+  TestrunHistoryPage,
+  OpenLinkListPage,
+  OpenLinkEditPage,
+  OpenLinkInfoPage,
+  OpenLinkPage,
+  GuidePage,
 };

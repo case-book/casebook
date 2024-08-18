@@ -90,4 +90,37 @@ ConfigService.selectMessageTypeList = (successHandler, failHandler) => {
   );
 };
 
+ConfigService.llmConfigTest = (llm, successHandler, failHandler) => {
+  return request.post(
+    '/api/configs/systems/llm',
+    llm,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ConfigService.selectDefaultPromptInfo = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/llm/config/default',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
+ConfigService.selectLlmConfigList = (successHandler, failHandler) => {
+  return request.get(
+    '/api/configs/systems/llm/config',
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default ConfigService;

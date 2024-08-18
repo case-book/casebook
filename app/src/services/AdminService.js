@@ -111,4 +111,15 @@ AdminService.deleteRedis = (successHandler, failHandler) => {
   );
 };
 
+AdminService.updateSystemInfo = (configRequests, successHandler, failHandler) => {
+  return request.put(
+    '/api/admin/llm/config',
+    { configRequests },
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 export default AdminService;

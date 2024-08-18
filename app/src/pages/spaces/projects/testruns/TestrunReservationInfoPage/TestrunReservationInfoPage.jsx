@@ -109,10 +109,7 @@ function TestrunReservationInfoPage() {
               to: '/',
               text: t('HOME'),
             },
-            {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
+
             {
               to: `/spaces/${spaceCode}/info`,
               text: spaceCode,
@@ -137,7 +134,7 @@ function TestrunReservationInfoPage() {
           links={[
             {
               to: `/spaces/${spaceCode}/projects/${projectId}/testruns/reservations/${testrunReservationId}/edit`,
-              text: t('편집'),
+              text: t('변경'),
               color: 'primary',
             },
           ]}

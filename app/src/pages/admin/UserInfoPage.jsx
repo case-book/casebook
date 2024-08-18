@@ -56,7 +56,7 @@ function UserInfoPage() {
             },
             {
               to: '/admin',
-              text: t('관리'),
+              text: t('시스템 관리'),
             },
             {
               to: '/admin/users',
@@ -70,7 +70,7 @@ function UserInfoPage() {
           links={[
             {
               to: `/admin/users/${userId}/edit`,
-              text: t('편집'),
+              text: t('변경'),
               color: 'primary',
             },
           ]}

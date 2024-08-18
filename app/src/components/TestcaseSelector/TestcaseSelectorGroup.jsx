@@ -1,23 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { ProjectReleasePropTypes, SelectedTestcaseGroupPropTypes, TestcaseGroupPropTypes } from '@/proptypes';
+import { SelectedTestcaseGroupPropTypes, TestcaseGroupPropTypes } from '@/proptypes';
 import './TestcaseSelectorGroup.scss';
 import moment from 'moment/moment';
 import testcaseUtil from '@/utils/testcaseUtil';
 import { Tag } from '@/components';
 
-function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate, filteredReleases, releases }) {
+function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestcaseGroups, testcaseName, minDate, maxDate, filteredReleases, releaseNameMap }) {
   const [opened, setOpened] = useState(true);
   const hasChild = testcaseGroup.testcases?.length > 0;
   const selectedTestcaseGroup = selectedTestcaseGroups.find(i => i.testcaseGroupId === testcaseGroup.id);
-
-  const releaseNameMap = useMemo(() => {
-    const nextReleaseNameMap = {};
-    releases.forEach(projectRelease => {
-      nextReleaseNameMap[projectRelease.id] = projectRelease.name;
-    });
-    return nextReleaseNameMap;
-  }, [releases]);
 
   return (
     <div
@@ -115,6 +107,7 @@ function TestcaseSelectorGroup({ testcaseGroup, selected, onClick, selectedTestc
               minDate={minDate}
               maxDate={maxDate}
               filteredReleases={filteredReleases}
+              releaseNameMap={releaseNameMap}
             />
           );
         })}
@@ -130,7 +123,7 @@ TestcaseSelectorGroup.defaultProps = {
   minDate: null,
   maxDate: null,
   filteredReleases: [],
-  releases: [],
+  releaseNameMap: {},
 };
 
 TestcaseSelectorGroup.propTypes = {
@@ -142,7 +135,9 @@ TestcaseSelectorGroup.propTypes = {
   minDate: PropTypes.instanceOf(moment),
   maxDate: PropTypes.instanceOf(moment),
   filteredReleases: PropTypes.arrayOf(PropTypes.shape({ key: PropTypes.number, value: PropTypes.string })),
-  releases: PropTypes.arrayOf(ProjectReleasePropTypes),
+  releaseNameMap: PropTypes.shape({
+    [PropTypes.number]: PropTypes.string,
+  }),
 };
 
 export default TestcaseSelectorGroup;

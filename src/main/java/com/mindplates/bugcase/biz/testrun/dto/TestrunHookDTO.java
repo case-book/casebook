@@ -1,9 +1,13 @@
 package com.mindplates.bugcase.biz.testrun.dto;
 
+import com.mindplates.bugcase.biz.testrun.entity.Testrun;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunHook;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunIteration;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunReservation;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
+import com.mindplates.bugcase.common.vo.IDTO;
 import com.mindplates.bugcase.common.vo.TestrunHookResult;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +21,7 @@ import org.springframework.http.HttpMethod;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class TestrunHookDTO extends CommonDTO {
+public class TestrunHookDTO extends CommonDTO implements IDTO<TestrunHook> {
 
 
     private Long id;
@@ -32,7 +36,6 @@ public class TestrunHookDTO extends CommonDTO {
     private TestrunIterationDTO testrunIteration;
     private Integer retryCount;
     private String result;
-    private String message;
 
 
     public TestrunHookDTO(TestrunHook testrunHook) {
@@ -57,16 +60,57 @@ public class TestrunHookDTO extends CommonDTO {
 
         this.retryCount = testrunHook.getRetryCount();
         this.result = testrunHook.getResult();
-        this.message = testrunHook.getMessage();
     }
 
     public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
         TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
-        this.message = testrunHookResult.getMessage();
-
         return testrunHookResult;
+    }
 
+    @Override
+    public TestrunHook toEntity() {
+        TestrunHook testrunHook = TestrunHook.builder()
+            .timing(timing)
+            .name(name)
+            .url(url)
+            .method(method)
+            .headers(headers)
+            .bodies(bodies)
+            .retryCount(retryCount)
+            .result(result)
+            .build();
 
+        if (testrun != null) {
+            testrunHook.setTestrun(Testrun.builder().id(testrun.getId()).build());
+        }
+
+        if (testrunReservation != null) {
+            testrunHook.setTestrunReservation(TestrunReservation.builder().id(testrunReservation.getId()).build());
+        }
+
+        if (testrunIteration != null) {
+            testrunHook.setTestrunIteration(TestrunIteration.builder().id(testrunIteration.getId()).build());
+        }
+
+        return testrunHook;
+    }
+
+    public TestrunHook toEntity(Testrun testrun) {
+        TestrunHook testrunHook = toEntity();
+        testrunHook.setTestrun(testrun);
+        return testrunHook;
+    }
+
+    public TestrunHook toEntity(TestrunReservation testrunReservation) {
+        TestrunHook testrunHook = toEntity();
+        testrunHook.setTestrunReservation(testrunReservation);
+        return testrunHook;
+    }
+
+    public TestrunHook toEntity(TestrunIteration testrunIteration) {
+        TestrunHook testrunHook = toEntity();
+        testrunHook.setTestrunIteration(testrunIteration);
+        return testrunHook;
     }
 }

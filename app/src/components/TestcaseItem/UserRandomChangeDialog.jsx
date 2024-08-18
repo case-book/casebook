@@ -41,7 +41,8 @@ function UserRandomChangeDialog({ className, setOpened, onChange, currentUser, t
         {t('테스터 변경')}
       </ModalHeader>
       <ModalBody>
-        <div>{t('테스터 @을(를) 테스트런에 참여중인 랜덤한 사용자로 변경합니다.', { userName: currentUser.name })}</div>
+        {currentUser && <div>{t('테스터 @을(를) 테스트런에 참여중인 랜덤한 사용자로 변경합니다.', { userName: currentUser?.name })}</div>}
+        {!currentUser && <div>{t('테스터가 지정되어 있지 않은 테스트케이스를 테스트런에 참여중인 랜덤한 사용자로 변경합니다.')}</div>}
         <div className="sub-title">{t('변경 사유')}</div>
         <ul>
           {TESTER_CHANGE_REASONS.map(d => {
@@ -96,7 +97,7 @@ function UserRandomChangeDialog({ className, setOpened, onChange, currentUser, t
           ref={buttonElement}
           color="primary"
           onClick={() => {
-            onChange(currentUser.userId, targetId, userChangeInfo.target, TESTER_CHANGE_REASONS.find(d => d.key === userChangeInfo.reason).value);
+            onChange(currentUser?.userId, targetId, userChangeInfo.target, TESTER_CHANGE_REASONS.find(d => d.key === userChangeInfo.reason).value);
             setOpened(false);
           }}
         >

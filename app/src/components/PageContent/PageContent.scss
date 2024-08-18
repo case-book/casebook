@@ -3,14 +3,8 @@
   position: relative;
   width: 100%;
   flex-direction: column;
-  max-width: $max-width;
-  padding: 20px 40px;
+  padding: 20px;
   background-color: var(--page-background-color);
-  border-radius: 10px;
-
-  @media (max-width: 1660px) {
-    padding: 20px;
-  }
 
   @media (max-width: 640px) {
     background-color: var(--theme-color);
@@ -26,8 +20,6 @@
   .page-content-wrapper {
     background-color: transparent;
     padding: 0;
-
-
   }
 }
 
@@ -37,5 +29,11 @@
     padding: 0 20px;
     border-radius: 0;
     margin: 0 auto;
+  }
+}
+
+.border {
+  > .page-content-wrapper {
+    border-radius: 8px;
   }
 }

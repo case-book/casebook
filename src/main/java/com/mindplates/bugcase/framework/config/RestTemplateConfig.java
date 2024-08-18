@@ -1,5 +1,8 @@
 package com.mindplates.bugcase.framework.config;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -7,10 +10,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.nio.charset.StandardCharsets;
 
 @Component
 @Log
@@ -34,8 +33,8 @@ public class RestTemplateConfig {
             factory.setProxy(proxy);
         }
 
-        factory.setConnectTimeout(30 * 1000);
-        factory.setReadTimeout(30 * 1000);
+        factory.setConnectTimeout(3 * 1000);
+        factory.setReadTimeout(3 * 1000);
 
         RestTemplate restTemplate = new RestTemplate(factory);
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));

@@ -18,9 +18,9 @@ ReportService.selectReportList = (spaceCode, projectId, start, end, successHandl
   );
 };
 
-ReportService.selectLatestReportList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+ReportService.selectPagingReportList = (spaceCode, projectId, pageNo, successHandler, failHandler, loading = true) => {
   return request.get(
-    `/api/${spaceCode}/projects/${projectId}/testruns/closed/latest`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/reports?pageNo=${pageNo}`,
     null,
     res => {
       successHandler(res);
@@ -29,7 +29,7 @@ ReportService.selectLatestReportList = (spaceCode, projectId, successHandler, fa
     null,
     null,
     loading,
-    i18n.t('최근 종료된 테스트런 목록을 불러오고 있습니다.'),
+    i18n.t('프로젝트의 테스트런 목록을 불러오고 있습니다.'),
   );
 };
 

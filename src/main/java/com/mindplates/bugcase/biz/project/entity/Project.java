@@ -1,7 +1,6 @@
 package com.mindplates.bugcase.biz.project.entity;
 
 import com.mindplates.bugcase.biz.space.entity.Space;
-import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
@@ -23,11 +22,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Builder
@@ -55,26 +57,8 @@ public class Project extends CommonEntity {
     @Column(name = "token", length = ColumnsDef.CODE)
     private String token;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TestcaseGroup> testcaseGroups;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TestcaseTemplate> testcaseTemplates;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectUser> users;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(updatable = false, insertable = false)
-    private List<ProjectApplicant> applicants;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
-    private Space space;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
-    private List<ProjectRelease> projectReleases;
+    @Column(name = "ai_enabled")
+    private boolean aiEnabled;
 
     @Column(name = "testcase_group_seq", columnDefinition = "integer default 0")
     private Integer testcaseGroupSeq = 0;
@@ -85,9 +69,43 @@ public class Project extends CommonEntity {
     @Column(name = "testrun_seq", columnDefinition = "integer default 0")
     private Integer testrunSeq = 0;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "space_id", foreignKey = @ForeignKey(name = "FK_PROJECT__SPACE"))
+    private Space space;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column
+    @Fetch(value = FetchMode.SELECT)
+    private List<TestcaseTemplate> testcaseTemplates;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
+    private List<ProjectUser> users;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SELECT)
     private List<ProjectMessageChannel> messageChannels;
+
+    @Transient
+    private Long testrunCount = 0L;
+
+    @Transient
+    private Long testcaseCount = 0L;
+
+    public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount,
+        long testcaseCount) {
+
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.activated = activated;
+        this.token = token;
+        this.aiEnabled = aiEnabled;
+        this.testcaseGroupSeq = testcaseGroupSeq;
+        this.testcaseSeq = testcaseSeq;
+        this.testrunSeq = testrunSeq;
+        this.testrunCount = testrunCount;
+        this.testcaseCount = testcaseCount;
+    }
 
     public Map<String, List<ProjectUser>> getUsersByTag(List<TestrunUser> testrunUsers) {
         Map<String, List<ProjectUser>> result = new HashMap<>();

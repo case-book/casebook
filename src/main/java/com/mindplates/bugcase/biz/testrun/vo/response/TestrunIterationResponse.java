@@ -4,16 +4,15 @@ import com.mindplates.bugcase.biz.testrun.dto.TestrunIterationDTO;
 import com.mindplates.bugcase.common.code.TestrunIterationTimeTypeCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterSelectRuleCode;
 import com.mindplates.bugcase.common.code.TestrunIterationUserFilterTypeCode;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -45,7 +44,7 @@ public class TestrunIterationResponse {
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Integer testcaseCount;
-    private Integer testrunUserCount;
+    private Long testrunUserCount;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
     private List<TestrunMessageChannelResponse> messageChannels;

@@ -8,7 +8,13 @@ function Title({ className, children, type, control, border, paddingBottom, marg
     <div className={`title-wrapper ${type} ${className} ${border ? 'border' : ''} ${colored ? 'colored' : ''} ${paddingBottom ? 'padding-bottom' : ''} ${marginBottom ? 'margin-bottom' : ''}`}>
       <div className="title-content">
         <div className="title-text">
-          {icon && <i className="fa-brands fa-readme" />} {children}
+          {icon && icon !== true && <span className="title-icon">{icon || <i className="fa-solid fa-barcode" />}</span>}
+          {icon && icon === true && (
+            <span className="title-icon">
+              <i className="fa-solid fa-barcode" />
+            </span>
+          )}
+          {children}
         </div>
         {control && (
           <div className="control">
@@ -43,7 +49,7 @@ Title.propTypes = {
   paddingBottom: PropTypes.bool,
   marginBottom: PropTypes.bool,
   colored: PropTypes.bool,
-  icon: PropTypes.bool,
+  icon: PropTypes.oneOfType([PropTypes.bool, PropTypes.node]),
 };
 
 export default Title;

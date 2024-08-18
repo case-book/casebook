@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, EmptyContent, Liner, Page, PageContent, Radio, Search, Tag, Version } from '@/components';
+import { Button, EmptyContent, Liner, Page, PageContent, PageTitle, Radio, Search, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 import { Link, useNavigate } from 'react-router-dom';
 import SpaceService from '@/services/SpaceService';
 import { THEMES } from '@/constants/constants';
 import useStores from '@/hooks/useStores';
-import { observer } from 'mobx-react';
 import useQueryString from '@/hooks/useQueryString';
 import './SpaceListPage.scss';
 
@@ -17,7 +17,7 @@ function SpaceListPage() {
   } = useStores();
 
   const { query, setQuery } = useQueryString();
-  const { my = 'Y', text = '', type = 'card' } = query;
+  const { my = 'N', text = '', type = 'card' } = query;
   const isMine = my === 'Y';
   const isCardType = type === 'card';
   const navigate = useNavigate();
@@ -45,7 +45,25 @@ function SpaceListPage() {
   }, [text, isMine]);
 
   return (
-    <Page className="space-list-page-wrapper" pure>
+    <Page className="space-list-page-wrapper">
+      <PageTitle
+        name={t('스페이스 검색')}
+        breadcrumbs={[
+          {
+            to: '/',
+            text: t('HOME'),
+          },
+          {
+            to: '/spaces/search',
+            text: t('스페이스 검색'),
+          },
+        ]}
+        onListClick={() => {
+          navigate('/');
+        }}
+      >
+        {t('스페이스 검색')}
+      </PageTitle>
       <PageContent className="page-content">
         <div className="search-opener">
           <Button
@@ -66,17 +84,6 @@ function SpaceListPage() {
             <Radio
               type="inline"
               size="md"
-              checked={isMine}
-              onChange={() => {
-                setQuery({
-                  my: 'Y',
-                });
-              }}
-              label={t('내 스페이스')}
-            />
-            <Radio
-              type="inline"
-              size="md"
               checked={!isMine}
               onChange={() => {
                 setQuery({
@@ -84,6 +91,17 @@ function SpaceListPage() {
                 });
               }}
               label={t('모든 스페이스')}
+            />
+            <Radio
+              type="inline"
+              size="md"
+              checked={isMine}
+              onChange={() => {
+                setQuery({
+                  my: 'Y',
+                });
+              }}
+              label={t('내 스페이스')}
             />
           </div>
           <div>
@@ -237,7 +255,6 @@ function SpaceListPage() {
             </ul>
           )}
         </div>
-        <Version className="version" />
       </PageContent>
     </Page>
   );

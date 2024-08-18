@@ -84,24 +84,26 @@ TestrunService.selectProjectTestrunIterationList = (spaceCode, projectId, option
   );
 };
 
-TestrunService.selectUserAssignedTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+TestrunService.selectAssignedTestrunList = (spaceCode, projectId, successHandler, failHandler, loading = true) => {
+  return request.get(
+    `/api/${spaceCode}/projects/${projectId}/testruns/assigned`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    loading,
+    i18n.t('사용자에게 할당된 테스트케이스 목록을 가져오고 있습니다.'),
+  );
+};
+
+TestrunService.selectUserAssignedTestrunList = (spaceCode, projectId, successHandler) => {
   const promises = [];
   promises.push(SpaceVariableService.selectSpaceVariableList(spaceCode));
   promises.push(SpaceProfileVariableService.selectSpaceProfileVariableList(spaceCode));
-  promises.push(
-    request.get(
-      `/api/${spaceCode}/projects/${projectId}/testruns/assigned`,
-      null,
-      res => {
-        successHandler(res);
-      },
-      failHandler,
-      null,
-      null,
-      loading,
-      i18n.t('사용자에게 할당된 테스트케이스 목록을 가져오고 있습니다.'),
-    ),
-  );
+  promises.push(TestrunService.selectAssignedTestrunList(spaceCode, projectId));
 
   waitFor(promises).then(responses => {
     const profileVariables = responses[0].data;
@@ -376,22 +378,6 @@ TestrunService.updateTestrunStatusOpened = (spaceCode, projectId, testrunId, suc
   );
 };
 
-TestrunService.updateTestrunResultItems = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, testrunResult, successHandler, failHandler, loading = true) => {
-  return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}`,
-    testrunResult,
-    res => {
-      if (successHandler) {
-        successHandler(res);
-      }
-    },
-    failHandler,
-    null,
-    null,
-    loading,
-  );
-};
-
 TestrunService.updateTestrunResultItem = (spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testcaseTemplateItemId, testrunItem, successHandler, failHandler, loading = false) => {
   return request.put(
     `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/testcases/${testrunTestcaseGroupTestcaseId}/items/${testcaseTemplateItemId}`,
@@ -458,7 +444,7 @@ TestrunService.updateTestrunTesterRandom = (spaceCode, projectId, testrunId, tes
 
 TestrunService.updateTestrunTestcaseComment = (spaceCode, projectId, testrunId, testrunTestcaseGroupId, testrunTestcaseGroupTestcaseId, comment, successHandler, failHandler, loading = true) => {
   return request.put(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments`,
     comment,
     res => {
       successHandler(res);
@@ -492,7 +478,7 @@ TestrunService.deleteTestrunTestcaseComment = (
   loading = true,
 ) => {
   return request.del(
-    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments/${testrunTestcaseGroupTestcaseCommentId}`,
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/comments/groups/${testrunTestcaseGroupId}/testcases/${testrunTestcaseGroupTestcaseId}/comments/${testrunTestcaseGroupTestcaseCommentId}`,
     null,
     res => {
       successHandler(res);
@@ -572,6 +558,22 @@ TestrunService.notifyTestrunProgress = (spaceCode, projectId, testrunId, success
     null,
     null,
     loading,
+  );
+};
+
+TestrunService.reopenProjectTestrunInfo = (spaceCode, projectId, testrunId, info, successHandler, failHandler) => {
+  return request.put(
+    `/api/${spaceCode}/projects/${projectId}/testruns/${testrunId}/reopen`,
+    info,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    null,
+    info.testrunReopenCreationType === 'REOPEN' ? i18n.t('테스트런을 다시 시작하고 있습니다.') : i18n.t('테스트런을 복사하고 있습니다.'),
   );
 };
 

@@ -123,10 +123,7 @@ function TestrunIterationInfoPage() {
               to: '/',
               text: t('HOME'),
             },
-            {
-              to: '/',
-              text: t('스페이스 목록'),
-            },
+
             {
               to: `/spaces/${spaceCode}/info`,
               text: spaceCode,
@@ -151,7 +148,7 @@ function TestrunIterationInfoPage() {
           links={[
             {
               to: `/spaces/${spaceCode}/projects/${projectId}/testruns/iterations/${testrunIterationId}/edit`,
-              text: t('편집'),
+              text: t('변경'),
               color: 'primary',
             },
           ]}

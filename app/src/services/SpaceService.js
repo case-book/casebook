@@ -55,6 +55,17 @@ SpaceService.selectSpaceInfo = (spaceCode, successHandler, failHandler) => {
   );
 };
 
+SpaceService.selectSpaceName = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/name`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 SpaceService.selectSpaceAccessibleInfo = (spaceId, successHandler, failHandler) => {
   return request.get(
     `/api/spaces/${spaceId}/accessible`,
@@ -166,6 +177,36 @@ SpaceService.selectSpaceChannelList = (spaceCode, successHandler, failHandler) =
     null,
     true,
     i18n.t('스페이스에 등록된 채널을 가져오고 있습니다.'),
+  );
+};
+
+SpaceService.selectSpaceLlmList = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/llms`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    i18n.t('스페이스에 등록된 LLM 정보를 가져옵니다.'),
+  );
+};
+
+SpaceService.selectSpaceTestrunDetailList = (spaceCode, successHandler, failHandler) => {
+  return request.get(
+    `/api/spaces/${spaceCode}/testruns/my`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+    null,
+    null,
+    true,
+    i18n.t('스페이스에서 진행 중인 테스트런 목록을 가져옵니다.'),
   );
 };
 
