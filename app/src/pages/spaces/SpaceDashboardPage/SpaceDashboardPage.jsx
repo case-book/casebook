@@ -323,8 +323,8 @@ function SpaceDashboardPage() {
                                     <Button
                                       rounded
                                       size="lg"
-                                      disabled={(testrun.messageChannels?.length || 0) < 1}
-                                      tip={(testrun.messageChannels?.length || 0) > 0 ? t('진행 상황 알림') : t('등록된 메세지 채널이 없습니다.')}
+                                      disabled={testrun.messageChannels?.length < 1}
+                                      tip={testrun.messageChannels?.length > 0 ? t('진행 상황 알림') : t('등록된 메세지 채널이 없습니다.')}
                                       onClick={() => {
                                         onNotify(projectTestrun.id, testrun.id);
                                       }}

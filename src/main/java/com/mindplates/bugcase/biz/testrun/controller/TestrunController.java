@@ -25,8 +25,6 @@ import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestca
 import com.mindplates.bugcase.biz.testrun.vo.response.TestrunTestcaseGroupTestcaseResponse;
 import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import com.mindplates.bugcase.common.message.MessageSendService;
-import com.mindplates.bugcase.common.message.vo.MessageData;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.TestrunHookResult;
@@ -61,8 +59,6 @@ public class TestrunController {
 
     private final ProjectFileService projectFileService;
 
-    private final MessageSendService messageSendService;
-
     private final HttpRequestUtil httpRequestUtil;
 
     private final TestrunCachedService testrunCachedService;
@@ -79,10 +75,6 @@ public class TestrunController {
 
         TestrunDTO result = testrunService.createTestrunInfo(spaceCode, testrun);
 
-        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
-        createdTestrunData.addData("testrunId", result.getId());
-        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
-
         // 시작 후 훅 호출
         result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {
             testrunHook.request(httpRequestUtil);
@@ -95,13 +87,10 @@ public class TestrunController {
 
     @Operation(description = "프로젝트 테스트런 재오픈")
     @PutMapping("/{testrunId}/reopen")
-    public ResponseEntity<HttpStatus> reopenTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId , @PathVariable long testrunId, @Valid @RequestBody TestrunReopenRequest testrunReopenRequest) {
+    public ResponseEntity<HttpStatus> reopenTestrunInfo(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId,
+        @Valid @RequestBody TestrunReopenRequest testrunReopenRequest) {
 
         TestrunDTO result = testrunService.reopenTestrunInfo(spaceCode, projectId, testrunId, testrunReopenRequest);
-
-        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
-        createdTestrunData.addData("testrunId", result.getId());
-        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
 
         // 시작 후 훅 호출
         result.getTestrunHookList(TestrunHookTiming.AFTER_START).forEach(testrunHook -> {

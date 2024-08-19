@@ -212,6 +212,16 @@ public class TestrunService {
             });
         }
 
+        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
+        createdTestrunData.addData("testrunId", result.getId());
+        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        List<TestrunDTO> openedProjectTestrunList = selectOpenedProjectTestrunList(spaceCode, projectId);
+        MessageData changeProjectOpenedTestrunCountData = MessageData.builder().type("PROJECT-TESTRUN-OPENED-COUNT-CHANGED").build();
+        changeProjectOpenedTestrunCountData.addData("projectId", projectId);
+        changeProjectOpenedTestrunCountData.addData("openedTestrunCount", openedProjectTestrunList.size());
+        messageSendService.sendTo("spaces/" + spaceCode, changeProjectOpenedTestrunCountData);
+
         return new TestrunDTO(result);
     }
 
@@ -298,6 +308,16 @@ public class TestrunService {
                 }
             });
         }
+
+        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CREATED").build();
+        createdTestrunData.addData("testrunId", result.getId());
+        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        List<TestrunDTO> openedProjectTestrunList = selectOpenedProjectTestrunList(spaceCode, projectId);
+        MessageData changeProjectOpenedTestrunCountData = MessageData.builder().type("PROJECT-TESTRUN-OPENED-COUNT-CHANGED").build();
+        changeProjectOpenedTestrunCountData.addData("projectId", projectId);
+        changeProjectOpenedTestrunCountData.addData("openedTestrunCount", openedProjectTestrunList.size());
+        messageSendService.sendTo("spaces/" + spaceCode, changeProjectOpenedTestrunCountData);
 
         return new TestrunDTO(result);
     }
@@ -412,6 +432,16 @@ public class TestrunService {
             }
         }));
 
+        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-DELETED").build();
+        createdTestrunData.addData("testrunId", testrunId);
+        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        List<TestrunDTO> openedProjectTestrunList = selectOpenedProjectTestrunList(spaceCode, projectId);
+        MessageData changeProjectOpenedTestrunCountData = MessageData.builder().type("PROJECT-TESTRUN-OPENED-COUNT-CHANGED").build();
+        changeProjectOpenedTestrunCountData.addData("projectId", projectId);
+        changeProjectOpenedTestrunCountData.addData("openedTestrunCount", openedProjectTestrunList.size());
+        messageSendService.sendTo("spaces/" + spaceCode, changeProjectOpenedTestrunCountData);
+
     }
 
     @Transactional
@@ -442,6 +472,16 @@ public class TestrunService {
         }
 
         testrunRepository.save(testrun);
+
+        MessageData createdTestrunData = MessageData.builder().type("TESTRUN-CLOSED").build();
+        createdTestrunData.addData("testrunId", testrun.getId());
+        messageSendService.sendTo("projects/" + projectId, createdTestrunData);
+
+        List<TestrunDTO> openedProjectTestrunList = selectOpenedProjectTestrunList(spaceCode, projectId);
+        MessageData changeProjectOpenedTestrunCountData = MessageData.builder().type("PROJECT-TESTRUN-OPENED-COUNT-CHANGED").build();
+        changeProjectOpenedTestrunCountData.addData("projectId", projectId);
+        changeProjectOpenedTestrunCountData.addData("openedTestrunCount", openedProjectTestrunList.size());
+        messageSendService.sendTo("spaces/" + spaceCode, changeProjectOpenedTestrunCountData);
 
         return new TestrunDTO(testrun);
     }
