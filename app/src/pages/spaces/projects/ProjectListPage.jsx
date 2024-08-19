@@ -103,7 +103,7 @@ function ProjectListPage() {
                       <div
                         className="name"
                         onClick={() => {
-                          navigate(`/spaces/${spaceCode}/projects/${project.id}`);
+                          navigate(`/spaces/${spaceCode}/projects/${project.id}/testcases`);
                         }}
                       >
                         {project.name}

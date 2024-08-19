@@ -71,6 +71,7 @@ public class TestrunHookDTO extends CommonDTO implements IDTO<TestrunHook> {
     @Override
     public TestrunHook toEntity() {
         TestrunHook testrunHook = TestrunHook.builder()
+            .id(id)
             .timing(timing)
             .name(name)
             .url(url)

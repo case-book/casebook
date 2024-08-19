@@ -43,7 +43,7 @@ spring:
     expireMinutes: 1440
     refreshExpireMinutes: 20160
 scheduler:
-  enabled: false
+  enabled: true
 server:
   port: 8080
   error:

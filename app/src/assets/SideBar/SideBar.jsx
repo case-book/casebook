@@ -17,6 +17,7 @@ function SideBar() {
   const {
     contextStore: { space, setSpace, collapsed, setCollapsed, refreshProjectTime },
     userStore: { isLogin },
+    socketStore: { addTopic, removeTopic, addMessageHandler, removeMessageHandler, socketClient },
   } = useStores();
 
   const navigate = useNavigate();
@@ -48,6 +49,38 @@ function SideBar() {
     }
     getMySpaceList();
   }, []);
+
+  const onMessage = info => {
+    const { data } = info;
+
+    switch (data.type) {
+      case 'PROJECT-TESTRUN-OPENED-COUNT-CHANGED': {
+        const nextProjects = projects.slice(0);
+        const project = nextProjects.find(d => d.id === data.data.projectId);
+        if (project) {
+          project.testrunCount = data.data.openedTestrunCount;
+          setProjects(nextProjects);
+        }
+        break;
+      }
+
+      default: {
+        break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (space?.code) {
+      addTopic(`/sub/spaces/${space?.code}`);
+      addMessageHandler('SideBar', onMessage);
+    }
+
+    return () => {
+      removeTopic(`/sub/spaces/${space?.code}`);
+      removeMessageHandler('SideBar');
+    };
+  }, [space?.code, socketClient, projects]);
 
   const getProjectList = useCallback(() => {
     ProjectService.selectMyProjectList(space?.code, list => {
