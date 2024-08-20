@@ -13,22 +13,21 @@ spring:
     password: admin1234
   jpa:
     hibernate:
-      ddl-auto: update #create
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: create
     generate-ddl: true
     show-sql: true
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     properties:
       hibernate:
         # format_sql: true
         enable_lazy_load_no_trans: true
         type: trace
-  redis:
-    host: localhost
-    port: 6679
-    password: admin1234
+  data:
+    redis:
+      host: localhost
+      port: 6679
+      password: admin1234
   messages:
     basename: messages/message
     encoding: UTF-8

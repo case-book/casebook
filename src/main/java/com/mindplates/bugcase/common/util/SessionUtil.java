@@ -21,8 +21,13 @@ public class SessionUtil {
         if (authentication == null) {
             return null;
         }
+        SecurityUser user = null;
+        try {
+            user = (SecurityUser) authentication.getPrincipal();
+        } catch (Exception e) {
+            return null;
+        }
 
-        SecurityUser user = (SecurityUser) authentication.getPrincipal();
 
         Long id = null;
         if (user != null) {

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    String PROJECT_LIST_PROJECTION = "SELECT new Project(p.id, p.name, p.description, p.activated, p.token, p.aiEnabled, p.testcaseGroupSeq, p.testcaseSeq, p.testcaseSeq, (SELECT COUNT(tr.id) FROM Testrun tr WHERE tr.project.id = p.id AND tr.opened = true), (SELECT COUNT(tc.id) FROM Testcase tc WHERE tc.project.id = p.id)) FROM Project p ";
+    String PROJECT_LIST_PROJECTION = "SELECT new Project(p.creationDate, p.id, p.name, p.description, p.activated, p.token, p.aiEnabled, p.testcaseGroupSeq, p.testcaseSeq, p.testcaseSeq, (SELECT COUNT(tr.id) FROM Testrun tr WHERE tr.project.id = p.id AND tr.opened = true), (SELECT COUNT(tc.id) FROM Testcase tc WHERE tc.project.id = p.id)) FROM Project p ";
 
     @Query(value = PROJECT_LIST_PROJECTION + " WHERE p.space.id = :spaceId")
     List<Project> findAllBySpaceId(Long spaceId);

@@ -63,7 +63,7 @@ public class TestrunHookDTO extends CommonDTO implements IDTO<TestrunHook> {
     }
 
     public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
-        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
+        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.valueOf(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
         return testrunHookResult;
     }

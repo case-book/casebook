@@ -3,7 +3,7 @@ package com.mindplates.bugcase.framework.handler;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import com.mindplates.bugcase.common.vo.ErrorResponse;
 import java.util.function.BiFunction;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;

@@ -5,24 +5,25 @@ import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplate;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -91,9 +92,10 @@ public class Project extends CommonEntity {
     @Transient
     private Long testcaseCount = 0L;
 
-    public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount,
+    public Project(LocalDateTime creationDate, long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount,
         long testcaseCount) {
 
+        this.setCreationDate(creationDate);
         this.id = id;
         this.name = name;
         this.description = description;

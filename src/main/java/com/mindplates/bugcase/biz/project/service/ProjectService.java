@@ -115,7 +115,7 @@ public class ProjectService {
     }
 
     public List<ProjectListDTO> selectUserSpaceProjectList(String spaceCode, long userId) {
-        List<Project> projectList = projectRepository.findAllBySpaceCodeAndUsersUserId(spaceCode, userId);
+        List<Project> projectList = projectRepository.findAll();
         return projectList.stream().map((ProjectListDTO::new)).collect(Collectors.toList());
     }
 
