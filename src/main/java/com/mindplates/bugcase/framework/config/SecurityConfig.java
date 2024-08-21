@@ -14,10 +14,10 @@ import com.mindplates.bugcase.framework.security.UserTokenProvider;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
@@ -27,6 +27,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
@@ -47,9 +48,6 @@ public class SecurityConfig {
     private final ProjectService projectService;
     private final MethodFinder methodFinder;
 
-    @Value("${bug-case.corsUrls}")
-    private String[] corsUrls;
-
     @Bean
     public AccessDecisionManager accessDecisionManager() {
 
@@ -66,50 +64,40 @@ public class SecurityConfig {
         return new AffirmativeBased(decisionVoters);
     }
 
-    /*
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    @Order(0)
+    public SecurityFilterChain ignoringSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatchers(requestMatcherConfigurer -> {
+                requestMatcherConfigurer
+                    .requestMatchers("/api/configs/systems/**",
+                        "/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh",
+                        "/api/{spaceCode}/projects/{projectId}/testcases/{testcaseId}/images/**", "/api/{spaceCode}/projects/{projectId}/testruns/{testrunId}/images/**",
+                        "/api/{spaceCode}/projects/{projectId}/images/**",
+                        "/api/links/**", "/ws/**");
+                requestMatcherConfigurer.requestMatchers(HttpMethod.OPTIONS, "/**");
 
-        http.cors()
-            .and()
-            .csrf()
-            .disable()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .exceptionHandling()
-            .authenticationEntryPoint(authenticationEntryPoint)
-            .accessDeniedHandler(accessDeniedHandler)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/api/**")
-            .authenticated()
-            .accessDecisionManager(accessDecisionManager())
-            .and()
-            .formLogin().disable()
-            .addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
+            })
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(requests -> requests.anyRequest().permitAll())
+            .requestCache(RequestCacheConfigurer::disable)
+            .securityContext(AbstractHttpConfigurer::disable)
+            .sessionManagement(AbstractHttpConfigurer::disable)
+        ;
+        return http.build();
     }
-    */
 
     @Bean
+    @Order(1)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .cors(AbstractHttpConfigurer::disable)
             .sessionManagement((httpSecuritySessionManagementConfigurer -> {
                 httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
             }))
-            .authorizeHttpRequests(authorizeRequests -> {
-                authorizeRequests
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/api/configs/systems/**").permitAll() // "^(?!/?api).+$"
-                    .requestMatchers("/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh").permitAll()
-                    .requestMatchers("/api/**/projects/**/testcases/**/images/**", "/api/**/projects/**/testruns/**/images/**", "/api/**/projects/**/images/**").permitAll()
-                    .requestMatchers("/api/links/**").permitAll()
-                    .requestMatchers("/ws/**").permitAll()
-                    .requestMatchers("/api/**").authenticated()
-                    .anyRequest().permitAll();
+            .authorizeRequests(authorizeRequests -> {
+                authorizeRequests.anyRequest().authenticated().accessDecisionManager(accessDecisionManager());
             })
             .exceptionHandling(authenticationManager -> {
                 authenticationManager.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler);
@@ -118,8 +106,6 @@ public class SecurityConfig {
             .addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
-
-        http.setSharedObject(AccessDecisionManager.class, accessDecisionManager());
 
         return http.build();
     }

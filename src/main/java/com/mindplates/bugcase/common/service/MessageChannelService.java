@@ -57,10 +57,10 @@ public class MessageChannelService {
         List<Map<String, String>> headers = messageChannel.getHeaderList();
         if (messageChannel.getPayloadType().equals(PayloadTypeCode.JSON)) {
             String jsonMessage = messageChannel.getJsonMessage(message);
-            return sendTextToWebhookJson(messageChannel.getHttpMethod(), messageChannel.getUrl(), headers, jsonMessage);
+            return sendTextToWebhookJson(HttpMethod.valueOf(messageChannel.getHttpMethod()), messageChannel.getUrl(), headers, jsonMessage);
         } else {
             List<Map<String, String>> payloads = messageChannel.getPayloadMessage(message);
-            return sendTextToWebhookFormData(messageChannel.getHttpMethod(), messageChannel.getUrl(), headers, payloads);
+            return sendTextToWebhookFormData(HttpMethod.valueOf(messageChannel.getHttpMethod()), messageChannel.getUrl(), headers, payloads);
         }
     }
 

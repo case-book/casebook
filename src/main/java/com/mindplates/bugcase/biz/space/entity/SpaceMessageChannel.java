@@ -47,7 +47,7 @@ public class SpaceMessageChannel extends CommonEntity {
     private Space space;
 
     @Column(name = "method", length = ColumnsDef.CODE)
-    private HttpMethod httpMethod;
+    private String httpMethod;
 
     @Column(name = "message_channel_type", length = ColumnsDef.CODE)
     @Enumerated(EnumType.STRING)

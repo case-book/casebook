@@ -26,7 +26,7 @@ public class SpaceMessageChannelDTO extends CommonDTO implements IDTO<SpaceMessa
     private SpaceDTO space;
     private String name;
     private String url;
-    private HttpMethod httpMethod;
+    private String httpMethod;
     private MessageChannelTypeCode messageChannelType;
     private PayloadTypeCode payloadType;
     private String json;
