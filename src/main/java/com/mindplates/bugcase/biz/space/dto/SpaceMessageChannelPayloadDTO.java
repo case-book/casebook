@@ -7,12 +7,14 @@ import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class SpaceMessageChannelPayloadDTO extends CommonDTO implements IDTO<SpaceMessageChannelPayload> {
 
     private Long id;

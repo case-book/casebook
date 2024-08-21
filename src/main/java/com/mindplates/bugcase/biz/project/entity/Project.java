@@ -61,12 +61,15 @@ public class Project extends CommonEntity {
     private boolean aiEnabled;
 
     @Column(name = "testcase_group_seq", columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer testcaseGroupSeq = 0;
 
     @Column(name = "testcase_seq", columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer testcaseSeq = 0;
 
     @Column(name = "testrun_seq", columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer testrunSeq = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -86,9 +89,11 @@ public class Project extends CommonEntity {
     private List<ProjectMessageChannel> messageChannels;
 
     @Transient
+    @Builder.Default
     private Long testrunCount = 0L;
 
     @Transient
+    @Builder.Default
     private Long testcaseCount = 0L;
 
     public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount,

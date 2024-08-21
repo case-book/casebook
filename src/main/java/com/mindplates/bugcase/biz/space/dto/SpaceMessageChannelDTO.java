@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpMethod;
 
@@ -20,6 +21,7 @@ import org.springframework.http.HttpMethod;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class SpaceMessageChannelDTO extends CommonDTO implements IDTO<SpaceMessageChannel> {
 
     private Long id;

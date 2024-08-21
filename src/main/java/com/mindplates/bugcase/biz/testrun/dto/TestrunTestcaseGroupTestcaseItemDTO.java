@@ -9,6 +9,7 @@ import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class TestrunTestcaseGroupTestcaseItemDTO extends CommonDTO implements IDTO<TestrunTestcaseGroupTestcaseItem> {
 
     private Long id;

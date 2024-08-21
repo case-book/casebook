@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Table(name = "notification", indexes = {
     @Index(name = "IDX_NOTIFICATION_USER_ID", columnList = "user_id"),
     @Index(name = "IDX_NOTIFICATION_USER_ID_AND_CREATION_DATE", columnList = "user_id, creation_date"),

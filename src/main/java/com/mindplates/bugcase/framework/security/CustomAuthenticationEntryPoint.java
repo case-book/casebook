@@ -34,7 +34,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         String requestOrigin = getOrigin(httpServletRequest);
 
-        // CORS 헤더 추가
         httpServletResponse.setHeader("Access-Control-Allow-Origin", requestOrigin);
         httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
         httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
