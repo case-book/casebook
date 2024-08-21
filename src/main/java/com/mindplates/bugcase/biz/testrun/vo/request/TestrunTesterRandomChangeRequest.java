@@ -1,9 +1,9 @@
 package com.mindplates.bugcase.biz.testrun.vo.request;
 
 import com.mindplates.bugcase.common.code.TesterChangeTargetCode;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data

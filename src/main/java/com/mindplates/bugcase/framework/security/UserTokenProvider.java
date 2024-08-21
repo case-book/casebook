@@ -5,7 +5,7 @@ import com.mindplates.bugcase.biz.user.dto.UserTokenDTO;
 import com.mindplates.bugcase.biz.user.service.UserTokenService;
 import com.mindplates.bugcase.common.vo.SecurityUser;
 import java.util.Base64;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

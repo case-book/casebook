@@ -25,10 +25,10 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,7 +36,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserTokenProvider userTokenProvider;
@@ -66,22 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new AffirmativeBased(decisionVoters);
     }
 
-    @Override
-    public void configure(WebSecurity web) {
-        // 인증 및 인가 예외 처리
-        web.ignoring()
-            // .requestMatchers(PathRequest.toStaticResources().atCommonLocations()) // favicon.ico 등의 인증을 시도하지 않음
-            .mvcMatchers(HttpMethod.OPTIONS, "/(.*)")
-            .regexMatchers("^(?!/?api).+$")
-            .mvcMatchers("/api/configs/systems/**")
-            .mvcMatchers("/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh")
-            .mvcMatchers("/api/**/projects/**/testcases/**/images/**")
-            .mvcMatchers("/api/**/projects/**/testruns/**/images/**")
-            .mvcMatchers("/api/**/projects/**/images/**")
-            .mvcMatchers("/api/links/**")
-            .mvcMatchers("/ws/**");
-    }
-
+    /*
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -106,6 +91,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
     }
+    */
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
+            .sessionManagement((httpSecuritySessionManagementConfigurer -> {
+                httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            }))
+            .authorizeHttpRequests(authorizeRequests -> {
+                authorizeRequests
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers("/api/configs/systems/**").permitAll() // "^(?!/?api).+$"
+                    .requestMatchers("/api/users/login", "/api/users/logout", "/api/users/join", "/api/users/refresh").permitAll()
+                    .requestMatchers("/api/**/projects/**/testcases/**/images/**", "/api/**/projects/**/testruns/**/images/**", "/api/**/projects/**/images/**").permitAll()
+                    .requestMatchers("/api/links/**").permitAll()
+                    .requestMatchers("/ws/**").permitAll()
+                    .requestMatchers("/api/**").authenticated()
+                    .anyRequest().permitAll();
+            })
+            .exceptionHandling(authenticationManager -> {
+                authenticationManager.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler);
+            })
+            .formLogin(AbstractHttpConfigurer::disable)
+            .addFilterBefore(new ExceptionHandlerFilter(messageSourceAccessor), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new UserTokenAuthenticationFilter(userTokenProvider), JwtAuthenticationFilter.class);
+
+        http.setSharedObject(AccessDecisionManager.class, accessDecisionManager());
+
+        return http.build();
+    }
 
 }

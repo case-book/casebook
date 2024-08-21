@@ -4,7 +4,7 @@ import com.mindplates.bugcase.common.code.TestrunReopenCreationTypeCode;
 import com.mindplates.bugcase.common.code.TestrunReopenTestResultCode;
 import com.mindplates.bugcase.common.code.TestrunReopenTestcaseCode;
 import com.mindplates.bugcase.common.code.TestrunReopenTesterCode;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data

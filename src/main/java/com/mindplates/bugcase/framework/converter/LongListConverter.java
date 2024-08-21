@@ -5,8 +5,8 @@ import static java.util.Collections.emptyList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import org.apache.commons.lang3.StringUtils;
 
 @Converter
