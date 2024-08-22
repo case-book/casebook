@@ -14,8 +14,7 @@ public class JsonRedisTemplate<V> extends RedisTemplate<String, V> {
         super.setKeySerializer(stringSerializer);
         super.setHashKeySerializer(stringSerializer);
         super.setHashValueSerializer(stringSerializer);
-        Jackson2JsonRedisSerializer<V> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(valueType);
-        jsonRedisSerializer.setObjectMapper(objectMapper);
+        Jackson2JsonRedisSerializer<V> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(objectMapper, valueType);
         super.setValueSerializer(jsonRedisSerializer);
         super.setConnectionFactory(connectionFactory);
         super.afterPropertiesSet();

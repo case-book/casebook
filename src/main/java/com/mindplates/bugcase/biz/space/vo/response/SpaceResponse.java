@@ -34,9 +34,9 @@ public class SpaceResponse {
     private List<HolidayResponse> holidays;
 
     private Long projectCount;
-    private boolean allowSearch = false;
-    private boolean allowAutoJoin = false;
-    private boolean isAdmin = false;
+    private boolean allowSearch;
+    private boolean allowAutoJoin;
+    private boolean isAdmin;
     private String country;
     private String timeZone;
 

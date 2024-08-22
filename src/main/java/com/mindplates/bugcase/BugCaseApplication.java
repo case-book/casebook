@@ -2,8 +2,8 @@ package com.mindplates.bugcase;
 
 import com.mindplates.bugcase.framework.config.AiConfig;
 import com.mindplates.bugcase.framework.config.FileConfig;
+import jakarta.annotation.PostConstruct;
 import java.util.TimeZone;
-import javax.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.ApplicationPidFileWriter;

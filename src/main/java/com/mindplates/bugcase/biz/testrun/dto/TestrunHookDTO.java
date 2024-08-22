@@ -14,6 +14,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpMethod;
 
@@ -21,6 +22,7 @@ import org.springframework.http.HttpMethod;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class TestrunHookDTO extends CommonDTO implements IDTO<TestrunHook> {
 
 
@@ -63,7 +65,7 @@ public class TestrunHookDTO extends CommonDTO implements IDTO<TestrunHook> {
     }
 
     public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
-        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
+        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.valueOf(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
         return testrunHookResult;
     }

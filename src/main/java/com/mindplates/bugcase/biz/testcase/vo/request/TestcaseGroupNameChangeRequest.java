@@ -1,6 +1,6 @@
 package com.mindplates.bugcase.biz.testcase.vo.request;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 

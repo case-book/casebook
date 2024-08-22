@@ -31,7 +31,7 @@ public class ProjectResponse {
     private List<TestcaseTemplateResponse> testcaseTemplates;
     private List<TestcaseGroupResponse> testcaseGroups;
     private List<SimpleMemberResponse> users;
-    private boolean isAdmin = false;
+    private boolean isAdmin;
     private List<ProjectMessageChannelResponse> messageChannels;
     private boolean aiEnabled;
 

@@ -5,7 +5,7 @@ import com.mindplates.bugcase.biz.user.entity.RefreshToken;
 import com.mindplates.bugcase.biz.user.repository.RefreshTokenRepository;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import java.time.LocalDateTime;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;

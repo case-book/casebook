@@ -11,7 +11,7 @@ import com.mindplates.bugcase.biz.user.service.UserCachedService;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

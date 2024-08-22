@@ -1,7 +1,7 @@
 package com.mindplates.bugcase.framework.security;
 
 import java.lang.reflect.Method;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
