@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.common.exception.ServiceException;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
@@ -19,10 +19,21 @@ import org.springframework.stereotype.Component;
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     private final MessageSourceAccessor messageSourceAccessor;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public String getOrigin(HttpServletRequest request) {
+        return request.getHeader("Origin");
+    }
 
     @Override
     public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServiceException {
+
+        String requestOrigin = getOrigin(httpServletRequest);
+
+        httpServletResponse.setHeader("Access-Control-Allow-Origin", requestOrigin);
+        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+        httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
+
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
         try (OutputStream os = httpServletResponse.getOutputStream()) {

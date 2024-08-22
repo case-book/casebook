@@ -16,12 +16,14 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class TestrunTestcaseGroupTestcaseDTO extends CommonDTO implements IDTO<TestrunTestcaseGroupTestcase> {
 
     private Long id;

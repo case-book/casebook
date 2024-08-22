@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.testcase.vo.request;
 
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.common.vo.IRequestVO;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 

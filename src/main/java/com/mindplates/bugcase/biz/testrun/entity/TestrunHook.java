@@ -5,26 +5,28 @@ import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.vo.TestrunHookResult;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
+// import io.hypersistence.utils.hibernate.type.json.JsonType;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+// import org.hibernate.annotations.TypeDef;
+import org.hibernate.type.SqlTypes;
 import org.springframework.http.HttpMethod;
 
 @Entity
@@ -34,7 +36,7 @@ import org.springframework.http.HttpMethod;
 @AllArgsConstructor
 @Getter
 @Setter
-@TypeDef(name = "json", typeClass = JsonType.class)
+// @TypeDef(name = "json", typeClass = JsonType.class)
 public class TestrunHook extends CommonEntity implements Cloneable {
 
     @Id
@@ -54,12 +56,14 @@ public class TestrunHook extends CommonEntity implements Cloneable {
     @Column(name = "method", nullable = false, length = ColumnsDef.CODE)
     private String method;
 
-    @Type(type = "json")
+    // @Type(type = "json")
     @Column(name = "headers", columnDefinition = ColumnsDef.LONGTEXT)
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<Map<String, String>> headers;
 
-    @Type(type = "json")
+    // @Type(type = "json")
     @Column(name = "bodies", columnDefinition = ColumnsDef.LONGTEXT)
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<Map<String, String>> bodies;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -81,7 +85,7 @@ public class TestrunHook extends CommonEntity implements Cloneable {
     private String result;
 
     public TestrunHookResult request(HttpRequestUtil httpRequestUtil) {
-        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.resolve(this.method), this.headers, this.bodies);
+        TestrunHookResult testrunHookResult = httpRequestUtil.request(this.url, HttpMethod.valueOf(this.method), this.headers, this.bodies);
         this.result = Integer.toString(testrunHookResult.getCode().value());
         return testrunHookResult;
     }

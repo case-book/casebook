@@ -64,9 +64,9 @@ public class HttpRequestUtil {
                 String.class
             );
 
-            return TestrunHookResult.builder().code(response.getStatusCode()).message(response.getBody()).build();
+            return TestrunHookResult.builder().code(HttpStatus.valueOf(response.getStatusCode().value())).message(response.getBody()).build();
         } catch (HttpServerErrorException e) {
-            return TestrunHookResult.builder().code(e.getStatusCode()).message(e.getMessage()).build();
+            return TestrunHookResult.builder().code(HttpStatus.valueOf(e.getStatusCode().value())).message(e.getMessage()).build();
         } catch (Exception e) {
             return TestrunHookResult.builder().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage()).build();
         }
@@ -85,9 +85,9 @@ public class HttpRequestUtil {
                 String.class
             );
 
-            return TestrunHookResult.builder().code(response.getStatusCode()).message(response.getBody()).build();
+            return TestrunHookResult.builder().code(HttpStatus.valueOf(response.getStatusCode().value())).message(response.getBody()).build();
         } catch (HttpServerErrorException e) {
-            return TestrunHookResult.builder().code(e.getStatusCode()).message(e.getMessage()).build();
+            return TestrunHookResult.builder().code(HttpStatus.valueOf(e.getStatusCode().value())).message(e.getMessage()).build();
         } catch (Exception e) {
             return TestrunHookResult.builder().code(HttpStatus.INTERNAL_SERVER_ERROR).message(e.getMessage()).build();
         }

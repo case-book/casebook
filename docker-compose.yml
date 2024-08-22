@@ -1,29 +1,23 @@
-# 파일 규격 버전
 version: "3"
-# 이 항목 밑에 실행하려는 컨테이너 들을 정의
 services:
-  # 서비스 명
   db:
-    # 사용할 이미지
-    image: mysql:5.7
-    # 컨테이너 이름 설정
-    container_name: bug-case-mysql-dev
-    # 접근 포트 설정 (컨테이너 외부:컨테이너 내부)
+    image: mysql:8.0.30
+    container_name: casebook-mysql-local
     ports:
       - 3606:3306
-    # -e 옵션
     environment:
-      # MYSQL 패스워드 설정 옵션
       MYSQL_ROOT_PASSWORD: "admin1234"
-    # 명령어 실행 (한글 인코딩 관련)
+      MYSQL_DATABASE: casebook
+      MYSQL_USER: casebook_app
+      MYSQL_PASSWORD: admin1234
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --default-authentication-plugin=mysql_native_password
     volumes:
-      # -v 옵션 (다렉토리 마운트 설정)
-      - ./database/db:/var/lib/mysql
-      - ./database/script/:/docker-entrypoint-initdb.d/:ro
+      - ./database/db:/var/lib/mysql  # 데이터베이스 파일을 저장할 디렉토리 (상대 경로)
+      - ./database/init-db:/docker-entrypoint-initdb.d  # 초기화 스크립트가 들어있는 디렉토리 (상대 경로)
+
   redis:
     image: redis:alpine
     command: redis-server --requirepass admin1234 --port 6579

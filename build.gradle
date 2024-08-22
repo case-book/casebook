@@ -1,13 +1,16 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.3'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
     id 'war'
 }
 
 group = 'com.mindplates'
 version = 'v2.0.0'
-sourceCompatibility = '1.8'
+
+java {
+    sourceCompatibility = '17'
+}
 
 configurations {
     compileOnly {
@@ -34,26 +37,33 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.session:spring-session-data-redis'
-    implementation 'org.apache.httpcomponents:httpclient'
-    implementation 'org.modelmapper:modelmapper:3.1.0'
-    implementation group: 'org.springframework.security', name: 'spring-security-messaging', version: '5.7.4'
-    implementation group: 'org.springframework', name: 'spring-messaging', version: '5.3.23'
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'org.modelmapper:modelmapper:3.1.1'
+    // implementation group: 'org.springframework.security', name: 'spring-security-messaging', version: '5.7.4'
+    implementation 'org.springframework.security:spring-security-messaging'
+    // implementation group: 'org.springframework', name: 'spring-messaging', version: '5.3.23'
+    implementation 'org.springframework:spring-messaging'
+    // implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.apache.commons:commons-lang3'
-    implementation 'org.apache.httpcomponents:httpclient'
+    // implementation 'org.apache.httpcomponents:httpclient'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.3'
-    implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-55', version: '3.7.0'
+    // implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-55', version: '3.7.0'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'mysql:mysql-connector-java'
+    // runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
     implementation 'io.sentry:sentry-logback:5.6.1'
+
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+    implementation 'com.sun.activation:jakarta.activation:1.2.2'
 }
 
 jar {

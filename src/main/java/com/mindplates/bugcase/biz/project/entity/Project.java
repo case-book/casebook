@@ -10,19 +10,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,12 +61,15 @@ public class Project extends CommonEntity {
     private boolean aiEnabled;
 
     @Column(name = "testcase_group_seq", columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer testcaseGroupSeq = 0;
 
     @Column(name = "testcase_seq", columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer testcaseSeq = 0;
 
     @Column(name = "testrun_seq", columnDefinition = "integer default 0")
+    @Builder.Default
     private Integer testrunSeq = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -86,9 +89,11 @@ public class Project extends CommonEntity {
     private List<ProjectMessageChannel> messageChannels;
 
     @Transient
+    @Builder.Default
     private Long testrunCount = 0L;
 
     @Transient
+    @Builder.Default
     private Long testcaseCount = 0L;
 
     public Project(long id, String name, String description, boolean activated, String token, boolean aiEnabled, int testcaseGroupSeq, int testcaseSeq, int testrunSeq, long testrunCount,
