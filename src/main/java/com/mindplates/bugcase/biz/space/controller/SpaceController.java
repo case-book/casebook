@@ -187,7 +187,7 @@ public class SpaceController {
     @GetMapping("/{spaceCode}/llms")
     public List<LlmResponse> selectSpaceLlms(@PathVariable String spaceCode) {
         SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
-        return spaceInfo.getLlms().stream().map(llmDTO -> new LlmResponse(llmDTO, true)).collect(Collectors.toList());
+        return spaceInfo.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
     }
 
     private void checkValidHoliday(List<HolidayRequest> holidays) {

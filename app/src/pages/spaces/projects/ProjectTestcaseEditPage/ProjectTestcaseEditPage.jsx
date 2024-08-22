@@ -503,9 +503,13 @@ function ProjectTestcaseEditPage() {
     });
     return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId, d => {
       try {
-        const items = JSON.parse(d);
+        const items = d.list.map(item => {
+          return {
+            ...item,
+            id: Number.isNaN(item.id) ? item.id : Number(item.id),
+          };
+        });
 
-        // items가 array인지 확인
         if (!Array.isArray(items)) {
           setParaphraseInfo({
             testcaseId,
@@ -572,6 +576,7 @@ function ProjectTestcaseEditPage() {
     setParaphraseInfo(nextParaphraseInfo);
   };
 
+  console.log(paraphraseInfo);
   return (
     <Page className="project-testcase-info-page-wrapper">
       <PageTitle

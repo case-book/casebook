@@ -247,7 +247,7 @@ function SpaceContent({ space, onRefresh }) {
             </ul>
           )}
         </Block>
-        <Title>{t('LLM API 설정')}</Title>
+        <Title>{t('OPENAI API 설정')}</Title>
         <Block>
           {!(space.llms?.length > 0) && (
             <EmptyContent className="empty-content" border>
@@ -272,7 +272,7 @@ function SpaceContent({ space, onRefresh }) {
             </ul>
           )}
         </Block>
-        <Title>{t('LLM 프롬프트 설정')}</Title>
+        <Title>{t('OPENAI 프롬프트 설정')}</Title>
         <Block>
           {!(space.llmPrompts?.length > 0) && <EmptyContent border>{t('등록된 프롬프트가 없습니다.')}</EmptyContent>}
           {space.llmPrompts?.length > 0 && (

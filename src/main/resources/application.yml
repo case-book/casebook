@@ -65,8 +65,8 @@ proxy:
   port:
 openai:
   default:
-    LLM_SYSTEM_ROLE: You are an expert test engineer.
+    LLM_SYSTEM_ROLE: 당신은 전문 테스트 엔지니어입니다.
     LLM_PREFIX: JSON 컨텐츠의 text 필드의 데이터들이 사용자가 쉽게 이해 및 수행할 수 있는 테스트케이스 문장으로 변경한다.
-    LLM_PROMPT: 문장의 맞춤법이 틀린 경우 올바르게 수정한다.\n변경하는 모든 문장이 하나의 관점에서 일관된 형태의 문장이 되도록 문장에 포함된 단어, 문장의 어조, 어미 일관되게 재구성한다.\n제공되는 문장이 HTML인 경우, HTML 문법이 최대한 유지되도록 변경한다.\n
+    LLM_PROMPT: 문장의 맞춤법이 틀린 경우 올바르게 수정합니다. 변경하는 문장의 어미가 서술형으로 종료되도록 수정합니다. 문장의 어조, 어미가 일관되게 재구성합니다. 제공되는 문장이 HTML인 경우, HTML 문법이 최대한 유지되도록 합니다.
     LLM_POSTFIX: 응답 메세지에는 변환된 JSON 형식의 데이터만 포함되어야 한다.
 

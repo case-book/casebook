@@ -6,6 +6,7 @@ import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
 import com.mindplates.bugcase.biz.ai.service.LlmService;
 import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
+import com.mindplates.bugcase.biz.ai.service.OpenAISimpleClientService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
@@ -64,7 +65,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
@@ -85,6 +85,7 @@ public class TestcaseService {
     private final TestcaseProjectReleaseRepository testcaseProjectReleaseRepository;
     private final ProjectReleaseRepository projectReleaseRepository;
     private final OpenAIClientService openAIClientService;
+    private final OpenAISimpleClientService openAISimpleClientService;
     private final LlmService llmService;
     private final SpaceLlmPromptService spaceLlmPromptService;
     private final ProjectService projectService;
@@ -583,7 +584,7 @@ public class TestcaseService {
 
 
     @Transactional
-    public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
+    public JsonNode createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
 
         boolean aiEnabled = projectRepository.findAiEnabledById(projectId);
 
@@ -596,8 +597,9 @@ public class TestcaseService {
         OpenAiDTO openAi = llmService.selectOpenAiInfo(modelId, spaceCode);
         OpenAiModelDTO openAiModel = openAi.getModels().stream().filter(model -> model.getId().equals(modelId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         TestcaseDTO testcase = testcaseCachedService.selectTestcaseInfo(projectId, testcaseId);
-        return openAIClientService.rephraseToTestCase(openAi, openAiModel, activePrompt, testcase, SessionUtil.getUserId());
+        return openAISimpleClientService.rephraseToTestCase(openAi, openAiModel, activePrompt, testcase, SessionUtil.getUserId());
     }
+
 
 
     @Transactional

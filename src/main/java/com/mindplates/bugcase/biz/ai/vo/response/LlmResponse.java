@@ -32,10 +32,4 @@ public class LlmResponse {
             this.space = SpaceDTO.builder().id(llm.getSpace().getId()).build();
         }
     }
-
-    public LlmResponse(LlmDTO llm, boolean masking) {
-        this(llm);
-        this.openAi = new OpenAiResponse(llm.getOpenAi(), masking);
-
-    }
 }
