@@ -173,7 +173,7 @@ public class SpaceService {
         spaceInfo.updateLlms(updateSpaceInfo.getLlms());
         // 모델 업데이트
         spaceInfo.getLlms().forEach((llm -> {
-            if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode())) {
+            if (LlmTypeCode.OPENAI.equals(llm.getLlmTypeCode()) && llm.isActivated()) {
                 syncLlmModels(llm);
             }
         }));

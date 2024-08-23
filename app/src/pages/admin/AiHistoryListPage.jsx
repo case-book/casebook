@@ -109,7 +109,7 @@ function AiHistoryListPage() {
         {t('LLM AI 이력 조회')}
       </PageTitle>
       <PageContent>
-        <Title>{t('LLM 프롬프트 설정')}</Title>
+        <Title>{t('OPENAPI 프롬프트 설정')}</Title>
         {!(info.llmPrompts?.length > 0) && (
           <EmptyContent className="empty-content">
             <div>{t('등록된 프롬프트가 없습니다.')}</div>

@@ -6,6 +6,8 @@ import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
 import com.mindplates.bugcase.biz.ai.service.LlmService;
 import com.mindplates.bugcase.biz.ai.service.OpenAIClientService;
+import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
+import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.project.dto.ProjectDTO;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectFile;
@@ -64,7 +66,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
@@ -88,6 +89,7 @@ public class TestcaseService {
     private final LlmService llmService;
     private final SpaceLlmPromptService spaceLlmPromptService;
     private final ProjectService projectService;
+    private final ConfigService configService;
     private TestcaseCachedService testcaseCachedService;
 
 
@@ -583,24 +585,6 @@ public class TestcaseService {
 
 
     @Transactional
-    public Mono<JsonNode> createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
-
-        boolean aiEnabled = projectRepository.findAiEnabledById(projectId);
-
-        if (!aiEnabled) {
-            throw new ServiceException(HttpStatus.FORBIDDEN, "error.project.ai.not.activated");
-        }
-
-        SpaceLlmPromptDTO activePrompt = spaceLlmPromptService.selectActivatedLlmPromptInfo(spaceCode);
-
-        OpenAiDTO openAi = llmService.selectOpenAiInfo(modelId, spaceCode);
-        OpenAiModelDTO openAiModel = openAi.getModels().stream().filter(model -> model.getId().equals(modelId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
-        TestcaseDTO testcase = testcaseCachedService.selectTestcaseInfo(projectId, testcaseId);
-        return openAIClientService.rephraseToTestCase(openAi, openAiModel, activePrompt, testcase, SessionUtil.getUserId());
-    }
-
-
-    @Transactional
     @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
     public void deleteByProjectId(String spaceCode, Long projectId) {
         testcaseItemRepository.deleteByProjectId(projectId);
@@ -614,5 +598,23 @@ public class TestcaseService {
         testcaseProjectReleaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
         testcaseItemRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
         testcaseRepository.deleteByTestcaseTemplateId(testcaseTemplateId);
+    }
+
+    @Transactional
+    public JsonNode createParaphraseTestcase(String spaceCode, long projectId, long testcaseId, long modelId) throws JsonProcessingException {
+
+        SpaceLlmPromptDTO activePrompt = spaceLlmPromptService.selectActivatedLlmPromptInfo(spaceCode);
+
+        boolean aiEnabled = projectRepository.findAiEnabledById(projectId);
+
+        if (!aiEnabled) {
+            throw new ServiceException(HttpStatus.FORBIDDEN, "error.project.ai.not.activated");
+        }
+
+        OpenAiDTO openAi = llmService.selectOpenAiInfo(modelId, spaceCode);
+        OpenAiModelDTO openAiModel = openAi.getModels().stream().filter(model -> model.getId().equals(modelId)).findAny().orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
+        TestcaseDTO testcase = testcaseCachedService.selectTestcaseInfo(projectId, testcaseId);
+        List<ConfigDTO> llmConfigs = configService.selectLlmConfigList();
+        return openAIClientService.rephraseToTestCase(openAi.getApiKey(), openAiModel, llmConfigs, activePrompt, testcase, SessionUtil.getUserId());
     }
 }

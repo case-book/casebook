@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class SpaceDTO extends CommonDTO implements IDTO<Space> {
 
     private Long id;
@@ -181,8 +183,6 @@ public class SpaceDTO extends CommonDTO implements IDTO<Space> {
                         targetLlm.setLlmTypeCode(updateLlm.getLlmTypeCode());
                         targetLlm.setActivated(updateLlm.isActivated());
                         targetLlm.getOpenAi().setName(updateLlm.getOpenAi().getName());
-                        targetLlm.getOpenAi().setUrl(updateLlm.getOpenAi().getUrl());
-                        targetLlm.getOpenAi().setApiKey(updateLlm.getOpenAi().getApiKey());
                     }
                 }
 

@@ -10,6 +10,7 @@ import com.mindplates.bugcase.common.vo.IDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class AiRequestHistoryDTO extends CommonDTO implements IDTO<AiRequestHistory> {
 
     Long id;

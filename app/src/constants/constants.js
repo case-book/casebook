@@ -615,7 +615,6 @@ const LLM_CONFIGS = {
   LLM_PROMPT: '프롬프트',
   LLM_SYSTEM_ROLE: '시스템 롤',
   LLM_PREFIX: 'PRE 프롬프트',
-  LLM_POSTFIX: 'POST 프롬프트',
 };
 
 export {

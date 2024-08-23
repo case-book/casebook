@@ -2,7 +2,7 @@ package com.mindplates.bugcase.biz.user.vo.request;
 
 
 import com.mindplates.bugcase.biz.user.dto.UserTokenDTO;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data

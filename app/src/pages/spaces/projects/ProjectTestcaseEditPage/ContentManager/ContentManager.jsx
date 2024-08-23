@@ -28,7 +28,9 @@ function ContentManager({
   tags,
   variables,
   onParaphrase,
-  llms,
+  llm,
+  selectedModelId,
+  setSelectedModelId,
   paraphraseInfo,
   onAcceptParaphraseContent,
   onRemoveParaphraseContent,
@@ -87,7 +89,9 @@ function ContentManager({
                 users={users}
                 createTestcaseImage={createTestcaseImage}
                 tags={tags}
-                llms={llms}
+                llm={llm}
+                selectedModelId={selectedModelId}
+                setSelectedModelId={setSelectedModelId}
                 onParaphrase={onParaphrase}
                 paraphraseInfo={paraphraseInfo}
                 onAcceptParaphraseContent={onAcceptParaphraseContent}
@@ -115,7 +119,9 @@ function ContentManager({
             createTestcaseImage={createTestcaseImage}
             tags={tags}
             variables={variables}
-            llms={llms}
+            llm={llm}
+            selectedModelId={selectedModelId}
+            setSelectedModelId={setSelectedModelId}
             onParaphrase={onParaphrase}
             paraphraseInfo={paraphraseInfo}
             onAcceptParaphraseContent={onAcceptParaphraseContent}
@@ -155,7 +161,9 @@ ContentManager.defaultProps = {
   popupContent: null,
   tags: [],
   variables: [],
-  llms: [],
+  llm: null,
+  selectedModelId: null,
+  setSelectedModelId: null,
   paraphraseInfo: {},
   aiEnabled: false,
 };
@@ -226,7 +234,9 @@ ContentManager.propTypes = {
     }),
   ),
   onParaphrase: PropTypes.func.isRequired,
-  llms: LlmPropTypes,
+  llm: LlmPropTypes,
+  selectedModelId: PropTypes.number,
+  setSelectedModelId: PropTypes.func,
   paraphraseInfo: ParaphraseInfoPropTypes,
   onAcceptParaphraseContent: PropTypes.func.isRequired,
   onRemoveParaphraseContent: PropTypes.func.isRequired,

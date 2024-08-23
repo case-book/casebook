@@ -6,13 +6,15 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
-import './TestcaseManager.scss';
 import useStores from '@/hooks/useStores';
 import dialogUtil from '@/utils/dialogUtil';
 import { DEFAULT_TESTRUN_RELEASE_ITEM, DEFAULT_TESTRUN_TESTER_ITEM, ITEM_TYPE, MESSAGE_CATEGORY } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import dateUtil from '@/utils/dateUtil';
 import TestcaseReleaseItem from '@/components/TestcaseItem/TestcaseReleaseItem';
+import useClickOutside from '@/hooks/useClickOutside';
+import classNames from 'classnames';
+import './TestcaseManager.scss';
 
 function TestcaseManager({
   content,
@@ -28,7 +30,9 @@ function TestcaseManager({
   tags,
   variables,
   onParaphrase,
-  llms,
+  llm,
+  selectedModelId,
+  setSelectedModelId,
   paraphraseInfo,
   onAcceptParaphraseContent,
   onRemoveParaphraseContent,
@@ -46,6 +50,10 @@ function TestcaseManager({
     inx: null,
     type: '',
   });
+
+  const [modelSelectorOpened, setModelSelectorOpened] = useState(false);
+  const element = useRef();
+  useClickOutside(element, () => setModelSelectorOpened(false));
 
   const caseContentElement = useRef(null);
 
@@ -185,21 +193,51 @@ function TestcaseManager({
                   <>
                     <Button
                       size="md"
-                      color="yellow"
+                      color="primary"
                       className="ai-button"
-                      disabled={!llms || llms.length === 0 || paraphraseInfo.isLoading}
+                      disabled={!llm || paraphraseInfo.isLoading}
                       onClick={() => {
-                        if (llms.length > 0) {
-                          const { models } = llms[0].openAi;
-                          if (models.length > 0) {
-                            onParaphrase(content.id, models[models.length - 1].id);
-                          }
+                        onParaphrase(content.id);
+                        setModelSelectorOpened(false);
+                      }}
+                      tip={t('AI로 테스트케이스 내용을 재구성합니다.')}
+                    >
+                      <i className="fa-solid fa-wand-magic-sparkles" />
+                      {t('재구성')}
+                    </Button>
+                    <Button
+                      className="model-selector"
+                      size="md"
+                      color="primary"
+                      onClick={() => {
+                        if (!modelSelectorOpened) {
+                          setModelSelectorOpened(true);
                         }
                       }}
                     >
-                      <i className="fa-solid fa-wand-magic-sparkles" />
-                      {t('AI 재구성')}
+                      <i className="fa-solid fa-angle-down" />
+                      {modelSelectorOpened && (
+                        <ul className="model-list" ref={element}>
+                          {llm.openAi.models.map(model => {
+                            return (
+                              <li
+                                key={model.id}
+                                className={classNames({ selected: selectedModelId === model.id })}
+                                onClick={() => {
+                                  if (setSelectedModelId) {
+                                    setSelectedModelId(model.id);
+                                  }
+                                  setModelSelectorOpened(false);
+                                }}
+                              >
+                                <div>{model.name}</div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
                     </Button>
+
                     <Liner className="liner" display="inline-block" width="1px" height="10px" margin="0 0.5rem" />
                   </>
                 )}
@@ -358,11 +396,13 @@ TestcaseManager.defaultProps = {
   users: [],
   tags: [],
   variables: [],
-  llms: [],
+  llm: null,
   paraphraseInfo: {},
   aiEnabled: false,
   setIsEdit: null,
   headerControl: null,
+  selectedModelId: null,
+  setSelectedModelId: null,
 };
 
 TestcaseManager.propTypes = {
@@ -415,12 +455,14 @@ TestcaseManager.propTypes = {
     }),
   ),
   onParaphrase: PropTypes.func.isRequired,
-  llms: LlmPropTypes,
+  llm: LlmPropTypes,
   paraphraseInfo: ParaphraseInfoPropTypes,
   onAcceptParaphraseContent: PropTypes.func.isRequired,
   onRemoveParaphraseContent: PropTypes.func.isRequired,
   aiEnabled: PropTypes.bool,
   headerControl: PropTypes.node,
+  selectedModelId: PropTypes.number,
+  setSelectedModelId: PropTypes.func,
 };
 
 export default TestcaseManager;

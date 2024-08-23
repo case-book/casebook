@@ -118,7 +118,7 @@ function SystemInfoPage() {
         {t('시스템 설정')}
       </PageTitle>
       <PageContent>
-        <Title>{t('LLM 프롬프트 설정')}</Title>
+        <Title>{t('OPENAPI 프롬프트 설정')}</Title>
         <Block>
           {!(llmConfigs?.length > 0) && (
             <EmptyContent className="empty-content">

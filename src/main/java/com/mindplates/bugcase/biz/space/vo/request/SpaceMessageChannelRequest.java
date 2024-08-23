@@ -15,7 +15,7 @@ public class SpaceMessageChannelRequest implements IRequestVO<SpaceMessageChanne
     private Long id;
     private String name;
     private String url;
-    private HttpMethod httpMethod;
+    private String httpMethod;
     private MessageChannelTypeCode messageChannelType;
     private PayloadTypeCode payloadType;
     private String json;

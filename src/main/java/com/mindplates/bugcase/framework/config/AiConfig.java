@@ -13,6 +13,5 @@ public class AiConfig {
     private String LLM_SYSTEM_ROLE;
     private String LLM_PROMPT;
     private String LLM_PREFIX;
-    private String LLM_POSTFIX;
 
 }

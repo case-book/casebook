@@ -4,16 +4,16 @@ package com.mindplates.bugcase.biz.ai.entity;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public class OpenAi extends CommonEntity {
     @Column(name = "url", length = ColumnsDef.NAME)
     private String url; // https://api.openai.com/v1
 
-    @Column(name = "api_key", length = ColumnsDef.NAME)
+    @Column(name = "api_key", length = ColumnsDef.TOKEN)
     private String apiKey; // sk-kdkdkdk
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "openAi", cascade = CascadeType.ALL, orphanRemoval = true)

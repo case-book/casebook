@@ -62,19 +62,17 @@ public class ConfigService {
     }
 
     @Transactional
-    public void createLlmPromptFix(String prefix, String postfix) {
+    public void createLlmPromptFix(String prefix) {
         Config prefixConfig = configRepository.findById(Constants.LLM_PREFIX).orElse(null);
-        Config postfixConfig = configRepository.findById(Constants.LLM_POSTFIX).orElse(null);
+
         if (prefixConfig == null) {
             prefixConfig = Config.builder().code(Constants.LLM_PREFIX).value(prefix).build();
-            postfixConfig = Config.builder().code(Constants.LLM_POSTFIX).value(prefix).build();
+
         } else {
             prefixConfig.setValue(prefix);
-            postfixConfig.setValue(postfix);
         }
 
         configRepository.save(prefixConfig);
-        configRepository.save(postfixConfig);
 
     }
 
@@ -82,7 +80,6 @@ public class ConfigService {
     public List<ConfigDTO> selectLlmConfigList() {
         List<String> codes = new ArrayList();
         codes.add(Constants.LLM_PREFIX);
-        codes.add(Constants.LLM_POSTFIX);
         codes.add(Constants.LLM_SYSTEM_ROLE);
         codes.add(Constants.LLM_PROMPT);
         return selectConfigList(codes);

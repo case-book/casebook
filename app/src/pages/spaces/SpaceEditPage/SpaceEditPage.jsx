@@ -563,7 +563,7 @@ function SpaceEditPage({ type }) {
                 </Button>
               }
             >
-              {t('LLM API 설정')}
+              {t('OPENAI API 설정')}
             </Title>
             <Block>
               {!(space.llms?.length > 0) && (
@@ -646,7 +646,7 @@ function SpaceEditPage({ type }) {
                 </Button>
               }
             >
-              {t('LLM 프롬프트 설정')}
+              {t('OPENAI 프롬프트 설정')}
             </Title>
             {!(space.llmPrompts?.length > 0) && (
               <EmptyContent className="empty-content">

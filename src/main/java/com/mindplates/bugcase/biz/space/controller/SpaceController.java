@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -187,7 +187,7 @@ public class SpaceController {
     @GetMapping("/{spaceCode}/llms")
     public List<LlmResponse> selectSpaceLlms(@PathVariable String spaceCode) {
         SpaceDTO spaceInfo = spaceService.selectSpaceInfo(spaceCode);
-        return spaceInfo.getLlms().stream().map(llmDTO -> new LlmResponse(llmDTO, true)).collect(Collectors.toList());
+        return spaceInfo.getLlms().stream().map(LlmResponse::new).collect(Collectors.toList());
     }
 
     private void checkValidHoliday(List<HolidayRequest> holidays) {

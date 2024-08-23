@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.ai.vo.response;
 
 import com.mindplates.bugcase.biz.ai.dto.LlmDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
+import com.mindplates.bugcase.common.util.MaskingUtil;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +29,7 @@ public class OpenAiResponse {
         this.id = openAi.getId();
         this.name = openAi.getName();
         this.url = openAi.getUrl();
-        this.apiKey = openAi.getApiKey();
+        this.apiKey = MaskingUtil.masking(openAi.getApiKey());
         if (openAi.getLlm() != null) {
             this.llm = LlmDTO.builder().id(openAi.getLlm().getId()).build();
         }
@@ -38,8 +39,5 @@ public class OpenAiResponse {
         }
     }
 
-    public OpenAiResponse(OpenAiDTO openAi, boolean masking) {
-        this(openAi);
-        this.apiKey = "********";
-    }
+
 }

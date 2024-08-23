@@ -52,7 +52,7 @@ public interface TestrunTestcaseGroupTestcaseRepository extends JpaRepository<Te
     Optional<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
         Long projectId, Long testrunId, String seqId);
 
-    @Query("SELECT new TestrunTestcaseGroupTestcase(ttgt.id, ttgt.tester.id, ttgt.testResult) FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testResult = :testResultCode AND ttgt.testrunTestcaseGroup IN (SELECT ttg.id FROM TestrunTestcaseGroup ttg WHERE ttg.testrun.id = :testrunId)")
+    @Query("SELECT new TestrunTestcaseGroupTestcase(ttgt.id, ttgt.tester.id, ttgt.testResult) FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testResult = :testResultCode AND ttgt.testrunTestcaseGroup.id IN (SELECT ttg.id FROM TestrunTestcaseGroup ttg WHERE ttg.testrun.id = :testrunId)")
     List<TestrunTestcaseGroupTestcase> findAllByTestrunTestcaseGroupTestrunIdAndTestResult(Long testrunId, TestResultCode testResultCode);
 
     @Query("SELECT new com.mindplates.bugcase.biz.testrun.dto.TestrunTestcaseGroupTestcaseHistoryDTO(ttgt.id, ttgt.testrunTestcaseGroup.testrun.id, ttgt.testrunTestcaseGroup.id, ttgt.testcase.id, ttgt.testResult) FROM TestrunTestcaseGroupTestcase ttgt WHERE ttgt.testcase.id = :testcaseId AND ttgt.testrunTestcaseGroup.testrun.id != :currentTestrunId ORDER BY ttgt.creationDate DESC")

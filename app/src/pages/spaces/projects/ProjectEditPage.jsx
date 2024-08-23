@@ -216,7 +216,6 @@ function ProjectEditPage({ type }) {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    getLlms();
     if (projectId && type === 'edit') {
       ProjectService.selectProjectInfo(spaceCode, projectId, info => {
         ReleaseService.selectReleaseList(spaceCode, projectId, list => {
@@ -232,6 +231,7 @@ function ProjectEditPage({ type }) {
   }, [type, projectId]);
 
   useEffect(() => {
+    getLlms();
     SpaceService.selectSpaceName(spaceCode, name => {
       setSpaceName(name);
     });
@@ -413,7 +413,7 @@ function ProjectEditPage({ type }) {
   };
 
   const hasLlm = useMemo(() => {
-    return llms && llms?.length > 0;
+    return llms && llms.filter(d => d.activated)?.length > 0;
   });
 
   return (
@@ -535,11 +535,11 @@ function ProjectEditPage({ type }) {
                 />
                 {!hasLlm && (
                   <div className="msg">
-                    <i className="fa-solid fa-circle-info" />
+                    {t('OPENAI API 미설정')} (
                     <Link to={`/spaces/${spaceCode}/info`}>
                       <span>{t('스페이스')}</span>
                     </Link>
-                    에 설정된 LLM API 정보가 없습니다.
+                    )
                   </div>
                 )}
               </BlockRow>

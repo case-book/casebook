@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Data
 @Setter
+@EqualsAndHashCode(callSuper = false)
 public class TestcaseGroupDTO extends CommonDTO implements IDTO<TestcaseGroup> {
 
     private Long id;
