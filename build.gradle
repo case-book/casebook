@@ -96,7 +96,7 @@ task prepareRelease {
             into "$buildDir/release/"
             filter { line -> line.replaceAll('__fileName__', fileName) }
         }
-+        copy {
+        copy {
             from "$projectDir/files/stop.sh"
             into "$buildDir/release/"
             filter { line -> line.replaceAll('__fileName__', fileName) }
