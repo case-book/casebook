@@ -22,7 +22,8 @@ function ProjectTestcaseEditPage() {
   const navigate = useNavigate();
   const { projectId, spaceCode } = useParams();
   const [project, setProject] = useState(null);
-  const [llms, setLlms] = useState([]);
+  const [llm, setLlm] = useState(null);
+  const [selectedModelId, setSelectedModelId] = useState(null);
   const [tags, setTags] = useState([]);
   const [projectUsers, setProjectUsers] = useState([]);
   const [allTestcaseGroups, setAllTestcaseGroups] = useState([]);
@@ -63,7 +64,26 @@ function ProjectTestcaseEditPage() {
 
   const getLlms = () => {
     SpaceService.selectSpaceLlmList(spaceCode, list => {
-      setLlms(list);
+      const activatedLlm = list.find(d => d.activated);
+      if (activatedLlm) {
+        const models = activatedLlm.openAi.models
+          .filter(d => d.name.indexOf('gpt-') === 0 && d.name.localeCompare('gpt-4') > 0)
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .reverse();
+        setLlm({
+          ...activatedLlm,
+          openAi: {
+            ...activatedLlm.openAi,
+            models,
+          },
+        });
+
+        if (models.length > 0) {
+          setSelectedModelId(models[0].id);
+        }
+      } else {
+        setLlm(null);
+      }
     });
   };
 
@@ -496,40 +516,57 @@ function ProjectTestcaseEditPage() {
     return TestcaseService.createImage(spaceCode, projectId, testcaseId, name, size, type, file);
   };
 
-  const onParaphrase = (testcaseId, modelId) => {
+  const onParaphrase = testcaseId => {
     setParaphraseInfo({
       testcaseId,
       isLoading: true,
     });
-    return TestcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId, d => {
-      try {
-        const items = JSON.parse(d);
+    return TestcaseService.createParaphraseTestcase(
+      spaceCode,
+      projectId,
+      testcaseId,
+      selectedModelId,
+      d => {
+        try {
+          const items = d.list.map(item => {
+            return {
+              ...item,
+              id: Number.isNaN(item.id) ? item.id : Number(item.id),
+            };
+          });
 
-        // items가 array인지 확인
-        if (!Array.isArray(items)) {
+          if (!Array.isArray(items)) {
+            setParaphraseInfo({
+              testcaseId,
+              result: false,
+              isLoading: false,
+            });
+            dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
+            return;
+          }
+
+          setParaphraseInfo({
+            testcaseId,
+            result: true,
+            isLoading: false,
+            items,
+          });
+        } catch (e) {
           setParaphraseInfo({
             testcaseId,
             result: false,
             isLoading: false,
           });
-          dialogUtil.setMessage(MESSAGE_CATEGORY.WARNING, t('재구성 데이터 오류'), t('AI로부터 전달된 데이터 형식이 올바르지 않습니다.'));
-          return;
         }
-
-        setParaphraseInfo({
-          testcaseId,
-          result: true,
-          isLoading: false,
-          items,
-        });
-      } catch (e) {
+      },
+      () => {
         setParaphraseInfo({
           testcaseId,
           result: false,
           isLoading: false,
         });
-      }
-    });
+      },
+    );
   };
 
   const onAcceptParaphraseContent = (testcaseId, testcaseItemId) => {
@@ -641,12 +678,14 @@ function ProjectTestcaseEditPage() {
                 setPopupContent={setPopupContent}
                 tags={tags}
                 variables={variables}
-                llms={llms}
+                llm={llm}
+                selectedModelId={selectedModelId}
+                setSelectedModelId={setSelectedModelId}
                 onParaphrase={onParaphrase}
                 paraphraseInfo={paraphraseInfo}
                 onAcceptParaphraseContent={onAcceptParaphraseContent}
                 onRemoveParaphraseContent={onRemoveParaphraseContent}
-                aiEnabled={project.aiEnabled}
+                aiEnabled={llm && project.aiEnabled}
               />
             </Pane>
           </SplitPane>

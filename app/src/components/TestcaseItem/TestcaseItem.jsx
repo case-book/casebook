@@ -223,6 +223,7 @@ function TestcaseItem({
                         <Button
                           size="sm"
                           color="danger"
+                          outline={false}
                           rounded
                           onClick={() => {
                             onRemoveParaphraseContent(testcaseItem.id);

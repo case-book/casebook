@@ -29,16 +29,11 @@ public class InitService {
     public void init() {
 
         ConfigDTO prefix = configService.selectConfig(Constants.LLM_PREFIX);
-        ConfigDTO postfix = configService.selectConfig(Constants.LLM_POSTFIX);
         ConfigDTO systemRole = configService.selectConfig(Constants.LLM_SYSTEM_ROLE);
         ConfigDTO prompt = configService.selectConfig(Constants.LLM_PROMPT);
 
         if (prefix == null) {
             configService.createConfigInfo(Constants.LLM_PREFIX, aiConfig.getLLM_PREFIX());
-        }
-
-        if (postfix == null) {
-            configService.createConfigInfo(Constants.LLM_POSTFIX, aiConfig.getLLM_POSTFIX());
         }
 
         if (systemRole == null) {

@@ -42,7 +42,7 @@ public class OpenAi extends CommonEntity {
     @Column(name = "url", length = ColumnsDef.NAME)
     private String url; // https://api.openai.com/v1
 
-    @Column(name = "api_key", length = ColumnsDef.NAME)
+    @Column(name = "api_key", length = ColumnsDef.TOKEN)
     private String apiKey; // sk-kdkdkdk
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "openAi", cascade = CascadeType.ALL, orphanRemoval = true)

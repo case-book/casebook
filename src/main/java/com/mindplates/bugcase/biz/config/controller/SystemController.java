@@ -173,7 +173,6 @@ public class SystemController {
             .prompt(aiConfig.getLLM_PROMPT())
             .systemRole(aiConfig.getLLM_SYSTEM_ROLE())
             .prefix(aiConfig.getLLM_PREFIX())
-            .postfix(aiConfig.getLLM_POSTFIX())
             .build();
     }
 

@@ -32,9 +32,9 @@ import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
 import com.mindplates.bugcase.biz.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,7 +49,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
@@ -225,7 +224,7 @@ public class TestcaseController {
 
     @Operation(description = "테스트케이스 AI 재구성")
     @PostMapping("/{testcaseId}/paraphrase")
-    public Mono<JsonNode> createParaphraseTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "modelId") long modelId)
+    public JsonNode createParaphraseTestcase(@PathVariable String spaceCode, @PathVariable Long projectId, @PathVariable Long testcaseId, @RequestParam(value = "modelId") long modelId)
         throws JsonProcessingException {
         return testcaseService.createParaphraseTestcase(spaceCode, projectId, testcaseId, modelId);
     }

@@ -226,22 +226,20 @@ const ParaphraseInfoPropTypes = PropTypes.shape({
   ),
 });
 
-const LlmPropTypes = PropTypes.arrayOf(
-  PropTypes.shape({
-    id: PropTypes.number,
-    llmTypeCode: PropTypes.string,
-    openAi: PropTypes.shape({
-      apiKey: PropTypes.string,
-      models: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.number,
-          name: PropTypes.string,
-          code: PropTypes.string,
-        }),
-      ),
-    }),
+const LlmPropTypes = PropTypes.shape({
+  id: PropTypes.number,
+  llmTypeCode: PropTypes.string,
+  openAi: PropTypes.shape({
+    apiKey: PropTypes.string,
+    models: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        code: PropTypes.string,
+      }),
+    ),
   }),
-);
+});
 
 export {
   NullableNumber,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, BlockRow, Button, CheckBox, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio } from '@/components';
+import { Block, BlockRow, Button, CheckBox, Form, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Radio, Text } from '@/components';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import './LlmEditPopup.scss';
@@ -85,7 +85,7 @@ function LlmEditPopup({ data, setOpened, onApply }) {
       }}
     >
       <Form onSubmit={onSubmit}>
-        <ModalHeader>{isEdit ? t('LLM API 변경') : t('LLM API 등록')}</ModalHeader>
+        <ModalHeader>{isEdit ? t('OPENAI API 변경') : t('OPENAI API 등록')}</ModalHeader>
         <ModalBody className="modal-body">
           <Block className="block">
             <BlockRow>
@@ -136,42 +136,48 @@ function LlmEditPopup({ data, setOpened, onApply }) {
                   <Label minWidth={labelMinWidth} required>
                     {t('URL')}
                   </Label>
-                  <Input
-                    type="text"
-                    value={llm.openAi.url}
-                    placeholder="https://api.openai.com/v1"
-                    onChange={val =>
-                      setLlm({
-                        ...llm,
-                        openAi: {
-                          ...llm.openAi,
-                          url: val,
-                        },
-                      })
-                    }
-                    required
-                    minLength={1}
-                  />
+                  {isEdit && <Text>{llm.openAi.url}</Text>}
+                  {!isEdit && (
+                    <Input
+                      type="text"
+                      value={llm.openAi.url}
+                      placeholder="https://api.openai.com/v1"
+                      onChange={val =>
+                        setLlm({
+                          ...llm,
+                          openAi: {
+                            ...llm.openAi,
+                            url: val,
+                          },
+                        })
+                      }
+                      required
+                      minLength={1}
+                    />
+                  )}
                 </BlockRow>
                 <BlockRow>
                   <Label minWidth={labelMinWidth} required>
                     {t('API KEY')}
                   </Label>
-                  <Input
-                    type="text"
-                    value={llm.openAi.apiKey}
-                    onChange={val =>
-                      setLlm({
-                        ...llm,
-                        openAi: {
-                          ...llm.openAi,
-                          apiKey: val,
-                        },
-                      })
-                    }
-                    required
-                    minLength={1}
-                  />
+                  {isEdit && <Text>{llm.openAi.apiKey}</Text>}
+                  {!isEdit && (
+                    <Input
+                      type="text"
+                      value={llm.openAi.apiKey}
+                      onChange={val =>
+                        setLlm({
+                          ...llm,
+                          openAi: {
+                            ...llm.openAi,
+                            apiKey: val,
+                          },
+                        })
+                      }
+                      required
+                      minLength={1}
+                    />
+                  )}
                 </BlockRow>
               </>
             )}
