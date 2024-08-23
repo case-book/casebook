@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { Block, BlockRow, Button, EmptyContent, Label, PageButtons, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
+import { Block, BlockRow, Button, Card, CardContent, EmptyContent, Label, PageButtons, PageContent, PageTitle, Radio, Table, Tag, Tbody, Td, Text, Th, THead, Title, Tr } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
 import { useParams } from 'react-router';
 import SpaceService from '@/services/SpaceService';
 import { SpacePropTypes } from '@/proptypes';
@@ -225,22 +226,23 @@ function SpaceContent({ space, onRefresh }) {
               {space.messageChannels.map((messageChannel, inx) => {
                 return (
                   <li key={inx}>
-                    <div>
-                      <Tag size="sm" color="white" border>
-                        {CHANNEL_TYPE_CODE[messageChannel.messageChannelType]}
-                      </Tag>
-                    </div>
-                    <div>
-                      <Link
-                        to={`/spaces/${space.code}/message-channels/${messageChannel.id}`}
-                        onClick={e => {
-                          e.preventDefault();
-                          setSelectedMessageChannel(messageChannel);
-                        }}
-                      >
-                        {messageChannel.name}
-                      </Link>
-                    </div>
+                    <Card border point shadow={false}>
+                      <CardContent>
+                        <Tag className="message-channel-type" size="sm" color="white" border>
+                          {CHANNEL_TYPE_CODE[messageChannel.messageChannelType]}
+                        </Tag>
+                        <Link
+                          className="hoverable"
+                          to={`/spaces/${space.code}/message-channels/${messageChannel.id}`}
+                          onClick={e => {
+                            e.preventDefault();
+                            setSelectedMessageChannel(messageChannel);
+                          }}
+                        >
+                          {messageChannel.name}
+                        </Link>
+                      </CardContent>
+                    </Card>
                   </li>
                 );
               })}
@@ -258,7 +260,7 @@ function SpaceContent({ space, onRefresh }) {
             <ul className="llms">
               {space.llms.map((llm, inx) => {
                 return (
-                  <li key={inx}>
+                  <li key={inx} className={classNames({ activated: llm.activated })}>
                     <div>
                       <Tag size="sm" color="white" border>
                         {llm.llmTypeCode}

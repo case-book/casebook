@@ -110,16 +110,6 @@ function SystemInfoPage() {
                     });
                   }
 
-                  const postfix = nextLlmConfigs.find(d => d.code === 'LLM_POSTFIX');
-                  if (postfix) {
-                    postfix.value = defaultPromptInfo.postfix;
-                  } else {
-                    llmConfigs.push({
-                      code: 'LLM_POSTFIX',
-                      value: defaultPromptInfo.postfix,
-                    });
-                  }
-
                   setLlmConfigs(nextLlmConfigs);
                 }}
               >
@@ -127,7 +117,7 @@ function SystemInfoPage() {
               </Button>
             }
           >
-            {t('LLM 프롬프트 설정')}
+            {t('OPENAPI 프롬프트 설정')}
           </Title>
           {!(llmConfigs?.length > 0) && (
             <EmptyContent className="empty-content">

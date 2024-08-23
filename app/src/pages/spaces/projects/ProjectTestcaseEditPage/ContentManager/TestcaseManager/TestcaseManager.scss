@@ -61,9 +61,46 @@
 
     .title-button {
       margin-left: 8px;
+      position: relative;
       .ai-button {
+        position: relative;
+        border-radius: 0;
+        padding-right: 0.25rem;
         > i {
           margin-right: 0.5rem;
+        }
+        &:hover {
+          color: var(--yellow-color);
+        }
+      }
+
+      .model-selector {
+        border-radius: 0;
+        padding-left: 0.25rem;
+        position: relative;
+        &:hover {
+          color: var(--yellow-color);
+        }
+        .model-list {
+          position: absolute;
+          right: 0;
+          top: 100%;
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          z-index: 1;
+          max-height: 200px;
+          overflow-y: auto;
+          background-color: var(--theme-color);
+          border: 1px solid var(--border-color);
+          > li {
+            padding: 0.25rem;
+            color: var(--text-color);
+            text-align: left;
+            &.selected {
+              background-color: var(--yellow-color);
+            }
+          }
         }
       }
 

@@ -14,7 +14,5 @@ public class PromptInfoResponse {
     private String systemRole;
     private String prompt;
     private String prefix;
-    private String postfix;
-
 
 }

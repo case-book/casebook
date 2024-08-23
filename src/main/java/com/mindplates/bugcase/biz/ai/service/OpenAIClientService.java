@@ -4,13 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mindplates.bugcase.biz.ai.dto.AiRequestHistoryDTO;
-import com.mindplates.bugcase.biz.ai.dto.OpenAiDTO;
 import com.mindplates.bugcase.biz.ai.dto.OpenAiModelDTO;
 import com.mindplates.bugcase.biz.config.constant.Constants;
 import com.mindplates.bugcase.biz.config.dto.ConfigDTO;
-import com.mindplates.bugcase.biz.config.service.ConfigService;
 import com.mindplates.bugcase.biz.space.dto.SpaceLlmPromptDTO;
-import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.user.dto.UserDTO;
@@ -24,7 +21,18 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.ResponseFormat;
+import org.springframework.ai.retry.NonTransientAiException;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -37,8 +45,6 @@ import reactor.core.publisher.Mono;
 public class OpenAIClientService {
 
     private final WebClient webClient;
-
-    private final ConfigService configService;
 
     private final LlmService llmService;
 
@@ -55,8 +61,7 @@ public class OpenAIClientService {
             .bodyToMono(String.class)
             .map(response -> messageSourceAccessor.getMessage("llm.config.success"))
             .onErrorResume(e -> {
-                if (e instanceof WebClientResponseException) {
-                    WebClientResponseException webClientResponseException = (WebClientResponseException) e;
+                if (e instanceof WebClientResponseException webClientResponseException) {
                     if (webClientResponseException.getStatusCode().is4xxClientError()) {
                         return Mono.just(messageSourceAccessor.getMessage("llm.config.invalid.key"));
                     } else {
@@ -103,8 +108,8 @@ public class OpenAIClientService {
             .block();
     }
 
-    public Mono<JsonNode> rephraseToTestCase(OpenAiDTO openAi, OpenAiModelDTO model, SpaceLlmPromptDTO prompt, TestcaseDTO testcase, long userId) throws JsonProcessingException {
 
+    public ArrayList<Map<String, Object>> getTestcaseMessageContent(TestcaseDTO testcase) {
         List<TestcaseItemDTO> testcaseItems = testcase.getTestcaseItems();
         ArrayList<Map<String, Object>> messages = new ArrayList<>();
 
@@ -115,9 +120,7 @@ public class OpenAIClientService {
         messages.add(testcaseTitle);
 
         for (TestcaseItemDTO testcaseItem : testcaseItems) {
-            if (TestcaseItemType.EDITOR.equals(testcaseItem.getTestcaseTemplateItem().getType()) ||
-                TestcaseItemType.TEXT.equals(testcaseItem.getTestcaseTemplateItem().getType())
-            ) {
+            if (testcaseItem.getType() != null && testcaseItem.getType().equals("text") && testcaseItem.getText() != null) {
                 Map<String, Object> testcaseItemInfo = new HashMap<>();
                 testcaseItemInfo.put("id", testcaseItem.getId());
                 testcaseItemInfo.put("label", testcaseItem.getTestcaseTemplateItem().getLabel());
@@ -126,79 +129,89 @@ public class OpenAIClientService {
             }
         }
 
-        Map<String, Object> requestBody = createRequestBody(objectMapper.writeValueAsString(messages), model.getCode(), prompt);
-
-        AiRequestHistoryDTO aiRequestHistory = AiRequestHistoryDTO.builder()
-            .aiModel(model)
-            .requester(UserDTO.builder().id(userId).build())
-            .request(objectMapper.writeValueAsString(requestBody))
-            .build();
-
-        return webClient.post()
-            .uri(openAi.getUrl() + "/chat/completions")
-            .header("Authorization", "Bearer " + openAi.getApiKey())
-            .bodyValue(requestBody)
-            .retrieve()
-            .bodyToMono(String.class)
-            .doOnNext(response -> {
-                try {
-                    aiRequestHistory.setResponse(response);
-                    llmService.createAiRequestHistoryInfo(aiRequestHistory);
-                } catch (Exception e) {
-                    log.error("Failed to parse response", e);
-                }
-            })
-            .map(this::parseResponse);
+        return messages;
     }
 
+    public JsonNode rephraseToTestCase(String openApiKey, OpenAiModelDTO model, List<ConfigDTO> llmConfigs, SpaceLlmPromptDTO prompt, TestcaseDTO testcase, long userId)
+        throws JsonProcessingException {
 
-    private Map<String, Object> createRequestBody(String targetContent, String model, SpaceLlmPromptDTO prompt) {
+        ArrayList<Map<String, Object>> messages = getTestcaseMessageContent(testcase);
 
-        List<ConfigDTO> llmConfigs = configService.selectLlmConfigList();
-
-        Map<String, String> valueByKey = new HashMap<>();
-        for (ConfigDTO llmConfig : llmConfigs) {
-            valueByKey.put(llmConfig.getCode(), llmConfig.getValue());
-        }
-
-        String prefix = valueByKey.get(Constants.LLM_PREFIX);
-        String postfix = valueByKey.get(Constants.LLM_POSTFIX);
-
-        if (prefix == null || postfix == null) {
-            throw new ServiceException("llm.config.not.found");
-        }
-
-        Map<String, Object> systemMessage = new HashMap<>();
-        systemMessage.put("role", "system");
-        systemMessage.put("content", prompt.getSystemRole() + prefix + "\n" + prompt.getPrompt() + postfix);
-
-        Map<String, Object> message = new HashMap<>();
-        message.put("role", "user");
-        message.put("content", targetContent);
-
-        ArrayList<Map<String, Object>> messages = new ArrayList<>();
-        messages.add(systemMessage);
-        messages.add(message);
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", model);
-        requestBody.put("messages", messages);
-
-        return requestBody;
-    }
-
-    private JsonNode parseResponse(String response) {
-        try {
-            JsonNode jsonNode = objectMapper.readTree(response);
-            JsonNode contentNode = jsonNode.path("choices").get(0).path("message").path("content");
-            if (contentNode.isMissingNode()) {
-                throw new RuntimeException("Invalid response structure");
+        String responseSchema = """
+            {
+                "type": "object",
+                "properties": {
+                    "list": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": { "type": "string" },
+                                "label": { "type": "string" },
+                                "text": { "type": "string" }
+                            },
+                            "required": ["id", "label", "text"],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": ["list"],
+                "additionalProperties": false
             }
-            return contentNode;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to parse response", e);
-        }
-    }
+            """;
 
+        OpenAiApi openAiApi = new OpenAiApi(openApiKey);
+
+        var openAiChatOptions = OpenAiChatOptions.builder().withTemperature(0.5f).build();
+        var chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
+
+        ConfigDTO prefix = llmConfigs.stream().filter(llmConfig -> llmConfig.getCode().equals(Constants.LLM_PREFIX)).findFirst().orElse(null);
+        Message systemMessage = new SystemMessage(prompt.getSystemRole());
+        Message userMessage = new UserMessage((prefix != null ? prefix.getValue() : "") + prompt.getPrompt());
+        Message targetContent = new UserMessage(objectMapper.writeValueAsString(messages));
+
+        try {
+            Prompt aiPrompt = new Prompt(List.of(systemMessage, userMessage, targetContent),
+                OpenAiChatOptions.builder().withModel(model.getCode()).withResponseFormat(new ResponseFormat(ResponseFormat.Type.JSON_SCHEMA, responseSchema)).build());
+            ChatResponse response = chatModel.call(aiPrompt);
+
+            try {
+                AiRequestHistoryDTO aiRequestHistory = AiRequestHistoryDTO.builder()
+                    .aiModel(model)
+                    .requester(UserDTO.builder().id(userId).build())
+                    .request(objectMapper.writeValueAsString(List.of(systemMessage, userMessage, targetContent)))
+                    .build();
+                aiRequestHistory.setResponse(response.getResult().getOutput().getContent());
+                llmService.createAiRequestHistoryInfo(aiRequestHistory);
+            } catch (Exception e) {
+                log.error("Failed to parse response", e);
+            }
+
+            return objectMapper.readTree(response.getResult().getOutput().getContent());
+        } catch (NonTransientAiException e) {
+
+            String message = e.getMessage();
+            int startIndex = message.indexOf('{');
+            int endIndex = message.lastIndexOf('}');
+            if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+                String errorJsonString = message.substring(startIndex, endIndex + 1);
+                JsonNode errorMessageNode = objectMapper.readTree(errorJsonString);
+                if (errorMessageNode != null) {
+                    JsonNode errorNode = errorMessageNode.get("error");
+                    if (errorNode != null) {
+                        String param = errorNode.get("code").isNull() ? errorNode.get("message").asText() : errorNode.get("code").asText();
+                        throw new ServiceException(HttpStatus.BAD_REQUEST, "error.ai.request", new String[]{param});
+                    }
+                }
+            }
+
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "error.ai.request", new String[]{""});
+
+        } catch (Exception e) {
+            throw e;
+        }
+
+
+    }
 
 }

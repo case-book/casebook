@@ -23,7 +23,7 @@ import {
   Tr,
 } from '@/components';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
@@ -49,6 +49,7 @@ function ProjectInfoPage() {
   const [project, setProject] = useState(null);
   const [projectTokenList, setProjectTokenList] = useState([]);
   const [releases, setReleases] = useState([]);
+  const [llms, setLlms] = useState([]);
   const [tagUserMap, setTagUserMap] = useState({});
   const [templateViewerPopupInfo, setTemplateViewerPopupInfo] = useState({
     opened: false,
@@ -65,7 +66,14 @@ function ProjectInfoPage() {
     enabled: true,
   });
 
+  const getLlms = () => {
+    SpaceService.selectSpaceLlmList(spaceCode, list => {
+      setLlms(list);
+    });
+  };
+
   useEffect(() => {
+    getLlms();
     SpaceService.selectSpaceName(spaceCode, name => {
       setSpaceName(name);
     });
@@ -181,6 +189,10 @@ function ProjectInfoPage() {
 
   const targetRelease = useMemo(() => releases.find(release => release.isTarget), [releases]);
 
+  const hasLlm = useMemo(() => {
+    return llms && llms.filter(d => d.activated)?.length > 0;
+  });
+
   return (
     <>
       <Page className="project-info-page-wrapper">
@@ -244,7 +256,16 @@ function ProjectInfoPage() {
             </BlockRow>
             <BlockRow>
               <Label>{t('AI 활성화')}</Label>
-              <Text>{project?.aiEnabled ? 'Y' : 'N'}</Text>
+              {!hasLlm && (
+                <Text>
+                  {t('OPENAI API 미설정')} (
+                  <Link to={`/spaces/${spaceCode}/info`}>
+                    <span>{t('스페이스')}</span>
+                  </Link>
+                  )
+                </Text>
+              )}
+              {hasLlm && <Text>{project?.aiEnabled ? 'Y' : 'N'}</Text>}
             </BlockRow>
             <BlockRow>
               <Label>{t('타겟 릴리스')}</Label>
