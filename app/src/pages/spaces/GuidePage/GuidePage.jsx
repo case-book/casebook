@@ -128,51 +128,53 @@ function GuidePage() {
             </div>
           </div>
         </Block>
-        <Title icon={<i className="fa-solid fa-circle-info" />}>{t('테스트케이스')}</Title>
-        <Block>
-          <div className="img-description">
-            <div className="img">
-              <img src={testcaseDiagram} alt="SPACE" />
+        <div className="others">
+          <Title icon={<i className="fa-solid fa-circle-info" />}>{t('테스트케이스')}</Title>
+          <Block>
+            <div className="img-description">
+              <div className="img">
+                <img src={testcaseDiagram} alt="SPACE" />
+              </div>
+              <div className="description" />
             </div>
-            <div className="description" />
-          </div>
-        </Block>
-        <Title icon={<i className="fa-solid fa-circle-info" />}>{t('테스트런')}</Title>
-        <Block>
-          <div className="img-description">
-            <div className="img">
-              <img src={testrunDiagram} alt="SPACE" />
+          </Block>
+          <Title icon={<i className="fa-solid fa-circle-info" />}>{t('테스트런')}</Title>
+          <Block>
+            <div className="img-description">
+              <div className="img">
+                <img src={testrunDiagram} alt="SPACE" />
+              </div>
+              <div className="description" />
             </div>
-            <div className="description" />
-          </div>
-        </Block>
-        <Title icon={<i className="fa-solid fa-circle-info" />}>{t('릴리스')}</Title>
-        <Block>
-          <div className="img-description">
-            <div className="img">
-              <img src={releaseDiagram} alt="SPACE" />
+          </Block>
+          <Title icon={<i className="fa-solid fa-circle-info" />}>{t('릴리스')}</Title>
+          <Block>
+            <div className="img-description">
+              <div className="img">
+                <img src={releaseDiagram} alt="SPACE" />
+              </div>
+              <div className="description" />
             </div>
-            <div className="description" />
-          </div>
-        </Block>
-        <Title icon={<i className="fa-solid fa-circle-info" />}>{t('리포트')}</Title>
-        <Block>
-          <div className="img-description">
-            <div className="img">
-              <img src={reportDiagram} alt="SPACE" />
+          </Block>
+          <Title icon={<i className="fa-solid fa-circle-info" />}>{t('리포트')}</Title>
+          <Block>
+            <div className="img-description">
+              <div className="img">
+                <img src={reportDiagram} alt="SPACE" />
+              </div>
+              <div className="description" />
             </div>
-            <div className="description" />
-          </div>
-        </Block>
-        <Title icon={<i className="fa-solid fa-circle-info" />}>{t('오픈 링크')}</Title>
-        <Block>
-          <div className="img-description">
-            <div className="img">
-              <img src={openlinkDiagram} alt="SPACE" />
+          </Block>
+          <Title icon={<i className="fa-solid fa-circle-info" />}>{t('오픈 링크')}</Title>
+          <Block>
+            <div className="img-description">
+              <div className="img">
+                <img src={openlinkDiagram} alt="SPACE" />
+              </div>
+              <div className="description" />
             </div>
-            <div className="description" />
-          </div>
-        </Block>
+          </Block>
+        </div>
       </PageContent>
     </Page>
   );

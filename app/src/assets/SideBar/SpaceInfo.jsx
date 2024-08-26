@@ -67,6 +67,7 @@ function SpaceInfo({ className, spaces }) {
                         to={`/spaces/${info.code}/info`}
                         onClick={e => {
                           e.stopPropagation();
+                          localStorage.setItem('spaceCode', info.code);
                           setSpace(info);
                           setSpaceSelectorOpened(false);
                         }}
