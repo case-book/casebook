@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
-    id 'war'
 }
 
 group = 'com.mindplates'
@@ -53,7 +52,7 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
     implementation 'io.sentry:sentry-logback:5.6.1'
@@ -66,6 +65,11 @@ jar {
     enabled = true
 }
 
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
@@ -74,8 +78,8 @@ def appDir = "$projectDir/app"
 def fileName = "${rootProject.name}-${version}"
 
 task prepareRelease {
-    dependsOn "clean", "bootWar"
-    bootWar.mustRunAfter(clean)
+    dependsOn "clean", "bootJar"
+    bootJar.mustRunAfter(clean)
     doFirst {
         println "prepare release"
     }
@@ -122,7 +126,7 @@ task prepareRelease {
             filter { line -> line.replaceAll('__fileName__', fileName) }
         }
         copy {
-            from "$buildDir/libs/${fileName}.war"
+            from "$buildDir/libs/${fileName}.jar"
             into "$buildDir/release/bin/"
         }
     }

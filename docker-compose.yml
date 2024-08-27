@@ -21,7 +21,7 @@ services:
   redis:
     image: redis:alpine
     command: redis-server --requirepass admin1234 --port 6579
-    container_name: bug-case-redis-dev
+    container_name: casebook-redis-dev
     hostname: redis6579
     labels:
       - "name=redis"

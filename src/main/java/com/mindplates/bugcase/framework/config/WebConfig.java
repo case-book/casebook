@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
-    @Value("${bug-case.corsUrls}")
+    @Value("${casebook.corsUrls}")
     private String[] corsUrls;
 
     @Override

@@ -29,7 +29,7 @@ public class MessageChannelService {
 
     private final MessageSourceAccessor messageSourceAccessor;
 
-    @Value("${bug-case.web-url}")
+    @Value("${casebook.web-url}")
     private String webUrl;
 
 

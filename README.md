@@ -64,7 +64,7 @@ gradle release
 이 후 상단의 설치 방법에 따라, 케이스북을 설치 및 사용할 수 있습니다.
 
 설치 파일을 직접사용하지 않고, 빌드 과정에서 생성된 파일들을 이용하여, 일반적인 웹 애플리케이션을 배포하는 방식으로 각 사용자의 상황에 맞게 직접 설치를 진행할 수 있습니다. 이때 아래의 디렉토리에 생성된 파일들을 참고하실 수 있습니다. 
- - build/libs/casebook-api-[version].war
+ - build/libs/casebook-api-[version].jar
  - app/build
 
 ## API 요청
