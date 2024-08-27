@@ -26,8 +26,6 @@
     }
   }
 
-
-
   .img-description {
     display: flex;
     > div {
@@ -45,5 +43,9 @@
         }
       }
     }
+  }
+
+  .others {
+    display: none;
   }
 }

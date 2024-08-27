@@ -22,14 +22,17 @@ public class SessionUtil {
             return null;
         }
 
-        SecurityUser user = (SecurityUser) authentication.getPrincipal();
+        try {
+            SecurityUser user = (SecurityUser) authentication.getPrincipal();
+            Long id = null;
+            if (user != null) {
+                id = user.getId();
+            }
 
-        Long id = null;
-        if (user != null) {
-            id = user.getId();
+            return id;
+        } catch (Exception e) {
+            return null;
         }
-
-        return id;
     }
 
     public static Long getUserId(boolean throwException) {

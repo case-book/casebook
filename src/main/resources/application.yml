@@ -13,22 +13,17 @@ spring:
     password: admin1234
   jpa:
     hibernate:
-      ddl-auto: update #create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     generate-ddl: true
     show-sql: true
     database: mysql
-    # database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     database-platform: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
         # format_sql: true
         enable_lazy_load_no_trans: true
-  redis:
-    host: localhost
-    port: 6679
-    password: admin1234
   messages:
     basename: messages/message
     encoding: UTF-8
@@ -42,6 +37,11 @@ spring:
     secret: CHANGE_THIS_SECRET
     expireMinutes: 1440
     refreshExpireMinutes: 20160
+  data:
+    redis:
+      host: localhost
+      port: 6679
+      password: admin1234
 scheduler:
   enabled: true
 server:
@@ -50,7 +50,7 @@ server:
     include-exception: false
     include-stacktrace: NEVER
     path: /error
-bug-case:
+casebook:
   locale:
     default: en
   corsUrls: http://localhost:3000,https://localhost:3000

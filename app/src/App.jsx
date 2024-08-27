@@ -6,7 +6,6 @@ import SpacesRoutes from '@/pages/spaces';
 import UsersRoutes from '@/pages/users';
 import useStores from '@/hooks/useStores';
 import AdminRoutes from '@/pages/admin';
-import ProjectsRoutes from '@/pages/spaces/projects';
 import { Button, LogoIcon } from '@/components';
 import { debounce } from 'lodash';
 import './App.scss';
@@ -102,7 +101,6 @@ function App() {
                 <Route path="/links/*" element={<LinksRoutes />} />
                 <Route path="/users/*" element={<UsersRoutes />} />
                 <Route path="/spaces/*" element={<SpacesRoutes />} />
-                <Route path="/projects/*" element={<ProjectsRoutes />} />
                 <Route path="/admin/*" element={<AdminRoutes />} />
                 <Route path="/apis/*" element={<ApiRoutes />} />
                 <Route path="*" element={<Message code="404" />} />

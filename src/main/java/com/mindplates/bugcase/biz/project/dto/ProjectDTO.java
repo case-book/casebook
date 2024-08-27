@@ -137,17 +137,6 @@ public class ProjectDTO extends CommonDTO implements IDTO<Project> {
         setToken(updateProjectInfo.getToken());
         setActivated(updateProjectInfo.isActivated());
         setAiEnabled(updateProjectInfo.isAiEnabled());
-        if (updateProjectInfo.getTestcaseGroupSeq() != null) {
-            setTestcaseGroupSeq(updateProjectInfo.getTestcaseGroupSeq());
-        }
-
-        if (updateProjectInfo.getTestrunSeq() != null) {
-            setTestrunSeq(updateProjectInfo.getTestrunSeq());
-        }
-
-        if (updateProjectInfo.getTestcaseSeq() != null) {
-            setTestcaseSeq(updateProjectInfo.getTestcaseSeq());
-        }
     }
 
     public List<Long> updateTestcaseTemplates(List<TestcaseTemplateDTO> updateTestcaseTemplates) {

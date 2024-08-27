@@ -180,8 +180,19 @@ function SpaceEditPage({ type }) {
         }
 
         setSpace({
-          ...space,
+          name: '',
+          code: '',
+          description: '',
+          activated: true,
+          token: uuidv4(),
+          allowSearch: true,
+          allowAutoJoin: false,
           timeZone: defaultTimeZone,
+          country,
+          holidays: country === 'KR' ? cloneDeep(DEFAULT_HOLIDAY.KR) : cloneDeep(DEFAULT_HOLIDAY.US),
+          messageChannels: [],
+          llms: [],
+          llmPrompts: [],
         });
       } else if (spaceCode && isEdit) {
         SpaceService.selectSpaceInfo(spaceCode, info => {

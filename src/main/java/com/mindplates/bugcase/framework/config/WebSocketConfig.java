@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final StompErrorHandler stompErrorHandler;
-    @Value("${bug-case.corsUrls}")
+    @Value("${casebook.corsUrls}")
     private String[] corsUrls;
 
     @Override
