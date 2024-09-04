@@ -3,6 +3,8 @@ package com.mindplates.bugcase.biz.testrun.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
@@ -18,14 +20,6 @@ import com.mindplates.bugcase.common.code.TestrunHookTiming;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import com.mindplates.bugcase.common.exception.ServiceException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.stream.Collectors;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +34,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -254,22 +256,21 @@ public class Testrun extends CommonEntity implements Cloneable {
         // 삭제된 테스트런 테스트케이스 그룹 제거
         this.testcaseGroups.removeIf(testrunTestcaseGroup -> updateTestcaseGroups
             .stream()
-            .filter(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId() != null)
-            .noneMatch(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getId().equals(testrunTestcaseGroup.getId())));
+            .noneMatch(testrunTestcaseGroupDTO -> testrunTestcaseGroupDTO.getTestcaseGroup().getId().equals(testrunTestcaseGroup.getTestcaseGroup().getId())));
 
         // 삭제된 테스트런 테스트케이스 그룹 테스트케이스 제거
         for (TestrunTestcaseGroup testcaseGroup : this.testcaseGroups) {
             TestrunTestcaseGroupDTO updateTestrunTestcaseGroup = updateTestcaseGroups
                 .stream()
-                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
-                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId().equals(testcaseGroup.getId())).findAny().orElse(null);
+                .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcaseGroup().getId().equals(testcaseGroup.getTestcaseGroup().getId())).findAny().orElse(null);
 
             if (testcaseGroup.getTestcases() != null) {
                 testcaseGroup.getTestcases().removeIf(testcase -> {
                     if (updateTestrunTestcaseGroup != null) {
                         return updateTestrunTestcaseGroup.getTestcases()
                             .stream()
-                            .noneMatch(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId().equals(testcase.getId()));
+                            .noneMatch(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestcase().getId() != null && testrunTestcaseGroupTestcase.getTestcase().getId()
+                                .equals(testcase.getTestcase().getId()));
                     }
                     return true;
                 });
@@ -277,31 +278,32 @@ public class Testrun extends CommonEntity implements Cloneable {
         }
 
         // 존재하는 테스트런 테스트케이스 그룹에 추가된 테스트런 테이스케이스 추가
-        updateTestcaseGroups.stream()
-            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() != null)
+        updateTestcaseGroups
             .forEach(testrunTestcaseGroup -> {
                 TestrunTestcaseGroup targetTestcaseGroup = this.testcaseGroups
                     .stream()
-                    .filter(ttg -> ttg.getId().equals(testrunTestcaseGroup.getId()))
+                    .filter(ttg -> ttg.getTestcaseGroup().getId().equals(testrunTestcaseGroup.getTestcaseGroup().getId()))
                     .findAny()
                     .orElse(null);
 
                 if (targetTestcaseGroup != null && testrunTestcaseGroup.getTestcases() != null) {
-                    testrunTestcaseGroup.getTestcases()
-                        .stream()
-                        .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getId() == null)
-                        .forEach(testrunTestcaseGroupTestcase -> {
+                    testrunTestcaseGroup.getTestcases().forEach(testrunTestcaseGroupTestcase -> {
+                        if (targetTestcaseGroup.getTestcases().stream().noneMatch(testcase -> testcase.getTestcase().getId().equals(testrunTestcaseGroupTestcase.getTestcase().getId()))) {
                             TestrunTestcaseGroupTestcase addTestrunTestcaseGroupTestcase = testrunTestcaseGroupTestcase.toEntity();
                             addTestrunTestcaseGroupTestcase.setTestrunTestcaseGroup(targetTestcaseGroup);
                             addTestrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
                             targetTestcaseGroup.getTestcases().add(addTestrunTestcaseGroupTestcase);
-                        });
+                        }
+                    });
                 }
             });
 
         // 추가된 테스트런 테스트케이스 그룹 추가
-        updateTestcaseGroups.stream()
-            .filter(testrunTestcaseGroup -> testrunTestcaseGroup.getId() == null)
+        updateTestcaseGroups
+            .stream()
+            .filter(testrunTestcaseGroup -> this.testcaseGroups
+                .stream()
+                .noneMatch(testcaseGroup -> testcaseGroup.getTestcaseGroup().getId().equals(testrunTestcaseGroup.getTestcaseGroup().getId())))
             .forEach(testrunTestcaseGroup -> {
                 TestrunTestcaseGroup testcaseGroup = testrunTestcaseGroup.toEntity();
                 testcaseGroup.setTestrun(this);
@@ -391,7 +393,13 @@ public class Testrun extends CommonEntity implements Cloneable {
                     }
                     List<TestcaseItem> testcaseItems = idTestcaseItemListMap.get(testcase.getId());
                     testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
-                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, new TestcaseDTO(testcase), testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester);
+
+                    TestcaseDTO testcaseInfo = new TestcaseDTO(testcase);
+                    for (TestcaseItemDTO testcaseItem : testcaseInfo.getTestcaseItems()) {
+                        testcaseItem.setTestcaseTemplateItem(new TestcaseTemplateItemDTO(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId())));
+                    }
+
+                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcaseInfo, testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester);
                     if (testcaseItems != null) {
                         for (TestcaseItem testcaseItem : testcaseItems) {
                             if (testcaseItem.getValue() == null || Objects
