@@ -14,6 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
     "@toast-ui/react-editor": "^3.2.3",
+    "@xyflow/react": "^12.2.0",
     "axios": "^0.27.2",
     "classnames": "^2.5.1",
     "copy-to-clipboard": "^3.3.3",

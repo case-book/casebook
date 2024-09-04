@@ -59,6 +59,8 @@ import OpenLinkPage from './links/OpenLinkPage/OpenLinkPage';
 
 import GuidePage from './spaces/GuidePage/GuidePage';
 
+import SequenceEditPage from './spaces/projects/sequences/SequenceEditPage/SequenceEditPage';
+
 export {
   SpaceListPage,
   Message,
@@ -109,4 +111,5 @@ export {
   OpenLinkInfoPage,
   OpenLinkPage,
   GuidePage,
+  SequenceEditPage,
 };
