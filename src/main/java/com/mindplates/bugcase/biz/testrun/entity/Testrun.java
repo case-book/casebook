@@ -3,6 +3,8 @@ package com.mindplates.bugcase.biz.testrun.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
@@ -391,7 +393,13 @@ public class Testrun extends CommonEntity implements Cloneable {
                     }
                     List<TestcaseItem> testcaseItems = idTestcaseItemListMap.get(testcase.getId());
                     testrunTestcaseGroupTestcase.setTestResult(TestResultCode.UNTESTED);
-                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, new TestcaseDTO(testcase), testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester);
+
+                    TestcaseDTO testcaseInfo = new TestcaseDTO(testcase);
+                    for (TestcaseItemDTO testcaseItem : testcaseInfo.getTestcaseItems()) {
+                        testcaseItem.setTestcaseTemplateItem(new TestcaseTemplateItemDTO(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId())));
+                    }
+
+                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcaseInfo, testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester);
                     if (testcaseItems != null) {
                         for (TestcaseItem testcaseItem : testcaseItems) {
                             if (testcaseItem.getValue() == null || Objects
