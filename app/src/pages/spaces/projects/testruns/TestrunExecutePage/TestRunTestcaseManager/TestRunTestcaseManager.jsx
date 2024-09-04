@@ -189,7 +189,7 @@ function TestRunTestcaseManager({
           </div>
           {resultLayoutPosition === 'POPUP' && (
             <Button
-              size="xs"
+              size="sm"
               className="result-popup-open-button"
               onClick={() => {
                 setResultPopupOpened(true);
