@@ -28,7 +28,7 @@ function convertTestrun(info, variable) {
         });
       }
 
-      testcase.testcaseItems.forEach(item => {
+      testcase.testcaseItems?.forEach(item => {
         if (item.value?.indexOf('{{') > -1) {
           Object.keys(variable).forEach(key => {
             if (variable[key]) {

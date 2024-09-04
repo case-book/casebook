@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ProjectPropTypes, ProjectReleasePropTypes, TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, Loader, SeqId, TestcaseItem } from '@/components';
+import { Button, Loader, Selector, SeqId, TestcaseItem } from '@/components';
 import SplitPane, { Pane } from 'split-pane-react';
 import { observer } from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -10,7 +10,7 @@ import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import { debounce } from 'lodash';
 import useStores from '@/hooks/useStores';
-import { ITEM_TYPE, TESTRUN_RESULT_LAYOUTS } from '@/constants/constants';
+import { ITEM_TYPE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import { getOption, setOption } from '@/utils/storageUtil';
 import './TestRunTestcaseManager.scss';
@@ -176,6 +176,7 @@ function TestRunTestcaseManager({
             <Button
               size="sm"
               className="result-popup-open-button"
+              shadow={false}
               onClick={() => {
                 setTestcaseViewerInfo({
                   testcaseTemplate: project.testcaseTemplates.find(d => d.id === content.testcaseTemplateId),
@@ -189,7 +190,8 @@ function TestRunTestcaseManager({
           </div>
           {resultLayoutPosition === 'POPUP' && (
             <Button
-              size="xs"
+              size="sm"
+              shadow={false}
               className="result-popup-open-button"
               onClick={() => {
                 setResultPopupOpened(true);
@@ -198,36 +200,28 @@ function TestRunTestcaseManager({
               {t('결과 입력')}
             </Button>
           )}
-
-          <div className="result-layout-selector">
-            <div className="circle" />
-            <div className="current-layout">{TESTRUN_RESULT_LAYOUTS[resultLayoutPosition]}</div>
-            <div className="layout-label">{t('결과 입력 레이아웃')}</div>
-            <div
-              className={`selector-item popup ${resultLayoutPosition === 'POPUP' ? 'selected' : ''}`}
-              onClick={() => {
-                onChangeLayoutPosition('POPUP');
-              }}
-            >
-              <div>{t('팝업')}</div>
-            </div>
-            <div
-              className={`selector-item right ${resultLayoutPosition === 'RIGHT' ? 'selected' : ''}`}
-              onClick={() => {
-                onChangeLayoutPosition('RIGHT');
-              }}
-            >
-              <div>{t('우측')}</div>
-            </div>
-            <div
-              className={`selector-item bottom ${resultLayoutPosition === 'BOTTOM' ? 'selected' : ''}`}
-              onClick={() => {
-                onChangeLayoutPosition('BOTTOM');
-              }}
-            >
-              <div>{t('하단')}</div>
-            </div>
-          </div>
+          <Selector
+            className="selector"
+            size="sm"
+            items={[
+              {
+                key: 'RIGHT',
+                value: t('우측'),
+              },
+              {
+                key: 'BOTTOM',
+                value: t('하단'),
+              },
+              {
+                key: 'POPUP',
+                value: t('팝업'),
+              },
+            ]}
+            value={resultLayoutPosition}
+            onChange={value => {
+              onChangeLayoutPosition(value);
+            }}
+          />
         </div>
         <div className="title-liner" />
         <div className="case-content" ref={caseContentElement}>
