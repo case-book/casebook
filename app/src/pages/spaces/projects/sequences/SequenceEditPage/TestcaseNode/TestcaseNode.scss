@@ -15,6 +15,19 @@
     display: flex;
     > .inner {
       align-self: center;
+
+      .seq-id {
+        display: inline-block;
+        border-radius: 2px;
+        line-height: 100%;
+        background-color: var(--primary-color);
+        color: var(--primary-text-color);
+        padding: 4px;
+        font-family: Cairo, sans-serif;
+        position: relative;
+        margin-right: 0.5rem;
+        font-size: 12px;
+      }
     }
   }
 
@@ -39,11 +52,11 @@
     display: none;
   }
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     .react-flow__resize-control.handle,
     .react-flow__resize-control.line {
       display: block;
     }
   }
-
 }

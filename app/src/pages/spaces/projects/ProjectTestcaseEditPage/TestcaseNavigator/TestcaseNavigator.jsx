@@ -33,6 +33,7 @@ function TestcaseNavigator({
   watcherInfo,
   enableDrag,
   copyTestcase,
+  onDragStart,
 }) {
   const { t } = useTranslation();
   const scroller = useRef(null);
@@ -371,6 +372,7 @@ function TestcaseNavigator({
                     showTestResult={showTestResult}
                     watcherInfo={watcherInfo}
                     copyInfo={copyInfo}
+                    onDragStart={onDragStart}
                   />
                 );
               })}
@@ -431,6 +433,7 @@ TestcaseNavigator.defaultProps = {
   onPositionChange: null,
   onChangeTestcaseGroupName: null,
   onDelete: null,
+  onDragStart: null,
   contentChanged: false,
   user: null,
   users: [],
@@ -449,6 +452,7 @@ TestcaseNavigator.propTypes = {
   onPositionChange: PropTypes.func,
   onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func,
+  onDragStart: PropTypes.func,
   selectedItemInfo: PropTypes.shape({
     id: NullableNumber,
     type: NullableString,

@@ -23,7 +23,9 @@ function TestcaseNavigatorTestcaseItem({
   onContextMenu,
   clearDragInfo,
   onKeyDown,
+  onDragStart,
 }) {
+  console.log(onDragStart);
   return (
     <li className="testcase-content" key={testcase.id}>
       <div
@@ -69,6 +71,10 @@ function TestcaseNavigatorTestcaseItem({
         onContextMenu={e => {
           onContextMenu(e, ITEM_TYPE.TESTCASE, testcase.id, testcase.name);
         }}
+        onDragStart={e => {
+          onDragStart(e, testcase);
+        }}
+        draggable={!!onDragStart}
       >
         {watcherInfo && watcherInfo[testcase.id]?.length > 0 && watcherInfo[testcase.id]?.length < 3 && (
           <div className="watcher">
@@ -240,6 +246,7 @@ TestcaseNavigatorTestcaseItem.defaultProps = {
   copyInfo: null,
   onContextMenu: () => {},
   clearDragInfo: () => {},
+  onDragStart: null,
 };
 
 TestcaseNavigatorTestcaseItem.propTypes = {
@@ -291,6 +298,7 @@ TestcaseNavigatorTestcaseItem.propTypes = {
   }),
   onContextMenu: PropTypes.func,
   clearDragInfo: PropTypes.func,
+  onDragStart: PropTypes.func,
 };
 
 export default TestcaseNavigatorTestcaseItem;
