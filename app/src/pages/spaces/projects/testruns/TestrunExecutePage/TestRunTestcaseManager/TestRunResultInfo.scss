@@ -1,3 +1,9 @@
+.RIGHT {
+  .testrun-result-info-wrapper {
+    overflow-y: auto;
+    height: 100%;
+  }
+}
 .testrun-result-info-wrapper {
   display: flex;
   flex-direction: column;
