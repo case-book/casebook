@@ -1,6 +1,6 @@
 import { Input, SeqId } from '@/components';
 import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
 
@@ -25,7 +25,10 @@ function TestcaseNavigatorTestcaseItem({
   onKeyDown,
   onDragStart,
 }) {
-  console.log(onDragStart);
+  const draggable = useMemo(() => {
+    return !!onDragStart;
+  }, [onDragStart]);
+
   return (
     <li className="testcase-content" key={testcase.id}>
       <div
@@ -39,21 +42,25 @@ function TestcaseNavigatorTestcaseItem({
             
             `}
         onClick={e => {
-          e.stopPropagation();
-          onSelect({ id: testcase.id, type: ITEM_TYPE.TESTCASE });
+          if (!draggable) {
+            e.stopPropagation();
+            onSelect({ id: testcase.id, type: ITEM_TYPE.TESTCASE });
+          }
         }}
         onDragEnter={e => {
-          e.stopPropagation();
-          if (dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId !== testcase.id) {
-            setDragInfo({
-              destinationType: ITEM_TYPE.TESTCASE,
-              destinationId: testcase.id,
-            });
-          } else {
-            setDragInfo({
-              destinationType: null,
-              destinationId: null,
-            });
+          if (!draggable) {
+            e.stopPropagation();
+            if (dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId !== testcase.id) {
+              setDragInfo({
+                destinationType: ITEM_TYPE.TESTCASE,
+                destinationId: testcase.id,
+              });
+            } else {
+              setDragInfo({
+                destinationType: null,
+                destinationId: null,
+              });
+            }
           }
         }}
         onDragLeave={e => {
@@ -74,7 +81,7 @@ function TestcaseNavigatorTestcaseItem({
         onDragStart={e => {
           onDragStart(e, testcase);
         }}
-        draggable={!!onDragStart}
+        draggable={draggable}
       >
         {watcherInfo && watcherInfo[testcase.id]?.length > 0 && watcherInfo[testcase.id]?.length < 3 && (
           <div className="watcher">
@@ -162,7 +169,7 @@ function TestcaseNavigatorTestcaseItem({
             <div>{TESTRUN_RESULT_CODE[testcase.testResult]}</div>
           </div>
         )}
-        {enableDrag && (
+        {!draggable && enableDrag && (
           <div
             draggable
             className="grab"

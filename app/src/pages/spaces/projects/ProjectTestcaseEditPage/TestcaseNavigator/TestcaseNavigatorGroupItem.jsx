@@ -64,6 +64,10 @@ function TestcaseNavigatorGroupItem({
     return group?.testcases?.length > 0 || group?.children?.length > 0;
   }, [group]);
 
+  const draggable = useMemo(() => {
+    return !!onDragStart;
+  }, [onDragStart]);
+
   return (
     <Suspense>
       <li key={group.id} className="testcase-group-item-wrapper" onClick={e => e.stopPropagation()}>
@@ -79,29 +83,37 @@ function TestcaseNavigatorGroupItem({
           ${copyInfo.type === ITEM_TYPE.TESTCASE_GROUP && copyInfo.id === group.id ? 'copied' : ''}
           `}
             onClick={() => {
-              onSelect({ id: group.id, type: ITEM_TYPE.TESTCASE_GROUP });
+              if (!draggable) {
+                onSelect({ id: group.id, type: ITEM_TYPE.TESTCASE_GROUP });
+              }
             }}
             onContextMenu={e => {
-              onContextMenu(e, ITEM_TYPE.TESTCASE_GROUP, group.id, group.name);
+              if (!draggable) {
+                onContextMenu(e, ITEM_TYPE.TESTCASE_GROUP, group.id, group.name);
+              }
             }}
             onDragEnter={() => {
-              if (dragInfo.targetId !== group.id) {
-                setDragInfo({
-                  destinationType: ITEM_TYPE.TESTCASE_GROUP,
-                  destinationId: group.id,
-                });
-              } else {
+              if (!draggable) {
+                if (dragInfo.targetId !== group.id) {
+                  setDragInfo({
+                    destinationType: ITEM_TYPE.TESTCASE_GROUP,
+                    destinationId: group.id,
+                  });
+                } else {
+                  setDragInfo({
+                    destinationType: null,
+                    destinationId: null,
+                  });
+                }
+              }
+            }}
+            onDragLeave={() => {
+              if (!draggable) {
                 setDragInfo({
                   destinationType: null,
                   destinationId: null,
                 });
               }
-            }}
-            onDragLeave={() => {
-              setDragInfo({
-                destinationType: null,
-                destinationId: null,
-              });
             }}
             onDragOver={e => {
               e.preventDefault();
@@ -175,7 +187,7 @@ function TestcaseNavigatorGroupItem({
                 </div>
               )}
             </div>
-            {enableDrag && (
+            {!draggable && enableDrag && (
               <div
                 draggable
                 className="grab"
@@ -196,38 +208,40 @@ function TestcaseNavigatorGroupItem({
                 <i className="fa-solid fa-grip-vertical" />
               </div>
             )}
-            <div
-              className="bar"
-              onDrop={onDrop}
-              onDragEnter={() => {
-                if (dragInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && dragInfo.targetId === group.id) {
-                  setDragInfo({
-                    destinationType: null,
-                    destinationId: null,
-                  });
-                } else {
-                  setDragInfo({
-                    destinationType: ITEM_TYPE.TESTCASE_GROUP,
-                    destinationId: group.id,
-                    toChildren: dragInfo.targetType === ITEM_TYPE.TESTCASE_GROUP,
-                  });
-                }
-              }}
-              onDragLeave={e => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (dragInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && dragInfo.targetId === group.id) {
-                  setDragInfo({
-                    destinationType: null,
-                    destinationId: null,
-                  });
-                } else {
-                  setDragInfo({
-                    toChildren: false,
-                  });
-                }
-              }}
-            />
+            {!draggable && (
+              <div
+                className="bar"
+                onDrop={onDrop}
+                onDragEnter={() => {
+                  if (dragInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && dragInfo.targetId === group.id) {
+                    setDragInfo({
+                      destinationType: null,
+                      destinationId: null,
+                    });
+                  } else {
+                    setDragInfo({
+                      destinationType: ITEM_TYPE.TESTCASE_GROUP,
+                      destinationId: group.id,
+                      toChildren: dragInfo.targetType === ITEM_TYPE.TESTCASE_GROUP,
+                    });
+                  }
+                }}
+                onDragLeave={e => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (dragInfo.targetType === ITEM_TYPE.TESTCASE_GROUP && dragInfo.targetId === group.id) {
+                    setDragInfo({
+                      destinationType: null,
+                      destinationId: null,
+                    });
+                  } else {
+                    setDragInfo({
+                      toChildren: false,
+                    });
+                  }
+                }}
+              />
+            )}
           </div>
           {treeOpen && group.testcases?.length > 0 && (
             <div
