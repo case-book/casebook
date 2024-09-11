@@ -12,12 +12,12 @@ import './over.scss';
 import { ResizableBox } from 'react-resizable';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import testcaseUtil from '@/utils/testcaseUtil';
-import ButtonEdge from './ButtonEdge/ButtonEdge';
+import SequenceEdge from '@/pages/spaces/projects/sequences/SequenceEditPage/SequenceEdge/SequenceEdge';
 import 'react-resizable/css/styles.css';
 
 const DEFAULT_BUTTON_EDGE = {
   type: 'buttonEdge',
-  data: { curveType: 'step' },
+  data: { curveType: 'bezier' }, // bezier, straight, smoothstep, step
   markerEnd: {
     type: MarkerType.Arrow,
     width: 16,
@@ -137,7 +137,7 @@ function SequenceEditPage() {
   };
 
   const edgeTypes = {
-    buttonEdge: ButtonEdge,
+    buttonEdge: SequenceEdge,
   };
 
   const onDrop = useCallback(

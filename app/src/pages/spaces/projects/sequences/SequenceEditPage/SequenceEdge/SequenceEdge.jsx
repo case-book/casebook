@@ -2,9 +2,9 @@ import React, { memo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, StepEdge, useReactFlow } from '@xyflow/react';
 import classNames from 'classnames';
-import './ButtonEdge.scss';
+import './SequenceEdge.scss';
 
-function ButtonEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, data }) {
+function SequenceEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, data }) {
   const { setEdges } = useReactFlow();
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -70,7 +70,7 @@ function ButtonEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, ta
   );
 }
 
-ButtonEdge.defaultProps = {
+SequenceEdge.defaultProps = {
   id: null,
   sourceX: null,
   sourceY: null,
@@ -85,7 +85,7 @@ ButtonEdge.defaultProps = {
   },
 };
 
-ButtonEdge.propTypes = {
+SequenceEdge.propTypes = {
   id: PropTypes.string,
   sourceX: PropTypes.string,
   sourceY: PropTypes.string,
@@ -102,4 +102,4 @@ ButtonEdge.propTypes = {
   }),
 };
 
-export default memo(ButtonEdge);
+export default memo(SequenceEdge);

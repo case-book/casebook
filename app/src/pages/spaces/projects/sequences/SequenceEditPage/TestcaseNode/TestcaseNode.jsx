@@ -4,8 +4,6 @@ import { Handle, NodeResizer, Position } from '@xyflow/react';
 import './TestcaseNode.scss';
 
 function TestcaseNode({ data }) {
-  console.log(data);
-
   const [resizable] = useState(data.resizable);
 
   return (
@@ -14,7 +12,7 @@ function TestcaseNode({ data }) {
       <div className="node-content">
         <div className="inner">
           <span className="seq-id">{data.seqId}</span>
-          {data.label || 'no node connected'}
+          {data.label}
         </div>
       </div>
       <Handle type="source" position={Position.Right} />
