@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @Builder
@@ -60,6 +59,12 @@ public class TestcaseResponse {
         this.lastUpdatedUserName = lastUpdatedUser != null ? lastUpdatedUser.getName() : "";
         this.creationDate = testcase.getCreationDate();
         this.lastUpdateDate = testcase.getLastUpdateDate();
+    }
+
+    public TestcaseResponse(TestcaseDTO testcase) {
+        this.id = testcase.getId();
+        this.seqId = testcase.getSeqId();
+        this.name = testcase.getName();
     }
 
 }

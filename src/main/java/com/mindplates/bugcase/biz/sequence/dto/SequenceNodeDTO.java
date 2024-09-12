@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 public class SequenceNodeDTO extends CommonDTO implements IDTO<SequenceNode> {
 
     private Long id;
+    private String nodeId;
     private TestcaseDTO testcase;
     private SequenceDTO sequence;
     private String type;
@@ -29,7 +30,12 @@ public class SequenceNodeDTO extends CommonDTO implements IDTO<SequenceNode> {
 
     public SequenceNodeDTO(SequenceNode sequenceNode) {
         this.id = sequenceNode.getId();
-        this.testcase = TestcaseDTO.builder().id(sequenceNode.getTestcase().getId()).build();
+        this.nodeId = sequenceNode.getNodeId();
+        this.testcase = TestcaseDTO.builder()
+            .id(sequenceNode.getTestcase().getId())
+            .seqId(sequenceNode.getTestcase().getSeqId())
+            .name(sequenceNode.getTestcase().getName())
+            .build();
         this.sequence = SequenceDTO.builder().id(sequenceNode.getSequence().getId()).build();
         this.type = sequenceNode.getType();
         this.style = sequenceNode.getStyle();
@@ -41,6 +47,7 @@ public class SequenceNodeDTO extends CommonDTO implements IDTO<SequenceNode> {
     public SequenceNode toEntity() {
         SequenceNode sequenceNode = SequenceNode.builder()
             .id(this.id)
+            .nodeId(this.nodeId)
             .type(this.type)
             .style(this.style)
             .position(this.position)
@@ -60,11 +67,7 @@ public class SequenceNodeDTO extends CommonDTO implements IDTO<SequenceNode> {
 
     public SequenceNode toEntity(Sequence sequence) {
         SequenceNode sequenceNode = toEntity();
-
-        if (this.sequence != null) {
-            sequenceNode.setSequence(sequence);
-        }
-
+        sequenceNode.setSequence(sequence);
         return sequenceNode;
     }
 

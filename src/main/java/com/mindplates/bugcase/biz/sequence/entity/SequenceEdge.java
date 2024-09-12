@@ -18,6 +18,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -34,9 +36,18 @@ public class SequenceEdge extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "edge_id", length = ColumnsDef.CODE)
+    private String edgeId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sequence_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE_EDGE__SEQUENCE"))
     private Sequence sequence;
+
+    @Column(name = "source_node_id", length = ColumnsDef.CODE)
+    private String sourceNodeId;
+
+    @Column(name = "target_node_id", length = ColumnsDef.CODE)
+    private String targetNodeId;
 
     @Column(name = "type", length = ColumnsDef.CODE)
     private String type;
@@ -45,11 +56,13 @@ public class SequenceEdge extends CommonEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, String> style;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumn(name = "source_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE_EDGE__SEQUENCE_SOURCE_NODE"))
     private SequenceNode source;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
     @JoinColumn(name = "target_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE_EDGE__SEQUENCE_TARGET_NODE"))
     private SequenceNode target;
 

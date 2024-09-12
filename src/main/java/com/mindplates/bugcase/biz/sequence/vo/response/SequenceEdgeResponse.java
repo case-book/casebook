@@ -12,18 +12,24 @@ import lombok.Getter;
 public class SequenceEdgeResponse {
 
     private Long id;
+    private String edgeId;
     private SequenceResponse sequence;
     private String type;
+    private String sourceNodeId;
+    private String targetNodeId;
     private Map<String, String> style;
     private SequenceNodeResponse source;
     private SequenceNodeResponse target;
 
     public SequenceEdgeResponse(SequenceEdgeDTO sequenceEdge) {
         this.id = sequenceEdge.getId();
+        this.edgeId = sequenceEdge.getEdgeId();
         this.type = sequenceEdge.getType();
         this.style = sequenceEdge.getStyle();
-        this.source = SequenceNodeResponse.builder().id(sequenceEdge.getSource().getId()).build();
-        this.target = SequenceNodeResponse.builder().id(sequenceEdge.getTarget().getId()).build();
+        this.sourceNodeId = sequenceEdge.getSourceNodeId();
+        this.targetNodeId = sequenceEdge.getTargetNodeId();
+        this.source = new SequenceNodeResponse(sequenceEdge.getSource());
+        this.target = new SequenceNodeResponse(sequenceEdge.getTarget());
         this.sequence = SequenceResponse.builder().id(sequenceEdge.getSequence().getId()).build();
     }
 }

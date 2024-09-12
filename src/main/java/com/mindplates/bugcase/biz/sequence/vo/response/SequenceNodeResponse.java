@@ -16,6 +16,7 @@ import lombok.Getter;
 public class SequenceNodeResponse {
 
     private Long id;
+    private String nodeId;
     private TestcaseResponse testcase;
     private SequenceResponse sequence;
     private String type;
@@ -24,7 +25,8 @@ public class SequenceNodeResponse {
 
     public SequenceNodeResponse(SequenceNodeDTO sequenceNode) {
         this.id = sequenceNode.getId();
-        this.testcase = TestcaseResponse.builder().id(sequenceNode.getTestcase().getId()).build();
+        this.nodeId = sequenceNode.getNodeId();
+        this.testcase = new TestcaseResponse(sequenceNode.getTestcase());
         this.sequence = SequenceResponse.builder().id(sequenceNode.getSequence().getId()).build();
         this.type = sequenceNode.getType();
         this.style = sequenceNode.getStyle();

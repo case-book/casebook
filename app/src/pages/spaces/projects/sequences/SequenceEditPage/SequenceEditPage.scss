@@ -2,27 +2,49 @@
   .page-content {
     flex-grow: 1;
     display: flex;
-    > div {
-      flex-grow: 1;
+    padding-bottom: 0;
 
-      div.reactflow-wrapper {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
+    .sequence-title {
+      display: inline-flex;
+      > div {
+        align-self: center;
+        &:last-child {
+          margin-left: 0.5rem;
+        }
       }
+    }
 
-      .testcase-group-content {
-        position: absolute;
-        top : 0;
-        right : 0;
-        bottom : 0;
-        background-color: var(--theme-color);
-        border-left: 1px solid var(--border-light-color);
+    > form {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
+      .sequence-content {
+        flex-grow: 1;
+        display: flex;
+        position: relative;
+
+        div.react-flow-wrapper {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+
+          .react-flow__attribution {
+            display: none;
+          }
+        }
+
+        .testcase-group-content {
+          position: absolute;
+          top: 20px;
+          right: 10px;
+          bottom: 20px;
+          background-color: var(--theme-color);
+          border: 1px solid var(--border-light-color);
+        }
       }
     }
   }
-
-
 }

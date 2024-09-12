@@ -35,6 +35,9 @@ public class SequenceNode extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "node_id", length = ColumnsDef.CODE)
+    private String nodeId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE__TESTCASE"))
     private Testcase testcase;

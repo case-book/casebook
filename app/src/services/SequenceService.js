@@ -29,21 +29,23 @@ SequenceService.selectSequenceList = (spaceCode, projectId, successHandler, fail
     null,
     null,
     loading,
-    i18n.t('프로젝트의 릴리스 목록을 가져오고 있습니다.'),
+    i18n.t('케이스 시퀀스 목록을 가져오고 있습니다.'),
   );
 };
 
-/*
-SequenceService.createRelease = (spaceCode, projectId, release, successHandler, failHandler) => {
+SequenceService.createSequence = (spaceCode, projectId, sequence, successHandler, failHandler) => {
   return request.post(
-    `/api/${spaceCode}/projects/${projectId}/releases`,
-    release,
+    `/api/${spaceCode}/projects/${projectId}/sequences`,
+    sequence,
     res => {
       successHandler(res);
     },
     failHandler,
   );
 };
+
+/*
+
 
 SequenceService.updateRelease = (spaceCode, projectId, releaseId, release, successHandler, failHandler) => {
   return request.put(

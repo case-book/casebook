@@ -18,7 +18,6 @@ public class SequenceResponse {
     private String name;
     private String description;
     private ProjectResponse project;
-    private TestcaseResponse testcase;
     private List<SequenceNodeResponse> nodes;
     private List<SequenceEdgeResponse> edges;
 
@@ -27,7 +26,6 @@ public class SequenceResponse {
         this.name = sequence.getName();
         this.description = sequence.getDescription();
         this.project = ProjectResponse.builder().id(sequence.getProject().getId()).build();
-        this.testcase = new TestcaseResponse(sequence.getTestcase(), null, null);
         this.nodes = sequence.getNodes().stream().map(SequenceNodeResponse::new).collect(Collectors.toList());
         this.edges = sequence.getEdges().stream().map(SequenceEdgeResponse::new).collect(Collectors.toList());
 

@@ -45,9 +45,6 @@ public class Sequence extends CommonEntity {
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE__TESTCASE"))
-    private Testcase testcase;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE__PROJECT"))

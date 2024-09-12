@@ -27,7 +27,6 @@ public class SequenceDTO extends CommonDTO implements IDTO<Sequence> {
     private String name;
     private String description;
     private ProjectDTO project;
-    private TestcaseDTO testcase;
     private List<SequenceNodeDTO> nodes;
     private List<SequenceEdgeDTO> edges;
 
@@ -38,10 +37,6 @@ public class SequenceDTO extends CommonDTO implements IDTO<Sequence> {
 
         if (sequence.getProject() != null) {
             this.project = ProjectDTO.builder().id(sequence.getProject().getId()).build();
-        }
-
-        if (sequence.getTestcase() != null) {
-            this.testcase = TestcaseDTO.builder().id(sequence.getTestcase().getId()).build();
         }
 
         if (sequence.getNodes() != null) {
@@ -70,10 +65,6 @@ public class SequenceDTO extends CommonDTO implements IDTO<Sequence> {
             sequence.setProject(Project.builder().id(project.getId()).build());
         }
 
-        if (this.testcase != null) {
-            sequence.setTestcase(Testcase.builder().id(testcase.getId()).build());
-        }
-
         if (this.nodes != null) {
             sequence.setNodes(this.nodes.stream().map(sequenceNodeDTO -> sequenceNodeDTO.toEntity(sequence)).collect(Collectors.toList()));
         } else {
@@ -81,7 +72,7 @@ public class SequenceDTO extends CommonDTO implements IDTO<Sequence> {
         }
 
         if (this.edges != null) {
-            sequence.setEdges(this.edges.stream().map(sequenceEdgeDTO -> sequenceEdgeDTO.toEntity(sequence)).collect(Collectors.toList()));
+            sequence.setEdges(this.edges.stream().map(sequenceEdgeDTO -> sequenceEdgeDTO.toEntity(sequence, sequence.getNodes())).collect(Collectors.toList()));
         } else {
             sequence.setEdges(Collections.emptyList());
         }

@@ -81,7 +81,7 @@ function SequenceListPage() {
                 <li key={sequence.id}>
                   <div className="title">
                     <div className="name">
-                      <Link className="hoverable" to={`/spaces/${spaceCode}/projects/${projectId}/reports/${sequence.id}`}>
+                      <Link className="hoverable" to={`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequence.id}/edit`}>
                         {sequence.name}
                       </Link>
                     </div>

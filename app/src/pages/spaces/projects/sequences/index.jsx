@@ -6,7 +6,8 @@ function SequencesRoutes() {
   return (
     <Routes>
       <Route path="/" element={<SequenceListPage />} />
-      <Route path="/:sequenceId" element={<SequenceEditPage />} />
+      <Route path="/new" element={<SequenceEditPage type="new" />} />
+      <Route path="/:sequenceId/edit" element={<SequenceEditPage type="edit" />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>
   );

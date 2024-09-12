@@ -19,7 +19,7 @@ public class SequenceService {
     private final SequenceRepository sequenceRepository;
 
     @Transactional
-    public SequenceDTO createSequenceInfo(long projectId, SequenceDTO sequenceInfo) {
+    public SequenceDTO createSequenceInfo(String spaceCode, long projectId, SequenceDTO sequenceInfo) {
 
         if (existByName(projectId, sequenceInfo.getName())) {
             throw new ServiceException("error.sequence.duplicated");

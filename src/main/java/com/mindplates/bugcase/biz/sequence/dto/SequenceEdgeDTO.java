@@ -5,6 +5,7 @@ import com.mindplates.bugcase.biz.sequence.entity.SequenceEdge;
 import com.mindplates.bugcase.biz.sequence.entity.SequenceNode;
 import com.mindplates.bugcase.common.dto.CommonDTO;
 import com.mindplates.bugcase.common.vo.IDTO;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,24 +21,30 @@ import lombok.NoArgsConstructor;
 public class SequenceEdgeDTO extends CommonDTO implements IDTO<SequenceEdge> {
 
     private Long id;
+    private String edgeId;
     private SequenceDTO sequence;
     private String type;
+    private String sourceNodeId;
+    private String targetNodeId;
     private Map<String, String> style;
     private SequenceNodeDTO source;
     private SequenceNodeDTO target;
 
     public SequenceEdgeDTO(SequenceEdge sequenceEdge) {
         this.id = sequenceEdge.getId();
-        this.sequence = new SequenceDTO(sequenceEdge.getSequence());
+        this.edgeId = sequenceEdge.getEdgeId();
+        this.sequence = SequenceDTO.builder().id(sequenceEdge.getSequence().getId()).build();
+        this.sourceNodeId = sequenceEdge.getSource().getNodeId();
+        this.targetNodeId = sequenceEdge.getTarget().getNodeId();
         this.type = sequenceEdge.getType();
         this.style = sequenceEdge.getStyle();
 
         if (sequenceEdge.getSource() != null) {
-            this.source = SequenceNodeDTO.builder().id(sequenceEdge.getSource().getId()).build();
+            this.source = new SequenceNodeDTO(sequenceEdge.getSource());
         }
 
         if (sequenceEdge.getTarget() != null) {
-            this.target = SequenceNodeDTO.builder().id(sequenceEdge.getTarget().getId()).build();
+            this.target = new SequenceNodeDTO(sequenceEdge.getTarget());
         }
     }
 
@@ -47,32 +54,31 @@ public class SequenceEdgeDTO extends CommonDTO implements IDTO<SequenceEdge> {
 
         SequenceEdge sequenceEdge = SequenceEdge.builder()
             .id(this.id)
+            .edgeId(this.edgeId)
             .type(this.type)
             .style(this.style)
+            .sourceNodeId(this.sourceNodeId)
+            .targetNodeId(this.targetNodeId)
             .build();
 
-        if (this.sequence != null) {
-            sequenceEdge.setSequence(Sequence.builder().id(sequence.getId()).build());
-        }
 
-        if (this.source != null) {
-            sequenceEdge.setSource(SequenceNode.builder().id(source.getId()).build());
-        }
 
-        if (this.target != null) {
-            sequenceEdge.setSource(SequenceNode.builder().id(target.getId()).build());
-        }
+
 
         return sequenceEdge;
     }
 
-    public SequenceEdge toEntity(Sequence sequence) {
+    public SequenceEdge toEntity(Sequence sequence, List<SequenceNode> nodes) {
         SequenceEdge sequenceEdge = toEntity();
+        sequenceEdge.setSequence(sequence);
 
-        if (this.sequence != null) {
-            sequenceEdge.setSequence(sequence);
+        if (this.source != null) {
+            sequenceEdge.setSource(nodes.stream().filter(sequenceNode -> sequenceNode.getNodeId().equals(source.getNodeId())).findFirst().orElse(null));
         }
 
+        if (this.target != null) {
+            sequenceEdge.setTarget(nodes.stream().filter(sequenceNode -> sequenceNode.getNodeId().equals(target.getNodeId())).findFirst().orElse(null));
+        }
         return sequenceEdge;
     }
 
