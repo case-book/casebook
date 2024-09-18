@@ -162,8 +162,8 @@ public class OpenAIClientService {
 
         OpenAiApi openAiApi = new OpenAiApi(openApiKey);
 
-        var openAiChatOptions = OpenAiChatOptions.builder().withTemperature(0.5f).build();
-        var chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
+        OpenAiChatOptions openAiChatOptions = OpenAiChatOptions.builder().withTemperature(0.5).build();
+        OpenAiChatModel chatModel = new OpenAiChatModel(openAiApi, openAiChatOptions);
 
         ConfigDTO prefix = llmConfigs.stream().filter(llmConfig -> llmConfig.getCode().equals(Constants.LLM_PREFIX)).findFirst().orElse(null);
         Message systemMessage = new SystemMessage(prompt.getSystemRole());

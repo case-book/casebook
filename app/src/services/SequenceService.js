@@ -44,6 +44,17 @@ SequenceService.createSequence = (spaceCode, projectId, sequence, successHandler
   );
 };
 
+SequenceService.deleteSequence = (spaceCode, projectId, sequenceId, successHandler, failHandler) => {
+  return request.del(
+    `/api/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`,
+    null,
+    res => {
+      successHandler(res);
+    },
+    failHandler,
+  );
+};
+
 /*
 
 
@@ -58,16 +69,7 @@ SequenceService.updateRelease = (spaceCode, projectId, releaseId, release, succe
   );
 };
 
-SequenceService.deleteRelease = (spaceCode, projectId, releaseId, successHandler, failHandler) => {
-  return request.del(
-    `/api/${spaceCode}/projects/${projectId}/releases/${releaseId}`,
-    null,
-    res => {
-      successHandler(res);
-    },
-    failHandler,
-  );
-};
+
 */
 
 export default SequenceService;

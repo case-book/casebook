@@ -24,6 +24,7 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
           <div className="page-title-info">
             <div className="page-title-text">{children}</div>
           </div>
+          {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
           {links?.length > 0 && (
             <ul className="links">
               {links.map((d, inx) => {
@@ -43,7 +44,6 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
               })}
             </ul>
           )}
-          {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
         </div>
       </div>
     </>

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,12 @@ public class SequenceController {
         return new SequenceResponse(sequenceService.createSequenceInfo(spaceCode, projectId, sequence));
     }
 
+    @Operation(description = "릴리스 삭제")
+    @DeleteMapping("/{sequenceId}")
+    public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long sequenceId) {
+        sequenceService.deleteSequenceInfo(spaceCode, projectId, sequenceId);
+    }
+
 
 
     /*
@@ -67,11 +74,7 @@ public class SequenceController {
         return new ProjectReleaseResponse(projectRelease, SessionUtil.getUserId(true));
     }
 
-    @Operation(description = "릴리스 삭제")
-    @DeleteMapping("/{releaseId}")
-    public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long releaseId) {
-        projectReleaseService.deleteProjectRelease(spaceCode, projectId, releaseId);
-    }
+
     */
 
 }

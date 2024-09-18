@@ -6,20 +6,19 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ProjectService from '@/services/ProjectService';
 import '@xyflow/react/dist/style.css';
 import TestcaseService from '@/services/TestcaseService';
-import TestcaseNode from '@/pages/spaces/projects/sequences/SequenceEditPage/TestcaseNode/TestcaseNode';
+import { SequenceEdge, TestcaseNode } from '@/assets';
 import './SequenceEditPage.scss';
-import './over.scss';
 import { ResizableBox } from 'react-resizable';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import testcaseUtil from '@/utils/testcaseUtil';
-import SequenceEdge from '@/pages/spaces/projects/sequences/SequenceEditPage/SequenceEdge/SequenceEdge';
+
 import 'react-resizable/css/styles.css';
 import * as PropTypes from 'prop-types';
 import SequenceService from '@/services/SequenceService';
 
 const DEFAULT_BUTTON_EDGE = {
   type: 'buttonEdge',
-  data: { curveType: 'bezier' }, // bezier, straight, smoothstep, step
+  data: { curveType: 'bezier', removable: true }, // bezier, straight, smoothstep, step
   markerEnd: {
     type: MarkerType.Arrow,
     width: 16,
@@ -170,6 +169,10 @@ function SequenceEditPage({ type }) {
               target: d.targetNodeId,
               type: d.type,
               style: d.style,
+              data: {
+                curveType: 'bezier',
+                removable: true,
+              },
             };
           }),
         );

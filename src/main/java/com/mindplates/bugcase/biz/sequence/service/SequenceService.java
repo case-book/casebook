@@ -48,7 +48,7 @@ public class SequenceService {
     }
 
     @Transactional
-    public void deleteSequenceInfo(long sequenceId) {
+    public void deleteSequenceInfo(String spaceCode, long projectId, long sequenceId) {
         Sequence sequence = sequenceRepository.findById(sequenceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         sequenceRepository.delete(sequence);
     }

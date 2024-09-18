@@ -52,18 +52,20 @@ function SequenceEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, 
           }}
           className="nodrag nopan"
         >
-          <button
-            className="button-edge-remove-button"
-            onClick={onEdgeClick}
-            onMouseEnter={() => {
-              setIsRemoveButtonHovered(true);
-            }}
-            onMouseLeave={() => {
-              setIsRemoveButtonHovered(false);
-            }}
-          >
-            <i className="fa-solid fa-xmark" />
-          </button>
+          {data.removable && (
+            <button
+              className="button-edge-remove-button"
+              onClick={onEdgeClick}
+              onMouseEnter={() => {
+                setIsRemoveButtonHovered(true);
+              }}
+              onMouseLeave={() => {
+                setIsRemoveButtonHovered(false);
+              }}
+            >
+              <i className="fa-solid fa-xmark" />
+            </button>
+          )}
         </div>
       </EdgeLabelRenderer>
     </>
@@ -82,15 +84,16 @@ SequenceEdge.defaultProps = {
   markerEnd: null,
   data: {
     curveType: 'bezier',
+    removable: false,
   },
 };
 
 SequenceEdge.propTypes = {
   id: PropTypes.string,
-  sourceX: PropTypes.string,
-  sourceY: PropTypes.string,
-  targetX: PropTypes.string,
-  targetY: PropTypes.string,
+  sourceX: PropTypes.number,
+  sourceY: PropTypes.number,
+  targetX: PropTypes.number,
+  targetY: PropTypes.number,
   sourcePosition: PropTypes.string,
   targetPosition: PropTypes.string,
   style: PropTypes.shape({
@@ -99,6 +102,7 @@ SequenceEdge.propTypes = {
   markerEnd: PropTypes.string,
   data: PropTypes.shape({
     curveType: PropTypes.string,
+    removable: PropTypes.bool,
   }),
 };
 

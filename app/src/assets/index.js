@@ -10,6 +10,8 @@ import TestrunMessageChannelSelector from './TestrunMessageChannelSelector/Testr
 import TestrunMessageChannelList from './TestrunMessageChannelList/TestrunMessageChannelList';
 import TestcaseViewerPopup from './TestcaseViewerPopup/TestcaseViewerPopup';
 import ReportCountSummary from './ReportCountSummary/ReportCountSummary';
+import SequenceEdge from './SequenceEdge/SequenceEdge';
+import TestcaseNode from './TestcaseNode/TestcaseNode';
 
 export {
   CommentList,
@@ -24,4 +26,6 @@ export {
   OpenLinkReport,
   ReportCountSummary,
   OpenLinkReportList,
+  SequenceEdge,
+  TestcaseNode,
 };
