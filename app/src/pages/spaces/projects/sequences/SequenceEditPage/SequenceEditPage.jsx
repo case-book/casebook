@@ -34,7 +34,7 @@ const DEFAULT_TESTCASE_NODE = {
   style: { width: 180, height: 60 },
   data: {
     label: '테스트케이스',
-    resizable: true,
+    editable: true,
   },
 };
 
@@ -45,7 +45,7 @@ const initialNodes = [
     ...DEFAULT_TESTCASE_NODE,
     data: {
       label: 'TC2 링크를 통한 초대',
-      resizable: true,
+      editable: true,
     },
   },
   {
@@ -107,6 +107,7 @@ function SequenceEditPage({ type }) {
       });
     }
   }, [type]);
+  console.log(nodes);
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -155,7 +156,7 @@ function SequenceEditPage({ type }) {
                 testcaseId: d.testcase.id,
                 seqId: d.testcase.seqId,
                 label: d.testcase.name,
-                resizable: true,
+                editable: true,
               },
             };
           }),
@@ -233,7 +234,7 @@ function SequenceEditPage({ type }) {
           testcaseId: testcase.id,
           seqId: testcase.seqId,
           label: testcase.name,
-          resizable: true,
+          editable: true,
         },
       };
 
@@ -282,6 +283,7 @@ function SequenceEditPage({ type }) {
 
     SequenceService.createSequence(spaceCode, projectId, data, info => {
       console.log(info);
+      navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
     });
 
     console.log(sequence);

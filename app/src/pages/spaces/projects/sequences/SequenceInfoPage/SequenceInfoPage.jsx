@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Background, Controls, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
+import { Background, Controls, MarkerType, MiniMap, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react';
 import { Button, Page, PageContent, PageTitle, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -19,8 +19,8 @@ function SequenceInfoPage() {
   const { spaceCode, projectId, sequenceId } = useParams();
   const [project, setProject] = useState(null);
 
-  const [nodes, setNodes] = useNodesState([]);
-  const [edges, setEdges] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [sequence, setSequence] = useState({
     name: '',
     description: '',
@@ -40,6 +40,8 @@ function SequenceInfoPage() {
           description: info.description,
         });
 
+        console.log(info);
+
         setNodes(
           info.nodes.map(d => {
             return {
@@ -47,11 +49,12 @@ function SequenceInfoPage() {
               position: d.position,
               type: d.type,
               style: d.style,
+              ...d.style,
               data: {
                 testcaseId: d.testcase.id,
                 seqId: d.testcase.seqId,
                 label: d.testcase.name,
-                resizable: false,
+                editable: false,
               },
             };
           }),
@@ -69,6 +72,11 @@ function SequenceInfoPage() {
                 curveType: 'bezier',
                 removable: false,
               },
+              markerEnd: {
+                type: MarkerType.Arrow,
+                width: 16,
+                height: 16,
+              },
             };
           }),
         );
@@ -83,6 +91,9 @@ function SequenceInfoPage() {
   const edgeTypes = {
     buttonEdge: SequenceEdge,
   };
+
+  console.log(nodes);
+  console.log(edges);
 
   const onDelete = () => {
     dialogUtil.setConfirm(
@@ -126,7 +137,7 @@ function SequenceInfoPage() {
           },
         ]}
         control={
-          <Button size="sm" color="danger" onClick={onDelete}>
+          <Button size="sm" color="danger" onClick={onDelete} shadow={false}>
             {t('시퀀스 삭제')}
           </Button>
         }
@@ -147,14 +158,24 @@ function SequenceInfoPage() {
           {sequence.name}
         </Title>
         <div className="sequence-content">
-          <ReactFlowProvider>
-            <div className="react-flow-wrapper" ref={reactFlowWrapper}>
-              <ReactFlow snapToGrid nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}>
-                <Controls />
-                <Background variant="dots" gap={12} size={1} />
-              </ReactFlow>
-            </div>
-          </ReactFlowProvider>
+          <div className="react-flow-wrapper" ref={reactFlowWrapper}>
+            <ReactFlow
+              snapToGrid
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              onEdgesChange={onEdgesChange}
+              onNodesChange={onNodesChange}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+            >
+              <Controls />
+              <MiniMap />
+              <Background variant="dots" gap={12} size={1} />
+            </ReactFlow>
+          </div>
         </div>
       </PageContent>
     </Page>
