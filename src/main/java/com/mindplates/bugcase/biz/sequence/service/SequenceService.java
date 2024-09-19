@@ -41,7 +41,7 @@ public class SequenceService {
     }
 
     @Transactional
-    public SequenceDTO updateSequenceInfo(long sequenceId, SequenceDTO updateSequenceInfo) {
+    public SequenceDTO updateSequenceInfo(String spaceCode, long projectId, long sequenceId, SequenceDTO updateSequenceInfo) {
         Sequence targetSequence = sequenceRepository.findById(sequenceId).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
         targetSequence.updateInfo(updateSequenceInfo);
         return new SequenceDTO(sequenceRepository.save(targetSequence));

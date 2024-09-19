@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.sequence.entity;
 
+import com.mindplates.bugcase.biz.sequence.dto.SequenceNodeDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
@@ -58,4 +59,11 @@ public class SequenceNode extends CommonEntity {
     private Map<String, String> position;
 
 
+    public void updateInfo(SequenceNodeDTO updateNode) {
+        this.nodeId = updateNode.getNodeId();
+        this.testcase = Testcase.builder().id(updateNode.getTestcase().getId()).build();
+        this.type = updateNode.getType();
+        this.style = updateNode.getStyle();
+        this.position = updateNode.getPosition();
+    }
 }

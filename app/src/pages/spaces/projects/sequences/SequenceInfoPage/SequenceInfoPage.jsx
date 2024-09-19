@@ -70,7 +70,7 @@ function SequenceInfoPage() {
               style: d.style,
               data: {
                 curveType: 'bezier',
-                removable: false,
+                editable: false,
               },
               markerEnd: {
                 type: MarkerType.Arrow,

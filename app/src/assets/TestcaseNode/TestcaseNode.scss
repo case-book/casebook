@@ -2,6 +2,25 @@
   box-sizing: border-box;
   height: 100%;
 
+
+
+  .button-node-remove-button {
+    position: absolute;
+    top : -12px;
+    right : calc(50% - 12px);
+    width: 24px;
+    height: 24px;
+    background: #eee;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 1;
+    &:hover {
+      border-color: var(--danger-color);
+    }
+  }
+
   .node-content {
     overflow: hidden;
     display: flex;
@@ -10,9 +29,7 @@
     flex-grow: 1;
     border: 2px solid var(--border-color);
     background-color: var(--theme-color);
-    _border-radius: 12px;
     height: 100%;
-    display: flex;
     > .inner {
       align-self: center;
 

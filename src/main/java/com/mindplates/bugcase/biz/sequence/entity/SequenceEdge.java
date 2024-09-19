@@ -1,5 +1,6 @@
 package com.mindplates.bugcase.biz.sequence.entity;
 
+import com.mindplates.bugcase.biz.sequence.dto.SequenceEdgeDTO;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,5 +68,13 @@ public class SequenceEdge extends CommonEntity {
     @JoinColumn(name = "target_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE_EDGE__SEQUENCE_TARGET_NODE"))
     private SequenceNode target;
 
-
+    public void updateInfo(SequenceEdgeDTO updateEdge, List<SequenceNode> nodes) {
+        this.edgeId = updateEdge.getEdgeId();
+        this.sourceNodeId = updateEdge.getSourceNodeId();
+        this.targetNodeId = updateEdge.getTargetNodeId();
+        this.type = updateEdge.getType();
+        this.style = updateEdge.getStyle();
+        this.source = nodes.stream().filter(node -> node.getNodeId().equals(updateEdge.getSourceNodeId())).findFirst().orElse(null);
+        this.target = nodes.stream().filter(node -> node.getNodeId().equals(updateEdge.getTargetNodeId())).findFirst().orElse(null);
+    }
 }

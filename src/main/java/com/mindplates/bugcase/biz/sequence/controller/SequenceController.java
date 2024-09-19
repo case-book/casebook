@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.sequence.dto.SequenceDTO;
 import com.mindplates.bugcase.biz.sequence.dto.SequenceListDTO;
 import com.mindplates.bugcase.biz.sequence.service.SequenceService;
 import com.mindplates.bugcase.biz.sequence.vo.request.SequenceCreateRequest;
+import com.mindplates.bugcase.biz.sequence.vo.request.SequenceUpdateRequest;
 import com.mindplates.bugcase.biz.sequence.vo.response.SequenceListResponse;
 import com.mindplates.bugcase.biz.sequence.vo.response.SequenceResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,7 +47,7 @@ public class SequenceController {
         return new SequenceResponse(sequence);
     }
 
-    @Operation(description = "릴리스 생성")
+    @Operation(description = "시퀀스 생성")
     @PostMapping("")
     public SequenceResponse createSequence(
         @PathVariable String spaceCode,
@@ -55,26 +57,19 @@ public class SequenceController {
         return new SequenceResponse(sequenceService.createSequenceInfo(spaceCode, projectId, sequence));
     }
 
-    @Operation(description = "릴리스 삭제")
+    @Operation(description = "시퀀스 삭제")
     @DeleteMapping("/{sequenceId}")
     public void deleteProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long sequenceId) {
         sequenceService.deleteSequenceInfo(spaceCode, projectId, sequenceId);
     }
 
-
-
-    /*
-
-
-    @Operation(description = "릴리스 수정")
-    @PutMapping("/{releaseId}")
-    public ProjectReleaseResponse updateProjectRelease(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long releaseId,
-        @Valid @RequestBody ProjectReleaseCreateRequest projectReleaseCreateRequest) {
-        ProjectReleaseDTO projectRelease = projectReleaseService.updateProjectRelease(spaceCode, projectId, releaseId, projectReleaseCreateRequest.toDTO(projectId));
-        return new ProjectReleaseResponse(projectRelease, SessionUtil.getUserId(true));
+    @Operation(description = "시퀀스 수정")
+    @PutMapping("/{sequenceId}")
+    public SequenceResponse updateSequence(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long sequenceId,
+        @Valid @RequestBody SequenceUpdateRequest sequenceUpdateRequest) {
+        SequenceDTO sequence = sequenceService.updateSequenceInfo(spaceCode, projectId, sequenceId, sequenceUpdateRequest.toDTO(projectId));
+        return new SequenceResponse(sequence);
     }
 
-
-    */
 
 }

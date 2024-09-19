@@ -55,21 +55,15 @@ SequenceService.deleteSequence = (spaceCode, projectId, sequenceId, successHandl
   );
 };
 
-/*
-
-
-SequenceService.updateRelease = (spaceCode, projectId, releaseId, release, successHandler, failHandler) => {
+SequenceService.updateSequence = (spaceCode, projectId, sequenceId, sequence, successHandler, failHandler) => {
   return request.put(
-    `/api/${spaceCode}/projects/${projectId}/releases/${releaseId}`,
-    release,
+    `/api/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`,
+    sequence,
     res => {
       successHandler(res);
     },
     failHandler,
   );
 };
-
-
-*/
 
 export default SequenceService;

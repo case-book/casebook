@@ -34,8 +34,8 @@ public class SequenceEdgeDTO extends CommonDTO implements IDTO<SequenceEdge> {
         this.id = sequenceEdge.getId();
         this.edgeId = sequenceEdge.getEdgeId();
         this.sequence = SequenceDTO.builder().id(sequenceEdge.getSequence().getId()).build();
-        this.sourceNodeId = sequenceEdge.getSource().getNodeId();
-        this.targetNodeId = sequenceEdge.getTarget().getNodeId();
+        this.sourceNodeId = sequenceEdge.getSourceNodeId();
+        this.targetNodeId = sequenceEdge.getTargetNodeId();
         this.type = sequenceEdge.getType();
         this.style = sequenceEdge.getStyle();
 

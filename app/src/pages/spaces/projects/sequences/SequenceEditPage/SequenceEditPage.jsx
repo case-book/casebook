@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addEdge, Background, Controls, MarkerType, MiniMap, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
-import { Button, Form, Input, Page, PageButtons, PageContent, PageTitle, Title } from '@/components';
+import { Button, Input, Liner, Page, PageContent, PageTitle, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProjectService from '@/services/ProjectService';
@@ -15,10 +15,11 @@ import testcaseUtil from '@/utils/testcaseUtil';
 import 'react-resizable/css/styles.css';
 import * as PropTypes from 'prop-types';
 import SequenceService from '@/services/SequenceService';
+import useStores from '@/hooks/useStores';
 
 const DEFAULT_BUTTON_EDGE = {
   type: 'buttonEdge',
-  data: { curveType: 'bezier', removable: true }, // bezier, straight, smoothstep, step
+  data: { curveType: 'bezier', editable: true }, // bezier, straight, smoothstep, step
   markerEnd: {
     type: MarkerType.Arrow,
     width: 16,
@@ -84,6 +85,9 @@ console.log(initialNodes, initialEdges);
 
 function SequenceEditPage({ type }) {
   const { t } = useTranslation();
+  const {
+    themeStore: { theme },
+  } = useStores();
   const navigate = useNavigate();
   const reactFlowWrapper = useRef(null);
   const { spaceCode, projectId, sequenceId } = useParams();
@@ -141,6 +145,7 @@ function SequenceEditPage({ type }) {
       SequenceService.selectSequence(spaceCode, projectId, sequenceId, info => {
         console.log(info);
         setSequence({
+          id: info.id,
           name: info.name,
           description: info.description,
         });
@@ -152,11 +157,13 @@ function SequenceEditPage({ type }) {
               position: d.position,
               type: d.type,
               style: d.style,
+              ...d.style,
               data: {
                 testcaseId: d.testcase.id,
                 seqId: d.testcase.seqId,
                 label: d.testcase.name,
                 editable: true,
+                id: d.id,
               },
             };
           }),
@@ -172,7 +179,13 @@ function SequenceEditPage({ type }) {
               style: d.style,
               data: {
                 curveType: 'bezier',
-                removable: true,
+                editable: true,
+                id: d.id,
+              },
+              markerEnd: {
+                type: MarkerType.Arrow,
+                width: 16,
+                height: 16,
               },
             };
           }),
@@ -183,14 +196,10 @@ function SequenceEditPage({ type }) {
 
   const onConnect = useCallback(
     params => {
-      console.log(params);
-      console.log(nodes);
       setEdges(eds =>
         addEdge(
           {
             ...params,
-            sourceNodeId: params.source,
-            targetNodeId: params.target,
             ...DEFAULT_BUTTON_EDGE,
           },
           eds,
@@ -258,33 +267,71 @@ function SequenceEditPage({ type }) {
   const handleSubmit = e => {
     e.preventDefault();
 
-    const data = {
-      ...sequence,
-      nodes: nodes.map(d => {
-        return {
-          nodeId: d.id,
-          testcaseId: d.data.testcaseId,
-          type: d.type,
-          style: d.style,
-          position: d.position,
-        };
-      }),
-      edges: edges.map(d => {
-        return {
-          edgeId: d.id,
+    if (isEdit) {
+      const data = {
+        ...sequence,
+        nodes: nodes.map(d => {
+          return {
+            id: d.data.id,
+            nodeId: d.id,
+            testcaseId: d.data.testcaseId,
+            type: d.type,
+            style: d.style,
+            position: d.position,
+          };
+        }),
+        edges: edges.map(d => {
+          return {
+            id: d.data.id,
+            edgeId: d.id,
+            sourceNodeId: d.source,
+            targetNodeId: d.target,
+            type: d.type,
+            style: d.style,
+          };
+        }),
+      };
 
-          sourceNodeId: d.sourceNodeId,
-          targetNodeId: d.targetNodeId,
-          type: d.type,
-          style: d.style,
-        };
-      }),
-    };
+      console.log(nodes);
+      console.log(edges);
+      console.log(sequence);
+      console.log(data);
 
-    SequenceService.createSequence(spaceCode, projectId, data, info => {
-      console.log(info);
-      navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
-    });
+      SequenceService.updateSequence(spaceCode, projectId, sequenceId, data, info => {
+        console.log(info);
+        navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`);
+      });
+    } else {
+      const data = {
+        ...sequence,
+        nodes: nodes.map(d => {
+          return {
+            nodeId: d.id,
+            testcaseId: d.data.testcaseId,
+            type: d.type,
+            style: d.style,
+            position: d.position,
+          };
+        }),
+        edges: edges.map(d => {
+          return {
+            edgeId: d.id,
+            sourceNodeId: d.source,
+            targetNodeId: d.target,
+            type: d.type,
+            style: d.style,
+          };
+        }),
+      };
+
+      console.log(edges);
+      console.log(data);
+
+      SequenceService.createSequence(spaceCode, projectId, data, info => {
+        console.log(info);
+        navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
+      });
+    }
 
     console.log(sequence);
     console.log(nodes);
@@ -325,14 +372,30 @@ function SequenceEditPage({ type }) {
             text: t('케이스 시퀀스 목록'),
           },
         ]}
-        links={[
-          {
-            to: `/spaces/${spaceCode}/projects/${projectId}/sequences/new`,
-            text: t('케이스 시퀀스'),
-            color: 'primary',
-            icon: <i className="fa-solid fa-plus" />,
-          },
-        ]}
+        control={
+          <div>
+            <Button
+              size="sm"
+              onClick={() => {
+                navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
+              }}
+            >
+              {t('목록')}
+            </Button>
+            <Liner className="liner" display="inline-block" width="1px" height="10px" color={theme === 'LIGHT' ? 'black' : 'white'} margin="0 10px 0 0" />
+            <Button
+              size="sm"
+              onClick={() => {
+                navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`);
+              }}
+            >
+              {t('취소')}
+            </Button>
+            <Button size="sm" color="primary" onClick={handleSubmit}>
+              {t('저장')}
+            </Button>
+          </div>
+        }
         onListClick={() => {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
         }}
@@ -359,55 +422,46 @@ function SequenceEditPage({ type }) {
             </div>
           </div>
         </Title>
-        <Form onSubmit={handleSubmit}>
-          <div className="sequence-content">
-            <ReactFlowProvider>
-              <div className="react-flow-wrapper" ref={reactFlowWrapper}>
-                <ReactFlow
-                  snapToGrid
-                  nodes={nodes}
-                  edges={edges}
-                  nodeTypes={nodeTypes}
-                  edgeTypes={edgeTypes}
-                  onNodesChange={onNodesChange}
-                  onEdgesChange={onEdgesChange}
-                  onConnect={onConnect}
-                  onInit={setReactFlowInstance}
-                  onDrop={onDrop}
-                  onDragOver={onDragOver}
-                >
-                  <Controls />
-                  <MiniMap />
-                  <Background variant="dots" gap={12} size={1} />
-                </ReactFlow>
-              </div>
-            </ReactFlowProvider>
-            <div className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <ResizableBox
-                width={360}
-                height="100%"
-                minConstraints={[200, 100]} // 최소 크기 설정
-                maxConstraints={[500, 200]} // 최대 크기 설정
-                resizeHandles={['w']} // 좌측에만 핸들을 표시
+
+        <div className="sequence-content">
+          <ReactFlowProvider>
+            <div className="react-flow-wrapper" ref={reactFlowWrapper}>
+              <ReactFlow
+                snapToGrid
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                onInit={setReactFlowInstance}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
               >
-                <TestcaseNavigator
-                  testcaseGroups={testcaseGroups}
-                  onDragStart={(e, testcase) => {
-                    onDragStart(e, testcase);
-                  }}
-                />
-              </ResizableBox>
+                <Controls />
+                <MiniMap />
+                <Background variant="dots" gap={12} size={1} />
+              </ReactFlow>
             </div>
+          </ReactFlowProvider>
+          <div className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <ResizableBox
+              width={360}
+              height="100%"
+              minConstraints={[200, 100]} // 최소 크기 설정
+              maxConstraints={[500, 200]} // 최대 크기 설정
+              resizeHandles={['w']} // 좌측에만 핸들을 표시
+            >
+              <TestcaseNavigator
+                testcaseGroups={testcaseGroups}
+                onDragStart={(e, testcase) => {
+                  onDragStart(e, testcase);
+                }}
+              />
+            </ResizableBox>
           </div>
-          <PageButtons
-            onCancel={() => {
-              navigate(-1);
-            }}
-            onSubmit={() => {}}
-            onSubmitText={t('저장')}
-            onCancelIcon=""
-          />
-        </Form>
+        </div>
       </PageContent>
     </Page>
   );

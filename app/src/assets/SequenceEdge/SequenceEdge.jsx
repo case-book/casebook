@@ -4,7 +4,8 @@ import { BaseEdge, EdgeLabelRenderer, getBezierPath, StepEdge, useReactFlow } fr
 import classNames from 'classnames';
 import './SequenceEdge.scss';
 
-function SequenceEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, data }) {
+function SequenceEdge(props) {
+  const { id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style = {}, markerEnd, data } = props;
   const { setEdges } = useReactFlow();
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -52,7 +53,7 @@ function SequenceEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition, 
           }}
           className="nodrag nopan"
         >
-          {data.removable && (
+          {data.editable && (
             <button
               className="button-edge-remove-button"
               onClick={onEdgeClick}
@@ -84,7 +85,7 @@ SequenceEdge.defaultProps = {
   markerEnd: null,
   data: {
     curveType: 'bezier',
-    removable: false,
+    editable: false,
   },
 };
 
@@ -102,7 +103,7 @@ SequenceEdge.propTypes = {
   markerEnd: PropTypes.string,
   data: PropTypes.shape({
     curveType: PropTypes.string,
-    removable: PropTypes.bool,
+    editable: PropTypes.bool,
   }),
 };
 

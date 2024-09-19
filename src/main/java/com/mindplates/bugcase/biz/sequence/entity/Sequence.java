@@ -2,7 +2,6 @@ package com.mindplates.bugcase.biz.sequence.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.sequence.dto.SequenceDTO;
-import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import jakarta.persistence.CascadeType;
@@ -60,5 +59,41 @@ public class Sequence extends CommonEntity {
 
 
     public void updateInfo(SequenceDTO updateSequenceInfo) {
+        this.name = updateSequenceInfo.getName();
+        this.description = updateSequenceInfo.getDescription();
+
+        // this.nodes에 있는데, updateSequenceInfo.getNodes()에는 없는 node는 삭제
+        this.nodes.removeIf(node -> updateSequenceInfo.getNodes().stream().noneMatch(updateNode -> node.getId().equals(updateNode.getId())));
+        // updateSequenceInfo.getNodes()에 id가 없는 노드를 추가
+        updateSequenceInfo.getNodes().stream().filter(updateNode -> updateNode.getId() == null).forEach(updateNode -> {
+            SequenceNode node = updateNode.toEntity();
+            node.setSequence(this);
+            this.nodes.add(node);
+        });
+        // updateSequenceInfo.getNodes()에 id가 있는 노드를 수정
+        updateSequenceInfo.getNodes().stream().filter(updateNode -> updateNode.getId() != null).forEach(updateNode -> {
+            SequenceNode node = this.nodes.stream().filter(n -> n.getId().equals(updateNode.getId())).findFirst().orElse(null);
+            if (node != null) {
+                node.updateInfo(updateNode);
+            }
+        });
+
+        // this.edges에는 있는데, updateSequenceInfo.getEdges()에는 없는 edge는 삭제
+        this.edges.removeIf(edge -> updateSequenceInfo.getEdges().stream().noneMatch(updateEdge -> edge.getId().equals(updateEdge.getId())));
+        // updateSequenceInfo.getEdges()에 id가 없는 노드를 추가
+        updateSequenceInfo.getEdges().stream().filter(updateEdge -> updateEdge.getId() == null).forEach(updateEdge -> {
+            SequenceEdge edge = updateEdge.toEntity(this, this.nodes);
+            edge.setSequence(this);
+            this.edges.add(edge);
+        });
+        // updateSequenceInfo.getEdges()에 id가 있는 노드를 수정
+        updateSequenceInfo.getEdges().stream().filter(updateEdge -> updateEdge.getId() != null).forEach(updateEdge -> {
+            SequenceEdge edge = this.edges.stream().filter(e -> e.getId().equals(updateEdge.getId())).findFirst().orElse(null);
+            if (edge != null) {
+                edge.updateInfo(updateEdge, this.nodes);
+            }
+        });
+
+
     }
 }
