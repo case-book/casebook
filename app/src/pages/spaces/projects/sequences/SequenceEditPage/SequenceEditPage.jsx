@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { addEdge, Background, Controls, MarkerType, MiniMap, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
+import { addEdge, Background, MarkerType, MiniMap, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
 import { Button, Input, Liner, Page, PageContent, PageTitle, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,6 +16,7 @@ import 'react-resizable/css/styles.css';
 import * as PropTypes from 'prop-types';
 import SequenceService from '@/services/SequenceService';
 import useStores from '@/hooks/useStores';
+import CustomControls from '@/pages/spaces/projects/sequences/SequenceEditPage/CustomControls';
 
 const DEFAULT_BUTTON_EDGE = {
   type: 'buttonEdge',
@@ -98,6 +99,7 @@ function SequenceEditPage({ type }) {
   const [isNameEdit, setIsNameEdit] = useState(false);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [isInteractive, setIsInteractive] = useState(true);
   const [sequence, setSequence] = useState({
     name: '',
     description: '',
@@ -348,6 +350,13 @@ function SequenceEditPage({ type }) {
     [sequence, setSequence],
   );
 
+  const nodeById = useMemo(() => {
+    return nodes.reduce((acc, node) => {
+      acc[node.id] = node;
+      return acc;
+    }, {});
+  }, [nodes]);
+
   return (
     <Page className="sequence-edit-page-wrapper">
       <PageTitle
@@ -438,8 +447,13 @@ function SequenceEditPage({ type }) {
                 onInit={setReactFlowInstance}
                 onDrop={onDrop}
                 onDragOver={onDragOver}
+                nodesDraggable={isInteractive} // 노드 드래그 가능 여부
+                nodesConnectable={isInteractive} // 노드 연결 가능 여부
+                elementsSelectable={isInteractive} // 엘리먼트 선택 가능 여부
+                zoomOnScroll={isInteractive} // 스크롤로 줌 가능 여부
+                panOnDrag={isInteractive} // 드래그로 패닝 가능 여부
               >
-                <Controls />
+                <CustomControls isInteractive={isInteractive} setIsInteractive={setIsInteractive} />
                 <MiniMap />
                 <Background variant="dots" gap={12} size={1} />
               </ReactFlow>
@@ -448,13 +462,14 @@ function SequenceEditPage({ type }) {
           <div className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <ResizableBox
               width={360}
-              height="100%"
+              height={Infinity}
               minConstraints={[200, 100]} // 최소 크기 설정
               maxConstraints={[500, 200]} // 최대 크기 설정
               resizeHandles={['w']} // 좌측에만 핸들을 표시
             >
               <TestcaseNavigator
                 testcaseGroups={testcaseGroups}
+                nodeById={nodeById}
                 onDragStart={(e, testcase) => {
                   onDragStart(e, testcase);
                 }}

@@ -30,6 +30,7 @@ function TestcaseNavigatorGroupItem({
   enableDrag,
   copyInfo,
   onDragStart,
+  nodeById,
 }) {
   const [treeOpen, setTreeOpen] = useState(false);
 
@@ -273,6 +274,7 @@ function TestcaseNavigatorGroupItem({
                     clearDragInfo={clearDragInfo}
                     onKeyDown={onKeyDown}
                     onDragStart={onDragStart}
+                    nodeById={nodeById}
                   />
                 ))}
               </ul>
@@ -308,6 +310,7 @@ function TestcaseNavigatorGroupItem({
                     watcherInfo={watcherInfo}
                     copyInfo={copyInfo}
                     onDragStart={onDragStart}
+                    nodeById={nodeById}
                   />
                 );
               })}
@@ -345,6 +348,7 @@ TestcaseNavigatorGroupItem.defaultProps = {
   watcherInfo: null,
   copyInfo: null,
   onDragStart: null,
+  nodeById: {},
 };
 
 TestcaseNavigatorGroupItem.propTypes = {
@@ -400,6 +404,11 @@ TestcaseNavigatorGroupItem.propTypes = {
     name: PropTypes.string,
   }),
   onDragStart: PropTypes.func,
+  nodeById: PropTypes.shape({
+    [PropTypes.string]: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
 };
 
 export default observer(TestcaseNavigatorGroupItem);

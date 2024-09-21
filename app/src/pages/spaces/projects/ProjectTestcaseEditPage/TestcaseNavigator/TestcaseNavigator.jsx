@@ -34,6 +34,7 @@ function TestcaseNavigator({
   enableDrag,
   copyTestcase,
   onDragStart,
+  nodeById,
 }) {
   const { t } = useTranslation();
   const scroller = useRef(null);
@@ -373,6 +374,7 @@ function TestcaseNavigator({
                     watcherInfo={watcherInfo}
                     copyInfo={copyInfo}
                     onDragStart={onDragStart}
+                    nodeById={nodeById}
                   />
                 );
               })}
@@ -431,9 +433,9 @@ TestcaseNavigator.defaultProps = {
   addTestcaseGroup: null,
   addTestcase: null,
   onPositionChange: null,
+  onSelect: null,
   onChangeTestcaseGroupName: null,
   onDelete: null,
-  onDragStart: null,
   contentChanged: false,
   user: null,
   users: [],
@@ -443,6 +445,8 @@ TestcaseNavigator.defaultProps = {
   enableDrag: true,
   watcherInfo: {},
   copyTestcase: null,
+  onDragStart: null,
+  nodeById: {},
 };
 
 TestcaseNavigator.propTypes = {
@@ -450,9 +454,8 @@ TestcaseNavigator.propTypes = {
   addTestcaseGroup: PropTypes.func,
   addTestcase: PropTypes.func,
   onPositionChange: PropTypes.func,
-  onSelect: PropTypes.func.isRequired,
+  onSelect: PropTypes.func,
   onDelete: PropTypes.func,
-  onDragStart: PropTypes.func,
   selectedItemInfo: PropTypes.shape({
     id: NullableNumber,
     type: NullableString,
@@ -479,6 +482,12 @@ TestcaseNavigator.propTypes = {
     }),
   }),
   copyTestcase: PropTypes.func,
+  onDragStart: PropTypes.func,
+  nodeById: PropTypes.shape({
+    [PropTypes.string]: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
 };
 
 export default observer(TestcaseNavigator);

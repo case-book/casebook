@@ -20,6 +20,10 @@
         .react-flow__handle {
           cursor: grab !important;
         }
+
+        .react-flow__attribution {
+          display: none;
+        }
       }
     }
   }
