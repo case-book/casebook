@@ -19,7 +19,6 @@ function SequenceListPage() {
       setProject(info);
     });
     SequenceService.selectSequenceList(spaceCode, projectId, list => {
-      console.log(list);
       setSequences(list);
     });
   }, [spaceCode, projectId]);

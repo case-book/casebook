@@ -5,6 +5,16 @@
     padding-bottom: 0;
     flex-direction: column;
 
+    .controls {
+      display: flex;
+      > div {
+        align-self: center;
+        .curve-type {
+          min-width: 30px;
+        }
+      }
+    }
+
     .sequence-title {
       display: inline-flex;
       > div {
@@ -15,7 +25,18 @@
       }
     }
 
+    .minimap {
+      position: absolute;
+      left: 36px;
+      top: auto;
+      right: auto;
+      bottom: -5px;
+    }
 
+    .react-flow__minimap {
+      background-color: var(--theme-color);
+      border: 1px solid var(--border-color);
+    }
 
     .sequence-content {
       flex-grow: 1;

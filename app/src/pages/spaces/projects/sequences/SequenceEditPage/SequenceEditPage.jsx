@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addEdge, Background, MarkerType, MiniMap, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
-import { Button, Input, Liner, Page, PageContent, PageTitle, Title } from '@/components';
+import { Button, Input, Liner, Page, PageContent, PageTitle, Radio, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProjectService from '@/services/ProjectService';
@@ -18,9 +18,28 @@ import SequenceService from '@/services/SequenceService';
 import useStores from '@/hooks/useStores';
 import CustomControls from '@/pages/spaces/projects/sequences/SequenceEditPage/CustomControls';
 
+const CURVE_TYPES = [
+  {
+    icon: <i className="fa-solid fa-l" />,
+    value: 'step',
+  },
+  {
+    icon: <i className="fa-solid fa-bezier-curve" />,
+    value: 'bezier',
+  },
+  {
+    icon: <i className="fa-solid fa-grip-lines" />,
+    value: 'straight',
+  },
+  {
+    icon: <i className="fa-solid fa-stairs" />,
+    value: 'smoothstep',
+  },
+];
+
 const DEFAULT_BUTTON_EDGE = {
   type: 'buttonEdge',
-  data: { curveType: 'bezier', editable: true }, // bezier, straight, smoothstep, step
+  // data: { curveType: 'bezier', editable: true }, // bezier, straight, smoothstep, step
   markerEnd: {
     type: MarkerType.Arrow,
     width: 16,
@@ -33,56 +52,8 @@ const DEFAULT_BUTTON_EDGE = {
 
 const DEFAULT_TESTCASE_NODE = {
   type: 'testcase',
-  style: { width: 180, height: 60 },
-  data: {
-    label: '테스트케이스',
-    editable: true,
-  },
+  style: { width: 240, height: 60 },
 };
-
-const initialNodes = [
-  {
-    id: '1',
-    position: { x: 100, y: 200 },
-    ...DEFAULT_TESTCASE_NODE,
-    data: {
-      label: 'TC2 링크를 통한 초대',
-      editable: true,
-    },
-  },
-  {
-    id: '3',
-    position: { x: 100, y: 400 },
-    ...DEFAULT_TESTCASE_NODE,
-    data: {
-      label: 'TC3 회원 가입',
-    },
-  },
-  {
-    id: '4',
-    position: { x: 500, y: 300 },
-    ...DEFAULT_TESTCASE_NODE,
-    data: {
-      label: 'TC4 중복 로그인 처리',
-    },
-  },
-];
-const initialEdges = [
-  {
-    id: 'e1-4',
-    source: '1',
-    target: '4',
-    ...DEFAULT_BUTTON_EDGE,
-  },
-  {
-    id: 'e3-4',
-    source: '3',
-    target: '4',
-    ...DEFAULT_BUTTON_EDGE,
-  },
-];
-
-console.log(initialNodes, initialEdges);
 
 function SequenceEditPage({ type }) {
   const { t } = useTranslation();
@@ -105,6 +76,9 @@ function SequenceEditPage({ type }) {
     description: '',
   });
 
+  const [curveType, setCurveType] = useState('bezier');
+  const [viewTestcaseNavigator, setViewTestcaseNavigator] = useState(true);
+
   useEffect(() => {
     if (type !== 'edit') {
       setSequence({
@@ -113,7 +87,6 @@ function SequenceEditPage({ type }) {
       });
     }
   }, [type]);
-  console.log(nodes);
 
   const isEdit = useMemo(() => {
     return type === 'edit';
@@ -145,7 +118,6 @@ function SequenceEditPage({ type }) {
   useEffect(() => {
     if (isEdit && sequenceId) {
       SequenceService.selectSequence(spaceCode, projectId, sequenceId, info => {
-        console.log(info);
         setSequence({
           id: info.id,
           name: info.name,
@@ -180,7 +152,7 @@ function SequenceEditPage({ type }) {
               type: d.type,
               style: d.style,
               data: {
-                curveType: 'bezier',
+                curveType,
                 editable: true,
                 id: d.id,
               },
@@ -203,6 +175,7 @@ function SequenceEditPage({ type }) {
           {
             ...params,
             ...DEFAULT_BUTTON_EDGE,
+            data: { curveType, editable: true },
           },
           eds,
         ),
@@ -210,8 +183,6 @@ function SequenceEditPage({ type }) {
     },
     [setEdges, nodes],
   );
-
-  console.log(edges);
 
   const nodeTypes = {
     testcase: TestcaseNode,
@@ -223,13 +194,9 @@ function SequenceEditPage({ type }) {
 
   const onDrop = useCallback(
     event => {
-      console.log(event);
-      console.log(reactFlowInstance);
       event.preventDefault();
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const testcase = JSON.parse(event.dataTransfer.getData('application/reactflow'));
-
-      console.log(testcase);
 
       // 마우스 좌표를 통해 드랍된 위치 계산
       const position = {
@@ -294,13 +261,7 @@ function SequenceEditPage({ type }) {
         }),
       };
 
-      console.log(nodes);
-      console.log(edges);
-      console.log(sequence);
-      console.log(data);
-
-      SequenceService.updateSequence(spaceCode, projectId, sequenceId, data, info => {
-        console.log(info);
+      SequenceService.updateSequence(spaceCode, projectId, sequenceId, data, () => {
         navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`);
       });
     } else {
@@ -326,18 +287,10 @@ function SequenceEditPage({ type }) {
         }),
       };
 
-      console.log(edges);
-      console.log(data);
-
-      SequenceService.createSequence(spaceCode, projectId, data, info => {
-        console.log(info);
+      SequenceService.createSequence(spaceCode, projectId, data, () => {
         navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
       });
     }
-
-    console.log(sequence);
-    console.log(nodes);
-    console.log(edges);
   };
 
   const onChangeSequence = useCallback(
@@ -356,6 +309,29 @@ function SequenceEditPage({ type }) {
       return acc;
     }, {});
   }, [nodes]);
+
+  useEffect(() => {
+    setEdges(eds =>
+      eds.map(edge => {
+        return {
+          ...edge,
+          data: {
+            ...edge.data,
+            curveType,
+          },
+        };
+      }),
+    );
+  }, [curveType]);
+
+  const nodeColor = useCallback(node => {
+    switch (node.type) {
+      case 'testcase':
+        return '#386bd8';
+      default:
+        return '#CCC';
+    }
+  }, []);
 
   return (
     <Page className="sequence-edit-page-wrapper">
@@ -412,7 +388,59 @@ function SequenceEditPage({ type }) {
         {!isEdit ? t('새 케이스시퀀스') : t('케이스 시퀀스')}
       </PageTitle>
       <PageContent className="page-content" flex>
-        <Title border={false} marginBottom={false}>
+        <Title
+          border={false}
+          marginBottom={false}
+          control={
+            <div className="controls">
+              <div>
+                {CURVE_TYPES.map(d => {
+                  return (
+                    <Radio
+                      key={d.value}
+                      className="curve-type"
+                      type="inline"
+                      size="xs"
+                      value={d.value}
+                      checked={curveType === d.value}
+                      onChange={() => {
+                        setCurveType(d.value);
+                      }}
+                      label={d.icon}
+                    />
+                  );
+                })}
+              </div>
+              <div>
+                <Liner width="1px" height="10px" margin="0 0.5rem" />
+              </div>
+              <div>
+                <Radio
+                  className="curve-type"
+                  type="inline"
+                  size="xs"
+                  value
+                  checked={viewTestcaseNavigator}
+                  onChange={() => {
+                    setViewTestcaseNavigator(true);
+                  }}
+                  label={<i className="fa-regular fa-window-maximize" />}
+                />
+                <Radio
+                  className="curve-type"
+                  type="inline"
+                  size="xs"
+                  value={false}
+                  checked={!viewTestcaseNavigator}
+                  onChange={() => {
+                    setViewTestcaseNavigator(false);
+                  }}
+                  label={<i className="fa-solid fa-minus" />}
+                />
+              </div>
+            </div>
+          }
+        >
           <div className="sequence-title">
             <div>
               {isNameEdit && <Input type="text" size="sm" value={sequence.name} onChange={val => onChangeSequence('name', val)} required minLength={1} />}
@@ -454,28 +482,41 @@ function SequenceEditPage({ type }) {
                 panOnDrag={isInteractive} // 드래그로 패닝 가능 여부
               >
                 <CustomControls isInteractive={isInteractive} setIsInteractive={setIsInteractive} />
-                <MiniMap />
+                <MiniMap
+                  className="minimap"
+                  nodeColor={nodeColor}
+                  maskColor="#fafafa"
+                  maskStrokeColor="rgba(0,0,0,0.5)"
+                  maskStrokeWidth={0.4}
+                  pannable
+                  zoomable
+                  style={{
+                    width: '200',
+                    height: '132',
+                  }}
+                />
                 <Background variant="dots" gap={12} size={1} />
               </ReactFlow>
             </div>
           </ReactFlowProvider>
-          <div className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <ResizableBox
-              width={360}
-              height={Infinity}
-              minConstraints={[200, 100]} // 최소 크기 설정
-              maxConstraints={[500, 200]} // 최대 크기 설정
-              resizeHandles={['w']} // 좌측에만 핸들을 표시
-            >
-              <TestcaseNavigator
-                testcaseGroups={testcaseGroups}
-                nodeById={nodeById}
-                onDragStart={(e, testcase) => {
-                  onDragStart(e, testcase);
-                }}
-              />
-            </ResizableBox>
-          </div>
+          {viewTestcaseNavigator && (
+            <div className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <ResizableBox
+                width={360}
+                minConstraints={[200, 100]} // 최소 크기 설정
+                maxConstraints={[500, 200]} // 최대 크기 설정
+                resizeHandles={['w']} // 좌측에만 핸들을 표시
+              >
+                <TestcaseNavigator
+                  testcaseGroups={testcaseGroups}
+                  nodeById={nodeById}
+                  onDragStart={(e, testcase) => {
+                    onDragStart(e, testcase);
+                  }}
+                />
+              </ResizableBox>
+            </div>
+          )}
         </div>
       </PageContent>
     </Page>

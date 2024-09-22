@@ -40,8 +40,6 @@ function SequenceInfoPage() {
           description: info.description,
         });
 
-        console.log(info);
-
         setNodes(
           info.nodes.map(d => {
             return {
@@ -91,9 +89,6 @@ function SequenceInfoPage() {
   const edgeTypes = {
     buttonEdge: SequenceEdge,
   };
-
-  console.log(nodes);
-  console.log(edges);
 
   const onDelete = () => {
     dialogUtil.setConfirm(

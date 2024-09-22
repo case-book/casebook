@@ -37,8 +37,8 @@ function TestcaseNavigatorTestcaseItem({
         className={classNames('testcase-info', {
           'drag-target': dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId === testcase.id,
           'drag-destination': dragInfo.destinationType === ITEM_TYPE.TESTCASE && dragInfo.destinationId === testcase.id,
-          'context-menu-target': contextMenuInfo.type === ITEM_TYPE.TESTCASE && contextMenuInfo.id === testcase.id,
           'name-editing': editInfo.type === ITEM_TYPE.TESTCASE && editInfo.id === testcase.id,
+          'context-menu-target': contextMenuInfo.type === ITEM_TYPE.TESTCASE && contextMenuInfo.id === testcase.id,
           selected: selectedItemInfo.type === ITEM_TYPE.TESTCASE && testcase.id === selectedItemInfo.id,
           copied: copyInfo.type === ITEM_TYPE.TESTCASE && testcase.id === copyInfo.id,
           'already-dragged': draggable && nodeById[testcase.id],
