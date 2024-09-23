@@ -1,0 +1,23 @@
+.button-edge-remove-button {
+  width: 24px;
+  height: 24px;
+  background: #eee;
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 1;
+  &:hover {
+    border-color: var(--danger-color);
+  }
+}
+
+.button-edge-wrapper {
+  stroke: var(--border-color);
+
+  &.hovered {
+    stroke: var(--danger-color);
+  }
+}
+
+

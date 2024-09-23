@@ -3,6 +3,7 @@ package com.mindplates.bugcase.biz.project.entity;
 import com.mindplates.bugcase.biz.project.dto.ProjectReleaseDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseProjectRelease;
+import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,13 +40,13 @@ public class ProjectRelease extends CommonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 128)
+    @Column(name = "name", nullable = false, length = ColumnsDef.NAME)
     private String name;
 
     @Column(name = "is_target")
     private Boolean isTarget;
 
-    @Column(name = "description", length = 512)
+    @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)

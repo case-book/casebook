@@ -362,6 +362,11 @@ li.testcase-group-item-wrapper {
       &.copied {
         outline: 2px dashed var(--gray-color);
       }
+
+      &.already-dragged {
+        background-color: var(--light-color);
+        opacity: 0.6;
+      }
     }
   }
 }

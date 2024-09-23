@@ -1,3 +1,4 @@
+import React from 'react';
 import i18n from 'i18next';
 
 const THEMES = {
@@ -617,6 +618,25 @@ const LLM_CONFIGS = {
   LLM_PREFIX: 'PRE 프롬프트',
 };
 
+const CURVE_TYPES = [
+  {
+    icon: <i className="fa-solid fa-l" />,
+    value: 'step',
+  },
+  {
+    icon: <i className="fa-solid fa-bezier-curve" />,
+    value: 'bezier',
+  },
+  {
+    icon: <i className="fa-solid fa-grip-lines" />,
+    value: 'straight',
+  },
+  {
+    icon: <i className="fa-solid fa-stairs" />,
+    value: 'smoothstep',
+  },
+];
+
 export {
   LANGUAGES,
   SYSTEM_ROLE,
@@ -652,4 +672,5 @@ export {
   CHANNEL_TYPE_CODE,
   LLM_TYPE_CODE,
   LLM_CONFIGS,
+  CURVE_TYPES
 };
