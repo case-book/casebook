@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Background, Controls, MarkerType, MiniMap, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react';
+import { Background, MarkerType, ReactFlow, useEdgesState, useNodesState } from '@xyflow/react';
 import { Button, Page, PageContent, PageTitle, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,10 +7,11 @@ import ProjectService from '@/services/ProjectService';
 import '@xyflow/react/dist/style.css';
 import 'react-resizable/css/styles.css';
 import SequenceService from '@/services/SequenceService';
-import { SequenceEdge, TestcaseNode } from '@/assets';
-import './SequenceInfoPage.scss';
+import { CurveTypeChoice, MiniMap, SequenceControls, SequenceEdge, TestcaseNode } from '@/assets';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
+import './SequenceInfoPage.scss';
+import { getOption, setOption } from '@/utils/storageUtil';
 
 function SequenceInfoPage() {
   const { t } = useTranslation();
@@ -18,13 +19,18 @@ function SequenceInfoPage() {
   const reactFlowWrapper = useRef(null);
   const { spaceCode, projectId, sequenceId } = useParams();
   const [project, setProject] = useState(null);
-
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [isInteractive, setIsInteractive] = useState(true);
   const [sequence, setSequence] = useState({
     name: '',
     description: '',
   });
+  const [curveType, setCurveType] = useState(
+    (() => {
+      return getOption('sequence', 'options', 'curveType') || 'step';
+    })(),
+  );
 
   useEffect(() => {
     ProjectService.selectProjectName(spaceCode, projectId, info => {
@@ -67,7 +73,7 @@ function SequenceInfoPage() {
               type: d.type,
               style: d.style,
               data: {
-                curveType: 'bezier',
+                curveType,
                 editable: false,
               },
               markerEnd: {
@@ -89,6 +95,20 @@ function SequenceInfoPage() {
   const edgeTypes = {
     buttonEdge: SequenceEdge,
   };
+
+  useEffect(() => {
+    setEdges(eds =>
+      eds.map(edge => {
+        return {
+          ...edge,
+          data: {
+            ...edge.data,
+            curveType,
+          },
+        };
+      }),
+    );
+  }, [curveType]);
 
   const onDelete = () => {
     dialogUtil.setConfirm(
@@ -149,7 +169,21 @@ function SequenceInfoPage() {
         {t('케이스 시퀀스')}
       </PageTitle>
       <PageContent className="page-content" flex>
-        <Title border={false} marginBottom={false}>
+        <Title
+          border={false}
+          marginBottom={false}
+          control={
+            <div className="controls">
+              <CurveTypeChoice
+                curveType={curveType}
+                setCurveType={d => {
+                  setOption('sequence', 'options', 'curveType', d);
+                  setCurveType(d);
+                }}
+              />
+            </div>
+          }
+        >
           {sequence.name}
         </Title>
         <div className="sequence-content">
@@ -166,7 +200,7 @@ function SequenceInfoPage() {
               nodesConnectable={false}
               elementsSelectable={false}
             >
-              <Controls />
+              <SequenceControls isInteractive={isInteractive} setIsInteractive={setIsInteractive} />
               <MiniMap />
               <Background variant="dots" gap={12} size={1} />
             </ReactFlow>

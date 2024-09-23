@@ -1,5 +1,7 @@
 import OpenLinkReport from '@/assets/OpenLink/OpenLinkReport/OpenLinkReport';
 import OpenLinkReportList from '@/assets/OpenLink/OpenLinkReportList/OpenLinkReportList';
+import SequenceEdge from '@/assets/sequence/SequenceEdge/SequenceEdge';
+import TestcaseNode from '@/assets/sequence/TestcaseNode/TestcaseNode';
 import TestrunHookEditPopup from './TestrunHookEditPopup/TestrunHookEditPopup';
 import CommentList from './CommentList/CommentList';
 import ProfileSelectPopup from './ProfileSelectPopup/ProfileSelectPopup';
@@ -10,8 +12,9 @@ import TestrunMessageChannelSelector from './TestrunMessageChannelSelector/Testr
 import TestrunMessageChannelList from './TestrunMessageChannelList/TestrunMessageChannelList';
 import TestcaseViewerPopup from './TestcaseViewerPopup/TestcaseViewerPopup';
 import ReportCountSummary from './ReportCountSummary/ReportCountSummary';
-import SequenceEdge from './SequenceEdge/SequenceEdge';
-import TestcaseNode from './TestcaseNode/TestcaseNode';
+import MiniMap from './sequence/MiniMap/MiniMap';
+import SequenceControls from './sequence/SequenceControls/SequenceControls';
+import CurveTypeChoice from './sequence/CurveTypeChoice/CurveTypeChoice';
 
 export {
   CommentList,
@@ -28,4 +31,7 @@ export {
   OpenLinkReportList,
   SequenceEdge,
   TestcaseNode,
+  MiniMap,
+  SequenceControls,
+  CurveTypeChoice,
 };

@@ -3,13 +3,13 @@ import { useReactFlow } from '@xyflow/react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Button } from '@/components';
-import './CustomControls.scss';
+import './SequenceControls.scss';
 
-function CustomControls({ className, position, isInteractive, setIsInteractive }) {
+function SequenceControls({ className, position, isInteractive, setIsInteractive }) {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
 
   return (
-    <div className={classNames('custom-controls-wrapper', className, position)}>
+    <div className={classNames('sequence-controls-wrapper', className, position)}>
       <Button size="sm" rounded onClick={zoomIn}>
         <i className="fa-solid fa-plus" />
       </Button>
@@ -33,16 +33,16 @@ function CustomControls({ className, position, isInteractive, setIsInteractive }
   );
 }
 
-CustomControls.propTypes = {
+SequenceControls.propTypes = {
   position: PropTypes.oneOf(['top-left', 'top-right', 'bottom-left', 'bottom-right']),
   className: PropTypes.string,
   isInteractive: PropTypes.bool.isRequired,
   setIsInteractive: PropTypes.func.isRequired,
 };
 
-CustomControls.defaultProps = {
+SequenceControls.defaultProps = {
   position: 'bottom-left',
   className: '',
 };
 
-export default CustomControls;
+export default SequenceControls;

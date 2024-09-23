@@ -5,6 +5,10 @@
     padding-bottom: 0;
     flex-direction: column;
 
+    .option {
+      min-width: 30px;
+    }
+
     .sequence-content {
       flex-grow: 1;
       display: flex;

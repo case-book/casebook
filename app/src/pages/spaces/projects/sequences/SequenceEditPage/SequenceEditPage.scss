@@ -9,7 +9,7 @@
       display: flex;
       > div {
         align-self: center;
-        .curve-type {
+        .option {
           min-width: 30px;
         }
       }
@@ -23,19 +23,6 @@
           margin-left: 0.5rem;
         }
       }
-    }
-
-    .minimap {
-      position: absolute;
-      left: 36px;
-      top: auto;
-      right: auto;
-      bottom: -5px;
-    }
-
-    .react-flow__minimap {
-      background-color: var(--theme-color);
-      border: 1px solid var(--border-color);
     }
 
     .sequence-content {

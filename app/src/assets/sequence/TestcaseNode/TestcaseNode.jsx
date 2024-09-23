@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Handle, NodeResizer, Position, useReactFlow } from '@xyflow/react';
+import classNames from 'classnames';
 import './TestcaseNode.scss';
 
 function TestcaseNode({ id, width, height, data }) {
@@ -26,8 +27,8 @@ function TestcaseNode({ id, width, height, data }) {
           {data.label}
         </div>
       </div>
-      <Handle type="source" position={Position.Right} />
-      <Handle type="target" position={Position.Left} />
+      <Handle className={classNames('source-handle', { hidden: !data.editable })} type="source" position={Position.Right} />
+      <Handle className={classNames('target-handle', { hidden: !data.editable })} type="target" position={Position.Left} />
       {data.editable && (
         <button className="button-node-remove-button" onClick={onRemoveClick}>
           <i className="fa-solid fa-xmark" />

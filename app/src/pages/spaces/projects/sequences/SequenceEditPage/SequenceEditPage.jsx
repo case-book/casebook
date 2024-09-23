@@ -1,45 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { addEdge, Background, MarkerType, MiniMap, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
+import { addEdge, Background, MarkerType, ReactFlow, ReactFlowProvider, useEdgesState, useNodesState } from '@xyflow/react';
 import { Button, Input, Liner, Page, PageContent, PageTitle, Radio, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProjectService from '@/services/ProjectService';
 import '@xyflow/react/dist/style.css';
 import TestcaseService from '@/services/TestcaseService';
-import { SequenceEdge, TestcaseNode } from '@/assets';
-import './SequenceEditPage.scss';
+import { CurveTypeChoice, MiniMap, SequenceControls, SequenceEdge, TestcaseNode } from '@/assets';
+import { useResizeDetector } from 'react-resize-detector';
 import { ResizableBox } from 'react-resizable';
 import TestcaseNavigator from '@/pages/spaces/projects/ProjectTestcaseEditPage/TestcaseNavigator/TestcaseNavigator';
 import testcaseUtil from '@/utils/testcaseUtil';
-
 import 'react-resizable/css/styles.css';
 import * as PropTypes from 'prop-types';
 import SequenceService from '@/services/SequenceService';
 import useStores from '@/hooks/useStores';
-import CustomControls from '@/pages/spaces/projects/sequences/SequenceEditPage/CustomControls';
-
-const CURVE_TYPES = [
-  {
-    icon: <i className="fa-solid fa-l" />,
-    value: 'step',
-  },
-  {
-    icon: <i className="fa-solid fa-bezier-curve" />,
-    value: 'bezier',
-  },
-  {
-    icon: <i className="fa-solid fa-grip-lines" />,
-    value: 'straight',
-  },
-  {
-    icon: <i className="fa-solid fa-stairs" />,
-    value: 'smoothstep',
-  },
-];
+import './SequenceEditPage.scss';
+import { getOption, setOption } from '@/utils/storageUtil';
 
 const DEFAULT_BUTTON_EDGE = {
   type: 'buttonEdge',
-  // data: { curveType: 'bezier', editable: true }, // bezier, straight, smoothstep, step
   markerEnd: {
     type: MarkerType.Arrow,
     width: 16,
@@ -71,12 +51,23 @@ function SequenceEditPage({ type }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isInteractive, setIsInteractive] = useState(true);
+
+  const { height, ref } = useResizeDetector({
+    handleHeight: true,
+    refreshMode: 'throttle',
+    refreshRate: 100,
+  });
+
   const [sequence, setSequence] = useState({
     name: '',
     description: '',
   });
 
-  const [curveType, setCurveType] = useState('bezier');
+  const [curveType, setCurveType] = useState(
+    (() => {
+      return getOption('sequence', 'options', 'curveType') || 'step';
+    })(),
+  );
   const [viewTestcaseNavigator, setViewTestcaseNavigator] = useState(true);
 
   useEffect(() => {
@@ -324,15 +315,6 @@ function SequenceEditPage({ type }) {
     );
   }, [curveType]);
 
-  const nodeColor = useCallback(node => {
-    switch (node.type) {
-      case 'testcase':
-        return '#386bd8';
-      default:
-        return '#CCC';
-    }
-  }, []);
-
   return (
     <Page className="sequence-edit-page-wrapper">
       <PageTitle
@@ -393,30 +375,19 @@ function SequenceEditPage({ type }) {
           marginBottom={false}
           control={
             <div className="controls">
-              <div>
-                {CURVE_TYPES.map(d => {
-                  return (
-                    <Radio
-                      key={d.value}
-                      className="curve-type"
-                      type="inline"
-                      size="xs"
-                      value={d.value}
-                      checked={curveType === d.value}
-                      onChange={() => {
-                        setCurveType(d.value);
-                      }}
-                      label={d.icon}
-                    />
-                  );
-                })}
-              </div>
+              <CurveTypeChoice
+                curveType={curveType}
+                setCurveType={d => {
+                  setOption('sequence', 'options', 'curveType', d);
+                  setCurveType(d);
+                }}
+              />
               <div>
                 <Liner width="1px" height="10px" margin="0 0.5rem" />
               </div>
               <div>
                 <Radio
-                  className="curve-type"
+                  className="option"
                   type="inline"
                   size="xs"
                   value
@@ -427,7 +398,7 @@ function SequenceEditPage({ type }) {
                   label={<i className="fa-regular fa-window-maximize" />}
                 />
                 <Radio
-                  className="curve-type"
+                  className="option"
                   type="inline"
                   size="xs"
                   value={false}
@@ -459,7 +430,6 @@ function SequenceEditPage({ type }) {
             </div>
           </div>
         </Title>
-
         <div className="sequence-content">
           <ReactFlowProvider>
             <div className="react-flow-wrapper" ref={reactFlowWrapper}>
@@ -481,30 +451,19 @@ function SequenceEditPage({ type }) {
                 zoomOnScroll={isInteractive} // 스크롤로 줌 가능 여부
                 panOnDrag={isInteractive} // 드래그로 패닝 가능 여부
               >
-                <CustomControls isInteractive={isInteractive} setIsInteractive={setIsInteractive} />
-                <MiniMap
-                  className="minimap"
-                  nodeColor={nodeColor}
-                  maskColor="#fafafa"
-                  maskStrokeColor="rgba(0,0,0,0.5)"
-                  maskStrokeWidth={0.4}
-                  pannable
-                  zoomable
-                  style={{
-                    width: '200',
-                    height: '132',
-                  }}
-                />
+                <SequenceControls isInteractive={isInteractive} setIsInteractive={setIsInteractive} />
+                <MiniMap />
                 <Background variant="dots" gap={12} size={1} />
               </ReactFlow>
             </div>
           </ReactFlowProvider>
           {viewTestcaseNavigator && (
-            <div className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div ref={ref} className="testcase-group-content" style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <ResizableBox
                 width={360}
-                minConstraints={[200, 100]} // 최소 크기 설정
-                maxConstraints={[500, 200]} // 최대 크기 설정
+                height={height}
+                minConstraints={[200, 100]} // 최소 너비, 높이
+                maxConstraints={[Infinity, Infinity]} // 최대 너비, 높이
                 resizeHandles={['w']} // 좌측에만 핸들을 표시
               >
                 <TestcaseNavigator
