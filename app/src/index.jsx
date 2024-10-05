@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/browser';
 import '@/configurations/i18n';
-// import AgentA from '@kakao/matrix-agenta';
-import AgentA from './agenta';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -21,12 +19,6 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     tracesSampleRate: 0.05,
   });
 }
-
-console.log(AgentA);
-
-AgentA.init({
-  debug: true,
-});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
