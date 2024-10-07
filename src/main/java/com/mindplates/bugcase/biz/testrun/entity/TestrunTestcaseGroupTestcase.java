@@ -87,7 +87,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
     }
 
 
-    public int assignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester) {
+    public int assignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester, Boolean addConnectedSequenceTestcase, Boolean assignSequenceTestcaseSameTester) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         List<TestcaseItemDTO> items = testcase.getTestcaseItems();
         this.testResult = TestResultCode.UNTESTED;
@@ -98,6 +98,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
                     .findFirst().orElse(null) : null;
             boolean isAutomationItem = automationItem != null && "Y".equals(automationItem.getValue());
 
+            // TODO
             if (!(autoTestcaseNotAssignedTester != null && autoTestcaseNotAssignedTester && isAutomationItem)) {
                 currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
             }

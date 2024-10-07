@@ -11,6 +11,8 @@ import com.mindplates.bugcase.biz.project.repository.ProjectMessageChannelReposi
 import com.mindplates.bugcase.biz.project.repository.ProjectRepository;
 import com.mindplates.bugcase.biz.project.service.ProjectCachedService;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
+import com.mindplates.bugcase.biz.sequence.dto.DirectedGraph;
+import com.mindplates.bugcase.biz.sequence.service.SequenceService;
 import com.mindplates.bugcase.biz.space.dto.SpaceMessageChannelDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceProfileVariableDTO;
 import com.mindplates.bugcase.biz.space.dto.SpaceVariableDTO;
@@ -74,6 +76,7 @@ import com.mindplates.bugcase.common.service.MessageChannelService;
 import com.mindplates.bugcase.common.util.FileUtil;
 import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.framework.config.CacheConfig;
+import jakarta.transaction.Transactional;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -85,7 +88,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -139,6 +141,7 @@ public class TestrunService {
     private final UserCachedService userCachedService;
     private final CacheManager cacheManager;
     private final TestrunCachedService testrunCachedService;
+    private final SequenceService sequenceService;
 
     private final Random random = new Random();
 
@@ -168,6 +171,7 @@ public class TestrunService {
 
         List<TestrunUser> testrunUsers = testrun.getTestrunUsers();
         if (!testrunUsers.isEmpty()) {
+
             // 프로젝트의 모든 테스트케이스 조회 및 정리
             List<Testcase> projectAllTestcases = testcaseRepository.findByProjectId(projectId);
             Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
@@ -189,8 +193,14 @@ public class TestrunService {
             Map<Long, TestcaseTemplateItem> projectTestcaseTemplateItemMap = new HashMap<>();
             projectAllTestcaseTemplateItems.forEach(testcaseTemplateItem -> projectTestcaseTemplateItemMap.put(testcaseTemplateItem.getId(), testcaseTemplateItem));
 
+            if (testrunDTO.getAddConnectedSequenceTestcase() != null && testrunDTO.getAddConnectedSequenceTestcase()) {
+                DirectedGraph graph = sequenceService.selectProjectSequenceGraph(projectId);
+                testrun.addConnectedTestcase(projectTestcaseMap, graph);
+            }
+
             // 테스트케이스, 테스트케이스 아이템, 테스트케이스 템플릿으로 테스트런 테스트케이스 정보 초기화
-            testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, random, testrunDTO.getAutoTestcaseNotAssignedTester());
+            testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, random, testrunDTO.getAutoTestcaseNotAssignedTester(),
+                testrunDTO.getAddConnectedSequenceTestcase(), testrunDTO.getAssignSequenceTestcaseSameTester());
         }
 
         // 시작 전 훅 호출
@@ -379,7 +389,8 @@ public class TestrunService {
                         TestcaseDTO testcase = testcaseCachedService.selectTestcaseInfo(updateTestrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
                         if (testrunTestcaseGroupTestcase.getId() == null) {
                             // 신규 생성된 테스트 케이스 그룹의 테스트케이스에 테스터 설정
-                            currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random, targetTestrun.getAutoTestcaseNotAssignedTester());
+                            currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random, targetTestrun.getAutoTestcaseNotAssignedTester(),
+                                targetTestrun.getAddConnectedSequenceTestcase(), targetTestrun.getAssignSequenceTestcaseSameTester());
                         } else {
                             // 존재하는 테스트케이스에 테스터가 삭제된 경우 신규 테스터 할당
                             currentSeq = testrunTestcaseGroupTestcase.reAssignTester(project, testcase, testrunUsers, currentSeq, random);

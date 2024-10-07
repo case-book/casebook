@@ -2,10 +2,12 @@ package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mindplates.bugcase.biz.project.entity.Project;
+import com.mindplates.bugcase.biz.sequence.dto.DirectedGraph;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.entity.Testcase;
+import com.mindplates.bugcase.biz.testcase.entity.TestcaseGroup;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseItem;
 import com.mindplates.bugcase.biz.testcase.entity.TestcaseTemplateItem;
 import com.mindplates.bugcase.biz.testrun.dto.TestrunDTO;
@@ -37,10 +39,14 @@ import jakarta.persistence.Table;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -129,6 +135,12 @@ public class Testrun extends CommonEntity implements Cloneable {
     @Column(name = "auto_testcase_not_assigned_tester")
     private Boolean autoTestcaseNotAssignedTester;
 
+    @Column(name = "add_connected_sequence_testcase")
+    private Boolean addConnectedSequenceTestcase;
+
+    @Column(name = "assign_sequence_testcase_same_tester")
+    private Boolean assignSequenceTestcaseSameTester;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "testrun", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<TestrunUser> testrunUsers;
@@ -154,7 +166,7 @@ public class Testrun extends CommonEntity implements Cloneable {
         LocalDateTime startDateTime, LocalDateTime endDateTime, boolean opened, int totalTestcaseCount,
         int passedTestcaseCount, int failedTestcaseCount, int untestableTestcaseCount, LocalDateTime closedDate,
         String days, Boolean excludeHoliday, LocalTime startTime, Integer durationHours,
-        Boolean reserveExpired, Long reserveResultId, Boolean deadlineClose, Boolean autoTestcaseNotAssignedTester) {
+        Boolean reserveExpired, Long reserveResultId, Boolean deadlineClose, Boolean autoTestcaseNotAssignedTester, Boolean addConnectedSequenceTestcase, Boolean assignSequenceTestcaseSameTester) {
         this.id = id;
         this.seqId = seqId;
         this.name = name;
@@ -176,6 +188,8 @@ public class Testrun extends CommonEntity implements Cloneable {
         this.reserveResultId = reserveResultId;
         this.deadlineClose = deadlineClose;
         this.autoTestcaseNotAssignedTester = autoTestcaseNotAssignedTester;
+        this.addConnectedSequenceTestcase = addConnectedSequenceTestcase;
+        this.assignSequenceTestcaseSameTester = assignSequenceTestcaseSameTester;
     }
 
     public void update(TestrunDTO updateTestrun) {
@@ -197,6 +211,8 @@ public class Testrun extends CommonEntity implements Cloneable {
         this.reserveExpired = (updateTestrun.getReserveExpired());
         this.deadlineClose = (updateTestrun.getDeadlineClose());
         this.autoTestcaseNotAssignedTester = updateTestrun.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = updateTestrun.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = updateTestrun.getAssignSequenceTestcaseSameTester();
         this.profiles.clear();
         this.profiles.addAll(updateTestrun.getProfiles().stream().map(TestrunProfileDTO::toEntity).collect(Collectors.toList()));
         this.hooks.removeIf(hook -> updateTestrun.getHooks().stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
@@ -382,7 +398,7 @@ public class Testrun extends CommonEntity implements Cloneable {
     }
 
     public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap, Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap,
-        Random random, Boolean autoTestcaseNotAssignedTester) {
+        Random random, Boolean autoTestcaseNotAssignedTester, Boolean addConnectedSequenceTestcase, Boolean assignSequenceTestcaseSameTester) {
         int currentSeq = random.nextInt(testrunUsers.size());
         for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
             if (testrunTestcaseGroup.getTestcases() != null) {
@@ -399,7 +415,8 @@ public class Testrun extends CommonEntity implements Cloneable {
                         testcaseItem.setTestcaseTemplateItem(new TestcaseTemplateItemDTO(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId())));
                     }
 
-                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcaseInfo, testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester);
+                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcaseInfo, testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester, addConnectedSequenceTestcase,
+                        assignSequenceTestcaseSameTester);
                     if (testcaseItems != null) {
                         for (TestcaseItem testcaseItem : testcaseItems) {
                             if (testcaseItem.getValue() == null || Objects
@@ -510,6 +527,66 @@ public class Testrun extends CommonEntity implements Cloneable {
             .map(testrunTestcaseGroup -> testrunTestcaseGroup.getTestcases() != null ? testrunTestcaseGroup.getTestcases().stream()
                 .filter(testrunTestcaseGroupTestcase -> testrunTestcaseGroupTestcase.getTestResult().equals(TestResultCode.UNTESTABLE)).count() : 0)
             .reduce(0L, Long::sum).intValue();
+
+    }
+
+    public void addConnectedTestcase(Map<Long, Testcase> projectTestcaseMap, DirectedGraph directedGraph) {
+
+        // ConcurrentHashMap을 사용하여 testcaseIds와 testcaseGroupIds 생성
+        ConcurrentHashMap<Long, Boolean> testcaseIds = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Long, Boolean> testcaseGroupIds = new ConcurrentHashMap<>();
+
+        // CopyOnWriteArrayList로 testcaseGroups 변환 및 내부 testcases도 변환
+        CopyOnWriteArrayList<TestrunTestcaseGroup> copyOnWriteTestcaseGroups = new CopyOnWriteArrayList<>(this.testcaseGroups);
+        for (TestrunTestcaseGroup group : copyOnWriteTestcaseGroups) {
+            group.setTestcases(new CopyOnWriteArrayList<>(group.getTestcases()));
+
+            testcaseGroupIds.put(group.getTestcaseGroup().getId(), true);
+            for (TestrunTestcaseGroupTestcase testcase : group.getTestcases()) {
+                testcaseIds.put(testcase.getTestcase().getId(), true);
+            }
+        }
+
+        for (TestrunTestcaseGroup testcaseGroup : copyOnWriteTestcaseGroups) {
+            for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
+                if (directedGraph.nodeExists(testcase.getTestcase().getId())) {
+                    Set<Long> connectedIds = directedGraph.getConnectedNodes(testcase.getTestcase().getId());
+
+                    for (Long id : connectedIds) {
+                        if (!testcaseIds.containsKey(id)) {
+                            Testcase connectedTestcase = projectTestcaseMap.get(id);
+                            if (connectedTestcase != null) {
+                                if (!testcaseGroupIds.containsKey(connectedTestcase.getTestcaseGroup().getId())) {
+                                    testcaseGroupIds.put(connectedTestcase.getTestcaseGroup().getId(), true);
+                                    TestrunTestcaseGroup newGroup = TestrunTestcaseGroup.builder()
+                                        .testrun(this)
+                                        .testcaseGroup(TestcaseGroup.builder().id(connectedTestcase.getTestcaseGroup().getId()).build())
+                                        .testcases(new CopyOnWriteArrayList<>())
+                                        .build();
+                                    copyOnWriteTestcaseGroups.add(newGroup);
+                                }
+
+                                TestrunTestcaseGroup targetGroup = copyOnWriteTestcaseGroups.stream()
+                                    .filter(tg -> tg.getTestcaseGroup().getId().equals(connectedTestcase.getTestcaseGroup().getId()))
+                                    .findAny()
+                                    .orElseThrow(() -> new IllegalStateException("TestcaseGroup not found"));
+
+                                TestrunTestcaseGroupTestcase newTestcase = TestrunTestcaseGroupTestcase.builder()
+                                    .testrunTestcaseGroup(targetGroup)
+                                    .testcase(Testcase.builder().id(connectedTestcase.getId()).build())
+                                    .build();
+
+                                targetGroup.getTestcases().add(newTestcase);
+                                testcaseIds.put(connectedTestcase.getId(), true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+// 최종 결과를 원래의 testcaseGroups에 할당
+        this.testcaseGroups = new ArrayList<>(copyOnWriteTestcaseGroups);
 
     }
 }
