@@ -6,7 +6,6 @@
     "@dicebear/collection": "^8.0.1",
     "@dicebear/core": "^8.0.1",
     "@fortawesome/fontawesome-free": "^6.2.0",
-    "@kakao/matrix-agenta": "^0.0.4",
     "@nivo/core": "^0.80.0",
     "@nivo/pie": "^0.80.0",
     "@sentry/browser": "^6.18.1",
