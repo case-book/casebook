@@ -42,6 +42,8 @@ public class TestrunIterationDTO extends CommonDTO implements IDTO<TestrunIterat
     private Integer day;
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private TestrunIterationUserFilterTypeCode testrunIterationUserFilterType;
     private TestrunIterationUserFilterSelectRuleCode testrunIterationUserFilterSelectRule;
     private Integer filteringUserCount;
@@ -77,6 +79,8 @@ public class TestrunIterationDTO extends CommonDTO implements IDTO<TestrunIterat
         this.day = testrunIteration.getDay();
         this.deadlineClose = testrunIteration.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester() != null && testrunIteration.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrunIteration.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrunIteration.getAssignSequenceTestcaseSameTester();
         this.testrunIterationUserFilterType = testrunIteration.getTestrunIterationUserFilterType();
         this.testrunIterationUserFilterSelectRule = testrunIteration.getTestrunIterationUserFilterSelectRule();
         this.filteringUserCount = testrunIteration.getFilteringUserCount();
@@ -133,6 +137,8 @@ public class TestrunIterationDTO extends CommonDTO implements IDTO<TestrunIterat
             .day(day)
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
             .testrunIterationUserFilterType(testrunIterationUserFilterType)
             .testrunIterationUserFilterSelectRule(testrunIterationUserFilterSelectRule)
             .filteringUserCount(filteringUserCount)

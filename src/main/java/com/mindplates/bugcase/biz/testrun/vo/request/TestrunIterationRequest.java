@@ -42,6 +42,8 @@ public class TestrunIterationRequest implements IRequestVO<TestrunIterationDTO> 
     private LocalDateTime startTime;
     private boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private Integer date;
     private Integer week;
     private Integer day;
@@ -70,6 +72,8 @@ public class TestrunIterationRequest implements IRequestVO<TestrunIterationDTO> 
             .startTime(startTime.toLocalTime())
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
             .date(date)
             .week(week)
             .day(day)

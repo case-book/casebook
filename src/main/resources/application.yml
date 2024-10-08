@@ -43,7 +43,7 @@ spring:
       port: 6679
       password: admin1234
 scheduler:
-  enabled: false
+  enabled: true
 server:
   port: 8080
   error:

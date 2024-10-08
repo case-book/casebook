@@ -41,6 +41,8 @@ public class TestrunIterationResponse {
     private List<Long> currentFilteringUserIds;
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private List<TestrunUserResponse> testrunUsers;
     private List<TestrunTestcaseGroupResponse> testcaseGroups;
     private Integer testcaseCount;
@@ -71,6 +73,8 @@ public class TestrunIterationResponse {
         this.currentFilteringUserIds = testrunIteration.getCurrentFilteringUserIds();
         this.deadlineClose = testrunIteration.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrunIteration.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrunIteration.getAssignSequenceTestcaseSameTester();
         this.testcaseCount = testrunIteration.getTestcaseCount();
         this.testrunUserCount = testrunIteration.getTestrunUserCount();
 

@@ -14,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface TestrunRepository extends JpaRepository<Testrun, Long> {
 
-    String TESTRUN_LIST_PROJECTION = "SELECT new Testrun(tr.id, tr.seqId, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.opened, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount, tr.closedDate, tr.days, tr.excludeHoliday, tr.startTime, tr.durationHours, tr.reserveExpired, tr.reserveResultId, tr.deadlineClose, tr.autoTestcaseNotAssignedTester) FROM Testrun tr ";
+    String TESTRUN_LIST_PROJECTION = "SELECT new Testrun(tr.id, tr.seqId, tr.name, tr.description, tr.project.id, tr.startDateTime, tr.endDateTime, tr.opened, tr.totalTestcaseCount, tr.passedTestcaseCount, tr.failedTestcaseCount, tr.untestableTestcaseCount, tr.closedDate, tr.days, tr.excludeHoliday, tr.startTime, tr.durationHours, tr.reserveExpired, tr.reserveResultId, tr.deadlineClose, tr.autoTestcaseNotAssignedTester, tr.addConnectedSequenceTestcase, tr.assignSequenceTestcaseSameTester) FROM Testrun tr ";
 
     Optional<Testrun> findAllByProjectIdAndSeqId(Long projectId, String seqId);
 

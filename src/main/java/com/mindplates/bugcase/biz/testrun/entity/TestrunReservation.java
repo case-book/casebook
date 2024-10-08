@@ -4,9 +4,6 @@ import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.user.entity.User;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,9 +16,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,6 +70,12 @@ public class TestrunReservation extends CommonEntity {
     @Column(name = "auto_testcase_not_assigned_tester")
     private Boolean autoTestcaseNotAssignedTester;
 
+    @Column(name = "add_connected_sequence_testcase")
+    private Boolean addConnectedSequenceTestcase;
+
+    @Column(name = "assign_sequence_testcase_same_tester")
+    private Boolean assignSequenceTestcaseSameTester;
+
     @Column(name = "testcase_group_count")
     private Integer testcaseGroupCount;
 
@@ -119,6 +124,8 @@ public class TestrunReservation extends CommonEntity {
         Boolean expired,
         Boolean deadlineClose,
         Boolean autoTestcaseNotAssignedTester,
+        Boolean addConnectedSequenceTestcase,
+        Boolean assignSequenceTestcaseSameTester,
         Integer testcaseGroupCount,
         Integer testcaseCount,
         Long testrunId,
@@ -133,6 +140,8 @@ public class TestrunReservation extends CommonEntity {
         this.expired = expired;
         this.deadlineClose = deadlineClose;
         this.autoTestcaseNotAssignedTester = autoTestcaseNotAssignedTester;
+        this.addConnectedSequenceTestcase = addConnectedSequenceTestcase;
+        this.assignSequenceTestcaseSameTester = assignSequenceTestcaseSameTester;
         this.testcaseGroupCount = testcaseGroupCount;
         this.testcaseCount = testcaseCount;
         this.testrun = Testrun.builder().id(testrunId).build();
@@ -168,6 +177,8 @@ public class TestrunReservation extends CommonEntity {
         this.endDateTime = testrunReservation.getEndDateTime();
         this.deadlineClose = testrunReservation.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester() != null && testrunReservation.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrunReservation.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrunReservation.getAssignSequenceTestcaseSameTester();
         this.profiles.clear();
         this.profiles.addAll(testrunReservation.getProfiles());
         this.hooks.removeIf(hook -> testrunReservation.hooks.stream().noneMatch(targetHook -> targetHook.getId() != null && targetHook.getId().equals(hook.getId())));
