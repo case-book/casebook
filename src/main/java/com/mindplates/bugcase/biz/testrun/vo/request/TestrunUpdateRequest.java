@@ -39,6 +39,8 @@ public class TestrunUpdateRequest implements IRequestVO<TestrunDTO> {
     private int durationHours;
     private boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private List<Long> profileIds;
     private List<TestrunHookRequest> hooks;
     private List<TestrunMessageChannelRequest> messageChannels;
@@ -60,6 +62,8 @@ public class TestrunUpdateRequest implements IRequestVO<TestrunDTO> {
             .durationHours(durationHours)
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
             .build();
 
         if (hooks != null) {

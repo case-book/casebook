@@ -33,6 +33,8 @@ public class TestrunReservationRequest implements IRequestVO<TestrunReservationD
     private boolean expired;
     private boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private boolean selectCreatedTestcase;
     private boolean selectUpdatedTestcase;
     private List<Long> profileIds;
@@ -53,6 +55,8 @@ public class TestrunReservationRequest implements IRequestVO<TestrunReservationD
             .expired(expired)
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
             .selectCreatedTestcase(selectCreatedTestcase)
             .selectUpdatedTestcase(selectUpdatedTestcase)
             .build();

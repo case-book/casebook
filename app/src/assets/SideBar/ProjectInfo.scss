@@ -81,6 +81,10 @@
   &.collapsed {
     .project-menu {
       > a {
+        justify-content: center;
+        .menu-icon {
+          margin-right: 0;
+        }
         .text {
           display: none;
         }

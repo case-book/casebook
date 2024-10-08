@@ -10,7 +10,7 @@ function TestrunMessageChannelSelector({ projectMessageChannels, messageChannels
   return (
     <div className="testrun-message-channel-selector-wrapper">
       {!(projectMessageChannels?.length > 0) && (
-        <EmptyContent className="empty-content">
+        <EmptyContent className="empty-content" border>
           <div>{t('등록된 메세지 채널이 없습니다.')}</div>
         </EmptyContent>
       )}

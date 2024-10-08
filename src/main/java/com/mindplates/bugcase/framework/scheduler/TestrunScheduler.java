@@ -82,6 +82,8 @@ public class TestrunScheduler {
             .endDateTime(testrunReservationDTO.getEndDateTime())
             .deadlineClose(testrunReservationDTO.getDeadlineClose())
             .autoTestcaseNotAssignedTester(testrunReservationDTO.getAutoTestcaseNotAssignedTester())
+            .addConnectedSequenceTestcase(testrunReservationDTO.getAddConnectedSequenceTestcase())
+            .assignSequenceTestcaseSameTester(testrunReservationDTO.getAssignSequenceTestcaseSameTester())
             .build();
 
         testrun.setHooks(new ArrayList<>());
@@ -181,6 +183,8 @@ public class TestrunScheduler {
             .endDateTime(startDateTime.plusHours(testrunIterationDTO.getDurationHours()))
             .deadlineClose(testrunIterationDTO.getDeadlineClose())
             .autoTestcaseNotAssignedTester(testrunIterationDTO.getAutoTestcaseNotAssignedTester())
+            .addConnectedSequenceTestcase(testrunIterationDTO.getAddConnectedSequenceTestcase())
+            .assignSequenceTestcaseSameTester(testrunIterationDTO.getAssignSequenceTestcaseSameTester())
             .build();
 
         testrun.setHooks(new ArrayList<>());

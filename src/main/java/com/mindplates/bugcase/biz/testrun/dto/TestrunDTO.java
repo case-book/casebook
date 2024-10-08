@@ -44,6 +44,8 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
     private Long reserveResultId;
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private List<TestrunUserDTO> testrunUsers;
     private List<TestrunTestcaseGroupDTO> testcaseGroups;
     private List<TestrunProfileDTO> profiles;
@@ -74,6 +76,8 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrun.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrun.getAssignSequenceTestcaseSameTester();
 
         if (testrun.getProfiles() != null) {
             this.profiles = testrun.getProfiles().stream().map(TestrunProfileDTO::new).collect(Collectors.toList());
@@ -130,6 +134,8 @@ public class TestrunDTO extends CommonDTO implements IDTO<Testrun> {
             .reserveResultId(reserveResultId)
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
             .build();
 
         if (testrunUsers != null) {

@@ -121,6 +121,8 @@ function TestrunEditPage({ type }) {
     durationHours: 24,
     deadlineClose: true,
     autoTestcaseNotAssignedTester: true,
+    addConnectedSequenceTestcase: true,
+    assignSequenceTestcaseSameTester: true,
     profileIds: [],
     hooks: [],
   });
@@ -618,7 +620,40 @@ function TestrunEditPage({ type }) {
                 </Table>
               </Block>
             )}
-
+            <Block>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('선택된 테스트케이스와 케이스 시퀀스로 연결된 모든 테스트케이스를 테스트런의 테스트케스로 추가합니다.')}>
+                  {t('연결된 케이스 추가')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrun.addConnectedSequenceTestcase}
+                  onChange={val =>
+                    setTestrun({
+                      ...testrun,
+                      addConnectedSequenceTestcase: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('테스트런에 포함된 테스트케이스 중 연결된 시퀀스의 테스트케이스의 테스터를 동일한 테스터로 지정합니다.')}>
+                  {t('시퀀스 동일 테스터')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrun.assignSequenceTestcaseSameTester}
+                  onChange={val =>
+                    setTestrun({
+                      ...testrun,
+                      assignSequenceTestcaseSameTester: val,
+                    })
+                  }
+                />
+              </BlockRow>
+            </Block>
             <Title border={false} marginBottom={false}>
               {t('알림 채널')}
             </Title>

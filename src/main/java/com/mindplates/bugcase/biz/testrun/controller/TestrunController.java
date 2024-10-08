@@ -29,10 +29,10 @@ import com.mindplates.bugcase.common.util.HttpRequestUtil;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import com.mindplates.bugcase.common.vo.TestrunHookResult;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -112,30 +112,15 @@ public class TestrunController {
 
     @Operation(description = "종료된 테스트런 목록 조회")
     @GetMapping("/closed")
-    public List<TestrunListResponse> selectClosedTestrunList(
-        @PathVariable String spaceCode,
-        @PathVariable long projectId,
-        @RequestParam(value = "start") LocalDateTime start,
-        @RequestParam(value = "end") LocalDateTime end
-    ) {
+    public List<TestrunListResponse> selectClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "start") LocalDateTime start,
+        @RequestParam(value = "end") LocalDateTime end) {
         return testrunService.selectClosedProjectTestrunList(projectId, start, end).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
     @Operation(description = "종료된 테스트런 목록 조회")
     @GetMapping("/reports")
-    public List<TestrunListResponse> selectReportList(
-        @PathVariable String spaceCode,
-        @PathVariable long projectId,
-        @RequestParam(value = "pageNo") int pageNo
-    ) {
+    public List<TestrunListResponse> selectReportList(@PathVariable String spaceCode, @PathVariable long projectId, @RequestParam(value = "pageNo") int pageNo) {
         return testrunService.selectClosedProjectTestrunList(projectId, pageNo, REPORT_PAGE_SIZE).stream().map(TestrunListResponse::new).collect(Collectors.toList());
-    }
-
-    // TODO 삭제 예정
-    @Operation(description = "최근 종료된 TOP 3 테스트런 목록 조회")
-    @GetMapping("/closed/latest")
-    public List<TestrunListResponse> selectLatestClosedTestrunList(@PathVariable String spaceCode, @PathVariable long projectId) {
-        return testrunService.selectLatestClosedTop3ProjectTestrunList(spaceCode, projectId).stream().map(TestrunListResponse::new).collect(Collectors.toList());
     }
 
 

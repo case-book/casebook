@@ -24,6 +24,8 @@ public class TestrunReservationResponse {
     private boolean expired;
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private int testcaseGroupCount;
     private int testcaseCount;
     private Long testrunId;
@@ -46,6 +48,8 @@ public class TestrunReservationResponse {
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrunReservation.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrunReservation.getAssignSequenceTestcaseSameTester();
         this.testcaseGroupCount = testrunReservation.getTestcaseGroupCount();
         this.testcaseCount = testrunReservation.getTestcaseCount();
         this.projectName = testrunReservation.getProject().getName();

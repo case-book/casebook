@@ -26,6 +26,16 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'import/no-cycle': 'off',
     'no-loop-func': 'off',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never'
+      }
+    ],
   },
   extends: ['react-app', 'airbnb', 'prettier', 'plugin:storybook/recommended'],
   plugins: ['react', 'prettier'],

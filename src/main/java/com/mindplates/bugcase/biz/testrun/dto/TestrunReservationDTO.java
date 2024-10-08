@@ -30,6 +30,8 @@ public class TestrunReservationDTO extends CommonDTO implements IDTO<TestrunRese
     private Boolean expired;
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private int testcaseGroupCount;
     private int testcaseCount;
     private TestrunDTO testrun;
@@ -51,6 +53,8 @@ public class TestrunReservationDTO extends CommonDTO implements IDTO<TestrunRese
         this.expired = testrunReservation.getExpired();
         this.deadlineClose = testrunReservation.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrunReservation.getAutoTestcaseNotAssignedTester() != null && testrunReservation.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrunReservation.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrunReservation.getAssignSequenceTestcaseSameTester();
         this.testcaseGroupCount = Optional.ofNullable(testrunReservation.getTestcaseGroupCount()).orElse(0);
         this.testcaseCount = Optional.ofNullable(testrunReservation.getTestcaseCount()).orElse(0);
         this.selectCreatedTestcase = testrunReservation.getSelectCreatedTestcase();
@@ -103,6 +107,8 @@ public class TestrunReservationDTO extends CommonDTO implements IDTO<TestrunRese
             .expired(expired)
             .deadlineClose(deadlineClose)
             .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
             .testcaseGroupCount(testcaseGroupCount)
             .testcaseCount(testcaseCount)
             .selectCreatedTestcase(selectCreatedTestcase)
