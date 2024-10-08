@@ -328,6 +328,8 @@ public class Testrun extends CommonEntity implements Cloneable {
                 }
                 this.testcaseGroups.add(testcaseGroup);
             });
+
+
     }
 
     public void updateTestSummaryCount(TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase, TestResultCode testResultCode) {
@@ -536,18 +538,17 @@ public class Testrun extends CommonEntity implements Cloneable {
         ConcurrentHashMap<Long, Boolean> testcaseIds = new ConcurrentHashMap<>();
         ConcurrentHashMap<Long, Boolean> testcaseGroupIds = new ConcurrentHashMap<>();
 
-        // CopyOnWriteArrayList로 testcaseGroups 변환 및 내부 testcases도 변환
-        CopyOnWriteArrayList<TestrunTestcaseGroup> copyOnWriteTestcaseGroups = new CopyOnWriteArrayList<>(this.testcaseGroups);
-        for (TestrunTestcaseGroup group : copyOnWriteTestcaseGroups) {
-            group.setTestcases(new CopyOnWriteArrayList<>(group.getTestcases()));
-
+        for (TestrunTestcaseGroup group : this.testcaseGroups) {
             testcaseGroupIds.put(group.getTestcaseGroup().getId(), true);
             for (TestrunTestcaseGroupTestcase testcase : group.getTestcases()) {
                 testcaseIds.put(testcase.getTestcase().getId(), true);
             }
         }
 
-        for (TestrunTestcaseGroup testcaseGroup : copyOnWriteTestcaseGroups) {
+        List<TestrunTestcaseGroup> newTestcaseGroups = new ArrayList<>();
+        List<TestrunTestcaseGroupTestcase> newTestcaseGroupTestcase = new ArrayList<>();
+
+        for (TestrunTestcaseGroup testcaseGroup : this.testcaseGroups) {
             for (TestrunTestcaseGroupTestcase testcase : testcaseGroup.getTestcases()) {
                 if (directedGraph.nodeExists(testcase.getTestcase().getId())) {
                     Set<Long> connectedIds = directedGraph.getConnectedNodes(testcase.getTestcase().getId());
@@ -563,21 +564,29 @@ public class Testrun extends CommonEntity implements Cloneable {
                                         .testcaseGroup(TestcaseGroup.builder().id(connectedTestcase.getTestcaseGroup().getId()).build())
                                         .testcases(new CopyOnWriteArrayList<>())
                                         .build();
-                                    copyOnWriteTestcaseGroups.add(newGroup);
+                                    newTestcaseGroups.add(newGroup);
                                 }
 
-                                TestrunTestcaseGroup targetGroup = copyOnWriteTestcaseGroups.stream()
+                                TestrunTestcaseGroup targetGroup = this.testcaseGroups.stream()
                                     .filter(tg -> tg.getTestcaseGroup().getId().equals(connectedTestcase.getTestcaseGroup().getId()))
                                     .findAny()
-                                    .orElseThrow(() -> new IllegalStateException("TestcaseGroup not found"));
+                                    .orElse(null);
 
-                                TestrunTestcaseGroupTestcase newTestcase = TestrunTestcaseGroupTestcase.builder()
-                                    .testrunTestcaseGroup(targetGroup)
-                                    .testcase(Testcase.builder().id(connectedTestcase.getId()).build())
-                                    .build();
+                                if (targetGroup == null) {
+                                    targetGroup = newTestcaseGroups.stream()
+                                        .filter(tg -> tg.getTestcaseGroup().getId().equals(connectedTestcase.getTestcaseGroup().getId()))
+                                        .findAny()
+                                        .orElse(null);
+                                }
 
-                                targetGroup.getTestcases().add(newTestcase);
-                                testcaseIds.put(connectedTestcase.getId(), true);
+                                if (targetGroup != null) {
+                                    TestrunTestcaseGroupTestcase newTestcase = TestrunTestcaseGroupTestcase.builder()
+                                        .testrunTestcaseGroup(targetGroup)
+                                        .testcase(Testcase.builder().id(connectedTestcase.getId()).build())
+                                        .build();
+                                    newTestcaseGroupTestcase.add(newTestcase);
+                                    testcaseIds.put(connectedTestcase.getId(), true);
+                                }
                             }
                         }
                     }
@@ -585,8 +594,10 @@ public class Testrun extends CommonEntity implements Cloneable {
             }
         }
 
-// 최종 결과를 원래의 testcaseGroups에 할당
-        this.testcaseGroups = new ArrayList<>(copyOnWriteTestcaseGroups);
-
+        // 최종 결과를 원래의 testcaseGroups에 할당
+        this.testcaseGroups.addAll(newTestcaseGroups);
+        for (TestrunTestcaseGroup group : this.testcaseGroups) {
+            group.getTestcases().addAll(newTestcaseGroupTestcase.stream().filter(testcase -> testcase.getTestrunTestcaseGroup().getTestcaseGroup().getId().equals(group.getTestcaseGroup().getId())).collect(Collectors.toList()));
+        }
     }
 }

@@ -373,6 +373,16 @@ public class TestrunService {
 
         targetTestrun.update(testrunDTO);
 
+        if (testrunDTO.getAddConnectedSequenceTestcase() != null && testrunDTO.getAddConnectedSequenceTestcase()) {
+
+            List<Testcase> projectAllTestcases = testcaseRepository.findByProjectId(project.getId());
+            Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
+            projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
+
+            DirectedGraph graph = sequenceService.selectProjectSequenceGraph(project.getId());
+            targetTestrun.addConnectedTestcase(projectTestcaseMap, graph);
+        }
+
         // 테스터 설정
         List<TestrunUser> testrunUsers = targetTestrun.getTestrunUsers();
         int currentSeq = -1;
