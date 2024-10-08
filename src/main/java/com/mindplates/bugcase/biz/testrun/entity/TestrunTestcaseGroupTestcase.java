@@ -2,6 +2,7 @@ package com.mindplates.bugcase.biz.testrun.entity;
 
 import com.mindplates.bugcase.biz.project.entity.Project;
 import com.mindplates.bugcase.biz.project.entity.ProjectUser;
+import com.mindplates.bugcase.biz.sequence.dto.DirectedGraph;
 import com.mindplates.bugcase.biz.testcase.constants.TestcaseItemType;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
@@ -87,7 +88,7 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
     }
 
 
-    public int assignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester, Boolean addConnectedSequenceTestcase, Boolean assignSequenceTestcaseSameTester) {
+    public int assignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, Map<Long, Long> testcaseTesterMap, int currentSeq, Random random, Boolean autoTestcaseNotAssignedTester, Long forcedTesterId) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         List<TestcaseItemDTO> items = testcase.getTestcaseItems();
         this.testResult = TestResultCode.UNTESTED;
@@ -98,12 +99,11 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
                     .findFirst().orElse(null) : null;
             boolean isAutomationItem = automationItem != null && "Y".equals(automationItem.getValue());
 
-            // TODO
             if (!(autoTestcaseNotAssignedTester != null && autoTestcaseNotAssignedTester && isAutomationItem)) {
-                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
+                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, testcaseTesterMap, currentSeq, forcedTesterId);
             }
-
         }
+
         if (!CollectionUtils.isEmpty(items)) {
             for (TestcaseItemDTO testcaseItem : items) {
                 if (testcaseItem.getValue() == null) {
@@ -140,13 +140,13 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
         return currentSeq;
     }
 
-    public int reAssignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
+    public int reAssignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, Map<Long, Long> testcaseTesterMap, int currentSeq, Random random, Long forcedTesterId) {
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
         boolean removedUser = testrunUsers.stream()
             .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(this.tester != null ? this.tester.getId() : null));
         if (removedUser) {
             if (!testrunUsers.isEmpty()) {
-                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
+                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, testcaseTesterMap, currentSeq, forcedTesterId);
             } else {
                 this.tester = null;
             }
@@ -158,37 +158,52 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
         Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
 
         if (!testrunUsers.isEmpty()) {
-            currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, currentSeq);
+            currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, null, currentSeq, null);
         }
         return currentSeq;
     }
 
-    private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, TestcaseDTO testcase,
-        int currentSeq) {
+    private int assignByType(Map<String, List<ProjectUser>> tagUserMap, Random random, List<TestrunUser> testrunUsers, TestcaseDTO testcase, Map<Long, Long> testcaseTesterMap,
+        int currentSeq, Long forcedTesterId) {
+        Long testerId = null;
         // 테스터 입력
-        if ("tag".equals(testcase.getTesterType())) {
+        if (forcedTesterId != null) {
+            // this.tester = User.builder().id(forcedTesterId).build();
+            testerId = forcedTesterId;
+        } else if ("tag".equals(testcase.getTesterType())) {
             if (tagUserMap.containsKey(testcase.getTesterValue())) {
                 List<ProjectUser> tagUsers = tagUserMap.get(testcase.getTesterValue());
                 int userIndex = random.nextInt(tagUsers.size());
-                this.tester = User.builder().id(tagUsers.get(userIndex).getUser().getId()).build();
+                // this.tester = User.builder().id(tagUsers.get(userIndex).getUser().getId()).build();
+                testerId = tagUsers.get(userIndex).getUser().getId();
             } else {
                 int userIndex = random.nextInt(testrunUsers.size());
-                this.tester = User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build();
+                // this.tester = User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build();
+                testerId = testrunUsers.get(userIndex).getUser().getId();
             }
         } else if ("operation".equals(testcase.getTesterType())) {
             if ("RND".equals(testcase.getTesterValue())) {
                 int userIndex = random.nextInt(testrunUsers.size());
-                this.tester = User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build();
+                // this.tester = User.builder().id(testrunUsers.get(userIndex).getUser().getId()).build();
+                testerId = testrunUsers.get(userIndex).getUser().getId();
             } else if ("SEQ".equals(testcase.getTesterValue())) {
                 if (currentSeq > testrunUsers.size() - 1) {
                     currentSeq = 0;
                 }
-                this.tester = User.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build();
+                // this.tester = User.builder().id(testrunUsers.get(currentSeq).getUser().getId()).build();
+                testerId = testrunUsers.get(currentSeq).getUser().getId();
                 currentSeq++;
             }
         } else {
-            this.tester = User.builder().id(Long.parseLong(testcase.getTesterValue())).build();
+            // this.tester = User.builder().id(Long.parseLong(testcase.getTesterValue())).build();
+            testerId = Long.parseLong(testcase.getTesterValue());
         }
+
+        this.tester = User.builder().id(testerId).build();
+        if (testcaseTesterMap != null) {
+            testcaseTesterMap.put(this.testcase.getId(), testerId);
+        }
+
         return currentSeq;
     }
 

@@ -87,6 +87,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -193,13 +195,13 @@ public class TestrunService {
             Map<Long, TestcaseTemplateItem> projectTestcaseTemplateItemMap = new HashMap<>();
             projectAllTestcaseTemplateItems.forEach(testcaseTemplateItem -> projectTestcaseTemplateItemMap.put(testcaseTemplateItem.getId(), testcaseTemplateItem));
 
+            DirectedGraph graph = sequenceService.selectProjectSequenceGraph(projectId);
             if (testrunDTO.getAddConnectedSequenceTestcase() != null && testrunDTO.getAddConnectedSequenceTestcase()) {
-                DirectedGraph graph = sequenceService.selectProjectSequenceGraph(projectId);
                 testrun.addConnectedTestcase(projectTestcaseMap, graph);
             }
 
             // 테스트케이스, 테스트케이스 아이템, 테스트케이스 템플릿으로 테스트런 테스트케이스 정보 초기화
-            testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, random, testrunDTO.getAutoTestcaseNotAssignedTester(),
+            testrun.initializeTestGroupAndTestCase(projectTestcaseMap, idTestcaseItemListMap, projectTestcaseTemplateItemMap, graph, random, testrunDTO.getAutoTestcaseNotAssignedTester(),
                 testrunDTO.getAddConnectedSequenceTestcase(), testrunDTO.getAssignSequenceTestcaseSameTester());
         }
 
@@ -373,13 +375,12 @@ public class TestrunService {
 
         targetTestrun.update(testrunDTO);
 
-        if (testrunDTO.getAddConnectedSequenceTestcase() != null && testrunDTO.getAddConnectedSequenceTestcase()) {
+        DirectedGraph graph = sequenceService.selectProjectSequenceGraph(project.getId());
 
+        if (testrunDTO.getAddConnectedSequenceTestcase() != null && testrunDTO.getAddConnectedSequenceTestcase()) {
             List<Testcase> projectAllTestcases = testcaseRepository.findByProjectId(project.getId());
             Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
             projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
-
-            DirectedGraph graph = sequenceService.selectProjectSequenceGraph(project.getId());
             targetTestrun.addConnectedTestcase(projectTestcaseMap, graph);
         }
 
@@ -391,19 +392,44 @@ public class TestrunService {
         }
 
         if (!CollectionUtils.isEmpty(targetTestrun.getTestcaseGroups())) {
+
+            Map<Long, Long> testcaseTesterMap = new ConcurrentHashMap<>();
+
+            for (TestrunTestcaseGroup testrunTestcaseGroup : targetTestrun.getTestcaseGroups()) {
+                if (testrunTestcaseGroup.getTestcases() != null) {
+                    for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
+                        if (testrunTestcaseGroupTestcase.getId() != null && testrunTestcaseGroupTestcase.getTester() != null) {
+                            testcaseTesterMap.put(testrunTestcaseGroupTestcase.getTestcase().getId(), testrunTestcaseGroupTestcase.getTester().getId());
+                        }
+                    }
+                }
+            }
+
             for (TestrunTestcaseGroup testrunTestcaseGroup : targetTestrun.getTestcaseGroups()) {
                 testrunTestcaseGroup.setTestrun(targetTestrun);
                 if (testrunTestcaseGroup.getTestcases() != null) {
                     for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
                         testrunTestcaseGroupTestcase.setTestrunTestcaseGroup(testrunTestcaseGroup);
                         TestcaseDTO testcase = testcaseCachedService.selectTestcaseInfo(updateTestrun.getProject().getId(), testrunTestcaseGroupTestcase.getTestcase().getId());
+
+                        // 연결된 시퀀스에 할당된 테스터가 있는지 확인하여 할당
+                        Long sequenceTesterId = null;
+                        if (testrunDTO.getAssignSequenceTestcaseSameTester() != null && testrunDTO.getAssignSequenceTestcaseSameTester()) {
+                            Set<Long> sequenceTestcaseIds = graph.getConnectedNodes(testcase.getId());
+                            for (Long sequenceTestcaseId : sequenceTestcaseIds) {
+                                if (testcaseTesterMap.containsKey(sequenceTestcaseId)) {
+                                    sequenceTesterId = testcaseTesterMap.get(sequenceTestcaseId);
+                                    break;
+                                }
+                            }
+                        }
+
                         if (testrunTestcaseGroupTestcase.getId() == null) {
                             // 신규 생성된 테스트 케이스 그룹의 테스트케이스에 테스터 설정
-                            currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, currentSeq, random, targetTestrun.getAutoTestcaseNotAssignedTester(),
-                                targetTestrun.getAddConnectedSequenceTestcase(), targetTestrun.getAssignSequenceTestcaseSameTester());
+                            currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, testcaseTesterMap, currentSeq, random, targetTestrun.getAutoTestcaseNotAssignedTester(), sequenceTesterId);
                         } else {
                             // 존재하는 테스트케이스에 테스터가 삭제된 경우 신규 테스터 할당
-                            currentSeq = testrunTestcaseGroupTestcase.reAssignTester(project, testcase, testrunUsers, currentSeq, random);
+                            currentSeq = testrunTestcaseGroupTestcase.reAssignTester(project, testcase, testrunUsers, testcaseTesterMap, currentSeq, random, sequenceTesterId);
 
                         }
                     }

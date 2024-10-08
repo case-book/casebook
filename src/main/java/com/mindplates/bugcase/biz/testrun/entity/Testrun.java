@@ -47,6 +47,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -399,9 +400,10 @@ public class Testrun extends CommonEntity implements Cloneable {
         }
     }
 
-    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap, Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap,
+    public void initializeTestGroupAndTestCase(Map<Long, Testcase> projectTestcaseMap, Map<Long, List<TestcaseItem>> idTestcaseItemListMap, Map<Long, TestcaseTemplateItem> idTestcaseTemplateItemMap, DirectedGraph graph,
         Random random, Boolean autoTestcaseNotAssignedTester, Boolean addConnectedSequenceTestcase, Boolean assignSequenceTestcaseSameTester) {
         int currentSeq = random.nextInt(testrunUsers.size());
+        Map<Long, Long> testcaseTesterMap = new ConcurrentHashMap<>();
         for (TestrunTestcaseGroup testrunTestcaseGroup : this.testcaseGroups) {
             if (testrunTestcaseGroup.getTestcases() != null) {
                 for (TestrunTestcaseGroupTestcase testrunTestcaseGroupTestcase : testrunTestcaseGroup.getTestcases()) {
@@ -417,8 +419,19 @@ public class Testrun extends CommonEntity implements Cloneable {
                         testcaseItem.setTestcaseTemplateItem(new TestcaseTemplateItemDTO(idTestcaseTemplateItemMap.get(testcaseItem.getTestcaseTemplateItem().getId())));
                     }
 
-                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcaseInfo, testrunUsers, currentSeq, random, autoTestcaseNotAssignedTester, addConnectedSequenceTestcase,
-                        assignSequenceTestcaseSameTester);
+                    // 연결된 시퀀스에 할당된 테스터가 있는지 확인하여 할당
+                    Long sequenceTesterId = null;
+                    if (assignSequenceTestcaseSameTester) {
+                        Set<Long> sequenceTestcaseIds = graph.getConnectedNodes(testcase.getId());
+                        for (Long sequenceTestcaseId : sequenceTestcaseIds) {
+                            if (testcaseTesterMap.containsKey(sequenceTestcaseId)) {
+                                sequenceTesterId = testcaseTesterMap.get(sequenceTestcaseId);
+                                break;
+                            }
+                        }
+                    }
+
+                    currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcaseInfo, testrunUsers, testcaseTesterMap, currentSeq, random, autoTestcaseNotAssignedTester, sequenceTesterId);
                     if (testcaseItems != null) {
                         for (TestcaseItem testcaseItem : testcaseItems) {
                             if (testcaseItem.getValue() == null || Objects
