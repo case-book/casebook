@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,26 +38,32 @@ public class Sequence extends CommonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "name", length = ColumnsDef.NAME)
     private String name;
-
     @Column(name = "description", length = ColumnsDef.TEXT)
     private String description;
-
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE__PROJECT"))
     private Project project;
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sequence", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<SequenceNode> nodes;
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "sequence", cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<SequenceEdge> edges;
+    @Transient
+    private Long nodeCount = 0L;
+    @Transient
+    private Long edgeCount = 0L;
 
+    public Sequence(long id, String name, long projectId, String description, long nodeCount, long edgeCount) {
+        this.id = id;
+        this.name = name;
+        this.project = Project.builder().id(projectId).build();
+        this.description = description;
+        this.nodeCount = nodeCount;
+        this.edgeCount = edgeCount;
+    }
 
     public void updateInfo(SequenceDTO updateSequenceInfo) {
         this.name = updateSequenceInfo.getName();

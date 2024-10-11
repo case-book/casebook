@@ -73,7 +73,7 @@ function SequenceEditPage({ type }) {
   useEffect(() => {
     if (type !== 'edit') {
       setSequence({
-        name: t('새 케이스 시퀀스'),
+        name: t('새 케이스시퀀스'),
         description: '',
       });
     }
@@ -336,7 +336,7 @@ function SequenceEditPage({ type }) {
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/sequences`,
-            text: t('케이스 시퀀스 목록'),
+            text: t('케이스시퀀스 목록'),
           },
         ]}
         control={
@@ -353,7 +353,11 @@ function SequenceEditPage({ type }) {
             <Button
               size="sm"
               onClick={() => {
-                navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`);
+                if (isEdit) {
+                  navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequenceId}`);
+                } else {
+                  navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
+                }
               }}
             >
               {t('취소')}
@@ -367,7 +371,7 @@ function SequenceEditPage({ type }) {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
         }}
       >
-        {!isEdit ? t('새 케이스시퀀스') : t('케이스 시퀀스')}
+        {!isEdit ? t('새 케이스시퀀스') : t('케이스시퀀스')}
       </PageTitle>
       <PageContent className="page-content" flex>
         <Title

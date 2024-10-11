@@ -61,7 +61,7 @@ const MENUS = [
     to: '/sequences',
     icon: <i className="fa-solid fa-vial-virus" />,
     color: '#3e8ef1',
-    name: i18n.t('케이스 시퀀스'),
+    name: i18n.t('케이스시퀀스'),
     admin: false,
     pc: true,
     login: true,

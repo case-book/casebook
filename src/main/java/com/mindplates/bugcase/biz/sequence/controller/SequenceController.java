@@ -30,7 +30,7 @@ public class SequenceController {
 
     private final SequenceService sequenceService;
 
-    @Operation(description = "프로젝트의 케이스 시퀀스 목록 조회")
+    @Operation(description = "프로젝트의 케이스시퀀스 목록 조회")
     @GetMapping("")
     public List<SequenceListResponse> selectSequences(@PathVariable String spaceCode, @PathVariable long projectId) {
         List<SequenceListDTO> sequenceList = sequenceService.selectProjectSequenceList(projectId);
@@ -40,7 +40,7 @@ public class SequenceController {
             .collect(Collectors.toList());
     }
 
-    @Operation(description = "케이스 시퀀스 조회")
+    @Operation(description = "케이스시퀀스 조회")
     @GetMapping("/{sequenceId}")
     public SequenceResponse selectSequence(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long sequenceId) {
         SequenceDTO sequence = sequenceService.selectSequenceInfo(sequenceId);

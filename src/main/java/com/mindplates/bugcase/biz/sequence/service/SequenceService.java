@@ -32,12 +32,12 @@ public class SequenceService {
 
 
     public List<SequenceListDTO> selectProjectSequenceList(long projectId) {
-        List<Sequence> sequences = sequenceRepository.findByProjectIdOrderByNameDesc(projectId);
+        List<Sequence> sequences = sequenceRepository.findByProjectId(projectId);
         return sequences.stream().map((SequenceListDTO::new)).collect(Collectors.toList());
     }
 
     public DirectedGraph selectProjectSequenceGraph(long projectId) {
-        List<Sequence> sequences = sequenceRepository.findByProjectIdOrderByNameDesc(projectId);
+        List<Sequence> sequences = sequenceRepository.findByProjectIdOrderByIdDesc(projectId);
 
         DirectedGraph graph = new DirectedGraph();
         sequences.forEach((sequence) -> {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { EmptyContent, Page, PageContent, PageTitle, Table, Tbody, Td, Th, THead, Title, Tr } from '@/components';
+import { Card, CardContent, CardHeader, EmptyContent, Page, PageContent, PageTitle, Tag } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -46,13 +46,13 @@ function SequenceListPage() {
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/sequences`,
-            text: t('케이스 시퀀스'),
+            text: t('케이스시퀀스'),
           },
         ]}
         links={[
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/sequences/new`,
-            text: t('케이스 시퀀스'),
+            text: t('케이스시퀀스'),
             icon: <i className="fa-solid fa-plus" />,
           },
         ]}
@@ -60,40 +60,32 @@ function SequenceListPage() {
           navigate(`/spaces/${spaceCode}/projects`);
         }}
       >
-        {t('케이스 시퀀스')}
+        {t('케이스시퀀스')}
       </PageTitle>
       <PageContent className="page-content" flex>
-        <Title border={false} marginBottom={false}>
-          {t('케이스 시퀀스')}
-        </Title>
         {sequences?.length <= 0 && (
           <EmptyContent fill border>
-            {t('조회된 케이스 시퀀스가 없습니다.')}
+            {t('조회된 케이스시퀀스가 없습니다.')}
           </EmptyContent>
         )}
-        {sequences?.length > 0 && (
-          <Table className="table" cols={['300px', '']} border>
-            <THead>
-              <Tr>
-                <Th align="left">{t('이름')}</Th>
-                <Th align="left">{t('설명')}</Th>
-              </Tr>
-            </THead>
-            <Tbody>
-              {sequences.map(sequence => {
-                return (
-                  <Tr key={sequence.id}>
-                    <Td>
-                      <Link className="g-text-link" to={`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequence.id}`}>
-                        {sequence.name}
-                      </Link>
-                    </Td>
-                    <Td>{sequence.description}</Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
+        {sequences.length > 0 && (
+          <div className="sequence-list">
+            {sequences.map(sequence => (
+              <Card key={sequence.id} border className="release-card">
+                <CardHeader className="sequence-card-header">
+                  <Link to={`/spaces/${spaceCode}/projects/${projectId}/sequences/${sequence.id}`}>{sequence.name}</Link>
+                </CardHeader>
+                <CardContent>
+                  <div className="description">
+                    <div>{sequence.description}</div>
+                  </div>
+                  <div className="node-count">
+                    <Tag border>{t('@ 테스트케이스', { count: sequence.nodeCount })}</Tag>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </PageContent>
     </Page>

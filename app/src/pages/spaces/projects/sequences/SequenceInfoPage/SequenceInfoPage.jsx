@@ -148,7 +148,7 @@ function SequenceInfoPage() {
           },
           {
             to: `/spaces/${spaceCode}/projects/${projectId}/sequences`,
-            text: t('케이스 시퀀스 목록'),
+            text: t('케이스시퀀스 목록'),
           },
         ]}
         control={
@@ -166,7 +166,7 @@ function SequenceInfoPage() {
           navigate(`/spaces/${spaceCode}/projects/${projectId}/sequences`);
         }}
       >
-        {t('케이스 시퀀스')}
+        {t('케이스시퀀스')}
       </PageTitle>
       <PageContent className="page-content" flex>
         <Title

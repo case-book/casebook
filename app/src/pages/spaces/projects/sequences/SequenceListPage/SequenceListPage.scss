@@ -1,171 +1,47 @@
 .report-list-page-wrapper {
   display: flex;
 
-  .report-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    li {
-      border-bottom: 1px solid var(--border-color);
-      padding: 1rem;
-      &:first-child {
-        border-top: 1px solid var(--border-color);
-      }
+  .sequence-list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-auto-rows: minmax(130px, auto);
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
 
-      .title {
-        display: flex;
-        line-height: 1;
-        > div {
-          align-self: center;
-        }
+    .sequence-card-header {
+      padding-top: 1.5rem;
+      padding-bottom: 0;
+      text-align: left;
+      a {
+        text-align: center;
+        color: var(--text-color);
+        border-bottom: 1px solid;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.25rem;
 
-        .name {
-          > a {
-            font-size: 16px;
-            font-weight: bold;
-            padding: 4px 0;
-          }
-        }
-
-        .tags-content {
-          display: flex;
-          .tags {
-            align-self: center;
-            > div {
-              margin-right: 4px;
-            }
-            .FAILED {
-              background-color: var(--danger-color);
-              color: var(--white-color);
-            }
-
-            .COMPLETE {
-              background-color: var(--blue-color);
-              color: var(--white-color);
-            }
-
-            .ALL-PASSED {
-              background-color: var(--blue-color);
-              color: var(--white-color);
-            }
-          }
-        }
-
-        .testrun-others {
-          flex-grow: 1;
-          font-size: 12px;
-
-          .time-info {
-            display: flex;
-            justify-content: flex-end;
-
-            > div {
-              align-self: center;
-            }
-
-            .calendar {
-              margin-right: 4px;
-            }
-
-            .end-date-info {
-              display: flex;
-            }
-          }
-        }
-      }
-
-      .summary {
-        display: flex;
-        margin-top: 16px;
-        font-size: 12px;
-
-        .testrun-id {
-          align-self: center;
-          > span {
-            background-color: var(--primary-color);
-            color: var(--primary-text-color);
-            padding: 2px 4px;
-            border-radius: 4px;
-            margin-right: 4px;
-            font-size: 11px;
-          }
-        }
-
-        .count-summary {
-          display: flex;
-
-          > div {
-            display: flex;
-            align-self: center;
-
-            .label {
-              margin-right: 4px;
-            }
-
-            &.count {
-              &.danger {
-                color: var(--danger-color);
-                font-weight: bold;
-              }
-
-              &.warning {
-                color: var(--warning-color);
-                font-weight: bold;
-              }
-
-              &.success {
-                color: var(--blue-color);
-                font-weight: bold;
-              }
-            }
-          }
-        }
-
-        .control {
-          flex-grow: 1;
-          text-align: right;
-
-          button {
-            border-radius: 20px;
-            margin-left: 8px;
-            i:first-child {
-              margin-right: 4px;
-            }
-          }
+        &:hover {
+          color: var(--link-color);
+          border-bottom: 1px solid var(--link-color);
         }
       }
     }
-  }
 
-  .testrun-table-content {
-    background-color: var(--theme-color);
-    display: none;
-    td {
-      &.testrun-id {
-        @include monospace;
+    .description {
+      background-color: var(--lighter-color);
+      padding: 0 10px;
+      font-size: 12px;
+      height: 40px;
+      display: flex;
+      > div {
+        align-self: center;
       }
-      &.count {
-        > div {
-          display: inline-block;
-          text-align: center;
-        }
-      }
-      &.PASSED {
-        color: var(--success-color);
-      }
+    }
 
-      &.FAILED {
-        color: var(--danger-color);
-      }
-
-      &.UNTESTABLE {
-        color: var(--gray-color);
-      }
-
-      .summary {
-        font-size: 12px;
-        margin-top: 4px;
-      }
+    .node-count {
+      text-align: right;
+      margin-top: 0.5rem;
     }
   }
 }

@@ -622,7 +622,7 @@ function TestrunEditPage({ type }) {
             )}
             <Block>
               <BlockRow>
-                <Label minWidth={labelMinWidth} tip={t('선택된 테스트케이스와 케이스 시퀀스로 연결된 모든 테스트케이스를 테스트런의 테스트케스로 추가합니다.')}>
+                <Label minWidth={labelMinWidth} tip={t('선택된 테스트케이스와 케이스시퀀스로 연결된 모든 테스트케이스를 테스트런의 테스트케스로 추가합니다.')}>
                   {t('연결된 케이스 추가')}
                 </Label>
                 <CheckBox

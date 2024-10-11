@@ -20,6 +20,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -39,8 +41,9 @@ public class SequenceNode extends CommonEntity {
     @Column(name = "node_id", length = ColumnsDef.CODE)
     private String nodeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE__TESTCASE"))
+    @ManyToOne(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.JOIN)
+    @JoinColumn(name = "testcase_id", foreignKey = @ForeignKey(name = "FK_SEQUENCE_NODE__TESTCASE"))
     private Testcase testcase;
 
     @ManyToOne(fetch = FetchType.LAZY)

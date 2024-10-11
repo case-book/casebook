@@ -20,12 +20,15 @@ public class SequenceListDTO extends CommonDTO {
     private String name;
     private String description;
     private ProjectDTO project;
-
+    private Long nodeCount = 0L;
+    private Long edgeCount = 0L;
 
     public SequenceListDTO(Sequence sequence) {
         this.id = sequence.getId();
         this.name = sequence.getName();
         this.description = sequence.getDescription();
+        this.nodeCount = sequence.getNodeCount();
+        this.edgeCount = sequence.getEdgeCount();
 
         if (sequence.getProject() != null) {
             this.project = ProjectDTO.builder().id(sequence.getProject().getId()).build();
