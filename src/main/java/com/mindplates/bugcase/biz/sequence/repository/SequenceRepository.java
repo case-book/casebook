@@ -11,7 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SequenceRepository extends JpaRepository<Sequence, Long> {
 
-    List<Sequence> findByProjectIdOrderByNameDesc(long projectId);
+    @Query(value = "SELECT new Sequence(s.id, s.name, s.project.id, s.description, (select count(sn.id) from SequenceNode sn where sn.sequence.id = s.id), (select count(*) from SequenceEdge se where se.sequence.id = s.id)) FROM Sequence s WHERE s.project.id = :projectId ORDER BY s.id DESC")
+    List<Sequence> findByProjectId(long projectId);
+
+    List<Sequence> findByProjectIdOrderByIdDesc(long projectId);
 
     Long countByProjectIdAndName(long projectId, String name);
 

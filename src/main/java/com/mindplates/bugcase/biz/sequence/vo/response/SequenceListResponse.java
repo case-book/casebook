@@ -15,12 +15,16 @@ public class SequenceListResponse {
     private String name;
     private String description;
     private ProjectResponse project;
+    private Long nodeCount;
+    private Long edgeCount;
+
 
     public SequenceListResponse(SequenceListDTO sequence) {
         this.id = sequence.getId();
         this.name = sequence.getName();
         this.description = sequence.getDescription();
         this.project = ProjectResponse.builder().id(sequence.getProject().getId()).build();
-
+        this.nodeCount = sequence.getNodeCount();
+        this.edgeCount = sequence.getEdgeCount();
     }
 }

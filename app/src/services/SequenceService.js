@@ -14,7 +14,7 @@ SequenceService.selectSequence = (spaceCode, projectId, sequenceId, successHandl
     null,
     null,
     loading,
-    i18n.t('케이스 시퀀스 정보를 가져오고 있습니다.'),
+    i18n.t('케이스시퀀스 정보를 가져오고 있습니다.'),
   );
 };
 
@@ -29,7 +29,7 @@ SequenceService.selectSequenceList = (spaceCode, projectId, successHandler, fail
     null,
     null,
     loading,
-    i18n.t('케이스 시퀀스 목록을 가져오고 있습니다.'),
+    i18n.t('케이스시퀀스 목록을 가져오고 있습니다.'),
   );
 };
 

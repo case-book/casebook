@@ -87,6 +87,12 @@ public class TestrunIteration extends CommonEntity {
     @Column(name = "auto_testcase_not_assigned_tester")
     private Boolean autoTestcaseNotAssignedTester;
 
+    @Column(name = "add_connected_sequence_testcase")
+    private Boolean addConnectedSequenceTestcase;
+
+    @Column(name = "assign_sequence_testcase_same_tester")
+    private Boolean assignSequenceTestcaseSameTester;
+
     @Column(name = "start_time")
     private LocalTime startTime;
 
@@ -184,6 +190,8 @@ public class TestrunIteration extends CommonEntity {
         Integer testcaseCount,
         Boolean deadlineClose,
         Boolean autoTestcaseNotAssignedTester,
+        Boolean addConnectedSequenceTestcase,
+        Boolean assignSequenceTestcaseSameTester,
         Long testrunUserCount
     ) {
 
@@ -213,6 +221,16 @@ public class TestrunIteration extends CommonEntity {
         } else {
             this.autoTestcaseNotAssignedTester = false;
         }
+        if (addConnectedSequenceTestcase != null) {
+            this.addConnectedSequenceTestcase = addConnectedSequenceTestcase;
+        } else {
+            this.addConnectedSequenceTestcase = false;
+        }
+        if (assignSequenceTestcaseSameTester != null) {
+            this.assignSequenceTestcaseSameTester = assignSequenceTestcaseSameTester;
+        } else {
+            this.assignSequenceTestcaseSameTester = false;
+        }
         this.testrunUserCount = testrunUserCount;
     }
 
@@ -227,6 +245,8 @@ public class TestrunIteration extends CommonEntity {
         this.durationHours = testrunIteration.getDurationHours();
         this.deadlineClose = testrunIteration.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrunIteration.getAutoTestcaseNotAssignedTester() != null && testrunIteration.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrunIteration.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrunIteration.getAssignSequenceTestcaseSameTester();
         this.startTime = testrunIteration.getStartTime();
         this.days = testrunIteration.getDays();
         this.date = testrunIteration.getDate();

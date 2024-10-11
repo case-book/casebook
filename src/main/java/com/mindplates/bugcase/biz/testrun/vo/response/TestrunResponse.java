@@ -40,6 +40,8 @@ public class TestrunResponse {
     private Long reserveResultId;
     private Boolean deadlineClose;
     private Boolean autoTestcaseNotAssignedTester;
+    private Boolean addConnectedSequenceTestcase;
+    private Boolean assignSequenceTestcaseSameTester;
     private List<Long> profileIds;
     private List<TestrunHookResponse> hooks;
     private List<TestrunMessageChannelResponse> messageChannels;
@@ -66,6 +68,8 @@ public class TestrunResponse {
         this.reserveResultId = testrun.getReserveResultId();
         this.deadlineClose = testrun.getDeadlineClose();
         this.autoTestcaseNotAssignedTester = testrun.getAutoTestcaseNotAssignedTester();
+        this.addConnectedSequenceTestcase = testrun.getAddConnectedSequenceTestcase();
+        this.assignSequenceTestcaseSameTester = testrun.getAssignSequenceTestcaseSameTester();
         if (testrun.getProfiles() != null && !testrun.getProfiles().isEmpty()) {
             this.profileIds = testrun.getProfiles()
                 .stream()
