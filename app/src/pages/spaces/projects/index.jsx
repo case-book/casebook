@@ -5,6 +5,7 @@ import TestrunsRoutes from '@/pages/spaces/projects/testruns';
 import ReportsRoutes from '@/pages/spaces/projects/reports';
 import ReleasesRoutes from '@/pages/spaces/projects/releases';
 import LinksRoutes from '@/pages/spaces/projects/links';
+import SequencesRoutes from '@/pages/spaces/projects/sequences';
 
 function ProjectsRoutes() {
   return (
@@ -18,6 +19,7 @@ function ProjectsRoutes() {
       <Route path="/:projectId/reports/*" element={<ReportsRoutes />} />
       <Route path="/:projectId/links/*" element={<LinksRoutes />} />
       <Route path="/:projectId/releases/*" element={<ReleasesRoutes />} />
+      <Route path="/:projectId/sequences/*" element={<SequencesRoutes />} />
       <Route path="/" element={<SpaceProjectListPage />} />
       <Route path="*" element={<Message code="404" />} />
     </Routes>

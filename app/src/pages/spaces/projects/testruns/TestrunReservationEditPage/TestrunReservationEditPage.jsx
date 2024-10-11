@@ -19,7 +19,7 @@ import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMess
 import { waitFor } from '@/utils/request';
 import TestcaseService from '@/services/TestcaseService';
 
-const labelMinWidth = '120px';
+const labelMinWidth = '160px';
 
 function TestrunReservationEditPage({ type }) {
   const { t } = useTranslation();
@@ -76,6 +76,8 @@ function TestrunReservationEditPage({ type }) {
     expired: false,
     deadlineClose: true,
     autoTestcaseNotAssignedTester: true,
+    addConnectedSequenceTestcase: true,
+    assignSequenceTestcaseSameTester: true,
     selectCreatedTestcase: false,
     selectUpdatedTestcase: false,
     profileIds: [],
@@ -489,37 +491,65 @@ function TestrunReservationEditPage({ type }) {
                 <Label minWidth={labelMinWidth} tip={t('예약 테스트런을 만든 시점부터, 예약 테스트런에 생성될때까지 추가된 테스트케이스를 자동으로 추가합니다.')}>
                   {t('자동 추가')}
                 </Label>
-                <Text>
-                  <CheckBox
-                    size="sm"
-                    type="checkbox"
-                    label={t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가')}
-                    value={testrunReservation.selectCreatedTestcase}
-                    onChange={val =>
-                      setTestrunReservation({
-                        ...testrunReservation,
-                        selectCreatedTestcase: val,
-                      })
-                    }
-                  />
-                </Text>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  label={t('예약 테스트런 생성전까지 생성된 테스트케이스 자동 추가')}
+                  value={testrunReservation.selectCreatedTestcase}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      selectCreatedTestcase: val,
+                    })
+                  }
+                />
               </BlockRow>
               <BlockRow>
                 <Label minWidth={labelMinWidth} />
-                <Text>
-                  <CheckBox
-                    size="sm"
-                    type="checkbox"
-                    label={t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가')}
-                    value={testrunReservation.selectUpdatedTestcase}
-                    onChange={val =>
-                      setTestrunReservation({
-                        ...testrunReservation,
-                        selectUpdatedTestcase: val,
-                      })
-                    }
-                  />
-                </Text>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  label={t('예약 테스트런 생성전까지 변경된 테스트케이스 자동 추가')}
+                  value={testrunReservation.selectUpdatedTestcase}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      selectUpdatedTestcase: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('선택된 테스트케이스와 케이스시퀀스로 연결된 모든 테스트케이스를 테스트런의 테스트케스로 추가합니다.')}>
+                  {t('연결된 케이스 추가')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrunReservation.addConnectedSequenceTestcase}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      addConnectedSequenceTestcase: val,
+                    })
+                  }
+                />
+              </BlockRow>
+              <BlockRow>
+                <Label minWidth={labelMinWidth} tip={t('테스트런에 포함된 테스트케이스 중 연결된 시퀀스의 테스트케이스의 테스터를 동일한 테스터로 지정합니다.')}>
+                  {t('시퀀스 동일 테스터')}
+                </Label>
+                <CheckBox
+                  size="sm"
+                  type="checkbox"
+                  value={testrunReservation.assignSequenceTestcaseSameTester}
+                  onChange={val =>
+                    setTestrunReservation({
+                      ...testrunReservation,
+                      assignSequenceTestcaseSameTester: val,
+                    })
+                  }
+                />
               </BlockRow>
             </Block>
             <Title border={false} marginBottom={false}>

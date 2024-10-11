@@ -17,6 +17,7 @@ ul.project-menu-wrapper {
   &.collapsed {
     > li {
       > a {
+        justify-content: center;
         .menu-icon {
           margin-right: 0;
         }
@@ -57,6 +58,7 @@ ul.project-menu-wrapper {
       opacity: 0.8;
       padding: 4px 16px;
       display: flex;
+
       .menu-icon {
         width: 32px;
         height: 32px;

@@ -2,10 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Liner from '@/components/Liner/Liner';
 import { observer } from 'mobx-react';
-import './PageTitle.scss';
 import { useNavigate } from 'react-router-dom';
 import PageBreadcrumbs from '@/components/PageTitle/PageBreadcrumbs';
 import useMenu from '@/hooks/useMenu';
+import classNames from 'classnames';
+import './PageTitle.scss';
 
 function PageTitle({ className, children, links, control, onListClick, breadcrumbs, borderBottom, marginBottom }) {
   const navigate = useNavigate();
@@ -24,8 +25,9 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
           <div className="page-title-info">
             <div className="page-title-text">{children}</div>
           </div>
+          {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
           {links?.length > 0 && (
-            <ul className="links">
+            <ul className={classNames('links', { 'has-control': control })}>
               {links.map((d, inx) => {
                 return (
                   <li key={inx}>
@@ -43,7 +45,6 @@ function PageTitle({ className, children, links, control, onListClick, breadcrum
               })}
             </ul>
           )}
-          {control && <div className={`control ${links ? 'has-link' : ''}`}>{control}</div>}
         </div>
       </div>
     </>

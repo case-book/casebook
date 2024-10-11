@@ -1,0 +1,47 @@
+.report-list-page-wrapper {
+  display: flex;
+
+  .sequence-list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-auto-rows: minmax(130px, auto);
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+
+    .sequence-card-header {
+      padding-top: 1.5rem;
+      padding-bottom: 0;
+      text-align: left;
+      a {
+        text-align: center;
+        color: var(--text-color);
+        border-bottom: 1px solid;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.25rem;
+
+        &:hover {
+          color: var(--link-color);
+          border-bottom: 1px solid var(--link-color);
+        }
+      }
+    }
+
+    .description {
+      background-color: var(--lighter-color);
+      padding: 0 10px;
+      font-size: 12px;
+      height: 40px;
+      display: flex;
+      > div {
+        align-self: center;
+      }
+    }
+
+    .node-count {
+      text-align: right;
+      margin-top: 0.5rem;
+    }
+  }
+}

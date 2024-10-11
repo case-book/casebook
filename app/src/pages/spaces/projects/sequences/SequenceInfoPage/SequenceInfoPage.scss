@@ -1,0 +1,34 @@
+.sequence-info-page-wrapper {
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+    padding-bottom: 0;
+    flex-direction: column;
+
+    .option {
+      min-width: 30px;
+    }
+
+    .sequence-content {
+      flex-grow: 1;
+      display: flex;
+      position: relative;
+
+      div.react-flow-wrapper {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+
+        .react-flow__handle {
+          cursor: grab !important;
+        }
+
+        .react-flow__attribution {
+          display: none;
+        }
+      }
+    }
+  }
+}

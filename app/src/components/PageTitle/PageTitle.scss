@@ -53,11 +53,8 @@
     margin-left: 10px;
     flex-grow: 1;
     text-align: right;
-    margin-right: 20px;
+    margin-right: 10px;
 
-    &.has-link {
-      flex-grow: 0;
-    }
     > div {
       button {
         margin-right: 0.5rem;
@@ -74,6 +71,11 @@
     flex-grow: 1;
     justify-content: flex-end;
     list-style: none;
+    padding-left: 0;
+
+    &.has-control {
+      flex-grow: 0;
+    }
 
     @media (max-width: 768px) {
       margin-right: 10px;
@@ -84,38 +86,26 @@
       display: inline-block;
 
       button {
-        border: none;
         outline: none;
-        background-color: var(--link-color);
-        color: var(--white-color);
-        padding: 6px 12px;
-        border-radius: 6px 0 6px 6px;
+        background-color: var(--theme-color);
+        color: var(--link-color);
+        padding: 6px 8px 6px 12px;
+        border: 1px solid var(--link-color);
+        box-sizing: border-box;
+        border-radius: 2px;
         cursor: pointer;
         position: relative;
+        font-size: 14px;
 
         .icon {
           display: inline-flex;
-          margin-left: 4px;
-          width: 20px;
-          height: 20px;
+          margin-left: 6px;
           justify-content: center;
-          background-color: rgba(0, 0, 0, 0.2);
-          border-radius: 50%;
-          transition: transform 0.2s ease, background-color 0.2s;
           position: relative;
+          top : -1px;
           i {
             align-self: center;
             font-size: 10px;
-          }
-        }
-
-        &:hover {
-          background-color: var(--link-hover-color);
-          .icon {
-            transform: scale(1.8);
-            left: 4px;
-            transition: transform 0.2s ease, background-color 0.2s;
-            background-color: var(--link-color);
           }
         }
       }

@@ -30,7 +30,7 @@ import { ProfileSelectPopup, TestrunHookEditPopup, TestrunHookTable, TestrunMess
 import TestcaseService from '@/services/TestcaseService';
 import { waitFor } from '@/utils/request';
 
-const labelMinWidth = '120px';
+const labelMinWidth = '160px';
 
 function TestrunIterationEditPage({ type }) {
   const { t } = useTranslation();
@@ -92,6 +92,8 @@ function TestrunIterationEditPage({ type }) {
     })(),
     deadlineClose: true,
     autoTestcaseNotAssignedTester: true,
+    addConnectedSequenceTestcase: true,
+    assignSequenceTestcaseSameTester: true,
     date: null,
     week: null,
     day: null,
@@ -745,6 +747,38 @@ function TestrunIterationEditPage({ type }) {
                 </BlockRow>
               )}
             </Block>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('선택된 테스트케이스와 케이스시퀀스로 연결된 모든 테스트케이스를 테스트런의 테스트케스로 추가합니다.')}>
+                {t('연결된 케이스 추가')}
+              </Label>
+              <CheckBox
+                size="sm"
+                type="checkbox"
+                value={testrunIteration.addConnectedSequenceTestcase}
+                onChange={val =>
+                  setTestrunIteration({
+                    ...testrunIteration,
+                    addConnectedSequenceTestcase: val,
+                  })
+                }
+              />
+            </BlockRow>
+            <BlockRow>
+              <Label minWidth={labelMinWidth} tip={t('테스트런에 포함된 테스트케이스 중 연결된 시퀀스의 테스트케이스의 테스터를 동일한 테스터로 지정합니다.')}>
+                {t('시퀀스 동일 테스터')}
+              </Label>
+              <CheckBox
+                size="sm"
+                type="checkbox"
+                value={testrunIteration.assignSequenceTestcaseSameTester}
+                onChange={val =>
+                  setTestrunIteration({
+                    ...testrunIteration,
+                    testrunIterationUserFilterType: val,
+                  })
+                }
+              />
+            </BlockRow>
             <Title border={false} marginBottom={false}>
               {t('알림 채널')}
             </Title>

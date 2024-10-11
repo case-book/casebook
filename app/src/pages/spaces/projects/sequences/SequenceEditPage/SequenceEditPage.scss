@@ -1,0 +1,55 @@
+.sequence-edit-page-wrapper {
+  .page-content {
+    flex-grow: 1;
+    display: flex;
+    padding-bottom: 0;
+    flex-direction: column;
+
+    .controls {
+      display: flex;
+      > div {
+        align-self: center;
+        .option {
+          min-width: 30px;
+        }
+      }
+    }
+
+    .sequence-title {
+      display: inline-flex;
+      > div {
+        align-self: center;
+        &:last-child {
+          margin-left: 0.5rem;
+        }
+      }
+    }
+
+    .sequence-content {
+      flex-grow: 1;
+      display: flex;
+      position: relative;
+
+      div.react-flow-wrapper {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+
+        .react-flow__attribution {
+          display: none;
+        }
+      }
+
+      .testcase-group-content {
+        position: absolute;
+        top: 20px;
+        right: 10px;
+        bottom: 20px;
+        background-color: var(--theme-color);
+        border: 1px solid var(--border-light-color);
+      }
+    }
+  }
+}

@@ -57,6 +57,17 @@ const MENUS = [
     project: true,
   },
   {
+    key: 'sequences',
+    to: '/sequences',
+    icon: <i className="fa-solid fa-vial-virus" />,
+    color: '#3e8ef1',
+    name: i18n.t('케이스시퀀스'),
+    admin: false,
+    pc: true,
+    login: true,
+    project: true,
+  },
+  {
     key: 'testruns',
     to: '/testruns',
     icon: <i className="fa-solid fa-scale-unbalanced-flip" />,

@@ -1,8 +1,9 @@
 import { Input, SeqId } from '@/components';
 import { ITEM_TYPE, TESTRUN_RESULT_CODE } from '@/constants/constants';
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { NullableNumber, TestcaseGroupPropTypes, TestcaseGroupSettingPropTypes } from '@/proptypes';
+import classNames from 'classnames';
 
 function TestcaseNavigatorTestcaseItem({
   testcase,
@@ -23,35 +24,45 @@ function TestcaseNavigatorTestcaseItem({
   onContextMenu,
   clearDragInfo,
   onKeyDown,
+  onDragStart,
+  nodeById,
 }) {
+  const draggable = useMemo(() => {
+    return !!onDragStart;
+  }, [onDragStart]);
+
   return (
     <li className="testcase-content" key={testcase.id}>
       <div
-        className={`testcase-info
-            ${dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId === testcase.id ? 'drag-target' : ''} 
-            ${dragInfo.destinationType === ITEM_TYPE.TESTCASE && dragInfo.destinationId === testcase.id ? 'drag-destination' : ''}
-            ${contextMenuInfo.type === ITEM_TYPE.TESTCASE && contextMenuInfo.id === testcase.id ? 'context-menu-target' : ''}
-            ${editInfo.type === ITEM_TYPE.TESTCASE && editInfo.id === testcase.id ? 'name-editing' : ''}
-            ${selectedItemInfo.type === ITEM_TYPE.TESTCASE && testcase.id === selectedItemInfo.id ? 'selected' : ''}
-            ${copyInfo.type === ITEM_TYPE.TESTCASE && testcase.id === copyInfo.id ? 'copied' : ''}
-            
-            `}
+        className={classNames('testcase-info', {
+          'drag-target': dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId === testcase.id,
+          'drag-destination': dragInfo.destinationType === ITEM_TYPE.TESTCASE && dragInfo.destinationId === testcase.id,
+          'name-editing': editInfo.type === ITEM_TYPE.TESTCASE && editInfo.id === testcase.id,
+          'context-menu-target': contextMenuInfo.type === ITEM_TYPE.TESTCASE && contextMenuInfo.id === testcase.id,
+          selected: selectedItemInfo.type === ITEM_TYPE.TESTCASE && testcase.id === selectedItemInfo.id,
+          copied: copyInfo.type === ITEM_TYPE.TESTCASE && testcase.id === copyInfo.id,
+          'already-dragged': draggable && nodeById[testcase.id],
+        })}
         onClick={e => {
-          e.stopPropagation();
-          onSelect({ id: testcase.id, type: ITEM_TYPE.TESTCASE });
+          if (!draggable) {
+            e.stopPropagation();
+            onSelect({ id: testcase.id, type: ITEM_TYPE.TESTCASE });
+          }
         }}
         onDragEnter={e => {
-          e.stopPropagation();
-          if (dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId !== testcase.id) {
-            setDragInfo({
-              destinationType: ITEM_TYPE.TESTCASE,
-              destinationId: testcase.id,
-            });
-          } else {
-            setDragInfo({
-              destinationType: null,
-              destinationId: null,
-            });
+          if (!draggable) {
+            e.stopPropagation();
+            if (dragInfo.targetType === ITEM_TYPE.TESTCASE && dragInfo.targetId !== testcase.id) {
+              setDragInfo({
+                destinationType: ITEM_TYPE.TESTCASE,
+                destinationId: testcase.id,
+              });
+            } else {
+              setDragInfo({
+                destinationType: null,
+                destinationId: null,
+              });
+            }
           }
         }}
         onDragLeave={e => {
@@ -69,6 +80,12 @@ function TestcaseNavigatorTestcaseItem({
         onContextMenu={e => {
           onContextMenu(e, ITEM_TYPE.TESTCASE, testcase.id, testcase.name);
         }}
+        onDragStart={e => {
+          if (!nodeById[testcase.id]) {
+            onDragStart(e, testcase);
+          }
+        }}
+        draggable={!nodeById[testcase.id] && draggable}
       >
         {watcherInfo && watcherInfo[testcase.id]?.length > 0 && watcherInfo[testcase.id]?.length < 3 && (
           <div className="watcher">
@@ -156,7 +173,7 @@ function TestcaseNavigatorTestcaseItem({
             <div>{TESTRUN_RESULT_CODE[testcase.testResult]}</div>
           </div>
         )}
-        {enableDrag && (
+        {!draggable && enableDrag && (
           <div
             draggable
             className="grab"
@@ -240,6 +257,8 @@ TestcaseNavigatorTestcaseItem.defaultProps = {
   copyInfo: null,
   onContextMenu: () => {},
   clearDragInfo: () => {},
+  onDragStart: null,
+  nodeById: {},
 };
 
 TestcaseNavigatorTestcaseItem.propTypes = {
@@ -291,6 +310,12 @@ TestcaseNavigatorTestcaseItem.propTypes = {
   }),
   onContextMenu: PropTypes.func,
   clearDragInfo: PropTypes.func,
+  onDragStart: PropTypes.func,
+  nodeById: PropTypes.shape({
+    [PropTypes.string]: PropTypes.shape({
+      id: PropTypes.string,
+    }),
+  }),
 };
 
 export default TestcaseNavigatorTestcaseItem;
