@@ -4,6 +4,7 @@ import com.mindplates.bugcase.biz.automation.request.TestResultRequest;
 import com.mindplates.bugcase.biz.project.service.ProjectService;
 import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
+import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import jakarta.validation.Valid;
@@ -36,9 +37,10 @@ public class AutomationController {
         @PathVariable long testcaseSeqNumber,
         @Valid @RequestBody TestResultRequest testResultRequest) {
 
+        Long userId = SessionUtil.getUserId(false);
         Long projectId = projectService.selectProjectId(projectToken);
         String spaceCode = spaceService.selectSpaceCodeByProjectId(projectId);
-        testrunService.updateTestrunTestcaseResult(spaceCode, projectId, projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment());
+        testrunService.updateTestrunTestcaseResult(spaceCode, projectId, projectToken, testrunSeqNumber, testcaseSeqNumber, testResultRequest.getResult(), testResultRequest.getComment(), userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

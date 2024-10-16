@@ -192,7 +192,7 @@ public class TestrunController {
     @PutMapping("/{testrunId}/groups/{testrunTestcaseGroupId}/testcases/{testrunTestcaseGroupTestcaseId}/result")
     public Boolean updateTestrunResult(@PathVariable String spaceCode, @PathVariable long projectId, @PathVariable long testrunId, @PathVariable long testrunTestcaseGroupTestcaseId,
         @Valid @RequestBody TestrunResultRequest testrunResultRequest) {
-        return testrunService.updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult());
+        return testrunService.updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, testrunResultRequest.getTestResult(), null, null);
     }
 
     @Operation(description = "테스트런 테스트케이스 테스터 변경")

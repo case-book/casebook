@@ -45,6 +45,7 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunMessageChannel;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunProfile;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroup;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcase;
+import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseComment;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunTestcaseGroupTestcaseItem;
 import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.biz.testrun.repository.TestrunHookRepository;
@@ -426,7 +427,8 @@ public class TestrunService {
 
                         if (testrunTestcaseGroupTestcase.getId() == null) {
                             // 신규 생성된 테스트 케이스 그룹의 테스트케이스에 테스터 설정
-                            currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, testcaseTesterMap, currentSeq, random, targetTestrun.getAutoTestcaseNotAssignedTester(), sequenceTesterId);
+                            currentSeq = testrunTestcaseGroupTestcase.assignTester(project, testcase, testrunUsers, testcaseTesterMap, currentSeq, random,
+                                targetTestrun.getAutoTestcaseNotAssignedTester(), sequenceTesterId);
                         } else {
                             // 존재하는 테스트케이스에 테스터가 삭제된 경우 신규 테스터 할당
                             currentSeq = testrunTestcaseGroupTestcase.reAssignTester(project, testcase, testrunUsers, testcaseTesterMap, currentSeq, random, sequenceTesterId);
@@ -672,7 +674,21 @@ public class TestrunService {
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
         @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
     })
-    public boolean updateTestrunTestcaseResult(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode) {
+    public void updateTestrunTestcaseResult(String spaceCode, long projectId, String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, TestResultCode resultCode, String comment,
+        Long userId) {
+        long testrunId = testrunRepository.findTestrunIdByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
+        long testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseRepository.findTestrunTestcaseGroupTestcaseIdByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
+            projectId, testrunId, "TC" + testcaseSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
+        updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, resultCode, comment, userId);
+    }
+
+    @Transactional
+    @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
+    })
+    public boolean updateTestrunTestcaseResult(String spaceCode, long projectId, long testrunId, Long testrunTestcaseGroupTestcaseId, TestResultCode testResultCode, String comment, Long commentUserId) {
         validateOpened(testrunId);
 
         TestrunTestcaseGroupTestcase targetTestrunTestcaseGroupTestcase = testrunTestcaseGroupTestcaseRepository.findById(testrunTestcaseGroupTestcaseId)
@@ -682,6 +698,15 @@ public class TestrunService {
         countSummary.updateCount(targetTestrunTestcaseGroupTestcase, testResultCode);
         testrunRepository.updateTestrunCountSummary(testrunId, countSummary.getPassedTestcaseCount(), countSummary.getFailedTestcaseCount(), countSummary.getUntestableTestcaseCount());
         targetTestrunTestcaseGroupTestcase.setTestResult(testResultCode);
+        if (comment != null) {
+            targetTestrunTestcaseGroupTestcase.getComments().add(TestrunTestcaseGroupTestcaseComment
+                .builder()
+                .testrunTestcaseGroupTestcase(targetTestrunTestcaseGroupTestcase)
+                .comment(comment)
+                .user(User.builder().id(commentUserId).build())
+                .build());
+        }
+
         testrunTestcaseGroupTestcaseRepository.save(targetTestrunTestcaseGroupTestcase);
 
         MessageData participantData = MessageData.builder().type("TESTRUN-TESTCASE-RESULT-CHANGED").build();
@@ -724,18 +749,6 @@ public class TestrunService {
         return countSummary.isDone();
     }
 
-    @Transactional
-    @Caching(evict = {
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
-        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
-    })
-    public void updateTestrunTestcaseResult(String spaceCode, long projectId, String projectToken, Long testrunSeqNumber, Long testcaseSeqNumber, TestResultCode resultCode, String comment) {
-        long testrunId = testrunRepository.findTestrunIdByProjectIdAndSeqId(projectId, "R" + testrunSeqNumber)
-            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"R" + testrunSeqNumber + " 테스트런"}));
-        long testrunTestcaseGroupTestcaseId = testrunTestcaseGroupTestcaseRepository.findTestrunTestcaseGroupTestcaseIdByTestrunTestcaseGroupTestrunProjectIdAndTestrunTestcaseGroupTestrunIdAndTestcaseSeqId(
-            projectId, testrunId, "TC" + testcaseSeqNumber).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"TC" + testcaseSeqNumber + " 테스트케이스"}));
-        updateTestrunTestcaseResult(spaceCode, projectId, testrunId, testrunTestcaseGroupTestcaseId, resultCode);
-    }
 
     @Transactional
     @Caching(evict = {

@@ -23,60 +23,63 @@ function ReleaseListPage() {
     });
   }, [spaceCode, projectId]);
 
-  const createNextReleaseButtonClick = useCallback(name => {
-    let nextVersion = '';
-    try {
-      const version3Pattern = /^(.*?)(v|V)(\d+)\.(\d+)\.(\d+)$/;
-      const match3 = name.match(version3Pattern);
+  const createNextReleaseButtonClick = useCallback(
+    name => {
+      let nextVersion = '';
+      try {
+        const version3Pattern = /^(.*?)(v|V)(\d+)\.(\d+)\.(\d+)$/;
+        const match3 = name.match(version3Pattern);
 
-      if (match3) {
-        const prefix = match3[1];
-        const v = match3[2];
-        const major = parseInt(match3[3], 10);
-        const minor = parseInt(match3[4], 10);
-        const patch = 0;
+        if (match3) {
+          const prefix = match3[1];
+          const v = match3[2];
+          const major = parseInt(match3[3], 10);
+          const minor = parseInt(match3[4], 10);
+          const patch = 0;
 
-        // minor 버전을 1 증가시킨 새로운 버전 문자열 생성
-        const newMinor = minor + 1;
-        nextVersion = `${prefix}${v}${major}.${newMinor}.${patch}`;
+          // minor 버전을 1 증가시킨 새로운 버전 문자열 생성
+          const newMinor = minor + 1;
+          nextVersion = `${prefix}${v}${major}.${newMinor}.${patch}`;
+        }
+
+        const version2Pattern = /^(.*?)(v|V)(\d+)\.(\d+)$/;
+        const match2 = name.match(version2Pattern);
+
+        if (match2) {
+          const prefix = match2[1];
+          const v = match2[2];
+          const major = parseInt(match2[3], 10);
+          const minor = parseInt(match2[4], 10);
+
+          // minor 버전을 1 증가시킨 새로운 버전 문자열 생성
+          const newMinor = minor + 1;
+          nextVersion = `${prefix}${v}${major}.${newMinor}`;
+        }
+
+        const version1Pattern = /^(.*?)(v|V)(\d+)$/;
+        const match1 = name.match(version1Pattern);
+
+        if (match1) {
+          const prefix = match1[1];
+          const v = match1[2];
+          const major = parseInt(match1[3], 10);
+
+          // minor 버전을 1 증가시킨 새로운 버전 문자열 생성
+          const newMajor = major + 1;
+          nextVersion = `${prefix}${v}${newMajor}`;
+        }
+      } catch (e) {
+        console.error(e);
       }
 
-      const version2Pattern = /^(.*?)(v|V)(\d+)\.(\d+)$/;
-      const match2 = name.match(version2Pattern);
-
-      if (match2) {
-        const prefix = match2[1];
-        const v = match2[2];
-        const major = parseInt(match2[3], 10);
-        const minor = parseInt(match2[4], 10);
-
-        // minor 버전을 1 증가시킨 새로운 버전 문자열 생성
-        const newMinor = minor + 1;
-        nextVersion = `${prefix}${v}${major}.${newMinor}`;
+      if (!nextVersion) {
+        nextVersion = name;
       }
 
-      const version1Pattern = /^(.*?)(v|V)(\d+)$/;
-      const match1 = name.match(version1Pattern);
-
-      if (match1) {
-        const prefix = match1[1];
-        const v = match1[2];
-        const major = parseInt(match1[3], 10);
-
-        // minor 버전을 1 증가시킨 새로운 버전 문자열 생성
-        const newMajor = major + 1;
-        nextVersion = `${prefix}${v}${newMajor}`;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    if (!nextVersion) {
-      nextVersion = name;
-    }
-
-    navigate(`/spaces/${spaceCode}/projects/${projectId}/releases/new?name=${nextVersion}`);
-  }, []);
+      navigate(`/spaces/${spaceCode}/projects/${projectId}/releases/new?name=${nextVersion}`);
+    },
+    [spaceCode, projectId],
+  );
 
   return (
     <Page className="release-list-page-wrapper">
