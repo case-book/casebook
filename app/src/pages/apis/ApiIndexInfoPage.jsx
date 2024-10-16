@@ -63,18 +63,18 @@ function ApiIndexInfoPage() {
             <div className="text">
               Authorization:
               <span className="function">
-                BASE64(<span className="var">USER EMAIL</span>:<span className="var">USER TOKEN</span>)
+                Basic BASE64(<span className="var">USER EMAIL</span>:<span className="var">USER TOKEN</span>)
               </span>
             </div>
           )}
           {isLogin && (
             <>
-              {selectedUserTokenId && <div className="text">{`Authorization: ${btoa(`${user.email}:${userTokenList?.find(d => d.id === selectedUserTokenId)?.token}`)}`}</div>}
+              {selectedUserTokenId && <div className="text">{`Authorization: Basic ${btoa(`${user.email}:${userTokenList?.find(d => d.id === selectedUserTokenId)?.token}`)}`}</div>}
               {!selectedUserTokenId && (
                 <div className="text">
                   Authorization:
                   <span className="function">
-                    BASE64(<span className="var">USER EMAIL</span>:<span className="var">USER TOKEN</span>)
+                    Basic BASE64(<span className="var">USER EMAIL</span>:<span className="var">USER TOKEN</span>)
                   </span>
                 </div>
               )}
