@@ -484,7 +484,7 @@ function TestrunExecutePage() {
 
         setTestrun(nextTestrun);
 
-        if (type === ITEM_TYPE.TESTCASE && Number(id) === content.id) {
+        if (type === ITEM_TYPE.TESTCASE && Number(data.data.testrunTestcaseGroupTestcaseId) === content.id) {
           const nextContent = { ...content };
           nextContent.testResult = data.data.testResult;
           setContent(nextContent);
