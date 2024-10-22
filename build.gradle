@@ -45,8 +45,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.apache.commons:commons-lang3'
-    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
-    implementation 'org.springframework.ai:spring-ai-openai'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -56,7 +54,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.batch:spring-batch-test'
     implementation 'io.sentry:sentry-logback:5.6.1'
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
     implementation 'com.sun.activation:jakarta.activation:1.2.2'
 }
