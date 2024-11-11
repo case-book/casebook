@@ -92,52 +92,29 @@ function SpaceInfo({ className, spaces }) {
       {spaceMenuOpened && (
         <div
           className={classNames('space-popup-menu', { collapsed })}
-          onClick={() => {
+          onClick={e => {
             setSpaceMenuOpened(false);
+            e.stopPropagation();
           }}
         >
           <div>
-            <div onClick={e => e.stopPropagation()}>
+            <div>
               <div className="arrow">
                 <div />
               </div>
               <ul>
                 <li>
-                  <Link
-                    to={`/spaces/${space.code}/info`}
-                    onClick={e => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    {t('스페이스 정보')}
-                  </Link>
+                  <Link to={`/spaces/${space.code}/info`}>{t('스페이스 정보')}</Link>
                   <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 4px" />
-                  <Link
-                    to={`/spaces/${space.code}/edit`}
-                    onClick={e => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    {t('관리')}
-                  </Link>
+                  <Link to={`/spaces/${space.code}/edit`}>{t('관리')}</Link>
                 </li>
                 <li>
-                  <Link
-                    to="/spaces/search"
-                    onClick={e => {
-                      e.stopPropagation();
-                    }}
-                  >
+                  <Link to="/spaces/search">
                     <i className="fa-solid fa-magnifying-glass" /> {t('스페이스 검색')}
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to="/spaces/new"
-                    onClick={e => {
-                      e.stopPropagation();
-                    }}
-                  >
+                  <Link to="/spaces/new">
                     <i className="fa-solid fa-plus" /> {t('스페이스 생성')}
                   </Link>
                 </li>

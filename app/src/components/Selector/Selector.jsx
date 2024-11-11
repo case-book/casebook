@@ -153,7 +153,7 @@ Selector.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       key: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      value: PropTypes.oneOfType([PropTypes.number, PropTypes.string, PropTypes.node]),
     }),
   ),
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),

@@ -568,7 +568,7 @@ function ProjectEditPage({ type }) {
             </Block>
             <Title
               control={
-                <Button size="sm" outline onClick={addMessageChannel}>
+                <Button size="sm" outline onClick={addMessageChannel} disabled={!spaceMessageChannelList || spaceMessageChannelList?.length < 1}>
                   <i className="fa-solid fa-plus" /> {t('알림 채널 추가')}
                 </Button>
               }
