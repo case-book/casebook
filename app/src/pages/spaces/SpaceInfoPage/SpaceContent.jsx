@@ -31,6 +31,7 @@ function SpaceContent({ space, onRefresh }) {
 
   const {
     userStore: { removeSpace, isAdmin },
+    contextStore: { space: storeSpace, setSpace },
   } = useStores();
 
   const navigate = useNavigate();
@@ -94,12 +95,12 @@ function SpaceContent({ space, onRefresh }) {
   }, [space, status]);
 
   const users = useMemo(() => {
-    return space?.users?.filter(user => {
+    return space?.users?.filter(info => {
       if (userRole === 'ALL') {
         return true;
       }
 
-      return user.role === userRole;
+      return info.role === userRole;
     });
   }, [space, userRole]);
 
@@ -110,8 +111,15 @@ function SpaceContent({ space, onRefresh }) {
       <div>{t('@ 스페이스 및 스페이스에 포함된 프로젝트를 비롯한 모든 정보가 삭제됩니다. 삭제하시겠습니까?', { spaceName: space.name })}</div>,
       () => {
         SpaceService.deleteSpace(space.id, () => {
-          removeSpace(space.id);
-          navigate('/spaces');
+          const remainSpaces = removeSpace(space.id);
+          navigate('/');
+          if (space.id === storeSpace.id) {
+            if (remainSpaces.length > 0) {
+              setSpace(remainSpaces[0]);
+            } else {
+              setSpace(null);
+            }
+          }
         });
       },
       null,

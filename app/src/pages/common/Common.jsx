@@ -27,7 +27,7 @@ function Common() {
     configStore: { releasePopup, closeReleasePopup, version, setVersion },
     socketStore: { topics, messageHandlers, addTopic, removeTopic, addMessageHandler, removeMessageHandler, setSocketClient },
     controlStore: { requestLoading, confirm, message, error, requestMessages, toast },
-    contextStore: { spaceCode, projectId, setProjectId },
+    contextStore: { setSpace, spaceCode, projectId, setProjectId },
   } = useStores();
 
   const { t } = useTranslation();
@@ -39,27 +39,29 @@ function Common() {
     let nextProjectId = null;
     if (/^\/spaces\/.*\/projects\/.*$/.test(location.pathname)) {
       const paths = location.pathname.split('/');
-      // eslint-disable-next-line prefer-destructuring
-      nextSpaceCode = paths[2];
-      // eslint-disable-next-line prefer-destructuring
-      nextProjectId = paths[4];
+      const [, , path2, , path4] = paths;
+      nextSpaceCode = path2;
+      nextProjectId = path4;
       if (Number.isInteger(nextProjectId)) {
         nextProjectId = Number(nextProjectId);
       }
     } else if (/^\/spaces\/.*$/.test(location.pathname)) {
       const paths = location.pathname.split('/');
-      // eslint-disable-next-line prefer-destructuring
-      nextSpaceCode = paths[2];
+      const [, , path2] = paths;
+      nextSpaceCode = path2;
     }
 
     if (spaceCode !== nextSpaceCode) {
-      // setSpaceCode(nextSpaceCode);
+      const changedSpace = user?.spaces?.find(d => d.code === nextSpaceCode);
+      if (changedSpace) {
+        setSpace(changedSpace);
+      }
     }
 
     if (projectId !== nextProjectId) {
       setProjectId(nextProjectId);
     }
-  }, [location.pathname]);
+  }, [location.pathname, user.spaces]);
 
   const [loading, setLoading] = useState(false);
 
@@ -67,6 +69,16 @@ function Common() {
 
   const [lastTagName] = useState(getOption('casebook', 'version', 'tag') || '');
   const [release, setRelease] = useState(null);
+
+  const getUrlSpaceCode = () => {
+    let nextSpaceCode = null;
+    if (/^\/spaces\/.*$/.test(location.pathname)) {
+      const [, , code] = location.pathname.split('/');
+      nextSpaceCode = code || null;
+    }
+
+    return nextSpaceCode;
+  };
 
   const getUserNotificationCount = () => {
     UserService.getUserNotificationCount(count => {
@@ -81,6 +93,18 @@ function Common() {
         userStore.setTried(true);
         i18n.changeLanguage(info.language);
         getUserNotificationCount();
+
+        const { spaces } = info;
+        const urlSpaceCode = getUrlSpaceCode();
+        const storedSpaceCode = localStorage.getItem('spaceCode');
+
+        const currentSpaceCode = urlSpaceCode || storedSpaceCode;
+        if (spaces.length > 0 && spaces.find(d => d.code === currentSpaceCode)) {
+          setSpace(spaces.find(d => d.code === currentSpaceCode));
+        } else if (spaces.length > 0) {
+          setSpace(spaces[0]);
+          localStorage.setItem('spaceCode', spaces[0].code);
+        }
       },
       () => {
         userStore.setTried(true);
