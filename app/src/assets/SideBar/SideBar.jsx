@@ -14,7 +14,7 @@ import './SideBar.scss';
 
 function SideBar() {
   const {
-    contextStore: { space, collapsed, setCollapsed, refreshProjectTime },
+    contextStore: { space, collapsed, setCollapsed, refreshProjectTime, setSpaceProjects },
     userStore: {
       isLogin,
       user: { spaces },
@@ -43,6 +43,7 @@ function SideBar() {
         if (project) {
           project.testrunCount = data.data.openedTestrunCount;
           setProjects(nextProjects);
+          setSpaceProjects(nextProjects);
         }
         break;
       }
@@ -67,7 +68,9 @@ function SideBar() {
 
   const getProjectList = useCallback(() => {
     ProjectService.selectMyProjectList(space?.code, list => {
+      console.log(list);
       setProjects(list);
+      setSpaceProjects(list);
     });
   }, [space?.code]);
 
@@ -96,24 +99,22 @@ function SideBar() {
 
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
-      {!collapsed && (
-        <div className="size-bar-logo">
-          <Logo
-            size="sm"
-            color="white"
-            hand={false}
-            onClick={() => {
-              navigate('/');
-            }}
-          />
-        </div>
-      )}
+      <div className="size-bar-logo">
+        <Logo
+          summary={collapsed}
+          size="sm"
+          hand={false}
+          onClick={() => {
+            navigate('/');
+          }}
+        />
+      </div>
       {!space && <SpaceMenu projects={projects} />}
       {space && (
         <>
           <SpaceInfo spaces={spaces} />
           <ProjectInfo projects={projects} onRefresh={getProjectList} />
-          <ProjectMenu projects={projects} />
+          <ProjectMenu />
         </>
       )}
       <div className="side-bar-bottom">

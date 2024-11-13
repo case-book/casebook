@@ -6,10 +6,10 @@ import ConfirmDialog from '@/pages/common/ConfirmDialog';
 import MessageDialog from '@/pages/common/MessageDialog';
 import ErrorDialog from '@/pages/common/ErrorDialog';
 import { debounce } from 'lodash';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ConfigService from '@/services/ConfigService';
 import ReactTooltip from 'react-tooltip';
 import { getOption, setOption } from '@/utils/storageUtil';
-import { Link, useLocation } from 'react-router-dom';
 import { CloseIcon, Liner, SocketClient } from '@/components';
 import { observer } from 'mobx-react';
 import i18n from 'i18next';
@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import GitService from '@/services/GitService';
 import moment from 'moment';
 import dateUtil from '@/utils/dateUtil';
+import classNames from 'classnames';
 import './Common.scss';
 
 function Common() {
@@ -27,12 +28,16 @@ function Common() {
     configStore: { releasePopup, closeReleasePopup, version, setVersion },
     socketStore: { topics, messageHandlers, addTopic, removeTopic, addMessageHandler, removeMessageHandler, setSocketClient },
     controlStore: { requestLoading, confirm, message, error, requestMessages, toast },
-    contextStore: { setSpace, spaceCode, projectId, setProjectId },
+    contextStore: { setSpace, spaceCode, projectId, setProjectId, projectSelector, setProjectSelector, spaceProjects, hoverMenu },
   } = useStores();
 
   const { t } = useTranslation();
 
   const location = useLocation();
+
+  const navigate = useNavigate();
+
+  console.log(spaceProjects);
 
   useEffect(() => {
     let nextSpaceCode = null;
@@ -219,6 +224,8 @@ function Common() {
     });
   };
 
+  console.log(projectSelector);
+
   return (
     <div>
       {user?.id && (
@@ -375,6 +382,39 @@ function Common() {
           </div>
         </div>
       )}
+      {projectSelector && (
+        <div className={classNames('project-selector')} onClick={() => setProjectSelector(null)}>
+          <div>
+            <div onClick={e => e.stopPropagation()}>
+              <h3>
+                {t('프로젝트 선택')}
+                <CloseIcon className="close-button" onClick={() => setProjectSelector(null)} />
+              </h3>
+              <div>
+                <ul>
+                  {spaceProjects.map(project => {
+                    return (
+                      <li
+                        key={project.id}
+                        className={classNames({ selected: projectId === project.id })}
+                        onClick={() => {
+                          console.log(project.id);
+                          console.log(projectSelector.replace('{{PROJECT_ID}}', project.id));
+                          navigate(projectSelector.replace('{{PROJECT_ID}}', project.id));
+                          setProjectSelector(null);
+                        }}
+                      >
+                        <div>{project.name}</div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import './SpacetMenu.scss';
+import './SideMenu.scss';
 
 const SPACE_MENU = [
   {
@@ -27,7 +28,7 @@ const SPACE_MENU = [
 
 function SpaceMenu({ className }) {
   const {
-    contextStore: { isProjectSelected, collapsed, setHoverMenu },
+    contextStore: { isProjectSelected, collapsed, setHoverMenu, hoverMenu },
   } = useStores();
 
   const location = useLocation();
@@ -43,20 +44,32 @@ function SpaceMenu({ className }) {
   };
 
   return (
-    <ul className={classNames('space-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
+    <ul className={classNames('space-menu-wrapper side-gnb-menu', className, { collapsed }, { 'project-selected': isProjectSelected })}>
       {SPACE_MENU.map((d, inx) => {
         return (
           <li key={inx} className={classNames({ selected: location.pathname === d.to })}>
-            <Link to={d.to} onMouseEnter={() => onMenuMouseEnter(d)} onMouseLeave={() => onMenuMouseLeave()}>
-              <div className="menu-icon">{d.icon}</div>
-              <div className="text">
-                {t(`메뉴.${d.name}`)}
-                <span />
-              </div>
-            </Link>
+            {d.separator && <div className="separator" />}
+            {!d.separator && (
+              <>
+                <div className="bg">
+                  <div className="arrow">
+                    <i className="fa-solid fa-angle-right" />
+                  </div>
+                </div>
+                <div className="line" />
+                <Link to={d.to} onMouseEnter={() => onMenuMouseEnter(d)} onMouseLeave={() => onMenuMouseLeave()}>
+                  <div className="menu-icon">{d.icon}</div>
+                  <div className="text">
+                    {t(`메뉴.${d.name}`)}
+                    <span />
+                  </div>
+                </Link>
+              </>
+            )}
           </li>
         );
       })}
+      {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
     </ul>
   );
 }

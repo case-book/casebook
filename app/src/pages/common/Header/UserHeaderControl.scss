@@ -49,13 +49,14 @@
       background: transparent;
       width: 100%;
       border: none;
-      color: white;
+      color: var(--text-color);
       font-size: 16px;
       cursor: pointer;
       padding: 8px;
       border-radius: 4px;
       &:hover {
-        background-color: #111;
+        background-color: $color-azure;
+        color: white;
       }
 
       .icon {
@@ -109,12 +110,18 @@
       z-index: 1;
     }
 
-    &:hover {
-      .admin-flag {
-      }
-    }
     > a {
       margin-right: 0.5rem;
+    }
+  }
+
+  .user-menu,
+  .notification-menu {
+    > button {
+      &:hover {
+        background-color: $color-azure !important;
+        color: white !important;
+      }
     }
   }
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './Logo.scss';
 import classNames from 'classnames';
 
-function Logo({ className, onClick, animation, color, size, hand }) {
+function Logo({ className, onClick, animation, color, size, hand, summary }) {
   return (
     <div className={classNames('logo-wrapper', className, `size-${size}`, `color-${color}`, { 'g-clickable': onClick, animation })}>
       {animation && hand && (
@@ -24,17 +24,25 @@ function Logo({ className, onClick, animation, color, size, hand }) {
       )}
       <div className="logo-content">
         <div
-          className="logo-content"
+          className={classNames('logo-content', { clickable: onClick })}
           onClick={() => {
             if (onClick) {
               onClick();
             }
           }}
         >
-          <div>
-            <span className="case">CASE</span>
-            <span className="book">BOOK</span>
-          </div>
+          {!summary && (
+            <div>
+              <span className="case">CASE</span>
+              <span className="book">BOOK</span>
+            </div>
+          )}
+          {summary && (
+            <div>
+              <span className="case">C</span>
+              <span className="book">B</span>
+            </div>
+          )}
         </div>
         <span className="floating-icon icon-pencil">
           <i className="fa-solid fa-pencil" />
@@ -54,6 +62,7 @@ Logo.defaultProps = {
   color: null,
   size: 'md',
   hand: true,
+  summary: false,
 };
 
 Logo.propTypes = {
@@ -63,6 +72,7 @@ Logo.propTypes = {
   color: PropTypes.string,
   size: PropTypes.string,
   hand: PropTypes.bool,
+  summary: PropTypes.bool,
 };
 
 export default Logo;

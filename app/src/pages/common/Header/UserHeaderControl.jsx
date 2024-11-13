@@ -127,7 +127,7 @@ function UserHeaderControl({ className }) {
         <>
           <div className="user-menu side-menu-item">
             <Button
-              outline={!user.avatarInfo}
+              outline
               rounded
               color={user.avatarInfo ? 'transparent' : 'white'}
               onClick={e => {
@@ -136,12 +136,12 @@ function UserHeaderControl({ className }) {
               }}
             >
               {isAdmin && <div className="admin-flag">ADMIN</div>}
-              <UserAvatar avatarInfo={user.avatarInfo} size={32} rounded outline />
+              <UserAvatar avatarInfo={user.avatarInfo} size={32} rounded outline={false} />
             </Button>
           </div>
           <div className="notification-menu side-menu-item">
             <Button
-              outline={false}
+              outline
               rounded
               className={notificationChangeEffect ? 'effect' : ''}
               color={notificationOpen ? 'primary' : 'white'}

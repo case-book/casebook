@@ -11,6 +11,10 @@ export default class ContextStore {
 
   hoverMenu = null;
 
+  projectSelector = false;
+
+  spaceProjects = [];
+
   constructor() {
     makeObservable(this, {
       space: observable,
@@ -25,11 +29,24 @@ export default class ContextStore {
       setCollapsed: action,
       hoverMenu: observable,
       setHoverMenu: action,
+      projectSelector: observable,
+      setProjectSelector: action,
+      spaceProjects: observable,
+      setSpaceProjects: action,
     });
   }
 
   setSpace = space => {
     this.space = space;
+  };
+
+  setSpaceProjects = spaceProjects => {
+    console.log(spaceProjects);
+    this.spaceProjects = spaceProjects;
+  };
+
+  setProjectSelector = projectSelector => {
+    this.projectSelector = projectSelector;
   };
 
   setProjectId = projectId => {

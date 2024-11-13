@@ -59,7 +59,7 @@ const MENUS = [
   {
     key: 'sequences',
     to: '/sequences',
-    icon: <i className="fa-solid fa-vial-virus" />,
+    icon: <i className="fa-solid fa-diagram-project" />,
     color: '#3e8ef1',
     name: i18n.t('케이스시퀀스'),
     admin: false,
@@ -98,13 +98,6 @@ const MENUS = [
         to: '/iterations',
         icon: <i className="fa-solid fa-clock-rotate-left" />,
         name: i18n.t('반복 테스트런'),
-        admin: false,
-      },
-      {
-        key: 'history',
-        to: '/history',
-        icon: <i className="fa-solid fa-timeline" />,
-        name: i18n.t('테스트런 히스토리'),
         admin: false,
       },
     ],
@@ -152,10 +145,6 @@ const MENUS = [
     pc: true,
     login: true,
     project: true,
-  },
-  {
-    separator: true,
-    pc: true,
   },
   {
     key: 'admin',

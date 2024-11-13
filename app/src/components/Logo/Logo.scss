@@ -110,6 +110,7 @@
 
   > .logo-content {
     font-size: 32px;
+
     @media (max-width: 768px) {
       font-size: 28px;
     }
@@ -143,6 +144,12 @@
 
       .logo-icon {
         margin-right: 0.5rem;
+      }
+
+      &.clickable:hover {
+        > div {
+          color: $color-azure;
+        }
       }
     }
 

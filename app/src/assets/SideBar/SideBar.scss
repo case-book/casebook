@@ -1,22 +1,23 @@
 .side-bar-wrapper {
   width: 220px;
-  background: #a50034;
-  color: white;
+  background: $side-gnb-background-color;
+  color: $side-gnb-text-color;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   justify-content: space-between;
   z-index: 10;
-  border-right: 1px solid transparent;
+  border-right: $side-gnb-menu-border;
 
   &.collapsed {
     width: 70px;
-    padding-top: 16px;
   }
 
   .size-bar-logo {
     padding: 16px 0;
+    background: $side-gnb-mark-background-color;
+    border-bottom: $side-gnb-menu-border;
   }
 
   .side-bar-bottom {
@@ -24,5 +25,7 @@
     bottom: 0;
     left: 0;
     right: 0;
+    border-top: $side-gnb-menu-border;
+    background: $side-gnb-mark-background-color;
   }
 }
