@@ -23,7 +23,7 @@ public class OpenLinkService {
 
 
     public List<OpenLinkDTO> selectOpenLinkList(long projectId) {
-        List<OpenLink> openLinks = openLinkRepository.findByProjectId(projectId);
+        List<OpenLink> openLinks = openLinkRepository.findByProjectIdOrderByIdDesc(projectId);
         return openLinks.stream().map(OpenLinkDTO::new).collect(Collectors.toList());
     }
 

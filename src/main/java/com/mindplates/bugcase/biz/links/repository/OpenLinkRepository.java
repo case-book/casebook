@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OpenLinkRepository extends JpaRepository<OpenLink, Long> {
 
-    List<OpenLink> findByProjectId(long projectId);
+    List<OpenLink> findByProjectIdOrderByIdDesc(long projectId);
 
     Optional<OpenLink> findByIdAndProjectId(long id, long projectId);
 

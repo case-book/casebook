@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { CheckBox, CloseIcon, EmptyContent, Liner, SeqId } from '@/components';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -10,20 +10,16 @@ import './OpenLinkReportList.scss';
 function OpenLinkReportList({ className, reports, onRemove, onCheck, isChecked }) {
   const { t } = useTranslation();
 
-  const list = useMemo(() => {
-    return reports.sort((a, b) => a.id - b.id);
-  }, [reports]);
-
   return (
     <>
-      {list?.length === 0 && (
+      {reports?.length === 0 && (
         <EmptyContent border fill>
           {t('리포트가 없습니다.')}
         </EmptyContent>
       )}
-      {list?.length > 0 && (
+      {reports?.length > 0 && (
         <ul className={classNames('open-link-report-list-wrapper', className)}>
-          {list.map(report => {
+          {reports.map(report => {
             return (
               <li key={report.id}>
                 <div className="report-name">
