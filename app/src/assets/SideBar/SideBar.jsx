@@ -96,28 +96,41 @@ function SideBar() {
 
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
-      {!collapsed && (
-        <div className="size-bar-logo">
-          <Logo
-            size="sm"
-            color="white"
-            hand={false}
-            onClick={() => {
-              navigate('/');
-            }}
-          />
+      <div>
+        <div className="side-bar-controls">
+          <button type="button" className="min">
+            <i className="fa-solid fa-minus" />
+          </button>
+          <button type="button" className="max">
+            <i className="fa-regular fa-window-maximize" />
+          </button>
         </div>
-      )}
-      {!space && <SpaceMenu projects={projects} />}
-      {space && (
-        <>
-          <SpaceInfo spaces={spaces} />
-          <ProjectInfo projects={projects} onRefresh={getProjectList} />
-          <ProjectMenu projects={projects} />
-        </>
-      )}
-      <div className="side-bar-bottom">
-        <UserHeaderControl />
+        {!collapsed && (
+          <div className="size-bar-logo">
+            <Logo
+              size="sm"
+              hand={false}
+              onClick={() => {
+                navigate('/');
+              }}
+            />
+          </div>
+        )}
+        {!space && <SpaceMenu projects={projects} />}
+        {space && (
+          <>
+            <ProjectInfo projects={projects} onRefresh={getProjectList} />
+            <ProjectMenu projects={projects} />
+          </>
+        )}
+        {space && (
+          <div className="space-info-content">
+            <SpaceInfo spaces={spaces} />
+          </div>
+        )}
+        <div className="side-bar-bottom">
+          <UserHeaderControl />
+        </div>
       </div>
     </nav>
   );

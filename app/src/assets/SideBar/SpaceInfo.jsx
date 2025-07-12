@@ -2,127 +2,66 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
 import useStores from '@/hooks/useStores';
 import { SpacePropTypes } from '@/proptypes';
-import { Link } from 'react-router-dom';
-import { Liner } from '@/components';
+import { useNavigate } from 'react-router-dom';
+import SelectSpacePopup from '@/assets/SideBar/SelectSpacePopup/SelectSpacePopup';
 import './SpaceInfo.scss';
 
 function SpaceInfo({ className, spaces }) {
   const {
-    contextStore: { space, setSpace, collapsed },
+    contextStore: { space, collapsed },
   } = useStores();
 
-  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [spaceSelectorOpened, setSpaceSelectorOpened] = useState(false);
-  const [spaceMenuOpened, setSpaceMenuOpened] = useState(false);
 
   return (
     <div className={classNames('space-info-wrapper', className)}>
-      <div>
-        <div
-          className={classNames('space-icon', { collapsed })}
-          onClick={() => {
-            setSpaceMenuOpened(!spaceMenuOpened);
-          }}
-        >
-          <span>{space?.name && space?.name[0]}</span>
+      <div className="label">
+        <div>SPACE</div>
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/spaces/search');
+            }}
+          >
+            <i className="fa-solid fa-magnifying-glass" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/spaces/new');
+            }}
+          >
+            <i className="fa-solid fa-plus" />
+          </button>
         </div>
       </div>
       {!collapsed && (
         <div className="space-info">
-          <span className="space-name" onClick={() => setSpaceMenuOpened(!spaceMenuOpened)}>
-            {space?.name}
-          </span>
           <span
             className="bullet"
             onClick={() => {
               setSpaceSelectorOpened(!spaceSelectorOpened);
             }}
           >
-            {!spaceSelectorOpened && <i className="fa-solid fa-angle-down" />}
-            {spaceSelectorOpened && <i className="fa-solid fa-angle-up" />}
+            <button
+              type="button"
+              onClick={() => {
+                navigate('/spaces/new');
+              }}
+            >
+              <i className="fa-solid fa-arrow-right-arrow-left" />
+            </button>
+          </span>
+          <span className="space-name">
+            <span onClick={() => navigate(`/spaces/${space.code}/info`)}>{space?.name}</span>
           </span>
         </div>
       )}
-      {spaceSelectorOpened && (
-        <div
-          className={classNames('space-popup-menu space-selector')}
-          onClick={() => {
-            setSpaceSelectorOpened(false);
-          }}
-        >
-          <div>
-            <div onClick={e => e.stopPropagation()}>
-              <div className="arrow">
-                <div />
-              </div>
-              <ul>
-                {spaces.map(info => {
-                  return (
-                    <li key={info.code}>
-                      <Link
-                        className="space-selector-item"
-                        to={`/spaces/${info.code}/info`}
-                        onClick={e => {
-                          e.stopPropagation();
-                          localStorage.setItem('spaceCode', info.code);
-                          setSpace(info);
-                          setSpaceSelectorOpened(false);
-                        }}
-                      >
-                        <div>
-                          <div>{info.name}</div>
-                          {info.code === space.code && (
-                            <div>
-                              <i className="fa-solid fa-check-to-slot" />
-                            </div>
-                          )}
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-      {spaceMenuOpened && (
-        <div
-          className={classNames('space-popup-menu', { collapsed })}
-          onClick={e => {
-            setSpaceMenuOpened(false);
-            e.stopPropagation();
-          }}
-        >
-          <div>
-            <div>
-              <div className="arrow">
-                <div />
-              </div>
-              <ul>
-                <li>
-                  <Link to={`/spaces/${space.code}/info`}>{t('스페이스 정보')}</Link>
-                  <Liner width="1px" height="10px" display="inline-block" color="gray" margin="0 4px" />
-                  <Link to={`/spaces/${space.code}/edit`}>{t('관리')}</Link>
-                </li>
-                <li>
-                  <Link to="/spaces/search">
-                    <i className="fa-solid fa-magnifying-glass" /> {t('스페이스 검색')}
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/spaces/new">
-                    <i className="fa-solid fa-plus" /> {t('스페이스 생성')}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
+      {spaceSelectorOpened && <SelectSpacePopup spaces={spaces} setOpened={opened => setSpaceSelectorOpened(opened)} />}
     </div>
   );
 }
