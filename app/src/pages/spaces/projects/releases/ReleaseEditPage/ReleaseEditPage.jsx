@@ -115,7 +115,9 @@ function ReleaseEditPage({ type }) {
     }
   }, [testcaseGroups, testcaseGroupId, testcaseGroupTestcaseId]);
 
-  const selectAllTestcase = () => setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(testcaseGroups ?? []));
+  const selectAllTestcase = () => {
+    setCurrentSelectedTestcaseGroups(testcaseUtil.getSelectionFromTestcaseGroups(testcaseGroups ?? []));
+  };
 
   const selectedTestcaseIdMap = useMemo(() => {
     const map = {};

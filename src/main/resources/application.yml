@@ -43,7 +43,7 @@ spring:
       port: 6679
       password: admin1234
 scheduler:
-  enabled: false
+  enabled: true
 server:
   port: 8080
   error:
@@ -53,7 +53,7 @@ server:
 casebook:
   locale:
     default: en
-  corsUrls: http://localhost:3000,https://localhost:3000
+  corsUrls: http://localhost:3000,https://localhost:3000,http://casebook.so:3000,https://casebook.so:3000
   url: http://localhost:3000
   web-url: http://localhost:3000
 file:

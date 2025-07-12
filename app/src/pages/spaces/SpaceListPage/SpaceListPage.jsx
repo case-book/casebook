@@ -192,7 +192,7 @@ function SpaceListPage() {
                         <div>
                           <span
                             onClick={() => {
-                              navigate(`/spaces/${space.code}/projects`);
+                              navigate(`/spaces/${space.code}/info`);
                             }}
                           >
                             {space.name}

@@ -221,26 +221,27 @@ function TestrunEditPage({ type }) {
     ReleaseService.selectReleaseList(spaceCode, projectId, list => {
       setReleases(list);
     });
+  }, [spaceCode, projectId]);
 
-    if (isEdit || !releaseId || !testcaseGroups) {
-      return;
+  useEffect(() => {
+    if (!isEdit && releaseId && testcaseGroups?.length > 0) {
+      ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
+        const nextTestcaseGroups = testcaseUtil.getSelectionForTestrunEdit(
+          testcaseGroups.map(group => ({
+            ...group,
+            testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))),
+          })),
+        );
+
+        setCurrentSelectedTestcaseGroups(nextTestcaseGroups);
+
+        setTestrun(prev => ({
+          ...prev,
+          name: data.name,
+          description: data.description,
+        }));
+      });
     }
-
-    ReleaseService.selectRelease(spaceCode, projectId, releaseId, data => {
-      const nextTestcaseGroups = testcaseUtil.getSelectionForTestrunEdit(
-        testcaseGroups.map(group => ({
-          ...group,
-          testcases: group.testcases.filter(testcase => testcase.projectReleaseIds.includes(Number(data.id))),
-        })),
-      );
-
-      setTestrun(prev => ({
-        ...prev,
-        name: data.name,
-        description: data.description,
-        testcaseGroups: nextTestcaseGroups,
-      }));
-    });
   }, [isEdit, spaceCode, projectId, releaseId, testcaseGroups]);
 
   const onSubmit = e => {

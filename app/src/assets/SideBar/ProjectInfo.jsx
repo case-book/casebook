@@ -115,6 +115,7 @@ function ProjectInfo({ className, projects, onRefresh }) {
           <div className="create-project">
             <Link to={`/spaces/${space?.code}/projects/new`}>
               <i className="fa-solid fa-plus" />
+              &nbsp;
               {t('새 프로젝트')}
             </Link>
           </div>

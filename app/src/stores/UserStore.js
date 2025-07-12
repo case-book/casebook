@@ -108,6 +108,8 @@ export default class UserStore {
     this.user = {
       ...next,
     };
+
+    return next.spaces;
   };
 
   setTried = tried => {
