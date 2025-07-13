@@ -41,21 +41,15 @@ function SpaceInfo({ className, spaces }) {
       </div>
       {!collapsed && (
         <div className="space-info">
-          <span
-            className="bullet"
+          <button
+            className="space-selector-button"
+            type="button"
             onClick={() => {
               setSpaceSelectorOpened(!spaceSelectorOpened);
             }}
           >
-            <button
-              type="button"
-              onClick={() => {
-                navigate('/spaces/new');
-              }}
-            >
-              <i className="fa-solid fa-arrow-right-arrow-left" />
-            </button>
-          </span>
+            <i className="fa-solid fa-arrow-right-arrow-left" />
+          </button>
           <span className="space-name">
             <span onClick={() => navigate(`/spaces/${space.code}/info`)}>{space?.name}</span>
           </span>

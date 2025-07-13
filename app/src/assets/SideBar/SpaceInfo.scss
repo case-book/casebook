@@ -84,32 +84,23 @@
       }
     }
 
-    .bullet {
-      font-size: 13px;
+    button.space-selector-button {
+      background-color: white;
+      color: var(--text-color);
+      font-size: 10px;
+      padding: 0;
+      cursor: pointer;
+      border: 1px solid rgba(0, 0, 0, 0.24);
       width: 24px;
       height: 24px;
-      display: inline-flex;
-      justify-content: center;
-      border-radius: 4px;
-      text-align: right;
+      box-sizing: border-box;
+      text-align: center;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px 0 rgb(0 0 0 / 20%);
+      align-self: center;
 
-      button {
-        background-color: white;
-        color: var(--text-color);
-        font-size: 10px;
-        padding: 0;
-        cursor: pointer;
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        width: 24px;
-        height: 24px;
-        box-sizing: border-box;
-        text-align: center;
-        border-radius: 50%;
-        box-shadow: 0 1px 4px 0 rgb(0 0 0 / 20%);
-
-        &:hover {
-          box-shadow: 0 1px 4px 0 rgb(0 0 0 / 40%);
-        }
+      &:hover {
+        box-shadow: 0 1px 4px 0 rgb(0 0 0 / 40%);
       }
     }
   }
