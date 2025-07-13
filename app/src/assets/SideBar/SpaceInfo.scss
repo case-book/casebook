@@ -20,34 +20,8 @@
         text-align: right;
       }
       button {
-        background-color: white;
-        color: var(--text-color);
-        font-size: 10px;
-        padding: 0;
-        cursor: pointer;
         margin-right: 4px;
-        border: 1px solid rgba(0, 0, 0, 0.24);
-        width: 20px;
-        height: 20px;
-        box-sizing: border-box;
-        text-align: center;
-        border-radius: 50%;
-        box-shadow: 0 1px 4px 0 rgb(0 0 0 / 20%);
-
-        &:hover {
-          box-shadow: 0 1px 4px 0 rgb(0 0 0 / 40%);
-        }
-
         &:last-child {
-          margin-right: 0;
-        }
-
-        &.min {
-          background-color: $color-tangerine;
-        }
-
-        &.max {
-          background-color: $naver-color;
           margin-right: 0;
         }
       }

@@ -7,6 +7,7 @@ import { SpacePropTypes } from '@/proptypes';
 import { useNavigate } from 'react-router-dom';
 import SelectSpacePopup from '@/assets/SideBar/SelectSpacePopup/SelectSpacePopup';
 import './SpaceInfo.scss';
+import SideBarMiniButton from '@/assets/SideBar/SideBarMiniButton';
 
 function SpaceInfo({ className, spaces }) {
   const {
@@ -21,22 +22,20 @@ function SpaceInfo({ className, spaces }) {
       <div className="label">
         <div>SPACE</div>
         <div>
-          <button
-            type="button"
+          <SideBarMiniButton
             onClick={() => {
               navigate('/spaces/search');
             }}
           >
             <i className="fa-solid fa-magnifying-glass" />
-          </button>
-          <button
-            type="button"
+          </SideBarMiniButton>
+          <SideBarMiniButton
             onClick={() => {
               navigate('/spaces/new');
             }}
           >
             <i className="fa-solid fa-plus" />
-          </button>
+          </SideBarMiniButton>
         </div>
       </div>
       <div className="space-info">

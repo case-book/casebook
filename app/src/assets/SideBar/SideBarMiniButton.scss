@@ -1,0 +1,20 @@
+.side-bar-mini-button-wrapper {
+  background-color: white;
+  color: var(--text-color);
+  font-size: 10px;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 20%);
+
+  &:hover {
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 40%);
+  }
+
+
+}
