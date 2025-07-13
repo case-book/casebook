@@ -50,9 +50,8 @@
 
       .separator {
         height: 1px;
-        background-color: var(--light-hover-color);
-        opacity: 0.6;
-        margin: 4px 0;
+        background-color: var(--light-color);
+        margin: 8px 0;
       }
 
       &.selected {

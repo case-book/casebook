@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
@@ -21,7 +21,7 @@ function ProjectMenu({ className, projects }) {
     contextStore: { spaceCode, projectId, isProjectSelected, collapsed, hoverMenu, setHoverMenu },
   } = useStores();
   const { menu } = useMenu();
-
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [projectSelector, setProjectSelector] = useState(null);
@@ -78,10 +78,27 @@ function ProjectMenu({ className, projects }) {
     <div className={classNames('project-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
       <div className="label">MENU</div>
       <ul>
+        <li>
+          <Link to={`/spaces/${spaceCode}/dashboard`}>
+            <div
+              className="menu-icon"
+              style={{
+                backgroundColor: location.pathname === `/spaces/${spaceCode}/dashboard` ? 'var(--primary-color)' : '',
+                color: location.pathname === `/spaces/${spaceCode}/dashboard` ? 'var(--primary-text-color)' : '',
+              }}
+            >
+              <span>
+                <i className="fa-solid fa-gauge" />
+              </span>
+            </div>
+            <div className="text">{t('메뉴.대시보드')}</div>
+          </Link>
+          <div className="separator" />
+        </li>
         {list.map((d, inx) => {
           let selected = d?.key === menu?.key;
           if (d?.key === 'admin') {
-            selected = window.location.pathname.startsWith('/admin');
+            selected = location.pathname.startsWith('/admin');
           }
 
           return (
@@ -137,7 +154,7 @@ function ProjectMenu({ className, projects }) {
                   {d.list && subMenuOpened[d?.key] && (
                     <ul className="sub-menu">
                       {d.list?.map(info => {
-                        const selectedSub = `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` === window.location.pathname || `${d.to}${info.to}` === window.location.pathname;
+                        const selectedSub = `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` === location.pathname || `${d.to}${info.to}` === location.pathname;
 
                         return (
                           <li key={info.key} className={classNames({ selected: selectedSub })}>

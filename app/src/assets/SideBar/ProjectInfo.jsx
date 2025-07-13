@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import * as PropTypes from 'prop-types';
 import classNames from 'classnames';
 import useStores from '@/hooks/useStores';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ProjectPropTypes } from '@/proptypes';
 import useMenu from '@/hooks/useMenu';
@@ -18,7 +18,6 @@ function ProjectInfo({ className, projects, onRefresh }) {
   const { t } = useTranslation();
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const { menu, submenu } = useMenu();
 
@@ -123,24 +122,6 @@ function ProjectInfo({ className, projects, onRefresh }) {
             </ul>
           )}
         </div>
-      </div>
-      <div
-        className={classNames('project-menu dashboard-menu', {
-          selected: location.pathname === `/spaces/${space?.code}/dashboard`,
-        })}
-        onMouseEnter={() => {
-          setHoverMenu(t('메뉴.대시보드'));
-        }}
-        onMouseLeave={() => {
-          setHoverMenu(null);
-        }}
-      >
-        <Link to={`/spaces/${space?.code}/dashboard`}>
-          <div className="menu-icon">
-            <i className="fa-solid fa-gauge" />
-          </div>
-          <div className="text">{t('메뉴.대시보드')}</div>
-        </Link>
       </div>
     </div>
   );
