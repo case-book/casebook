@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import './SpacetMenu.scss';
+import './SpaceMenu.scss';
 
 const SPACE_MENU = [
   {

@@ -37,6 +37,16 @@
         text-align: center;
       }
     }
+
+    .project-selector {
+      > .project-name {
+        &.short-name,
+        &.no-project {
+          writing-mode: vertical-rl;
+          font-size: 11px;
+        }
+      }
+    }
   }
 
   .project-selector {
@@ -48,12 +58,6 @@
       cursor: pointer;
       border: 1px solid transparent;
       border-bottom: none;
-
-      &.short-name,
-      &.no-project {
-        writing-mode: vertical-rl;
-        font-size: 11px;
-      }
 
       &.no-project {
         font-size: 11px;

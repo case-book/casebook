@@ -6,11 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 import './ProjectMenu.scss';
 import { ProjectPropTypes } from '@/proptypes';
-import { CloseIcon } from '@/components';
 import useMenu from '@/hooks/useMenu';
+import SideBarMiniButton from '@/assets/SideBar/SideBarMiniButton';
+import SelectProjectPopup from '@/assets/SideBar/SelectProjectPopup/SelectProjectPopup';
 
 function ProjectMenu({ className, projects }) {
   const {
@@ -25,6 +25,7 @@ function ProjectMenu({ className, projects }) {
   const navigate = useNavigate();
 
   const [projectSelector, setProjectSelector] = useState(null);
+  const [subMenuOpened, setSubMenuOpened] = useState({});
 
   const { t } = useTranslation();
 
@@ -39,6 +40,7 @@ function ProjectMenu({ className, projects }) {
 
   const onMenuClick = (d, e) => {
     e.preventDefault();
+
     if (d.project) {
       if (!projectId) {
         setProjectSelector(`/spaces/${spaceCode}/projects/{{PROJECT_ID}}${d.to}`);
@@ -73,89 +75,105 @@ function ProjectMenu({ className, projects }) {
   };
 
   return (
-    <ul className={classNames('project-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
-      {list.map((d, inx) => {
-        return (
-          <li
-            key={inx}
-            className={classNames({ selected: d?.key === menu?.key })}
-            style={{
-              animationDelay: `${inx * 0.05}s`,
-            }}
-          >
-            {d.separator && <div className="separator" />}
-            {!d.separator && (
-              <>
-                <Link
-                  to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
-                  onClick={e => onMenuClick(d, e)}
-                  onMouseEnter={() => onMenuMouseEnter(d)}
-                  onMouseLeave={() => onMenuMouseLeave()}
-                >
-                  <div className="menu-icon">{d.icon}</div>
-                  <div className="text">
-                    {t(`메뉴.${d.name}`)}
-                    <span />
-                  </div>
-                </Link>
-                {d.list && (
-                  <SideOverlayMenu className="sub-menu">
-                    <ul>
+    <div className={classNames('project-menu-wrapper', className, { collapsed }, { 'project-selected': isProjectSelected })}>
+      <div className="label">MENU</div>
+      <ul>
+        {list.map((d, inx) => {
+          let selected = d?.key === menu?.key;
+          if (d?.key === 'admin') {
+            selected = window.location.pathname.startsWith('/admin');
+          }
+
+          return (
+            <li
+              key={inx}
+              className={classNames({ selected })}
+              style={{
+                animationDelay: `${inx * 0.05}s`,
+              }}
+            >
+              {d.separator && <div className="separator" />}
+              {!d.separator && (
+                <>
+                  <Link
+                    to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}` : d.to}
+                    onClick={e => onMenuClick(d, e)}
+                    onMouseEnter={() => onMenuMouseEnter(d)}
+                    onMouseLeave={() => onMenuMouseLeave()}
+                  >
+                    <div
+                      className="menu-icon"
+                      style={{
+                        backgroundColor: selected ? 'var(--primary-color)' : '',
+                        color: selected ? 'var(--primary-text-color)' : '',
+                      }}
+                    >
+                      <span>{d.icon}</span>
+                    </div>
+                    <div className="text">
+                      {t(`메뉴.${d.name}`)}
+                      <span />
+                    </div>
+                    {d.list && (
+                      <div className="sub-menu-open-button" onClick={e => e.stopPropagation()}>
+                        <SideBarMiniButton
+                          shadow={false}
+                          onClick={e => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setSubMenuOpened(prev => {
+                              const next = { ...prev };
+                              next[d.key] = !next[d.key];
+                              return next;
+                            });
+                          }}
+                        >
+                          {subMenuOpened[d?.key] && <i className="fa-solid fa-chevron-up" />}
+                          {!subMenuOpened[d?.key] && <i className="fa-solid fa-chevron-down" />}
+                        </SideBarMiniButton>
+                      </div>
+                    )}
+                  </Link>
+                  {d.list && subMenuOpened[d?.key] && (
+                    <ul className="sub-menu">
                       {d.list?.map(info => {
+                        const selectedSub = `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` === window.location.pathname || `${d.to}${info.to}` === window.location.pathname;
+
                         return (
-                          <li key={info.key}>
+                          <li key={info.key} className={classNames({ selected: selectedSub })}>
                             <Link
                               to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
-                              onClick={e => onSubMenuClick(d, info, e)}
+                              onClick={e => {
+                                onSubMenuClick(d, info, e);
+                              }}
                               onMouseEnter={() => onMenuMouseEnter(info)}
                               onMouseLeave={() => onMenuMouseLeave()}
                             >
-                              <div className="menu-icon">{info.icon}</div>
+                              <div
+                                className="menu-icon"
+                                style={{
+                                  backgroundColor: selectedSub ? 'var(--primary-color)' : '',
+                                  color: selectedSub ? 'var(--primary-text-color)' : '',
+                                }}
+                              >
+                                <span>{info.icon}</span>
+                              </div>
                               <div className="text">{info.name}</div>
                             </Link>
                           </li>
                         );
                       })}
                     </ul>
-                  </SideOverlayMenu>
-                )}
-              </>
-            )}
-          </li>
-        );
-      })}
-      {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
-      {projectSelector && (
-        <div className={classNames('project-selector', { collapsed })} onClick={() => setProjectSelector(null)}>
-          <div>
-            <div onClick={e => e.stopPropagation()}>
-              <h3>
-                {t('프로젝트 선택')}
-                <CloseIcon className="close-button" onClick={() => setProjectSelector(null)} />
-              </h3>
-              <div>
-                <ul>
-                  {projects.map(project => {
-                    return (
-                      <li
-                        key={project.id}
-                        className={classNames({ selected: projectId === project.id })}
-                        onClick={() => {
-                          navigate(projectSelector.replace('{{PROJECT_ID}}', project.id));
-                          setProjectSelector(null);
-                        }}
-                      >
-                        <div>{project.name}</div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </ul>
+                  )}
+                </>
+              )}
+            </li>
+          );
+        })}
+        {hoverMenu && <div className="hover-menu">{hoverMenu}</div>}
+        {projectSelector && <SelectProjectPopup projects={projects} setOpened={() => setProjectSelector(null)} moveTo={projectSelector} onSelect={() => setProjectSelector(null)} />}
+      </ul>
+    </div>
   );
 }
 
