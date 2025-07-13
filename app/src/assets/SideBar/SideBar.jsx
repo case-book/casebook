@@ -94,14 +94,21 @@ function SideBar() {
     };
   }, [collapsed, isLogin]);
 
+  const onCollapseClick = useCallback(() => {
+    setCollapsed(!collapsed);
+    localStorage.setItem('collapsed', !collapsed);
+  }, [collapsed, setCollapsed]);
+
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
       <div>
         <div className="side-bar-controls">
-          <button type="button" className="min">
-            <i className="fa-solid fa-minus" />
-          </button>
-          <button type="button" className="max">
+          {!collapsed && (
+            <button type="button" className="min" onClick={onCollapseClick}>
+              <i className="fa-solid fa-minus" />
+            </button>
+          )}
+          <button type="button" className="max" onClick={onCollapseClick}>
             <i className="fa-regular fa-window-maximize" />
           </button>
         </div>
@@ -123,14 +130,14 @@ function SideBar() {
             <ProjectMenu projects={projects} />
           </>
         )}
+        <div className="side-bar-bottom">
+          <UserHeaderControl />
+        </div>
         {space && (
           <div className="space-info-content">
             <SpaceInfo spaces={spaces} />
           </div>
         )}
-        <div className="side-bar-bottom">
-          <UserHeaderControl />
-        </div>
       </div>
     </nav>
   );

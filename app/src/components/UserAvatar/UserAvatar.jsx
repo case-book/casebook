@@ -77,8 +77,15 @@ function UserAvatar({ className, size, avatarInfo, rounded, fill, outline }) {
     <div className={`user-avatar-wrapper ${className} ${rounded ? 'rounded' : ''} ${fill ? 'fill' : ''} ${outline ? 'outline' : ''}`}>
       {avatar && <img src={avatar} alt="avator" />}
       {!avatar && (
-        <div style={{ width: `${size}px`, height: `${size}px`, fontSize: `${size ? size / 2 - 2 : 16}px` }} className="empty-icon">
-          <i className="fa-solid fa-skull" />
+        <div
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            fontSize: `${size ? size / 2 - 2 : 16}px`,
+          }}
+          className="empty-icon"
+        >
+          <i className="fa-solid fa-user-astronaut" />
         </div>
       )}
     </div>

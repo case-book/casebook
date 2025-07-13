@@ -6,6 +6,7 @@
   position: relative;
   border-radius: 0 0 24px 24px;
   background-color: $gray-100;
+  height: 66px;
 
   > .label {
     font-size: 10px;
@@ -82,6 +83,10 @@
           }
         }
       }
+
+      &.space-short-name {
+        display: none;
+      }
     }
 
     button.space-selector-button {
@@ -101,6 +106,46 @@
 
       &:hover {
         box-shadow: 0 1px 4px 0 rgb(0 0 0 / 40%);
+      }
+    }
+  }
+}
+
+.collapsed {
+  .space-info-wrapper {
+    padding: 0;
+    .label {
+      display: none;
+    }
+
+    .space-info {
+      justify-content: center;
+      .space-selector-button {
+        display: none;
+      }
+      > span {
+        &.space-name {
+          display: none;
+        }
+
+        &.space-short-name {
+          display: inline-flex;
+          background-color: white;
+          border: 1px solid rgba(0, 0, 0, 0.4);
+          width: 24px;
+          height: 24px;
+          justify-content: center;
+          border-radius: 50%;
+          cursor: pointer;
+          box-shadow: 0 1px 4px 0 rgb(0 0 0 / 20%);
+          > span {
+            align-self: center;
+          }
+
+          &:hover {
+            box-shadow: 0 1px 4px 0 rgb(0 0 0 / 40%);
+          }
+        }
       }
     }
   }

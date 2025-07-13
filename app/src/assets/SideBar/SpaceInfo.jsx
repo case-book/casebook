@@ -10,7 +10,7 @@ import './SpaceInfo.scss';
 
 function SpaceInfo({ className, spaces }) {
   const {
-    contextStore: { space, collapsed },
+    contextStore: { space },
   } = useStores();
 
   const navigate = useNavigate();
@@ -39,22 +39,23 @@ function SpaceInfo({ className, spaces }) {
           </button>
         </div>
       </div>
-      {!collapsed && (
-        <div className="space-info">
-          <button
-            className="space-selector-button"
-            type="button"
-            onClick={() => {
-              setSpaceSelectorOpened(!spaceSelectorOpened);
-            }}
-          >
-            <i className="fa-solid fa-arrow-right-arrow-left" />
-          </button>
-          <span className="space-name">
-            <span onClick={() => navigate(`/spaces/${space.code}/info`)}>{space?.name}</span>
-          </span>
-        </div>
-      )}
+      <div className="space-info">
+        <button
+          className="space-selector-button"
+          type="button"
+          onClick={() => {
+            setSpaceSelectorOpened(!spaceSelectorOpened);
+          }}
+        >
+          <i className="fa-solid fa-arrow-right-arrow-left" />
+        </button>
+        <span className="space-name">
+          <span onClick={() => navigate(`/spaces/${space.code}/info`)}>{space?.name}</span>
+        </span>
+        <span className="space-short-name">
+          <span onClick={() => navigate(`/spaces/${space.code}/info`)}>{space?.name[0]}</span>
+        </span>
+      </div>
       {spaceSelectorOpened && <SelectSpacePopup spaces={spaces} setOpened={opened => setSpaceSelectorOpened(opened)} />}
     </div>
   );

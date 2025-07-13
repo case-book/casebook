@@ -76,7 +76,8 @@ $color-white: #fff;
 $color-muted-black: #837e7e;
 
 $font-family-count: Rowdies, sans-serif;
-$font-family-date: IBMPlexMono;
+$font-family-date: MartianMono;
+
 
 $gray-200: #eaeef3;
 
@@ -114,8 +115,9 @@ $color-form-control-dark: #121212;
 }
 
 @mixin date() {
-  font-weight: bold;
   font-family: $font-family-date;
+  letter-spacing: -0.25px;
+  word-spacing: -4px;
 }
 
 @mixin number() {
