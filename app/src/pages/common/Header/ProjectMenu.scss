@@ -104,12 +104,23 @@
   }
 
   &.collapsed {
-    > ul > {
+    margin: 16px 0;
+
+    .label {
+      text-align: center;
+    }
+
+    > ul {
+      overflow: visible;
       > li {
-        > a {
+        a {
           justify-content: center;
           .menu-icon {
             margin-right: 0;
+            > span {
+              align-self: center;
+              line-height: 0;
+            }
           }
           .text {
             display: none;

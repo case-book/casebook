@@ -11,6 +11,7 @@ import { ProjectPropTypes } from '@/proptypes';
 import useMenu from '@/hooks/useMenu';
 import SideBarMiniButton from '@/assets/SideBar/SideBarMiniButton';
 import SelectProjectPopup from '@/assets/SideBar/SelectProjectPopup/SelectProjectPopup';
+import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
 
 function ProjectMenu({ className, projects }) {
   const {
@@ -131,7 +132,7 @@ function ProjectMenu({ className, projects }) {
                       {t(`메뉴.${d.name}`)}
                       <span />
                     </div>
-                    {d.list && (
+                    {!collapsed && d.list && (
                       <div className="sub-menu-open-button" onClick={e => e.stopPropagation()}>
                         <SideBarMiniButton
                           shadow={false}
@@ -151,7 +152,29 @@ function ProjectMenu({ className, projects }) {
                       </div>
                     )}
                   </Link>
-                  {d.list && subMenuOpened[d?.key] && (
+                  {collapsed && d.list && (
+                    <SideOverlayMenu className="sub-menu">
+                      <ul>
+                        {d.list?.map(info => {
+                          const selectedSub = `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` === location.pathname || `${d.to}${info.to}` === location.pathname;
+                          return (
+                            <li key={info.key} className={classNames({ selected: selectedSub })}>
+                              <Link
+                                to={d.project ? `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` : `${d.to}${info.to}`}
+                                onClick={e => onSubMenuClick(d, info, e)}
+                                onMouseEnter={() => onMenuMouseEnter(info)}
+                                onMouseLeave={() => onMenuMouseLeave()}
+                              >
+                                <div className="menu-icon">{info.icon}</div>
+                                <div className="text">{info.name}</div>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </SideOverlayMenu>
+                  )}
+                  {!collapsed && d.list && subMenuOpened[d?.key] && (
                     <ul className="sub-menu">
                       {d.list?.map(info => {
                         const selectedSub = `/spaces/${spaceCode}/projects/${projectId}${d.to}${info.to}` === location.pathname || `${d.to}${info.to}` === location.pathname;
