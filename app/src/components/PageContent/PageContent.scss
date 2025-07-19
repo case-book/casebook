@@ -5,6 +5,7 @@
   flex-direction: column;
   padding: 20px;
   background-color: var(--page-background-color);
+  border-radius: 0 0 var(--layout-border-radius) var(--layout-border-radius);
 
   @media (max-width: 640px) {
     background-color: var(--theme-color);
