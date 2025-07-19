@@ -207,22 +207,6 @@
           padding-right: 10px;
         }
       }
-
-      .comment-editor {
-        flex-grow: 0;
-        margin-top: 10px;
-
-        .buttons {
-          text-align: right;
-          margin-top: 10px;
-          button {
-            margin-right: 10px;
-            &:last-child {
-              margin-right: 0;
-            }
-          }
-        }
-      }
     }
   }
 }

@@ -69,6 +69,9 @@ import VariableInput from './VariableInput/VariableInput';
 import PathIcon from './PathIcon/PathIcon';
 import Pill from './Pill/Pill';
 
+import CommentEditor from './CommentEditor/CommentEditor';
+import ResizableEditor from './ResizableEditor/ResizableEditor';
+
 export {
   Selector,
   Modal,
@@ -138,4 +141,6 @@ export {
   VariableInput,
   PathIcon,
   Pill,
+  CommentEditor,
+  ResizableEditor,
 };

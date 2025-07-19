@@ -1,0 +1,51 @@
+.resizable-editor-wrapper {
+  position: relative;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .editor-content {
+    flex-grow: 1;
+  }
+
+  .toastui-editor-defaultUI .ProseMirror {
+    padding: 16px;
+    font-family: NanumSquareNeo, sans-serif;
+  }
+
+  .resizer {
+    width: 100%;
+    height: 9px;
+    box-sizing: border-box;
+    cursor: ns-resize;
+    z-index: 1;
+    background-color: var(--light-color);
+    display: flex;
+    justify-content: center;
+    padding-bottom: 1px;
+
+    &:hover {
+      background-color: var(--yellow-color);
+    }
+    > div {
+      width: 34px;
+      display: flex;
+      flex-direction: row;
+      gap: 2px;
+
+      > div {
+        flex: 1 1 0;
+        display: inline-flex;
+        padding: 2px;
+
+        > div {
+          width: 100%;
+          height: 100%;
+          align-self: center;
+          background-color: var(--border-color);
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+}

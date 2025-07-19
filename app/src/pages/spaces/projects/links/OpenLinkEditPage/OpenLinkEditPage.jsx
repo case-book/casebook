@@ -1,10 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Block, Button, CheckBox, DatePicker, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Block, Button, CheckBox, DatePicker, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, ResizableEditor, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Editor } from '@toast-ui/react-editor';
 import PropTypes from 'prop-types';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { useParams } from 'react-router';
 import BlockRow from '@/components/BlockRow/BlockRow';
 import ProjectService from '@/services/ProjectService';
@@ -14,19 +12,12 @@ import DateCustomInput from '@/components/DateRange/DateCustomInput/DateCustomIn
 import SelectOpenLinkTestrunPopup from '@/pages/spaces/projects/links/OpenLinkEditPage/SelectOpenLinkTestrunPopup/SelectOpenLinkTestrunPopup';
 import OpenLinkService from '@/services/OpenLinkService';
 import { getBaseURL } from '@/utils/configUtil';
-import useStores from '@/hooks/useStores';
 import { OpenLinkReportList } from '@/assets';
 
 const labelMinWidth = '160px';
 
 function OpenLinkEditPage({ type }) {
   const { t } = useTranslation();
-
-  const {
-    themeStore: { theme },
-  } = useStores();
-
-  const editor = useRef(null);
 
   const { projectId, spaceCode } = useParams();
 
@@ -231,34 +222,17 @@ function OpenLinkEditPage({ type }) {
             </Block>
             <Title>{t('코멘트')}</Title>
             <Block className="editor-block">
-              <Editor
-                ref={editor}
-                theme={theme === 'DARK' ? 'dark' : 'white'}
-                placeholder="내용을 입력해주세요."
-                previewStyle="vertical"
-                height="100%"
-                initialEditType="wysiwyg"
-                hideModeSwitch
-                plugins={[colorSyntax]}
-                autofocus={false}
-                toolbarItems={[
-                  ['heading', 'bold', 'italic', 'strike'],
-                  ['hr', 'quote'],
-                  ['ul', 'ol', 'task', 'indent', 'outdent'],
-                  ['table', 'image', 'link'],
-                  ['code', 'codeblock'],
-                ]}
-                hooks={{
-                  addImageBlobHook: async (blob, callback) => {
-                    const result = await createProjectImage(blob.name, blob.size, blob.type, blob);
-                    callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
-                  },
-                }}
+              <ResizableEditor
                 initialValue={openLink.comment}
-                onChange={() => {
+                defaultHeight={300}
+                onAddImageHook={async (blob, callback) => {
+                  const result = await createProjectImage(blob.name, blob.size, blob.type, blob);
+                  callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
+                }}
+                onChange={html => {
                   setOpenLink({
                     ...openLink,
-                    comment: editor.current?.getInstance()?.getHTML(),
+                    comment: html,
                   });
                 }}
               />

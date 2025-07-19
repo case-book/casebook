@@ -5,6 +5,7 @@ import './DescriptionTooltip.scss';
 import { Viewer } from '@toast-ui/react-editor';
 import useStores from '@/hooks/useStores';
 import { observer } from 'mobx-react';
+import { Button } from '@/components';
 
 function DescriptionTooltip({ className, icon, onClick, title, text, opened, clipboard, parentElement, onClose, type }) {
   const [copied, setCopied] = useState(false);
@@ -66,7 +67,8 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
             <span>{title}</span>
             {clipboard && (
               <span className="copy-button g-no-select">
-                <div
+                <Button
+                  size="xs"
                   onClick={e => {
                     e.stopPropagation();
                     setCopied(true);
@@ -77,7 +79,7 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
                   }}
                 >
                   <span className="copy-text">{copied ? '복사됨' : '복사'}</span>
-                </div>
+                </Button>
               </span>
             )}
           </div>

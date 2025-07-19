@@ -142,25 +142,6 @@
         line-height: 125%;
         margin-bottom: 0.5rem;
       }
-
-      .comment-editor {
-        margin-top: 10px;
-        .buttons {
-          margin-top: 10px;
-          text-align: right;
-          button {
-            margin-left: 0.5rem;
-            &:first-child {
-              margin-left: 0;
-            }
-          }
-        }
-
-        .toastui-editor-defaultUI .ProseMirror {
-          padding: 16px;
-          font-family: NanumSquareNeo, sans-serif;
-        }
-      }
     }
   }
 

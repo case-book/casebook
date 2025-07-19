@@ -112,7 +112,7 @@ function TestcaseTemplateItem({ className, testcaseTemplateItem, inx, selected, 
             </div>
           )}
         </div>
-        <div className="item-info">{t(testcaseTemplateItem.label)}</div>
+        <div className="item-info">{testcaseTemplateItem.label}</div>
         {testcaseTemplateItem.fixed && <div className="fixed-badge">{t('고정 아이템')}</div>}
         {!testcaseTemplateItem.fixed && !testcaseTemplateItem.editable && <div className="editable-badge">{t('필수 아이템')}</div>}
       </div>

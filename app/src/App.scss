@@ -64,9 +64,10 @@
     box-sizing: border-box;
 
     .main-content {
-      border: 1px solid rgba(0, 0, 0, 0.15);
+      border: var(--layout-border);
       border-radius: var(--layout-border-radius);
       box-sizing: border-box;
+      box-shadow: var(--layout-box-shadow);
 
       &.no-border {
         border: 1px solid transparent;
