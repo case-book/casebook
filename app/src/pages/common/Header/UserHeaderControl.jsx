@@ -16,7 +16,7 @@ import { THEMES } from '@/constants/constants';
 function UserHeaderControl({ className }) {
   const {
     userStore: { isAdmin, user, setUser, notificationCount, setNotificationCount },
-    contextStore: { collapsed, setCollapsed, setSpace },
+    contextStore: { collapsed, setSpace },
     themeStore: { theme, setTheme },
   } = useStores();
 
@@ -123,57 +123,6 @@ function UserHeaderControl({ className }) {
 
   return (
     <div className={classNames('user-header-control-wrapper', className, { collapsed })}>
-      {user?.id && (
-        <>
-          <div className="user-menu side-menu-item">
-            <Button
-              outline={!user.avatarInfo}
-              rounded
-              color={user.avatarInfo ? 'transparent' : 'white'}
-              onClick={e => {
-                e.preventDefault();
-                setUserMenuOpen(!userMenuOpen);
-              }}
-            >
-              {isAdmin && <div className="admin-flag">ADMIN</div>}
-              <UserAvatar avatarInfo={user.avatarInfo} size={32} rounded outline />
-            </Button>
-          </div>
-          <div className="notification-menu side-menu-item">
-            <Button
-              outline={false}
-              rounded
-              className={notificationChangeEffect ? 'effect' : ''}
-              color={notificationOpen ? 'primary' : 'white'}
-              onClick={e => {
-                e.preventDefault();
-                openUserNotificationPopup(!notificationOpen);
-              }}
-            >
-              {notificationCount > 0 && (
-                <span className="notification-count">
-                  <span>{notificationCount > 9 ? '9+' : notificationCount}</span>
-                </span>
-              )}
-              <i className="fa-solid fa-bell" />
-            </Button>
-          </div>
-        </>
-      )}
-      <div className="collapse side-menu-item">
-        <button
-          onClick={() => {
-            setCollapsed(!collapsed);
-            localStorage.setItem('collapsed', !collapsed);
-          }}
-        >
-          <span className="icon">
-            {collapsed && <i className="fa-solid fa-angle-right" />}
-            {!collapsed && <i className="fa-solid fa-angle-left" />}
-          </span>
-          <span className="text">COLLAPSE</span>
-        </button>
-      </div>
       {notificationOpen && (
         <div
           className="notification-list"
@@ -237,24 +186,6 @@ function UserHeaderControl({ className }) {
                 <div />
               </div>
               <ul>
-                <li className="user-info">
-                  <div>
-                    <div>
-                      {user?.avatarInfo && <UserAvatar className="user-icon" avatarInfo={user.avatarInfo} size={60} />}
-                      {!user?.avatarInfo && (
-                        <div className="icon">
-                          <i className="fa-solid fa-skull" />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="name">{user.name}</div>
-                      <div className="email">{user.email}</div>
-                    </div>
-                  </div>
-
-                  <hr />
-                </li>
                 <li>
                   <div className="theme-selector">
                     <span
@@ -274,8 +205,20 @@ function UserHeaderControl({ className }) {
                       <i className="fa-solid fa-moon" /> DARK
                     </span>
                   </div>
+                  <hr />
                 </li>
-                <li>
+                <li className="user-info">
+                  <div>
+                    <div>
+                      <UserAvatar className="user-icon" avatarInfo={user.avatarInfo} size={40} outline rounded />
+                    </div>
+                    <div>
+                      <div className="name">{user.name}</div>
+                      <div className="email">{user.email}</div>
+                    </div>
+                  </div>
+                </li>
+                <li className="links">
                   <Link
                     to="/users/my"
                     onClick={e => {
@@ -289,10 +232,10 @@ function UserHeaderControl({ className }) {
                     {t('내 정보')}
                   </Link>
                 </li>
-                <li>
+                <li className="links">
                   <Link to="/" onClick={logout}>
                     <span className="icon">
-                      <i className="fa-solid fa-flag" />
+                      <i className="fa-solid fa-door-closed" />
                     </span>
                     {t('로그아웃')}
                   </Link>
@@ -301,6 +244,43 @@ function UserHeaderControl({ className }) {
             </div>
           </div>
         </div>
+      )}
+      {user?.id && (
+        <>
+          <div className="user-menu side-menu-item">
+            <Button
+              outline={!user.avatarInfo}
+              rounded
+              color={user.avatarInfo ? 'transparent' : 'white'}
+              onClick={e => {
+                e.preventDefault();
+                setUserMenuOpen(!userMenuOpen);
+              }}
+            >
+              {isAdmin && <div className="admin-flag">ADMIN</div>}
+              <UserAvatar avatarInfo={user.avatarInfo} size={32} rounded outline={false} />
+            </Button>
+          </div>
+          <div className="notification-menu side-menu-item">
+            <Button
+              outline
+              rounded
+              className={notificationChangeEffect ? 'effect' : ''}
+              color={notificationOpen ? 'primary' : 'white'}
+              onClick={e => {
+                e.preventDefault();
+                openUserNotificationPopup(!notificationOpen);
+              }}
+            >
+              {notificationCount > 0 && (
+                <span className="notification-count">
+                  <span>{notificationCount > 9 ? '9+' : notificationCount}</span>
+                </span>
+              )}
+              <i className="fa-solid fa-bell" />
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );

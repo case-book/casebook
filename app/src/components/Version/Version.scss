@@ -1,7 +1,7 @@
 .version-wrapper {
   height: 100%;
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: 10px;
   text-align: center;
   padding: 1rem;
   display: flex;
@@ -26,6 +26,10 @@
       &.slash {
         margin: 0 0.5rem;
       }
+    }
+
+    a:hover {
+      font-weight: bold;
     }
   }
 }

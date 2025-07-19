@@ -4,71 +4,87 @@
   }
 }
 .page-breadcrumbs-wrapper {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  display: flex;
-  background-color: var(--lighter-color);
-  padding: 0 10px;
+  padding: 4px 0 4px 0;
   box-sizing: border-box;
   height: 40px;
   position: sticky;
   top: 0;
-  z-index: 10;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  z-index: 9;
 
   > div {
-    align-self: center;
-  }
-  > .breadcrumbs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-size: 12px;
     display: flex;
-    box-sizing: border-box;
-    overflow: hidden;
+    height: 32px;
+    align-self: center;
+    _border-radius: 8px;
+    _border: 1px solid rgba(0, 0, 0, 0.15);
 
-    li {
-      align-self: center;
-      white-space: nowrap;
+    padding: 0 0 0 10px;
 
-      .bullet {
-        margin: 0 4px;
-        > svg {
-          position: relative;
-          top: -1px;
+    > .breadcrumbs {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 11px;
+      display: flex;
+      box-sizing: border-box;
+      overflow: hidden;
+      height: 100%;
+
+      li {
+        align-self: center;
+        white-space: nowrap;
+        height: 100%;
+        display: inline-flex;
+
+        .bullet {
+          margin: 0 4px;
+          align-self: center;
+          > svg {
+            position: relative;
+            top: -1px;
+          }
+        }
+
+        a {
+          display: inline-block;
+          align-self: center;
+          border-bottom: 1px solid transparent;
+          color: var(--text-color);
+          padding: 2px 4px;
+          box-sizing: border-box;
+          &:hover {
+            color: var(--link-color);
+            border-bottom: 1px solid var(--link-color);
+          }
         }
       }
+    }
+    > .list-icon {
+      padding: 0 10px;
+      display: inline-flex;
+      cursor: pointer;
 
-      a {
-        display: inline-block;
+      > span {
         border-bottom: 1px solid transparent;
-        color: var(--text-color);
-        padding: 10px 4px;
-        box-sizing: border-box;
-        &:hover {
+        display: inline-block;
+        padding: 2px 4px;
+      }
+      &:hover {
+        > span {
           color: var(--link-color);
           border-bottom: 1px solid var(--link-color);
         }
       }
+      > span {
+        align-self: center;
+        position: relative;
+        top: -1px;
+      }
     }
-  }
-  > .list-icon {
-    height: 100%;
-    padding: 0 10px;
-    display: inline-flex;
-    cursor: pointer;
-    border-bottom: 1px solid transparent;
-    &:hover {
-      color: var(--link-color);
-      border-bottom: 1px solid var(--link-color);
-    }
-    > span {
-      align-self: center;
-      position: relative;
-      top: -1px;
-    }
-  }
 
-  .version {
-    flex-grow: 1;
+    .version {
+      flex-grow: 1;
+    }
   }
 }

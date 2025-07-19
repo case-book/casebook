@@ -1,8 +1,21 @@
 @import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css';
 
 @font-face {
-  font-family: 'PatrickHand';
-  src: url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff'), url('./fonts/PatrickHand/PatrickHandSC-Regular.ttf') format('woff2');
+  font-family: 'NanumSquareNeo';
+  src: url('./fonts/NanumSquareNeo/NanumSquareNeo-aLt.ttf');
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  src: url('./fonts/NanumSquareNeo/NanumSquareNeo-bRg.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  src: url('./fonts/NanumSquareNeo/NanumSquareNeo-cBd.ttf');
+  font-weight: 700;
 }
 
 @font-face {
@@ -32,65 +45,9 @@
 }
 
 @font-face {
-  font-family: 'NanumGothic';
-  font-style: normal;
-  font-weight: 300;
-  src: url('./fonts/NanumGothic/NanumGothic-Regular.ttf') format('woff'), url('./fonts/NanumGothic/NanumGothic-Regular.ttf') format('woff2');
-}
-
-@font-face {
-  font-family: 'NanumGothic';
-  font-style: normal;
-  font-weight: 700;
-  src: url('./fonts/NanumGothic/NanumGothic-Bold.ttf') format('woff'), url('./fonts/NanumGothic/NanumGothic-Bold.ttf') format('woff2');
-}
-
-@font-face {
-  font-family: 'AzeretMono';
-  font-style: normal;
-  src: url('./fonts/Azeret_Mono/AzeretMono-Regular.ttf') format('woff'), url('./fonts/Azeret_Mono/AzeretMono-Regular.ttf') format('woff2');
-}
-
-@font-face {
   font-family: 'SpaceMono';
   font-style: normal;
   src: url('./fonts/Space_Mono/SpaceMono-Regular.ttf') format('woff'), url('./fonts/Space_Mono/SpaceMono-Regular.ttf') format('woff2');
-}
-
-@font-face {
-  font-family: 'NotoSans';
-  font-style: normal;
-  font-weight: 300;
-  src: local('Noto Sans Light'), local('NotoSans-Light');
-  src: url(./fonts/NotoSans/NotoSans-Light.eot);
-  src: url(./fonts/NotoSans/NotoSans-Light.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Light.woff) format('woff'),
-    url(./fonts/NotoSans/NotoSans-Light.otf) format('opentype');
-}
-@font-face {
-  font-family: 'NotoSans';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Noto Sans Regular'), local('NotoSans-Regular');
-  src: url(./fonts/NotoSans/NotoSans-Regular.eot);
-  src: url(./fonts/NotoSans/NotoSans-Regular.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Regular.woff) format('woff'),
-    url(./fonts/NotoSans/NotoSans-Regular.otf) format('opentype');
-}
-@font-face {
-  font-family: 'NotoSans';
-  font-style: normal;
-  font-weight: 500;
-  src: local('Noto Sans Medium'), local('NotoSans-Medium');
-  src: url(./fonts/NotoSans/NotoSans-Medium.eot);
-  src: url(./fonts/NotoSans/NotoSans-Medium.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Medium.woff) format('woff'),
-    url(./fonts/NotoSans/NotoSans-Medium.otf) format('opentype');
-}
-@font-face {
-  font-family: 'NotoSans';
-  font-style: normal;
-  font-weight: 700;
-  src: local('Noto Sans Bold'), local('NotoSans-Bold');
-  src: url(./fonts/NotoSans/NotoSans-Bold.eot);
-  src: url(./fonts/NotoSans/NotoSans-Bold.eot?#iefix) format('embedded-opentype'), url(./fonts/NotoSans/NotoSans-Bold.woff) format('woff'), url(./fonts/NotoSans/NotoSans-Bold.otf) format('opentype');
 }
 
 @font-face {
@@ -122,43 +79,9 @@
 }
 
 @font-face {
-  font-family: 'SUITE';
-  src: url('./fonts/SUITE/SUITE-Regular.woff2') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'OAGothic';
-  src: url('./fonts/OAGothic/OAGothic-ExtraBold.woff2') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'NanumSquareNeo';
-  src: url('./fonts/NanumSquareNeo/NanumSquareNeo-Variable.woff2') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
   font-family: 'LINESeed';
   src: url('./fonts/LINESeed/LINESeedKR-Bd.woff2') format('woff');
   font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'MICEGothic';
-  src: url('./fonts/MICEGothic/MICEGothicBold.woff2') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Quicksand';
-  src: url('./fonts/Quicksand/Quicksand-VariableFont_wght.ttf');
   font-style: normal;
 }
 
@@ -203,7 +126,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   &.side-bar-ready {
-    padding-left: 220px;
+    padding-left: 240px;
   }
 
   &.collapsed {

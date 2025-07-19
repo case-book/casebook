@@ -8,13 +8,14 @@ import useStores from '@/hooks/useStores';
 import AdminRoutes from '@/pages/admin';
 import { Button, LogoIcon } from '@/components';
 import { debounce } from 'lodash';
-import './App.scss';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import GuestHeader from '@/pages/common/Header/GuestHeader';
 import ApiRoutes from '@/pages/apis';
 import SideBar from '@/assets/SideBar/SideBar';
 import ProjectListPage from '@/pages/spaces/projects/ProjectListPage';
 import LinksRoutes from '@/pages/links';
+import './App.scss';
 
 function App() {
   const {
@@ -92,7 +93,11 @@ function App() {
         <div className="app-content">
           {isLogin && <SideBar />}
           {!isLogin && <GuestHeader />}
-          <main className="main-content">
+          <main
+            className={classNames('main-content', {
+              'no-border': ['/users/join', '/users/login'].includes(location.pathname),
+            })}
+          >
             {isLogin && (
               <Routes location={location}>
                 <Route path="/start" element={<GuidePage />} />

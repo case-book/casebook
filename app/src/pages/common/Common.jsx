@@ -101,9 +101,6 @@ function Common() {
         const currentSpaceCode = urlSpaceCode || storedSpaceCode;
         if (spaces.length > 0 && spaces.find(d => d.code === currentSpaceCode)) {
           setSpace(spaces.find(d => d.code === currentSpaceCode));
-        } else if (spaces.length > 0) {
-          setSpace(spaces[0]);
-          localStorage.setItem('spaceCode', spaces[0].code);
         }
       },
       () => {

@@ -110,11 +110,6 @@ function AiHistoryListPage() {
       </PageTitle>
       <PageContent>
         <Title>{t('OPENAPI 프롬프트 설정')}</Title>
-        {!(info.llmPrompts?.length > 0) && (
-          <EmptyContent className="empty-content">
-            <div>{t('등록된 프롬프트가 없습니다.')}</div>
-          </EmptyContent>
-        )}
         <Block>
           {!(info.llmPrompts?.length > 0) && <EmptyContent border>{t('등록된 프롬프트가 없습니다.')}</EmptyContent>}
           {info.llmPrompts?.length > 0 && (

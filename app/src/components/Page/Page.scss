@@ -3,10 +3,11 @@
   position: relative;
   padding: 0;
   flex-direction: column;
-  min-height: 100vh;
+  _min-height: 100vh;
+  min-height: calc(100vh - 18px);
+  box-sizing: border-box;
   display: flex;
   overflow: visible;
-  box-sizing: border-box;
 
   &.margin-bottom {
     margin-bottom: 20px !important;

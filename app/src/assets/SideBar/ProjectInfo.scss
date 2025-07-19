@@ -1,190 +1,127 @@
 .project-info-wrapper {
-  .project-menu {
-    position: relative;
+  background-color: var(--lighter-color);
+  margin: 0 16px;
+  padding: 16px 16px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light-color);
 
-    &.selected {
-      > a {
-        color: var(--white-color);
-        font-weight: bold;
-        opacity: 1;
+  .label {
+    color: var(--dark-gray-color);
+    font-size: 10px;
+    margin-bottom: 8px;
+    display: flex;
+
+    > div {
+      align-self: center;
+      &:last-child {
+        flex-grow: 1;
+        text-align: right;
       }
     }
 
-    a {
-      color: white;
-      padding: 4px 16px;
-      display: flex;
-      opacity: 0.8;
-      > div {
-        align-self: center;
-
-        &.text {
-          flex-grow: 1;
-        }
-
-        &.open-list {
-          flex-grow: 0;
-          text-align: right;
-          margin-left: 4px;
-        }
-
-        .bullet {
-          font-size: 13px;
-          width: 24px;
-          height: 24px;
-          display: inline-flex;
-          justify-content: center;
-          border-radius: 4px;
-          &:hover {
-            background-color: var(--yellow-color);
-            color: #111;
-          }
-          i {
-            align-self: center;
-          }
-        }
-      }
-
-      &:hover {
-        background-color: #111;
-
-        > a {
-          color: white;
-        }
-      }
-
-      .menu-icon {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        justify-content: center;
-        border-radius: 4px;
-        margin-right: 8px;
-        font-size: 16px;
-        i {
-          align-self: center;
-        }
-      }
-
-      .text {
-        align-self: center;
-      }
-    }
-
-    &:hover {
-      .collapsed-project-list {
-        display: block;
+    button {
+      margin-right: 4px;
+      &:last-child {
+        margin-right: 0;
       }
     }
   }
 
   &.collapsed {
-    .project-menu {
-      > a {
-        justify-content: center;
-        .menu-icon {
-          margin-right: 0;
-        }
-        .text {
-          display: none;
+    margin: 16px 8px 0;
+    padding: 8px 0;
+
+    .label {
+      text-align: center;
+      > div {
+        text-align: center;
+      }
+    }
+
+    .project-selector {
+      > .project-name {
+        &.short-name,
+        &.no-project {
+          writing-mode: vertical-rl;
+          font-size: 11px;
         }
       }
     }
   }
 
-  .project-list {
-    padding: 0 0 0 32px;
-    width: calc(100% + 2px);
-    max-height: 300px;
-    overflow-y: auto;
-    display: none;
+  .project-selector {
+    position: relative;
+    > .project-name {
+      align-self: center;
+      font-weight: bold;
+      padding: 12px 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
 
-    &.opened {
-      display: block;
-    }
-
-    .create-project {
-      padding: 8px;
-      > a {
-        color: var(--white-color);
-        &:hover {
-          color: var(--yellow-color);
-        }
+      &.no-project {
+        font-size: 11px;
+        text-align: center;
       }
     }
 
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 8px 0 16px 0;
-      align-self: center;
-      white-space: nowrap;
-
-      > li {
+    > .project-hover-list {
+      border: 1px solid transparent;
+      border-top: none;
+      display: none;
+      position: absolute;
+      background-color: var(--theme-color);
+      top: 100%;
+      left: 0;
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
         width: 100%;
-        margin-bottom: 2px;
-        padding-right: 10px;
-        &:last-child {
-          margin-bottom: 0;
-        }
+        border-radius: 4px;
 
-        a {
-          color: white;
-          vertical-align: top;
-          width: 100%;
-          display: block;
-          padding: 4px 2px;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          .project-name {
-            position: relative;
-            .testrun-count {
-              position: absolute;
-              left: -12px;
-              top: -4px;
-              width: 14px;
-              height: 14px;
-              display: inline-flex;
-              justify-content: center;
-              background-color: var(--link-color);
-              color: var(--white-color);
-              border-radius: 50%;
-              font-size: 12px;
-              font-weight: normal;
-              font-family: AzeretMono, sans-serif;
-              > span {
-                align-self: center;
-              }
-            }
-          }
+        > li {
+          cursor: pointer;
 
-          &:hover {
-            color: var(--yellow-color);
-          }
-          .dot {
-            display: inline-block;
-            margin-right: 8px;
-            > div {
-              align-self: center;
-              width: 4px;
-              height: 4px;
-              background-color: var(--theme-color);
-              border-radius: 50%;
-              position: relative;
-              top: -2px;
-            }
-          }
-        }
-
-        &.selected {
-          background-color: var(--theme-color);
           > a {
             color: var(--text-color);
-            font-weight: bold;
-            font-size: 15px;
-            padding: 4px 2px;
-            border-radius: 4px 0 0 4px;
+            padding: 8px;
+            font-size: 12px;
+            display: block;
+            &:hover {
+              background-color: var(--primary-color);
+              color: var(--primary-text-color);
+            }
           }
+        }
+      }
+    }
+  }
+
+  &.expanded {
+    .project-selector {
+      > .project-name {
+        &:hover {
+          background-color: var(--hover-background-color);
+          color: var(--text-color);
+        }
+      }
+
+      &:hover {
+        box-shadow: 0 1px 4px 0 rgb(0 0 0 / 15%);
+        > .project-name {
+          border: 1px solid var(--border-color);
+          border-bottom: none;
+        }
+
+        > .project-hover-list {
+          display: block;
+          border: 1px solid var(--border-color);
+          border-top: none;
+          box-shadow: 0 1px 4px 0 rgb(0 0 0 / 15%);
         }
       }
     }
