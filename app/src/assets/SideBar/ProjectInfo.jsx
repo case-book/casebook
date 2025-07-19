@@ -33,6 +33,7 @@ function ProjectInfo({ className, projects, onRefresh }) {
         {!collapsed && (
           <div>
             <SideBarMiniButton
+              tooltip={t('프로젝트 정보 새로고침')}
               onClick={() => {
                 onRefresh();
               }}
@@ -40,6 +41,7 @@ function ProjectInfo({ className, projects, onRefresh }) {
               <i className="fa-solid fa-retweet" />
             </SideBarMiniButton>
             <SideBarMiniButton
+              tooltip={t('프로젝트 목록')}
               onClick={() => {
                 navigate(`/spaces/${space?.code}/projects`);
               }}
@@ -47,6 +49,7 @@ function ProjectInfo({ className, projects, onRefresh }) {
               <i className="fa-solid fa-list" />
             </SideBarMiniButton>
             <SideBarMiniButton
+              tooltip={t('새 프로젝트')}
               onClick={() => {
                 navigate(`/spaces/${space?.code}/projects/new`);
               }}

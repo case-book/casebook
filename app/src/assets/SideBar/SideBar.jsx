@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import useStores from '@/hooks/useStores';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import SpaceInfo from '@/assets/SideBar/SpaceInfo';
 import ProjectMenu from '@/pages/common/Header/ProjectMenu';
@@ -23,7 +24,7 @@ function SideBar() {
   } = useStores();
 
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
@@ -104,11 +105,11 @@ function SideBar() {
       <div>
         <div className="side-bar-controls">
           {!collapsed && (
-            <button type="button" className="min" onClick={onCollapseClick}>
+            <button type="button" className="min" onClick={onCollapseClick} data-tip={t('GNB 접기')}>
               <i className="fa-solid fa-minus" />
             </button>
           )}
-          <button type="button" className="max" onClick={onCollapseClick}>
+          <button type="button" className="max" onClick={onCollapseClick} data-tip={t('GNB 펼치기')}>
             <i className="fa-regular fa-window-maximize" />
           </button>
         </div>
@@ -133,11 +134,9 @@ function SideBar() {
         <div className="side-bar-bottom">
           <UserHeaderControl />
         </div>
-        {space && (
-          <div className="space-info-content">
-            <SpaceInfo spaces={spaces} />
-          </div>
-        )}
+        <div className="space-info-content">
+          <SpaceInfo spaces={spaces} />
+        </div>
       </div>
     </nav>
   );

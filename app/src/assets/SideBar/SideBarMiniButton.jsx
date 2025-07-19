@@ -2,9 +2,9 @@ import React from 'react';
 import * as PropTypes from 'prop-types';
 import './SideBarMiniButton.scss';
 
-function SideBarMiniButton({ className, children, onClick, shadow }) {
+function SideBarMiniButton({ className, children, onClick, shadow, tooltip }) {
   return (
-    <button className={`side-bar-mini-button-wrapper ${className} ${shadow ? 'shadow' : ''}`} type="button" onClick={onClick}>
+    <button className={`side-bar-mini-button-wrapper ${className} ${shadow ? 'shadow' : ''}`} type="button" onClick={onClick} data-tip={tooltip}>
       {children}
     </button>
   );
@@ -13,6 +13,7 @@ function SideBarMiniButton({ className, children, onClick, shadow }) {
 SideBarMiniButton.defaultProps = {
   className: '',
   shadow: true,
+  tooltip: null,
 };
 
 SideBarMiniButton.propTypes = {
@@ -20,6 +21,7 @@ SideBarMiniButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
   shadow: PropTypes.bool,
+  tooltip: PropTypes.string,
 };
 
 export default SideBarMiniButton;

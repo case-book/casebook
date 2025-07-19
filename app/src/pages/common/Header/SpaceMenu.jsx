@@ -48,7 +48,9 @@ function SpaceMenu({ className }) {
         return (
           <li key={inx} className={classNames({ selected: location.pathname === d.to })}>
             <Link to={d.to} onMouseEnter={() => onMenuMouseEnter(d)} onMouseLeave={() => onMenuMouseLeave()}>
-              <div className="menu-icon">{d.icon}</div>
+              <div className="menu-icon" data-tip={t(`메뉴.${d.name}`)}>
+                {d.icon}
+              </div>
               <div className="text">
                 {t(`메뉴.${d.name}`)}
                 <span />

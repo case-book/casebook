@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import useStores from '@/hooks/useStores';
 import PropTypes from 'prop-types';
@@ -6,12 +6,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MENUS } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import './ProjectMenu.scss';
+import ReactTooltip from 'react-tooltip';
 import { ProjectPropTypes } from '@/proptypes';
 import useMenu from '@/hooks/useMenu';
 import SideBarMiniButton from '@/assets/SideBar/SideBarMiniButton';
 import SelectProjectPopup from '@/assets/SideBar/SelectProjectPopup/SelectProjectPopup';
 import SideOverlayMenu from '@/assets/SideBar/SideOverlayMenu/SideOverlayMenu';
+import './ProjectMenu.scss';
 
 function ProjectMenu({ className, projects }) {
   const {
@@ -27,6 +28,10 @@ function ProjectMenu({ className, projects }) {
 
   const [projectSelector, setProjectSelector] = useState(null);
   const [subMenuOpened, setSubMenuOpened] = useState({});
+
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [subMenuOpened, collapsed]);
 
   const { t } = useTranslation();
 
@@ -83,6 +88,7 @@ function ProjectMenu({ className, projects }) {
           <Link to={`/spaces/${spaceCode}/dashboard`}>
             <div
               className="menu-icon"
+              data-tip={t('메뉴.대시보드')}
               style={{
                 backgroundColor: location.pathname === `/spaces/${spaceCode}/dashboard` ? 'var(--primary-color)' : '',
                 color: location.pathname === `/spaces/${spaceCode}/dashboard` ? 'var(--primary-text-color)' : '',
@@ -121,6 +127,7 @@ function ProjectMenu({ className, projects }) {
                   >
                     <div
                       className="menu-icon"
+                      data-tip={t(`메뉴.${d.name}`)}
                       style={{
                         backgroundColor: selected ? 'var(--primary-color)' : '',
                         color: selected ? 'var(--primary-text-color)' : '',
@@ -165,7 +172,9 @@ function ProjectMenu({ className, projects }) {
                                 onMouseEnter={() => onMenuMouseEnter(info)}
                                 onMouseLeave={() => onMenuMouseLeave()}
                               >
-                                <div className="menu-icon">{info.icon}</div>
+                                <div className="menu-icon" data-tip={info.name} data-place="right">
+                                  {info.icon}
+                                </div>
                                 <div className="text">{info.name}</div>
                               </Link>
                             </li>
@@ -191,6 +200,7 @@ function ProjectMenu({ className, projects }) {
                             >
                               <div
                                 className="menu-icon"
+                                data-tip={info.name}
                                 style={{
                                   backgroundColor: selectedSub ? 'var(--primary-color)' : '',
                                   color: selectedSub ? 'var(--primary-text-color)' : '',

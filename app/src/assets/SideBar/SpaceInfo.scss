@@ -5,7 +5,7 @@
   padding: 8px 16px 8px;
   position: relative;
   border-radius: 0 0 24px 24px;
-  background-color: $gray-100;
+  background-color: var(--lighter-color);
   height: 66px;
 
   > .label {
@@ -40,6 +40,14 @@
     > span {
       align-self: center;
 
+      &.no-space-name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        padding: 8px 4px 8px 0;
+        flex-grow: 1;
+      }
+
       &.space-name {
         overflow: hidden;
         white-space: nowrap;
@@ -64,7 +72,7 @@
     }
 
     button.space-selector-button {
-      background-color: white;
+      background-color: var(--theme-color);
       color: var(--text-color);
       font-size: 10px;
       padding: 0;
@@ -121,6 +129,10 @@
           }
         }
       }
+    }
+
+    .no-space-name {
+      display: none;
     }
   }
 }

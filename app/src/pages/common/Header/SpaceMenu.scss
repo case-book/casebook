@@ -15,8 +15,12 @@ ul.space-menu-wrapper {
   margin: 0;
 
   &.collapsed {
+    margin-top: 16px;
     > li {
+      text-align: center;
       > a {
+        padding: 4px 8px;
+        justify-content: center;
         .menu-icon {
           margin-right: 0;
         }
@@ -32,39 +36,39 @@ ul.space-menu-wrapper {
     animation: leftToRight 0.2s ease-in-out;
     animation-fill-mode: forwards;
     opacity: 0;
-    &:hover {
-      background-color: #111;
-      color: white;
-    }
 
-    .separator {
-      height: 1px;
-      background-color: var(--white-color);
-      opacity: 0.6;
-      margin: 4px 20px;
+    &:hover {
+      font-weight: bold;
+      .menu-icon {
+        background-color: var(--hover-background-color);
+      }
     }
 
     &.selected {
       > a {
-        color: var(--white-color);
         font-weight: bold;
         opacity: 1;
+        .menu-icon {
+          background-color: var(--primary-color);
+          color: var(--primary-text-color);
+        }
       }
     }
 
     > a {
-      color: var(--white-color);
+      color: var(--text-color);
       opacity: 0.8;
       padding: 4px 16px;
       display: flex;
       .menu-icon {
-        width: 32px;
-        height: 32px;
         display: inline-flex;
         justify-content: center;
         border-radius: 4px;
         margin-right: 8px;
-        font-size: 16px;
+        font-size: 12px;
+        width: 24px;
+        height: 24px;
+        border: 1px solid var(--border-color);
         i {
           align-self: center;
         }

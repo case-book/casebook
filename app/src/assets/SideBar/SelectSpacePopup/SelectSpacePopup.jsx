@@ -30,6 +30,22 @@ function SelectSpacePopup({ spaces, setOpened }) {
       <ModalBody>
         <div className="description">{t('이동할 스페이스를 선택해주세요.')}</div>
         <ul>
+          <li>
+            <Link
+              className="space-selector-item"
+              to="/"
+              onClick={e => {
+                e.stopPropagation();
+                localStorage.removeItem('spaceCode');
+                setSpace(null);
+                setOpened(false);
+              }}
+            >
+              <div>
+                <span>{t('스페이스 선택 안함')}</span>
+              </div>
+            </Link>
+          </li>
           {spaces.map(info => {
             return (
               <li key={info.code}>
@@ -50,7 +66,7 @@ function SelectSpacePopup({ spaces, setOpened }) {
                         {info.code}
                       </Tag>
                     </span>
-                    <span>{info.code === space.code && <i className="fa-solid fa-street-view" />}</span>
+                    <span>{info.code === space?.code && <i className="fa-solid fa-street-view" />}</span>
                   </div>
                 </Link>
               </li>

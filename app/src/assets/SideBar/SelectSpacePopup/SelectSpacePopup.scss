@@ -13,7 +13,8 @@
       padding: 0;
       width: 100%;
       &:hover {
-        background-color: $primary-color;
+        background-color: var(--primary-color);
+        color: var(--primary-text-color);
       }
       a {
         color: var(--text-color);
@@ -31,7 +32,7 @@
 
       &:hover {
         a {
-          color: var(--primary-color);
+          color: var(--primary-text-color);
         }
       }
 
