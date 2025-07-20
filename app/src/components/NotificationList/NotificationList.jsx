@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './NotificationList.scss';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components';
 import dateUtil from '@/utils/dateUtil';
+import './NotificationList.scss';
 
 function NotificationList({ className, elementRef, notificationList, lastSeen, onMoreClick, onLinkClick, hasNext }) {
+  const { t } = useTranslation();
   return (
     <ul className={`notification-list-wrapper ${className}`} ref={elementRef}>
       {notificationList.map(d => {
@@ -32,7 +34,7 @@ function NotificationList({ className, elementRef, notificationList, lastSeen, o
           </li>
         );
       })}
-      {!hasNext && <li className="end-list">다음 알림이 없습니다.</li>}
+      {!hasNext && <li className="end-list">{t('다음 알림이 없습니다.')}</li>}
       {hasNext && (
         <li className="has-next">
           <Button
@@ -41,11 +43,10 @@ function NotificationList({ className, elementRef, notificationList, lastSeen, o
             onClick={() => {
               if (hasNext) {
                 onMoreClick();
-                // getNotificationInfo(notificationInfo.pageNo + 1);
               }
             }}
           >
-            더 보기
+            {t('더 보기')}
           </Button>
         </li>
       )}

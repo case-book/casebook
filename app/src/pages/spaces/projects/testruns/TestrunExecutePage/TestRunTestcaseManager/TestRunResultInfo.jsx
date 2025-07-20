@@ -1,23 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { TestcaseTemplatePropTypes } from '@/proptypes';
-import { Button, CloseIcon, Liner, Tag, TestcaseItem } from '@/components';
+import { Button, CloseIcon, CommentEditor, Liner, Tag, TestcaseItem } from '@/components';
 import { observer } from 'mobx-react';
-import '@toast-ui/editor/dist/toastui-editor.css';
-import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
-import 'tui-color-picker/dist/tui-color-picker.css';
-import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
+
 import useStores from '@/hooks/useStores';
 import { DEFAULT_TESTRUN_RESULT_ITEM, DEFAULT_TESTRUN_TESTER_ITEM } from '@/constants/constants';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
-import { Editor } from '@toast-ui/react-editor';
 import { useTranslation } from 'react-i18next';
 import { CommentList } from '@/assets';
-import './TestRunResultInfo.scss';
 import TestcaseService from '@/services/TestcaseService';
 import TestrunService from '@/services/TestrunService';
 import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
+import './TestRunResultInfo.scss';
 
 function TestRunResultInfo({
   content,
@@ -44,9 +39,7 @@ function TestRunResultInfo({
 
   const { t } = useTranslation();
   const caseContentElement = useRef(null);
-  const editor = useRef(null);
   const resultInfoElement = useRef(null);
-  const [comment, setComment] = useState('');
   const [testcaseResultHistory, setTestcaseResultHistory] = useState([]);
   const [testcaseResultHistoryOpened, setTestcaseResultHistoryOpened] = useState(false);
   const [popupInfo, setPopupInfo] = useState({
@@ -66,9 +59,6 @@ function TestRunResultInfo({
     if (resultInfoElement.current && resultInfoElement.current.parentNode && resultInfoElement.current.parentNode.parentNode) {
       resultInfoElement.current.parentNode.parentNode.scrollTop = 0;
     }
-
-    setComment('');
-    editor.current?.getInstance().setHTML('');
   }, [content?.id]);
 
   useEffect(() => {
@@ -242,62 +232,13 @@ function TestRunResultInfo({
           <div className="testrun-testcase-comments">
             <div className="text">{t('코멘트')}</div>
             <CommentList comments={content.comments} onDeleteComment={onDeleteComment} />
-            <div className="comment-editor">
-              <Editor
-                key={theme}
-                ref={editor}
-                theme={theme === 'DARK' ? 'dark' : 'white'}
-                placeholder="내용을 입력해주세요."
-                previewStyle="vertical"
-                height="200px"
-                initialEditType="wysiwyg"
-                plugins={[colorSyntax]}
-                autofocus={false}
-                toolbarItems={[
-                  ['heading', 'bold', 'italic', 'strike'],
-                  ['hr', 'quote'],
-                  ['ul', 'ol', 'task', 'indent', 'outdent'],
-                  ['table', 'image', 'link'],
-                  ['code', 'codeblock'],
-                ]}
-                hooks={{
-                  addImageBlobHook: async (blob, callback) => {
-                    const result = await createTestrunImage(content.id, blob.name, blob.size, blob.type, blob);
-                    callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
-                  },
-                }}
-                initialValue={comment || ''}
-                onChange={() => {
-                  setComment(editor.current?.getInstance()?.getHTML());
-                }}
-              />
-              <div className="buttons">
-                <Button
-                  outline
-                  onClick={() => {
-                    setComment('');
-                    editor.current?.getInstance().setHTML('');
-                  }}
-                  size="sm"
-                >
-                  {t('취소')}
-                </Button>
-                <Button
-                  outline
-                  size="sm"
-                  onClick={() => {
-                    if (comment) {
-                      onSaveComment(null, comment, () => {
-                        setComment('');
-                        editor.current?.getInstance().setHTML('');
-                      });
-                    }
-                  }}
-                >
-                  {t('코멘트 추가')}
-                </Button>
-              </div>
-            </div>
+            <CommentEditor
+              onSaveComment={onSaveComment}
+              onAddImageHook={async (blob, callback) => {
+                const result = await createTestrunImage(content.id, blob.name, blob.size, blob.type, blob);
+                callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
+              }}
+            />
           </div>
         </div>
       </div>

@@ -34,9 +34,11 @@ function TestcaseTemplateEditorPopup({ className, testcaseTemplate, onClose, onC
   const onChangeTestcaseTemplateItem = (testcaseTemplateItemInx, category, key, val, type) => {
     const nextTemplateItems = category === 'CASE' ? caseTemplateItems.slice(0) : resultTemplateItems.slice(0);
     const nextTemplateItem = nextTemplateItems[testcaseTemplateItemInx];
-    nextTemplateItem[key] = val;
-    if (type) {
-      nextTemplateItem.defaultType = type;
+    if (nextTemplateItem) {
+      nextTemplateItem[key] = val;
+      if (type) {
+        nextTemplateItem.defaultType = type;
+      }
     }
 
     if (category === 'CASE') {

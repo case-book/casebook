@@ -1,0 +1,44 @@
+.select-space-popup-wrapper {
+  .description {
+    padding: 12px;
+    background-color: $gray-100;
+    margin-bottom: 12px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      padding: 0;
+      width: 100%;
+      &:hover {
+        background-color: var(--primary-color);
+        color: var(--primary-text-color);
+      }
+      a {
+        color: var(--text-color);
+        text-decoration: none;
+        padding: 0.5rem 0.5rem;
+        display: block;
+        > div {
+          display: flex;
+          gap: 4px;
+          > span {
+            align-self: center;
+          }
+        }
+      }
+
+      &:hover {
+        a {
+          color: var(--primary-text-color);
+        }
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

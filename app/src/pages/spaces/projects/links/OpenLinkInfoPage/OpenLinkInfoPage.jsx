@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Block, Button, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
+import { Block, Button, UserContentViewer, EmptyContent, Label, Page, PageButtons, PageContent, PageTitle, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router';
@@ -7,12 +7,10 @@ import BlockRow from '@/components/BlockRow/BlockRow';
 import copy from 'copy-to-clipboard';
 import ProjectService from '@/services/ProjectService';
 import SpaceService from '@/services/SpaceService';
-import { Viewer } from '@toast-ui/react-editor';
 import OpenLinkService from '@/services/OpenLinkService';
 import OpenLinkReportPopup from '@/pages/spaces/projects/links/OpenLinkInfoPage/OpenLinkReportPopup/OpenLinkReportPopup';
 import { OpenLinkReportList } from '@/assets';
 import './OpenLinkInfoPage.scss';
-import useStores from '@/hooks/useStores';
 import dateUtil from '@/utils/dateUtil';
 import dialogUtil from '@/utils/dialogUtil';
 import { MESSAGE_CATEGORY } from '@/constants/constants';
@@ -21,10 +19,6 @@ const labelMinWidth = '140px';
 
 function OpenLinkInfoPage() {
   const { t } = useTranslation();
-
-  const {
-    themeStore: { theme },
-  } = useStores();
 
   const { projectId, spaceCode, openLinkId } = useParams();
 
@@ -165,7 +159,7 @@ function OpenLinkInfoPage() {
             </Block>
             <Title>{t('코멘트')}</Title>
             <Block className="viewer-block">
-              {openLink.comment && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={openLink.comment || '<span className="none-text">&nbsp;</span>'} />}
+              {openLink.comment && <UserContentViewer content={openLink.comment} />}
               {!openLink.comment && <EmptyContent border>{t('코멘트가 없습니다.')}</EmptyContent>}
             </Block>
             <Title>{t('관리')}</Title>

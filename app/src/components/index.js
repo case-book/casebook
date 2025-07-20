@@ -1,4 +1,5 @@
 import ReactSelect from '@/components/ReactSelect/ReactSelect';
+import UserContentEditor from '@/components/UserContent/UserContentEditor/UserContentEditor';
 import Tabs from './Tabs/Tabs';
 import Page from './Page/Page';
 import PageTitle from './PageTitle/PageTitle';
@@ -69,6 +70,9 @@ import VariableInput from './VariableInput/VariableInput';
 import PathIcon from './PathIcon/PathIcon';
 import Pill from './Pill/Pill';
 
+import UserContentViewer from './UserContent/UserContentViewer/UserContentViewer';
+import CommentEditor from './UserContent/CommentEditor/CommentEditor';
+
 export {
   Selector,
   Modal,
@@ -138,4 +142,7 @@ export {
   VariableInput,
   PathIcon,
   Pill,
+  CommentEditor,
+  UserContentEditor,
+  UserContentViewer,
 };

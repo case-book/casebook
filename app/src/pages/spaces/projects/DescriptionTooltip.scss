@@ -63,6 +63,9 @@
       padding-bottom: 8px;
       margin-bottom: 8px;
       display: flex;
+      > span {
+        align-self: center;
+      }
       span:first-child {
         flex-grow: 1;
       }
