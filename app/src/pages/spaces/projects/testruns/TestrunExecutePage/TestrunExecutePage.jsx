@@ -314,7 +314,7 @@ function TestrunExecutePage() {
     TestrunService.notifyTestrunProgress(spaceCode, projectId, testrunId, () => {});
   };
 
-  const onChangeComment = (pId, comment, handler) => {
+  const onChangeComment = comment => {
     TestrunService.updateTestrunTestcaseComment(
       spaceCode,
       projectId,
@@ -322,7 +322,7 @@ function TestrunExecutePage() {
       content.testrunTestcaseGroupId,
       content.id,
       {
-        pId,
+        pId: null,
         comment,
         testrunTestcaseGroupTestcaseId: content.id,
       },
@@ -334,9 +334,6 @@ function TestrunExecutePage() {
         }
 
         nextContent.comments.push(info);
-        if (handler) {
-          handler();
-        }
 
         setContent(nextContent);
       },

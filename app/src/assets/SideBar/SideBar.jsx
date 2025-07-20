@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import classNames from 'classnames';
 import useStores from '@/hooks/useStores';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import SpaceInfo from '@/assets/SideBar/SpaceInfo';
 import ProjectMenu from '@/pages/common/Header/ProjectMenu';
@@ -23,7 +24,7 @@ function SideBar() {
   } = useStores();
 
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
@@ -94,30 +95,48 @@ function SideBar() {
     };
   }, [collapsed, isLogin]);
 
+  const onCollapseClick = useCallback(() => {
+    setCollapsed(!collapsed);
+    localStorage.setItem('collapsed', !collapsed);
+  }, [collapsed, setCollapsed]);
+
   return (
     <nav className={classNames('side-bar-wrapper', { collapsed })}>
-      {!collapsed && (
-        <div className="size-bar-logo">
-          <Logo
-            size="sm"
-            color="white"
-            hand={false}
-            onClick={() => {
-              navigate('/');
-            }}
-          />
+      <div>
+        <div className="side-bar-controls">
+          {!collapsed && (
+            <button type="button" className="min" onClick={onCollapseClick} data-tip={t('GNB 접기')}>
+              <i className="fa-solid fa-minus" />
+            </button>
+          )}
+          <button type="button" className="max" onClick={onCollapseClick} data-tip={t('GNB 펼치기')}>
+            <i className="fa-regular fa-window-maximize" />
+          </button>
         </div>
-      )}
-      {!space && <SpaceMenu projects={projects} />}
-      {space && (
-        <>
+        {!collapsed && (
+          <div className="size-bar-logo">
+            <Logo
+              size="sm"
+              hand={false}
+              onClick={() => {
+                navigate('/');
+              }}
+            />
+          </div>
+        )}
+        {!space && <SpaceMenu projects={projects} />}
+        {space && (
+          <>
+            <ProjectInfo projects={projects} onRefresh={getProjectList} />
+            <ProjectMenu projects={projects} />
+          </>
+        )}
+        <div className="side-bar-bottom">
+          <UserHeaderControl />
+        </div>
+        <div className="space-info-content">
           <SpaceInfo spaces={spaces} />
-          <ProjectInfo projects={projects} onRefresh={getProjectList} />
-          <ProjectMenu projects={projects} />
-        </>
-      )}
-      <div className="side-bar-bottom">
-        <UserHeaderControl />
+        </div>
       </div>
     </nav>
   );

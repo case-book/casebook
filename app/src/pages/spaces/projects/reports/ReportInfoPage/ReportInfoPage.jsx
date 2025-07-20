@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Block, Button, CloseIcon, Info, Liner, Page, PageContent, PageTitle, Table, Tbody, Th, THead, Title, Tr, UserAvatar } from '@/components';
+import React, { useEffect, useState } from 'react';
+import { Block, Button, CloseIcon, CommentEditor, Info, Liner, Page, PageContent, PageTitle, Table, Tbody, Th, THead, Title, Tr, UserAvatar } from '@/components';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,9 +13,6 @@ import dialogUtil from '@/utils/dialogUtil';
 import testcaseUtil from '@/utils/testcaseUtil';
 import useQueryString from '@/hooks/useQueryString';
 import TestrunResultViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunResultViewerPopup';
-import { Editor } from '@toast-ui/react-editor';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import useStores from '@/hooks/useStores';
 import TestrunTestcaseListViewerPopup from '@/pages/spaces/projects/reports/ReportInfoPage/TestrunTestcaseListViewerPopup';
 import { getBaseURL } from '@/utils/configUtil';
 import { CommentList, ReportCountSummary } from '@/assets';
@@ -25,10 +22,6 @@ import './ReportInfoPage.scss';
 
 function ReportInfoPage() {
   const { t } = useTranslation();
-
-  const {
-    themeStore: { theme },
-  } = useStores();
 
   const { projectId, spaceCode, reportId } = useParams();
 
@@ -55,10 +48,6 @@ function ReportInfoPage() {
   const [testerProgressList, setTesterProgressList] = useState([]);
 
   const { query, setQuery } = useQueryString();
-
-  const editor = useRef(null);
-
-  const [comment, setComment] = useState('');
 
   const [testrunCommentList, setTestrunCommentList] = useState([]);
 
@@ -524,59 +513,17 @@ function ReportInfoPage() {
                   </div>
                 </Block>
                 <Block className="comment-editor">
-                  <Editor
-                    key={theme}
-                    ref={editor}
-                    theme={theme === 'DARK' ? 'dark' : 'white'}
-                    placeholder={t('내용을 입력해주세요.')}
-                    previewStyle="vertical"
-                    height="160px"
-                    initialEditType="wysiwyg"
-                    plugins={[colorSyntax]}
-                    autofocus={false}
-                    toolbarItems={[
-                      ['heading', 'bold', 'italic', 'strike'],
-                      ['hr', 'quote'],
-                      ['ul', 'ol', 'task', 'indent', 'outdent'],
-                      ['table', 'image', 'link'],
-                      ['code', 'codeblock'],
-                    ]}
-                    hooks={{
-                      addImageBlobHook: async (blob, callback) => {
-                        const result = await createTestrunImage(blob.name, blob.size, blob.type, blob);
-                        callback(`${getBaseURL()}/api/${spaceCode}/projects/${projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
-                      },
+                  <CommentEditor
+                    onSaveComment={html => {
+                      if (html) {
+                        createComment(html);
+                      }
                     }}
-                    initialValue={comment || ''}
-                    onChange={() => {
-                      setComment(editor.current?.getInstance()?.getHTML());
+                    onAddImageHook={async (blob, callback) => {
+                      const result = await createTestrunImage(blob.name, blob.size, blob.type, blob);
+                      callback(`${getBaseURL()}/api/${spaceCode}/projects/${projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
                     }}
                   />
-                  <div className="buttons">
-                    <Button
-                      outline
-                      onClick={() => {
-                        setComment('');
-                        editor.current?.getInstance().setHTML('');
-                      }}
-                      size="sm"
-                    >
-                      {t('취소')}
-                    </Button>
-                    <Button
-                      outline
-                      size="sm"
-                      onClick={() => {
-                        if (comment) {
-                          createComment(comment);
-                          setComment('');
-                          editor.current?.getInstance().setHTML('');
-                        }
-                      }}
-                    >
-                      {t('코멘트 추가')}
-                    </Button>
-                  </div>
                 </Block>
               </Pane>
             )}

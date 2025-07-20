@@ -1,18 +1,14 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import './TestcaseItem.scss';
-import { Button, CheckBox, Radio, Selector, Tag, TestcaseViewerLabel, UserSelector, VariableInput } from '@/components';
+import { Button, CheckBox, UserContentViewer, Radio, UserContentEditor, Selector, Tag, TestcaseViewerLabel, UserSelector, VariableInput } from '@/components';
 import { getUserText } from '@/utils/userUtil';
-import { Editor, Viewer } from '@toast-ui/react-editor';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { getBaseURL } from '@/utils/configUtil';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
 import { getVariableList } from '@/pages/spaces/projects/testruns/TestrunExecutePage/variableUtil';
 import { ParaphraseInfoPropTypes } from '@/proptypes';
-
-// const reWidgetRule = /\{{(\S+)}}/;
+import './TestcaseItem.scss';
 
 function TestcaseItem({
   isEdit,
@@ -38,7 +34,6 @@ function TestcaseItem({
   onAcceptParaphraseContent,
   onRemoveParaphraseContent,
 }) {
-  const editor = useRef(null);
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
   const lastEditorKey = useRef(null);
@@ -210,9 +205,7 @@ function TestcaseItem({
             )}
             {testcaseTemplateItem.type === 'EDITOR' && (
               <div className="editor" key={`${content.id}-${theme}`}>
-                {!isEdit && (
-                  <Viewer key={testcaseItem?.text} className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />
-                )}
+                {!isEdit && <UserContentViewer key={testcaseItem?.text} content={testcaseItem?.text} />}
                 {!isEdit && paraphraseContent?.text && (
                   <div className="paraphrase-content">
                     <Tag className="ai-tag" border color="white">
@@ -246,54 +239,38 @@ function TestcaseItem({
                       )}
                     </div>
                     <div>
-                      <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={paraphraseContent?.text || '<span className="none-text">&nbsp;</span>'} />
+                      <UserContentViewer content={paraphraseContent?.text} />
                     </div>
                   </div>
                 )}
                 {isEdit && (
-                  <Editor
-                    ref={editor}
-                    theme={theme === 'DARK' ? 'dark' : 'white'}
-                    placeholder={t('내용을 입력해주세요.')}
-                    previewStyle="vertical"
-                    height="400px"
-                    initialEditType="wysiwyg"
-                    plugins={[colorSyntax]}
-                    autofocus={false}
-                    onBlur={() => {
-                      if (isTestResultItem) {
-                        onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
-                      }
-                    }}
-                    toolbarItems={[
-                      ['heading', 'bold', 'italic', 'strike'],
-                      ['hr', 'quote'],
-                      ['ul', 'ol', 'task', 'indent', 'outdent'],
-                      ['table', 'image', 'link'],
-                      ['code', 'codeblock'],
-                    ]}
-                    hooks={{
-                      addImageBlobHook: async (blob, callback) => {
-                        const result = await createImage(content.id, blob.name, blob.size, blob.type, blob);
-                        callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
-                      },
-                    }}
+                  <UserContentEditor
                     initialValue={testcaseItem?.text || ''}
-                    onChange={() => {
-                      if (!isTestResultItem) {
-                        onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', editor.current?.getInstance()?.getHTML(), testcaseTemplateItem.type);
+                    defaultHeight={400}
+                    onBlur={html => {
+                      if (isTestResultItem) {
+                        onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', html, testcaseTemplateItem.type);
                       }
                     }}
-                    onKeyup={(editorType, ev) => {
-                      if (editor.current && ev.shiftKey && ev.key === '{' && lastEditorKey.current === '{') {
+                    onAddImageHook={async (blob, callback) => {
+                      const result = await createImage(content.id, blob.name, blob.size, blob.type, blob);
+                      callback(`${getBaseURL()}/api/${result.data.spaceCode}/projects/${result.data.projectId}/images/${result.data.id}?uuid=${result.data.uuid}`);
+                    }}
+                    onKeyup={(editorControl, editorType, ev) => {
+                      if (editorControl && ev.shiftKey && ev.key === '{' && lastEditorKey.current === '{') {
                         const widgetPopup = getVariableList(variables, e => {
-                          const [start, end] = editor.current.getInstance().getSelection();
-                          editor.current.getInstance().replaceSelection(`${e.target.textContent}}}`, [start[0], start[1] - 1], end);
+                          const [start, end] = editorControl.getInstance().getSelection();
+                          editorControl.getInstance().replaceSelection(`${e.target.textContent}}}`, [start[0], start[1] - 1], end);
                         });
 
-                        editor.current.getInstance().addWidget(widgetPopup, 'bottom');
+                        editorControl.getInstance().addWidget(widgetPopup, 'bottom');
                       } else if (ev.key !== 'Shift') {
                         lastEditorKey.current = ev.key;
+                      }
+                    }}
+                    onChange={html => {
+                      if (!isTestResultItem) {
+                        onChangeTestcaseItem(testcaseTemplateItem.id, 'text', 'text', html, testcaseTemplateItem.type);
                       }
                     }}
                   />

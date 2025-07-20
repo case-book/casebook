@@ -1,18 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './CommentList.scss';
-import { EmptyContent, Liner, UserAvatar } from '@/components';
-import { Viewer } from '@toast-ui/react-editor';
+import { UserContentViewer, EmptyContent, Liner, UserAvatar } from '@/components';
 import dateUtil from '@/utils/dateUtil';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useStores from '@/hooks/useStores';
+import './CommentList.scss';
 
 function CommentList({ className, comments, onDeleteComment }) {
   const { t } = useTranslation();
 
   const {
-    themeStore: { theme },
     userStore: {
       user: { id: userId },
     },
@@ -35,7 +33,7 @@ function CommentList({ className, comments, onDeleteComment }) {
                     <UserAvatar className="user-icon" avatarInfo={comment.user?.avatarInfo} size={36} fill rounded />
                   </div>
                   <div className="comment-content">
-                    <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={comment.comment || '<span className="none-text">&nbsp;</span>'} />
+                    <UserContentViewer content={comment.comment} />
                   </div>
                 </div>
 

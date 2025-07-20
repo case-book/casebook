@@ -19,12 +19,14 @@
 .user-header-control-wrapper {
   display: flex;
   justify-content: flex-end;
-  padding: 16px;
+  padding: 12px;
 
   .side-menu-item {
     margin-right: 4px;
-
     display: inline-flex;
+    &:last-child {
+      margin-right: 0;
+    }
     > div {
       align-self: center;
     }
@@ -32,61 +34,13 @@
 
   &.collapsed {
     display: block;
+    padding: 12px 0;
     .side-menu-item {
+      text-align: center;
       display: block;
-      width: 32px;
+      width: 100%;
       margin-right: 0;
       margin-top: 8px;
-    }
-  }
-
-  .collapse {
-    flex-grow: 1;
-    order: 1;
-    margin-right: 10px;
-
-    > button {
-      background: transparent;
-      width: 100%;
-      border: none;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 4px;
-      &:hover {
-        background-color: #111;
-      }
-
-      .icon {
-        margin-right: 4px;
-        font-size: 12px;
-      }
-
-      .text {
-        font-size: 12px;
-      }
-    }
-  }
-
-  &.collapsed {
-    .collapse {
-      margin-right: 0;
-      > button {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        justify-content: center;
-        border-radius: 50%;
-
-        > span {
-          align-self: center;
-          padding-left: 3px;
-        }
-        .text {
-          display: none;
-        }
-      }
     }
   }
 
@@ -149,6 +103,7 @@
     bottom: 0;
     right: 0;
     color: var(--text-color);
+    z-index: 1;
 
     > div {
       position: relative;
@@ -157,14 +112,15 @@
 
       > div {
         position: absolute;
-        bottom: 60px;
-        left: 150px;
+        bottom: 136px;
+        left: 172px;
         background-color: var(--box-color);
         width: 380px;
+        box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.15);
 
         .arrow {
           position: absolute;
-          bottom: -7px;
+          bottom: -12px;
           left: 0;
           right: 0;
           text-align: left;
@@ -172,11 +128,15 @@
           z-index: 1;
 
           > div {
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid white;
+            width: 11px;
+            height: 11px;
+            transform: rotate(225deg);
+            position: relative;
+            top: -7px;
+            border: 1px solid var(--border-color);
+            border-right: none;
+            border-bottom: none;
+            background-color: var(--box-color);
           }
         }
 
@@ -217,8 +177,8 @@
     .notification-list {
       > div {
         > div {
-          bottom: 100px;
-          left: 10px;
+          bottom: 127px;
+          left: 15px;
 
           .arrow {
             padding-left: 14px;
@@ -242,12 +202,13 @@
       height: 100%;
 
       > div {
-        min-width: 110px;
+        min-width: 240px;
         position: absolute;
-        bottom: 60px;
-        left: 120px;
+        bottom: 136px;
+        left: 139px;
         background-color: var(--box-color);
         border: 1px solid var(--border-color);
+        box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.15);
 
         .arrow {
           position: absolute;
@@ -275,7 +236,7 @@
           list-style: none;
           margin: 0;
           font-size: 14px;
-          padding: 0.5rem 0;
+          padding: 8px 0 16px;
           position: relative;
           z-index: 1;
           line-height: 100%;
@@ -285,15 +246,23 @@
             line-height: 100%;
             padding: 0 1rem;
 
+            &.links {
+              text-align: right;
+            }
+
+            hr {
+              background-color: var(--border-light-color);
+              display: none;
+            }
+
             > div.theme-selector {
               text-align: right;
               margin-top: 8px;
-              margin-bottom: 8px;
 
               > span {
-                font-size: 11px;
+                font-size: 10px;
                 display: inline-block;
-                padding: 4px 6px;
+                padding: 2px 4px;
                 background-color: var(--light-color);
                 cursor: pointer;
                 color: var(--text-color);
@@ -317,7 +286,7 @@
             }
 
             &.user-info {
-              padding: 0.5rem 1rem;
+              padding: 8px 16px 0;
               color: var(--text-color);
 
               > div {
@@ -331,40 +300,36 @@
                 }
 
                 .name {
-                  margin-bottom: 4px;
+                  margin-bottom: 2px;
                   font-weight: bold;
                 }
                 .email {
                   font-size: 12px;
+                  display: none;
                 }
-              }
-
-              hr {
-                background-color: var(--border-light-color);
-                margin-bottom: 0;
-                margin-top: 0.75rem;
               }
             }
 
             a {
               color: var(--text-color);
               text-decoration: none;
-              padding: 0.5rem 0.5rem;
+              padding: 4px;
               display: inline-block;
-              width: 100%;
+              font-size: 13px;
+              text-align: right;
+              border-bottom: 1px solid transparent;
 
               .icon {
                 margin-right: 8px;
-              }
-              &:hover {
-                background-color: var(--primary-color);
-                color: var(--primary-text-color) !important;
+                display: inline-block;
+                width: 16px;
               }
             }
 
             &:hover {
               a {
-                color: var(--primary-color);
+                color: var(--link-color);
+                border-bottom: 1px solid var(--link-color);
               }
             }
 
@@ -381,8 +346,8 @@
     .my-info-menu {
       > div {
         > div {
-          bottom: 140px;
-          left: 10px;
+          bottom: 178px;
+          left: 13px;
 
           .arrow {
             padding-left: 15px;

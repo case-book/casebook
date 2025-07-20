@@ -59,9 +59,19 @@
   .app-content {
     position: relative;
     z-index: 1;
-    min-height: 100vh;
+    min-height: calc(100vh - 16px);
+    padding: 8px 8px 8px 0;
+    box-sizing: border-box;
 
     .main-content {
+      border: var(--layout-border);
+      border-radius: var(--layout-border-radius);
+      box-sizing: border-box;
+      box-shadow: var(--layout-box-shadow);
+
+      &.no-border {
+        border: 1px solid transparent;
+      }
     }
   }
 }
