@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button, ResizableEditor } from '@/components';
+import { Button, UserContentEditor } from '@/components';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import './CommentEditor.scss';
@@ -20,7 +20,7 @@ function CommentEditor({ onSaveComment, onAddImageHook, minHeight, defaultHeight
         height,
       }}
     >
-      <ResizableEditor
+      <UserContentEditor
         onEditorRef={ref => {
           editor.current = ref;
         }}

@@ -1,17 +1,14 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import './TestcaseItem.scss';
-import { Button, CheckBox, Radio, ResizableEditor, Selector, Tag, TestcaseViewerLabel, UserSelector, VariableInput } from '@/components';
+import { Button, CheckBox, UserContentViewer, Radio, UserContentEditor, Selector, Tag, TestcaseViewerLabel, UserSelector, VariableInput } from '@/components';
 import { getUserText } from '@/utils/userUtil';
-import { Viewer } from '@toast-ui/react-editor';
 import { getBaseURL } from '@/utils/configUtil';
 import { TESTRUN_RESULT_CODE } from '@/constants/constants';
 import { useTranslation } from 'react-i18next';
 import UserRandomChangeDialog from '@/components/TestcaseItem/UserRandomChangeDialog';
 import { getVariableList } from '@/pages/spaces/projects/testruns/TestrunExecutePage/variableUtil';
 import { ParaphraseInfoPropTypes } from '@/proptypes';
-
-// const reWidgetRule = /\{{(\S+)}}/;
+import './TestcaseItem.scss';
 
 function TestcaseItem({
   isEdit,
@@ -208,9 +205,7 @@ function TestcaseItem({
             )}
             {testcaseTemplateItem.type === 'EDITOR' && (
               <div className="editor" key={`${content.id}-${theme}`}>
-                {!isEdit && (
-                  <Viewer key={testcaseItem?.text} className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={testcaseItem?.text || '<span className="none-text">&nbsp;</span>'} />
-                )}
+                {!isEdit && <UserContentViewer key={testcaseItem?.text} content={testcaseItem?.text} />}
                 {!isEdit && paraphraseContent?.text && (
                   <div className="paraphrase-content">
                     <Tag className="ai-tag" border color="white">
@@ -244,12 +239,12 @@ function TestcaseItem({
                       )}
                     </div>
                     <div>
-                      <Viewer className="viewer" theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={paraphraseContent?.text || '<span className="none-text">&nbsp;</span>'} />
+                      <UserContentViewer content={paraphraseContent?.text} />
                     </div>
                   </div>
                 )}
                 {isEdit && (
-                  <ResizableEditor
+                  <UserContentEditor
                     initialValue={testcaseItem?.text || ''}
                     defaultHeight={400}
                     onBlur={html => {

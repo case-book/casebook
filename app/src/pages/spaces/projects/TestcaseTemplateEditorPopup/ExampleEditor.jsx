@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, ResizableEditor } from '@/components';
+import { Button, UserContentEditor } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { getBaseURL } from '@/utils/configUtil';
 import './ExampleEditor.scss';
@@ -30,7 +30,7 @@ function ExampleEditor({ className, itemId, onChange, initialValue, max, setMax,
           </div>
         </div>
         <div className="properties-control" key={`${itemId}-${max}`}>
-          <ResizableEditor
+          <UserContentEditor
             minHeight={max ? '100%' : 160}
             defaultHeight={max ? '100%' : 160}
             onAddImageHook={async (blob, callback) => {

@@ -1,0 +1,19 @@
+.image-portal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: zoom-out;
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 0 10px 10px rgb(0 0 0 / 15%);
+  }
+}

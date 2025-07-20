@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Block, Button, CheckBox, DatePicker, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, ResizableEditor, Text, Title } from '@/components';
+import { Block, Button, CheckBox, DatePicker, Form, Input, Label, Page, PageButtons, PageContent, PageTitle, UserContentEditor, Text, Title } from '@/components';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -222,7 +222,7 @@ function OpenLinkEditPage({ type }) {
             </Block>
             <Title>{t('코멘트')}</Title>
             <Block className="editor-block">
-              <ResizableEditor
+              <UserContentEditor
                 initialValue={openLink.comment}
                 defaultHeight={300}
                 onAddImageHook={async (blob, callback) => {

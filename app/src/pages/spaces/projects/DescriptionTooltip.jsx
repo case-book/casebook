@@ -1,21 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import copy from 'copy-to-clipboard';
+import { Button, UserContentViewer } from '@/components';
 import './DescriptionTooltip.scss';
-import { Viewer } from '@toast-ui/react-editor';
-import useStores from '@/hooks/useStores';
-import { observer } from 'mobx-react';
-import { Button } from '@/components';
 
 function DescriptionTooltip({ className, icon, onClick, title, text, opened, clipboard, parentElement, onClose, type }) {
   const [copied, setCopied] = useState(false);
   const [leftList, setLeftList] = useState(true);
   const tooltip = useRef(null);
   const element = useRef(null);
-
-  const {
-    themeStore: { theme },
-  } = useStores();
 
   const handleOutsideClick = event => {
     if (tooltip.current && !tooltip.current.contains(event.target) && element.current && !element.current.contains(event.target)) {
@@ -83,7 +76,7 @@ function DescriptionTooltip({ className, icon, onClick, title, text, opened, cli
               </span>
             )}
           </div>
-          {type === 'EDITOR' && <Viewer theme={theme === 'DARK' ? 'dark' : 'white'} initialValue={text} />}
+          {type === 'EDITOR' && <UserContentViewer content={text} />}
           {type !== 'EDITOR' && <div className="description-text">{text}</div>}
         </div>
       )}
@@ -115,4 +108,4 @@ DescriptionTooltip.propTypes = {
   type: PropTypes.string,
 };
 
-export default observer(DescriptionTooltip);
+export default DescriptionTooltip;

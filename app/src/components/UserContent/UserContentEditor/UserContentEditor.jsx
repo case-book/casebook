@@ -8,9 +8,9 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 import useStores from '@/hooks/useStores';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { Editor } from '@toast-ui/react-editor';
-import './ResizableEditor.scss';
+import './UserContentEditor.scss';
 
-function ResizableEditor({ onAddImageHook, minHeight, defaultHeight, onBlur, initialValue, onKeyup, onChange, onHeightChange, onEditorRef }) {
+function UserContentEditor({ onAddImageHook, minHeight, defaultHeight, onBlur, initialValue, onKeyup, onChange, onHeightChange, onEditorRef }) {
   const {
     themeStore: { theme },
   } = useStores();
@@ -60,7 +60,7 @@ function ResizableEditor({ onAddImageHook, minHeight, defaultHeight, onBlur, ini
 
   return (
     <div
-      className="resizable-editor-wrapper"
+      className="user-content-editor-wrapper"
       ref={container}
       style={{
         height,
@@ -127,7 +127,7 @@ function ResizableEditor({ onAddImageHook, minHeight, defaultHeight, onBlur, ini
   );
 }
 
-ResizableEditor.defaultProps = {
+UserContentEditor.defaultProps = {
   minHeight: 200,
   defaultHeight: 200,
   onBlur: null,
@@ -138,7 +138,7 @@ ResizableEditor.defaultProps = {
   onEditorRef: null,
 };
 
-ResizableEditor.propTypes = {
+UserContentEditor.propTypes = {
   onAddImageHook: PropTypes.func.isRequired,
   onBlur: PropTypes.func,
   minHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -150,4 +150,4 @@ ResizableEditor.propTypes = {
   onEditorRef: PropTypes.func,
 };
 
-export default observer(ResizableEditor);
+export default observer(UserContentEditor);
