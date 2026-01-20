@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import {observer} from 'mobx-react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import useStores from '@/hooks/useStores';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { Editor } from '@toast-ui/react-editor';
+import {Editor} from '@toast-ui/react-editor';
 import './UserContentEditor.scss';
 
 function UserContentEditor({ onAddImageHook, minHeight, defaultHeight, onBlur, initialValue, onKeyup, onChange, onHeightChange, onEditorRef }) {
@@ -53,10 +53,6 @@ function UserContentEditor({ onAddImageHook, minHeight, defaultHeight, onBlur, i
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
-
-  useEffect(() => {
-    editor.current?.getInstance()?.setHTML(initialValue);
-  }, [initialValue]);
 
   return (
     <div

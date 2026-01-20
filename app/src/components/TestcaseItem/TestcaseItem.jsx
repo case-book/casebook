@@ -245,7 +245,7 @@ function TestcaseItem({
                 )}
                 {isEdit && (
                   <UserContentEditor
-                    initialValue={testcaseItem?.text || ''}
+                    initialValue={testcaseItem?.text}
                     defaultHeight={400}
                     onBlur={html => {
                       if (isTestResultItem) {

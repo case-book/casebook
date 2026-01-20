@@ -148,7 +148,7 @@ function Common() {
     getSystemInfo();
     setAutoLogin();
     getReleaseList();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (releasePopup) {
