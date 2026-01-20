@@ -68,7 +68,7 @@ function SequenceListPage() {
             {t('조회된 케이스시퀀스가 없습니다.')}
           </EmptyContent>
         )}
-        {sequences.length > 0 && (
+        {sequences?.length > 0 && (
           <div className="sequence-list">
             {sequences.map(sequence => (
               <Card key={sequence.id} border className="release-card">
