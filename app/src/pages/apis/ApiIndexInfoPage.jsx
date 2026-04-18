@@ -7,6 +7,150 @@ import './ApiIndexInfoPage.scss';
 import useStores from '@/hooks/useStores';
 import RequestBuilderPopup from '@/pages/admin/AdminIndexInfoPage/RequestBuilderPopup';
 
+const TESTCASE_LIST_EXAMPLE = `[
+  {
+    "id": 1,
+    "seqId": "TC1",
+    "testcaseGroupId": 5,
+    "testcaseTemplateId": 2,
+    "projectReleaseIds": [10],
+    "name": "로그인 정상 케이스-1",
+    "itemOrder": 0,
+    "closed": false,
+    "description": "이메일과 비밀번호가 일치하는 경우",
+    "creationDate": "2026-04-19T10:30:00"
+  },
+  {
+    "id": 2,
+    "seqId": "TC2",
+    "testcaseGroupId": 5,
+    "testcaseTemplateId": 2,
+    "projectReleaseIds": [],
+    "name": "로그인 실패 케이스-2",
+    "itemOrder": 1,
+    "closed": false,
+    "description": "비밀번호가 일치하지 않는 경우",
+    "creationDate": "2026-04-19T10:31:00"
+  }
+]`;
+
+const TESTCASE_DETAIL_EXAMPLE = `{
+  "id": 1,
+  "seqId": "TC1",
+  "projectId": 3,
+  "testcaseGroupId": 5,
+  "testcaseTemplateId": 2,
+  "projectReleaseIds": [10],
+  "name": "로그인 정상 케이스-1",
+  "itemOrder": 0,
+  "closed": false,
+  "description": "이메일과 비밀번호가 일치하는 경우",
+  "testerType": "operation",
+  "testerValue": "RND",
+  "createdUserName": "홍길동",
+  "lastUpdatedUserName": "홍길동",
+  "creationDate": "2026-04-19T10:30:00",
+  "lastUpdateDate": "2026-04-19T11:00:00",
+  "testcaseItems": [
+    {
+      "id": 101,
+      "testcaseId": 1,
+      "testcaseTemplateItemId": 20,
+      "type": "text",
+      "value": null,
+      "text": "이메일/비밀번호를 입력한다."
+    },
+    {
+      "id": 102,
+      "testcaseId": 1,
+      "testcaseTemplateItemId": 21,
+      "type": "value",
+      "value": "Y",
+      "text": null
+    }
+  ]
+}`;
+
+const TESTCASE_GROUP_EXAMPLE = `{
+  "id": 5,
+  "seqId": "G5",
+  "parentId": null,
+  "depth": 0,
+  "name": "로그인-5",
+  "description": "로그인 관련 테스트케이스 그룹",
+  "itemOrder": 0,
+  "testcases": [
+    {
+      "id": 1,
+      "seqId": "TC1",
+      "testcaseGroupId": 5,
+      "testcaseTemplateId": 2,
+      "projectReleaseIds": [10],
+      "name": "로그인 정상 케이스-1",
+      "itemOrder": 0,
+      "closed": false,
+      "description": "이메일과 비밀번호가 일치하는 경우",
+      "creationDate": "2026-04-19T10:30:00"
+    }
+  ]
+}`;
+
+const TESTCASE_RESULT_REQUEST_EXAMPLE = `{
+  "result": "PASSED",
+  "comment": "정상 동작 확인"
+}`;
+
+const TESTCASE_CREATE_REQUEST_EXAMPLE = `{
+  "testcaseGroupSeqNumber": 5,
+  "name": "로그인 정상 케이스",
+  "description": "이메일과 비밀번호가 일치하는 경우",
+  "testerType": "operation",
+  "testerValue": "RND",
+  "testcaseItems": [
+    {
+      "testcaseTemplateItemId": 20,
+      "type": "text",
+      "text": "이메일/비밀번호를 입력한다."
+    },
+    {
+      "testcaseTemplateItemId": 21,
+      "type": "value",
+      "value": "Y"
+    }
+  ]
+}`;
+
+const TESTCASE_UPDATE_REQUEST_EXAMPLE = `{
+  "name": "로그인 정상 케이스",
+  "description": "이메일과 비밀번호가 모두 유효한 경우",
+  "testerType": "operation",
+  "testerValue": "RND",
+  "closed": false,
+  "testcaseItems": [
+    {
+      "testcaseTemplateItemId": 20,
+      "type": "text",
+      "text": "유효한 이메일과 비밀번호를 입력한다."
+    },
+    {
+      "testcaseTemplateItemId": 21,
+      "type": "value",
+      "value": "N"
+    }
+  ]
+}`;
+
+const TESTCASE_GROUP_CREATE_REQUEST_EXAMPLE = `{
+  "parentSeqNumber": null,
+  "name": "로그인",
+  "description": "로그인 관련 테스트케이스 그룹"
+}`;
+
+const TESTCASE_GROUP_UPDATE_REQUEST_EXAMPLE = `{
+  "name": "로그인",
+  "description": "로그인 기능 전반에 대한 테스트케이스"
+}`;
+
 function ApiIndexInfoPage() {
   const { t } = useTranslation();
 
@@ -40,6 +184,306 @@ function ApiIndexInfoPage() {
       });
     }
   }, [isLogin]);
+
+  const testcaseItemFieldTable = (
+    <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('필수')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>testcaseTemplateItemId</Td>
+          <Td>Number</Td>
+          <Td>{t('필수')}</Td>
+          <Td>{t('연결할 테스트케이스 템플릿 아이템의 ID. 상세 조회 API 응답의 testcaseItems[].testcaseTemplateItemId 값을 그대로 사용합니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>type</Td>
+          <Td>String</Td>
+          <Td>{t('선택')}</Td>
+          <Td>{t('아이템 값 종류. "text"(리치텍스트/에디터) 또는 "value"(일반 값). 템플릿 아이템의 타입에 맞춰 지정합니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>value</Td>
+          <Td>String</Td>
+          <Td>{t('선택')}</Td>
+          <Td>{t('type이 "value"일 때의 값. 예: "Y", "SEQ", 사용자 ID 등.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>text</Td>
+          <Td>String</Td>
+          <Td>{t('선택')}</Td>
+          <Td>{t('type이 "text"일 때의 본문 텍스트 (HTML/Markdown).')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+
+  const testcaseItemResponseTable = (
+    <Table size="sm" cols={['200px', '100px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>id</Td>
+          <Td>Number</Td>
+          <Td>{t('테스트케이스 아이템의 고유 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseId</Td>
+          <Td>Number</Td>
+          <Td>{t('소속 테스트케이스의 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseTemplateItemId</Td>
+          <Td>Number</Td>
+          <Td>{t('연결된 테스트케이스 템플릿 아이템의 ID. 생성/변경 시 매칭 키로 사용.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>type</Td>
+          <Td>String</Td>
+          <Td>{t('아이템 값의 종류. "text" 또는 "value".')}</Td>
+        </Tr>
+        <Tr>
+          <Td>value</Td>
+          <Td>String</Td>
+          <Td>{t('type이 "value"일 때의 값 (type이 "text"면 null).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>text</Td>
+          <Td>String</Td>
+          <Td>{t('type이 "text"일 때의 본문 (type이 "value"면 null).')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+
+  const testcaseDetailResponseTable = (
+    <Table size="sm" cols={['200px', '120px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>id</Td>
+          <Td>Number</Td>
+          <Td>{t('테스트케이스의 고유 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>seqId</Td>
+          <Td>String</Td>
+          <Td>{t('프로젝트 내 테스트케이스 식별자. "TC" 접두사 + SEQ 번호. (예: "TC10")')}</Td>
+        </Tr>
+        <Tr>
+          <Td>projectId</Td>
+          <Td>Number</Td>
+          <Td>{t('소속 프로젝트의 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseGroupId</Td>
+          <Td>Number</Td>
+          <Td>{t('소속 테스트케이스 그룹의 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseTemplateId</Td>
+          <Td>Number</Td>
+          <Td>{t('적용된 테스트케이스 템플릿의 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>projectReleaseIds</Td>
+          <Td>Array&lt;Number&gt;</Td>
+          <Td>{t('연관된 프로젝트 릴리스 ID 목록.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>name</Td>
+          <Td>String</Td>
+          <Td>{t('테스트케이스 이름. 생성 시 "-<SEQ>" 접미가 자동 추가됩니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>itemOrder</Td>
+          <Td>Number</Td>
+          <Td>{t('그룹 내에서의 정렬 순서 (0부터).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>closed</Td>
+          <Td>Boolean</Td>
+          <Td>{t('종료(보관) 여부. true이면 테스트런에 선택되지 않습니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>description</Td>
+          <Td>String</Td>
+          <Td>{t('테스트케이스 설명.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testerType</Td>
+          <Td>String</Td>
+          <Td>{t('테스터 지정 타입. "operation" | "tag" | "addUser".')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testerValue</Td>
+          <Td>String</Td>
+          <Td>{t('테스터 지정 값. testerType에 따라 "RND"/"SEQ", 태그명, 사용자 ID 문자열 중 하나.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>createdUserName</Td>
+          <Td>String</Td>
+          <Td>{t('최초 생성한 사용자 이름.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>lastUpdatedUserName</Td>
+          <Td>String</Td>
+          <Td>{t('마지막으로 수정한 사용자 이름.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>creationDate</Td>
+          <Td>String (ISO-8601)</Td>
+          <Td>{t('생성 일시.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>lastUpdateDate</Td>
+          <Td>String (ISO-8601)</Td>
+          <Td>{t('마지막 수정 일시.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseItems</Td>
+          <Td>Array&lt;TestcaseItem&gt;</Td>
+          <Td>{t('테스트케이스 아이템 배열. 각 아이템의 필드는 아래 테이블 참조.')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+
+  const testcaseListResponseTable = (
+    <Table size="sm" cols={['200px', '120px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>id</Td>
+          <Td>Number</Td>
+          <Td>{t('테스트케이스의 고유 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>seqId</Td>
+          <Td>String</Td>
+          <Td>{t('프로젝트 내 테스트케이스 식별자. (예: "TC10")')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseGroupId</Td>
+          <Td>Number</Td>
+          <Td>{t('소속 테스트케이스 그룹의 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseTemplateId</Td>
+          <Td>Number</Td>
+          <Td>{t('적용된 테스트케이스 템플릿의 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>projectReleaseIds</Td>
+          <Td>Array&lt;Number&gt;</Td>
+          <Td>{t('연관된 프로젝트 릴리스 ID 목록.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>name</Td>
+          <Td>String</Td>
+          <Td>{t('테스트케이스 이름.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>itemOrder</Td>
+          <Td>Number</Td>
+          <Td>{t('그룹 내에서의 정렬 순서 (0부터).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>closed</Td>
+          <Td>Boolean</Td>
+          <Td>{t('종료(보관) 여부.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>description</Td>
+          <Td>String</Td>
+          <Td>{t('테스트케이스 설명.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>creationDate</Td>
+          <Td>String (ISO-8601)</Td>
+          <Td>{t('생성 일시.')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+
+  const testcaseGroupResponseTable = (
+    <Table size="sm" cols={['200px', '180px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>id</Td>
+          <Td>Number</Td>
+          <Td>{t('테스트케이스 그룹의 고유 ID.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>seqId</Td>
+          <Td>String</Td>
+          <Td>{t('프로젝트 내 그룹 식별자. "G" 접두사 + SEQ 번호. (예: "G5")')}</Td>
+        </Tr>
+        <Tr>
+          <Td>parentId</Td>
+          <Td>Number</Td>
+          <Td>{t('상위 그룹의 ID. 최상위면 null.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>depth</Td>
+          <Td>Number</Td>
+          <Td>{t('트리 깊이. 최상위는 0.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>name</Td>
+          <Td>String</Td>
+          <Td>{t('그룹 이름. 생성 시 "-<SEQ>" 접미가 자동 추가됩니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>description</Td>
+          <Td>String</Td>
+          <Td>{t('그룹 설명.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>itemOrder</Td>
+          <Td>Number</Td>
+          <Td>{t('같은 상위 그룹 내에서의 정렬 순서 (0부터).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcases</Td>
+          <Td>Array&lt;TestcaseList&gt;</Td>
+          <Td>{t('그룹에 소속된 테스트케이스 목록 (목록 조회 스키마와 동일).')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
 
   return (
     <Page className="apis-index-info-page-wrapper">
@@ -108,6 +552,7 @@ function ApiIndexInfoPage() {
           {t('API 목록')}
         </Title>
         <ul className="apis">
+          {/* 1. 테스트런 목록 조회 */}
           <li>
             <div className="name">{t('테스트케이스가 포함된 테스트런 SEQ 번호 조회 API')}</div>
             <div className="description">{t('테스트케이스의 SEQ 번호를 통해, 해당 테스트케이스가 포함되어 실행 중인 테스트런 SEQ 번호 목록을 조회할 수 있습니다.')}</div>
@@ -125,13 +570,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestrunApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestrunApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -140,46 +579,73 @@ function ApiIndexInfoPage() {
                   {isOpenTestrunApiBuilder && (
                     <RequestBuilderPopup
                       path={[
-                        {
-                          type: 'text',
-                          value: '/api/automation/projects/',
-                        },
-                        {
-                          type: 'variable',
-                          value: 'PROJECT TOKEN',
-                        },
-                        {
-                          type: 'text',
-                          value: '/testcases/',
-                        },
-                        {
-                          type: 'variable',
-                          value: 'TESTCASE SEQ NUMBER',
-                        },
-                        {
-                          type: 'text',
-                          value: '/testruns',
-                        },
+                        { type: 'text', value: '/api/automation/projects/' },
+                        { type: 'variable', value: 'PROJECT TOKEN' },
+                        { type: 'text', value: '/testcases/' },
+                        { type: 'variable', value: 'TESTCASE SEQ NUMBER' },
+                        { type: 'text', value: '/testruns' },
                       ]}
                       setOpened={setIsOpenTestrunApiBuilder}
                     />
                   )}
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                  <div className="explain">{t('경로에 포함되는 변수 설명')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트의 토큰 값. 프로젝트 설정 화면에서 확인할 수 있습니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트케이스 SEQ 번호. seqId가 "TC10"이면 10.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('Number 배열 (각 요소는 테스트런 SEQ 번호)')}</div>
+                </div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('JSON 숫자 배열로 테스트런 SEQ 번호 목록이 반환됩니다.')}</div>
                 </div>
-                <div className="result">[10, 20, 30]</div>
+                <div className="result">
+                  <pre>[10, 20, 30]</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 2. 테스트케이스 결과 저장 */}
           <li>
             <div className="name">{t('테스트케이스 결과 저장 API')}</div>
-            <div className="description">{t('테스트런에 포함된 테스트케이스 테스트 결과를 저장합니다.')}</div>
+            <div className="description">{t('테스트런에 포함된 테스트케이스의 테스트 결과를 저장합니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -194,13 +660,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseResultApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseResultApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -209,30 +669,12 @@ function ApiIndexInfoPage() {
                   {isOpenTestcaseResultApiBuilder && (
                     <RequestBuilderPopup
                       path={[
-                        {
-                          type: 'text',
-                          value: '/api/automation/projects/',
-                        },
-                        {
-                          type: 'variable',
-                          value: 'PROJECT TOKEN',
-                        },
-                        {
-                          type: 'text',
-                          value: '/testruns/',
-                        },
-                        {
-                          type: 'variable',
-                          value: 'TESTRUN SEQ NUMBER',
-                        },
-                        {
-                          type: 'text',
-                          value: '/testcases/',
-                        },
-                        {
-                          type: 'variable',
-                          value: 'TESTCASE SEQ NUMBER',
-                        },
+                        { type: 'text', value: '/api/automation/projects/' },
+                        { type: 'variable', value: 'PROJECT TOKEN' },
+                        { type: 'text', value: '/testruns/' },
+                        { type: 'variable', value: 'TESTRUN SEQ NUMBER' },
+                        { type: 'text', value: '/testcases/' },
+                        { type: 'variable', value: 'TESTCASE SEQ NUMBER' },
                       ]}
                       setOpened={setIsOpenTestcaseResultApiBuilder}
                     />
@@ -242,12 +684,11 @@ function ApiIndexInfoPage() {
               <div className="request-body">
                 <div className="label">
                   <div>
-                    <Tag border>REQUEST BODY</Tag>
+                    <Tag border>PATH PARAMETERS</Tag>
                   </div>
-                  <div className="explain">{t('테스트 결과 및 코멘트를 저장할 수 있습니다.')}</div>
                 </div>
                 <div className="result">
-                  <Table size="sm" cols={['100px', '100px', '']} border>
+                  <Table size="sm" cols={['220px', '100px', '']} border>
                     <THead>
                       <Tr>
                         <Th align="left">{t('이름')}</Th>
@@ -257,17 +698,66 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTRUN SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트런의 SEQ 번호. (예: "R15"이면 15)')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트케이스의 SEQ 번호.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY</Tag>
+                  </div>
+                  <div className="explain">{t('테스트 결과 및 코멘트를 저장합니다.')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['180px', '100px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('필수')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
                         <Td>result</Td>
                         <Td>String</Td>
-                        <Td>UNTESTED / UNTESTABLE / FAILED / PASSED {t('중 1개의 값')}</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('테스트 결과 코드. "UNTESTED" | "UNTESTABLE" | "FAILED" | "PASSED" 중 하나.')}</Td>
                       </Tr>
                       <Tr>
                         <Td>comment</Td>
                         <Td>String</Td>
-                        <Td>{t('코멘트')}</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('결과와 함께 저장할 코멘트.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_RESULT_REQUEST_EXAMPLE}</pre>
                 </div>
               </div>
               <div className="response">
@@ -275,15 +765,17 @@ function ApiIndexInfoPage() {
                   <div>
                     <Tag border>RESPONSE</Tag>
                   </div>
-                  <div className="explain">{t('HTTP STATUS 코드 값으로 성공 여부를 반환합니다.')}</div>
+                  <div className="explain">{t('응답 본문 없음. HTTP STATUS로 성공 여부를 반환합니다.')}</div>
                 </div>
-                <div className="result">{t('성공 시 200')}</div>
+                <div className="result">{t('성공 시 200 OK')}</div>
               </div>
             </div>
           </li>
+
+          {/* 3. 테스트케이스 목록 조회 */}
           <li>
             <div className="name">{t('테스트케이스 목록 조회 API')}</div>
-            <div className="description">{t('프로젝트에 속한 모든 테스트케이스 목록을 조회합니다.')}</div>
+            <div className="description">{t('프로젝트에 속한 모든 테스트케이스를 목록 스키마로 조회합니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -297,13 +789,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseListApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseListApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -321,20 +807,57 @@ function ApiIndexInfoPage() {
                   )}
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('테스트케이스 목록 객체 배열. 배열 각 요소의 필드는 아래와 같습니다.')}</div>
+                </div>
+                <div className="result">{testcaseListResponseTable}</div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('테스트케이스 목록을 JSON 배열로 반환합니다. (id, seqId, testcaseGroupId, name, description, itemOrder, closed, creationDate 등)')}</div>
                 </div>
-                <div className="result">{'[{ "id": 1, "seqId": "TC1", "name": "..." }, ...]'}</div>
+                <div className="result">
+                  <pre>{TESTCASE_LIST_EXAMPLE}</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 4. 테스트케이스 상세 조회 */}
           <li>
             <div className="name">{t('테스트케이스 상세 조회 API')}</div>
-            <div className="description">{t('테스트케이스의 SEQ 번호를 통해 해당 테스트케이스의 상세 정보를 조회합니다.')}</div>
+            <div className="description">{t('테스트케이스의 SEQ 번호를 통해 해당 테스트케이스의 상세 정보(아이템 포함)를 조회합니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -349,13 +872,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseInfoApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseInfoApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -374,21 +891,74 @@ function ApiIndexInfoPage() {
                   )}
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트케이스의 SEQ 번호.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('테스트케이스 상세 정보')}</div>
+                </div>
+                <div className="result">{testcaseDetailResponseTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS - testcaseItems[]</Tag>
+                  </div>
+                  <div className="explain">{t('testcaseItems 배열 요소의 필드')}</div>
+                </div>
+                <div className="result">{testcaseItemResponseTable}</div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('테스트케이스 상세 정보를 JSON 객체로 반환합니다. (id, seqId, name, description, testcaseGroupId, testcaseTemplateId, testcaseItems, testerType, testerValue 등)')}</div>
                 </div>
-                <div className="result">{'{ "id": 1, "seqId": "TC1", "name": "...", "testcaseItems": [...] }'}</div>
+                <div className="result">
+                  <pre>{TESTCASE_DETAIL_EXAMPLE}</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 5. 테스트케이스 생성 */}
           <li>
             <div className="name">{t('테스트케이스 생성 API')}</div>
             <div className="description">
-              {t('지정한 테스트케이스 그룹에 새로운 테스트케이스를 생성합니다. 테스트케이스 아이템 정보(testcaseItems)를 함께 전달하여 템플릿 아이템의 값을 지정할 수 있습니다. 아이템은 상세 조회 API 응답의 testcaseTemplateItemId를 기준으로 매칭됩니다.')}
+              {t(
+                '지정한 테스트케이스 그룹에 새로운 테스트케이스를 생성합니다. 테스트케이스 아이템 정보(testcaseItems)를 함께 전달하여 템플릿 아이템의 값을 지정할 수 있습니다. 아이템은 상세 조회 API 응답의 testcaseTemplateItemId를 기준으로 매칭됩니다.',
+              )}
             </div>
             <div className="req-res">
               <div className="request">
@@ -403,13 +973,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseCreateApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseCreateApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -430,9 +994,8 @@ function ApiIndexInfoPage() {
               <div className="request-body">
                 <div className="label">
                   <div>
-                    <Tag border>REQUEST BODY</Tag>
+                    <Tag border>PATH PARAMETERS</Tag>
                   </div>
-                  <div className="explain">{t('생성할 테스트케이스의 정보를 전달합니다.')}</div>
                 </div>
                 <div className="result">
                   <Table size="sm" cols={['220px', '100px', '']} border>
@@ -445,56 +1008,128 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
-                        <Td>testcaseGroupSeqNumber</Td>
-                        <Td>Number</Td>
-                        <Td>{t('테스트케이스를 생성할 대상 테스트케이스 그룹의 SEQ 번호 (필수)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>name</Td>
+                        <Td>PROJECT TOKEN</Td>
                         <Td>String</Td>
-                        <Td>{t('테스트케이스 이름 (필수)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>description</Td>
-                        <Td>String</Td>
-                        <Td>{t('테스트케이스 설명 (선택)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>testerType</Td>
-                        <Td>String</Td>
-                        <Td>{t('테스터 지정 타입 (선택). 예: operation, tag, addUser')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>testerValue</Td>
-                        <Td>String</Td>
-                        <Td>{t('테스터 지정 값 (선택). testerType에 따라 RND/SEQ, 태그명, 사용자 ID 등')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>testcaseItems</Td>
-                        <Td>Array</Td>
-                        <Td>
-                          {t('테스트케이스 아이템 목록 (선택). 각 아이템은 testcaseTemplateItemId(필수), type(text/value), value, text 필드로 구성됩니다.')}
-                        </Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY</Tag>
+                  </div>
+                  <div className="explain">{t('생성할 테스트케이스의 정보를 전달합니다.')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('필수')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>testcaseGroupSeqNumber</Td>
+                        <Td>Number</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('테스트케이스를 생성할 대상 테스트케이스 그룹의 SEQ 번호. (예: "G5"이면 5)')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>name</Td>
+                        <Td>String</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('테스트케이스 이름. 저장 시 "-<SEQ>" 접미가 자동 추가됩니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>description</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('테스트케이스 설명.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>testerType</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('테스터 지정 타입. "operation" | "tag" | "addUser". 생략 시 템플릿 기본값 사용.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>testerValue</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('testerType에 따른 값. operation이면 "RND"/"SEQ", tag이면 태그명, addUser이면 사용자 ID 문자열.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>testcaseItems</Td>
+                        <Td>Array&lt;TestcaseItem&gt;</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('템플릿 아이템별 값 목록. 각 요소 필드는 아래 테이블 참조. 생략 시 템플릿의 기본값으로 초기화됩니다.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY - testcaseItems[]</Tag>
+                  </div>
+                  <div className="explain">{t('testcaseItems 배열 요소 구조')}</div>
+                </div>
+                <div className="result">{testcaseItemFieldTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_CREATE_REQUEST_EXAMPLE}</pre>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('생성된 테스트케이스의 상세 정보')}</div>
+                </div>
+                <div className="result">{testcaseDetailResponseTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS - testcaseItems[]</Tag>
+                  </div>
+                </div>
+                <div className="result">{testcaseItemResponseTable}</div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('생성된 테스트케이스의 상세 정보를 JSON 객체로 반환합니다. (testcaseItems 포함)')}</div>
                 </div>
-                <div className="result">{'{ "id": 10, "seqId": "TC10", "name": "...", "testcaseItems": [{ "testcaseTemplateItemId": 3, "type": "text", "text": "..." }] }'}</div>
+                <div className="result">
+                  <pre>{TESTCASE_DETAIL_EXAMPLE}</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 6. 테스트케이스 변경 */}
           <li>
             <div className="name">{t('테스트케이스 변경 API')}</div>
             <div className="description">
-              {t('테스트케이스의 이름, 설명, 테스터, 아이템 정보를 변경합니다. 상세 조회 API 응답을 활용하여 testcaseTemplateItemId를 기준으로 아이템 값을 수정해서 전달할 수 있습니다. testcaseItems를 생략하면 기존 아이템은 유지됩니다.')}
+              {t(
+                '테스트케이스의 이름, 설명, 테스터, 종료 여부, 아이템 정보를 변경합니다. 상세 조회 API 응답의 testcaseTemplateItemId를 기준으로 매칭하여 아이템 값을 수정합니다. testcaseItems를 생략하면 기존 아이템은 유지됩니다.',
+              )}
             </div>
             <div className="req-res">
               <div className="request">
@@ -510,13 +1145,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseUpdateApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseUpdateApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -538,9 +1167,8 @@ function ApiIndexInfoPage() {
               <div className="request-body">
                 <div className="label">
                   <div>
-                    <Tag border>REQUEST BODY</Tag>
+                    <Tag border>PATH PARAMETERS</Tag>
                   </div>
-                  <div className="explain">{t('변경할 테스트케이스의 정보를 전달합니다.')}</div>
                 </div>
                 <div className="result">
                   <Table size="sm" cols={['220px', '100px', '']} border>
@@ -553,55 +1181,129 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
-                        <Td>name</Td>
+                        <Td>PROJECT TOKEN</Td>
                         <Td>String</Td>
-                        <Td>{t('테스트케이스 이름 (필수)')}</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                       <Tr>
-                        <Td>description</Td>
-                        <Td>String</Td>
-                        <Td>{t('테스트케이스 설명 (선택)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>testerType</Td>
-                        <Td>String</Td>
-                        <Td>{t('테스터 지정 타입 (선택)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>testerValue</Td>
-                        <Td>String</Td>
-                        <Td>{t('테스터 지정 값 (선택)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>closed</Td>
-                        <Td>Boolean</Td>
-                        <Td>{t('테스트케이스 종료 여부 (선택)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>testcaseItems</Td>
-                        <Td>Array</Td>
-                        <Td>
-                          {t('테스트케이스 아이템 목록 (선택). 상세 조회 응답의 testcaseTemplateItemId를 사용하여 매칭된 아이템의 value/text를 변경합니다.')}
-                        </Td>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('변경할 테스트케이스의 SEQ 번호.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY</Tag>
+                  </div>
+                  <div className="explain">{t('변경할 테스트케이스의 정보를 전달합니다.')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('필수')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>name</Td>
+                        <Td>String</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('테스트케이스 이름.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>description</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('테스트케이스 설명. null을 보내면 그대로 반영되어 빈 값으로 저장됩니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>testerType</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('테스터 지정 타입. 생략 시 기존 값 유지.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>testerValue</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('테스터 지정 값. 생략 시 기존 값 유지.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>closed</Td>
+                        <Td>Boolean</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('종료(보관) 여부. 생략 시 기존 값 유지.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>testcaseItems</Td>
+                        <Td>Array&lt;TestcaseItem&gt;</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('변경할 아이템 목록. testcaseTemplateItemId로 매칭하여 value/text를 갱신합니다. 생략 시 기존 아이템이 그대로 유지됩니다.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY - testcaseItems[]</Tag>
+                  </div>
+                </div>
+                <div className="result">{testcaseItemFieldTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_UPDATE_REQUEST_EXAMPLE}</pre>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('변경된 테스트케이스의 상세 정보')}</div>
+                </div>
+                <div className="result">{testcaseDetailResponseTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS - testcaseItems[]</Tag>
+                  </div>
+                </div>
+                <div className="result">{testcaseItemResponseTable}</div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('변경된 테스트케이스의 상세 정보를 JSON 객체로 반환합니다. (testcaseItems 포함)')}</div>
                 </div>
-                <div className="result">{'{ "id": 10, "seqId": "TC10", "name": "...", "testcaseItems": [...] }'}</div>
+                <div className="result">
+                  <pre>{TESTCASE_DETAIL_EXAMPLE}</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 7. 테스트케이스 삭제 */}
           <li>
             <div className="name">{t('테스트케이스 삭제 API')}</div>
-            <div className="description">{t('테스트케이스의 SEQ 번호를 통해 해당 테스트케이스를 삭제합니다.')}</div>
+            <div className="description">{t('테스트케이스의 SEQ 번호를 통해 해당 테스트케이스를 삭제합니다. 연관된 아이템과 테스트런 실행 이력도 함께 제거됩니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -616,13 +1318,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseDeleteApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseDeleteApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -641,20 +1337,52 @@ function ApiIndexInfoPage() {
                   )}
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('삭제할 테스트케이스의 SEQ 번호.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
                     <Tag border>RESPONSE</Tag>
                   </div>
-                  <div className="explain">{t('HTTP STATUS 코드 값으로 성공 여부를 반환합니다.')}</div>
+                  <div className="explain">{t('응답 본문 없음. HTTP STATUS로 성공 여부를 반환합니다.')}</div>
                 </div>
-                <div className="result">{t('성공 시 200')}</div>
+                <div className="result">{t('성공 시 200 OK')}</div>
               </div>
             </div>
           </li>
+
+          {/* 8. 테스트케이스 그룹 생성 */}
           <li>
             <div className="name">{t('테스트케이스 그룹 생성 API')}</div>
-            <div className="description">{t('프로젝트에 새로운 테스트케이스 그룹을 생성합니다. parentSeqNumber를 지정하면 하위 그룹으로 생성됩니다.')}</div>
+            <div className="description">{t('프로젝트에 새로운 테스트케이스 그룹을 생성합니다. parentSeqNumber를 지정하면 해당 그룹의 하위로 생성됩니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -668,13 +1396,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseGroupCreateApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupCreateApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -695,12 +1417,11 @@ function ApiIndexInfoPage() {
               <div className="request-body">
                 <div className="label">
                   <div>
-                    <Tag border>REQUEST BODY</Tag>
+                    <Tag border>PATH PARAMETERS</Tag>
                   </div>
-                  <div className="explain">{t('생성할 테스트케이스 그룹의 정보를 전달합니다.')}</div>
                 </div>
                 <div className="result">
-                  <Table size="sm" cols={['180px', '100px', '']} border>
+                  <Table size="sm" cols={['220px', '100px', '']} border>
                     <THead>
                       <Tr>
                         <Th align="left">{t('이름')}</Th>
@@ -710,35 +1431,87 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
-                        <Td>parentSeqNumber</Td>
-                        <Td>Number</Td>
-                        <Td>{t('상위 그룹의 SEQ 번호 (선택). 생략 시 최상위 그룹으로 생성')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>name</Td>
+                        <Td>PROJECT TOKEN</Td>
                         <Td>String</Td>
-                        <Td>{t('그룹 이름 (필수)')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>description</Td>
-                        <Td>String</Td>
-                        <Td>{t('그룹 설명 (선택)')}</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY</Tag>
+                  </div>
+                  <div className="explain">{t('생성할 테스트케이스 그룹의 정보를 전달합니다.')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('필수')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>parentSeqNumber</Td>
+                        <Td>Number</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('상위 그룹의 SEQ 번호. 생략/null이면 최상위 그룹으로 생성됩니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>name</Td>
+                        <Td>String</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('그룹 이름. 저장 시 "-<SEQ>" 접미가 자동 추가됩니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>description</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('그룹 설명.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_CREATE_REQUEST_EXAMPLE}</pre>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('생성된 테스트케이스 그룹 정보')}</div>
+                </div>
+                <div className="result">{testcaseGroupResponseTable}</div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('생성된 테스트케이스 그룹의 정보를 JSON 객체로 반환합니다.')}</div>
                 </div>
-                <div className="result">{'{ "id": 5, "seqId": "G5", "name": "...", "parentId": null, "depth": 0 }'}</div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_EXAMPLE}</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 9. 테스트케이스 그룹 변경 */}
           <li>
             <div className="name">{t('테스트케이스 그룹 변경 API')}</div>
             <div className="description">{t('테스트케이스 그룹의 이름과 설명을 변경합니다.')}</div>
@@ -756,13 +1529,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseGroupUpdateApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupUpdateApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -784,12 +1551,11 @@ function ApiIndexInfoPage() {
               <div className="request-body">
                 <div className="label">
                   <div>
-                    <Tag border>REQUEST BODY</Tag>
+                    <Tag border>PATH PARAMETERS</Tag>
                   </div>
-                  <div className="explain">{t('변경할 테스트케이스 그룹의 정보를 전달합니다.')}</div>
                 </div>
                 <div className="result">
-                  <Table size="sm" cols={['180px', '100px', '']} border>
+                  <Table size="sm" cols={['220px', '100px', '']} border>
                     <THead>
                       <Tr>
                         <Th align="left">{t('이름')}</Th>
@@ -799,33 +1565,95 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
-                        <Td>name</Td>
+                        <Td>PROJECT TOKEN</Td>
                         <Td>String</Td>
-                        <Td>{t('그룹 이름 (필수)')}</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                       <Tr>
-                        <Td>description</Td>
-                        <Td>String</Td>
-                        <Td>{t('그룹 설명 (선택)')}</Td>
+                        <Td>GROUP SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('변경할 테스트케이스 그룹의 SEQ 번호. ("G5"면 5)')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY</Tag>
+                  </div>
+                  <div className="explain">{t('변경할 그룹 정보를 전달합니다.')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('필수')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>name</Td>
+                        <Td>String</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('그룹 이름.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>description</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('그룹 설명. 생략 시 기존 값 유지.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>parentSeqNumber</Td>
+                        <Td>Number</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('참고: 본 API에서는 사용되지 않으며 상위 그룹 이동은 지원하지 않습니다.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_UPDATE_REQUEST_EXAMPLE}</pre>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('변경된 테스트케이스 그룹 정보')}</div>
+                </div>
+                <div className="result">{testcaseGroupResponseTable}</div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
-                    <Tag border>RESPONSE</Tag>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
                   </div>
-                  <div className="explain">{t('변경된 테스트케이스 그룹의 정보를 JSON 객체로 반환합니다.')}</div>
                 </div>
-                <div className="result">{'{ "id": 5, "seqId": "G5", "name": "..." }'}</div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_EXAMPLE}</pre>
+                </div>
               </div>
             </div>
           </li>
+
+          {/* 10. 테스트케이스 그룹 삭제 */}
           <li>
             <div className="name">{t('테스트케이스 그룹 삭제 API')}</div>
-            <div className="description">{t('테스트케이스 그룹의 SEQ 번호를 통해 해당 그룹을 삭제합니다. 하위 그룹과 그 안의 테스트케이스도 함께 삭제됩니다.')}</div>
+            <div className="description">{t('테스트케이스 그룹의 SEQ 번호를 통해 해당 그룹을 삭제합니다. 하위 그룹, 그 안의 테스트케이스, 관련 테스트런 실행 이력이 모두 함께 삭제됩니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -840,13 +1668,7 @@ function ApiIndexInfoPage() {
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button
-                          size="xs"
-                          color="primary"
-                          onClick={() => {
-                            setIsOpenTestcaseGroupDeleteApiBuilder(true);
-                          }}
-                        >
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupDeleteApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
@@ -865,14 +1687,44 @@ function ApiIndexInfoPage() {
                   )}
                 </div>
               </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>GROUP SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('삭제할 테스트케이스 그룹의 SEQ 번호.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
               <div className="response">
                 <div className="label">
                   <div>
                     <Tag border>RESPONSE</Tag>
                   </div>
-                  <div className="explain">{t('HTTP STATUS 코드 값으로 성공 여부를 반환합니다.')}</div>
+                  <div className="explain">{t('응답 본문 없음. HTTP STATUS로 성공 여부를 반환합니다.')}</div>
                 </div>
-                <div className="result">{t('성공 시 200')}</div>
+                <div className="result">{t('성공 시 200 OK')}</div>
               </div>
             </div>
           </li>
