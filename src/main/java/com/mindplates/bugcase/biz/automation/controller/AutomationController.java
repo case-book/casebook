@@ -9,11 +9,13 @@ import com.mindplates.bugcase.biz.space.service.SpaceService;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseItemDTO;
+import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateItemDTO;
 import com.mindplates.bugcase.biz.testcase.service.TestcaseService;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseGroupResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseListResponse;
 import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseResponse;
+import com.mindplates.bugcase.biz.testcase.vo.response.TestcaseTemplateResponse;
 import com.mindplates.bugcase.biz.testrun.service.TestrunService;
 import com.mindplates.bugcase.common.util.SessionUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -152,6 +154,22 @@ public class AutomationController {
         String spaceCode = spaceService.selectSpaceCodeByProjectId(projectId);
         testcaseService.deleteTestcaseGroupBySeqId(spaceCode, projectId, "G" + groupSeqNumber);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(description = "프로젝트의 테스트케이스 템플릿 목록을 조회합니다. 테스트케이스 생성/변경 시 testcaseTemplateItemId를 확인하기 위해 사용합니다.")
+    @GetMapping("/testcase-templates")
+    public List<TestcaseTemplateResponse> selectProjectTestcaseTemplateList(@PathVariable String projectToken) {
+        Long projectId = projectService.selectProjectId(projectToken);
+        List<TestcaseTemplateDTO> templates = projectService.selectProjectTestcaseTemplateList(projectId);
+        return templates.stream().map(TestcaseTemplateResponse::new).collect(Collectors.toList());
+    }
+
+    @Operation(description = "프로젝트의 특정 테스트케이스 템플릿 상세 정보를 조회합니다.")
+    @GetMapping("/testcase-templates/{testcaseTemplateId}")
+    public TestcaseTemplateResponse selectProjectTestcaseTemplate(@PathVariable String projectToken, @PathVariable Long testcaseTemplateId) {
+        Long projectId = projectService.selectProjectId(projectToken);
+        TestcaseTemplateDTO template = projectService.selectProjectTestcaseTemplateInfo(projectId, testcaseTemplateId);
+        return new TestcaseTemplateResponse(template);
     }
 
     private List<TestcaseItemDTO> toTestcaseItemDTOList(List<AutomationTestcaseItemRequest> items) {

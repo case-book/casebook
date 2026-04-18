@@ -151,6 +151,88 @@ const TESTCASE_GROUP_UPDATE_REQUEST_EXAMPLE = `{
   "description": "로그인 기능 전반에 대한 테스트케이스"
 }`;
 
+const TESTCASE_TEMPLATE_LIST_EXAMPLE = `[
+  {
+    "id": 2,
+    "name": "기본 템플릿",
+    "defaultTemplate": true,
+    "defaultTesterType": "operation",
+    "defaultTesterValue": "RND",
+    "testcaseTemplateItems": [
+      {
+        "id": 20,
+        "category": "CASE",
+        "type": "EDITOR",
+        "itemOrder": 0,
+        "label": "테스트 절차",
+        "options": null,
+        "size": 12,
+        "defaultValue": null,
+        "defaultType": "text",
+        "description": "단계별 수행 절차",
+        "example": "1. 로그인 버튼 클릭\\n2. 이메일 입력",
+        "editable": true,
+        "systemLabel": null
+      },
+      {
+        "id": 21,
+        "category": "CASE",
+        "type": "CHECKBOX",
+        "itemOrder": 1,
+        "label": "자동화 여부",
+        "options": ["Y", "N"],
+        "size": 4,
+        "defaultValue": "N",
+        "defaultType": "value",
+        "description": "자동화 테스트 대상인지 여부",
+        "example": null,
+        "editable": true,
+        "systemLabel": "AUTOMATION"
+      }
+    ]
+  }
+]`;
+
+const TESTCASE_TEMPLATE_DETAIL_EXAMPLE = `{
+  "id": 2,
+  "name": "기본 템플릿",
+  "defaultTemplate": true,
+  "defaultTesterType": "operation",
+  "defaultTesterValue": "RND",
+  "testcaseTemplateItems": [
+    {
+      "id": 20,
+      "category": "CASE",
+      "type": "EDITOR",
+      "itemOrder": 0,
+      "label": "테스트 절차",
+      "options": null,
+      "size": 12,
+      "defaultValue": null,
+      "defaultType": "text",
+      "description": "단계별 수행 절차",
+      "example": "1. 로그인 버튼 클릭\\n2. 이메일 입력",
+      "editable": true,
+      "systemLabel": null
+    },
+    {
+      "id": 21,
+      "category": "CASE",
+      "type": "CHECKBOX",
+      "itemOrder": 1,
+      "label": "자동화 여부",
+      "options": ["Y", "N"],
+      "size": 4,
+      "defaultValue": "N",
+      "defaultType": "value",
+      "description": "자동화 테스트 대상인지 여부",
+      "example": null,
+      "editable": true,
+      "systemLabel": "AUTOMATION"
+    }
+  ]
+}`;
+
 function ApiIndexInfoPage() {
   const { t } = useTranslation();
 
@@ -168,6 +250,8 @@ function ApiIndexInfoPage() {
   const [isOpenTestcaseGroupCreateApiBuilder, setIsOpenTestcaseGroupCreateApiBuilder] = useState(false);
   const [isOpenTestcaseGroupUpdateApiBuilder, setIsOpenTestcaseGroupUpdateApiBuilder] = useState(false);
   const [isOpenTestcaseGroupDeleteApiBuilder, setIsOpenTestcaseGroupDeleteApiBuilder] = useState(false);
+  const [isOpenTestcaseTemplateListApiBuilder, setIsOpenTestcaseTemplateListApiBuilder] = useState(false);
+  const [isOpenTestcaseTemplateInfoApiBuilder, setIsOpenTestcaseTemplateInfoApiBuilder] = useState(false);
 
   const {
     userStore: { user, isLogin },
@@ -485,6 +569,129 @@ function ApiIndexInfoPage() {
     </Table>
   );
 
+  const testcaseTemplateResponseTable = (
+    <Table size="sm" cols={['200px', '180px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>id</Td>
+          <Td>Number</Td>
+          <Td>{t('테스트케이스 템플릿의 고유 ID. 테스트케이스 생성 시 참고.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>name</Td>
+          <Td>String</Td>
+          <Td>{t('템플릿 이름.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>defaultTemplate</Td>
+          <Td>Boolean</Td>
+          <Td>{t('기본 템플릿 여부. 테스트케이스 생성 시 별도 지정이 없으면 이 템플릿이 적용됩니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>defaultTesterType</Td>
+          <Td>String</Td>
+          <Td>{t('템플릿의 기본 테스터 지정 타입. "operation" | "tag" | "addUser".')}</Td>
+        </Tr>
+        <Tr>
+          <Td>defaultTesterValue</Td>
+          <Td>String</Td>
+          <Td>{t('템플릿의 기본 테스터 지정 값 (예: "RND", "SEQ", 태그명, 사용자 ID 문자열).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>testcaseTemplateItems</Td>
+          <Td>Array&lt;TestcaseTemplateItem&gt;</Td>
+          <Td>{t('템플릿에 포함된 아이템 목록. 각 아이템의 필드는 아래 테이블 참조.')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+
+  const testcaseTemplateItemResponseTable = (
+    <Table size="sm" cols={['180px', '180px', '']} border>
+      <THead>
+        <Tr>
+          <Th align="left">{t('이름')}</Th>
+          <Th align="left">{t('타입')}</Th>
+          <Th align="left">{t('설명')}</Th>
+        </Tr>
+      </THead>
+      <Tbody>
+        <Tr>
+          <Td>id</Td>
+          <Td>Number</Td>
+          <Td>{t('테스트케이스 템플릿 아이템의 고유 ID. 테스트케이스 생성/변경 시 testcaseItems[].testcaseTemplateItemId에 그대로 사용합니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>category</Td>
+          <Td>String</Td>
+          <Td>{t('아이템 카테고리. "CASE"(케이스 작성용) | "RESULT"(결과 기록용).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>type</Td>
+          <Td>String</Td>
+          <Td>{t('UI 렌더링 타입. "CHECKBOX" | "RADIO" | "TEXT" | "NUMBER" | "USER" | "SELECT" | "URL" | "EDITOR".')}</Td>
+        </Tr>
+        <Tr>
+          <Td>itemOrder</Td>
+          <Td>Number</Td>
+          <Td>{t('템플릿 내 정렬 순서 (0부터).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>label</Td>
+          <Td>String</Td>
+          <Td>{t('아이템 레이블 (UI 표시 이름).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>options</Td>
+          <Td>Array&lt;String&gt;</Td>
+          <Td>{t('CHECKBOX/RADIO/SELECT 타입일 때 선택 가능한 값 목록. 그 외엔 null.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>size</Td>
+          <Td>Number</Td>
+          <Td>{t('UI 컬럼 너비(1~12 그리드 기준).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>defaultValue</Td>
+          <Td>String</Td>
+          <Td>{t('기본값. 테스트케이스 생성 시 testcaseItems에 별도 지정이 없으면 이 값으로 초기화됩니다.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>defaultType</Td>
+          <Td>String</Td>
+          <Td>{t('기본값이 적용될 때 사용하는 type. "text" 또는 "value".')}</Td>
+        </Tr>
+        <Tr>
+          <Td>description</Td>
+          <Td>String</Td>
+          <Td>{t('아이템 설명 (UI 가이드 문구).')}</Td>
+        </Tr>
+        <Tr>
+          <Td>example</Td>
+          <Td>String</Td>
+          <Td>{t('입력 예시.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>editable</Td>
+          <Td>Boolean</Td>
+          <Td>{t('사용자가 값을 수정할 수 있는지 여부.')}</Td>
+        </Tr>
+        <Tr>
+          <Td>systemLabel</Td>
+          <Td>String</Td>
+          <Td>{t('시스템이 특별한 의미로 사용하는 태그. 예: "AUTOMATION"(자동화 여부 아이템).')}</Td>
+        </Tr>
+      </Tbody>
+    </Table>
+  );
+
   return (
     <Page className="apis-index-info-page-wrapper">
       <PageTitle
@@ -552,10 +759,14 @@ function ApiIndexInfoPage() {
           {t('API 목록')}
         </Title>
         <ul className="apis">
-          {/* 1. 테스트런 목록 조회 */}
+          {/* 1. 테스트케이스 템플릿 목록 조회 */}
           <li>
-            <div className="name">{t('테스트케이스가 포함된 테스트런 SEQ 번호 조회 API')}</div>
-            <div className="description">{t('테스트케이스의 SEQ 번호를 통해, 해당 테스트케이스가 포함되어 실행 중인 테스트런 SEQ 번호 목록을 조회할 수 있습니다.')}</div>
+            <div className="name">{t('테스트케이스 템플릿 목록 조회 API')}</div>
+            <div className="description">
+              {t(
+                '프로젝트에 정의된 테스트케이스 템플릿 목록과 각 템플릿의 아이템 정의를 조회합니다. 테스트케이스 생성/변경 API에서 사용할 testcaseTemplateItemId(아이템별 id)를 여기서 확인할 수 있습니다.',
+              )}
+            </div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -565,27 +776,24 @@ function ApiIndexInfoPage() {
                   <div className="spec">
                     <div className="method">GET</div>
                     <div className="path">
-                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases/
-                      <span className="var">TESTCASE SEQ NUMBER</span>/testruns
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-templates
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button size="xs" color="primary" onClick={() => setIsOpenTestrunApiBuilder(true)}>
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseTemplateListApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
                     )}
                   </div>
-                  {isOpenTestrunApiBuilder && (
+                  {isOpenTestcaseTemplateListApiBuilder && (
                     <RequestBuilderPopup
                       path={[
                         { type: 'text', value: '/api/automation/projects/' },
                         { type: 'variable', value: 'PROJECT TOKEN' },
-                        { type: 'text', value: '/testcases/' },
-                        { type: 'variable', value: 'TESTCASE SEQ NUMBER' },
-                        { type: 'text', value: '/testruns' },
+                        { type: 'text', value: '/testcase-templates' },
                       ]}
-                      setOpened={setIsOpenTestrunApiBuilder}
+                      setOpened={setIsOpenTestcaseTemplateListApiBuilder}
                     />
                   )}
                 </div>
@@ -595,7 +803,6 @@ function ApiIndexInfoPage() {
                   <div>
                     <Tag border>PATH PARAMETERS</Tag>
                   </div>
-                  <div className="explain">{t('경로에 포함되는 변수 설명')}</div>
                 </div>
                 <div className="result">
                   <Table size="sm" cols={['220px', '100px', '']} border>
@@ -610,12 +817,7 @@ function ApiIndexInfoPage() {
                       <Tr>
                         <Td>PROJECT TOKEN</Td>
                         <Td>String</Td>
-                        <Td>{t('프로젝트의 토큰 값. 프로젝트 설정 화면에서 확인할 수 있습니다.')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>TESTCASE SEQ NUMBER</Td>
-                        <Td>Number</Td>
-                        <Td>{t('테스트케이스 SEQ 번호. seqId가 "TC10"이면 10.')}</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
@@ -626,8 +828,18 @@ function ApiIndexInfoPage() {
                   <div>
                     <Tag border>RESPONSE FIELDS</Tag>
                   </div>
-                  <div className="explain">{t('Number 배열 (각 요소는 테스트런 SEQ 번호)')}</div>
+                  <div className="explain">{t('템플릿 배열의 각 요소 필드')}</div>
                 </div>
+                <div className="result">{testcaseTemplateResponseTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS - testcaseTemplateItems[]</Tag>
+                  </div>
+                  <div className="explain">{t('템플릿 아이템 요소 필드')}</div>
+                </div>
+                <div className="result">{testcaseTemplateItemResponseTable}</div>
               </div>
               <div className="response">
                 <div className="label">
@@ -636,16 +848,16 @@ function ApiIndexInfoPage() {
                   </div>
                 </div>
                 <div className="result">
-                  <pre>[10, 20, 30]</pre>
+                  <pre>{TESTCASE_TEMPLATE_LIST_EXAMPLE}</pre>
                 </div>
               </div>
             </div>
           </li>
 
-          {/* 2. 테스트케이스 결과 저장 */}
+          {/* 2. 테스트케이스 템플릿 상세 조회 */}
           <li>
-            <div className="name">{t('테스트케이스 결과 저장 API')}</div>
-            <div className="description">{t('테스트런에 포함된 테스트케이스의 테스트 결과를 저장합니다.')}</div>
+            <div className="name">{t('테스트케이스 템플릿 상세 조회 API')}</div>
+            <div className="description">{t('특정 테스트케이스 템플릿의 상세 정보(아이템 포함)를 조회합니다. 목록 조회로 얻은 id를 사용합니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -653,30 +865,28 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">POST</div>
+                    <div className="method">GET</div>
                     <div className="path">
-                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testruns/<span className="var">TESTRUN SEQ NUMBER</span>/testcases/
-                      <span className="var">TESTCASE SEQ NUMBER</span>
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-templates/
+                      <span className="var">TESTCASE TEMPLATE ID</span>
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseResultApiBuilder(true)}>
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseTemplateInfoApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
                     )}
                   </div>
-                  {isOpenTestcaseResultApiBuilder && (
+                  {isOpenTestcaseTemplateInfoApiBuilder && (
                     <RequestBuilderPopup
                       path={[
                         { type: 'text', value: '/api/automation/projects/' },
                         { type: 'variable', value: 'PROJECT TOKEN' },
-                        { type: 'text', value: '/testruns/' },
-                        { type: 'variable', value: 'TESTRUN SEQ NUMBER' },
-                        { type: 'text', value: '/testcases/' },
-                        { type: 'variable', value: 'TESTCASE SEQ NUMBER' },
+                        { type: 'text', value: '/testcase-templates/' },
+                        { type: 'variable', value: 'TESTCASE TEMPLATE ID' },
                       ]}
-                      setOpened={setIsOpenTestcaseResultApiBuilder}
+                      setOpened={setIsOpenTestcaseTemplateInfoApiBuilder}
                     />
                   )}
                 </div>
@@ -703,14 +913,98 @@ function ApiIndexInfoPage() {
                         <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                       <Tr>
-                        <Td>TESTRUN SEQ NUMBER</Td>
+                        <Td>TESTCASE TEMPLATE ID</Td>
                         <Td>Number</Td>
-                        <Td>{t('테스트런의 SEQ 번호. (예: "R15"이면 15)')}</Td>
+                        <Td>{t('조회할 테스트케이스 템플릿의 ID. 목록 조회 응답의 id 값을 그대로 사용합니다. (SEQ 번호가 아닌 내부 ID)')}</Td>
                       </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('테스트케이스 템플릿 상세 정보')}</div>
+                </div>
+                <div className="result">{testcaseTemplateResponseTable}</div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS - testcaseTemplateItems[]</Tag>
+                  </div>
+                </div>
+                <div className="result">{testcaseTemplateItemResponseTable}</div>
+              </div>
+              <div className="response">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_TEMPLATE_DETAIL_EXAMPLE}</pre>
+                </div>
+              </div>
+            </div>
+          </li>
+          {/* 3. 테스트케이스 그룹 생성 */}
+          <li>
+            <div className="name">{t('테스트케이스 그룹 생성 API')}</div>
+            <div className="description">{t('프로젝트에 새로운 테스트케이스 그룹을 생성합니다. parentSeqNumber를 지정하면 해당 그룹의 하위로 생성됩니다.')}</div>
+            <div className="req-res">
+              <div className="request">
+                <div className="label">
+                  <Tag border>REQUEST</Tag>
+                </div>
+                <div className="request-info">
+                  <div className="spec">
+                    <div className="method">POST</div>
+                    <div className="path">
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups
+                    </div>
+                    {isLogin && (
+                      <div className="builder">
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupCreateApiBuilder(true)}>
+                          {t('빌더')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  {isOpenTestcaseGroupCreateApiBuilder && (
+                    <RequestBuilderPopup
+                      path={[
+                        { type: 'text', value: '/api/automation/projects/' },
+                        { type: 'variable', value: 'PROJECT TOKEN' },
+                        { type: 'text', value: '/testcase-groups' },
+                      ]}
+                      setOpened={setIsOpenTestcaseGroupCreateApiBuilder}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
                       <Tr>
-                        <Td>TESTCASE SEQ NUMBER</Td>
-                        <Td>Number</Td>
-                        <Td>{t('테스트케이스의 SEQ 번호.')}</Td>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
@@ -721,10 +1015,10 @@ function ApiIndexInfoPage() {
                   <div>
                     <Tag border>REQUEST BODY</Tag>
                   </div>
-                  <div className="explain">{t('테스트 결과 및 코멘트를 저장합니다.')}</div>
+                  <div className="explain">{t('생성할 테스트케이스 그룹의 정보를 전달합니다.')}</div>
                 </div>
                 <div className="result">
-                  <Table size="sm" cols={['180px', '100px', '100px', '']} border>
+                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
                     <THead>
                       <Tr>
                         <Th align="left">{t('이름')}</Th>
@@ -735,16 +1029,22 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
-                        <Td>result</Td>
-                        <Td>String</Td>
-                        <Td>{t('필수')}</Td>
-                        <Td>{t('테스트 결과 코드. "UNTESTED" | "UNTESTABLE" | "FAILED" | "PASSED" 중 하나.')}</Td>
+                        <Td>parentSeqNumber</Td>
+                        <Td>Number</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('상위 그룹의 SEQ 번호. 생략/null이면 최상위 그룹으로 생성됩니다.')}</Td>
                       </Tr>
                       <Tr>
-                        <Td>comment</Td>
+                        <Td>name</Td>
+                        <Td>String</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('그룹 이름. 저장 시 "-<SEQ>" 접미가 자동 추가됩니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>description</Td>
                         <Td>String</Td>
                         <Td>{t('선택')}</Td>
-                        <Td>{t('결과와 함께 저장할 코멘트.')}</Td>
+                        <Td>{t('그룹 설명.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
@@ -757,7 +1057,235 @@ function ApiIndexInfoPage() {
                   </div>
                 </div>
                 <div className="result">
-                  <pre>{TESTCASE_RESULT_REQUEST_EXAMPLE}</pre>
+                  <pre>{TESTCASE_GROUP_CREATE_REQUEST_EXAMPLE}</pre>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('생성된 테스트케이스 그룹 정보')}</div>
+                </div>
+                <div className="result">{testcaseGroupResponseTable}</div>
+              </div>
+              <div className="response">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_EXAMPLE}</pre>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          {/* 4. 테스트케이스 그룹 변경 */}
+          <li>
+            <div className="name">{t('테스트케이스 그룹 변경 API')}</div>
+            <div className="description">{t('테스트케이스 그룹의 이름과 설명을 변경합니다.')}</div>
+            <div className="req-res">
+              <div className="request">
+                <div className="label">
+                  <Tag border>REQUEST</Tag>
+                </div>
+                <div className="request-info">
+                  <div className="spec">
+                    <div className="method">PUT</div>
+                    <div className="path">
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups/
+                      <span className="var">GROUP SEQ NUMBER</span>
+                    </div>
+                    {isLogin && (
+                      <div className="builder">
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupUpdateApiBuilder(true)}>
+                          {t('빌더')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  {isOpenTestcaseGroupUpdateApiBuilder && (
+                    <RequestBuilderPopup
+                      path={[
+                        { type: 'text', value: '/api/automation/projects/' },
+                        { type: 'variable', value: 'PROJECT TOKEN' },
+                        { type: 'text', value: '/testcase-groups/' },
+                        { type: 'variable', value: 'GROUP SEQ NUMBER' },
+                      ]}
+                      setOpened={setIsOpenTestcaseGroupUpdateApiBuilder}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>GROUP SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('변경할 테스트케이스 그룹의 SEQ 번호. ("G5"면 5)')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY</Tag>
+                  </div>
+                  <div className="explain">{t('변경할 그룹 정보를 전달합니다.')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('필수')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>name</Td>
+                        <Td>String</Td>
+                        <Td>{t('필수')}</Td>
+                        <Td>{t('그룹 이름.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>description</Td>
+                        <Td>String</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('그룹 설명. 생략 시 기존 값 유지.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>parentSeqNumber</Td>
+                        <Td>Number</Td>
+                        <Td>{t('선택')}</Td>
+                        <Td>{t('참고: 본 API에서는 사용되지 않으며 상위 그룹 이동은 지원하지 않습니다.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>REQUEST BODY EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_UPDATE_REQUEST_EXAMPLE}</pre>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('변경된 테스트케이스 그룹 정보')}</div>
+                </div>
+                <div className="result">{testcaseGroupResponseTable}</div>
+              </div>
+              <div className="response">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>{TESTCASE_GROUP_EXAMPLE}</pre>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          {/* 5. 테스트케이스 그룹 삭제 */}
+          <li>
+            <div className="name">{t('테스트케이스 그룹 삭제 API')}</div>
+            <div className="description">{t('테스트케이스 그룹의 SEQ 번호를 통해 해당 그룹을 삭제합니다. 하위 그룹, 그 안의 테스트케이스, 관련 테스트런 실행 이력이 모두 함께 삭제됩니다.')}</div>
+            <div className="req-res">
+              <div className="request">
+                <div className="label">
+                  <Tag border>REQUEST</Tag>
+                </div>
+                <div className="request-info">
+                  <div className="spec">
+                    <div className="method">DELETE</div>
+                    <div className="path">
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups/
+                      <span className="var">GROUP SEQ NUMBER</span>
+                    </div>
+                    {isLogin && (
+                      <div className="builder">
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupDeleteApiBuilder(true)}>
+                          {t('빌더')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  {isOpenTestcaseGroupDeleteApiBuilder && (
+                    <RequestBuilderPopup
+                      path={[
+                        { type: 'text', value: '/api/automation/projects/' },
+                        { type: 'variable', value: 'PROJECT TOKEN' },
+                        { type: 'text', value: '/testcase-groups/' },
+                        { type: 'variable', value: 'GROUP SEQ NUMBER' },
+                      ]}
+                      setOpened={setIsOpenTestcaseGroupDeleteApiBuilder}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트 토큰.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>GROUP SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('삭제할 테스트케이스 그룹의 SEQ 번호.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
                 </div>
               </div>
               <div className="response">
@@ -772,7 +1300,7 @@ function ApiIndexInfoPage() {
             </div>
           </li>
 
-          {/* 3. 테스트케이스 목록 조회 */}
+          {/* 6. 테스트케이스 목록 조회 */}
           <li>
             <div className="name">{t('테스트케이스 목록 조회 API')}</div>
             <div className="description">{t('프로젝트에 속한 모든 테스트케이스를 목록 스키마로 조회합니다.')}</div>
@@ -854,7 +1382,7 @@ function ApiIndexInfoPage() {
             </div>
           </li>
 
-          {/* 4. 테스트케이스 상세 조회 */}
+          {/* 7. 테스트케이스 상세 조회 */}
           <li>
             <div className="name">{t('테스트케이스 상세 조회 API')}</div>
             <div className="description">{t('테스트케이스의 SEQ 번호를 통해 해당 테스트케이스의 상세 정보(아이템 포함)를 조회합니다.')}</div>
@@ -952,7 +1480,7 @@ function ApiIndexInfoPage() {
             </div>
           </li>
 
-          {/* 5. 테스트케이스 생성 */}
+          {/* 8. 테스트케이스 생성 */}
           <li>
             <div className="name">{t('테스트케이스 생성 API')}</div>
             <div className="description">
@@ -1123,7 +1651,7 @@ function ApiIndexInfoPage() {
             </div>
           </li>
 
-          {/* 6. 테스트케이스 변경 */}
+          {/* 9. 테스트케이스 변경 */}
           <li>
             <div className="name">{t('테스트케이스 변경 API')}</div>
             <div className="description">
@@ -1300,7 +1828,7 @@ function ApiIndexInfoPage() {
             </div>
           </li>
 
-          {/* 7. 테스트케이스 삭제 */}
+          {/* 10. 테스트케이스 삭제 */}
           <li>
             <div className="name">{t('테스트케이스 삭제 API')}</div>
             <div className="description">{t('테스트케이스의 SEQ 번호를 통해 해당 테스트케이스를 삭제합니다. 연관된 아이템과 테스트런 실행 이력도 함께 제거됩니다.')}</div>
@@ -1379,10 +1907,100 @@ function ApiIndexInfoPage() {
             </div>
           </li>
 
-          {/* 8. 테스트케이스 그룹 생성 */}
+          {/* 11. 테스트케이스가 포함된 테스트런 SEQ 번호 조회 */}
           <li>
-            <div className="name">{t('테스트케이스 그룹 생성 API')}</div>
-            <div className="description">{t('프로젝트에 새로운 테스트케이스 그룹을 생성합니다. parentSeqNumber를 지정하면 해당 그룹의 하위로 생성됩니다.')}</div>
+            <div className="name">{t('테스트케이스가 포함된 테스트런 SEQ 번호 조회 API')}</div>
+            <div className="description">{t('테스트케이스의 SEQ 번호를 통해, 해당 테스트케이스가 포함되어 실행 중인 테스트런 SEQ 번호 목록을 조회할 수 있습니다.')}</div>
+            <div className="req-res">
+              <div className="request">
+                <div className="label">
+                  <Tag border>REQUEST</Tag>
+                </div>
+                <div className="request-info">
+                  <div className="spec">
+                    <div className="method">GET</div>
+                    <div className="path">
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases/
+                      <span className="var">TESTCASE SEQ NUMBER</span>/testruns
+                    </div>
+                    {isLogin && (
+                      <div className="builder">
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestrunApiBuilder(true)}>
+                          {t('빌더')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                  {isOpenTestrunApiBuilder && (
+                    <RequestBuilderPopup
+                      path={[
+                        { type: 'text', value: '/api/automation/projects/' },
+                        { type: 'variable', value: 'PROJECT TOKEN' },
+                        { type: 'text', value: '/testcases/' },
+                        { type: 'variable', value: 'TESTCASE SEQ NUMBER' },
+                        { type: 'text', value: '/testruns' },
+                      ]}
+                      setOpened={setIsOpenTestrunApiBuilder}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>PATH PARAMETERS</Tag>
+                  </div>
+                  <div className="explain">{t('경로에 포함되는 변수 설명')}</div>
+                </div>
+                <div className="result">
+                  <Table size="sm" cols={['220px', '100px', '']} border>
+                    <THead>
+                      <Tr>
+                        <Th align="left">{t('이름')}</Th>
+                        <Th align="left">{t('타입')}</Th>
+                        <Th align="left">{t('설명')}</Th>
+                      </Tr>
+                    </THead>
+                    <Tbody>
+                      <Tr>
+                        <Td>PROJECT TOKEN</Td>
+                        <Td>String</Td>
+                        <Td>{t('프로젝트의 토큰 값. 프로젝트 설정 화면에서 확인할 수 있습니다.')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트케이스 SEQ 번호. seqId가 "TC10"이면 10.')}</Td>
+                      </Tr>
+                    </Tbody>
+                  </Table>
+                </div>
+              </div>
+              <div className="request-body">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE FIELDS</Tag>
+                  </div>
+                  <div className="explain">{t('Number 배열 (각 요소는 테스트런 SEQ 번호)')}</div>
+                </div>
+              </div>
+              <div className="response">
+                <div className="label">
+                  <div>
+                    <Tag border>RESPONSE EXAMPLE</Tag>
+                  </div>
+                </div>
+                <div className="result">
+                  <pre>[10, 20, 30]</pre>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          {/* 12. 테스트케이스 결과 저장 */}
+          <li>
+            <div className="name">{t('테스트케이스 결과 저장 API')}</div>
+            <div className="description">{t('테스트런에 포함된 테스트케이스의 테스트 결과를 저장합니다.')}</div>
             <div className="req-res">
               <div className="request">
                 <div className="label">
@@ -1392,24 +2010,28 @@ function ApiIndexInfoPage() {
                   <div className="spec">
                     <div className="method">POST</div>
                     <div className="path">
-                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups
+                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testruns/<span className="var">TESTRUN SEQ NUMBER</span>/testcases/
+                      <span className="var">TESTCASE SEQ NUMBER</span>
                     </div>
                     {isLogin && (
                       <div className="builder">
-                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupCreateApiBuilder(true)}>
+                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseResultApiBuilder(true)}>
                           {t('빌더')}
                         </Button>
                       </div>
                     )}
                   </div>
-                  {isOpenTestcaseGroupCreateApiBuilder && (
+                  {isOpenTestcaseResultApiBuilder && (
                     <RequestBuilderPopup
                       path={[
                         { type: 'text', value: '/api/automation/projects/' },
                         { type: 'variable', value: 'PROJECT TOKEN' },
-                        { type: 'text', value: '/testcase-groups' },
+                        { type: 'text', value: '/testruns/' },
+                        { type: 'variable', value: 'TESTRUN SEQ NUMBER' },
+                        { type: 'text', value: '/testcases/' },
+                        { type: 'variable', value: 'TESTCASE SEQ NUMBER' },
                       ]}
-                      setOpened={setIsOpenTestcaseGroupCreateApiBuilder}
+                      setOpened={setIsOpenTestcaseResultApiBuilder}
                     />
                   )}
                 </div>
@@ -1435,6 +2057,16 @@ function ApiIndexInfoPage() {
                         <Td>String</Td>
                         <Td>{t('프로젝트 토큰.')}</Td>
                       </Tr>
+                      <Tr>
+                        <Td>TESTRUN SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트런의 SEQ 번호. (예: "R15"이면 15)')}</Td>
+                      </Tr>
+                      <Tr>
+                        <Td>TESTCASE SEQ NUMBER</Td>
+                        <Td>Number</Td>
+                        <Td>{t('테스트케이스의 SEQ 번호.')}</Td>
+                      </Tr>
                     </Tbody>
                   </Table>
                 </div>
@@ -1444,10 +2076,10 @@ function ApiIndexInfoPage() {
                   <div>
                     <Tag border>REQUEST BODY</Tag>
                   </div>
-                  <div className="explain">{t('생성할 테스트케이스 그룹의 정보를 전달합니다.')}</div>
+                  <div className="explain">{t('테스트 결과 및 코멘트를 저장합니다.')}</div>
                 </div>
                 <div className="result">
-                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
+                  <Table size="sm" cols={['180px', '100px', '100px', '']} border>
                     <THead>
                       <Tr>
                         <Th align="left">{t('이름')}</Th>
@@ -1458,22 +2090,16 @@ function ApiIndexInfoPage() {
                     </THead>
                     <Tbody>
                       <Tr>
-                        <Td>parentSeqNumber</Td>
-                        <Td>Number</Td>
-                        <Td>{t('선택')}</Td>
-                        <Td>{t('상위 그룹의 SEQ 번호. 생략/null이면 최상위 그룹으로 생성됩니다.')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>name</Td>
+                        <Td>result</Td>
                         <Td>String</Td>
                         <Td>{t('필수')}</Td>
-                        <Td>{t('그룹 이름. 저장 시 "-<SEQ>" 접미가 자동 추가됩니다.')}</Td>
+                        <Td>{t('테스트 결과 코드. "UNTESTED" | "UNTESTABLE" | "FAILED" | "PASSED" 중 하나.')}</Td>
                       </Tr>
                       <Tr>
-                        <Td>description</Td>
+                        <Td>comment</Td>
                         <Td>String</Td>
                         <Td>{t('선택')}</Td>
-                        <Td>{t('그룹 설명.')}</Td>
+                        <Td>{t('결과와 함께 저장할 코멘트.')}</Td>
                       </Tr>
                     </Tbody>
                   </Table>
@@ -1486,235 +2112,7 @@ function ApiIndexInfoPage() {
                   </div>
                 </div>
                 <div className="result">
-                  <pre>{TESTCASE_GROUP_CREATE_REQUEST_EXAMPLE}</pre>
-                </div>
-              </div>
-              <div className="request-body">
-                <div className="label">
-                  <div>
-                    <Tag border>RESPONSE FIELDS</Tag>
-                  </div>
-                  <div className="explain">{t('생성된 테스트케이스 그룹 정보')}</div>
-                </div>
-                <div className="result">{testcaseGroupResponseTable}</div>
-              </div>
-              <div className="response">
-                <div className="label">
-                  <div>
-                    <Tag border>RESPONSE EXAMPLE</Tag>
-                  </div>
-                </div>
-                <div className="result">
-                  <pre>{TESTCASE_GROUP_EXAMPLE}</pre>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          {/* 9. 테스트케이스 그룹 변경 */}
-          <li>
-            <div className="name">{t('테스트케이스 그룹 변경 API')}</div>
-            <div className="description">{t('테스트케이스 그룹의 이름과 설명을 변경합니다.')}</div>
-            <div className="req-res">
-              <div className="request">
-                <div className="label">
-                  <Tag border>REQUEST</Tag>
-                </div>
-                <div className="request-info">
-                  <div className="spec">
-                    <div className="method">PUT</div>
-                    <div className="path">
-                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups/
-                      <span className="var">GROUP SEQ NUMBER</span>
-                    </div>
-                    {isLogin && (
-                      <div className="builder">
-                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupUpdateApiBuilder(true)}>
-                          {t('빌더')}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  {isOpenTestcaseGroupUpdateApiBuilder && (
-                    <RequestBuilderPopup
-                      path={[
-                        { type: 'text', value: '/api/automation/projects/' },
-                        { type: 'variable', value: 'PROJECT TOKEN' },
-                        { type: 'text', value: '/testcase-groups/' },
-                        { type: 'variable', value: 'GROUP SEQ NUMBER' },
-                      ]}
-                      setOpened={setIsOpenTestcaseGroupUpdateApiBuilder}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="request-body">
-                <div className="label">
-                  <div>
-                    <Tag border>PATH PARAMETERS</Tag>
-                  </div>
-                </div>
-                <div className="result">
-                  <Table size="sm" cols={['220px', '100px', '']} border>
-                    <THead>
-                      <Tr>
-                        <Th align="left">{t('이름')}</Th>
-                        <Th align="left">{t('타입')}</Th>
-                        <Th align="left">{t('설명')}</Th>
-                      </Tr>
-                    </THead>
-                    <Tbody>
-                      <Tr>
-                        <Td>PROJECT TOKEN</Td>
-                        <Td>String</Td>
-                        <Td>{t('프로젝트 토큰.')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>GROUP SEQ NUMBER</Td>
-                        <Td>Number</Td>
-                        <Td>{t('변경할 테스트케이스 그룹의 SEQ 번호. ("G5"면 5)')}</Td>
-                      </Tr>
-                    </Tbody>
-                  </Table>
-                </div>
-              </div>
-              <div className="request-body">
-                <div className="label">
-                  <div>
-                    <Tag border>REQUEST BODY</Tag>
-                  </div>
-                  <div className="explain">{t('변경할 그룹 정보를 전달합니다.')}</div>
-                </div>
-                <div className="result">
-                  <Table size="sm" cols={['220px', '100px', '100px', '']} border>
-                    <THead>
-                      <Tr>
-                        <Th align="left">{t('이름')}</Th>
-                        <Th align="left">{t('타입')}</Th>
-                        <Th align="left">{t('필수')}</Th>
-                        <Th align="left">{t('설명')}</Th>
-                      </Tr>
-                    </THead>
-                    <Tbody>
-                      <Tr>
-                        <Td>name</Td>
-                        <Td>String</Td>
-                        <Td>{t('필수')}</Td>
-                        <Td>{t('그룹 이름.')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>description</Td>
-                        <Td>String</Td>
-                        <Td>{t('선택')}</Td>
-                        <Td>{t('그룹 설명. 생략 시 기존 값 유지.')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>parentSeqNumber</Td>
-                        <Td>Number</Td>
-                        <Td>{t('선택')}</Td>
-                        <Td>{t('참고: 본 API에서는 사용되지 않으며 상위 그룹 이동은 지원하지 않습니다.')}</Td>
-                      </Tr>
-                    </Tbody>
-                  </Table>
-                </div>
-              </div>
-              <div className="request-body">
-                <div className="label">
-                  <div>
-                    <Tag border>REQUEST BODY EXAMPLE</Tag>
-                  </div>
-                </div>
-                <div className="result">
-                  <pre>{TESTCASE_GROUP_UPDATE_REQUEST_EXAMPLE}</pre>
-                </div>
-              </div>
-              <div className="request-body">
-                <div className="label">
-                  <div>
-                    <Tag border>RESPONSE FIELDS</Tag>
-                  </div>
-                  <div className="explain">{t('변경된 테스트케이스 그룹 정보')}</div>
-                </div>
-                <div className="result">{testcaseGroupResponseTable}</div>
-              </div>
-              <div className="response">
-                <div className="label">
-                  <div>
-                    <Tag border>RESPONSE EXAMPLE</Tag>
-                  </div>
-                </div>
-                <div className="result">
-                  <pre>{TESTCASE_GROUP_EXAMPLE}</pre>
-                </div>
-              </div>
-            </div>
-          </li>
-
-          {/* 10. 테스트케이스 그룹 삭제 */}
-          <li>
-            <div className="name">{t('테스트케이스 그룹 삭제 API')}</div>
-            <div className="description">{t('테스트케이스 그룹의 SEQ 번호를 통해 해당 그룹을 삭제합니다. 하위 그룹, 그 안의 테스트케이스, 관련 테스트런 실행 이력이 모두 함께 삭제됩니다.')}</div>
-            <div className="req-res">
-              <div className="request">
-                <div className="label">
-                  <Tag border>REQUEST</Tag>
-                </div>
-                <div className="request-info">
-                  <div className="spec">
-                    <div className="method">DELETE</div>
-                    <div className="path">
-                      /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups/
-                      <span className="var">GROUP SEQ NUMBER</span>
-                    </div>
-                    {isLogin && (
-                      <div className="builder">
-                        <Button size="xs" color="primary" onClick={() => setIsOpenTestcaseGroupDeleteApiBuilder(true)}>
-                          {t('빌더')}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  {isOpenTestcaseGroupDeleteApiBuilder && (
-                    <RequestBuilderPopup
-                      path={[
-                        { type: 'text', value: '/api/automation/projects/' },
-                        { type: 'variable', value: 'PROJECT TOKEN' },
-                        { type: 'text', value: '/testcase-groups/' },
-                        { type: 'variable', value: 'GROUP SEQ NUMBER' },
-                      ]}
-                      setOpened={setIsOpenTestcaseGroupDeleteApiBuilder}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="request-body">
-                <div className="label">
-                  <div>
-                    <Tag border>PATH PARAMETERS</Tag>
-                  </div>
-                </div>
-                <div className="result">
-                  <Table size="sm" cols={['220px', '100px', '']} border>
-                    <THead>
-                      <Tr>
-                        <Th align="left">{t('이름')}</Th>
-                        <Th align="left">{t('타입')}</Th>
-                        <Th align="left">{t('설명')}</Th>
-                      </Tr>
-                    </THead>
-                    <Tbody>
-                      <Tr>
-                        <Td>PROJECT TOKEN</Td>
-                        <Td>String</Td>
-                        <Td>{t('프로젝트 토큰.')}</Td>
-                      </Tr>
-                      <Tr>
-                        <Td>GROUP SEQ NUMBER</Td>
-                        <Td>Number</Td>
-                        <Td>{t('삭제할 테스트케이스 그룹의 SEQ 번호.')}</Td>
-                      </Tr>
-                    </Tbody>
-                  </Table>
+                  <pre>{TESTCASE_RESULT_REQUEST_EXAMPLE}</pre>
                 </div>
               </div>
               <div className="response">
@@ -1728,6 +2126,7 @@ function ApiIndexInfoPage() {
               </div>
             </div>
           </li>
+
         </ul>
       </PageContent>
     </Page>

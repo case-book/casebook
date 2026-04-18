@@ -11,6 +11,8 @@ public interface TestcaseTemplateRepository extends JpaRepository<TestcaseTempla
 
     List<TestcaseTemplate> findAllByProjectId(Long projectId);
 
+    Optional<TestcaseTemplate> findByIdAndProjectId(Long id, Long projectId);
+
 
 }
 

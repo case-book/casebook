@@ -251,4 +251,10 @@ public class ProjectService {
         return testcaseTemplateRepository.findAllByProjectId(projectId).stream().map((TestcaseTemplateDTO::new)).collect(Collectors.toList());
     }
 
+    public TestcaseTemplateDTO selectProjectTestcaseTemplateInfo(long projectId, long testcaseTemplateId) {
+        return testcaseTemplateRepository.findByIdAndProjectId(testcaseTemplateId, projectId)
+            .map(TestcaseTemplateDTO::new)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{testcaseTemplateId + " 테스트케이스 템플릿"}));
+    }
+
 }
