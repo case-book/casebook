@@ -141,17 +141,18 @@ public class TestrunTestcaseGroupTestcase extends CommonEntity implements Clonea
     }
 
     public int reAssignTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, Map<Long, Long> testcaseTesterMap, int currentSeq, Random random, Long forcedTesterId) {
-        Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
-        boolean removedUser = testrunUsers.stream()
-            .noneMatch(testrunUser -> testrunUser.getUser().getId().equals(this.tester != null ? this.tester.getId() : null));
-        if (removedUser) {
-            if (!testrunUsers.isEmpty()) {
-                currentSeq = assignByType(tagUserMap, random, testrunUsers, testcase, testcaseTesterMap, currentSeq, forcedTesterId);
-            } else {
-                this.tester = null;
+        // 기존에 지정된 테스터는 그대로 유지하고, 테스터가 지정되지 않은 경우에만 신규 할당
+        if (this.tester != null) {
+            if (testcaseTesterMap != null) {
+                testcaseTesterMap.put(this.testcase.getId(), this.tester.getId());
             }
+            return currentSeq;
         }
-        return currentSeq;
+        if (testrunUsers.isEmpty()) {
+            return currentSeq;
+        }
+        Map<String, List<ProjectUser>> tagUserMap = project.getUsersByTag(testrunUsers);
+        return assignByType(tagUserMap, random, testrunUsers, testcase, testcaseTesterMap, currentSeq, forcedTesterId);
     }
 
     public int changeTester(Project project, TestcaseDTO testcase, List<TestrunUser> testrunUsers, int currentSeq, Random random) {
