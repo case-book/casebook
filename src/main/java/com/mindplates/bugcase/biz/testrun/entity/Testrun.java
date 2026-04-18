@@ -546,6 +546,10 @@ public class Testrun extends CommonEntity implements Cloneable {
     }
 
     public void addConnectedTestcase(Map<Long, Testcase> projectTestcaseMap, DirectedGraph directedGraph) {
+        addConnectedTestcase(projectTestcaseMap, directedGraph, java.util.Collections.emptySet());
+    }
+
+    public void addConnectedTestcase(Map<Long, Testcase> projectTestcaseMap, DirectedGraph directedGraph, Set<Long> excludedTestcaseIds) {
 
         // ConcurrentHashMap을 사용하여 testcaseIds와 testcaseGroupIds 생성
         ConcurrentHashMap<Long, Boolean> testcaseIds = new ConcurrentHashMap<>();
@@ -567,7 +571,7 @@ public class Testrun extends CommonEntity implements Cloneable {
                     Set<Long> connectedIds = directedGraph.getConnectedNodes(testcase.getTestcase().getId());
 
                     for (Long id : connectedIds) {
-                        if (!testcaseIds.containsKey(id)) {
+                        if (!testcaseIds.containsKey(id) && !excludedTestcaseIds.contains(id)) {
                             Testcase connectedTestcase = projectTestcaseMap.get(id);
                             if (connectedTestcase != null) {
                                 if (!testcaseGroupIds.containsKey(connectedTestcase.getTestcaseGroup().getId())) {
