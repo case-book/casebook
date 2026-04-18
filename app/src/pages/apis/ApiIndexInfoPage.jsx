@@ -774,7 +774,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">GET</div>
+                    <div className="method get">GET</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-templates
                     </div>
@@ -865,7 +865,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">GET</div>
+                    <div className="method get">GET</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-templates/
                       <span className="var">TESTCASE TEMPLATE ID</span>
@@ -961,7 +961,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">POST</div>
+                    <div className="method post">POST</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups
                     </div>
@@ -1093,7 +1093,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">PUT</div>
+                    <div className="method put">PUT</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups/
                       <span className="var">GROUP SEQ NUMBER</span>
@@ -1232,7 +1232,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">DELETE</div>
+                    <div className="method delete">DELETE</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcase-groups/
                       <span className="var">GROUP SEQ NUMBER</span>
@@ -1311,7 +1311,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">GET</div>
+                    <div className="method get">GET</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases
                     </div>
@@ -1393,7 +1393,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">GET</div>
+                    <div className="method get">GET</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases/
                       <span className="var">TESTCASE SEQ NUMBER</span>
@@ -1495,7 +1495,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">POST</div>
+                    <div className="method post">POST</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases
                     </div>
@@ -1666,7 +1666,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">PUT</div>
+                    <div className="method put">PUT</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases/
                       <span className="var">TESTCASE SEQ NUMBER</span>
@@ -1839,7 +1839,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">DELETE</div>
+                    <div className="method delete">DELETE</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases/
                       <span className="var">TESTCASE SEQ NUMBER</span>
@@ -1918,7 +1918,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">GET</div>
+                    <div className="method get">GET</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testcases/
                       <span className="var">TESTCASE SEQ NUMBER</span>/testruns
@@ -2008,7 +2008,7 @@ function ApiIndexInfoPage() {
                 </div>
                 <div className="request-info">
                   <div className="spec">
-                    <div className="method">POST</div>
+                    <div className="method post">POST</div>
                     <div className="path">
                       /api/automation/projects/<span className="var">PROJECT TOKEN</span>/testruns/<span className="var">TESTRUN SEQ NUMBER</span>/testcases/
                       <span className="var">TESTCASE SEQ NUMBER</span>
