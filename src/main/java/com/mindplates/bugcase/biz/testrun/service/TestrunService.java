@@ -84,6 +84,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -374,7 +375,29 @@ public class TestrunService {
         Testrun updateTestrun = testrunDTO.toEntity();
         Testrun targetTestrun = testrunRepository.findById(testrunDTO.getId()).orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND));
 
+        // 업데이트 전 기존 테스트케이스 ID 목록 (이번 업데이트에서 명시적으로 제외된 케이스 계산용)
+        Set<Long> originalTestcaseIds = new HashSet<>();
+        for (TestrunTestcaseGroup group : targetTestrun.getTestcaseGroups()) {
+            if (group.getTestcases() != null) {
+                for (TestrunTestcaseGroupTestcase tc : group.getTestcases()) {
+                    originalTestcaseIds.add(tc.getTestcase().getId());
+                }
+            }
+        }
+
         targetTestrun.update(testrunDTO);
+
+        // 업데이트 후 남아 있는 테스트케이스 ID 목록 → 사용자가 이번 업데이트에서 제외한 케이스 산출
+        Set<Long> currentTestcaseIds = new HashSet<>();
+        for (TestrunTestcaseGroup group : targetTestrun.getTestcaseGroups()) {
+            if (group.getTestcases() != null) {
+                for (TestrunTestcaseGroupTestcase tc : group.getTestcases()) {
+                    currentTestcaseIds.add(tc.getTestcase().getId());
+                }
+            }
+        }
+        Set<Long> excludedTestcaseIds = new HashSet<>(originalTestcaseIds);
+        excludedTestcaseIds.removeAll(currentTestcaseIds);
 
         DirectedGraph graph = sequenceService.selectProjectSequenceGraph(project.getId());
 
@@ -382,7 +405,7 @@ public class TestrunService {
             List<Testcase> projectAllTestcases = testcaseRepository.findByProjectId(project.getId());
             Map<Long, Testcase> projectTestcaseMap = new HashMap<>();
             projectAllTestcases.forEach(testcase -> projectTestcaseMap.put(testcase.getId(), testcase));
-            targetTestrun.addConnectedTestcase(projectTestcaseMap, graph);
+            targetTestrun.addConnectedTestcase(projectTestcaseMap, graph, excludedTestcaseIds);
         }
 
         // 테스터 설정
