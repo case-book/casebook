@@ -55,40 +55,78 @@
       padding: 0;
       margin: 0;
 
-      .name {
-        font-weight: bold;
-        padding: 10px;
-        font-size: 16px;
-      }
-
-      .description {
-        font-size: 12px;
-        padding-left: 10px;
-        margin-bottom: 10px;
-      }
-
       > li {
-        margin-bottom: 20px;
+        margin: 0 10px 56px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        position: relative;
+
+        // 카드 사이 시각적 구분자
+        &:not(:last-child)::after {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 50%;
+          bottom: -32px;
+          width: 48px;
+          height: 4px;
+          border-radius: 2px;
+          background-color: var(--border-color);
+          opacity: 0.5;
+          transform: translateX(-50%);
+        }
+
+        .name {
+          font-weight: 700;
+          padding: 0 0 8px;
+          font-size: 18px;
+          border-bottom: 2px solid var(--primary-color, var(--border-color));
+          margin-bottom: 12px;
+          display: inline-block;
+        }
+
+        .description {
+          font-size: 13px;
+          padding-left: 0;
+          margin-bottom: 20px;
+          color: var(--sub-font-color, #666);
+          line-height: 1.6;
+        }
 
         .req-res {
-          margin-left: 10px;
-          margin-right: 10px;
+          margin-left: 0;
+          margin-right: 0;
           border: 1px solid var(--border-color);
+          border-radius: 6px;
+          overflow: hidden;
+
           .request,
           .request-body {
             border-bottom: 1px solid var(--border-color);
           }
+
+          .request {
+            background-color: var(--light-color);
+          }
+
           .request,
           .request-body,
           .response {
+            padding-bottom: 8px;
+
             .label {
-              padding: 10px 10px 0;
+              padding: 14px 16px 6px;
               display: flex;
               > div {
                 align-self: center;
 
                 &.explain {
-                  margin-left: 8px;
+                  margin-left: 10px;
+                  font-size: 12px;
+                  color: var(--sub-font-color, #666);
                 }
               }
             }
@@ -96,25 +134,52 @@
             .request-info {
               .spec {
                 display: flex;
-                padding: 4px 10px 10px;
+                padding: 6px 16px 14px;
                 font-weight: bold;
-                margin-left: 10px;
+                margin-left: 0;
+                align-items: center;
 
                 > div {
                   align-self: center;
 
                   &.method {
-                    margin-right: 10px;
+                    margin-right: 12px;
+                    padding: 4px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: white;
+                    background-color: #6b7280;
+                    letter-spacing: 0.5px;
+                    min-width: 56px;
+                    text-align: center;
+
+                    &.get {
+                      background-color: #2563eb;
+                    }
+                    &.post {
+                      background-color: #16a34a;
+                    }
+                    &.put {
+                      background-color: #d97706;
+                    }
+                    &.delete {
+                      background-color: #dc2626;
+                    }
                   }
 
                   &.path {
                     flex-grow: 1;
+                    font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+                    font-size: 13px;
+                    word-break: break-all;
                   }
                 }
               }
+
               .sample {
-                padding: 0 10px 10px;
-                margin-left: 10px;
+                padding: 0 16px 14px;
+                margin-left: 0;
                 display: flex;
                 > div {
                   align-self: center;
@@ -126,23 +191,29 @@
             }
 
             .result {
-              padding: 10px;
-              margin-left: 10px;
-              margin-right: 10px;
+              padding: 6px 16px 14px;
+              margin-left: 0;
+              margin-right: 0;
 
               pre {
                 margin: 0;
-                padding: 12px;
-                background-color: var(--light-color);
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
+                padding: 14px 16px;
+                background-color: #1e293b;
+                color: #e2e8f0;
+                border: 1px solid #0f172a;
+                border-radius: 6px;
                 font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
-                font-size: 12px;
+                font-size: 12.5px;
+                line-height: 1.55;
                 white-space: pre-wrap;
                 word-break: break-word;
                 overflow-x: auto;
               }
             }
+          }
+
+          .response {
+            padding-bottom: 14px;
           }
         }
       }
