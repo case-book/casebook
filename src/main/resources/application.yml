@@ -11,6 +11,9 @@ spring:
     url: jdbc:mysql://localhost:3606/casebook?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
     username: casebook_app
     password: admin1234
+    #url: jdbc:mysql://matrix-server-mysql-254-dbaas.mydev.onkakao.net:3306/casebook?serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&cacheDefaultTimezone=false
+    #username: casebook
+    #password: casebook
   jpa:
     hibernate:
       ddl-auto: update
@@ -43,7 +46,7 @@ spring:
       port: 6679
       password: admin1234
 scheduler:
-  enabled: true
+  enabled: false
 server:
   port: 8080
   error:

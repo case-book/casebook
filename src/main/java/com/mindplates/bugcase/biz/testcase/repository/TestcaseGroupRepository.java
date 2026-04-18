@@ -18,6 +18,8 @@ public interface TestcaseGroupRepository extends JpaRepository<TestcaseGroup, Lo
 
     Optional<TestcaseGroup> findByIdAndProjectId(Long id, Long projectId);
 
+    Optional<TestcaseGroup> findByProjectIdAndSeqId(Long projectId, String seqId);
+
     @Query(value = "SELECT tg.depth FROM TestcaseGroup tg WHERE tg.id = :id AND tg.project.id = :projectId")
     Optional<Long> findDepthByIdAndProjectId(Long id, Long projectId);
 

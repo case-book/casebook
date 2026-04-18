@@ -410,6 +410,136 @@ public class TestcaseService {
         return testcases.stream().map(TestcaseNameDTO::new).collect(Collectors.toList());
     }
 
+    public TestcaseDTO selectTestcaseInfoBySeqId(Long projectId, String seqId) {
+        Testcase testcase = testcaseRepository.findByProjectIdAndSeqId(projectId, seqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{seqId + " 테스트케이스"}));
+        return new TestcaseDTO(testcase);
+    }
+
+    @Transactional
+    public TestcaseDTO createTestcaseBySeqId(String spaceCode, Long projectId, String testcaseGroupSeqId, String name, String description,
+        String testerType, String testerValue, List<TestcaseItemDTO> requestItems) {
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByProjectIdAndSeqId(projectId, testcaseGroupSeqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{testcaseGroupSeqId + " 테스트케이스 그룹"}));
+        TestcaseDTO testcase = TestcaseDTO.builder()
+            .testcaseGroup(TestcaseGroupDTO.builder().id(testcaseGroup.getId()).build())
+            .project(ProjectDTO.builder().id(projectId).build())
+            .name(name)
+            .description(description)
+            .build();
+        TestcaseDTO created = createTestcaseInfo(spaceCode, projectId, testcase);
+
+        boolean hasOverride = testerType != null || testerValue != null || (requestItems != null && !requestItems.isEmpty());
+        if (hasOverride) {
+            return updateTestcaseInfoBySeqId(spaceCode, projectId, created.getSeqId(), null, null, testerType, testerValue, null, requestItems);
+        }
+        return created;
+    }
+
+    @Transactional
+    @Caching(evict = {
+        @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS),
+    })
+    public TestcaseDTO updateTestcaseInfoBySeqId(String spaceCode, Long projectId, String seqId, String name, String description,
+        String testerType, String testerValue, Boolean closed, List<TestcaseItemDTO> requestItems) {
+        Testcase target = testcaseRepository.findByProjectIdAndSeqId(projectId, seqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{seqId + " 테스트케이스"}));
+        TestcaseDTO current = new TestcaseDTO(target);
+
+        if (name != null) {
+            current.setName(name);
+        }
+        if (description != null) {
+            current.setDescription(description);
+        }
+        if (testerType != null) {
+            current.setTesterType(testerType);
+        }
+        if (testerValue != null) {
+            current.setTesterValue(testerValue);
+        }
+        if (closed != null) {
+            current.setClosed(closed);
+        }
+
+        if (requestItems != null) {
+            List<TestcaseItemDTO> existingItems = current.getTestcaseItems() == null ? new ArrayList<>() : current.getTestcaseItems();
+            Map<Long, TestcaseItemDTO> existingByTemplateId = new HashMap<>();
+            for (TestcaseItemDTO item : existingItems) {
+                if (item.getTestcaseTemplateItem() != null && item.getTestcaseTemplateItem().getId() != null) {
+                    existingByTemplateId.put(item.getTestcaseTemplateItem().getId(), item);
+                }
+            }
+            for (TestcaseItemDTO req : requestItems) {
+                Long templateItemId = req.getTestcaseTemplateItem() != null ? req.getTestcaseTemplateItem().getId() : null;
+                if (templateItemId == null) {
+                    continue;
+                }
+                TestcaseItemDTO existing = existingByTemplateId.get(templateItemId);
+                if (existing != null) {
+                    if (req.getType() != null) {
+                        existing.setType(req.getType());
+                    }
+                    existing.setValue(req.getValue());
+                    existing.setText(req.getText());
+                } else {
+                    req.setTestcase(TestcaseDTO.builder().id(current.getId()).build());
+                    existingItems.add(req);
+                }
+            }
+            current.setTestcaseItems(existingItems);
+        }
+
+        return updateTestcaseInfo(spaceCode, projectId, current);
+    }
+
+    @Transactional
+    public void deleteTestcaseBySeqId(String spaceCode, Long projectId, String seqId) {
+        Testcase testcase = testcaseRepository.findByProjectIdAndSeqId(projectId, seqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{seqId + " 테스트케이스"}));
+        deleteTestcaseInfo(spaceCode, projectId, testcase.getId());
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
+    public TestcaseGroupDTO createTestcaseGroupBySeqId(String spaceCode, Long projectId, String parentSeqId, String name, String description) {
+        Long parentId = null;
+        if (parentSeqId != null) {
+            TestcaseGroup parent = testcaseGroupRepository.findByProjectIdAndSeqId(projectId, parentSeqId)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{parentSeqId + " 테스트케이스 그룹"}));
+            parentId = parent.getId();
+        }
+        TestcaseGroupDTO group = TestcaseGroupDTO.builder()
+            .parentId(parentId)
+            .name(name)
+            .description(description)
+            .build();
+        return createTestcaseGroupInfo(spaceCode, projectId, group);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
+    public TestcaseGroupDTO updateTestcaseGroupBySeqId(String spaceCode, Long projectId, String seqId, String name, String description) {
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByProjectIdAndSeqId(projectId, seqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{seqId + " 테스트케이스 그룹"}));
+        if (name != null) {
+            testcaseGroup.setName(name);
+        }
+        if (description != null) {
+            testcaseGroup.setDescription(description);
+        }
+        TestcaseGroup result = testcaseGroupRepository.save(testcaseGroup);
+        return new TestcaseGroupDTO(result);
+    }
+
+    @Transactional
+    @CacheEvict(key = "{#projectId}", value = CacheConfig.TESTCASE_GROUPS)
+    public void deleteTestcaseGroupBySeqId(String spaceCode, Long projectId, String seqId) {
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByProjectIdAndSeqId(projectId, seqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{seqId + " 테스트케이스 그룹"}));
+        deleteTestcaseGroupInfo(spaceCode, projectId, testcaseGroup.getId());
+    }
+
     public List<TestcaseDTO> selectProjectTestcaseList(Long projectId) {
         List<Testcase> testcases = testcaseRepository.findByProjectId(projectId);
         return testcases.stream().map(testcase -> TestcaseDTO
