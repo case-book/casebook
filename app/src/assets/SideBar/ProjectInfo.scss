@@ -51,13 +51,35 @@
 
   .project-selector {
     position: relative;
-    > .project-name {
+
+    .project-name {
       align-self: center;
       font-weight: bold;
       padding: 12px 8px;
       cursor: pointer;
       border: 1px solid transparent;
       border-bottom: none;
+      position: relative;
+
+
+      .testrun-count {
+        position: absolute;
+        left: -6px;
+        top: 6px;
+        width: 14px;
+        height: 14px;
+        display: inline-flex;
+        justify-content: center;
+        background-color: var(--link-color);
+        color: var(--white-color);
+        border-radius: 50%;
+        font-size: 8px;
+        font-weight: normal;
+        font-family: MartianMono, sans-serif;
+        > span {
+          align-self: center;
+        }
+      }
 
       &.no-project {
         font-size: 11px;
