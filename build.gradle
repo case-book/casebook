@@ -168,6 +168,9 @@ task deployStatic(type: Copy) {
     into "$projectDir/src/main/resources/static"
 }
 
+// Gradle 8+ 는 동일 디렉터리 입출력에 대한 암묵적 의존을 거부하므로 명시적으로 선언
+tasks.named('processResources').configure { mustRunAfter('deployStatic') }
+
 task buildApp {
     doFirst {
         println "start app build"

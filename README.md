@@ -55,9 +55,9 @@ app] npm start
 
 
 ## 릴리스
-아래와 같이 릴리스 파일을 생성할 수 있습니다. 단, gradle 7.X 버전을 사용해야 올바르게 릴리스됩니다. gradle 8.0 이상의 버전에서는 현재 올바르게 릴리스 과정이 동작하지 않습니다.
+프로젝트에 포함된 Gradle Wrapper(`./gradlew`)를 사용하여 릴리스 파일을 생성합니다. Wrapper 기준 Gradle 8.14에서 빌드가 검증되었습니다.
 ```agsl
-gradle release
+./gradlew release
 ```
 릴리스 과정이 올바르게 처리되면, 프로젝트 파일의 build 파일의 dist 폴더 하위에 zip 파일이 생성됩니다.
 
