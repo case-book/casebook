@@ -12,6 +12,7 @@ import com.mindplates.bugcase.biz.testrun.entity.TestrunUser;
 import com.mindplates.bugcase.common.constraints.ColumnsDef;
 import com.mindplates.bugcase.common.entity.CommonEntity;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -155,14 +156,16 @@ public class Testcase extends CommonEntity {
         this.testerValue = testcase.getTesterValue();
         this.contentUpdateDate = LocalDateTime.now();
 
+        List<ProjectReleaseDTO> incomingProjectReleases = testcase.getProjectReleases() == null ? Collections.emptyList() : testcase.getProjectReleases();
+
         List<TestcaseProjectRelease> deletedTestcaseProjectReleaseList = this.testcaseProjectReleases.stream()
-            .filter(testcaseProjectRelease -> testcase.getProjectReleases().stream().noneMatch(projectRelease -> projectRelease.getId().equals(testcaseProjectRelease.getProjectRelease().getId())))
+            .filter(testcaseProjectRelease -> incomingProjectReleases.stream().noneMatch(projectRelease -> projectRelease.getId().equals(testcaseProjectRelease.getProjectRelease().getId())))
             .collect(
                 Collectors.toList());
         this.testcaseProjectReleases.removeIf(
-            testcaseProjectRelease -> testcase.getProjectReleases().stream().noneMatch(projectRelease -> projectRelease.getId().equals(testcaseProjectRelease.getProjectRelease().getId())));
+            testcaseProjectRelease -> incomingProjectReleases.stream().noneMatch(projectRelease -> projectRelease.getId().equals(testcaseProjectRelease.getProjectRelease().getId())));
 
-        for (ProjectReleaseDTO projectRelease : testcase.getProjectReleases()) {
+        for (ProjectReleaseDTO projectRelease : incomingProjectReleases) {
             if (this.testcaseProjectReleases.stream().noneMatch(testcaseProjectRelease -> testcaseProjectRelease.getProjectRelease().getId().equals(projectRelease.getId()))) {
                 this.testcaseProjectReleases.add(TestcaseProjectRelease.builder().projectRelease(ProjectRelease.builder().id(projectRelease.getId()).build()).testcase(this).build());
             }

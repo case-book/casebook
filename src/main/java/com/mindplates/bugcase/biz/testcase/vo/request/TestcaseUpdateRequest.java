@@ -6,6 +6,7 @@ import com.mindplates.bugcase.biz.testcase.dto.TestcaseDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO;
 import com.mindplates.bugcase.biz.testcase.dto.TestcaseTemplateDTO;
 import com.mindplates.bugcase.common.vo.IRequestVO;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Data;
@@ -43,7 +44,9 @@ public class TestcaseUpdateRequest implements IRequestVO<TestcaseDTO> {
             .testerValue(testerValue)
             .build();
 
-        if (projectReleaseIds != null) {
+        if (projectReleaseIds == null) {
+            testcase.setProjectReleases(Collections.emptyList());
+        } else {
             testcase.setProjectReleases(
                 projectReleaseIds.stream()
                     .map(projectReleaseId ->
