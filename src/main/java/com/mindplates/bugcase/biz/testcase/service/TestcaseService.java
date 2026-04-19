@@ -416,6 +416,34 @@ public class TestcaseService {
         return new TestcaseDTO(testcase);
     }
 
+    public List<TestcaseDTO> searchTestcasesByName(Long projectId, String name) {
+        String keyword = name == null ? "" : name;
+        List<Testcase> testcases = testcaseRepository.findByProjectIdAndNameContainingIgnoreCase(projectId, keyword);
+        return testcases.stream().map(TestcaseDTO::new).collect(Collectors.toList());
+    }
+
+    public List<TestcaseDTO> selectTestcasesByGroupSeqId(Long projectId, String testcaseGroupSeqId) {
+        testcaseGroupRepository.findByProjectIdAndSeqId(projectId, testcaseGroupSeqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{testcaseGroupSeqId + " 테스트케이스 그룹"}));
+        List<Testcase> testcases = testcaseRepository.findByProjectIdAndTestcaseGroupSeqId(projectId, testcaseGroupSeqId);
+        return testcases.stream().map(TestcaseDTO::new).collect(Collectors.toList());
+    }
+
+    public TestcaseGroupDTO selectTestcaseGroupInfoBySeqId(Long projectId, String testcaseGroupSeqId) {
+        TestcaseGroup testcaseGroup = testcaseGroupRepository.findByProjectIdAndSeqId(projectId, testcaseGroupSeqId)
+            .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{testcaseGroupSeqId + " 테스트케이스 그룹"}));
+        return new TestcaseGroupDTO(testcaseGroup);
+    }
+
+    public List<TestcaseGroupDTO> selectProjectTestcaseGroupList(Long projectId) {
+        return testcaseCachedService.selectTestcaseGroupList(projectId);
+    }
+
+    public List<Testcase> findTestcasesByProjectIdAndSeqNumbers(Long projectId, List<Long> testcaseSeqNumbers) {
+        List<String> seqIds = testcaseSeqNumbers.stream().map(n -> "TC" + n).collect(Collectors.toList());
+        return testcaseRepository.findByProjectIdAndSeqIdIn(projectId, seqIds);
+    }
+
     @Transactional
     public TestcaseDTO createTestcaseBySeqId(String spaceCode, Long projectId, String testcaseGroupSeqId, String name, String description,
         String testerType, String testerValue, List<TestcaseItemDTO> requestItems) {

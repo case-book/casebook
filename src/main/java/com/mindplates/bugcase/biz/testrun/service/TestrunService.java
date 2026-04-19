@@ -158,6 +158,90 @@ public class TestrunService {
 
     @Transactional
     @Caching(evict = {
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
+        @CacheEvict(key = "{#spaceCode,#projectId}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)
+    })
+    public TestrunDTO createAutomationTestrun(String spaceCode, Long projectId, String name, String description,
+        java.time.LocalDateTime startDateTime, java.time.LocalDateTime endDateTime, Boolean opened,
+        Boolean autoTestcaseNotAssignedTester, Boolean addConnectedSequenceTestcase, Boolean assignSequenceTestcaseSameTester,
+        List<Long> testrunUserIds, List<Long> testcaseSeqNumbers, List<Long> testcaseGroupSeqNumbers) {
+
+        List<com.mindplates.bugcase.biz.testcase.entity.Testcase> testcases = new ArrayList<>();
+        if (testcaseSeqNumbers != null && !testcaseSeqNumbers.isEmpty()) {
+            List<String> seqIds = testcaseSeqNumbers.stream().map(n -> "TC" + n).collect(Collectors.toList());
+            testcases.addAll(testcaseRepository.findByProjectIdAndSeqIdIn(projectId, seqIds));
+            if (testcases.size() < testcaseSeqNumbers.size()) {
+                throw new ServiceException(HttpStatus.NOT_FOUND, "target.not.found", new String[]{"일부 테스트케이스"});
+            }
+        }
+        if (testcaseGroupSeqNumbers != null && !testcaseGroupSeqNumbers.isEmpty()) {
+            Set<Long> existingIds = testcases.stream().map(com.mindplates.bugcase.biz.testcase.entity.Testcase::getId).collect(Collectors.toSet());
+            for (Long groupSeq : testcaseGroupSeqNumbers) {
+                List<com.mindplates.bugcase.biz.testcase.entity.Testcase> groupTestcases =
+                    testcaseRepository.findByProjectIdAndTestcaseGroupSeqId(projectId, "G" + groupSeq);
+                for (com.mindplates.bugcase.biz.testcase.entity.Testcase tc : groupTestcases) {
+                    if (!existingIds.contains(tc.getId())) {
+                        testcases.add(tc);
+                        existingIds.add(tc.getId());
+                    }
+                }
+            }
+        }
+        if (testcases.isEmpty()) {
+            throw new ServiceException(HttpStatus.BAD_REQUEST, "testcaseSeqNumbers 또는 testcaseGroupSeqNumbers로 포함할 테스트케이스를 지정해야 합니다.");
+        }
+
+        java.util.Map<Long, TestrunTestcaseGroupDTO> groupMap = new java.util.LinkedHashMap<>();
+        for (com.mindplates.bugcase.biz.testcase.entity.Testcase tc : testcases) {
+            Long groupId = tc.getTestcaseGroup().getId();
+            TestrunTestcaseGroupDTO group = groupMap.computeIfAbsent(groupId, gid ->
+                TestrunTestcaseGroupDTO.builder()
+                    .testcaseGroup(com.mindplates.bugcase.biz.testcase.dto.TestcaseGroupDTO.builder().id(gid).build())
+                    .testcases(new ArrayList<>())
+                    .build());
+            group.getTestcases().add(TestrunTestcaseGroupTestcaseDTO.builder()
+                .testcase(TestcaseDTO.builder().id(tc.getId()).build())
+                .testrunTestcaseGroup(group)
+                .build());
+        }
+
+        TestrunDTO testrunDTO = TestrunDTO.builder()
+            .name(name)
+            .description(description)
+            .project(ProjectDTO.builder().id(projectId).build())
+            .startDateTime(startDateTime)
+            .endDateTime(endDateTime)
+            .opened(opened == null ? true : opened)
+            .startTime(startDateTime != null ? startDateTime.toLocalTime() : null)
+            .durationHours(0)
+            .deadlineClose(false)
+            .excludeHoliday(false)
+            .autoTestcaseNotAssignedTester(autoTestcaseNotAssignedTester)
+            .addConnectedSequenceTestcase(addConnectedSequenceTestcase)
+            .assignSequenceTestcaseSameTester(assignSequenceTestcaseSameTester)
+            .testcaseGroups(new ArrayList<>(groupMap.values()))
+            .profiles(new ArrayList<>())
+            .hooks(new ArrayList<>())
+            .messageChannels(new ArrayList<>())
+            .build();
+
+        if (testrunUserIds != null && !testrunUserIds.isEmpty()) {
+            testrunDTO.setTestrunUsers(testrunUserIds.stream()
+                .map(userId -> com.mindplates.bugcase.biz.testrun.dto.TestrunUserDTO.builder()
+                    .user(UserDTO.builder().id(userId).build())
+                    .testrun(testrunDTO)
+                    .build())
+                .collect(Collectors.toList()));
+        } else {
+            testrunDTO.setTestrunUsers(new ArrayList<>());
+        }
+
+        return createTestrunInfo(spaceCode, testrunDTO);
+    }
+
+    @Transactional
+    @Caching(evict = {
         @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT),
         @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_SIMPLE_TESTRUNS),
         @CacheEvict(key = "{#spaceCode,#testrunDTO.project.id}", value = CacheConfig.PROJECT_OPENED_DETAIL_TESTRUNS)

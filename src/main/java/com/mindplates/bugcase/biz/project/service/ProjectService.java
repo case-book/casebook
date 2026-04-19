@@ -247,6 +247,24 @@ public class ProjectService {
         return projectUserRepository.findAllByProjectId(projectId).stream().map((projectUser -> new UserDTO(projectUser.getUser()))).collect(Collectors.toList());
     }
 
+    public List<com.mindplates.bugcase.biz.project.dto.ProjectUserDTO> selectProjectUsersWithTags(long projectId) {
+        return projectUserRepository.findAllByProjectId(projectId).stream()
+            .map(com.mindplates.bugcase.biz.project.dto.ProjectUserDTO::new)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> selectProjectUserTagList(long projectId) {
+        return projectUserRepository.findAllByProjectId(projectId).stream()
+            .map(pu -> pu.getTags())
+            .filter(tags -> tags != null && !tags.isBlank())
+            .flatMap(tags -> java.util.Arrays.stream(tags.split(",")))
+            .map(String::trim)
+            .filter(tag -> !tag.isEmpty())
+            .distinct()
+            .sorted()
+            .collect(Collectors.toList());
+    }
+
     public List<TestcaseTemplateDTO> selectProjectTestcaseTemplateList(long projectId) {
         return testcaseTemplateRepository.findAllByProjectId(projectId).stream().map((TestcaseTemplateDTO::new)).collect(Collectors.toList());
     }

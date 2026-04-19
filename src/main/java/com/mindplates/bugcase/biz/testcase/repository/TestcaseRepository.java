@@ -33,6 +33,12 @@ public interface TestcaseRepository extends JpaRepository<Testcase, Long> {
 
     Optional<Testcase> findByProjectIdAndSeqId(Long projectId, String seqId);
 
+    List<Testcase> findByProjectIdAndNameContainingIgnoreCase(Long projectId, String name);
+
+    List<Testcase> findByProjectIdAndSeqIdIn(Long projectId, List<String> seqIds);
+
+    List<Testcase> findByProjectIdAndTestcaseGroupSeqId(Long projectId, String testcaseGroupSeqId);
+
     @Query(value = "SELECT new Testcase(t.id, t.seqId, t.name) FROM Testcase t WHERE t.project.id = :projectId")
     List<Testcase> findNameByProjectId(Long projectId);
 
